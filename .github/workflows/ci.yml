@@ -20,7 +20,7 @@ jobs:
       - name: Package import smoke
         run: python -c "import enterprise_memory; from enterprise_memory.serving import governed_view, api"
       - name: Unit + security + API tests (no Solar, no Mem0, no network)
-        run: python -m pytest -q tests/unit tests/security tests/integration/test_api.py
+        run: python -m pytest -q tests/unit tests/security tests/integration/test_api.py tests/service
       - name: Offline Alice/Bob demo
         run: python scripts/demo_alice_bob.py --offline
       - name: OpenAPI snapshot check

@@ -5,7 +5,7 @@
 ## Status
 - P0-fix-2: green (73 tests).
 - **P1 (this push): PostgreSQL persistence + Alembic + RLS + durable jobs + transactional outbox** —
-  implemented; validated via the new `ci-postgres` GitHub Actions workflow (PostgreSQL service container).
+  implemented and **CI-VALIDATED** — `ci-postgres` is GREEN (PostgreSQL service container).
 - **Gate A = PARTIAL** (full HTTP/worker E2E is P5).
 - **Gate B advances**: PostgreSQL FORCE-RLS tenant/private isolation + no-BYPASSRLS runtime roles +
   transaction-local tenant context + pool-leak test — implemented and CI-validated. Real company OIDC /

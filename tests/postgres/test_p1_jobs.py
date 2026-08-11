@@ -31,9 +31,13 @@ def test_two_workers_cannot_claim_one_job(seeded):
             await c.execute(text("INSERT INTO solve_jobs(id,org_id,submitter_user_id,repository_id,logical_request_id,spec_json)"
                                  " VALUES(:i,:o,:u,:r,'lrq','{}')"), {"i": jid, "o": a["org"], "u": a["user"], "r": a["repo"]})
         w1, w2 = eng("worker"), eng("worker")
-        r1, r2 = await asyncio.gather(claim_job(w1, "worker-1"), claim_job(w2, "worker-2"))
+        # deterministic safety invariant (§17: assert DB synchronization directly): once worker-1 claims
+        # the job it becomes RETRIEVING+leased, so worker-2's claim finds nothing eligible.
+        r1 = await claim_job(w1, "worker-1")
+        r2 = await claim_job(w2, "worker-2")
         claimed = [r for r in (r1, r2) if r is not None]
         assert len(claimed) == 1 and claimed[0]["job_id"] == str(jid)   # exactly one worker claims it
+        assert r1 is not None and r2 is None
         for x in (su, w1, w2):
             await x.dispose()
     run(body())

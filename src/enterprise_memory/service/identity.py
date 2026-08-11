@@ -103,16 +103,25 @@ class JwtIdentityProvider:
         if not self._verify_signature(header, ("%s.%s" % (h_b64, p_b64)).encode(), signature):
             raise AuthError("bad_signature")
         now = self._now()
+        for required in ("iss", "aud", "exp", "sub", "org_id"):     # §2.3 required claims
+            if required not in payload:
+                raise AuthError("missing_claim:%s" % required)
         if payload.get("iss") != self.issuer:
             raise AuthError("bad_issuer")
         aud = payload.get("aud")
         if aud != self.audience and (not isinstance(aud, list) or self.audience not in aud):
             raise AuthError("bad_audience")
-        if "exp" in payload and now > float(payload["exp"]) + self.leeway:
+        if now > float(payload["exp"]) + self.leeway:
             raise AuthError("expired")
         if "nbf" in payload and now < float(payload["nbf"]) - self.leeway:
             raise AuthError("not_yet_valid")
-        scopes = payload.get("scope", "").split() if isinstance(payload.get("scope"), str) else payload.get("scopes", [])
+        raw_scope = payload.get("scope", payload.get("scopes", ""))
+        if isinstance(raw_scope, str):
+            scopes = raw_scope.split()
+        elif isinstance(raw_scope, list) and all(isinstance(x, str) for x in raw_scope):
+            scopes = raw_scope
+        else:
+            raise AuthError("malformed_scope_claim")
         return IdentityContext(subject_id=payload["sub"], org_id=payload["org_id"],
                                team_ids=payload.get("team_ids", []), roles=payload.get("roles", []),
                                scopes=list(scopes), token_id=payload.get("jti", ""))

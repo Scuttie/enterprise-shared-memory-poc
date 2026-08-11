@@ -18,10 +18,77 @@ from enterprise_memory.service.orchestrator import SolveOrchestrator            
 from enterprise_memory.service.container import build_container                                     # noqa: E402
 from enterprise_memory.service.providers_local import FakeSolarProvider, ListMetrics, ListAudit, InMemoryOutcomeStore  # noqa: E402
 from enterprise_memory.patches import apply_unified_diff, PatchError                                # noqa: E402
+from enterprise_memory.service.task_policy import (TaskExecutionPolicy, LocalTaskPolicyRepository,     # noqa: E402
+                                                   ClientTaskRequest)
+from enterprise_memory.service.private_view import compile_private_view, PrivateViewRefused           # noqa: E402
 
 
 def run(coro):
     return asyncio.run(coro)
+
+
+# ---------------- P0-fix-2: server-owned task policy ----------------
+def test_client_cannot_dictate_task_fields():
+    body = {"repo_id": "r", "task_id": "t", "instruction": "do it", "target_file": "EVIL.py",
+            "test_entry": "evil_test.py", "signature": "def evil():", "path_allowlist": ["/etc/passwd"]}
+    req = ClientTaskRequest.from_body(body)
+    assert set(req.ignored_client_fields) >= {"target_file", "test_entry", "signature", "path_allowlist"}
+    assert req.repo_id == "r" and req.instruction == "do it"
+
+
+def test_policy_repo_resolves_server_owned():
+    pol = TaskExecutionPolicy("r", "t", ["mod.py", "test_hidden.py"], "mod.py", "rate", "def rate(x):", "test_hidden.py")
+    repo = LocalTaskPolicyRepository({("r", "t"): pol})
+    got = run(repo.resolve(ClientTaskRequest("r", "t", "x"), authorized_repo=True))
+    assert got.target_file == "mod.py" and got.exact_signature == "def rate(x):"
+    import pytest
+    with pytest.raises(Exception):
+        run(repo.resolve(ClientTaskRequest("r", "t", "x"), authorized_repo=False))
+
+
+# ---------------- P0-fix-2: private egress compiler ----------------
+def test_private_view_refuses_unsafe():
+    base = {"id": "m", "owner": "bob", "hash": "h", "repo_id": "r"}
+    for body, reason in [("-----BEGIN RSA PRIVATE KEY-----\nMIIabc", "SECRET"),
+                         ("token=ghp_" + "a" * 36, "SECRET"),
+                         ("aws key AKIA" + "A" * 16, "SECRET")]:
+        try:
+            compile_private_view({**base, "body": body}, "bob", "r"); assert False
+        except PrivateViewRefused as e:
+            assert reason in e.reason
+    # wrong owner / wrong repo
+    try:
+        compile_private_view({**base, "owner": "alice", "body": "note"}, "bob", "r"); assert False
+    except PrivateViewRefused as e:
+        assert e.reason == "NOT_OWNER"
+    try:
+        compile_private_view({**base, "repo_id": "other", "body": "note"}, "bob", "r"); assert False
+    except PrivateViewRefused as e:
+        assert e.reason == "OUT_OF_REPO_SCOPE"
+
+
+def test_private_view_valid_note_ok():
+    v, meta = compile_private_view({"id": "m", "owner": "bob", "hash": "h", "repo_id": "r",
+                                    "body": "prefer exponential backoff for 503s in this service"}, "bob", "r")
+    assert "backoff" in v and meta["memory_id"] == "m" and "hash" not in v.lower()
+
+
+# ---------------- P0-fix-2: JWT required claims ----------------
+def test_jwt_requires_claims():
+    p = ID.JwtIdentityProvider("https://idp", "esm-api", hs256_secret="s", now_fn=lambda: 1000.0)
+    for missing in ("exp", "sub", "org_id", "aud", "iss"):
+        claims = {"iss": "https://idp", "aud": "esm-api", "sub": "u", "org_id": "o", "exp": 2000.0}
+        del claims[missing]
+        try:
+            run(p.authenticate("Bearer " + ID.make_hs256(claims, "s"))); assert False
+        except ID.AuthError as e:
+            assert missing in str(e) or "claim" in str(e) or "issuer" in str(e) or "audience" in str(e)
+    # malformed scope type
+    bad = ID.make_hs256({"iss": "https://idp", "aud": "esm-api", "sub": "u", "org_id": "o", "exp": 2000.0, "scope": 123}, "s")
+    try:
+        run(p.authenticate("Bearer " + bad)); assert False
+    except ID.AuthError as e:
+        assert "malformed_scope" in str(e)
 
 
 # ---------------- strict settings ----------------
@@ -179,59 +246,57 @@ def _gold(starter):
     return lambda p: "```diff\n%s```" % diff
 
 
-def _mk_orch(shared_items, priv_items, responder):
+def _mk_orch(shared_items, priv_items, responder, write=True):
     starter = "def rate(x):\n    # BEGIN SOLUTION\n    raise NotImplementedError\n    # END SOLUTION\n"
     hidden = "from mod import rate\n\ndef test_h():\n    assert rate(10)==30\n    assert rate(4)==12\n"
     fixtures = {"repoX": {"files": {"mod.py": starter, "test_hidden.py": hidden}}}
     cont = build_container(AppSettings(environment="local"), {"fixtures": fixtures})
+    pol = TaskExecutionPolicy("repoX", "t1", ["mod.py", "test_hidden.py"], "mod.py", "rate", "def rate(x):", "test_hidden.py")
+    policy_repo = LocalTaskPolicyRepository({("repoX", "t1"): pol})
 
-    def db(c, task):
-        return C.ExecutionDirective("d", "python", "rate", "rate(x)", [C.Predicate("tier", "==", "P", "str")],
+    def db(c, policy):
+        return C.ExecutionDirective("d", "python", "rate", "def rate(x):", [C.Predicate("tier", "==", "P", "str")],
                                     C.Operation("o", "arithmetic.scale", {"operand": 3}, "x"),
                                     source_contract_id=c["contract_id"], source_contract_version=c.get("version", "v1"),
-                                    source_contract_hash=c.get("hash", "h"),
-                                    validity_state=c.get("validity", "CURRENT"))
+                                    source_contract_hash=c.get("hash", "h"), validity_state=c.get("validity", "CURRENT"))
     orch = SolveOrchestrator(_Reg({"c1": {"contract_id": "c1", "version": "v3", "hash": "h1"}}),
                              _Idx(priv_items), _Idx(shared_items),
-                             ID.StaticRepoAuthz({"o1": {"repoX"}}, {"o1": {"repoX"}}),
+                             ID.StaticRepoAuthz({"o1": {"repoX"}}, {"o1": {"repoX"} if write else set()}),
                              cont.repo_provider, FakeSolarProvider(responder(starter)),
-                             cont.sandbox, ListAudit(), ListMetrics(), db,
+                             cont.sandbox, ListAudit(), ListMetrics(), db, policy_repo,
                              outcome_store=cont.outcome_store, outbox=cont.outbox)
-    task = {"repo_id": "repoX", "query": "q", "target_file": "mod.py", "test_entry": "test_hidden.py",
-            "func": "rate", "signature": "def rate(x):", "instruction": "Implement rate."}
-    return orch, task
+    req = ClientTaskRequest("repoX", "t1", "Implement rate.")
+    return orch, req
 
 
 def test_local_chain_pass_and_persist():
-    orch, task = _mk_orch(["c1"], [], _gold)
-    ident = ID.IdentityContext("bob", "o1", scopes=["solve:submit"])
-    out = run(orch.solve(ident, task, "lrq1"))
+    orch, req = _mk_orch(["c1"], [], _gold)
+    out = run(orch.solve(ID.IdentityContext("bob", "o1", scopes=["solve:submit"]), req, "lrq1"))
     assert out["pass1"] == 1 and out["exec1"] == 1
     assert out["injected_contracts"][0]["contract_id"] == "c1"
     assert out["cross_user_private_injection_count"] == 0 and out["outcome_id"]
 
 
 def test_solve_requires_can_modify():
-    orch, task = _mk_orch(["c1"], [], _gold)
-    orch.authz = ID.StaticRepoAuthz({"o1": {"repoX"}}, {"o1": set()})   # read yes, modify no
+    orch, req = _mk_orch(["c1"], [], _gold, write=False)
     try:
-        run(orch.solve(ID.IdentityContext("bob", "o1", scopes=["solve:submit"]), task, "lrq"))
+        run(orch.solve(ID.IdentityContext("bob", "o1", scopes=["solve:submit"]), req, "lrq"))
         assert False
     except PermissionError as e:
         assert "modify" in str(e)
 
 
 def test_cross_user_private_never_injected():
-    # a private item owned by someone else must NOT be injected and must be counted (=0 injection)
-    orch, task = _mk_orch([], [{"id": "m1", "owner": "alice", "note": "secret", "hash": "h"}], lambda s: (lambda p: "```diff\n```"))
-    out = run(orch.solve(ID.IdentityContext("bob", "o1", scopes=["solve:submit"]), task, "lrq"))
-    assert out["cross_user_private_injection_count"] == 0     # never INJECTED (hard-fail metric stays 0)
-    assert out["cross_user_private_blocked"] == 1             # detected + blocked (defense in depth)
-    assert all(m.get("kind") != "private" for m in out["injected_contracts"])   # none injected
+    orch, req = _mk_orch([], [{"id": "m1", "owner": "alice", "note": "secret", "hash": "h", "repo_id": "repoX"}],
+                         lambda s: (lambda p: "```diff\n```"))
+    out = run(orch.solve(ID.IdentityContext("bob", "o1", scopes=["solve:submit"]), req, "lrq"))
+    assert out["cross_user_private_injection_count"] == 0
+    assert out["cross_user_private_blocked"] == 1
+    assert all(m.get("kind") != "private" for m in out["injected_contracts"])
 
 
 def test_expired_contract_refused_no_view():
-    orch, task = _mk_orch(["c1"], [], lambda s: (lambda p: "```diff\n```"))
-    reg = orch.registry._c["c1"]; reg["validity"] = "EXPIRED"
-    out = run(orch.solve(ID.IdentityContext("bob", "o1", scopes=["solve:submit"]), task, "lrq"))
+    orch, req = _mk_orch(["c1"], [], lambda s: (lambda p: "```diff\n```"))
+    orch.registry._c["c1"]["validity"] = "EXPIRED"
+    out = run(orch.solve(ID.IdentityContext("bob", "o1", scopes=["solve:submit"]), req, "lrq"))
     assert out["injected_contracts"] == []

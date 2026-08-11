@@ -1,0 +1,24 @@
+# runtime / secrets — NEVER commit
+.env
+*.env
+.upstage_key
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+# databases / vector state / caches
+*.db
+*.db-wal
+*.db-shm
+*.sqlite*
+qdrant/
+.qdrant/
+hf_cache/
+model_cache/
+# raw experiment artifacts (never released)
+*.jsonl
+*.log
+data/

@@ -1,0 +1,11 @@
+# Pinned runtime for reproducibility (offline demo + core tests need only the base group).
+fastapi==0.110.0
+uvicorn==0.29.0
+httpx==0.27.0
+# dev
+pytest==8.2.0
+build==1.2.1
+# mem0 group (opt-in; live retrieval index) — see DEPENDENCY_PROVENANCE.json for hashes
+mem0ai==2.0.17
+sentence-transformers==3.0.1
+qdrant-client==1.9.0

@@ -1,0 +1,6 @@
+embedder: sentence-transformers/multi-qa-MiniLM-L6-cos-v1
+embedding_dims: 384
+trust_remote_code: false
+vector_store: qdrant
+qdrant_path: ./_runtime/qdrant
+telemetry: false

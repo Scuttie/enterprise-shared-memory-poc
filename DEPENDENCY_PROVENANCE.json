@@ -1,0 +1,18 @@
+{
+ "python": ">=3.10,<4.0",
+ "mem0ai": {
+  "version": "2.0.17",
+  "release_tag": "v2.0.17",
+  "source_commit": "12c47f524935692e27ad48d829f35fa1e4417181",
+  "license": "Apache-2.0",
+  "wheel_sha256": "1521209f0ab4c77b7e5777aa1b0b5f0104efa06ca5b9eddb804cdd091c17726a"
+ },
+ "embedding_model": {
+  "name": "sentence-transformers/multi-qa-MiniLM-L6-cos-v1",
+  "dims": 384,
+  "trust_remote_code": false,
+  "revision": "PIN FROM COMMITTED PROVENANCE (record exact revision before enabling live retrieval)",
+  "license": "Apache-2.0 (verify from the model card before redistribution)"
+ },
+ "note": "Base offline demo + core unit tests require none of the mem0-group deps."
+}

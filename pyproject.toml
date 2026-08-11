@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enterprise-shared-memory-poc"
+version = "0.1.0"
+description = "Governed private/shared memory PoC for coding agents: Mem0 retrieval, canonical contracts, validity gates, and compact literal execution views."
+requires-python = ">=3.10,<4.0"
+readme = "README.md"
+dependencies = ["fastapi>=0.110", "uvicorn>=0.29", "httpx>=0.27"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "build>=1.2"]
+mem0 = ["mem0ai==2.0.17", "sentence-transformers>=3.0", "qdrant-client>=1.9"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

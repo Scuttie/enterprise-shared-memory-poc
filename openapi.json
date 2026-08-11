@@ -1,0 +1,500 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Enterprise Shared Memory PoC",
+  "version": "1.0.0"
+ },
+ "paths": {
+  "/health": {
+   "get": {
+    "summary": "Health",
+    "operationId": "health_health_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/private/episodes": {
+   "post": {
+    "summary": "Put Episode",
+    "operationId": "put_episode_v1_private_episodes_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/EpisodeIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/memories/search": {
+   "get": {
+    "summary": "Search",
+    "operationId": "search_v1_memories_search_get",
+    "parameters": [
+     {
+      "name": "org_id",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Org Id"
+      }
+     },
+     {
+      "name": "user_id",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "User Id"
+      }
+     },
+     {
+      "name": "query",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "",
+       "title": "Query"
+      }
+     },
+     {
+      "name": "scope",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "private",
+       "title": "Scope"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/contracts/{contract_id}/promote": {
+   "post": {
+    "summary": "Promote",
+    "operationId": "promote_v1_contracts__contract_id__promote_post",
+    "parameters": [
+     {
+      "name": "contract_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Contract Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SearchIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/contracts/{contract_id}/deprecate": {
+   "post": {
+    "summary": "Deprecate",
+    "operationId": "deprecate_v1_contracts__contract_id__deprecate_post",
+    "parameters": [
+     {
+      "name": "contract_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Contract Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SearchIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/memories/{memory_id}": {
+   "delete": {
+    "summary": "Delete",
+    "operationId": "delete_v1_memories__memory_id__delete",
+    "parameters": [
+     {
+      "name": "memory_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Memory Id"
+      }
+     },
+     {
+      "name": "org_id",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Org Id"
+      }
+     },
+     {
+      "name": "user_id",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "User Id"
+      }
+     },
+     {
+      "name": "physical",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Physical"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/feedback": {
+   "post": {
+    "summary": "Feedback",
+    "operationId": "feedback_v1_feedback_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SearchIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/solve": {
+   "post": {
+    "summary": "Solve",
+    "operationId": "solve_v1_solve_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/EpisodeIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "Ctx": {
+    "properties": {
+     "org_id": {
+      "type": "string",
+      "title": "Org Id"
+     },
+     "user_id": {
+      "type": "string",
+      "title": "User Id"
+     },
+     "repo_id": {
+      "type": "string",
+      "title": "Repo Id",
+      "default": "repoX"
+     },
+     "allowed_repo_ids": {
+      "items": {},
+      "type": "array",
+      "title": "Allowed Repo Ids",
+      "default": [
+       "repoX"
+      ]
+     },
+     "team_id": {
+      "type": "string",
+      "title": "Team Id",
+      "default": "t1"
+     }
+    },
+    "type": "object",
+    "required": [
+     "org_id",
+     "user_id"
+    ],
+    "title": "Ctx"
+   },
+   "EpisodeIn": {
+    "properties": {
+     "ctx": {
+      "$ref": "#/components/schemas/Ctx"
+     },
+     "episode_id": {
+      "type": "string",
+      "title": "Episode Id"
+     },
+     "task_id": {
+      "type": "string",
+      "title": "Task Id"
+     },
+     "patch": {
+      "type": "string",
+      "title": "Patch",
+      "default": ""
+     },
+     "test_passed": {
+      "type": "boolean",
+      "title": "Test Passed",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "ctx",
+     "episode_id",
+     "task_id"
+    ],
+    "title": "EpisodeIn"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "SearchIn": {
+    "properties": {
+     "ctx": {
+      "$ref": "#/components/schemas/Ctx"
+     },
+     "query": {
+      "type": "string",
+      "title": "Query",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "ctx"
+    ],
+    "title": "SearchIn"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   }
+  }
+ }
+}

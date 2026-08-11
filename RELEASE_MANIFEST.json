@@ -1,0 +1,275 @@
+{
+ "release": "v0.1.0-poc",
+ "source_branch": "codex/enterprise-shared-memory-m7-pilot",
+ "source_commit": "4487ea6",
+ "n_files": 38,
+ "files": [
+  {
+   "source_commit": "4487ea6",
+   "dest": "openapi.json",
+   "bytes": 9343,
+   "sha256": "a38eaa8cca859f51054c4198537dd121bf24d842c74bb2125755e98b085c6ba0",
+   "category": "spec"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "scripts/demo_alice_bob.py",
+   "bytes": 6005,
+   "sha256": "873457b8e31530941adabd313329f09f755d0f174a45a93302800f72387393e3",
+   "category": "scripts"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "scripts/hidden_call_audit.py",
+   "bytes": 3150,
+   "sha256": "74bd77c383dbe18b26bc4cc0c618b0e1cb6ff0cc0d3097e25508d85b89ac8cd9",
+   "category": "scripts"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "scripts/mem0_validate.py",
+   "bytes": 7779,
+   "sha256": "823097c4fe712131b24287070244c72f907f72224356f5b811f4c23f6ae564a3",
+   "category": "scripts"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/audit/events.py",
+   "bytes": 1470,
+   "sha256": "5e364c3e5a7cc717b3cdff1591a91933f88af68b783470ec12c4bcca101cda7a",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/backends/base.py",
+   "bytes": 1575,
+   "sha256": "be1f2d0e43341110bef8180bca271f26504600ae076ba2d3a3c524e48ab21ac0",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/backends/in_memory.py",
+   "bytes": 3254,
+   "sha256": "1aeaa4e22eea489ae2d699a4c86cef598ed1fb031ae5b564030bc0b71051a2a4",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/backends/mem0_backend.py",
+   "bytes": 4254,
+   "sha256": "f52c472304ac48823a4b6aaa783cd6c7abd9ee73ad45dd959d6e4d33155130b0",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/assignment.py",
+   "bytes": 880,
+   "sha256": "8f0fc7a943728a028f8dbbcb8fc30eca6e1c6c3dea794391ab8330ac75700e35",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/canary/__init__.py",
+   "bytes": 461,
+   "sha256": "e50f041a538fe34d5718eb7f85fa61fe7b7b72cfedb186ff1c6a3643f875920c",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/canary/bench.py",
+   "bytes": 11581,
+   "sha256": "57f0d9d060c992403e0b7b027fe38a90b83ad17a10a8417f7120f74fd8c28950",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/gaten_v2/__init__.py",
+   "bytes": 699,
+   "sha256": "da81259134b0c45b043255816b2f163d14af3190c3f3fc21e694afd798595c40",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/gaten_v2/families.py",
+   "bytes": 12577,
+   "sha256": "3b7b08a1d1427114f438611ac2f1509794ae1d73857310e4e78c325cd0cc794a",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/gaten_v2/harness.py",
+   "bytes": 10173,
+   "sha256": "a2bdfead2294e2f30a6c61a952b23f5e931f2ace8f4475198e614aac4d07ca71",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/m7pilot/__init__.py",
+   "bytes": 557,
+   "sha256": "59e9387c2259a8fa26dff822d7eac0e90f37771f554702b1a51946496ebd98a8",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/m7pilot/bench.py",
+   "bytes": 11162,
+   "sha256": "88ff2199fae335234bac02c6fbdb2b418867db3ca665a29895c89c5a8c03a4ff",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/m7pilot/logger.py",
+   "bytes": 3339,
+   "sha256": "76626c70e46dc3bbd47e50c9dfda38aa38fbbd9bb5b3a5e131d4992cb54755ad",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/m7pilot/renderers.py",
+   "bytes": 6928,
+   "sha256": "11e91e45e38de722c4c679f9852edfe9d9b6a855615b3c77f772b8148cb4b63c",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/benchmarks/synthetic.py",
+   "bytes": 5709,
+   "sha256": "7f7322db169895b0b5db91a5c5aa3df176cda2e10676aac0becd170d00f2ca40",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/contracts/registry.py",
+   "bytes": 9161,
+   "sha256": "ae0f6177806502080bc8672e04f018aac064da8b3bcd28f2816a7658b3383379",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/contracts/schema.py",
+   "bytes": 7762,
+   "sha256": "0939b1f5b0f4f0e3f4521d98194533809bad5d9950e7cb808760777359b121a1",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/promotion/policy.py",
+   "bytes": 3266,
+   "sha256": "5152b1e5528536a48e9e3d800e26c4f23b91777e833ee30e491677c96f9e298f",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/promotion/security_scan.py",
+   "bytes": 3543,
+   "sha256": "2f699118d839fa170b7e52179510b3b03a07e8343d97750d451540186a70f481",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/retrieval/gates.py",
+   "bytes": 4127,
+   "sha256": "fa59c0b7d6053c06d7a6f8f80b6ad231f14b21f867a7101518fcec8a396510cc",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/retrieval/pipeline.py",
+   "bytes": 4391,
+   "sha256": "1680e81fe421ab79a4375e44fa8a7c140043f85a28a4eb306222dcac2b7e58a2",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/serving/api.py",
+   "bytes": 5210,
+   "sha256": "2ee6a657f502aebff23521daf7b84f141a6e85fc50c82cab147f7069674d5028",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/serving/governed_view.py",
+   "bytes": 3660,
+   "sha256": "497de2d960c9710cac948f696a06f21ec6a7f9583cc5c3a56e7e5ae7be1974b2",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "src/enterprise_memory/serving/sandbox.py",
+   "bytes": 4269,
+   "sha256": "92cb326433ee030b7382fe63b1057c35ad751794c4508a563d9bde29dfffc060",
+   "category": "implementation"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/conftest.py",
+   "bytes": 161,
+   "sha256": "196e543d6a4318ebefb0cad1913c685dc166e75cafd8c4f0cd82475b53e251d4",
+   "category": "tests"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/integration/test_api.py",
+   "bytes": 1612,
+   "sha256": "1e9eb36b32d7ba1708e7833ea744231f9dd36094980a70214b0f602067fdf41e",
+   "category": "tests"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/integration/test_mem0_roundtrip.py",
+   "bytes": 912,
+   "sha256": "529cd6601dd184eaf576315ddd728b62ba104f1e8b71947d02fa442173abf810",
+   "category": "tests-optional"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/security/test_sandbox.py",
+   "bytes": 3041,
+   "sha256": "c257fc6dda1afd24f43f53bf4c7911e1d1d830f0c75b0f0b436b01dcbc94eb00",
+   "category": "tests"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/security/test_scanner.py",
+   "bytes": 1369,
+   "sha256": "ad684c5d4a0e2259833e88289d3ac4e912716754307ab6a8c97f7fa22f7be578",
+   "category": "tests"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/unit/test_core.py",
+   "bytes": 5581,
+   "sha256": "e9f9ce1233a3f1e38e8462d673bbe17a33c3cb87a447e5743a262a965790855d",
+   "category": "tests"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/unit/test_governed_view.py",
+   "bytes": 3197,
+   "sha256": "a72ad9cb036ceb927b6c08a35f4a10a5aaff175e2b1bc478044df3ad046f6e94",
+   "category": "tests"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/unit/test_promotion.py",
+   "bytes": 2175,
+   "sha256": "1593b8e40cfb7ff73d783cefbeb73fc069fcd2e20502993376b34cc12c3c74b1",
+   "category": "tests"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/unit/test_registry.py",
+   "bytes": 3456,
+   "sha256": "139c56ce264c06b9375265e5f182423ba4b77bce6a5f34a9b7406b52fb15c72f",
+   "category": "tests"
+  },
+  {
+   "source_commit": "4487ea6",
+   "dest": "tests/unit/test_retrieval.py",
+   "bytes": 2081,
+   "sha256": "bc24bbbc828278af3b6ddbbf8e2734931f37ddf8d91076dfb1b59edca88575be",
+   "category": "tests"
+  }
+ ],
+ "manifest_hash": "500e9a43ffbb73788c92674c"
+}

@@ -1,0 +1,4 @@
+require_executable_replay: true
+min_source_success: 1
+block_on_secret: true
+max_injected_contracts: 2

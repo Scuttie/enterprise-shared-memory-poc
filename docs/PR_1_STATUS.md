@@ -1,22 +1,16 @@
 # Production service v0.2 — CI-first infrastructure implementation [DRAFT]
 
-**Do not merge.** Draft PR tracking the v0.2 production-service build. Head advances with each milestone.
+**Do not merge.** Draft PR tracking the v0.2 production-service build.
 
 ## Status
-- current head: P0-fix-2 (see commits)
-- tests at P0-fix-2: **73** (53 v0.1 + 20 service), all green in `ci`
-- **Gate A = PARTIAL**: local component-chain integration only — NOT full HTTP API / durable job /
-  worker / DB end-to-end. Full E2E arrives at P5.
-- P1–P8 (Postgres/RLS/Alembic, Qdrant/Mem0, MinIO/S3, OIDC-JWKS, async API+worker, promotion, K8s
-  sandbox, observability, Helm, backup/restore, load) are implemented and validated **through GitHub
-  Actions service containers**, not on the local host.
-- **Company-staging certification remains PENDING** for all gates; CI validation != company security
-  certification.
-
-## P0-fix-2 (this head)
-- Server-owned `TaskExecutionPolicy` — client cannot dictate target_file/test_entry/signature/paths.
-- `PrivateExecutionViewCompiler` — real egress boundary (ownership + secret/PII scan + repo/path scope),
-  replaces newline-strip/truncation.
-- JWT now requires iss/aud/exp/sub/org_id and rejects malformed scope claims.
-
-Version stays `0.2.0.dev1`. No `v0.2.0-rc1`. See `docs/PRODUCTION_READINESS_REPORT.md`.
+- P0-fix-2: green (73 tests).
+- **P1 (this push): PostgreSQL persistence + Alembic + RLS + durable jobs + transactional outbox** —
+  implemented; validated via the new `ci-postgres` GitHub Actions workflow (PostgreSQL service container).
+- **Gate A = PARTIAL** (full HTTP/worker E2E is P5).
+- **Gate B advances**: PostgreSQL FORCE-RLS tenant/private isolation + no-BYPASSRLS runtime roles +
+  transaction-local tenant context + pool-leak test — implemented and CI-validated. Real company OIDC /
+  repository authorization remains pending.
+- **Gate C**: durable immutable contract versions + transactional outbox implemented; persistent
+  promotion remains P6.
+- **Gate E**: PostgreSQL job idempotency + two-worker SKIP-LOCKED claim + lease recovery implemented.
+- P2–P8 not implemented. Company-staging certification PENDING. Version `0.2.0.dev1`; no rc1.

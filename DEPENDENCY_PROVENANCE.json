@@ -14,5 +14,12 @@
   "revision": "PIN FROM COMMITTED PROVENANCE (record exact revision before enabling live retrieval)",
   "license": "Apache-2.0 (verify from the model card before redistribution)"
  },
- "note": "Base offline demo + core unit tests require none of the mem0-group deps."
+ "note": "Base offline demo + core unit tests require none of the mem0-group deps.",
+ "postgres_group": {
+  "SQLAlchemy": ">=2.0.30,<2.1 (MIT)",
+  "asyncpg": ">=0.29,<0.31 (Apache-2.0)",
+  "alembic": ">=1.13,<1.14 (MIT)",
+  "psycopg2-binary": ">=2.9,<3.0 (LGPL-3.0-with-exceptions; migrations only)",
+  "postgres_image": "postgres:16.4 (pin by digest recommended)"
+ }
 }

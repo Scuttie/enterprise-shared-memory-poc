@@ -1,0 +1,50 @@
+name: ci-postgres
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.4
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: esm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm"
+          --health-interval 5s --health-timeout 5s --health-retries 30
+    env:
+      DATABASE_URL: postgresql://localhost:5432/esm
+      MIGRATION_USER: postgres
+      MIGRATION_PASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: esm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,postgres]"
+      - name: Bootstrap roles
+        run: python scripts/postgres_bootstrap.py
+      - name: Alembic upgrade
+        run: alembic upgrade head
+      - name: Head check
+        run: alembic current | grep -E "0001.*\(head\)"
+      - name: Idempotent re-upgrade
+        run: alembic upgrade head
+      - name: Schema validate
+        run: python scripts/postgres_validate.py
+      - name: Postgres integration tests
+        run: python -m pytest -q tests/postgres

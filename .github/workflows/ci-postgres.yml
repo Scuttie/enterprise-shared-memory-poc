@@ -7,6 +7,7 @@ permissions:
 jobs:
   postgres:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:16.4
@@ -47,4 +48,4 @@ jobs:
       - name: Schema validate
         run: python scripts/postgres_validate.py
       - name: Postgres integration tests
-        run: python -m pytest -q tests/postgres
+        run: python -m pytest -q tests/postgres --timeout=90 --timeout-method=thread

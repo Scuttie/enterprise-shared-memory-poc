@@ -75,12 +75,16 @@ def test_missing_and_malformed_context_fail_closed(seeded):
         e = eng("api")
         # no tenant context -> app.org_id empty -> nullif(...)::uuid is NULL -> no rows
         async with e.connect() as c:
+            t0 = await c.begin()
             assert (await c.execute(text("SELECT count(*) FROM repositories"))).scalar() == 0
-        # malformed uuid in context -> cast error -> fails closed (raises), never leaks rows
+            await t0.rollback()
+        # malformed uuid in context -> cast error -> fails closed (raises); roll back the aborted tx cleanly
         async with e.connect() as c:
+            t1 = await c.begin()
             await c.execute(text("SELECT set_config('app.org_id','not-a-uuid', true)"))
             with pytest.raises(Exception):
                 await c.execute(text("SELECT count(*) FROM repositories"))
+            await t1.rollback()
         await e.dispose()
     run(body())
 

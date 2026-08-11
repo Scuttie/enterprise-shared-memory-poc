@@ -32,6 +32,21 @@ def _require_db():
         pytest.skip("no DATABASE_URL (ci-postgres only)")
 
 
+@pytest.fixture(autouse=True)
+def _clean(_require_db):
+    """Isolate tests: claim_next_job is cross-tenant, so leftover jobs from a prior test would be claimed.
+    Truncate the transactional tables (as superuser) before each test; identity/org rows are per-test."""
+    async def _c():
+        e = eng("postgres")
+        async with e.begin() as conn:
+            await conn.execute(text(
+                "TRUNCATE solve_jobs, outbox_events, audit_events, memory_contracts, private_episodes,"
+                " idempotency_keys RESTART IDENTITY CASCADE"))
+        await e.dispose()
+    run(_c())
+    yield
+
+
 async def _seed():
     e = eng("postgres")
     ids = {}

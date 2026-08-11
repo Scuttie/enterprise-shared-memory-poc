@@ -13,9 +13,19 @@ depends_on = None
 _SCHEMA = Path(__file__).resolve().parents[2] / "src" / "enterprise_memory" / "persistence" / "schema.sql"
 
 
+def _raw_execute(sql: str):
+    # raw psycopg2 cursor on the migration connection: runs multi-statement DDL (DO blocks, functions,
+    # $$ bodies) as one PQexec without SQLAlchemy parameter binding.
+    cur = op.get_bind().connection.dbapi_connection.cursor()
+    try:
+        cur.execute(sql)
+    finally:
+        cur.close()
+
+
 def upgrade():
-    op.get_bind().exec_driver_sql(_SCHEMA.read_text(encoding="utf-8"))
+    _raw_execute(_SCHEMA.read_text(encoding="utf-8"))
 
 
 def downgrade():
-    op.get_bind().exec_driver_sql("DROP SCHEMA public CASCADE; CREATE SCHEMA public;")
+    _raw_execute("DROP SCHEMA public CASCADE; CREATE SCHEMA public;")

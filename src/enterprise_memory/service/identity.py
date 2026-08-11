@@ -40,7 +40,7 @@ class StaticIdentityProvider:
     def __init__(self, table: dict):
         self._table = table
 
-    def authenticate(self, authorization_header: str | None) -> IdentityContext:
+    async def authenticate(self, authorization_header: str | None) -> IdentityContext:
         if not authorization_header or not authorization_header.startswith("Bearer "):
             raise AuthError("missing_bearer")
         tok = authorization_header[7:]
@@ -87,7 +87,7 @@ class JwtIdentityProvider:
         # PRODUCTION: RS256 via rotating JWKS goes here (resolve kid -> public key, verify). Fail closed.
         raise AuthError("alg_not_supported_here_use_jwks:%s" % self.required_alg)
 
-    def authenticate(self, authorization_header: str | None) -> IdentityContext:
+    async def authenticate(self, authorization_header: str | None) -> IdentityContext:
         if not authorization_header or not authorization_header.startswith("Bearer "):
             raise AuthError("missing_bearer")
         parts = authorization_header[7:].split(".")
@@ -125,11 +125,11 @@ class StaticRepoAuthz:
         self._read = read_map
         self._write = write_map or {}
 
-    def can_read(self, ident: IdentityContext, repo_id: str) -> bool:
+    async def can_read(self, ident: IdentityContext, repo_id: str) -> bool:
         return repo_id in self._read.get(ident.org_id, set())
 
-    def can_modify(self, ident: IdentityContext, repo_id: str) -> bool:
+    async def can_modify(self, ident: IdentityContext, repo_id: str) -> bool:
         return repo_id in self._write.get(ident.org_id, set())
 
-    def readable_repos(self, ident: IdentityContext) -> list:
+    async def readable_repos(self, ident: IdentityContext) -> list:
         return sorted(self._read.get(ident.org_id, set()))

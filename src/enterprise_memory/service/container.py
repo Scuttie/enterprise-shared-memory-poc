@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from .settings import AppSettings
 from .providers_local import (FakeSolarProvider, LocalArtifactStore, LocalFixtureRepositoryProvider,
-                              LocalEvaluationSandbox, ListMetrics)
+                              LocalEvaluationSandbox, ListMetrics, ListAudit, InMemoryOutcomeStore)
 from .jobs import InMemoryJobRepository
 from .outbox import InMemoryOutbox
 
@@ -28,6 +28,7 @@ class ServiceContainer:
     outbox: object = None
     audit: object = None
     metrics: object = None
+    outcome_store: object = None
 
 
 def build_container(settings: AppSettings, overrides: dict | None = None) -> ServiceContainer:
@@ -43,9 +44,11 @@ def build_container(settings: AppSettings, overrides: dict | None = None) -> Ser
             jobs=ov.get("jobs") or InMemoryJobRepository(),
             outbox=ov.get("outbox") or InMemoryOutbox(),
             metrics=ov.get("metrics") or ListMetrics(),
+            audit=ov.get("audit") or ListAudit(),
+            outcome_store=ov.get("outcome_store") or InMemoryOutcomeStore(),
             registry=ov.get("registry"), private_index=ov.get("private_index"),
             shared_index=ov.get("shared_index"), identity_provider=ov.get("identity_provider"),
-            repo_authz=ov.get("repo_authz"), audit=ov.get("audit"))
+            repo_authz=ov.get("repo_authz"))
         return c
     # staging/production: adapters must be provided via overrides (Postgres/Mem0/S3/OIDC/K8s) — NOT
     # implemented as runnable here; construction is delegated to their modules once company infra exists.

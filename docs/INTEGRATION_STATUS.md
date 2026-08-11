@@ -16,7 +16,7 @@ without company infrastructure.
 - **Transactional outbox** semantics (idempotent apply + poison quarantine).
 - **JWT identity validation** (issuer/audience/exp/nbf/signature/scopes, fail-closed) + identity-derived
   repository authorization.
-- **Real local end-to-end `SolveOrchestrator`** (Gate A in local mode): auth -> authz -> separate
+- **Local component-chain integration** via `SolveOrchestrator` (Gate A = PARTIAL, not full end-to-end): auth -> authz -> separate
   private/shared retrieval -> canonical reload -> gates -> compile literal view -> FakeSolar -> sandbox
   -> outcome + audit; invalid contracts inject NO model-facing text; no client patch is trusted.
 

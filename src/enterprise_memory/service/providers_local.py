@@ -1,8 +1,8 @@
-"""Test/local provider implementations (§3). These satisfy the interfaces without any external
-infrastructure so the full pipeline and end-to-end tests run offline. Production adapters (Postgres,
-Mem0/Qdrant, S3, OIDC, GitHub App, Kubernetes) are separate modules that must NOT be selectable under
-ENVIRONMENT=production's dev-backend refusal — see settings.AppSettings.validate."""
+"""Async test/local provider implementations (§2.1/§3). No external infrastructure, so the pipeline and
+end-to-end tests run offline. Production adapters (Postgres/Mem0/S3/OIDC/GitHub App/Kubernetes) are
+separate modules that must NOT be selectable under the production/staging dev-backend refusal."""
 from __future__ import annotations
+import asyncio
 import hashlib
 import os
 import shutil
@@ -12,13 +12,11 @@ from ..serving import sandbox as _sandbox
 
 
 class FakeSolarProvider:
-    """Deterministic coding-model stand-in for CI/e2e. `responder(prompt) -> diff text`."""
-
     def __init__(self, responder=None):
         self._responder = responder or (lambda p: "```diff\n```")
         self.calls = []
 
-    def generate(self, logical_request_id: str, prompt: str) -> dict:
+    async def generate(self, logical_request_id: str, prompt: str) -> dict:
         text = self._responder(prompt)
         rec = {"logical_request_id": logical_request_id, "text": text,
                "prompt_sha256": "sha256:" + hashlib.sha256(prompt.encode()).hexdigest()[:16],
@@ -35,25 +33,23 @@ class LocalArtifactStore:
         self.root = root or tempfile.mkdtemp(prefix="esm_artifacts_")
         self._store = {}
 
-    def put(self, tenant_id: str, key: str, data: bytes, retention_class: str = "default") -> str:
+    async def put(self, tenant_id, key, data: bytes, retention_class="default") -> str:
         self._store[(tenant_id, key)] = bytes(data)
         return "local://%s/%s" % (tenant_id, key)
 
-    def get(self, tenant_id: str, key: str) -> bytes:
+    async def get(self, tenant_id, key) -> bytes:
         return self._store[(tenant_id, key)]
 
 
 class LocalFixtureRepositoryProvider:
-    """Serves in-memory fixture snapshots; never touches an arbitrary host path from client input."""
-
     def __init__(self, fixtures: dict):
-        self._fixtures = fixtures      # repo_id -> {files: {name: content}}
+        self._fixtures = fixtures
 
-    def resolve_commit(self, repo_id: str, ref: str) -> str:
+    async def resolve_commit(self, repo_id, ref) -> str:
         blob = repr(sorted(self._fixtures[repo_id]["files"].items()))
         return "sha_" + hashlib.sha256(blob.encode()).hexdigest()[:12]
 
-    def snapshot(self, repo_id: str, commit_sha: str, path_allowlist: list) -> dict:
+    async def snapshot(self, repo_id, commit_sha, path_allowlist) -> dict:
         files = self._fixtures[repo_id]["files"]
         sel = {k: v for k, v in files.items() if (not path_allowlist or k in path_allowlist)}
         return {"repo_id": repo_id, "commit_sha": commit_sha, "files": sel,
@@ -61,19 +57,39 @@ class LocalFixtureRepositoryProvider:
 
 
 class LocalEvaluationSandbox:
-    """test/local ONLY subprocess sandbox (reuses the hardened v0.1 sandbox). Production MUST refuse it."""
+    """test/local ONLY subprocess sandbox. Production/staging MUST refuse it (settings gate)."""
 
-    def run(self, snapshot: dict, patch_files: dict, test_entry: str, timeout_s: int = 20) -> dict:
-        d = tempfile.mkdtemp(prefix="esm_sbx_")
-        try:
-            for name, content in snapshot["files"].items():
-                p = os.path.join(d, name)
-                os.makedirs(os.path.dirname(p) or d, exist_ok=True)
-                open(p, "w", encoding="utf-8").write(content)
-            res = _sandbox.run_task(d, patch_files, test_entry, timeout=timeout_s)
-            return {"passed": int(res["passed"]), "exec_ok": int(res["exec_ok"]), "escape": False}
-        finally:
-            shutil.rmtree(d, ignore_errors=True)
+    async def run(self, snapshot, patch_files, test_entry, timeout_s=20) -> dict:
+        def _blocking():
+            d = tempfile.mkdtemp(prefix="esm_sbx_")
+            try:
+                for name, content in snapshot["files"].items():
+                    p = os.path.join(d, name)
+                    os.makedirs(os.path.dirname(p) or d, exist_ok=True)
+                    open(p, "w", encoding="utf-8").write(content)
+                res = _sandbox.run_task(d, patch_files, test_entry, timeout=timeout_s)
+                return {"passed": int(res["passed"]), "exec_ok": int(res["exec_ok"]), "escape": False}
+            finally:
+                shutil.rmtree(d, ignore_errors=True)
+        return await asyncio.to_thread(_blocking)   # keep the blocking sandbox off the event loop
+
+
+class ListAudit:
+    def __init__(self):
+        self.events = []
+
+    async def emit(self, event_type, actor, subject, detail) -> str:
+        self.events.append((event_type, actor, subject, detail))
+        return "audit_%d" % len(self.events)
+
+
+class InMemoryOutcomeStore:
+    def __init__(self):
+        self.records = []
+
+    async def persist(self, record: dict) -> str:
+        self.records.append(record)
+        return "outcome_%d" % len(self.records)
 
 
 class ListMetrics:

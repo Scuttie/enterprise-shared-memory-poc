@@ -41,7 +41,7 @@ class InMemoryJobRepository:
         self._t += 1
         return self._t
 
-    def create(self, spec: dict, idempotency_key: str | None = None) -> dict:
+    async def create(self, spec: dict, idempotency_key: str | None = None) -> dict:
         if idempotency_key and idempotency_key in self._by_idem:
             return self._jobs[self._by_idem[idempotency_key]]           # duplicate -> existing job
         jid = "job_%06d" % next(self._seq)
@@ -53,7 +53,7 @@ class InMemoryJobRepository:
             self._by_idem[idempotency_key] = jid
         return job
 
-    def claim(self, worker_id: str, lease_s: int = 30) -> dict | None:
+    async def claim(self, worker_id: str, lease_s: int = 30) -> dict | None:
         now = self._now()
         for job in self._jobs.values():
             leaseable = job["state"] in ("QUEUED",) or (
@@ -68,7 +68,7 @@ class InMemoryJobRepository:
                 return job
         return None
 
-    def transition(self, job_id: str, to_state: str, detail: dict | None = None) -> dict:
+    async def transition(self, job_id: str, to_state: str, detail: dict | None = None) -> dict:
         job = self._jobs[job_id]
         if not can_transition(job["state"], to_state):
             raise JobError("illegal transition %s -> %s" % (job["state"], to_state))
@@ -82,10 +82,10 @@ class InMemoryJobRepository:
         job["state"] = state
         job["events"].append((state, self._now(), detail))
 
-    def get(self, job_id: str) -> dict | None:
+    async def get(self, job_id: str) -> dict | None:
         return self._jobs.get(job_id)
 
-    def heartbeat(self, job_id: str, worker_id: str, lease_s: int = 30):
+    async def heartbeat(self, job_id: str, worker_id: str, lease_s: int = 30):
         job = self._jobs[job_id]
         if job["lease_owner"] != worker_id:
             raise JobError("not lease owner")

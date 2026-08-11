@@ -1,18 +1,18 @@
-# Production readiness report (honest, this increment)
+# Production readiness report (honest; two columns per §20)
 
-**NOT production-ready. NOT yet a staging-ready candidate.** Gate status reflects what is actually
-implemented and executed in THIS environment (offline, no company infrastructure).
+**NOT production-ready. NOT a staging-ready candidate.** No company infrastructure exists in this
+environment (no Docker/Postgres/Qdrant/MinIO/kind/Helm), so the infrastructure stages P1-P8 can be
+authored but not validated here.
 
-| gate | status | basis |
+| gate | IMPLEMENTATION / CI STATUS (this environment) | COMPANY-STAGING CERTIFICATION |
 |---|---|---|
-| A end-to-end functionality | **PASS (local mode, fakes)** | real orchestrator completes retrieval->gates->compile->model->sandbox->outcome; no client patch trusted; NOT validated with Postgres/Solar/K8s |
-| B tenant & repository security | **PARTIAL** | JWT validation + scope + identity-derived repo authz unit-tested; DB row-level security NOT implemented (requires Postgres) |
-| C contract governance | **PARTIAL** | compiler refusal + outbox idempotency tested; full transactional promotion workflow NOT wired to a real DB |
-| D sandbox | **NOT MET** | production KubernetesJobSandbox not implemented; local subprocess sandbox refused in production mode (tested); K8s escape suite not run |
-| E reliability | **PARTIAL** | job state machine + lease recovery + idempotency + outbox quarantine tested in-memory; Postgres leasing + circuit breaker + Qdrant-outage recovery NOT implemented/run |
-| F recovery | **NOT MET** | backup/restore/reindex requires infrastructure; not implemented/run |
-| G operations | **NOT MET** | OTel/dashboards/runbooks not implemented; requires infrastructure |
+| A end-to-end | **PARTIAL** — local component-chain integration test passes (orchestrator: authz(modify)->separate private/shared retrieval->canonical reload->gates->compile literal view->FakeSolar->bounded-edit validation->sandbox->persisted outcome+audit+outbox). NOT via HTTP API / durable job / worker / DB. | PENDING |
+| B tenant & repo security | **PARTIAL** — JWT (iss/aud/exp/nbf/sig/scope, fail-closed) + `can_modify` + identity-derived authz + private-ownership blocking tested; **Postgres RLS NOT implemented** (no DB). | PENDING |
+| C contract governance | **PARTIAL** — compiler refusal (7 invalid states + unsupported) + outbox idempotency/quarantine tested; persistent promotion/deprecation NOT wired to a DB. | PENDING |
+| D sandbox | **NOT MET** — KubernetesJobSandbox not implemented; subprocess sandbox refused in prod/staging (tested); kind lifecycle + escape suite NOT RUN (no Docker/kind). | PENDING |
+| E reliability | **PARTIAL** — job machine + lease recovery + idempotency + outbox quarantine tested in-memory; Postgres leasing / circuit breaker / index-outage replay NOT implemented (no infra). | PENDING |
+| F recovery | **NOT MET** — backup/restore/reindex requires ephemeral services (absent). | PENDING |
+| G operations | **NOT MET** — OTel/dashboards/runbooks/load/soak require infra (absent). | PENDING |
 
-**Conclusion:** A-G are NOT all met in a company staging environment; this is not a staging-ready
-production candidate. The increment delivers a tested foundation and the self-contained control-plane /
-execution-plane logic, with the infrastructure stages specified for follow-on work.
+**Version stays `0.2.0.dev1`. No `v0.2.0-rc1`.** Recommendation: implement P1-P8 in an environment with
+Docker + CI service containers; certify Gates A-G in company staging before any rc/beta tag.

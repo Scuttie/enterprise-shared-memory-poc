@@ -97,17 +97,16 @@ def test_outbox_dedup_and_distinct_versions(seeded):
     run(body())
 
 
-def test_outbox_quarantine(seeded):
+def test_api_cannot_mutate_outbox_state(seeded):
+    # §2.3: the API role may publish (INSERT) an outbox event but may NOT change its processing state.
+    # (proper quarantine via lease-token dispatch is covered in test_p1_1 / test_p2_0.)
     async def body():
         e = eng("api"); a = seeded["A"]; aid = uuid.uuid4()
         async with tenant_tx(e, a["org"], a["user"]) as c:
-            await publish_outbox(c, a["org"], "REINDEX", "contract", aid, 1, {})
-            # simulate repeated processing failure reaching max_attempts -> quarantine
-            await c.execute(text("UPDATE outbox_events SET attempts=max_attempts, status='QUARANTINED',"
-                                 " error_detail_sanitized='transient' WHERE aggregate_id=:i"), {"i": aid})
-        async with tenant_tx(e, a["org"], a["user"]) as c:
-            st = (await c.execute(text("SELECT status FROM outbox_events WHERE aggregate_id=:i"), {"i": aid})).scalar()
-            assert st == "QUARANTINED"
+            await publish_outbox(c, a["org"], "REINDEX", "contract", aid, 1, {})   # api CAN publish
+        with pytest.raises(Exception):                                             # api CANNOT mutate state
+            async with tenant_tx(e, a["org"], a["user"]) as c:
+                await c.execute(text("UPDATE outbox_events SET status='QUARANTINED' WHERE aggregate_id=:i"), {"i": aid})
         await e.dispose()
     run(body())
 

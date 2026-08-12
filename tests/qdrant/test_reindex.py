@@ -23,7 +23,7 @@ def test_full_reindex_swap_and_rollback(seeded, index, embedder):
         await reng.dispose()
         assert report.indexed == 2
         assert report.new_collection == SHARED_COLLECTION + "_b1"
-        assert index.collection_for(SHARED) == report.new_collection          # live pointer flipped
+        assert await index.resolve(SHARED) == report.new_collection            # alias flipped to new collection
         assert report.previous_collection == SHARED_COLLECTION
 
         api = eng("api")
@@ -33,7 +33,7 @@ def test_full_reindex_swap_and_rollback(seeded, index, embedder):
 
         # rollback restores the previous (empty) base collection instantly
         await R.rollback(index, SHARED, report)
-        assert index.collection_for(SHARED) == SHARED_COLLECTION
+        assert await index.resolve(SHARED) == SHARED_COLLECTION
         res2 = await validated_search(api, index, embedder, SHARED, str(a["org"]), QUERY, user_id=str(a["user"]))
         await api.dispose()
         assert res2.hits == []

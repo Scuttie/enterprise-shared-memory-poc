@@ -30,7 +30,7 @@
   "resolved": "2026-08 (ci-postgres run)"
  },
  "qdrant_group": {
-  "qdrant-client": ">=1.9,<2.0 (Apache-2.0); vector CANDIDATE index only — never authoritative memory",
+  "qdrant-client": ">=1.12,<1.13 (Apache-2.0), server-compatible minor with qdrant v1.12.4; version check stays ON (no check_compatibility=False); vector CANDIDATE index only — never authoritative memory",
   "note": "ci-qdrant installs only qdrant-client (no torch, no mem0, no model download, no network). The DeterministicTestEmbedder makes the index/search/drift/reindex machinery reproducible without credentials. Mem0 governance (infer=False, hidden-LLM-calls=0) is proven with a stub; the real mem0 path stays behind the mem0 extra."
  },
  "qdrant_image_pinned": {

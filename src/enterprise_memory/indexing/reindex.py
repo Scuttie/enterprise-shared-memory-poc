@@ -54,7 +54,7 @@ async def full_reindex(engine, index, embedder, scope, targets, suffix) -> Reind
     (caller supplies it, e.g. a build id) so reindex is reproducible and never depends on wall-clock."""
     if scope not in (PRIVATE, SHARED):
         raise ValueError("unknown scope %r" % (scope,))
-    previous = index.collection_for(scope)
+    previous = await index.resolve(scope)
     new_collection = "%s_%s" % (BASE_COLLECTION[scope], suffix)
     await index.create_collection(new_collection)
     total = 0

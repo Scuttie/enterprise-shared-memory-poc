@@ -47,5 +47,5 @@ def test_delete_and_reindex_swap(index, embedder):
         await index.create_collection(new)
         await index.upsert([rs], embedder.embed([rs.text]), collection=new)
         await index.swap(SHARED, new)
-        assert index.collection_for(SHARED) == new and await index.count(SHARED) == 1
+        assert await index.resolve(SHARED) == new and await index.count(SHARED) == 1
     run(body())

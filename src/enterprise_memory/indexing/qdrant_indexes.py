@@ -37,7 +37,10 @@ class QdrantIndex:
         from qdrant_client import QdrantClient
         url = url or os.environ.get("QDRANT_URL")
         if url:
-            return cls(QdrantClient(url=url, timeout=15.0), dim, server=True)
+            # check_compatibility=False: the client only warns on a minor-version gap; the REST surface we
+            # use (query_points/upsert/scroll/aliases) is stable, and we never want a version warning to
+            # become a hard failure across client/server upgrades.
+            return cls(QdrantClient(url=url, timeout=15.0, check_compatibility=False), dim, server=True)
         return cls(QdrantClient(location=":memory:"), dim, server=False)
 
     def collection_for(self, scope: str) -> str:

@@ -20,9 +20,9 @@ jobs:
           --health-cmd "pg_isready -U postgres -d esm"
           --health-interval 5s --health-timeout 5s --health-retries 30
       qdrant:
-        # pinned by tag now; the resolve-digest step prints the pullable digest to pin in a follow-up.
-        # No credentials, no company Qdrant — a stock public image in local CI.
-        image: qdrant/qdrant:v1.12.4
+        # digest-pinned (resolved on the ubuntu-latest runner). No credentials, no company Qdrant — a
+        # stock public image in local CI.
+        image: qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
         ports:
           - 6333:6333
           - 6334:6334
@@ -49,7 +49,7 @@ jobs:
       - name: Resolve image digests
         run: |
           echo "PG_DIGEST=$(docker image inspect postgres:16.4 --format '{{index .RepoDigests 0}}' 2>/dev/null || true)"
-          echo "QDRANT_DIGEST=$(docker image inspect qdrant/qdrant:v1.12.4 --format '{{index .RepoDigests 0}}' 2>/dev/null || true)"
+          echo "QDRANT_DIGEST=$(docker image inspect qdrant/qdrant --format '{{index .RepoDigests 0}}' 2>/dev/null || true)"
       - name: Wait for Qdrant
         run: |
           python - <<'PY'

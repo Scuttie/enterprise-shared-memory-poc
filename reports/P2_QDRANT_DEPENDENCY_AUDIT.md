@@ -9,7 +9,7 @@ their embedded text are never authoritative memory and are never injected into a
 |---|---|---|---|
 | qdrant-client | `>=1.9,<2.0` (runner: 1.19.0) | Apache-2.0 | vector candidate index client (local mode in CI, URL mode in prod) |
 | postgres (image) | `16.4@sha256:e62fbf9d…` | PostgreSQL License | authoritative store (shared with ci-postgres) |
-| qdrant/qdrant (image) | `v1.12.4` (digest: pin after first ci-qdrant run) | Apache-2.0 | real vector server exercised in ci-qdrant |
+| qdrant/qdrant (image) | `v1.12.4@sha256:241edb9d…` (digest-pinned) | Apache-2.0 | real vector server exercised in ci-qdrant |
 
 `ci-qdrant` installs **only** `.[dev,postgres,qdrant]` — no `torch`, no `mem0ai`, no `sentence-transformers`,
 no model download, no network egress, and **no `UPSTAGE_API_KEY`, company database, company Qdrant, or
@@ -44,5 +44,7 @@ reproducible with no model or key. Its provenance (model id, dim, algorithm dige
 version are stamped into drift/reindex reports so an embedder or client swap is detectable.
 
 ## Follow-ups
-- Pin the `qdrant/qdrant` image by digest using the `QDRANT_DIGEST` printed by the ci-qdrant
-  resolve-digest step (mirrors how the postgres image was pinned).
+- Done: `qdrant/qdrant` is digest-pinned (`sha256:241edb9d…`, resolved on the runner in ci-qdrant run
+  31574181758). The resolve-digest step remains for future re-pins.
+- The client (1.19) warns on the server (1.12.4) minor-version gap; `check_compatibility=False` is set so
+  the warning never becomes a hard failure. A future bump can align the server minor if desired.

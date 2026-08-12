@@ -29,7 +29,7 @@ def test_full_reindex_swap_and_rollback(seeded, index, embedder):
         api = eng("api")
         res = await validated_search(api, index, embedder, SHARED, str(a["org"]), QUERY,
                                      limit=10, user_id=str(a["user"]))
-        assert {h.object_id for h in res.hits} == {v1, v2}                     # served from the new collection
+        assert {h.canonical_version_id for h in res.hits} == {v1, v2}                     # served from the new collection
 
         # rollback restores the previous (empty) base collection instantly
         await R.rollback(index, SHARED, report)

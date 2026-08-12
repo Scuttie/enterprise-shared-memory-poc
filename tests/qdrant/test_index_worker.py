@@ -40,7 +40,7 @@ def test_contract_index_then_supersede_then_deprecate(seeded, index, embedder):
         out = await W.drain(weng, index, embedder, "iw-1")
         assert any(r["action"] == "CONTRACT_INDEX:upserted" for r in out)
         r1 = await _search(index, embedder, SHARED, a["org"], a["user"])
-        assert len(r1.hits) == 1 and r1.hits[0].object_id == vid1
+        assert len(r1.hits) == 1 and r1.hits[0].canonical_version_id == vid1
 
         # supersede: v2 current, remove v1 point + add v2 point
         su = eng("postgres")
@@ -52,7 +52,7 @@ def test_contract_index_then_supersede_then_deprecate(seeded, index, embedder):
         out2 = await W.drain(weng, index, embedder, "iw-1")
         assert any(r["action"] == "CONTRACT_SUPERSEDE:swapped" for r in out2)
         r2 = await _search(index, embedder, SHARED, a["org"], a["user"])
-        assert len(r2.hits) == 1 and r2.hits[0].object_id == vid2 and r2.hits[0].canonical["v"] == 2
+        assert len(r2.hits) == 1 and r2.hits[0].canonical_version_id == vid2 and r2.hits[0].canonical["v"] == 2
 
         # deprecate v2 -> point removed
         await _publish(a["org"], a["user"], W.CONTRACT_DEPRECATE, "contract_version", vid2, 2,
@@ -75,7 +75,7 @@ def test_private_index_then_delete(seeded, index, embedder):
                        {"owner_user_id": str(a["user"])})
         await W.drain(weng, index, embedder, "iw-p")
         r1 = await _search(index, embedder, PRIVATE, a["org"], a["user"])
-        assert len(r1.hits) == 1 and r1.hits[0].object_id == eid
+        assert len(r1.hits) == 1 and r1.hits[0].canonical_version_id == eid
 
         await _publish(a["org"], a["user"], W.PRIVATE_DELETE, "private_episode", eid, 1,
                        {"owner_user_id": str(a["user"]), "version_number": 1})

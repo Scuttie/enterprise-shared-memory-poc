@@ -18,7 +18,8 @@ from sqlalchemy import text
 from ..persistence.tenant_context import tenant_tx
 from ..persistence.postgres import claim_outbox_event, mark_processed, mark_retry, redact
 from . import canonical_loaders as cl
-from .models import PRIVATE, SHARED, ObjectType, IndexRecord, point_id
+from .projection import build_record
+from .models import PRIVATE, SHARED, ObjectType, point_id
 
 PRIVATE_INDEX = "PRIVATE_INDEX"
 PRIVATE_DELETE = "PRIVATE_DELETE"
@@ -28,22 +29,9 @@ CONTRACT_DELETE = "CONTRACT_DELETE"
 CONTRACT_SUPERSEDE = "CONTRACT_SUPERSEDE"
 
 
-def _private_record(row, embedder) -> tuple:
-    txt = cl.embed_text(row["canonical"])
-    rec = IndexRecord(scope=PRIVATE, object_type=ObjectType.PRIVATE_EPISODE.value,
-                      object_id=row["object_id"], org_id=row["org_id"], content_hash=row["content_hash"],
-                      text=txt, owner_user_id=row["owner_user_id"], repository_id=row.get("repository_id"),
-                      version_number=1)
-    return rec, embedder.embed([txt])[0]
-
-
-def _contract_record(row, embedder) -> tuple:
-    txt = cl.embed_text(row["canonical"])
-    rec = IndexRecord(scope=SHARED, object_type=ObjectType.CONTRACT_VERSION.value,
-                      object_id=row["object_id"], org_id=row["org_id"], content_hash=row["content_hash"],
-                      text=txt, repository_id=row.get("repository_id"), contract_id=row.get("contract_id"),
-                      version_number=row["version_number"])
-    return rec, embedder.embed([txt])[0]
+def _record(scope, row, embedder) -> tuple:
+    rec = build_record(scope, row)
+    return rec, embedder.embed([rec.text])[0]
 
 
 async def load_outbox_payload(engine, org_id, event_id) -> dict:
@@ -67,7 +55,7 @@ async def process_event(engine, index, embedder, event, payload) -> str:
         if row is None:                                  # vanished -> idempotent delete
             await index.delete(PRIVATE, [point_id(ObjectType.PRIVATE_EPISODE.value, oid, 1)])
             return "PRIVATE_INDEX:missing_deleted"
-        rec, vec = _private_record(row, embedder)
+        rec, vec = _record(PRIVATE, row, embedder)
         await index.upsert([rec], [vec])
         return "PRIVATE_INDEX:upserted"
 
@@ -82,7 +70,7 @@ async def process_event(engine, index, embedder, event, payload) -> str:
             v = int(row["version_number"]) if row else int(event.get("aggregate_version", 1))
             await index.delete(SHARED, [point_id(ObjectType.CONTRACT_VERSION.value, oid, v)])
             return "CONTRACT_INDEX:not_current_deleted"
-        rec, vec = _contract_record(row, embedder)
+        rec, vec = _record(SHARED, row, embedder)
         await index.upsert([rec], [vec])
         return "CONTRACT_INDEX:upserted"
 
@@ -98,7 +86,7 @@ async def process_event(engine, index, embedder, event, payload) -> str:
             await index.delete(SHARED, [point_id(ObjectType.CONTRACT_VERSION.value, old_id, old_v)])
         row = await cl.load_contract_version(engine, org, oid)   # oid = new version id
         if row is not None and row["is_current"] and row["governance_state"] == "promoted":
-            rec, vec = _contract_record(row, embedder)
+            rec, vec = _record(SHARED, row, embedder)
             await index.upsert([rec], [vec])
             return "CONTRACT_SUPERSEDE:swapped"
         return "CONTRACT_SUPERSEDE:old_removed"

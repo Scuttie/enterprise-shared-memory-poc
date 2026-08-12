@@ -34,7 +34,7 @@ class DriftReport:
 
 
 async def _index_map(index, scope, org_id, owner_user_id=None):
-    """object_id -> content_hash for this org's (and owner's) points in the scope collection."""
+    """canonical_version_id -> content_hash for this org's (and owner's) points in the scope collection."""
     pts = await index.scroll(scope)
     m = {}
     for p in pts:
@@ -43,7 +43,7 @@ async def _index_map(index, scope, org_id, owner_user_id=None):
             continue
         if owner_user_id is not None and str(pl.get("owner_user_id")) != str(owner_user_id):
             continue
-        m[str(pl.get("object_id"))] = str(pl.get("content_hash"))
+        m[str(pl.get("canonical_version_id"))] = str(pl.get("canonical_content_hash"))
     return m
 
 

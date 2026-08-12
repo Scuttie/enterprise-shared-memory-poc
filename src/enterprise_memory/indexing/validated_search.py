@@ -1,100 +1,148 @@
-"""Validated search (P2). The vector index is a CANDIDATE GENERATOR only. Every candidate is validated
-against PostgreSQL before it can be returned, and the returned content is the canonical row loaded from
-PostgreSQL — never the index payload or the embedded text. Each dropped candidate carries an explicit
-RejectionReason so the decision is auditable.
+"""Validated search (P2 / P2.1). The vector index is a CANDIDATE GENERATOR only. Every candidate is
+validated against PostgreSQL before it can be returned, and the returned content is the canonical row
+loaded from PostgreSQL — never the index payload or the embedded text. Each dropped candidate carries an
+explicit RejectionReason so the decision is auditable.
 
-The pipeline (13 steps):
-  1. resolve scope -> physical collection (private requires user_id)
-  2. embed the query with the SAME embedder used to index
-  3. vector search in the scope's physical collection with a store-side org (+owner) filter, over-fetching
-  4. payload scope must equal the requested scope            -> SCOPE_MISMATCH
-  5. payload.org_id must equal the caller org                -> WRONG_ORG
-  6. private: payload.owner_user_id must equal the caller    -> NOT_OWNER
-  7. load the canonical row from PostgreSQL (RLS-scoped)     -> NOT_IN_POSTGRES if absent
-  8. loaded org must equal the caller org                    -> WRONG_ORG
-  9. private: loaded owner must equal the caller             -> NOT_OWNER
- 10. payload.content_hash must equal the canonical hash      -> HASH_MISMATCH (stale index)
- 11. shared: version must be the contract's current version  -> NOT_CURRENT_VERSION
- 12. shared: governance_state must be promoted (not deleted) -> DEPRECATED
- 13. repository read permission for the caller               -> NO_READ_PERMISSION
-Survivors become ValidatedHit(canonical=...) up to `limit`."""
+Authenticated identity (user_id) is REQUIRED for both private and shared searches — there is no
+user_id=None permission bypass.
+
+Per-candidate gates (in order): scope, index schema version, object kind, payload org, private owner,
+PostgreSQL existence, canonical org, canonical owner, repository read permission, payload/canonical
+repository equality, version equality, contract-id equality, content-hash equality, current version,
+promoted/servable state, valid_from, valid_until, not superseded, path scope, retrieval-text hash."""
 from __future__ import annotations
-from .models import (PRIVATE, SHARED, ObjectType, RejectionReason as RR,
-                     SearchResult, ValidatedHit)
+import fnmatch
+from datetime import datetime, timezone
+from .models import PRIVATE, SHARED, ObjectType, INDEX_SCHEMA_VERSION, RejectionReason as RR, \
+    SearchResult, ValidatedHit, sha256_hex
 from . import canonical_loaders as cl
 
+_PRIVATE_UNSERVABLE = ("deleted", "quarantined", "tombstoned")
 
-async def validated_search(engine, index, embedder, scope, org_id, query, limit=10, user_id=None,
-                           overfetch=4):
-    result = SearchResult()
 
-    # 1. scope resolution
+def _now():
+    return datetime.now(timezone.utc)
+
+
+def _aware(dt):
+    if dt is not None and dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+def _path_ok(requested_path, path_scope):
+    if not requested_path or not path_scope:
+        return True
+    return any(fnmatch.fnmatch(requested_path, g) for g in path_scope)
+
+
+async def _validate(engine, embedder, scope, org_id, user_id, requested_path, p):
+    """Return (hit_or_None, reason_or_None) for one candidate payload `p`."""
+    # 1 scope
+    if p.get("scope") != scope:
+        return None, RR.SCOPE_MISMATCH
+    # 2 index schema version
+    if int(p.get("index_schema_version", -1)) != INDEX_SCHEMA_VERSION:
+        return None, RR.SCHEMA_VERSION_UNKNOWN
+    # 3 object kind
+    want_kind = ObjectType.CONTRACT_VERSION.value if scope == SHARED else ObjectType.PRIVATE_EPISODE.value
+    if p.get("object_kind") != want_kind:
+        return None, RR.WRONG_OBJECT_KIND
+    # 4 payload org
+    if str(p.get("org_id")) != str(org_id):
+        return None, RR.WRONG_ORG
+    # 5 payload owner (private)
+    if scope == PRIVATE and str(p.get("owner_user_id")) != str(user_id):
+        return None, RR.NOT_OWNER
+
+    version_id = p.get("canonical_version_id")
+
+    # 6 authoritative load
+    if scope == PRIVATE:
+        row = await cl.load_private_episode(engine, org_id, user_id, version_id)
+    else:
+        row = await cl.load_contract_version(engine, org_id, version_id)
+    if row is None:
+        return None, RR.NOT_IN_POSTGRES
+    # 7 canonical org
+    if str(row["org_id"]) != str(org_id):
+        return None, RR.WRONG_ORG
+    # 8 canonical owner (private)
+    if scope == PRIVATE and str(row["owner_user_id"]) != str(user_id):
+        return None, RR.NOT_OWNER
+    # 10 repository read permission (shared; private is owner-scoped and already authorised)
+    if scope == SHARED and not await cl.can_read_repo(engine, org_id, user_id, row.get("repository_id")):
+        return None, RR.NO_READ_PERMISSION
+    # 11 payload/canonical repository equality
+    if str(p.get("repository_id")) != str(row.get("repository_id")):
+        return None, RR.WRONG_REPOSITORY
+    # 12 version equality
+    want_version = int(row["version_number"]) if scope == SHARED else 1
+    if int(p.get("canonical_version_number", -1)) != want_version:
+        return None, RR.VERSION_MISMATCH
+    # 13 contract-id equality (shared)
+    if scope == SHARED and str(p.get("contract_id")) != str(row.get("contract_id")):
+        return None, RR.CONTRACT_MISMATCH
+    # 14 hash equality
+    if str(p.get("canonical_content_hash")) != str(row["content_hash"]):
+        return None, RR.HASH_MISMATCH
+    # 15/16 current + promoted/servable state
+    if scope == SHARED:
+        if not row.get("is_current"):
+            return None, RR.NOT_CURRENT_VERSION
+        if row.get("governance_state") != "promoted":
+            return None, RR.DEPRECATED
+        # 17 valid_from
+        vf = _aware(row.get("valid_from"))
+        if vf is not None and vf > _now():
+            return None, RR.NOT_VALID_YET
+        # 18 valid_until
+        vu = _aware(row.get("valid_until"))
+        if vu is not None and vu <= _now():
+            return None, RR.EXPIRED
+        # 19 not superseded
+        if row.get("superseded_by"):
+            return None, RR.SUPERSEDED
+    else:
+        if (row.get("state") or "") in _PRIVATE_UNSERVABLE:
+            return None, RR.DEPRECATED
+    # 20 path scope
+    if not _path_ok(requested_path, row.get("path_scope")):
+        return None, RR.PATH_SCOPE_MISMATCH
+    # 21 retrieval-text hash
+    if str(p.get("retrieval_text_hash")) != sha256_hex(cl.embed_text(row["canonical"])):
+        return None, RR.RETRIEVAL_HASH_MISMATCH
+
+    hit = ValidatedHit(
+        object_kind=row["object_type"], canonical_id=str(row.get("contract_id") or row["object_id"]),
+        canonical_version_id=row["object_id"], org_id=row["org_id"], content_hash=row["content_hash"],
+        score=0.0, canonical=row["canonical"], version_number=(row.get("version_number") or 1),
+        contract_id=row.get("contract_id"))
+    return hit, None
+
+
+async def validated_search(engine, index, embedder, scope, org_id, query, user_id, limit=10,
+                           requested_path=None, overfetch=4):
     if scope not in (PRIVATE, SHARED):
         raise ValueError("unknown scope %r" % (scope,))
-    if scope == PRIVATE and user_id is None:
-        raise ValueError("private search requires user_id")
+    if user_id is None:
+        raise ValueError("validated_search requires an authenticated user_id (no bypass)")
 
-    # 2. embed with the indexing embedder
+    result = SearchResult()
     vec = embedder.embed([query])[0]
-
-    # 3. candidate generation with store-side filtering (defence in depth)
     owner_filter = str(user_id) if scope == PRIVATE else None
     candidates = await index.search(scope, vec, org_id, owner_user_id=owner_filter,
                                     limit=max(limit * overfetch, limit))
-
     for cand in candidates:
         if len(result.hits) >= limit:
             break
-        p = cand.payload
-
-        # 4. scope integrity
-        if p.get("scope") != scope:
-            result.reject(cand.pid, RR.SCOPE_MISMATCH); continue
-        # 5. payload org
-        if str(p.get("org_id")) != str(org_id):
-            result.reject(cand.pid, RR.WRONG_ORG); continue
-        # 6. payload owner (private)
-        if scope == PRIVATE and str(p.get("owner_user_id")) != str(user_id):
-            result.reject(cand.pid, RR.NOT_OWNER); continue
-
-        object_id = p.get("object_id")
-
-        # 7. authoritative load from PostgreSQL
-        if scope == PRIVATE:
-            row = await cl.load_private_episode(engine, org_id, user_id, object_id)
+        hit, reason = await _validate(engine, embedder, scope, org_id, user_id, requested_path, cand.payload)
+        if reason is not None:
+            result.reject(cand.pid, reason)
         else:
-            row = await cl.load_contract_version(engine, org_id, object_id)
-        if row is None:
-            result.reject(cand.pid, RR.NOT_IN_POSTGRES); continue
-
-        # 8. loaded org
-        if str(row["org_id"]) != str(org_id):
-            result.reject(cand.pid, RR.WRONG_ORG); continue
-        # 9. loaded owner (private)
-        if scope == PRIVATE and str(row["owner_user_id"]) != str(user_id):
-            result.reject(cand.pid, RR.NOT_OWNER); continue
-
-        # 10. staleness: index hash vs canonical hash
-        if str(p.get("content_hash")) != str(row["content_hash"]):
-            result.reject(cand.pid, RR.HASH_MISMATCH); continue
-
-        # 11 & 12. shared governance
-        if scope == SHARED:
-            if not row.get("is_current"):
-                result.reject(cand.pid, RR.NOT_CURRENT_VERSION); continue
-            if row.get("governance_state") != "promoted":
-                result.reject(cand.pid, RR.DEPRECATED); continue
-
-        # 13. repository read permission
-        repo = row.get("repository_id")
-        reader = user_id if scope == PRIVATE else user_id
-        if scope == SHARED and reader is not None:
-            if not await cl.can_read_repo(engine, org_id, reader, repo):
-                result.reject(cand.pid, RR.NO_READ_PERMISSION); continue
-
-        result.hits.append(ValidatedHit(
-            object_type=row["object_type"], object_id=row["object_id"], org_id=row["org_id"],
-            content_hash=row["content_hash"], score=cand.score, canonical=row["canonical"],
-            version_number=row.get("version_number", 1), contract_id=row.get("contract_id")))
-
+            result.hits.append(ValidatedHit(
+                object_kind=hit.object_kind, canonical_id=hit.canonical_id,
+                canonical_version_id=hit.canonical_version_id, org_id=hit.org_id,
+                content_hash=hit.content_hash, score=cand.score, canonical=hit.canonical,
+                version_number=hit.version_number, contract_id=hit.contract_id))
     return result

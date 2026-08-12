@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from typing import List
 from .models import PRIVATE, SHARED, BASE_COLLECTION
 from . import canonical_loaders as cl
-from .index_worker import _private_record, _contract_record
+from .projection import build_record
 
 
 @dataclass
@@ -30,8 +30,8 @@ async def _build_shared(engine, index, embedder, org_id, new_collection) -> int:
     recs, vecs = [], []
     for r in rows:
         r = dict(r); r["org_id"] = str(org_id)
-        rec, vec = _contract_record(r, embedder)
-        recs.append(rec); vecs.append(vec)
+        rec = build_record(SHARED, r)
+        recs.append(rec); vecs.append(embedder.embed([rec.text])[0])
     if recs:
         await index.upsert(recs, vecs, collection=new_collection)
     return len(recs)
@@ -42,8 +42,8 @@ async def _build_private(engine, index, embedder, org_id, user_id, new_collectio
     recs, vecs = [], []
     for r in rows:
         r = dict(r); r["org_id"] = str(org_id); r["owner_user_id"] = str(user_id)
-        rec, vec = _private_record(r, embedder)
-        recs.append(rec); vecs.append(vec)
+        rec = build_record(PRIVATE, r)
+        recs.append(rec); vecs.append(embedder.embed([rec.text])[0])
     if recs:
         await index.upsert(recs, vecs, collection=new_collection)
     return len(recs)

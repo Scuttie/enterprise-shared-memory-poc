@@ -3,8 +3,9 @@ the mem0.Memory surface and RAISES if infer=True is ever requested, and counts t
 inference path would make. The governed wrapper must: never pass infer=True (hidden LLM calls == 0), keep
 private and shared physically separate instances, and expose reference payloads only."""
 import pytest
+from conftest import mk_record
 from enterprise_memory.indexing.mem0_indexes import GovernedMem0Index
-from enterprise_memory.indexing.models import IndexRecord, PRIVATE, SHARED
+from enterprise_memory.indexing.models import PRIVATE, SHARED
 
 
 class MemoryStub:
@@ -31,13 +32,13 @@ class MemoryStub:
 
 
 def _priv(oid, org, owner, h, text):
-    return IndexRecord(scope=PRIVATE, object_type="private_episode", object_id=oid, org_id=org,
-                       content_hash=h, text=text, owner_user_id=owner)
+    return mk_record(PRIVATE, canonical_version_id=oid, org_id=org, content_hash=h, text=text,
+                     owner_user_id=owner)
 
 
 def _shared(oid, org, h, text):
-    return IndexRecord(scope=SHARED, object_type="contract_version", object_id=oid, org_id=org,
-                       content_hash=h, text=text, contract_id="c1")
+    return mk_record(SHARED, canonical_version_id=oid, org_id=org, content_hash=h, text=text,
+                     contract_id="c1")
 
 
 def test_requires_separate_instances():
@@ -57,13 +58,13 @@ def test_governed_infer_false_zero_llm_and_separation():
 
     # candidates return reference payloads only (content_hash present, canonical text absent)
     sc = idx.candidates(SHARED, "alpha retry backoff", "o1")
-    assert sc and sc[0]["content_hash"] == "hs" and sc[0]["object_id"] == "v1"
+    assert sc and sc[0]["canonical_content_hash"] == "hs" and sc[0]["canonical_version_id"] == "v1"
     pc = idx.candidates(PRIVATE, "alpha retry backoff", "u1")
-    assert pc and pc[0]["object_id"] == "ep1"
+    assert pc and pc[0]["canonical_version_id"] == "ep1"
 
     # physical separation: the private episode lives only in the private store
-    assert all(c["object_id"] != "ep1" for c in sc)
-    assert all(c["object_id"] != "v1" for c in pc)
+    assert all(c["canonical_version_id"] != "ep1" for c in sc)
+    assert all(c["canonical_version_id"] != "v1" for c in pc)
 
 
 def test_delete_removes_reference():

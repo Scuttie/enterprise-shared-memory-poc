@@ -57,5 +57,5 @@ def test_outage_retries_then_replays(seeded, index, embedder):
         api = eng("api")
         res = await validated_search(api, index, embedder, SHARED, str(a["org"]), QUERY, user_id=str(a["user"]))
         await api.dispose()
-        assert len(res.hits) == 1 and res.hits[0].object_id == vid
+        assert len(res.hits) == 1 and res.hits[0].canonical_version_id == vid
     run(body())

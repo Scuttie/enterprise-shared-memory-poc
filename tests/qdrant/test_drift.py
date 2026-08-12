@@ -50,3 +50,32 @@ def test_shared_drift_buckets(seeded, index, embedder):
         assert ghost in rep2.orphan_in_index
         assert v3 in rep2.missing_in_index
     run(body())
+
+
+def test_drift_extended_categories(seeded, index, embedder):
+    async def body():
+        su = eng("postgres"); a = seeded["A"]; c1 = {"text": "one"}
+        cid, v1, h1 = await seed_contract_version(su, a["org"], a["repo"], c1, version_number=1)
+        # v2 becomes current -> v1 is superseded and no longer current
+        await seed_contract_version(su, a["org"], a["repo"], {"text": "two"}, version_number=2,
+                                    contract_id=cid, supersedes=v1)
+        await su.dispose()
+        # index the superseded v1 (version 1) and a duplicate of it (version 2, same canonical_version_id)
+        r1 = _rec(a, cid, v1, h1, c1)
+        dup = mk_record(SHARED, canonical_version_id=v1, org_id=a["org"], content_hash=h1,
+                        text=embed_text(c1), contract_id=cid, repository_id=a["repo"], version_number=2)
+        await index.upsert([r1], embedder.embed([r1.text]))
+        await index.upsert([dup], embedder.embed([dup.text]))
+        # an invalid-schema point for a ghost object
+        gid = str(uuid.uuid4())
+        bad = mk_record(SHARED, canonical_version_id=gid, org_id=a["org"], content_hash="h",
+                        text="x", contract_id=cid, repository_id=a["repo"], index_schema_version=999)
+        await index.upsert([bad], embedder.embed([bad.text]))
+
+        weng = eng("index")
+        rep = await D.check_shared(weng, index, a["org"])
+        await weng.dispose()
+        assert v1 in rep.superseded_searchable
+        assert v1 in rep.duplicate
+        assert gid in rep.invalid_schema
+    run(body())

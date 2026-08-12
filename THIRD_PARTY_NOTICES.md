@@ -9,7 +9,13 @@ Directly relevant bundled/required dependencies (each retains its own license):
 | fastapi | 0.110.x | MIT |
 | uvicorn | 0.29.x | BSD-3-Clause |
 | httpx | 0.27.x | BSD-3-Clause |
-| qdrant-client | 1.9.x | Apache-2.0 |
+| qdrant-client | 1.9–1.19 | Apache-2.0 |
+| SQLAlchemy | 2.0.x | MIT |
+| asyncpg | 0.29–0.30 | Apache-2.0 |
+| alembic | 1.13.x | MIT |
+| psycopg2-binary (migrations only) | 2.9.x | LGPL-3.0-with-exceptions |
+| postgres (container image) | 16.4 (digest-pinned) | PostgreSQL License |
+| qdrant/qdrant (container image) | v1.12.4 | Apache-2.0 |
 | pytest | 8.x | MIT |
 
 mem0ai wheel SHA-256: `1521209f0ab4c77b7e5777aa1b0b5f0104efa06ca5b9eddb804cdd091c17726a`.

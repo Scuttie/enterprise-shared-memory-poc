@@ -1,20 +1,32 @@
-"""Async PostgreSQL adapter functions (P1/P1.1). RLS + transaction-local context isolate tenants; the
-worker claims jobs through the SECURITY DEFINER claim_next_job (owned by a dedicated NOLOGIN BYPASSRLS
-role). create_job upserts so concurrent same-key submissions all return the one job id."""
+"""Async PostgreSQL adapter functions (P1/P1.1/P2-0). RLS + transaction-local context isolate tenants;
+the worker claims jobs through the hardened SECURITY DEFINER claim_next_job (owned by a dedicated NOLOGIN
+NOSUPERUSER BYPASSRLS role). Outbox completion/retry enforce lease ownership. Persisted error details are
+redacted deterministically (never raw exception strings)."""
 from __future__ import annotations
 import json
+import re
 from sqlalchemy import text
 from ..tenant_context import tenant_tx
 
+_TERMINAL = ("SUCCEEDED", "FAILED", "CANCELLED", "DEAD_LETTER")
 _ALLOWED = {"QUEUED": {"RETRIEVING", "CANCELLED"}, "RETRIEVING": {"GENERATING", "FAILED", "QUEUED", "CANCELLED"},
             "GENERATING": {"TESTING", "FAILED", "QUEUED", "CANCELLED"},
             "TESTING": {"REPAIRING", "SUCCEEDED", "FAILED", "QUEUED", "CANCELLED"},
             "REPAIRING": {"TESTING", "SUCCEEDED", "FAILED", "CANCELLED"},
             "SUCCEEDED": set(), "FAILED": {"QUEUED", "DEAD_LETTER"}, "CANCELLED": set(), "DEAD_LETTER": set()}
 
+_SECRET_RE = re.compile(r"(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[A-Z0-9]{16}"
+                        r"|-----BEGIN[ A-Z]+PRIVATE KEY-----|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
+                        r"|[A-Za-z0-9+/]{40,})")
+
+
+def redact(error) -> str:
+    """Deterministic redactor: replace secret-shaped substrings, cap length. Never store raw exceptions."""
+    s = _SECRET_RE.sub("[REDACTED]", str(error))
+    return s[:200]
+
 
 async def create_job(engine, org_id, user_id, repo_id, spec, idempotency_key, logical_request_id):
-    """Idempotent create (concurrency-safe upsert): duplicate (org, key) returns the SAME job -> (job_id, created)."""
     async with tenant_tx(engine, org_id, user_id) as c:
         row = (await c.execute(text(
             "INSERT INTO solve_jobs(org_id,submitter_user_id,repository_id,logical_request_id,idempotency_key,spec_json)"
@@ -27,18 +39,20 @@ async def create_job(engine, org_id, user_id, repo_id, spec, idempotency_key, lo
 
 async def claim_job(engine, worker_id, lease_seconds=30):
     async with engine.begin() as c:
-        row = (await c.execute(text("SELECT job_id, org_id, task_policy_id, attempt_number FROM claim_next_job(:w,:l)"),
-                               {"w": worker_id, "l": lease_seconds})).first()
-        return None if row is None else {"job_id": str(row[0]), "org_id": str(row[1]), "attempt": row[3]}
+        row = (await c.execute(text("SELECT job_id, org_id, submitter_user_id, task_policy_id, spec_json, attempt_number"
+                                    " FROM claim_next_job(:w,:l)"), {"w": worker_id, "l": lease_seconds})).first()
+        return None if row is None else {"job_id": str(row[0]), "org_id": str(row[1]),
+                                         "submitter": (str(row[2]) if row[2] else None), "attempt": row[5]}
 
 
 async def heartbeat(engine, org_id, job_id, worker_id, lease_seconds=30):
     async with tenant_tx(engine, org_id) as c:
         r = await c.execute(text("UPDATE solve_jobs SET heartbeat_at=now(),"
-                                 " lease_expires_at=now()+make_interval(secs=>:l) WHERE id=:j AND lease_owner=:w"),
-                            {"l": lease_seconds, "j": job_id, "w": worker_id})
+                                 " lease_expires_at=now()+make_interval(secs=>:l)"
+                                 " WHERE id=:j AND lease_owner=:w AND state <> ALL(:term)"),
+                            {"l": lease_seconds, "j": job_id, "w": worker_id, "term": list(_TERMINAL)})
         if r.rowcount != 1:
-            raise PermissionError("not_lease_owner")
+            raise PermissionError("not_lease_owner_or_terminal")
 
 
 async def transition(engine, org_id, job_id, worker_id, to_state, detail=None):
@@ -54,8 +68,12 @@ async def transition(engine, org_id, job_id, worker_id, to_state, detail=None):
             to_state = "DEAD_LETTER"
         if to_state not in _ALLOWED.get(state, set()):
             raise ValueError("illegal transition %s -> %s" % (state, to_state))
-        await c.execute(text("UPDATE solve_jobs SET state=:s, updated_at=now(), error_detail_sanitized=:d WHERE id=:j"),
-                        {"s": to_state, "d": (detail or None), "j": job_id})
+        term = to_state in _TERMINAL
+        await c.execute(text("UPDATE solve_jobs SET state=:s, updated_at=now(), error_detail_sanitized=:d,"
+                             " lease_owner = CASE WHEN :t THEN NULL ELSE lease_owner END,"
+                             " lease_expires_at = CASE WHEN :t THEN NULL ELSE lease_expires_at END,"
+                             " heartbeat_at = CASE WHEN :t THEN NULL ELSE heartbeat_at END WHERE id=:j"),
+                        {"s": to_state, "d": (redact(detail) if detail else None), "t": term, "j": job_id})
         return to_state
 
 
@@ -71,6 +89,7 @@ async def list_job_events(engine, org_id, job_id):
         return [{"attempt": r[0], "state": r[1]} for r in rows]
 
 
+# ---------------------------------------------------------------- outbox (lease-owner enforced)
 async def publish_outbox(conn, org_id, event_type, aggregate_type, aggregate_id, aggregate_version, payload):
     await conn.execute(text(
         "INSERT INTO outbox_events(org_id,event_type,aggregate_type,aggregate_id,aggregate_version,payload_json)"
@@ -90,21 +109,29 @@ async def claim_outbox_event(engine, org_id, worker_id, lease_seconds=30):
         return None if row is None else {"id": str(row[0]), "event_type": row[1], "aggregate_id": str(row[2])}
 
 
-async def mark_processed(engine, org_id, event_id):
+async def mark_processed(engine, org_id, event_id, worker_id):
     async with tenant_tx(engine, org_id) as c:
-        await c.execute(text("UPDATE outbox_events SET status='PROCESSED', processed_at=now() WHERE id=:i"), {"i": event_id})
+        r = await c.execute(text("UPDATE outbox_events SET status='PROCESSED', processed_at=now(),"
+                                 " lease_owner=NULL, lease_expires_at=NULL"
+                                 " WHERE id=:i AND status='PROCESSING' AND lease_owner=:w"),
+                            {"i": event_id, "w": worker_id})
+        if r.rowcount != 1:
+            raise PermissionError("not_lease_owner_or_not_processing")
 
 
-async def mark_retry(engine, org_id, event_id, error, backoff_seconds=2):
+async def mark_retry(engine, org_id, event_id, worker_id, error, backoff_seconds=2):
     async with tenant_tx(engine, org_id) as c:
-        row = (await c.execute(text("SELECT attempts, max_attempts FROM outbox_events WHERE id=:i"), {"i": event_id})).first()
-        if row and row[0] >= row[1]:
-            await c.execute(text("UPDATE outbox_events SET status='QUARANTINED', error_detail_sanitized=:e WHERE id=:i"),
-                            {"e": str(error)[:200], "i": event_id})
+        row = (await c.execute(text("SELECT attempts, max_attempts, lease_owner, status FROM outbox_events WHERE id=:i FOR UPDATE"),
+                               {"i": event_id})).first()
+        if row is None or row[2] != worker_id or row[3] != "PROCESSING":
+            raise PermissionError("not_lease_owner_or_not_processing")
+        if row[0] >= row[1]:
+            await c.execute(text("UPDATE outbox_events SET status='QUARANTINED', lease_owner=NULL, lease_expires_at=NULL,"
+                                 " error_detail_sanitized=:e WHERE id=:i"), {"e": redact(error), "i": event_id})
             return "QUARANTINED"
         await c.execute(text("UPDATE outbox_events SET status='PENDING', lease_owner=NULL, lease_expires_at=NULL,"
                              " next_attempt_at=now()+make_interval(secs=>:b), error_detail_sanitized=:e WHERE id=:i"),
-                        {"b": backoff_seconds, "e": str(error)[:200], "i": event_id})
+                        {"b": backoff_seconds, "e": redact(error), "i": event_id})
         return "PENDING"
 
 

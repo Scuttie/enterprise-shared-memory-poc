@@ -18,7 +18,8 @@ FORBIDDEN_PATH = ["C:\\Users\\jewon", "C:/Users/jewon", _HOST, "vscode-webview",
                   "AppData\\Local\\Temp\\claude", "AppData/Local/Temp/claude"]
 FORBIDDEN_CRED = ["ghp_", "github_pat_", "AKIA", "-----BEGIN ", "up_live_"]
 EXEMPT = {"src/enterprise_memory/promotion/security_scan.py", "tests/security/test_scanner.py",
-          "tests/unit/test_promotion.py", "scripts/release_check.py", "tests/service/test_service.py"}
+          "tests/unit/test_promotion.py", "scripts/release_check.py", "tests/service/test_service.py",
+          "src/enterprise_memory/persistence/postgres/repos.py", "tests/postgres/test_p2_0.py"}
 SKIP_DIR = ("__pycache__", ".git", ".venv", "venv", "dist", "build", "reports", "data")
 
 

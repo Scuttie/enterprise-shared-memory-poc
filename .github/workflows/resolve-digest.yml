@@ -1,0 +1,19 @@
+name: resolve-digest
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: postgres 16.4 digest
+        run: |
+          docker pull postgres:16.4
+          echo "ARCH=$(docker image inspect postgres:16.4 --format '{{.Architecture}}')"
+          echo "DIGEST=$(docker image inspect postgres:16.4 --format '{{index .RepoDigests 0}}')"
+      - name: qdrant digest
+        run: |
+          docker pull qdrant/qdrant:v1.11.0
+          echo "QARCH=$(docker image inspect qdrant/qdrant:v1.11.0 --format '{{.Architecture}}')"
+          echo "QDIGEST=$(docker image inspect qdrant/qdrant:v1.11.0 --format '{{index .RepoDigests 0}}')"

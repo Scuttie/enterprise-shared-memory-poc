@@ -180,10 +180,10 @@ def test_outbox_lifecycle_quarantine(seeded):
         ev = await claim_outbox_event(e, a["org"], "ow1")
         assert ev and ev["aggregate_id"] == str(aid)
         # backoff 0 so the event is immediately re-claimable for the second failure
-        assert await mark_retry(e, a["org"], ev["id"], "transient", backoff_seconds=0) == "PENDING"
+        assert await mark_retry(e, a["org"], ev["id"], "ow1", "transient", backoff_seconds=0) == "PENDING"
         ev2 = await claim_outbox_event(e, a["org"], "ow1")   # attempts now 2 == max
         assert ev2 is not None
-        st = await mark_retry(e, a["org"], ev2["id"], "transient again", backoff_seconds=0)
+        st = await mark_retry(e, a["org"], ev2["id"], "ow1", "transient again", backoff_seconds=0)
         assert st == "QUARANTINED"
         for x in (e, su):
             await x.dispose()

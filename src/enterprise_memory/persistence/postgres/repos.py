@@ -102,7 +102,7 @@ async def mark_retry(engine, org_id, event_id, error, backoff_seconds=2):
             await c.execute(text("UPDATE outbox_events SET status='QUARANTINED', error_detail_sanitized=:e WHERE id=:i"),
                             {"e": str(error)[:200], "i": event_id})
             return "QUARANTINED"
-        await c.execute(text("UPDATE outbox_events SET status='PENDING', lease_owner=NULL,"
+        await c.execute(text("UPDATE outbox_events SET status='PENDING', lease_owner=NULL, lease_expires_at=NULL,"
                              " next_attempt_at=now()+make_interval(secs=>:b), error_detail_sanitized=:e WHERE id=:i"),
                         {"b": backoff_seconds, "e": str(error)[:200], "i": event_id})
         return "PENDING"

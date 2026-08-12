@@ -162,7 +162,9 @@ def test_job_lifecycle(seeded):
         assert await transition(api, a["org"], jid, "worker-1", "GENERATING") == "GENERATING"
         assert await transition(api, a["org"], jid, "worker-1", "TESTING") == "TESTING"
         assert await transition(api, a["org"], jid, "worker-1", "SUCCEEDED") == "SUCCEEDED"
-        with pytest.raises(ValueError):   # terminal -> no further transition
+        # terminal -> further transition rejected: SUCCEEDED cleared the lease (P2-0), so the owner check
+        # (PermissionError) or the illegal-transition check (ValueError) both correctly reject it.
+        with pytest.raises((ValueError, PermissionError)):
             await transition(api, a["org"], jid, "worker-1", "QUEUED")
         for x in (api, w):
             await x.dispose()

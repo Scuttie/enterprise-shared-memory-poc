@@ -51,7 +51,7 @@ async def heartbeat(engine, org_id, job_id, worker_id, lease_seconds=30):
     async with tenant_tx(engine, org_id) as c:
         r = await c.execute(text("UPDATE solve_jobs SET heartbeat_at=now(),"
                                  " lease_expires_at=now()+make_interval(secs=>:l)"
-                                 " WHERE id=:j AND lease_owner=:w AND state <> ALL(:term)"),
+                                 " WHERE id=:j AND lease_owner=:w AND state <> ALL(:term) AND lease_expires_at IS NOT NULL AND lease_expires_at > now()"),
                             {"l": lease_seconds, "j": job_id, "w": worker_id, "term": list(_TERMINAL)})
         if r.rowcount != 1:
             raise PermissionError("not_lease_owner_or_terminal")

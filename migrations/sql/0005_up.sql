@@ -16,17 +16,18 @@ DECLARE v public.outbox_events%ROWTYPE; tok UUID; exp TIMESTAMPTZ;
 BEGIN
   IF p_worker IS NULL OR length(p_worker) = 0 THEN RAISE EXCEPTION 'empty worker id'; END IF;
   IF p_lease_seconds < 1 OR p_lease_seconds > 3600 THEN RAISE EXCEPTION 'lease seconds out of bounds'; END IF;
-  -- exhausted expired PROCESSING events -> QUARANTINED (clear lease)
-  UPDATE public.outbox_events SET status='QUARANTINED', lease_owner=NULL, lease_token=NULL, lease_expires_at=NULL
-   WHERE status='PROCESSING' AND lease_expires_at IS NOT NULL AND lease_expires_at < now() AND attempts >= max_attempts;
+  -- exhausted expired PROCESSING events -> QUARANTINED (clear lease). Alias the target so column refs are not
+  -- ambiguous against the RETURNS TABLE OUT parameters (lease_expires_at, ...).
+  UPDATE public.outbox_events o SET status='QUARANTINED', lease_owner=NULL, lease_token=NULL, lease_expires_at=NULL
+   WHERE o.status='PROCESSING' AND o.lease_expires_at IS NOT NULL AND o.lease_expires_at < now() AND o.attempts >= o.max_attempts;
   SELECT * INTO v FROM public.outbox_events e
    WHERE e.status IN ('PENDING','PROCESSING') AND (e.lease_expires_at IS NULL OR e.lease_expires_at < now())
      AND e.next_attempt_at <= now() AND e.attempts < e.max_attempts
    ORDER BY e.created_at FOR UPDATE SKIP LOCKED LIMIT 1;
   IF NOT FOUND THEN RETURN; END IF;
   tok := gen_random_uuid(); exp := now() + make_interval(secs=>p_lease_seconds);
-  UPDATE public.outbox_events SET status='PROCESSING', lease_owner=p_worker, lease_token=tok,
-         lease_expires_at=exp, attempts=attempts+1 WHERE id=v.id;
+  UPDATE public.outbox_events o SET status='PROCESSING', lease_owner=p_worker, lease_token=tok,
+         lease_expires_at=exp, attempts=o.attempts+1 WHERE o.id=v.id;
   RETURN QUERY SELECT v.id, v.org_id, v.event_type, v.aggregate_type, v.aggregate_id, v.aggregate_version, tok, exp;
 END $$;
 ALTER FUNCTION claim_next_outbox_event(TEXT, INTEGER) OWNER TO index_dispatcher_owner;

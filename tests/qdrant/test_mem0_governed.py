@@ -27,6 +27,11 @@ class MemoryStub:
                 for it in self.items if it["user_id"] == uid]
         return {"results": hits[:top_k]}
 
+    def get_all(self, *, filters):
+        uid = str(filters["user_id"])
+        return {"results": [{"id": it["id"], "metadata": it["metadata"]}
+                            for it in self.items if it["user_id"] == uid]}
+
     def delete(self, memory_id):
         self.items = [it for it in self.items if it["id"] != memory_id]
 
@@ -56,6 +61,8 @@ def test_governed_infer_false_zero_llm_and_separation():
     # zero hidden LLM calls on both physical stores
     assert priv.llm_calls == 0 and shar.llm_calls == 0
 
+    # get_all lists the scoped references (the 'get' operation)
+    assert {c["canonical_version_id"] for c in idx.get_all(SHARED, "o1")} == {"v1"}
     # candidates return reference payloads only (content_hash present, canonical text absent)
     sc = idx.candidates(SHARED, "alpha retry backoff", "o1")
     assert sc and sc[0]["canonical_content_hash"] == "hs" and sc[0]["canonical_version_id"] == "v1"

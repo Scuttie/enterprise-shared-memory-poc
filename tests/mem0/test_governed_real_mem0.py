@@ -68,11 +68,14 @@ def test_governed_real_mem0_infer_false_zero_llm_pg_reload(tmp_path, org_ids):
     before = dict(COUNT)
     idx = build_real(_paths(tmp_path), MODEL)               # real Mem0 stores, physically separate
     idx.index(rec)                                          # governed add: infer=False
-    cands = idx.candidates(SHARED, "retry once with backoff", str(a["org"]))
 
+    # get: the reference is stored under the org scope with its metadata intact
+    stored = idx.get_all(SHARED, str(a["org"]))
+    assert any(c["canonical_version_id"] == vid and c["canonical_content_hash"] == h for c in stored)
+
+    cands = idx.candidates(SHARED, "retry once with backoff", str(a["org"]))
     assert COUNT["llm"] == before["llm"] == 0               # hidden LLM calls == 0
     assert COUNT["embed"] > before["embed"]                 # embeddings did happen (counted separately)
-
     assert cands and cands[0]["canonical_version_id"] == vid and cands[0]["canonical_content_hash"] == h
     # reference only — Mem0 prose never leaves the adapter
     assert all(k not in cands[0] for k in ("text", "memory", "data", "canonical", "canonical_json"))

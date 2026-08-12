@@ -45,6 +45,12 @@ class GovernedMem0Index:
         results = res.get("results", res) if isinstance(res, dict) else res
         return [dict(r.get("metadata") or {}) for r in results]
 
+    def get_all(self, scope, scope_id):
+        """List reference payloads for a scope (the 'get' operation) — metadata only, no stored text."""
+        res = self._m[scope].get_all(filters={"user_id": str(scope_id)})
+        results = res.get("results", res) if isinstance(res, dict) else res
+        return [dict(r.get("metadata") or {}) for r in results]
+
 
 def build_real(paths: dict, embedder_model: str):
     """Construct physically separated real Mem0 stores over local Qdrant (governed: no LLM). Requires the
@@ -54,16 +60,22 @@ def build_real(paths: dict, embedder_model: str):
     from ..backends.mem0_backend import Mem0Store
 
     class _Adapter:
+        """Targets mem0.Memory directly with an explicit user_id scope (NOT Mem0Store._scope, which keys off
+        legacy owner/org metadata). threshold=0 disables score cut-off — the governed index returns every
+        scoped candidate and PostgreSQL is the authority on relevance/validity."""
         def __init__(self, store):
             self._s = store
 
         def add(self, text, *, user_id, metadata, infer):
             if infer:
                 raise ValueError("governed Mem0 index forbids infer=True")
-            return self._s.add_view(metadata.get("mem_key", "m"), text, metadata, infer=False)
+            return self._s.mem.add(text, user_id=str(user_id), metadata=dict(metadata), infer=False)
 
         def search(self, query, *, top_k, filters):
-            return self._s.search(query, top_k=top_k, scope_id=filters["user_id"])
+            return self._s.mem.search(query, top_k=top_k, filters=filters, threshold=0)
+
+        def get_all(self, *, filters):
+            return self._s.mem.get_all(filters=filters)
 
         def delete(self, memory_id):
             return self._s.mem.delete(memory_id)

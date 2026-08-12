@@ -16,6 +16,8 @@ build/
 *.sqlite*
 qdrant/
 .qdrant/
+!tests/qdrant/
+!tests/qdrant/*.py
 hf_cache/
 model_cache/
 # raw experiment artifacts (never released)

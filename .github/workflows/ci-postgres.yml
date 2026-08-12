@@ -37,6 +37,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev,postgres]"
+      - name: Resolve image digest
+        run: |
+          echo "PG_ARCH=$(docker image inspect postgres:16.4 --format '{{.Architecture}}')"
+          echo "PG_DIGEST=$(docker image inspect postgres:16.4 --format '{{index .RepoDigests 0}}')"
       - name: Bootstrap roles
         run: python scripts/postgres_bootstrap.py
       - name: Alembic upgrade

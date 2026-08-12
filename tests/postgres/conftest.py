@@ -14,7 +14,8 @@ from enterprise_memory.persistence.database import make_engine          # noqa: 
 from enterprise_memory.persistence.tenant_context import tenant_tx      # noqa: E402
 
 _CREDS = {"postgres": ("postgres", "postgres"), "api": ("api_service", "api_pw"),
-          "worker": ("worker_service", "worker_pw"), "audit": ("audit_reader", "audit_pw")}
+          "worker": ("worker_service", "worker_pw"), "audit": ("audit_reader", "audit_pw"),
+          "index": ("index_worker_service", "index_pw")}
 
 
 def eng(role="api"):

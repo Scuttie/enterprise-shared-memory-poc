@@ -46,6 +46,8 @@ async def claim_job(engine, worker_id, lease_seconds=30):
 
 
 async def heartbeat(engine, org_id, job_id, worker_id, lease_seconds=30):
+    if not (1 <= lease_seconds <= 3600):                 # §2.5 same lease bounds as initial claim
+        raise ValueError("lease seconds out of bounds")
     async with tenant_tx(engine, org_id) as c:
         r = await c.execute(text("UPDATE solve_jobs SET heartbeat_at=now(),"
                                  " lease_expires_at=now()+make_interval(secs=>:l)"
@@ -97,42 +99,38 @@ async def publish_outbox(conn, org_id, event_type, aggregate_type, aggregate_id,
         {"o": org_id, "t": event_type, "a": aggregate_type, "i": aggregate_id, "v": aggregate_version, "p": json.dumps(payload)})
 
 
-async def claim_outbox_event(engine, org_id, worker_id, lease_seconds=30):
-    async with tenant_tx(engine, org_id) as c:
-        row = (await c.execute(text(
-            "UPDATE outbox_events SET status='PROCESSING', lease_owner=:w,"
-            " lease_expires_at=now()+make_interval(secs=>:l), attempts=attempts+1"
-            " WHERE id = (SELECT id FROM outbox_events WHERE org_id=:o AND status IN ('PENDING','PROCESSING')"
-            "   AND (lease_expires_at IS NULL OR lease_expires_at < now()) AND next_attempt_at<=now()"
-            "   ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1) RETURNING id, event_type, aggregate_id"),
-            {"w": worker_id, "l": lease_seconds, "o": org_id})).first()
-        return None if row is None else {"id": str(row[0]), "event_type": row[1], "aggregate_id": str(row[2])}
+async def claim_outbox_event(engine, worker_id, lease_seconds=30):
+    """Cross-tenant claim via the SECURITY DEFINER dispatcher (index_worker_service only). Returns a fresh
+    lease_token that must be presented to complete/retry."""
+    async with engine.begin() as c:
+        row = (await c.execute(text("SELECT event_id, org_id, event_type, aggregate_type, aggregate_id,"
+                                    " aggregate_version, lease_token, lease_expires_at FROM claim_next_outbox_event(:w,:l)"),
+                               {"w": worker_id, "l": lease_seconds})).first()
+        return None if row is None else {"id": str(row[0]), "org_id": str(row[1]), "event_type": row[2],
+                                         "aggregate_id": str(row[4]), "aggregate_version": row[5],
+                                         "lease_token": str(row[6])}
 
 
-async def mark_processed(engine, org_id, event_id, worker_id):
-    async with tenant_tx(engine, org_id) as c:
-        r = await c.execute(text("UPDATE outbox_events SET status='PROCESSED', processed_at=now(),"
-                                 " lease_owner=NULL, lease_expires_at=NULL"
-                                 " WHERE id=:i AND status='PROCESSING' AND lease_owner=:w"),
-                            {"i": event_id, "w": worker_id})
-        if r.rowcount != 1:
-            raise PermissionError("not_lease_owner_or_not_processing")
+async def mark_processed(engine, event_id, worker_id, lease_token):
+    async with engine.begin() as c:
+        try:
+            await c.execute(text("SELECT complete_outbox_event(:e,:w,cast(:t as uuid))"),
+                            {"e": event_id, "w": worker_id, "t": lease_token})
+        except Exception as ex:
+            if "invalid or expired lease" in str(ex):
+                raise PermissionError("invalid_or_expired_lease")
+            raise
 
 
-async def mark_retry(engine, org_id, event_id, worker_id, error, backoff_seconds=2):
-    async with tenant_tx(engine, org_id) as c:
-        row = (await c.execute(text("SELECT attempts, max_attempts, lease_owner, status FROM outbox_events WHERE id=:i FOR UPDATE"),
-                               {"i": event_id})).first()
-        if row is None or row[2] != worker_id or row[3] != "PROCESSING":
-            raise PermissionError("not_lease_owner_or_not_processing")
-        if row[0] >= row[1]:
-            await c.execute(text("UPDATE outbox_events SET status='QUARANTINED', lease_owner=NULL, lease_expires_at=NULL,"
-                                 " error_detail_sanitized=:e WHERE id=:i"), {"e": redact(error), "i": event_id})
-            return "QUARANTINED"
-        await c.execute(text("UPDATE outbox_events SET status='PENDING', lease_owner=NULL, lease_expires_at=NULL,"
-                             " next_attempt_at=now()+make_interval(secs=>:b), error_detail_sanitized=:e WHERE id=:i"),
-                        {"b": backoff_seconds, "e": redact(error), "i": event_id})
-        return "PENDING"
+async def mark_retry(engine, event_id, worker_id, lease_token, error, backoff_seconds=2):
+    async with engine.begin() as c:
+        try:
+            return (await c.execute(text("SELECT retry_outbox_event(:e,:w,cast(:t as uuid),:err,:b)"),
+                                    {"e": event_id, "w": worker_id, "t": lease_token, "err": redact(error), "b": backoff_seconds})).scalar()
+        except Exception as ex:
+            if "invalid or expired lease" in str(ex):
+                raise PermissionError("invalid_or_expired_lease")
+            raise
 
 
 async def emit_audit(conn, org_id, event_type, subject_type, subject_id, detail, prev_hash, event_hash):

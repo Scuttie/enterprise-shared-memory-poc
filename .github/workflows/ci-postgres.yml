@@ -46,7 +46,7 @@ jobs:
       - name: Alembic upgrade
         run: alembic upgrade head
       - name: Head check
-        run: alembic current | grep -E "0003.*\(head\)"
+        run: alembic current | grep -E "0004.*\(head\)"
       - name: Idempotent re-upgrade
         run: alembic upgrade head
       - name: Schema validate

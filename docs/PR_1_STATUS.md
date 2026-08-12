@@ -3,15 +3,11 @@
 **Do not merge.** Draft PR tracking the v0.2 production-service build.
 
 ## Status
-- P0-fix-2, P1, P1.1: green.
-- **P2-0 (canonical-integrity + dispatcher/outbox preflight): CI-VALIDATED (ci + ci-postgres GREEN).**
-  Same-contract current-version FK; supersession same-contract FK + cycle trigger; P1.1-table tenant FKs
-  (cross-org insert fails at the DB constraint); hardened SECURITY DEFINER claim (fixed search_path, lease
-  bounds, empty-worker/cancel/exhausted->DEAD_LETTER, dedicated NOLOGIN owner + REVOKE PUBLIC); terminal-
-  lease clearing; deterministic error redaction; outbox lease-owner enforcement; **PostgreSQL image pinned
-  by digest**.
-- **Gate A = PARTIAL** (full HTTP/worker E2E is P5).
-- **Gate B / C / E advanced** (RLS + canonical integrity + durable jobs/outbox — CI-validated).
-- **P2 (Qdrant/Mem0 index + outbox index worker + drift/reindex + ci-qdrant) is the NEXT milestone**
-  (now unblocked — P2-0 green). Not started. P3-P8 not implemented.
-- Company-staging certification PENDING. Version `0.2.0.dev1`; no rc1.
+- head before P2 = eb30fc4.
+- P0-fix-2, P1, P1.1, **P2-0**: CI-validated (ci + ci-postgres GREEN). PostgreSQL image **digest-pinned**.
+- **P2 (Postgres-authoritative Qdrant/Mem0 indexing) in progress**: P2-preflight (revision 0004 —
+  lease-token outbox claims, minimal SECURITY DEFINER search_path, dedicated index-worker role + ACL,
+  adversarial supersession-cycle tests, job heartbeat lease bounds), then Qdrant/Mem0 adapters, canonical
+  reload, outbox index worker, drift/reindex, ci-qdrant.
+- **Gate A = PARTIAL** (full HTTP/worker E2E is P5). Gate B/C/E advanced (CI-validated).
+- P3-P8 not implemented. Company-staging certification PENDING. Version `0.2.0.dev1`; no rc1.

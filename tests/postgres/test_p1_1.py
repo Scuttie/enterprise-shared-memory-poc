@@ -173,20 +173,19 @@ def test_job_lifecycle(seeded):
 
 def test_outbox_lifecycle_quarantine(seeded):
     async def body():
-        e = eng("api"); a = seeded["A"]; aid = uuid.uuid4()
+        e = eng("api"); idx = eng("index"); a = seeded["A"]; aid = uuid.uuid4()
         async with tenant_tx(e, a["org"], a["user"]) as c:
             await publish_outbox(c, a["org"], "REINDEX", "contract", aid, 1, {})
         su = eng("postgres")                                 # set max_attempts low so two failures quarantine
         async with su.begin() as c:
             await c.execute(text("UPDATE outbox_events SET max_attempts=2 WHERE aggregate_id=:i"), {"i": aid})
-        ev = await claim_outbox_event(e, a["org"], "ow1")
-        assert ev and ev["aggregate_id"] == str(aid)
-        # backoff 0 so the event is immediately re-claimable for the second failure
-        assert await mark_retry(e, a["org"], ev["id"], "ow1", "transient", backoff_seconds=0) == "PENDING"
-        ev2 = await claim_outbox_event(e, a["org"], "ow1")   # attempts now 2 == max
+        ev = await claim_outbox_event(idx, "ow1")            # cross-tenant claim via dispatcher (index role)
+        assert ev and ev["aggregate_id"] == str(aid) and ev["lease_token"]
+        assert await mark_retry(idx, ev["id"], "ow1", ev["lease_token"], "transient", backoff_seconds=0) == "PENDING"
+        ev2 = await claim_outbox_event(idx, "ow1")           # attempts now 2 == max
         assert ev2 is not None
-        st = await mark_retry(e, a["org"], ev2["id"], "ow1", "transient again", backoff_seconds=0)
+        st = await mark_retry(idx, ev2["id"], "ow1", ev2["lease_token"], "transient again", backoff_seconds=0)
         assert st == "QUARANTINED"
-        for x in (e, su):
+        for x in (e, idx, su):
             await x.dispose()
     run(body())

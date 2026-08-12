@@ -128,18 +128,74 @@ def test_claim_skips_cancelled_and_exhausted(seeded):
     run(body())
 
 
-def test_outbox_lease_owner_enforced(seeded):
+def test_outbox_lease_token_enforced(seeded):
     async def body():
-        e = eng("api"); a = seeded["A"]; aid = uuid.uuid4()
+        e = eng("api"); idx = eng("index"); a = seeded["A"]; aid = uuid.uuid4()
         async with tenant_tx(e, a["org"], a["user"]) as c:
             await publish_outbox(c, a["org"], "REINDEX", "contract", aid, 1, {})
-        ev = await claim_outbox_event(e, a["org"], "owA")
-        assert ev
-        with pytest.raises(PermissionError):                 # worker B cannot process worker A's event
-            await mark_processed(e, a["org"], ev["id"], "owB")
-        await mark_processed(e, a["org"], ev["id"], "owA")   # owner ok
+        ev = await claim_outbox_event(idx, "owA")
+        assert ev and ev["lease_token"]
+        with pytest.raises(PermissionError):                 # wrong worker
+            await mark_processed(idx, ev["id"], "owB", ev["lease_token"])
+        with pytest.raises(PermissionError):                 # wrong token (same worker)
+            await mark_processed(idx, ev["id"], "owA", str(uuid.uuid4()))
+        await mark_processed(idx, ev["id"], "owA", ev["lease_token"])   # correct worker+token
         with pytest.raises(PermissionError):                 # already processed -> not PROCESSING
-            await mark_processed(e, a["org"], ev["id"], "owA")
+            await mark_processed(idx, ev["id"], "owA", ev["lease_token"])
+        for x in (e, idx):
+            await x.dispose()
+    run(body())
+
+
+def test_outbox_expired_lease_and_stale_worker(seeded):
+    async def body():
+        e = eng("api"); idx = eng("index"); su = eng("postgres"); a = seeded["A"]; aid = uuid.uuid4()
+        async with tenant_tx(e, a["org"], a["user"]) as c:
+            await publish_outbox(c, a["org"], "REINDEX", "contract", aid, 1, {})
+        ev = await claim_outbox_event(idx, "owA")
+        async with su.begin() as c:                          # expire the lease
+            await c.execute(text("UPDATE outbox_events SET lease_expires_at=now()-interval '1 hour' WHERE id=:i"), {"i": ev["id"]})
+        with pytest.raises(PermissionError):                 # expired lease rejected even with right worker+token
+            await mark_processed(idx, ev["id"], "owA", ev["lease_token"])
+        for x in (e, idx, su):
+            await x.dispose()
+    run(body())
+
+
+def test_index_dispatch_acl_and_api_cannot_process():
+    async def body():
+        su = eng("postgres")
+        async with su.connect() as c:
+            assert (await c.execute(text("SELECT has_function_privilege('index_worker_service','claim_next_outbox_event(text,integer)','EXECUTE')"))).scalar() is True
+            assert (await c.execute(text("SELECT has_function_privilege('api_service','claim_next_outbox_event(text,integer)','EXECUTE')"))).scalar() is False
+            # API can no longer UPDATE outbox processing state; still INSERT/SELECT
+            assert (await c.execute(text("SELECT has_table_privilege('api_service','outbox_events','UPDATE')"))).scalar() is False
+            assert (await c.execute(text("SELECT has_table_privilege('api_service','outbox_events','INSERT')"))).scalar() is True
+            # dedicated dispatcher owner is NOLOGIN + non-super
+            owner = (await c.execute(text("SELECT rolcanlogin, rolsuper FROM pg_roles WHERE rolname='index_dispatcher_owner'"))).first()
+            assert owner[0] is False and owner[1] is False
+            iw = (await c.execute(text("SELECT rolbypassrls FROM pg_roles WHERE rolname='index_worker_service'"))).scalar()
+            assert iw is False
+        await su.dispose()
+    run(body())
+
+
+def test_multi_row_supersession_cycles_rejected(seeded):
+    async def body():
+        e = eng("api"); a = seeded["A"]; cid = uuid.uuid4()
+        async with tenant_tx(e, a["org"], a["user"]) as c:
+            await c.execute(text("INSERT INTO memory_contracts(id,org_id) VALUES(:i,:o)"), {"i": cid, "o": a["org"]})
+        v1, v2, v3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
+        with pytest.raises(Exception):                       # two-node cycle in ONE multi-row insert
+            async with tenant_tx(e, a["org"], a["user"]) as c:
+                await c.execute(text("INSERT INTO memory_contract_versions(id,contract_id,org_id,version_number,canonical_json,content_hash,supersedes_version_id)"
+                                     " VALUES(:v1,:c,:o,1,'{}','a',:v2),(:v2,:c,:o,2,'{}','b',:v1)"),
+                                {"v1": v1, "v2": v2, "c": cid, "o": a["org"]})
+        with pytest.raises(Exception):                       # three-node cycle in ONE multi-row insert
+            async with tenant_tx(e, a["org"], a["user"]) as c:
+                await c.execute(text("INSERT INTO memory_contract_versions(id,contract_id,org_id,version_number,canonical_json,content_hash,supersedes_version_id)"
+                                     " VALUES(:v1,:c,:o,1,'{}','a',:v3),(:v2,:c,:o,2,'{}','b',:v1),(:v3,:c,:o,3,'{}','c',:v2)"),
+                                {"v1": v1, "v2": v2, "v3": v3, "c": cid, "o": a["org"]})
         await e.dispose()
     run(body())
 

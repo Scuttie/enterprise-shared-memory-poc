@@ -133,6 +133,35 @@ async def mark_retry(engine, event_id, worker_id, lease_token, error, backoff_se
             raise
 
 
+async def heartbeat_outbox(engine, event_id, worker_id, lease_token, lease_seconds=30):
+    """Extend a live outbox lease held by this worker+token (for long rebuild/index operations)."""
+    async with engine.begin() as c:
+        try:
+            await c.execute(text("SELECT heartbeat_outbox_event(:e,:w,cast(:t as uuid),:l)"),
+                            {"e": event_id, "w": worker_id, "t": lease_token, "l": lease_seconds})
+        except Exception as ex:
+            if "invalid or expired lease" in str(ex):
+                raise PermissionError("invalid_or_expired_lease")
+            raise
+
+
+async def emit_index_audit(engine, org_id, *, result, outbox_event_id=None, worker_id=None, lease_token=None,
+                           object_kind=None, canonical_id=None, canonical_version_id=None,
+                           canonical_version_number=None, content_hash=None, qdrant_operation=None,
+                           point_id=None, collection=None, detail=None):
+    """Append-only audit of one index operation (org-scoped, RLS-enforced)."""
+    async with tenant_tx(engine, org_id) as c:
+        await c.execute(text(
+            "INSERT INTO index_audit_events(org_id,outbox_event_id,worker_id,lease_token,object_kind,"
+            "canonical_id,canonical_version_id,canonical_version_number,content_hash,qdrant_operation,"
+            "point_id,collection,result,detail_json) VALUES(:o,cast(:e as uuid),:w,cast(:t as uuid),:k,"
+            "cast(:ci as uuid),cast(:cv as uuid),:cn,:h,:op,:pid,:col,:res,cast(:d as jsonb))"),
+            {"o": org_id, "e": outbox_event_id, "w": worker_id, "t": lease_token, "k": object_kind,
+             "ci": canonical_id, "cv": canonical_version_id, "cn": canonical_version_number,
+             "h": content_hash, "op": qdrant_operation, "pid": point_id, "col": collection,
+             "res": result, "d": json.dumps(detail or {})})
+
+
 async def emit_audit(conn, org_id, event_type, subject_type, subject_id, detail, prev_hash, event_hash):
     await conn.execute(text(
         "INSERT INTO audit_events(org_id,event_type,subject_type,subject_id,detail_json,previous_hash,event_hash)"

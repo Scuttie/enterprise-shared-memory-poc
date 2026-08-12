@@ -1,6 +1,7 @@
 """Outbox index worker: canonical PostgreSQL changes are projected onto the index via durable outbox
 events. Covers index / supersede / deprecate / delete semantics."""
 import pytest
+from sqlalchemy import text
 from conftest import run, eng, seed_contract_version, seed_private, grant_repo_read
 from enterprise_memory.persistence.tenant_context import tenant_tx
 from enterprise_memory.persistence.postgres import publish_outbox
@@ -83,4 +84,42 @@ def test_private_index_then_delete(seeded, index, embedder):
         r2 = await _search(index, embedder, PRIVATE, a["org"], a["user"])
         await weng.dispose()
         assert r2.hits == []
+    run(body())
+
+
+def test_worker_writes_index_audit(seeded, index, embedder):
+    async def body():
+        su = eng("postgres"); a = seeded["A"]
+        cid, vid, _ = await seed_contract_version(su, a["org"], a["repo"], {"text": QUERY})
+        await su.dispose()
+        weng = eng("index")
+        await _publish(a["org"], a["user"], W.CONTRACT_INDEX, "contract_version", vid, 1, {})
+        await W.drain(weng, index, embedder, "iw-audit")
+        async with tenant_tx(weng, a["org"]) as c:
+            rows = (await c.execute(text("SELECT result, qdrant_operation, point_id, canonical_version_id"
+                                         " FROM index_audit_events WHERE org_id=:o"), {"o": a["org"]})).fetchall()
+        await weng.dispose()
+        assert any(r[0] == "CONTRACT_INDEX:upserted" and r[1] == "upsert" and r[2] and str(r[3]) == vid
+                   for r in rows)
+    run(body())
+
+
+def test_stale_index_event_does_not_overwrite_current(seeded, index, embedder):
+    async def body():
+        su = eng("postgres"); a = seeded["A"]
+        cid, v1, _ = await seed_contract_version(su, a["org"], a["repo"], {"text": QUERY, "v": 1}, version_number=1)
+        _, v2, _ = await seed_contract_version(su, a["org"], a["repo"], {"text": QUERY, "v": 2},
+                                               version_number=2, contract_id=cid, supersedes=v1)
+        await grant_repo_read(su, a["org"], a["repo"], a["user"])
+        await su.dispose()
+        weng = eng("index")
+        await _publish(a["org"], a["user"], W.CONTRACT_INDEX, "contract_version", v2, 2, {})   # index current v2
+        await W.drain(weng, index, embedder, "iw-o")
+        # a stale/reordered CONTRACT_INDEX for the superseded v1 arrives later
+        await _publish(a["org"], a["user"], W.CONTRACT_INDEX, "contract_version", v1, 1, {})
+        out = await W.drain(weng, index, embedder, "iw-o")
+        assert any(r["action"] == "CONTRACT_INDEX:not_current_deleted" for r in out)
+        r = await _search(index, embedder, SHARED, a["org"], a["user"])
+        await weng.dispose()
+        assert len(r.hits) == 1 and r.hits[0].canonical_version_id == v2   # current point never overwritten
     run(body())

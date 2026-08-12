@@ -30,9 +30,10 @@ async def _search(index, embedder, a, scope=SHARED, user=None, requested_path=No
     return res
 
 
-def _correct_shared(a, cid, vid, h, canonical):
+def _correct_shared(a, cid, vid, h, canonical, version_number=1):
     return mk_record(SHARED, canonical_version_id=vid, org_id=a["org"], content_hash=h,
-                     text=embed_text(canonical), contract_id=cid, repository_id=a["repo"], version_number=1)
+                     text=embed_text(canonical), contract_id=cid, repository_id=a["repo"],
+                     version_number=version_number)
 
 
 def test_requires_authenticated_user(seeded, index, embedder):
@@ -195,7 +196,7 @@ def test_deprecated_current(seeded, index, embedder):
         _, v2, h2 = await seed_contract_version(su, a["org"], a["repo"], c2, version_number=2,
                                                 contract_id=cid, supersedes=v1, governance="deprecated")
         await grant_repo_read(su, a["org"], a["repo"], a["user"]); await su.dispose()
-        rec = _correct_shared(a, cid, v2, h2, c2)                   # current but deprecated
+        rec = _correct_shared(a, cid, v2, h2, c2, version_number=2)  # current but deprecated
         await index.upsert([rec], embedder.embed([rec.text]))
         res = await _search(index, embedder, a)
         assert res.hits == [] and RR.DEPRECATED.value in res.reasons()

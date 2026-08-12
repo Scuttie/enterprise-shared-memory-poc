@@ -141,23 +141,21 @@ async def seed_contract_version(su, org, repo, canonical, version_number=1, cont
     (contract_id, version_id, content_hash)."""
     vid = uuid.uuid4()
     h = chash(canonical)
-    vf = "cast(:vf as timestamptz)" if valid_from else "NULL"
-    vu = "cast(:vu as timestamptz)" if valid_until else "NULL"
+    # valid_from/valid_until are trusted test-only SQL fragments (e.g. "now() + interval '1 day'"),
+    # inlined because a bound param can't carry a SQL expression.
+    vf = valid_from if valid_from else "NULL"
+    vu = valid_until if valid_until else "NULL"
     async with su.begin() as c:
         if contract_id is None:
             contract_id = uuid.uuid4()
             await c.execute(text("INSERT INTO memory_contracts(id,org_id,repository_id) VALUES(:i,:o,:r)"),
                             {"i": contract_id, "o": org, "r": repo})
-        params = {"i": vid, "c": contract_id, "o": org, "n": version_number,
-                  "j": json.dumps(canonical), "h": h, "g": governance, "s": supersedes}
-        if valid_from:
-            params["vf"] = valid_from
-        if valid_until:
-            params["vu"] = valid_until
         await c.execute(text(
             "INSERT INTO memory_contract_versions(id,contract_id,org_id,version_number,canonical_json,"
             "content_hash,governance_state,supersedes_version_id,valid_from,valid_until)"
-            " VALUES(:i,:c,:o,:n,cast(:j as jsonb),:h,:g,:s," + vf + "," + vu + ")"), params)
+            " VALUES(:i,:c,:o,:n,cast(:j as jsonb),:h,:g,:s," + vf + "," + vu + ")"),
+            {"i": vid, "c": contract_id, "o": org, "n": version_number,
+             "j": json.dumps(canonical), "h": h, "g": governance, "s": supersedes})
         if make_current:
             await c.execute(text("UPDATE memory_contracts SET current_version_id=:v WHERE id=:c"),
                             {"v": vid, "c": contract_id})

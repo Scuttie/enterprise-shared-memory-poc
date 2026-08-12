@@ -27,3 +27,19 @@ production outbox indexing; asynchronous worker process; OpenTelemetry traces/me
 backup/restore + disaster recovery; load/soak/failure-injection. These are specified and interface-
 stubbed; they are not implemented as runnable adapters in this increment. These gaps are stated in the
 release notes and the readiness report -- not hidden.
+
+## Update — P2.1 + P3 (HEAD bd56e3c)
+
+Now CI-validated (green: `ci`, `ci-postgres`, `ci-qdrant`, `ci-mem0`, `ci-oidc`, `ci-qdrant-outage`):
+- **Qdrant production outbox indexing** — PostgreSQL-authoritative, durable alias routing, pre-swap
+  reindex validation, expanded drift, actual container outage/replay, append-only index audit + lease
+  heartbeat.
+- **Real Mem0 (infer=False, zero hidden LLM calls)** exercised with the installed mem0ai + a pinned HF
+  embedder (`ci-mem0`).
+- **OIDC/JWKS RS256 (+optional ES256)** with rotation, TTL cache, and fail-closed fetch — verified against a
+  local JWKS fixture server (a real external IdP is still a company-configuration item).
+- **GitHub App repository provider/authorization** — verified against a **mocked** GitHub API (real GitHub
+  App credentials/installation remain a company-configuration item).
+
+Still specified/stubbed, not runnable adapters here: Kubernetes Job sandbox, S3 artifact store, async worker
+process, OpenTelemetry, backup/restore/DR, load/soak. P4–P8 not implemented; PR #1 stays DRAFT.

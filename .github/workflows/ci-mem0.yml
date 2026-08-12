@@ -1,0 +1,57 @@
+name: ci-mem0
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mem0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      postgres:
+        image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: esm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm"
+          --health-interval 5s --health-timeout 5s --health-retries 30
+    env:
+      DATABASE_URL: postgresql://localhost:5432/esm
+      MIGRATION_USER: postgres
+      MIGRATION_PASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: esm
+      # governed Mem0 must not need a real LLM/company key; this placeholder is never called (infer=False)
+      MEM0_TELEMETRY: "False"
+      OPENAI_API_KEY: sk-noop
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HOME: ${{ github.workspace }}/.hf_cache
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Cache HF embedder
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.hf_cache
+          key: hf-multi-qa-MiniLM-L6-cos-v1
+      - name: Install (dev + postgres + mem0)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,postgres,mem0]"
+      - name: Bootstrap roles
+        run: python scripts/postgres_bootstrap.py
+      - name: Alembic upgrade
+        run: alembic upgrade head
+      - name: Head check
+        run: alembic current | grep -E "0006.*\(head\)"
+      - name: Real Mem0 governed infer=False tests
+        run: python -m pytest -q tests/mem0 --timeout=900 --timeout-method=thread

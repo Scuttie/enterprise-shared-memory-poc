@@ -23,4 +23,5 @@ where = ["src"]
 testpaths = ["tests"]
 addopts = "-q"
 markers = ["postgres: requires a PostgreSQL service (ci-postgres)",
-           "qdrant: requires PostgreSQL + a vector index (ci-qdrant)"]
+           "qdrant: requires PostgreSQL + a vector index (ci-qdrant)",
+           "mem0: requires real mem0ai + a HF embedder + PostgreSQL (ci-mem0)"]

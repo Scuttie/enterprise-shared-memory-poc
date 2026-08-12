@@ -7,9 +7,9 @@ from enterprise_memory.indexing.models import SHARED, PRIVATE, SHARED_COLLECTION
 from enterprise_memory.indexing.qdrant_indexes import QdrantIndex
 
 
-def _new_adapter():
+async def _new_adapter():
     ix = QdrantIndex.from_env(DIM)
-    run(ix.ensure_ready())          # idempotent: creates only what's missing, never wipes
+    await ix.ensure_ready()         # idempotent: creates only what's missing, never wipes
     return ix
 
 
@@ -69,11 +69,11 @@ def test_alias_persists_across_adapter_instances(index):
         await index.create_collection(new)
         await index.swap(SHARED, new)
         # a brand-new adapter (fresh client) must observe the swap durably
-        other = _new_adapter()
+        other = await _new_adapter()
         assert await other.resolve(SHARED) == new
         # rollback via the other adapter; a third adapter observes the rollback
         await other.swap(SHARED, SHARED_COLLECTION)
-        third = _new_adapter()
+        third = await _new_adapter()
         assert await third.resolve(SHARED) == SHARED_COLLECTION
         await other.close(); await third.close()
     run(body())

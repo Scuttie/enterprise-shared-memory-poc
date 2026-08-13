@@ -11,9 +11,12 @@ GitHub App adapter tested against a MOCKED GitHub API. Every security-relevant v
 """
 from __future__ import annotations
 import fnmatch
+import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import List, Optional, Sequence
+from typing import List, Optional, Sequence, Tuple
+
+_FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 
 
 class RepositoryError(Exception):
@@ -134,3 +137,117 @@ class GitHubAppRepositoryProvider(RepositoryProvider, RepositoryAuthorizationPro
             resolved = self.resolve_ref(installation_id, full_name, ref)   # immutable, server-resolved
             commit, tree = resolved.commit_sha, resolved.tree_sha
         return AccessDecision(True, action, full_name, commit, tree, reasons=["server_derived"])
+
+
+# ================================================================ P3.1 §6: server-owned task policy
+@dataclass(frozen=True)
+class RepositoryTaskPolicy:
+    org_id: str
+    installation_id: int
+    repository_full_name: str
+    allowed_ref_globs: Tuple[str, ...]
+    allowed_branch_globs: Tuple[str, ...]
+    allowed_path_globs: Tuple[str, ...]
+    required_action: str
+    task_policy_id: str
+    policy_version: int
+
+
+class TaskPolicyRepository(ABC):
+    @abstractmethod
+    def get_policy(self, org_id, task_policy_id) -> RepositoryTaskPolicy: ...
+
+
+class InMemoryTaskPolicyRepository(TaskPolicyRepository):
+    def __init__(self, policies):
+        self._p = {(p.org_id, p.task_policy_id): p for p in policies}
+
+    def get_policy(self, org_id, task_policy_id) -> RepositoryTaskPolicy:
+        p = self._p.get((str(org_id), str(task_policy_id)))
+        if p is None:
+            raise AuthorizationDenied("unknown_task_policy")
+        return p
+
+
+class InstallationDirectory:
+    """Server-side org_id -> approved GitHub App installation_id mapping. The client cannot choose it."""
+    def __init__(self, mapping):
+        self._m = dict(mapping)
+
+    def installation_for(self, org_id) -> int:
+        i = self._m.get(str(org_id))
+        if i is None:
+            raise AuthorizationDenied("no_installation_for_org")
+        return i
+
+
+def is_full_commit_sha(s) -> bool:
+    return bool(isinstance(s, str) and _FULL_SHA.match(s))
+
+
+def normalize_git_path(p: str) -> str:
+    """Normalized POSIX Git path or AuthorizationDenied. Rejects backslashes, NUL, encoded traversal,
+    absolute paths, and `..`/`.` segments."""
+    if not isinstance(p, str) or not p:
+        raise AuthorizationDenied("empty_path")
+    if "\\" in p or "\x00" in p:
+        raise AuthorizationDenied("path_bad_chars")
+    low = p.lower()
+    if "%2e" in low or "%2f" in low or "%5c" in low or "%00" in low:
+        raise AuthorizationDenied("path_encoded_traversal")
+    if p.startswith("/") or (len(p) > 1 and p[1] == ":"):
+        raise AuthorizationDenied("path_absolute")
+    parts = p.split("/")
+    if ".." in parts or "." in parts or "" in parts:
+        raise AuthorizationDenied("path_traversal")
+    return "/".join(parts)
+
+
+def _branch_from_ref(ref: str):
+    if ref.startswith("refs/heads/"):
+        return ref[len("refs/heads/"):]
+    if ref.startswith("refs/tags/"):
+        return None
+    if "/" not in ref and not is_full_commit_sha(ref):
+        return ref                                   # bare branch name
+    return None
+
+
+def authorize_task(provider: GitHubAppRepositoryProvider, policy_repo: TaskPolicyRepository,
+                   installation_dir: InstallationDirectory, *, org_id, task_policy_id,
+                   expected_policy_version, ref, branch=None, path=None) -> AccessDecision:
+    """Authorize a solve against a SERVER-OWNED policy. The caller supplies no allowlist, no installation,
+    no permissions, no immutable commit — those are all derived server-side and bound to the policy."""
+    policy = policy_repo.get_policy(org_id, task_policy_id)
+    if int(policy.policy_version) != int(expected_policy_version):
+        raise AuthorizationDenied("policy_version_mismatch")
+    installation_id = installation_dir.installation_for(org_id)      # server-derived; client cannot pick
+    if int(installation_id) != int(policy.installation_id):
+        raise AuthorizationDenied("installation_policy_mismatch")
+    full = policy.repository_full_name
+
+    if not any(fnmatch.fnmatch(ref, g) for g in policy.allowed_ref_globs):
+        raise AuthorizationDenied("ref_not_allowed")
+    derived_branch = _branch_from_ref(ref)
+    if branch is not None and derived_branch is not None and branch != derived_branch:
+        raise AuthorizationDenied("branch_ref_mismatch")
+    eff_branch = derived_branch if derived_branch is not None else branch
+    if eff_branch is not None and not any(fnmatch.fnmatch(eff_branch, g) for g in policy.allowed_branch_globs):
+        raise AuthorizationDenied("branch_not_allowed")
+    if path is not None:
+        np = normalize_git_path(path)
+        if not any(fnmatch.fnmatch(np, g) for g in policy.allowed_path_globs):
+            raise AuthorizationDenied("path_not_allowed")
+
+    handle = provider.resolve_repository(installation_id, full)
+    if policy.required_action == "read" and not handle.can_read:
+        raise AuthorizationDenied("no_read")
+    if policy.required_action == "modify" and not handle.can_write:
+        raise AuthorizationDenied("no_write")
+    resolved = provider.resolve_ref(installation_id, full, ref)
+    if not is_full_commit_sha(resolved.commit_sha):
+        raise AuthorizationDenied("bad_commit_sha")
+    if not resolved.tree_sha:
+        raise AuthorizationDenied("missing_tree_sha")
+    return AccessDecision(True, policy.required_action, full, resolved.commit_sha, resolved.tree_sha,
+                          reasons=["policy:%s@%d" % (policy.task_policy_id, policy.policy_version)])

@@ -6,7 +6,7 @@ from conftest import base_claims, ISSUER, AUDIENCE
 from enterprise_memory.auth.oidc import OIDCConfig, JWKSCache, verify_access_token, OIDCError
 
 
-def cfg(jwks_uri="unused", **over):
+def cfg(jwks_uri="https://idp.test.local/jwks.json", **over):
     kw = dict(issuer=ISSUER, audience=AUDIENCE, jwks_uri=jwks_uri, allowed_algs=("RS256",),
               environment="production")
     kw.update(over)
@@ -144,7 +144,7 @@ def test_fail_closed_when_jwks_unavailable(ring):
 # ---- HTTP path (local JWKS server) --------------------------------------------------------------
 def test_http_fetch_and_valid(ring, jwks_server):
     ring.add_rsa("k1")
-    c = cfg(jwks_uri=jwks_server.url)
+    c = cfg(jwks_uri=jwks_server.url, environment="dev")
     cache = JWKSCache(c)                                  # default fetcher hits the local server
     claims = verify_access_token(ring.sign("k1", base_claims()), c, cache)
     assert claims["sub"] == "user-123" and jwks_server.hits >= 1
@@ -152,7 +152,7 @@ def test_http_fetch_and_valid(ring, jwks_server):
 
 def test_key_rotation(ring, jwks_server):
     ring.add_rsa("k1")
-    c = cfg(jwks_uri=jwks_server.url)
+    c = cfg(jwks_uri=jwks_server.url, environment="dev")
     cache = JWKSCache(c)
     assert verify_access_token(ring.sign("k1", base_claims()), c, cache)["sub"] == "user-123"
     ring.add_rsa("k2"); jwks_server.set_kids(["k2"])     # rotate: only k2 published now
@@ -165,7 +165,7 @@ def test_cache_ttl_bounds_refresh(ring, jwks_server):
     ring.add_rsa("k1")
     base = time.time()
     clk = {"t": base}
-    c = cfg(jwks_uri=jwks_server.url, cache_ttl_seconds=100)
+    c = cfg(jwks_uri=jwks_server.url, cache_ttl_seconds=100, environment="dev")
     cache = JWKSCache(c, clock=lambda: clk["t"])
     tok = ring.sign("k1", base_claims())
     verify_access_token(tok, c, cache, clock=lambda: clk["t"])

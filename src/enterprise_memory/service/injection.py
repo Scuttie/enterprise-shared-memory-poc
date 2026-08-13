@@ -85,11 +85,35 @@ def _rank_key(c: PlannedCandidate):
     return (-float(c.score or 0.0), scope_rank, str(c.content_hash or ""), str(c.canonical_version_id or ""))
 
 
+def apply_abstention(shared_hits, *, tau_abs=None, tau_margin=None, oracle_id=None):
+    """P5.2 competitive-retrieval gate over the ranked shared candidates (already PG/scope/validity gated).
+    - oracle_id: keep only the candidate with that canonical_version_id (oracle bypasses similarity ranking).
+    - else the frozen abstention rule: keep only top-1 iff top1_score>=tau_abs AND (top1-top2)>=tau_margin;
+      otherwise keep NONE (abstain). With no thresholds given, returns the hits unchanged (P5.1 behaviour)."""
+    hits = sorted(shared_hits, key=lambda h: -float(getattr(h, "score", 0.0)))
+    if oracle_id is not None:
+        return [h for h in hits if str(h.canonical_version_id) == str(oracle_id)][:1]
+    if tau_abs is None:
+        return hits
+    if not hits:
+        return []
+    top1 = float(getattr(hits[0], "score", 0.0))
+    top2 = float(getattr(hits[1], "score", 0.0)) if len(hits) > 1 else 0.0
+    if top1 >= float(tau_abs) and (top1 - top2) >= float(tau_margin or 0.0):
+        return hits[:1]
+    return []                    # abstain
+
+
 def plan_injection(private_hits, shared_hits, *, requester_id: str, repo_id,
-                   rejected_audit=None, max_injected: int = MAX_INJECTED) -> InjectionPlan:
+                   rejected_audit=None, max_injected: int = MAX_INJECTED,
+                   abstain=None, oracle_id=None) -> InjectionPlan:
     """Build the injection plan. `private_hits`/`shared_hits` are validated_search ValidatedHit objects
     (already owner/scope/permission/path/hash gated). `rejected_audit` is validated_search's per-candidate
-    audit rows for REJECTED candidates (so they are persisted as accepted=False with real owner info)."""
+    audit rows for REJECTED candidates. `abstain` (P5.2) = {tau_abs, tau_margin}; `oracle_id` (P5.2, M4)
+    selects a specific shared candidate. Both default off (P5.1 behaviour)."""
+    if abstain is not None or oracle_id is not None:
+        shared_hits = apply_abstention(shared_hits, tau_abs=(abstain or {}).get("tau_abs"),
+                                       tau_margin=(abstain or {}).get("tau_margin"), oracle_id=oracle_id)
     cands: List[PlannedCandidate] = []
 
     for h in private_hits:

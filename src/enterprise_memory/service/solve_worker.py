@@ -145,17 +145,21 @@ async def process_job(container, worker_id, ev):
             rp = ev.get("retrieval_policy") or spec.get("retrieval_policy") or {}
             priv_scopes = rp.get("scopes", ["private", "shared"])
             max_inj = int(rp.get("max_injected", 2))
+            slimit = int(rp.get("search_limit", 5))
+            abstain = rp.get("abstain")             # P5.2 {tau_abs, tau_margin} competitive-retrieval gate
+            oracle_id = rp.get("oracle_id")          # P5.2 M4 oracle: select this canonical version id
             priv = SearchResult() if "private" not in priv_scopes else await validated_search(
                 e, container.index, container.embedder, PRIVATE, org, spec["instruction"],
-                user_id=user, limit=5)
+                user_id=user, limit=slimit)
             shared = SearchResult() if "shared" not in priv_scopes else await validated_search(
                 e, container.index, container.embedder, SHARED, org, spec["instruction"],
-                user_id=user, limit=5)
+                user_id=user, limit=slimit)
             # deterministic joint ranking + REAL safe-view compilation + <=max_inj selection. `injected` is
             # set only for views actually placed in the backend payload; leakage is computed from real owners.
             rejected_audit = [a for a in (priv.audit + shared.audit) if not a.get("accepted")]
             plan = plan_injection(priv.hits, shared.hits, requester_id=str(user),
-                                  repo_id=repo_id, rejected_audit=rejected_audit, max_injected=max_inj)
+                                  repo_id=repo_id, rejected_audit=rejected_audit, max_injected=max_inj,
+                                  abstain=abstain, oracle_id=oracle_id)
             for c in plan.candidates:
                 await D.persist_retrieval_candidate(
                     e, org, job_id, scope=c.scope, canonical_id=c.canonical_id,

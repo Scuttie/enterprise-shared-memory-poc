@@ -8,13 +8,13 @@ from experiments.p5_2 import retrieval as R
 from enterprise_memory.indexing.embeddings import DeterministicTestEmbedder
 
 ART = os.path.join("artifacts", "experiments", "p5_2")
-N_RELEVANT = 32
-N_NOMATCH = 16
+N_RELEVANT = 24
+N_NOMATCH = 8
 
 
 def main():
     emb = DeterministicTestEmbedder(R.DIM)
-    dev = R.build_dev("retrieval_dev", N_RELEVANT, N_NOMATCH)
+    dev = R.build_dev(N_RELEVANT, N_NOMATCH)
     sel, grid = R.select_thresholds(dev, emb)
     if sel is None:
         raise SystemExit("no feasible thresholds on retrieval-dev (recall>=0.90 AND specificity>=0.80)")

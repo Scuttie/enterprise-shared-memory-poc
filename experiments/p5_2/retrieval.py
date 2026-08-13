@@ -1,84 +1,78 @@
-"""P5.2 §3 — competitive retrieval + frozen abstention rule. Model-free: candidate ranking is the vector
-embedder's cosine similarity; relevance is engineered through domain + technique-family-tag token overlap so a
-realistic pool separates (relevant > same-domain near-miss > cross-technique irrelevant). Deterministic.
-
-Frozen decision rule: inject top-1 ONLY when
-    top1_score >= tau_abs  AND  (top1_score - top2_score) >= tau_margin
-otherwise ABSTAIN. tau_abs / tau_margin are selected on the retrieval-dev split ONLY, then frozen."""
+"""P5.2 §3 — competitive retrieval + frozen abstention rule. The retrieval-dev split is REPRESENTATIVE: its
+candidate texts are the SAME governed-contract retrieval projections used in the experiment bank, and its query
+is the same task instruction, so thresholds selected here transfer to calibration/main. Model-free,
+deterministic. Frozen rule: inject top-1 iff top1>=tau_abs AND (top1-top2)>=tau_margin, else abstain."""
 from __future__ import annotations
-import hashlib
 from enterprise_memory.indexing.embeddings import DeterministicTestEmbedder
+from enterprise_memory.contracts import codec
+from . import tokens as T
 
-DIM = 128
-QUERY_TAG_REPEAT = 8         # frozen embedding-signal weights (chosen so the deterministic bag-of-tokens
-MEM_TAG_REPEAT = 10          # embedder separates relevant / same-domain near-miss / cross-domain cleanly)
-DOMAINS = ("internal_api", "cache", "config", "schema")
+DIM = T.DIM
+DOMAINS = T.DOMAINS
+QUERY_TAG_REPEAT = T.QUERY_TAG_REPEAT
+MEM_TAG_REPEAT = T.MEM_TAG_REPEAT
 
-# domain vocabulary (6 tokens) shared by every memory in a domain -> same-domain near-misses partially overlap
-_DOMAIN_VOCAB = {
-    "internal_api": "retry backoff attempt request timeout idempotency",
-    "cache": "cache ttl tier eviction lookup invalidation",
-    "config": "config precedence branch environment override profile",
-    "schema": "schema field normalization mapping version compatibility",
-}
+DEV_SPLIT = "retrieval_dev"
+DEV_N = 8                      # 32 dev families (disjoint from calibration/main/instrument_dev by split name)
 
 
-def _tag(split, domain, family_idx):
-    return "technique_%s_%s_%d" % (domain, hashlib.sha256(split.encode()).hexdigest()[:4], family_idx)
+def _dev_families():
+    from benchmarks.p5_2_static import generate
+    return generate(DEV_SPLIT, DEV_N)
 
 
-def _mem_text(domain, tag, extra="convention applies_when edge case branch"):
-    # the tag is repeated so a single technique-family match dominates the shared-domain baseline
-    return "%s %s %s" % (_DOMAIN_VOCAB[domain], " ".join([tag] * MEM_TAG_REPEAT), extra)
+def _relevant_text(family):
+    from . import memory_bank as MB
+    ct, _ = MB.governed_relevant("o", "r", family, form="shared_governed")
+    return codec.retrieval_text(MB.canonical_of(ct))
 
 
-def _query_text(domain, tag):
-    return "%s %s task edit function implement" % (_DOMAIN_VOCAB[domain], " ".join([tag] * QUERY_TAG_REPEAT))
+def _decoy_text(domain, tag):
+    from . import memory_bank as MB
+    return codec.retrieval_text(MB.canonical_of(MB.decoy_contract("o", "r", domain, tag)))
 
 
-def build_dev(split="retrieval_dev", n_relevant=32, n_nomatch=16):
-    """Return a list of queries. Each has 8 candidates that all pass hard org/repo/path/state gates:
-    a relevant query pool = 1 relevant + 3 same-domain near-miss + 4 cross-technique irrelevant; a no-match
-    query pool = 0 relevant + 4 same-domain near-miss + 4 cross-technique irrelevant."""
+def build_dev(n_relevant=24, n_nomatch=8):
+    """Representative dev queries. relevant-query pool = 1 relevant + 3 same-domain near-miss + 4 cross-domain
+    irrelevant; no-match pool = 0 relevant + 4 near-miss + 4 irrelevant. All pass hard metadata gates."""
+    from . import plan as PLAN
+    fams = _dev_families()
+    by_domain = {d: [f for f in fams if f.domain == d] for d in DOMAINS}
     out = []
     for i in range(n_relevant + n_nomatch):
         domain = DOMAINS[i % 4]
+        pool_fams = by_domain[domain]
+        f = pool_fams[(i // 4) % len(pool_fams)]
         has_rel = i < n_relevant
-        qtag = _tag(split, domain, i)
+        query = PLAN.instruction_for(f)
         cands = []
         if has_rel:
-            cands.append({"label": "relevant", "relevant": True, "text": _mem_text(domain, qtag)})
-        # same-domain near-miss (different technique tag)
+            cands.append({"label": "relevant", "relevant": True, "text": _relevant_text(f)})
         n_near = 3 if has_rel else 4
         for k in range(n_near):
-            cands.append({"label": "near_miss", "relevant": False,
-                          "text": _mem_text(domain, _tag(split, domain, 1000 + i * 10 + k))})
-        # cross-technique irrelevant (different domain)
+            nf = pool_fams[(i // 4 + 1 + k) % len(pool_fams)]
+            cands.append({"label": "near_miss", "relevant": False, "text": _relevant_text(nf)})
+        others = [d for d in DOMAINS if d != domain]
         for k in range(4):
-            od = DOMAINS[(i + 1 + k) % 4]
+            od = others[k % len(others)]
             cands.append({"label": "irrelevant", "relevant": False,
-                          "text": _mem_text(od, _tag(split, od, 5000 + i * 10 + k))})
-        out.append({"query": _query_text(domain, qtag), "domain": domain, "has_relevant": has_rel,
-                    "candidates": cands})
+                          "text": _decoy_text(od, T.tag(DEV_SPLIT + "irr", od, i * 10 + k))})
+        out.append({"query": query, "domain": domain, "has_relevant": has_rel, "candidates": cands})
     return out
 
 
 def score_pool(embedder, q):
     qv = embedder.embed([q["query"]])[0]
     cvs = embedder.embed([c["text"] for c in q["candidates"]])
-    scored = []
-    for c, cv in zip(q["candidates"], cvs):
-        scored.append((sum(a * b for a, b in zip(qv, cv)), c))
-    scored.sort(key=lambda t: -t[0])
-    return scored                      # list of (score, candidate) descending
+    return sorted([(sum(a * b for a, b in zip(qv, cv)), c) for c, cv in zip(q["candidates"], cvs)],
+                 key=lambda t: -t[0])
 
 
 def decide(scored, tau_abs, tau_margin):
     top1 = scored[0][0]
     top2 = scored[1][0] if len(scored) > 1 else 0.0
-    inject = (top1 >= tau_abs) and ((top1 - top2) >= tau_margin)
-    return {"inject": inject, "top1": top1, "top2": top2, "margin": top1 - top2,
-            "top1_relevant": bool(scored[0][1]["relevant"])}
+    return {"inject": (top1 >= tau_abs) and ((top1 - top2) >= tau_margin), "top1": top1, "top2": top2,
+            "margin": top1 - top2, "top1_relevant": bool(scored[0][1]["relevant"])}
 
 
 def _rank_of_relevant(scored):
@@ -100,8 +94,8 @@ def metrics(dev, embedder, tau_abs, tau_margin):
             rr.append(1.0 / _rank_of_relevant(scored))
             if d["inject"] and d["top1_relevant"]:
                 tp += 1; inj_total += 1; inj_correct += 1
-            elif d["inject"] and not d["top1_relevant"]:
-                fn += 1; inj_total += 1                       # injected the wrong one
+            elif d["inject"]:
+                fn += 1; inj_total += 1
             else:
                 fn += 1
         else:
@@ -112,28 +106,24 @@ def metrics(dev, embedder, tau_abs, tau_margin):
     precision = inj_correct / inj_total if inj_total else 1.0
     recall = tp / (tp + fn) if (tp + fn) else 0.0
     specificity = tn / (tn + fp) if (tn + fp) else 1.0
-    f1_inj = (2 * precision * recall / (precision + recall)) if (precision + recall) else 0.0
-    p_abs = tn / (tn + fn) if (tn + fn) else 1.0
-    r_abs = tn / (tn + fp) if (tn + fp) else 1.0
-    f1_abs = (2 * p_abs * r_abs / (p_abs + r_abs)) if (p_abs + r_abs) else 0.0
+    f1_i = (2 * precision * recall / (precision + recall)) if (precision + recall) else 0.0
+    p_a = tn / (tn + fn) if (tn + fn) else 1.0
+    r_a = tn / (tn + fp) if (tn + fp) else 1.0
+    f1_a = (2 * p_a * r_a / (p_a + r_a)) if (p_a + r_a) else 0.0
     n = len(dev)
     return {"precision": precision, "recall": recall, "no_match_specificity": specificity,
             "false_injection_rate": (fp / (fp + tn) if (fp + tn) else 0.0),
             "mrr": (sum(rr) / len(rr) if rr else 0.0), "mean_margin": (sum(margins) / len(margins)),
-            "abstention_rate": ((tn + (fn if False else 0)) + (n - inj_total)) / n if n else 0.0,
-            "macro_f1": (f1_inj + f1_abs) / 2, "tp": tp, "fn": fn, "fp": fp, "tn": tn,
-            "injections": inj_total}
+            "abstention_rate": (n - inj_total) / n if n else 0.0, "macro_f1": (f1_i + f1_a) / 2,
+            "tp": tp, "fn": fn, "fp": fp, "tn": tn, "injections": inj_total}
 
 
-TAU_ABS_GRID = [round(0.30 + 0.05 * i, 2) for i in range(11)]      # 0.30..0.80
-TAU_MARGIN_GRID = [round(0.05 + 0.05 * i, 2) for i in range(10)]   # 0.05..0.50
+TAU_ABS_GRID = [round(0.30 + 0.05 * i, 2) for i in range(11)]
+TAU_MARGIN_GRID = [round(0.05 + 0.05 * i, 2) for i in range(10)]
 
 
 def select_thresholds(dev, embedder, recall_min=0.90, spec_min=0.80):
-    """Predeclared objective: (1) recall>=0.90; (2) no-match specificity>=0.80; (3) among feasible maximise
-    macro F1; (4) deterministic tie-break larger tau_abs then larger tau_margin."""
-    grid = []
-    feasible = []
+    grid, feasible = [], []
     for ta in TAU_ABS_GRID:
         for tm in TAU_MARGIN_GRID:
             m = metrics(dev, embedder, ta, tm)
@@ -146,5 +136,5 @@ def select_thresholds(dev, embedder, recall_min=0.90, spec_min=0.80):
     if not feasible:
         return None, grid
     feasible.sort(key=lambda r: (-r["macro_f1"], -r["tau_abs"], -r["tau_margin"]))
-    best = feasible[0]
-    return {"tau_abs": best["tau_abs"], "tau_margin": best["tau_margin"]}, grid
+    b = feasible[0]
+    return {"tau_abs": b["tau_abs"], "tau_margin": b["tau_margin"]}, grid

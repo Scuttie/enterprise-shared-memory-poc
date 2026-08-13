@@ -72,4 +72,5 @@ def store(request, tmp_path):
     except Exception:
         pass
     from enterprise_memory.artifacts.store import S3ArtifactStore
-    return S3ArtifactStore(endpoint, bucket, key, secret, secure=False, sse="AES256")
+    # MinIO in CI has no KMS -> SSE header off; production configures SSE (interface preserved)
+    return S3ArtifactStore(endpoint, bucket, key, secret, secure=False, sse=os.environ.get("MINIO_SSE") or None)

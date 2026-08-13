@@ -128,8 +128,11 @@ class S3ArtifactStore(ArtifactStore):
             if (existing.get("Metadata", {}) or {}).get("sha256") not in (None, expected_hash):
                 raise ArtifactStoreError("content-address collision with different content")
             return {"size": len(data), "sha256": expected_hash, "existed": True}
-        self._c.put_object(Bucket=self._bucket, Key=key, Body=data, ServerSideEncryption=self._sse,
-                           Metadata={"sha256": expected_hash}, ContentLength=len(data))
+        kwargs = {"Bucket": self._bucket, "Key": key, "Body": data, "ContentLength": len(data),
+                  "Metadata": {"sha256": expected_hash}}
+        if self._sse:                                    # SSE is configurable; MinIO w/o KMS uses none
+            kwargs["ServerSideEncryption"] = self._sse
+        self._c.put_object(**kwargs)
         return {"size": len(data), "sha256": expected_hash, "existed": False}
 
     def get(self, key: str) -> bytes:

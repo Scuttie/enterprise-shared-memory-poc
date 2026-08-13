@@ -63,6 +63,19 @@ single-flight refresh, claim type checks); repository ref/installation policy (s
 ref↔branch binding, full commit SHA + tree required, POSIX path normalization, client-chosen installation
 rejected).
 
+### P4.1 — COMPLETE (green)
+- **Artifact integrity:** existing S3 object accepted only on matching hash-metadata **and** size (missing
+  metadata → read-back verify or fail closed); post-write verification (exists + size + hash-metadata +
+  read-back hash + tenant-prefixed key) before AVAILABLE, failure → UPLOAD_FAILED + audit, no presign;
+  read-only **bidirectional reconciliation** (`store.list_keys`) + separate explicit `repair()`; full deletion
+  chain AVAILABLE→DELETE_REQUESTED→LOGICALLY_DELETED→PHYSICAL_DELETE_PENDING→PHYSICALLY_CONFIRMED|DELETE_FAILED
+  (retention/legal-hold block physical delete; object verified absent before confirm); **chained** append-only
+  artifact audit.
+- **Solar closure:** one absolute logical deadline bounding every attempt + sleep; per-attempt `AttemptRecord`
+  + a final `LogicalModelCall` on **every** outcome (attached to the raised error); Retry-After/jitter clamped
+  (0..max, never negative); malformed-200 → accounted `ParserError` (not a transport retry); bounded/LRU
+  per-org limiter; provider interface conformance test.
+
 ### P4 — COMPLETE (green)
 - **Artifact store** (alembic 0007 + `artifacts/`): PostgreSQL-authoritative metadata + 8-state durable
   lifecycle; `LocalArtifactStore` + `S3ArtifactStore` (private bucket, SSE-configurable, SHA-256 verified,
@@ -75,10 +88,14 @@ rejected).
   accounting record, redaction sanitizer. `ci-solar` (fake server) green; optional gated `solar-integration`.
 
 ### P5 — NOT STARTED (remaining to reach the valid endpoint)
-Real authenticated FastAPI `/v1` surface (18 endpoints), durable job submission, a separate worker process
-running the full solve pipeline (repo snapshot → dual retrieval → execution-view compiler → model call →
-sandbox → patch validation → outcome/private-episode/audit persistence), the HTTP→worker E2E, the negative
-E2E suite, and `ci-e2e`. **Gate A stays PARTIAL until the P5 E2E passes.**
+Migration 0008 (job identity/policy/ref snapshot + model call/attempt records + retrieval-decision detail);
+production container wiring; **removal of the legacy insecure PoC app**; real authenticated FastAPI `/v1`
+surface (15 endpoints incl health/version; review/promote/deprecate remain P6); durable `POST /v1/solve`
+(202, no model/sandbox in-handler); a separate worker process running the full solve pipeline (immutable repo
+snapshot → dual private/shared retrieval → canonical reload → compact literal execution view → Solar → patch
+parse + edit-policy validation → sandbox → outcome/private-episode/audit/outbox persistence, with
+`cross_user_private_injection_count == 0` computed); the HTTP→worker positive E2E, the ~40-case negative E2E,
+crash-recovery E2E, OpenAPI snapshot, and `ci-e2e`. **Gate A stays PARTIAL until the P5 E2E passes.**
 
 ## Green workflows
 `ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`.

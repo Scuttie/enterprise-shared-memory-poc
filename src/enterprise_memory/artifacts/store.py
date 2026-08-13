@@ -40,6 +40,16 @@ class ArtifactStore(ABC):
     @abstractmethod
     def health(self) -> dict: ...
 
+    @abstractmethod
+    def list_keys(self, prefix: str) -> list: ...
+
+    def verify(self, key: str, expected_hash: str) -> bool:
+        """Read the object back and confirm its SHA-256 — the strongest integrity check."""
+        try:
+            return sha256_hex(self.get(key)) == expected_hash
+        except Exception:
+            return False
+
     def close(self) -> None:
         pass
 
@@ -95,6 +105,29 @@ class LocalArtifactStore(ArtifactStore):
     def health(self) -> dict:
         return {"ok": os.path.isdir(self._base), "backend": "local"}
 
+    def list_keys(self, prefix: str) -> list:
+        root = self._path(prefix)
+        out = []
+        if not os.path.isdir(root):
+            # prefix may be a partial dir; walk from base and filter
+            base = self._base
+            for dirpath, _dirs, files in os.walk(base):
+                for f in files:
+                    if f.endswith(".tmp"):
+                        continue
+                    full = os.path.join(dirpath, f)
+                    rel = os.path.relpath(full, base).replace(os.sep, "/")
+                    if rel.startswith(prefix):
+                        out.append(rel)
+            return out
+        for dirpath, _dirs, files in os.walk(root):
+            for f in files:
+                if f.endswith(".tmp"):
+                    continue
+                rel = os.path.relpath(os.path.join(dirpath, f), self._base).replace(os.sep, "/")
+                out.append(rel)
+        return out
+
 
 class S3ArtifactStore(ArtifactStore):
     """S3/MinIO. Private bucket, SSE, tenant-prefixed content-addressed keys. Requires the `artifacts`
@@ -125,8 +158,15 @@ class S3ArtifactStore(ArtifactStore):
             raise HashMismatch("write hash mismatch")
         existing = self._head_raw(key)
         if existing is not None:
-            if (existing.get("Metadata", {}) or {}).get("sha256") not in (None, expected_hash):
-                raise ArtifactStoreError("content-address collision with different content")
+            # §2.1: an existing object is acceptable ONLY when its stored hash AND size match. Missing
+            # metadata is NOT treated as a match — read the bytes and verify, else fail closed.
+            meta_sha = (existing.get("Metadata", {}) or {}).get("sha256")
+            size = existing.get("ContentLength")
+            if meta_sha is not None:
+                if meta_sha != expected_hash or int(size) != len(data):
+                    raise ArtifactStoreError("content-address collision with different content")
+            elif not self.verify(key, expected_hash):
+                raise ArtifactStoreError("existing object failed hash verification")
             return {"size": len(data), "sha256": expected_hash, "existed": True}
         kwargs = {"Bucket": self._bucket, "Key": key, "Body": data, "ContentLength": len(data),
                   "Metadata": {"sha256": expected_hash}}
@@ -141,10 +181,27 @@ class S3ArtifactStore(ArtifactStore):
 
     def head(self, key: str) -> Optional[dict]:
         h = self._head_raw(key)
-        return None if h is None else {"size": h.get("ContentLength")}
+        if h is None:
+            return None
+        return {"size": h.get("ContentLength"), "sha256": (h.get("Metadata", {}) or {}).get("sha256")}
 
     def delete(self, key: str) -> None:
         self._c.delete_object(Bucket=self._bucket, Key=key)
+
+    def list_keys(self, prefix: str) -> list:
+        out = []
+        token = None
+        while True:
+            kw = {"Bucket": self._bucket, "Prefix": prefix}
+            if token:
+                kw["ContinuationToken"] = token
+            resp = self._c.list_objects_v2(**kw)
+            for obj in resp.get("Contents", []) or []:
+                out.append(obj["Key"])
+            if not resp.get("IsTruncated"):
+                break
+            token = resp.get("NextContinuationToken")
+        return out
 
     def create_presigned_get(self, key: str, ttl_seconds: int = 300) -> str:
         return self._c.generate_presigned_url("get_object", Params={"Bucket": self._bucket, "Key": key},

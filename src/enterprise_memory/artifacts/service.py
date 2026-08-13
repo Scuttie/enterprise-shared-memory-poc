@@ -1,9 +1,9 @@
-"""Artifact service (P4 §8-§10). PostgreSQL is the authoritative metadata + lifecycle state machine; the
-object store holds content-addressed, SHA-256-verified bytes. The object write and the DB row are not one
-distributed transaction, so the service drives a durable state machine and offers reconciliation. All DB
-access is RLS-scoped by org; keys are tenant-prefixed and content-addressed — a caller never supplies a key.
-Retention and legal hold block physical deletion; physical deletion is only confirmed after the object is
-verified absent."""
+"""Artifact service (P4 §8-§10 + P4.1 §2). PostgreSQL is the authoritative metadata + lifecycle state
+machine; the object store holds content-addressed, SHA-256-verified bytes. The object write and the DB row
+are not one distributed transaction, so the service drives a durable state machine, verifies integrity on
+write (read-back hash + tenant-prefixed key), keeps a CHAINED append-only audit, and offers a read-only
+bidirectional reconciliation with a separate explicit repair. Retention and legal hold block physical
+deletion; physical deletion is confirmed only after the object is verified absent."""
 from __future__ import annotations
 import asyncio
 import json
@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from sqlalchemy import text
 from ..persistence.tenant_context import tenant_tx
 from . import records as R
-from .store import HashMismatch, ArtifactStoreError
+from .store import ArtifactStoreError
 
 
 class ArtifactError(Exception):
@@ -36,6 +36,8 @@ class ArtifactCorrupt(ArtifactError):
 
 _COLS = ("id", "org_id", "object_key", "content_hash", "byte_size", "content_type", "artifact_class",
          "deletion_state", "retention_class", "retain_until", "legal_hold", "created_by", "created_at")
+_SEL = ("SELECT id,org_id,object_key,content_hash,byte_size,content_type,artifact_class,deletion_state,"
+        "retention_class,retain_until,legal_hold,created_by,created_at FROM artifacts")
 
 
 def _ref(row) -> R.ArtifactRef:
@@ -50,30 +52,47 @@ def _ref(row) -> R.ArtifactRef:
         created_at=(d["created_at"].isoformat() if d["created_at"] else None))
 
 
-_SEL = ("SELECT id,org_id,object_key,content_hash,byte_size,content_type,artifact_class,deletion_state,"
-        "retention_class,retain_until,legal_hold,created_by,created_at FROM artifacts")
-
-
 class ArtifactService:
     def __init__(self, store):
         self._store = store
 
-    async def _to_thread(self, fn, *a):
+    async def _t(self, fn, *a):
         return await asyncio.to_thread(fn, *a)
 
+    # ---------------------------------------------------------------- chained append-only audit
+    async def _audit(self, conn, org_id, artifact_id, prior_state, new_state, *, object_hash=None,
+                     result="ok", actor=None, request_id=None):
+        prev = (await conn.execute(text(
+            "SELECT event_hash FROM audit_events WHERE org_id=:o ORDER BY created_at DESC LIMIT 1"),
+            {"o": org_id})).scalar() or ""
+        detail = {"artifact_id": str(artifact_id), "prior_state": prior_state, "new_state": new_state,
+                  "object_hash": object_hash, "result": result,
+                  "actor": (str(actor) if actor else None), "request_id": request_id}
+        payload = json.dumps(detail, sort_keys=True)
+        ev_hash = R.sha256_hex(("%s|%s" % (prev, payload)).encode())
+        await conn.execute(text(
+            "INSERT INTO audit_events(org_id,actor_user_id,request_id,event_type,subject_type,subject_id,"
+            "detail_json,previous_hash,event_hash) VALUES(:o,:a,:rq,'ARTIFACT_LIFECYCLE','artifact',:s,"
+            "cast(:d as jsonb),:p,:h)"),
+            {"o": org_id, "a": actor, "rq": request_id, "s": str(artifact_id), "d": payload,
+             "p": prev, "h": ev_hash})
+
+    # ---------------------------------------------------------------- write
     async def put(self, engine, org_id, artifact_class, data: bytes, *, content_type=None, created_by=None,
                   retention_class="default", retain_until=None, legal_hold=False, metadata=None,
-                  job_id=None) -> R.ArtifactRef:
+                  job_id=None, request_id=None) -> R.ArtifactRef:
         if artifact_class not in R.ARTIFACT_CLASSES:
             raise ArtifactError("unknown artifact_class %r" % (artifact_class,))
         h = R.sha256_hex(data)
         key = R.content_key(org_id, artifact_class, h)
+        if not key.startswith("org/%s/" % org_id):                # tenant-prefixed key (defence)
+            raise ArtifactError("key not tenant-prefixed")
         aid = str(uuid.uuid4())
         async with tenant_tx(engine, org_id) as c:
             row = (await c.execute(text(_SEL + " WHERE org_id=:o AND object_key=:k"),
                                    {"o": org_id, "k": key})).first()
             if row is not None and row[7] == R.AVAILABLE:
-                return _ref(row)                              # idempotent upload
+                return _ref(row)                                  # idempotent upload
             if row is None:
                 await c.execute(text(
                     "INSERT INTO artifacts(id,org_id,job_id,kind,object_key,content_hash,artifact_class,"
@@ -83,34 +102,42 @@ class ArtifactService:
                     {"i": aid, "o": org_id, "j": job_id, "kind": artifact_class, "k": key, "h": h,
                      "cls": artifact_class, "ct": content_type, "rc": retention_class, "ru": retain_until,
                      "lh": legal_hold, "cb": created_by, "md": json.dumps(metadata or {})})
-                got = (await c.execute(text("SELECT id FROM artifacts WHERE org_id=:o AND object_key=:k"),
-                                       {"o": org_id, "k": key})).scalar()
-                aid = str(got)
+                aid = str((await c.execute(text("SELECT id FROM artifacts WHERE org_id=:o AND object_key=:k"),
+                                           {"o": org_id, "k": key})).scalar())
             else:
                 aid = str(row[0])
         try:
-            await self._to_thread(self._store.put, key, data, h)
-            head = await self._to_thread(self._store.head, key)
+            await self._t(self._store.put, key, data, h)
+            head = await self._t(self._store.head, key)           # exists + size (+ sha metadata if present)
             if not head or int(head.get("size", -1)) != len(data):
-                raise ArtifactStoreError("post-write head mismatch")
+                raise ArtifactStoreError("post-write size mismatch")
+            if head.get("sha256") is not None and head.get("sha256") != h:
+                raise ArtifactStoreError("post-write hash-metadata mismatch")
+            if not await self._t(self._store.verify, key, h):     # read-back hash — strongest check
+                raise ArtifactStoreError("post-write read-back hash mismatch")
         except Exception:
             async with tenant_tx(engine, org_id) as c:
                 await c.execute(text("UPDATE artifacts SET deletion_state='UPLOAD_FAILED',"
                                      " optimistic_version=optimistic_version+1 WHERE id=:i"), {"i": aid})
+                await self._audit(c, org_id, aid, "PENDING_UPLOAD", "UPLOAD_FAILED", object_hash=h,
+                                  result="failed", actor=created_by, request_id=request_id)
             raise
         async with tenant_tx(engine, org_id) as c:
             await c.execute(text("UPDATE artifacts SET deletion_state='AVAILABLE', byte_size=:sz,"
                                  " optimistic_version=optimistic_version+1 WHERE id=:i"),
                             {"sz": len(data), "i": aid})
+            await self._audit(c, org_id, aid, "PENDING_UPLOAD", "AVAILABLE", object_hash=h,
+                              actor=created_by, request_id=request_id)
             row = (await c.execute(text(_SEL + " WHERE id=:i"), {"i": aid})).first()
         return _ref(row)
 
+    # ---------------------------------------------------------------- read
     async def get(self, engine, org_id, artifact_id) -> bytes:
         async with tenant_tx(engine, org_id) as c:
             row = (await c.execute(text(_SEL + " WHERE id=:i"), {"i": artifact_id})).first()
         if row is None or row[7] not in R.SERVABLE_STATES:
             raise ArtifactNotAvailable("not available")
-        data = await self._to_thread(self._store.get, row[2])
+        data = await self._t(self._store.get, row[2])
         if R.sha256_hex(data) != row[3]:
             raise ArtifactCorrupt("stored content hash mismatch")
         return data
@@ -134,9 +161,10 @@ class ArtifactService:
         ref = await self.head(engine, org_id, artifact_id)
         if ref is None or ref.deletion_state not in R.SERVABLE_STATES:
             raise ArtifactNotAvailable("not available")
-        return await self._to_thread(self._store.create_presigned_get, ref.object_key, ttl_seconds)
+        return await self._t(self._store.create_presigned_get, ref.object_key, ttl_seconds)
 
-    async def request_delete(self, engine, org_id, artifact_id, actor=None):
+    # ---------------------------------------------------------------- deletion lifecycle
+    async def request_delete(self, engine, org_id, artifact_id, actor=None, request_id=None):
         async with tenant_tx(engine, org_id) as c:
             row = (await c.execute(text(_SEL + " WHERE id=:i"), {"i": artifact_id})).first()
             if row is None:
@@ -145,65 +173,103 @@ class ArtifactService:
                 raise ArtifactBlocked("legal_hold")
             if row[9] is not None and row[9] > datetime.now(timezone.utc):
                 raise ArtifactBlocked("retention")
-            # hide from serving immediately (logical deletion)
-            await c.execute(text("UPDATE artifacts SET deletion_state='LOGICALLY_DELETED',"
-                                 " logical_deletion_at=now(), optimistic_version=optimistic_version+1"
+            await c.execute(text("UPDATE artifacts SET deletion_state='DELETE_REQUESTED',"
+                                 " optimistic_version=optimistic_version+1"
                                  " WHERE id=:i AND deletion_state='AVAILABLE'"), {"i": artifact_id})
+            await self._audit(c, org_id, artifact_id, "AVAILABLE", "DELETE_REQUESTED", actor=actor,
+                              request_id=request_id)
 
     async def run_physical_deletions(self, engine, org_id) -> list:
         async with tenant_tx(engine, org_id) as c:
             rows = (await c.execute(text(
-                "SELECT id, object_key FROM artifacts WHERE org_id=:o AND deletion_state='LOGICALLY_DELETED'"
+                "SELECT id, object_key, content_hash, deletion_state FROM artifacts WHERE org_id=:o"
+                " AND deletion_state IN ('DELETE_REQUESTED','LOGICALLY_DELETED')"
                 " AND legal_hold=false AND (retain_until IS NULL OR retain_until<=now())"),
                 {"o": org_id})).fetchall()
         results = []
-        for aid, key in rows:
+        for aid, key, chash, state in rows:
+            if state == "DELETE_REQUESTED":                       # advance through LOGICALLY_DELETED
+                async with tenant_tx(engine, org_id) as c:
+                    await c.execute(text("UPDATE artifacts SET deletion_state='LOGICALLY_DELETED',"
+                                         " logical_deletion_at=now(), optimistic_version=optimistic_version+1"
+                                         " WHERE id=:i"), {"i": aid})
+                    await self._audit(c, org_id, aid, "DELETE_REQUESTED", "LOGICALLY_DELETED")
             async with tenant_tx(engine, org_id) as c:
                 await c.execute(text("UPDATE artifacts SET deletion_state='PHYSICAL_DELETE_PENDING',"
                                      " optimistic_version=optimistic_version+1 WHERE id=:i"), {"i": aid})
+                await self._audit(c, org_id, aid, "LOGICALLY_DELETED", "PHYSICAL_DELETE_PENDING")
             try:
-                await self._to_thread(self._store.delete, key)
-                if await self._to_thread(self._store.exists, key):   # verify absent BEFORE confirming
+                await self._t(self._store.delete, key)
+                if await self._t(self._store.exists, key):        # verify absent BEFORE confirming
                     raise ArtifactStoreError("object still present after delete")
                 async with tenant_tx(engine, org_id) as c:
                     await c.execute(text("UPDATE artifacts SET deletion_state='PHYSICALLY_CONFIRMED',"
                                          " physical_deletion_at=now(), optimistic_version=optimistic_version+1"
                                          " WHERE id=:i"), {"i": aid})
-                    await self._audit(c, org_id, aid, "ARTIFACT_PHYSICAL_DELETE")
+                    await self._audit(c, org_id, aid, "PHYSICAL_DELETE_PENDING", "PHYSICALLY_CONFIRMED",
+                                      object_hash=chash)
                 results.append((str(aid), "PHYSICALLY_CONFIRMED"))
             except Exception:
                 async with tenant_tx(engine, org_id) as c:
                     await c.execute(text("UPDATE artifacts SET deletion_state='DELETE_FAILED',"
                                          " optimistic_version=optimistic_version+1 WHERE id=:i"), {"i": aid})
+                    await self._audit(c, org_id, aid, "PHYSICAL_DELETE_PENDING", "DELETE_FAILED",
+                                      result="failed")
                 results.append((str(aid), "DELETE_FAILED"))
         return results
 
+    # ---------------------------------------------------------------- bidirectional reconciliation (read-only)
     async def reconcile(self, engine, org_id) -> dict:
         async with tenant_tx(engine, org_id) as c:
-            rows = (await c.execute(text("SELECT id, object_key, deletion_state FROM artifacts"
+            rows = (await c.execute(text("SELECT id, object_key, content_hash, deletion_state FROM artifacts"
                                          " WHERE org_id=:o"), {"o": org_id})).fetchall()
-        recovered, orphan_db = [], []
-        for aid, key, state in rows:
-            exists = await self._to_thread(self._store.exists, key)
-            if state == R.PENDING_UPLOAD:
-                async with tenant_tx(engine, org_id) as c:
-                    if exists:
+        db = {key: (str(aid), chash, state) for aid, key, chash, state in rows}
+        store_keys = set(await self._t(self._store.list_keys, "org/%s/" % org_id))
+        rep = {"db_row_missing_object": [], "object_missing_db_row": [], "available_corrupted": [],
+               "pending_with_object": [], "confirmed_object_reappeared": [], "wrong_tenant_prefix": []}
+        for key, (aid, chash, state) in db.items():
+            if not key.startswith("org/%s/" % org_id):
+                rep["wrong_tenant_prefix"].append(aid); continue
+            exists = key in store_keys
+            if state == R.AVAILABLE:
+                if not exists:
+                    rep["db_row_missing_object"].append(aid)
+                elif not await self._t(self._store.verify, key, chash):
+                    rep["available_corrupted"].append(aid)
+            elif state == R.PENDING_UPLOAD and exists:
+                rep["pending_with_object"].append(aid)
+            elif state == R.PHYSICALLY_CONFIRMED and exists:
+                rep["confirmed_object_reappeared"].append(aid)
+        for key in store_keys:
+            if key not in db:
+                rep["object_missing_db_row"].append(key)
+        rep["has_drift"] = any(v for k, v in rep.items() if k != "has_drift")
+        return rep
+
+    async def repair(self, engine, org_id) -> dict:
+        """Explicit (non-default) repair of the low-risk classes discovered by reconcile()."""
+        async with tenant_tx(engine, org_id) as c:
+            rows = (await c.execute(text("SELECT id, object_key, content_hash, deletion_state FROM artifacts"
+                                         " WHERE org_id=:o AND deletion_state IN ('PENDING_UPLOAD','AVAILABLE')"),
+                                    {"o": org_id})).fetchall()
+        recovered, failed, orphan_db = [], [], []
+        for aid, key, chash, state in rows:
+            exists = await self._t(self._store.exists, key)
+            async with tenant_tx(engine, org_id) as c:
+                if state == R.PENDING_UPLOAD:
+                    if exists and await self._t(self._store.verify, key, chash):
                         await c.execute(text("UPDATE artifacts SET deletion_state='AVAILABLE',"
                                              " optimistic_version=optimistic_version+1 WHERE id=:i"), {"i": aid})
+                        await self._audit(c, org_id, aid, "PENDING_UPLOAD", "AVAILABLE", object_hash=chash)
                         recovered.append(str(aid))
                     else:
                         await c.execute(text("UPDATE artifacts SET deletion_state='UPLOAD_FAILED',"
                                              " optimistic_version=optimistic_version+1 WHERE id=:i"), {"i": aid})
-            elif state == R.AVAILABLE and not exists:
-                async with tenant_tx(engine, org_id) as c:
+                        await self._audit(c, org_id, aid, "PENDING_UPLOAD", "UPLOAD_FAILED", result="failed")
+                        failed.append(str(aid))
+                elif state == R.AVAILABLE and not exists:
                     await c.execute(text("UPDATE artifacts SET deletion_state='DELETE_FAILED',"
                                          " optimistic_version=optimistic_version+1 WHERE id=:i"), {"i": aid})
-                orphan_db.append(str(aid))
-        return {"recovered_uploads": recovered, "orphan_db_rows": orphan_db}
-
-    async def _audit(self, conn, org_id, subject_id, event_type):
-        ev_hash = R.sha256_hex(("%s|%s|%s" % (org_id, subject_id, event_type)).encode())
-        await conn.execute(text(
-            "INSERT INTO audit_events(org_id,event_type,subject_type,subject_id,detail_json,previous_hash,"
-            "event_hash) VALUES(:o,:t,'artifact',:s,'{}',:p,:h)"),
-            {"o": org_id, "t": event_type, "s": str(subject_id), "p": "", "h": ev_hash})
+                    await self._audit(c, org_id, aid, "AVAILABLE", "DELETE_FAILED", result="orphan_db")
+                    orphan_db.append(str(aid))
+        return {"recovered_uploads": recovered, "failed_uploads": failed, "orphan_db_rows": orphan_db}

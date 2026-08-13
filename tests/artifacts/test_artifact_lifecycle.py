@@ -92,21 +92,17 @@ def test_logical_then_physical_deletion_confirmed(orgs, store):
     run(body())
 
 
-def test_failed_upload_reconciliation(orgs, store):
+def test_repair_reconciles_failed_and_recoverable_uploads(orgs, store):
     async def body():
         a = orgs["A"]; svc = _svc(store); su = eng("postgres"); e = eng("api")
-        # simulate an orphan DB row: PENDING_UPLOAD with no object in the store
+        # orphan DB row: PENDING_UPLOAD with no object -> repair marks UPLOAD_FAILED
         aid = uuid.uuid4(); key = R.content_key(a["org"], CLS, "deadbeef" * 8)
         async with su.begin() as c:
             await c.execute(text(
                 "INSERT INTO artifacts(id,org_id,kind,object_key,content_hash,artifact_class,"
                 "deletion_state) VALUES(:i,:o,:k,:key,:h,:cls,'PENDING_UPLOAD')"),
                 {"i": aid, "o": a["org"], "k": CLS, "key": key, "h": "deadbeef" * 8, "cls": CLS})
-        rep = await svc.reconcile(e, a["org"])
-        async with su.connect() as c:
-            st = (await c.execute(text("SELECT deletion_state FROM artifacts WHERE id=:i"), {"i": aid})).scalar()
-        assert st == "UPLOAD_FAILED"                              # no object -> failed upload
-        # a PENDING_UPLOAD whose object DOES exist is recovered to AVAILABLE
+        # a PENDING_UPLOAD whose object DOES exist -> repair recovers to AVAILABLE
         data = b"recoverable"; h = R.sha256_hex(data); k2 = R.content_key(a["org"], CLS, h)
         await __import__("asyncio").to_thread(store.put, k2, data, h)
         aid2 = uuid.uuid4()
@@ -114,10 +110,56 @@ def test_failed_upload_reconciliation(orgs, store):
             await c.execute(text(
                 "INSERT INTO artifacts(id,org_id,kind,object_key,content_hash,artifact_class,byte_size,"
                 "deletion_state) VALUES(:i,:o,:k,:key,:h,:cls,:sz,'PENDING_UPLOAD')"),
-                {"i": aid2, "o": a["org"], "k": CLS, "key": k2, "h": h, "cls": CLS, "sz": len(data)})
-        rep2 = await svc.reconcile(e, a["org"])
-        assert str(aid2) in rep2["recovered_uploads"]
+                {"i": aid2, "o": a["org"], "k": k2 and CLS, "key": k2, "h": h, "cls": CLS, "sz": len(data)})
+        # reconcile is READ-ONLY: it reports pending-with-object but changes nothing
+        ro = await svc.reconcile(e, a["org"])
+        assert str(aid2) in ro["pending_with_object"]
+        async with su.connect() as c:
+            st_before = (await c.execute(text("SELECT deletion_state FROM artifacts WHERE id=:i"),
+                                         {"i": aid2})).scalar()
+        assert st_before == "PENDING_UPLOAD"
+        # explicit repair mutates
+        rep = await svc.repair(e, a["org"])
+        assert str(aid2) in rep["recovered_uploads"] and str(aid) in rep["failed_uploads"]
+        async with su.connect() as c:
+            st = (await c.execute(text("SELECT deletion_state FROM artifacts WHERE id=:i"), {"i": aid})).scalar()
+        assert st == "UPLOAD_FAILED"
         await su.dispose(); await e.dispose()
+    run(body())
+
+
+def test_reconcile_readonly_detects_orphans(orgs, store):
+    async def body():
+        a = orgs["A"]; svc = _svc(store); e = eng("api")
+        ref = await svc.put(e, a["org"], CLS, b"present then gone", created_by=a["user"])
+        # object deleted out-of-band -> AVAILABLE DB row missing its object
+        await __import__("asyncio").to_thread(store.delete, ref.object_key)
+        # an object with no DB row at all
+        stray_key = R.content_key(a["org"], CLS, R.sha256_hex(b"stray"))
+        await __import__("asyncio").to_thread(store.put, stray_key, b"stray", R.sha256_hex(b"stray"))
+        rep = await svc.reconcile(e, a["org"])
+        assert ref.artifact_id in rep["db_row_missing_object"]
+        assert stray_key in rep["object_missing_db_row"] and rep["has_drift"]
+        await e.dispose()
+    run(body())
+
+
+def test_chained_artifact_audit(orgs, store):
+    async def body():
+        a = orgs["A"]; svc = _svc(store); su = eng("postgres"); e = eng("api")
+        ref = await svc.put(e, a["org"], CLS, b"audited", created_by=a["user"])
+        await svc.request_delete(e, a["org"], ref.artifact_id, actor=a["user"])
+        async with su.connect() as c:
+            rows = (await c.execute(text(
+                "SELECT previous_hash, event_hash, detail_json->>'new_state' FROM audit_events"
+                " WHERE org_id=:o AND event_type='ARTIFACT_LIFECYCLE' ORDER BY created_at"),
+                {"o": a["org"]})).fetchall()
+        await su.dispose(); await e.dispose()
+        states = [r[2] for r in rows]
+        assert "AVAILABLE" in states and "DELETE_REQUESTED" in states
+        # the chain links: some later row's previous_hash equals an earlier row's event_hash
+        hashes = {r[1] for r in rows}
+        assert any(r[0] in hashes for r in rows if r[0])          # chained (non-empty previous_hash links)
     run(body())
 
 

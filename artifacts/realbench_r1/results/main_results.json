@@ -1,0 +1,6139 @@
+{
+  "all_gates_pass": true,
+  "arms": {
+    "R0": {
+      "exec1": 0.9916666666666667,
+      "n": 120,
+      "pass1": 0.575
+    },
+    "R1": {
+      "exec1": 1.0,
+      "n": 120,
+      "pass1": 0.6
+    },
+    "R2": {
+      "exec1": 1.0,
+      "n": 120,
+      "pass1": 0.6166666666666667
+    },
+    "R3": {
+      "exec1": 1.0,
+      "n": 120,
+      "pass1": 0.625
+    },
+    "R4": {
+      "exec1": 1.0,
+      "n": 120,
+      "pass1": 0.6333333333333333
+    }
+  },
+  "dataset_content_hash": "bbaa3bec889558881f14ad8e2cc9ea9d7b9bed2c283484e823cebf5ce86a777c",
+  "experiment_id": "REALBENCH_MBPP_PLUS_R1_MAIN",
+  "gates": {
+    "C1_grader_validity": {
+      "malformed_rate": 0.0016666666666666668,
+      "note": "reference-solution 100% pass validated in ci-realbench-grader",
+      "pass": true,
+      "setup_failure": 0
+    },
+    "C2_service_validity": {
+      "cross_user_private_injection": 0,
+      "no_memory_injected": 0,
+      "note": "every job traversed HTTP->worker; DB injected==payload by construction",
+      "pass": true
+    },
+    "C3_dynamic_range": {
+      "R0_pass1": 0.575,
+      "pass": true
+    },
+    "C4_retrieval": {
+      "R2_injected_rate": 0.825,
+      "R3_injected_rate": 0.7583333333333333,
+      "note": "validated_search rejects invalid canonical; source!=target; augmented tests never in memory; abstention logged via injected counts",
+      "pass": true
+    },
+    "C5_reproducibility": {
+      "calibration_main_overlap": 0,
+      "pass": true,
+      "split_hash": "c3cbf496cf2f6fb7505e61d958c4523f58776ee71ae28f992c49f11d0fd7c8b3"
+    }
+  },
+  "n_targets": 120,
+  "primary": {
+    "ci": {
+      "hi": 0.11666666666666667,
+      "lo": -0.016666666666666666,
+      "mean": 0.05
+    },
+    "diff": 0.05,
+    "mcnemar": {
+      "b": 12,
+      "c": 6,
+      "p_value": 0.237884521484375
+    },
+    "n": 120
+  },
+  "results": [
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/565"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/566"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/567"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/568"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/572"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/573"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/576"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/577"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/578"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/579"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/580"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/581"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/583"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/585"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/586"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/587"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/588"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/589"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/590"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/591"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/592"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/593"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/594"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/596"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/597"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "DEAD_LETTER",
+      "tid": "Mbpp/599"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/600"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/603"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/604"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/605"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/606"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/607"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/608"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/610"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/611"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/612"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/614"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/615"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/616"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/619"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/620"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/622"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/623"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/624"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/626"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/628"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/629"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/630"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/631"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/632"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/633"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/635"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/637"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/638"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/639"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/643"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/644"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/720"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/721"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/722"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/723"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/724"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/725"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/726"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/728"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/730"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/731"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/732"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/733"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/734"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/735"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/736"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/737"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/739"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/740"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/741"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/742"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/743"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/744"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/745"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/748"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/749"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/750"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/751"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/753"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/754"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/755"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/757"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/758"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/759"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/760"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/762"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/764"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/765"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/766"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/767"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/769"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/770"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/771"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/772"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/773"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/775"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/777"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/778"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/780"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/781"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/782"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/784"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/786"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/787"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/788"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/790"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/791"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/792"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/793"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/794"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/796"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/797"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/798"
+    },
+    {
+      "arm": "R0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/799"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/565"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/566"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/567"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/568"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/572"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/573"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/576"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/577"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/578"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/579"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/580"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/581"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/583"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/585"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/586"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/587"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/588"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/589"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/590"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/591"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/592"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/593"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/594"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/596"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/597"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/599"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/600"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/603"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/604"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/605"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/606"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/607"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/608"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/610"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/611"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/612"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/614"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/615"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/616"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/619"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/620"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/622"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/623"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/624"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/626"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/628"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/629"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/630"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/631"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/632"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/633"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/635"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/637"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/638"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/639"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/643"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/644"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/720"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/721"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/722"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/723"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/724"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/725"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/726"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/728"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/730"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/731"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/732"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/733"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/734"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/735"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/736"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/737"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/739"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/740"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/741"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/742"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/743"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/744"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/745"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/748"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/749"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/750"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/751"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/753"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/754"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/755"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/757"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/758"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/759"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/760"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/762"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/764"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/765"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/766"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/767"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/769"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/770"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/771"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/772"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/773"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/775"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/777"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/778"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/780"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/781"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/782"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/784"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/786"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/787"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/788"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/790"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/791"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/792"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/793"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/794"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/796"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/797"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/798"
+    },
+    {
+      "arm": "R2",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/799"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/565"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/566"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/567"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/568"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/572"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/573"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/576"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/577"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/578"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/579"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/580"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/581"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/583"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/585"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/586"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/587"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/588"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/589"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/590"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/591"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/592"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/593"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/594"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/596"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/597"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/599"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/600"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/603"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/604"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/605"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/606"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/607"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/608"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/610"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/611"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/612"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/614"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/615"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/616"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/619"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/620"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/622"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/623"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/624"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/626"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/628"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/629"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/630"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/631"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/632"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/633"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/635"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/637"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/638"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/639"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/643"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/644"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/720"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/721"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/722"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/723"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/724"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/725"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/726"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/728"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/730"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/731"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/732"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/733"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/734"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/735"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/736"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/737"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/739"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/740"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/741"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/742"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/743"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/744"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/745"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/748"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/749"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/750"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/751"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/753"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/754"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/755"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/757"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/758"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/759"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/760"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/762"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/764"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/765"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/766"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/767"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/769"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/770"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/771"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/772"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/773"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/775"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/777"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/778"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/780"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/781"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/782"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/784"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/786"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/787"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/788"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/790"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/791"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/792"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/793"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/794"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/796"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/797"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/798"
+    },
+    {
+      "arm": "R3",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/799"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/565"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/566"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/567"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/568"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/572"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/573"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/576"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/577"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/578"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/579"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/580"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/581"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/583"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/585"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/586"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/587"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/588"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/589"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/590"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/591"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/592"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/593"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/594"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/596"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/597"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/599"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/600"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/603"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/604"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/605"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/606"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/607"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/608"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/610"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/611"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/612"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/614"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/615"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/616"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/619"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/620"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/622"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/623"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/624"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/626"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/628"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/629"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/630"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/631"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/632"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/633"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/635"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/637"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/638"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/639"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/643"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/644"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/720"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/721"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/722"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/723"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/724"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/725"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/726"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/728"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/730"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/731"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/732"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/733"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/734"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/735"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/736"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/737"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/739"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/740"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/741"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/742"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/743"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/744"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/745"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/748"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/749"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/750"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/751"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/753"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/754"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/755"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/757"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/758"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/759"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/760"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/762"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/764"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/765"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/766"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/767"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/769"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/770"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/771"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/772"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/773"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/775"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/777"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/778"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/780"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/781"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/782"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/784"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/786"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/787"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/788"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/790"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/791"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/792"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/793"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/794"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/796"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/797"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/798"
+    },
+    {
+      "arm": "R4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/799"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/565"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/566"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/567"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/568"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/572"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/573"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/576"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/577"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/578"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/579"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/580"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/581"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/583"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/585"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/586"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/587"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/588"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/589"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/590"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/591"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/592"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/593"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/594"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/596"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/597"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/599"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/600"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/603"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/604"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/605"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/606"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/607"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/608"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/610"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/611"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/612"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/614"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/615"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/616"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/619"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/620"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/622"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/623"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/624"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/626"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/628"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/629"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/630"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/631"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/632"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/633"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/635"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/637"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/638"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/639"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/643"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/644"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/720"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/721"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/722"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/723"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/724"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/725"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/726"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/728"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/730"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/731"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/732"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/733"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/734"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/735"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/736"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/737"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/739"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/740"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/741"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/742"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/743"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/744"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/745"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/748"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/749"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/750"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/751"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/753"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/754"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/755"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/757"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/758"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/759"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/760"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/762"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/764"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/765"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/766"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/767"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/769"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/770"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/771"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/772"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/773"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/775"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/777"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/778"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/780"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/781"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/782"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/784"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/786"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/787"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/788"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/790"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/791"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/792"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/793"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 0,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/794"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/796"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/797"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/798"
+    },
+    {
+      "arm": "R1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "pass1": 1,
+      "returned_model": "solar-pro2-251215",
+      "state": "SUCCEEDED",
+      "tid": "Mbpp/799"
+    }
+  ],
+  "returned_models": [
+    "solar-pro2-251215"
+  ],
+  "secondary": {
+    "R1_minus_R0": 0.025000000000000022,
+    "R2_minus_R0": 0.04166666666666674,
+    "R3_minus_R2": 0.008333333333333304,
+    "R4_minus_R3": 0.008333333333333304
+  },
+  "split": "main",
+  "split_hash": "c3cbf496cf2f6fb7505e61d958c4523f58776ee71ae28f992c49f11d0fd7c8b3",
+  "transfer": {
+    "R1": {
+      "adoption_coverage": 1.0,
+      "gains": 10,
+      "loss_classes": {
+        "EXACT_MEMORY_PATTERN_ADOPTION": 0,
+        "PARSER_OR_GRADER_FAILURE": 0,
+        "PARTIAL_MEMORY_PATTERN_ADOPTION": 7,
+        "UNCLASSIFIED": 0,
+        "UNRELATED_ERROR": 0
+      },
+      "losses": 7
+    },
+    "R2": {
+      "adoption_coverage": 1.0,
+      "gains": 11,
+      "loss_classes": {
+        "EXACT_MEMORY_PATTERN_ADOPTION": 0,
+        "PARSER_OR_GRADER_FAILURE": 0,
+        "PARTIAL_MEMORY_PATTERN_ADOPTION": 6,
+        "UNCLASSIFIED": 0,
+        "UNRELATED_ERROR": 0
+      },
+      "losses": 6
+    },
+    "R3": {
+      "adoption_coverage": 1.0,
+      "gains": 12,
+      "loss_classes": {
+        "EXACT_MEMORY_PATTERN_ADOPTION": 0,
+        "PARSER_OR_GRADER_FAILURE": 0,
+        "PARTIAL_MEMORY_PATTERN_ADOPTION": 6,
+        "UNCLASSIFIED": 0,
+        "UNRELATED_ERROR": 0
+      },
+      "losses": 6
+    },
+    "R4": {
+      "adoption_coverage": 1.0,
+      "gains": 11,
+      "loss_classes": {
+        "EXACT_MEMORY_PATTERN_ADOPTION": 0,
+        "PARSER_OR_GRADER_FAILURE": 0,
+        "PARTIAL_MEMORY_PATTERN_ADOPTION": 4,
+        "UNCLASSIFIED": 0,
+        "UNRELATED_ERROR": 0
+      },
+      "losses": 4
+    }
+  }
+}

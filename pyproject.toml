@@ -25,7 +25,7 @@ enterprise-memory-index-worker = "enterprise_memory.service.index_worker_cli:mai
 
 [tool.setuptools.packages.find]
 where = ["src", "."]
-include = ["enterprise_memory*", "benchmarks*"]
+include = ["enterprise_memory*", "benchmarks*", "experiments*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

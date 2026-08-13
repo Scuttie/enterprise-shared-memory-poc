@@ -31,20 +31,21 @@ def episode_id_for_job(job_id: str) -> str:
 # ---------------------------------------------------------------- submission (API, api_service role)
 async def create_solve_job(engine, *, org_id, user_id, repo_id, task_policy_id, task_policy_version,
                            installation_id, requested_ref, commit_sha, tree_sha, instruction,
-                           idempotency_key, backend_type, spec) -> tuple:
+                           idempotency_key, backend_type, spec, experiment_id=None, experiment_arm=None) -> tuple:
     ihash = sha(instruction)
     async with tenant_tx(engine, org_id, user_id) as c:
         row = (await c.execute(text(
             "INSERT INTO solve_jobs(org_id,submitter_user_id,repository_id,task_policy_id,logical_request_id,"
             "idempotency_key,spec_json,installation_id,requested_ref,resolved_commit_sha,resolved_tree_sha,"
-            "task_policy_version,instruction_hash,identity_snapshot,backend_type) VALUES(:o,:u,:r,:tp,:lrq,:k,"
-            "cast(:s as jsonb),:inst,:ref,:cs,:ts,:tpv,:ih,cast(:idn as jsonb),:bt)"
-            " ON CONFLICT (org_id,idempotency_key) DO UPDATE SET updated_at=now()"
+            "task_policy_version,instruction_hash,identity_snapshot,backend_type,experiment_id,experiment_arm)"
+            " VALUES(:o,:u,:r,:tp,:lrq,:k,cast(:s as jsonb),:inst,:ref,:cs,:ts,:tpv,:ih,cast(:idn as jsonb),"
+            ":bt,:eid,:earm) ON CONFLICT (org_id,idempotency_key) DO UPDATE SET updated_at=now()"
             " RETURNING id,(xmax=0) AS created"),
             {"o": org_id, "u": user_id, "r": repo_id, "tp": task_policy_id, "lrq": idempotency_key,
              "k": idempotency_key, "s": json.dumps(spec), "inst": installation_id, "ref": requested_ref,
              "cs": commit_sha, "ts": tree_sha, "tpv": task_policy_version, "ih": ihash,
-             "idn": json.dumps({"sub": str(user_id), "org": str(org_id)}), "bt": backend_type})).first()
+             "idn": json.dumps({"sub": str(user_id), "org": str(org_id)}), "bt": backend_type,
+             "eid": experiment_id, "earm": experiment_arm})).first()
         jid, created = str(row[0]), bool(row[1])
         if created:
             await _event(c, org_id, jid, 0, "QUEUED", "submitted", {"ref": requested_ref, "commit": commit_sha})

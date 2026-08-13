@@ -115,6 +115,9 @@ async def process_job(container, worker_id, ev):
     org, user, job_id = ev["org_id"], ev.get("submitter"), ev["job_id"]
     spec = ev["spec_json"] if isinstance(ev["spec_json"], dict) else json.loads(ev["spec_json"])
     repo_id = spec["repository_id"]; target = spec["target_path"]; commit = spec["commit_sha"]
+    # the repository/task adapter is keyed by the server-owned fixture id (falls back to the DB repo id for
+    # the demo provider). Authorization always uses the DB repo id (repo_id), never the fixture ref.
+    repo_ref = spec.get("repository_fixture_id") or repo_id
     lrq = "mc-%s" % job_id
     seq = 1
     stop = asyncio.Event()
@@ -130,7 +133,7 @@ async def process_job(container, worker_id, ev):
             nonlocal seq
             # immutable snapshot -> artifact
             await _checkpoint(e, org, job_id, worker_id, lease_lost)     # before snapshot
-            snapshot = container.repo_provider.snapshot(repo_id, commit, target)
+            snapshot = container.repo_provider.snapshot(repo_ref, commit, target)
             snap_ref = await container.artifacts.put(e, org, AR.REPOSITORY_SNAPSHOT,
                                                      json.dumps(snapshot, sort_keys=True).encode(),
                                                      created_by=user, job_id=job_id)
@@ -192,27 +195,45 @@ async def process_job(container, worker_id, ev):
                                           created_by=user, job_id=job_id)
             await D.add_event(e, org, job_id, seq, "TESTING", "generated", {"backend": result.backend_type}); seq += 1
 
-            # patch parse + edit policy
+            # patch parse + edit policy. For an experiment job a rejected/unapplyable patch is a recorded
+            # exec failure (Exec@1=0), NOT a job failure — the model's attempt is still a data point. For a
+            # non-experiment (demo) job the original strict behaviour is preserved (policy violation -> FAIL).
             await _checkpoint(e, org, job_id, worker_id, lease_lost)     # before patch processing
-            new_text, meta = validate_edit_policy(result.patch_text, spec["editable_paths"],
-                                                  spec["maximum_changed_lines"], snapshot, target)
+            is_experiment = bool(spec.get("experiment_id"))
+            new_text, meta, policy_reason = None, {}, None
+            try:
+                new_text, meta = validate_edit_policy(result.patch_text, spec["editable_paths"],
+                                                      spec["maximum_changed_lines"], snapshot, target)
+            except EditPolicyError as pe:
+                if not is_experiment:
+                    raise
+                policy_reason = str(pe)
             await container.artifacts.put(e, org, AR.PARSED_PATCH, result.patch_text.encode(),
                                           created_by=user, job_id=job_id)
-            # controlled sandbox
+            # controlled sandbox — grade on the SERVER-OWNED hidden test (never in the model snapshot)
             await _checkpoint(e, org, job_id, worker_id, lease_lost)     # before sandbox
-            sandbox_res = container.sandbox.run(snapshot, result.patch_text, target)
-            await container.artifacts.put(e, org, AR.APPLIED_PATCH, new_text.encode(), created_by=user, job_id=job_id)
+            hidden = getattr(container.repo_provider, "hidden_test", lambda r: None)(repo_ref)
+            if new_text is not None:
+                sandbox_res = container.sandbox.run(snapshot, result.patch_text, target, grading_test=hidden)
+                await container.artifacts.put(e, org, AR.APPLIED_PATCH, new_text.encode(), created_by=user,
+                                              job_id=job_id)
+            else:
+                sandbox_res = {"applied": False, "tests_passed": False, "output": "policy:%s" % policy_reason,
+                               "changed_files": []}
             await container.artifacts.put(e, org, AR.SANDBOX_RESULT,
                                           json.dumps(sandbox_res, sort_keys=True).encode(), created_by=user,
                                           job_id=job_id)
-            if not sandbox_res.get("tests_passed"):
+            exec1 = 1 if sandbox_res.get("applied") else 0
+            pass1 = 1 if sandbox_res.get("tests_passed") else 0
+            if not is_experiment and not pass1:
                 raise EditPolicyError("sandbox_tests_failed")
-            await D.add_event(e, org, job_id, seq, "TESTING", "sandbox_pass", {"changed": meta}); seq += 1
+            await D.add_event(e, org, job_id, seq, "TESTING", "graded",
+                              {"applied": bool(exec1), "passed": bool(pass1)}); seq += 1
 
             # build (but do NOT yet persist) the terminal evidence; the atomic finaliser writes it all in one
             # lease-owned transaction together with the SUCCEEDED transition.
-            outcome = {"pass1": 1, "exec1": 1, "pass2": 1, "injected": injected_meta,
-                       "content_hash": D.sha(new_text)}
+            outcome = {"pass1": pass1, "exec1": exec1, "pass2": pass1, "injected": injected_meta,
+                       "content_hash": D.sha(new_text or result.patch_text)}
             episode = {"task_id": spec["task_id"], "repo_id": repo_id, "commit": commit,
                        "outcome": "success", "injected_memory_ids": [m["version_id"] for m in injected_meta]}
             return cross_user, outcome, episode

@@ -13,10 +13,36 @@ from ..indexing.qdrant_indexes import QdrantIndex
 from ..indexing.embeddings import DeterministicTestEmbedder
 from ..artifacts.service import ArtifactService
 from .p5deps import OIDCIdentityProvider, DbRepositoryAuthz, DbTaskPolicyRepository, OfflineRepositoryProvider
-from .execution import FakeExecutionBackend
+from .execution import FakeExecutionBackend, DirectModelExecutionBackend
 from .localsandbox import ControlledLocalSandbox
 
 INDEX_DIM = int(os.environ.get("INDEX_DIM", "64"))
+SOLAR_BASE_URL = os.environ.get("SOLAR_BASE_URL", "https://api.upstage.ai/v1/solar")
+SOLAR_MODEL = os.environ.get("SOLAR_MODEL", "solar-pro2-251215")
+
+
+def _execution_backend():
+    """Server-owned execution backend. Default is the deterministic fake (credential-free CI). When
+    EXECUTION_BACKEND=solar the worker calls the real Solar coding model via DirectModelExecutionBackend (key
+    from UPSTAGE_API_KEY, read by an EnvSecretProvider — never from any request)."""
+    kind = os.environ.get("EXECUTION_BACKEND", "fake")
+    if kind == "solar":
+        from ..providers.solar import SolarProvider
+        from ..providers.secrets import EnvSecretProvider
+        provider = SolarProvider(SOLAR_BASE_URL, SOLAR_MODEL, EnvSecretProvider(),
+                                 key_name=os.environ.get("SOLAR_KEY_NAME", "UPSTAGE_API_KEY"),
+                                 max_output_tokens=int(os.environ.get("SOLAR_MAX_TOKENS", "1024")))
+        return DirectModelExecutionBackend(provider)
+    return FakeExecutionBackend()
+
+
+def _repo_provider():
+    """Repository/task adapter. Default is the offline demo provider. The frozen experiment uses the
+    FrozenExecutableBenchmarkAdapter (snapshot + server-owned hidden test) when REPO_PROVIDER=benchmark."""
+    if os.environ.get("REPO_PROVIDER") == "benchmark":
+        from .task_adapter import FrozenExecutableBenchmarkAdapter
+        return FrozenExecutableBenchmarkAdapter()
+    return OfflineRepositoryProvider()
 
 
 class ContainerError(RuntimeError):
@@ -86,9 +112,9 @@ def build_container(environment=None) -> Container:
         identity=_oidc_identity(environment),
         repo_authz=DbRepositoryAuthz(),
         task_policy=DbTaskPolicyRepository(),
-        repo_provider=OfflineRepositoryProvider(),
+        repo_provider=_repo_provider(),
         artifacts=ArtifactService(_artifact_store()),
         index=QdrantIndex.from_env(INDEX_DIM),
         embedder=DeterministicTestEmbedder(INDEX_DIM),
-        backend=FakeExecutionBackend(),
+        backend=_execution_backend(),
         sandbox=ControlledLocalSandbox(environment))

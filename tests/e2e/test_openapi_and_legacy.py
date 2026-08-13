@@ -6,7 +6,8 @@ from enterprise_memory.service.app import create_app, SolveRequest
 
 _SNAP = os.path.join(os.path.dirname(__file__), "..", "..", "openapi_v1.json")
 FORBIDDEN = {"org_id", "user_id", "installation_id", "patch", "test_passed", "editable_paths",
-             "test_command", "hidden_test", "permissions"}
+             "test_command", "hidden_test", "permissions", "arm", "experiment_arm", "experiment_id",
+             "retrieval_policy"}
 
 
 def test_openapi_snapshot_matches():

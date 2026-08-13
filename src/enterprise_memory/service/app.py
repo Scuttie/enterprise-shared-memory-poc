@@ -21,7 +21,7 @@ from . import durable as D
 from .p5deps import Unauthenticated, ref_allowed
 
 API_VERSION = "v1"
-MIGRATION_HEAD = "0011"
+MIGRATION_HEAD = "0012"
 
 ROUTE_SCOPES = {
     ("POST", "/v1/solve"): S.SOLVE_SUBMIT,
@@ -182,12 +182,17 @@ def create_app(container=None, environment=None):
                 "family_id": policy.get("family_id"), "domain": policy.get("domain"),
                 "repository_fixture_id": policy.get("repository_fixture_id"),
                 "hidden_test_manifest_id": policy.get("hidden_test_manifest_id"),
-                "policy_version": policy.get("policy_version")}
+                "policy_version": policy.get("policy_version"),
+                # server-assigned experiment arm + retrieval policy (never from the client)
+                "experiment_id": policy.get("experiment_id"), "experiment_arm": policy.get("experiment_arm"),
+                "retrieval_policy": policy.get("retrieval_policy")}
+        backend_type = os.environ.get("EXECUTION_BACKEND", "fake")
         job_id, created = await D.create_solve_job(
             c.api_engine, org_id=ident.org_id, user_id=ident.subject_id, repo_id=body.repository_id,
             task_policy_id=policy["task_policy_id"], task_policy_version=policy["version"],
             installation_id=installation, requested_ref=body.desired_ref, commit_sha=commit, tree_sha=tree,
-            instruction=body.instruction, idempotency_key=idem, backend_type="fake", spec=spec)
+            instruction=body.instruction, idempotency_key=idem, backend_type=backend_type, spec=spec,
+            experiment_id=policy.get("experiment_id"), experiment_arm=policy.get("experiment_arm"))
         audit_id = await _audit(c.api_engine, ident.org_id, ident.subject_id, "solve_submitted", job_id,
                                 {"commit": commit, "created": created}, rid)
         return JSONResponse(status_code=202, content={

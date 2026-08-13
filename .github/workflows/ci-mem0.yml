@@ -52,6 +52,6 @@ jobs:
       - name: Alembic upgrade
         run: alembic upgrade head
       - name: Head check
-        run: alembic current | grep -E "0011.*\(head\)"
+        run: alembic current | grep -E "0012.*\(head\)"
       - name: Real Mem0 governed infer=False tests
         run: python -m pytest -q tests/mem0 --timeout=900 --timeout-method=thread

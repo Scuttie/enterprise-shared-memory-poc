@@ -1,0 +1,122 @@
+name: ci-e2e
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: esm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm"
+          --health-interval 5s --health-timeout 5s --health-retries 30
+    env:
+      DATABASE_URL: postgresql://localhost:5432/esm
+      MIGRATION_USER: postgres
+      MIGRATION_PASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: esm
+      QDRANT_URL: http://localhost:6333
+      MINIO_ENDPOINT: http://localhost:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: esm-artifacts-e2e
+      INDEX_DIM: "64"
+      ENVIRONMENT: ci
+      OIDC_ISSUER: https://idp.e2e.local/
+      OIDC_AUDIENCE: esm-api
+      OIDC_JWKS_FILE: /tmp/e2e_jwks.json
+      E2E_API_URL: http://127.0.0.1:8000
+      API_PORT: "8000"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Start Qdrant + MinIO (digest-pinned qdrant; MinIO by tag, resolve-to-pin later)
+        run: |
+          docker run -d --name qdrant -p 6333:6333 \
+            qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
+          docker run -d --name minio -p 9000:9000 \
+            -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin \
+            minio/minio:latest server /data
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,postgres,qdrant,artifacts,oidc]"
+      - name: Wait for Qdrant + MinIO
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          def wait(url):
+              for _ in range(60):
+                  try:
+                      with urllib.request.urlopen(url, timeout=2) as r:
+                          if r.status < 500: return
+                  except Exception: pass
+                  time.sleep(2)
+              raise SystemExit("not ready: " + url)
+          wait("http://localhost:6333/readyz")
+          wait("http://localhost:9000/minio/health/live")
+          print("qdrant + minio ready")
+          PY
+      - name: Bootstrap roles + migrate
+        run: |
+          python scripts/postgres_bootstrap.py
+          alembic upgrade head
+          alembic current | grep -E "0008.*\(head\)"
+      - name: Create MinIO bucket
+        run: |
+          python - <<'PY'
+          import boto3, os
+          c = boto3.client("s3", endpoint_url=os.environ["MINIO_ENDPOINT"],
+                           aws_access_key_id=os.environ["MINIO_ACCESS_KEY"],
+                           aws_secret_access_key=os.environ["MINIO_SECRET_KEY"], use_ssl=False,
+                           region_name="us-east-1")
+          try: c.create_bucket(Bucket=os.environ["MINIO_BUCKET"])
+          except Exception as e: print("bucket:", e)
+          print("bucket ready")
+          PY
+      - name: Seed a JWKS file so the API can start verifying (overwritten per-session by the tests)
+        run: echo '{"keys":[]}' > "$OIDC_JWKS_FILE"
+      - name: Start API (separate process)
+        run: |
+          nohup python -m enterprise_memory.service.appcli > api.log 2>&1 &
+          echo "started api pid $!"
+      - name: Start solve worker (separate process)
+        run: |
+          nohup env WORKER_ID=e2e-worker-1 python -m enterprise_memory.service.solve_worker > worker.log 2>&1 &
+          echo "started worker pid $!"
+      - name: Wait for API readiness
+        run: |
+          python - <<'PY'
+          import time, urllib.request, json
+          for _ in range(60):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8000/health/live", timeout=2) as r:
+                      if r.status == 200:
+                          print("api live"); raise SystemExit(0)
+              except SystemExit: raise
+              except Exception: pass
+              time.sleep(1)
+          raise SystemExit("api not live")
+          PY
+      - name: E2E tests (positive + negative + crash) over real HTTP
+        run: python -m pytest -q tests/e2e --timeout=300 --timeout-method=thread
+      - name: Dump service logs on failure
+        if: failure()
+        run: |
+          echo "===== api.log ====="; cat api.log || true
+          echo "===== worker.log ====="; cat worker.log || true

@@ -42,7 +42,9 @@ async def claim_job(engine, worker_id, lease_seconds=30):
         row = (await c.execute(text("SELECT job_id, org_id, submitter_user_id, task_policy_id, spec_json, attempt_number"
                                     " FROM claim_next_job(:w,:l)"), {"w": worker_id, "l": lease_seconds})).first()
         return None if row is None else {"job_id": str(row[0]), "org_id": str(row[1]),
-                                         "submitter": (str(row[2]) if row[2] else None), "attempt": row[5]}
+                                         "submitter": (str(row[2]) if row[2] else None),
+                                         "task_policy_id": (str(row[3]) if row[3] else None),
+                                         "spec_json": row[4], "attempt": row[5]}
 
 
 async def heartbeat(engine, org_id, job_id, worker_id, lease_seconds=30):

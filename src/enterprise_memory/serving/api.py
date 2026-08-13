@@ -1,11 +1,18 @@
-"""FastAPI PoC (handoff §6.1/§10). Every endpoint validates org/user/repo scope, returns request_id +
-audit_id, uses structured schemas, never returns another user's raw private trace, and distinguishes
-logical/index/physical deletion. Backend = InMemoryBackend + SqliteRegistry (no Solar/Mem0 needed to
-serve or test). /v1/solve runs a provided patch in the sandbox (Solar wiring is the benchmark path)."""
+"""OFFLINE DEMO ONLY (P5 §3). This is the legacy PoC app: it trusts client-provided org_id/user_id/patch/
+test_passed and is INSECURE. It is quarantined here as an offline example (`create_offline_demo_app`) and is
+refused in ci/staging/production. The single documented PRODUCTION app is `enterprise_memory.service.app.
+create_app`, which never trusts request-body identity/patch/test results."""
 from __future__ import annotations
+import os
 import uuid
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+
+_QUARANTINED_ENVS = ("ci", "staging", "production")
+
+
+class LegacyAppRefused(RuntimeError):
+    pass
 
 from ..backends.in_memory import InMemoryBackend
 from ..contracts.registry import SqliteRegistry
@@ -38,8 +45,11 @@ def _user(ctx: Ctx):
     return S.UserContext(ctx.org_id, ctx.team_id, ctx.user_id, "agent", ctx.allowed_repo_ids, ["src/**"], "dev", "req")
 
 
-def create_app(registry_path=":memory:"):
-    app = FastAPI(title="Enterprise Shared Memory PoC", version="1.0.0")
+def create_offline_demo_app(registry_path=":memory:"):
+    env = os.environ.get("ENVIRONMENT", "local")
+    if env in _QUARANTINED_ENVS:
+        raise LegacyAppRefused("legacy insecure PoC app is not selectable in %s" % env)
+    app = FastAPI(title="Enterprise Shared Memory PoC (offline demo)", version="1.0.0")
     reg = SqliteRegistry(registry_path); reg.migrate()
     priv = InMemoryBackend()      # per-user private views
     shar = InMemoryBackend()      # promoted contract views
@@ -117,3 +127,7 @@ def create_app(registry_path=":memory:"):
     app.state.private = priv
     app.state.shared = shar
     return app
+
+
+# Back-compat alias for the offline demo/unit tests only. NOT a production entrypoint.
+create_app = create_offline_demo_app

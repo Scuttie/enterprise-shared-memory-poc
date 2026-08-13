@@ -1,0 +1,154 @@
+"""Durable Postgres persistence for the P5 API + worker (RLS-scoped). Everything a caller sees is
+authoritative PostgreSQL state; identity/permissions/patch/test-results are never taken from request input."""
+from __future__ import annotations
+import hashlib
+import json
+import uuid
+from sqlalchemy import text
+from ..persistence.tenant_context import tenant_tx
+
+
+def sha(s: str) -> str:
+    return hashlib.sha256((s or "").encode("utf-8")).hexdigest()
+
+
+# ---------------------------------------------------------------- submission (API, api_service role)
+async def create_solve_job(engine, *, org_id, user_id, repo_id, task_policy_id, task_policy_version,
+                           installation_id, requested_ref, commit_sha, tree_sha, instruction,
+                           idempotency_key, backend_type, spec) -> tuple:
+    ihash = sha(instruction)
+    async with tenant_tx(engine, org_id, user_id) as c:
+        row = (await c.execute(text(
+            "INSERT INTO solve_jobs(org_id,submitter_user_id,repository_id,task_policy_id,logical_request_id,"
+            "idempotency_key,spec_json,installation_id,requested_ref,resolved_commit_sha,resolved_tree_sha,"
+            "task_policy_version,instruction_hash,identity_snapshot,backend_type) VALUES(:o,:u,:r,:tp,:lrq,:k,"
+            "cast(:s as jsonb),:inst,:ref,:cs,:ts,:tpv,:ih,cast(:idn as jsonb),:bt)"
+            " ON CONFLICT (org_id,idempotency_key) DO UPDATE SET updated_at=now()"
+            " RETURNING id,(xmax=0) AS created"),
+            {"o": org_id, "u": user_id, "r": repo_id, "tp": task_policy_id, "lrq": idempotency_key,
+             "k": idempotency_key, "s": json.dumps(spec), "inst": installation_id, "ref": requested_ref,
+             "cs": commit_sha, "ts": tree_sha, "tpv": task_policy_version, "ih": ihash,
+             "idn": json.dumps({"sub": str(user_id), "org": str(org_id)}), "bt": backend_type})).first()
+        jid, created = str(row[0]), bool(row[1])
+        if created:
+            await _event(c, org_id, jid, 0, "QUEUED", "submitted", {"ref": requested_ref, "commit": commit_sha})
+    return jid, created
+
+
+async def _event(conn, org_id, job_id, seq, state, event_type, detail):
+    await conn.execute(text(
+        "INSERT INTO job_events(org_id,job_id,seq,state,event_type,detail_json)"
+        " VALUES(:o,:j,:seq,:st,:et,cast(:d as jsonb)) ON CONFLICT (job_id,seq) DO NOTHING"),
+        {"o": org_id, "j": job_id, "seq": seq, "st": state, "et": event_type, "d": json.dumps(detail or {})})
+
+
+async def add_event(engine, org_id, job_id, seq, state, event_type, detail=None):
+    async with tenant_tx(engine, org_id) as c:
+        await _event(c, org_id, job_id, seq, state, event_type, detail)
+
+
+# ---------------------------------------------------------------- reads (API)
+async def get_job(engine, org_id, job_id):
+    async with tenant_tx(engine, org_id) as c:
+        r = (await c.execute(text(
+            "SELECT id,state,submitter_user_id,repository_id,resolved_commit_sha,resolved_tree_sha,"
+            "backend_type,cross_user_private_injection_count,created_at,updated_at FROM solve_jobs"
+            " WHERE id=:i"), {"i": job_id})).first()
+    if r is None:
+        return None
+    return {"job_id": str(r[0]), "state": r[1], "submitter": str(r[2]), "repository_id": str(r[3]),
+            "commit_sha": r[4], "tree_sha": r[5], "backend_type": r[6],
+            "cross_user_private_injection_count": r[7],
+            "created_at": (r[8].isoformat() if r[8] else None),
+            "updated_at": (r[9].isoformat() if r[9] else None)}
+
+
+async def list_events(engine, org_id, job_id):
+    async with tenant_tx(engine, org_id) as c:
+        rows = (await c.execute(text("SELECT seq,state,event_type,detail_json,created_at FROM job_events"
+                                     " WHERE job_id=:j ORDER BY seq"), {"j": job_id})).fetchall()
+    return [{"seq": r[0], "state": r[1], "event_type": r[2],
+             "detail": (r[3] if isinstance(r[3], dict) else json.loads(r[3] or "{}")),
+             "created_at": (r[4].isoformat() if r[4] else None)} for r in rows]
+
+
+async def request_cancel(engine, org_id, job_id) -> bool:
+    async with tenant_tx(engine, org_id) as c:
+        n = (await c.execute(text(
+            "UPDATE solve_jobs SET cancel_requested_at=now() WHERE id=:i"
+            " AND state <> ALL(ARRAY['SUCCEEDED','FAILED','CANCELLED','DEAD_LETTER'])"),
+            {"i": job_id})).rowcount
+    return n == 1
+
+
+# ---------------------------------------------------------------- worker persistence (worker_service role)
+async def persist_model_call(engine, org_id, job_id, record: dict):
+    async with tenant_tx(engine, org_id) as c:
+        await c.execute(text(
+            "INSERT INTO model_calls(org_id,job_id,logical_request_id,backend_type,requested_model,"
+            "returned_model,attempts,input_tokens,output_tokens,total_tokens,total_latency,final_status,"
+            "redaction_status,detail_json) VALUES(:o,:j,:lrq,:bt,:rm,:rtm,:att,:it,:ot,:tt,:lat,:fs,:rs,"
+            "cast(:d as jsonb))"),
+            {"o": org_id, "j": job_id, "lrq": record.get("logical_request_id"),
+             "bt": record.get("backend_type", "fake"), "rm": record.get("requested_model"),
+             "rtm": record.get("returned_model"), "att": int(record.get("attempts", 1)),
+             "it": record.get("input_tokens"), "ot": record.get("output_tokens"),
+             "tt": record.get("total_tokens"), "lat": record.get("total_latency"),
+             "fs": record.get("final_status", "success"), "rs": record.get("redaction_status", "clean"),
+             "d": json.dumps({k: record.get(k) for k in ("prompt_hash", "response_hash")})})
+
+
+async def persist_retrieval_candidate(engine, org_id, job_id, *, scope, canonical_id, canonical_version_id,
+                                      content_hash, private_owner_id, accepted, rejection_reason, injected):
+    async with tenant_tx(engine, org_id) as c:
+        await c.execute(text(
+            "INSERT INTO retrieval_candidates(org_id,job_id,scope,canonical_id,canonical_version_id,"
+            "content_hash,private_owner_id,accepted,rejection_reason,injected) VALUES(:o,:j,:sc,:ci,:cv,:h,"
+            "cast(:po as uuid),:acc,:rr,:inj)"),
+            {"o": org_id, "j": job_id, "sc": scope, "ci": canonical_id, "cv": canonical_version_id,
+             "h": content_hash, "po": private_owner_id, "acc": accepted, "rr": rejection_reason,
+             "inj": injected})
+
+
+async def persist_outcome(engine, org_id, job_id, *, pass1, exec1, pass2, injected, content_hash):
+    async with tenant_tx(engine, org_id) as c:
+        await c.execute(text(
+            "INSERT INTO outcome_observations(org_id,job_id,pass1,exec1,pass2,injected_memories,content_hash)"
+            " VALUES(:o,:j,:p1,:e1,:p2,cast(:im as jsonb),:h)"),
+            {"o": org_id, "j": job_id, "p1": pass1, "e1": exec1, "p2": pass2,
+             "im": json.dumps(injected), "h": content_hash})
+
+
+async def persist_private_episode(engine, org_id, user_id, repo_id, canonical: dict) -> str:
+    h = "sha256:" + sha(json.dumps(canonical, sort_keys=True))[:32]
+    eid = str(uuid.uuid4())
+    async with tenant_tx(engine, org_id, user_id) as c:
+        await c.execute(text(
+            "INSERT INTO private_episodes(id,org_id,owner_user_id,repository_id,canonical_json,content_hash,"
+            "state) VALUES(:i,:o,:u,:r,cast(:j as jsonb),:h,'success')"),
+            {"i": eid, "o": org_id, "u": user_id, "r": repo_id, "j": json.dumps(canonical), "h": h})
+    return eid
+
+
+async def finalize_success(engine, org_id, job_id, worker_id, cross_user_count, seq):
+    """Terminal transition enforcing lease ownership; sets the computed injection count; records the event."""
+    async with tenant_tx(engine, org_id) as c:
+        n = (await c.execute(text(
+            "UPDATE solve_jobs SET state='SUCCEEDED', updated_at=now(), lease_owner=NULL,"
+            " lease_expires_at=NULL, heartbeat_at=NULL, cross_user_private_injection_count=:x"
+            " WHERE id=:i AND lease_owner=:w AND state <> ALL(ARRAY['SUCCEEDED','FAILED','CANCELLED','DEAD_LETTER'])"),
+            {"x": cross_user_count, "i": job_id, "w": worker_id})).rowcount
+        if n != 1:
+            raise PermissionError("not_lease_owner_or_terminal")
+        await _event(c, org_id, job_id, seq, "SUCCEEDED", "completed",
+                     {"cross_user_private_injection_count": cross_user_count})
+
+
+async def mark_failed(engine, org_id, job_id, worker_id, reason, seq):
+    from ..persistence.postgres import redact
+    async with tenant_tx(engine, org_id) as c:
+        await c.execute(text(
+            "UPDATE solve_jobs SET state='FAILED', updated_at=now(), lease_owner=NULL, lease_expires_at=NULL,"
+            " error_detail_sanitized=:d WHERE id=:i AND lease_owner=:w"),
+            {"d": redact(reason), "i": job_id, "w": worker_id})
+        await _event(c, org_id, job_id, seq, "FAILED", "failed", {"reason": redact(reason)})

@@ -43,6 +43,14 @@ class ControlledLocalSandbox:
         except SyntaxError:
             return {"applied": True, "tests_passed": False, "output": "syntax_error",
                     "changed_files": [target_path]}
+        # REALBENCH-R1: an "EVALPLUS:<task_id>" grading marker routes to the OFFICIAL MBPP+ evaluator (Linux/CI)
+        if grading_test is not None and grading_test.startswith("EVALPLUS:"):
+            from experiments.realbench_r1 import grader as _G
+            r = _G.grade(grading_test[len("EVALPLUS:"):], new_text)
+            return {"applied": True, "tests_passed": bool(r["mbpp_plus_pass"]),
+                    "output": ("ok" if r["mbpp_plus_pass"] else "mbpp_plus_fail"),
+                    "base_pass": r["base_pass"], "plus_pass": r["plus_pass"], "exec_ok": r["exec_ok"],
+                    "changed_files": [target_path], "meta": meta, "patched_text": new_text}
         # grade on the server-owned test (hidden for experiment tasks); fall back to the snapshot public test
         test_src = grading_test if grading_test is not None else snapshot.get("tests/test_app.py", "")
         passed = _run_test(new_text, target_path, test_src)

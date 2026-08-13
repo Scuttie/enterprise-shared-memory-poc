@@ -53,15 +53,36 @@ P1, P1.1, P2-0 (alembic 0003), P2-preflight (0004), P2-start (0005), **P2** core
 - **E = PARTIAL-advanced** — durable job/outbox + Qdrant outage replay validated; full worker/provider recovery later.
 - **Company certification: PENDING for every gate.**
 
-## In progress
-- **P3.1/P2.2**: versioned canonical codec, safe retrieval projection, private-recall re-authorization,
-  embedder revision pinning, OIDC network/JWK hardening, repository ref/installation policy hardening.
-- **P4**: S3/MinIO artifact store + retention/deletion lifecycle; async Solar provider (resilience,
-  accounting, redaction).
-- **P5**: real authenticated FastAPI `/v1` surface, durable job submission, separate worker process, and a
-  real HTTP → job → worker → outcome end-to-end path.
+### P3.1/P2.2 — COMPLETE (green)
+Versioned canonical codec (`contracts/codec.py`, schema `enterprise_memory/1.0.0`); safe target-free
+retrieval projection (provenance/hidden-tests/identities never enter Qdrant/Mem0 text); private-recall
+re-authorization (current repo-read + path permission; owner alone insufficient; revoked-permission
+rejection); pinned embedder (revision/trust/dimension enforced, provenance recorded); OIDC network/JWK/claim
+hardening (HTTPS+port+redirect policy, bounded fetch, duplicate/empty JWKS, per-JWK kty/use/key_ops,
+single-flight refresh, claim type checks); repository ref/installation policy (server-owned `RepositoryTaskPolicy`,
+ref↔branch binding, full commit SHA + tree required, POSIX path normalization, client-chosen installation
+rejected).
+
+### P4 — COMPLETE (green)
+- **Artifact store** (alembic 0007 + `artifacts/`): PostgreSQL-authoritative metadata + 8-state durable
+  lifecycle; `LocalArtifactStore` + `S3ArtifactStore` (private bucket, SSE-configurable, SHA-256 verified,
+  content-addressed, no overwrite-with-different-content, presigned GET only); retention + legal hold block
+  deletion; physical deletion confirmed only after the object is verified absent; reconciliation. `ci-artifacts`
+  (postgres + MinIO) green.
+- **Async Solar provider** (`providers/`): one httpx client/process; key via `SecretProvider` (never in
+  exceptions/logs/artifacts); timeouts, bounded retries (408/429/5xx/transport only), backoff+jitter+bounded
+  Retry-After, stable logical_request_id, per-org+global concurrency, circuit breaker w/ half-open recovery,
+  accounting record, redaction sanitizer. `ci-solar` (fake server) green; optional gated `solar-integration`.
+
+### P5 — NOT STARTED (remaining to reach the valid endpoint)
+Real authenticated FastAPI `/v1` surface (18 endpoints), durable job submission, a separate worker process
+running the full solve pipeline (repo snapshot → dual retrieval → execution-view compiler → model call →
+sandbox → patch validation → outcome/private-episode/audit persistence), the HTTP→worker E2E, the negative
+E2E suite, and `ci-e2e`. **Gate A stays PARTIAL until the P5 E2E passes.**
+
+## Green workflows
+`ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`.
 
 ## Scope
-- **Gate A stays PARTIAL until the P5 HTTP→worker E2E passes in CI.** P6–P8 not implemented.
-- Company certification remains **PENDING** for every gate.
+- P5 in progress / not yet green; P6–P8 not implemented. Company certification **PENDING** for every gate.
 - Version `0.2.0.dev1`; no rc/beta tag. PR remains **DRAFT**; **do not merge**.

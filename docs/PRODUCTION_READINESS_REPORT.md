@@ -35,3 +35,12 @@ PostgreSQL and Qdrant images are digest-pinned; qdrant-client is pinned to a ser
   decision) — all CI-validated against local fixtures / a mocked GitHub API.
 
 **Company certification remains PENDING for every gate. P4–P8 not implemented. PR #1 stays DRAFT.**
+
+## P3.1 + P4 update
+
+Additional green workflows: `ci-artifacts` (postgres + MinIO) and `ci-solar` (fake server). Delivered and
+CI-validated: versioned canonical codec + safe retrieval projection + private-recall re-authorization +
+pinned embedder; OIDC network/JWK/claim hardening; server-owned repository task policy; the artifact store
+(8-state lifecycle, retention/legal-hold, physical-delete-after-confirmation, reconciliation) on both local
+and S3/MinIO; and the async Solar provider (resilience/circuit/concurrency/accounting/redaction).
+**P5 (runnable HTTP→worker E2E) is not started; Gate A stays PARTIAL until it passes. P6–P8 not implemented.**

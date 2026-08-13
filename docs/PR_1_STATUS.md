@@ -87,15 +87,23 @@ rejected).
   Retry-After, stable logical_request_id, per-org+global concurrency, circuit breaker w/ half-open recovery,
   accounting record, redaction sanitizer. `ci-solar` (fake server) green; optional gated `solar-integration`.
 
-### P5 — NOT STARTED (remaining to reach the valid endpoint)
-Migration 0008 (job identity/policy/ref snapshot + model call/attempt records + retrieval-decision detail);
-production container wiring; **removal of the legacy insecure PoC app**; real authenticated FastAPI `/v1`
-surface (15 endpoints incl health/version; review/promote/deprecate remain P6); durable `POST /v1/solve`
-(202, no model/sandbox in-handler); a separate worker process running the full solve pipeline (immutable repo
-snapshot → dual private/shared retrieval → canonical reload → compact literal execution view → Solar → patch
-parse + edit-policy validation → sandbox → outcome/private-episode/audit/outbox persistence, with
-`cross_user_private_injection_count == 0` computed); the HTTP→worker positive E2E, the ~40-case negative E2E,
-crash-recovery E2E, OpenAPI snapshot, and `ci-e2e`. **Gate A stays PARTIAL until the P5 E2E passes.**
+### P5 — FOUNDATION IN PLACE (green); API/worker/E2E remaining
+**Done & green:** preflight §1 (artifact existing-AVAILABLE integrity verification before returning; per-org
+artifact audit chain serialized with `pg_advisory_xact_lock` so concurrent transitions cannot fork the
+ledger — `ci-artifacts`); **alembic 0008** — solve-job identity/policy/ref snapshot columns + RLS-forced,
+tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates` tables + api/worker grants (applies clean
+across `ci-postgres`/`ci-qdrant`/`ci-mem0`/`ci-artifacts`).
+
+**Remaining:** pluggable `CodingExecutionBackend` (Fake/Direct/ExternalHarness) + service-interface
+normalization + production `build_container` for ci/staging; removal/quarantine of the legacy insecure PoC
+app; the real authenticated FastAPI `/v1` surface (15 endpoints); durable `POST /v1/solve` (202, no
+model/sandbox in-handler); a **separate worker process** running the full solve pipeline (immutable repo
+snapshot → dual private/shared retrieval → canonical reload → compact literal view → execution backend →
+patch parse + edit-policy validation → controlled sandbox → outcome/private-episode/audit/outbox persistence,
+with `cross_user_private_injection_count == 0` computed); the HTTP→worker positive E2E, the negative matrix,
+crash-recovery E2E, OpenAPI snapshot, and `ci-e2e`. An existing in-process `service/` scaffolding
+(orchestrator + interfaces + local fakes) is the base to durably adapt. **Gate A stays PARTIAL until the P5
+HTTP→worker E2E passes.**
 
 ## Green workflows
 `ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`.

@@ -9,7 +9,7 @@ ALTER TABLE task_execution_policies ADD COLUMN target_path TEXT;
 ALTER TABLE task_execution_policies ADD COLUMN public_test_entry TEXT;
 ALTER TABLE task_execution_policies ADD COLUMN hidden_test_manifest_id TEXT;
 ALTER TABLE task_execution_policies ADD COLUMN runtime TEXT;
-ALTER TABLE task_execution_policies ADD COLUMN timeout_seconds INTEGER;
+-- timeout_seconds already exists from 0001 (reused as-is)
 ALTER TABLE task_execution_policies ADD COLUMN allowed_import_changes JSONB NOT NULL DEFAULT '[]';
 ALTER TABLE task_execution_policies ADD COLUMN allowed_new_files JSONB NOT NULL DEFAULT '[]';
 ALTER TABLE task_execution_policies ADD COLUMN source_world_id TEXT;

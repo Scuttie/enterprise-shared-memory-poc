@@ -75,8 +75,9 @@ async def _collect(sub):
     e = su()
     try:
         async with e.connect() as c:
-            st = (await c.execute(text("SELECT state, cross_user_private_injection_count, experiment_arm "
-                                       "FROM solve_jobs WHERE id=:j"), {"j": sub["job_id"]})).first()
+            st = (await c.execute(text("SELECT state, cross_user_private_injection_count, experiment_arm, "
+                                       "error_detail_sanitized FROM solve_jobs WHERE id=:j"),
+                                  {"j": sub["job_id"]})).first()
             oc = (await c.execute(text("SELECT pass1, exec1 FROM outcome_observations WHERE job_id=:j"),
                                   {"j": sub["job_id"]})).first()
             inj = (await c.execute(text("SELECT count(*) FROM retrieval_candidates WHERE job_id=:j AND injected"),
@@ -97,7 +98,8 @@ async def _collect(sub):
             "expired_injected": int(inj or 0) if arm == "S2" else 0,
             "oos_injected": int(inj or 0) if arm == "S3" else 0,
             "leak": 0, "injected_matches_payload": 1,
-            "source_ne_target": (sub.get("target_user") is not None), "returned_model": model}
+            "source_ne_target": (sub.get("target_user") is not None), "returned_model": model,
+            "error_detail": (st[3] if st and len(st) > 3 else None)}
 
 
 def main():
@@ -108,7 +110,11 @@ def main():
     fams = {f.family_id: f for f in generate(split, cfg["n_per_domain"])}
     sign = _keyring()
 
-    subs = asyncio.run(_seed_all(plan["cells"], fams))
+    cells = plan["cells"]
+    cap = int(os.environ.get("MAX_CELLS", "0"))
+    if cap:
+        cells = cells[:cap]
+    subs = asyncio.run(_seed_all(cells, fams))
     print("seeded %d cells" % len(subs), flush=True)
 
     with httpx.Client(base_url=API_URL, timeout=60.0) as client:
@@ -155,6 +161,10 @@ def main():
         json.dump(out, f, indent=2, sort_keys=True); f.write("\n")
     print("WROTE", path, "all_gates_pass=%s" % report["all_pass"],
           "primary_lift_mean=%.3f" % primary["ci"]["mean"], flush=True)
+    import collections
+    errs = collections.Counter((r.get("error_detail") or "")[:80] for r in results if r["state"] == "FAILED")
+    for msg, n in errs.most_common(5):
+        print("FAILED[%d]: %s" % (n, msg), flush=True)
 
 
 def _diff(results, a, b):

@@ -1,0 +1,55 @@
+{
+  "arms": [
+    "R0",
+    "R2",
+    "R3",
+    "R4",
+    "R1"
+  ],
+  "call_budget": {
+    "calibration": 240,
+    "main": 600
+  },
+  "dataset_content_hash": "bbaa3bec889558881f14ad8e2cc9ea9d7b9bed2c283484e823cebf5ce86a777c",
+  "experiment": "REALBENCH_MBPP_PLUS_R1",
+  "index_dim": 256,
+  "manifest_hashes": {
+    "calibration_targets": "4a84893afb97d6decabe1e67af036c40e4191db071a17505b03d0120447c49bf",
+    "evaluator_manifest": "4050b94cf2675029d867e6d4b90a8b7aa0917d3f6562d36369ecd80d1c6226e5",
+    "main_targets": "105529ffc303a718903610f91221a4cb5d5dd20b0654add946db185ad9220662",
+    "memory_bank": "e590def445f6263817e623b5d7b1169e66c2bc03537bafff1a3354f9c1c0baca",
+    "prompt_manifest": "beba244e170a407285be8750ba806c1ff03928c6d79459930c07bbd9e523b7f1",
+    "retrieval_config": "dd4a54c4ca1162daf0fba537e5213d093c535fd74fd2f0626e3ba2d1b8a24570",
+    "retrieval_dev": "e31a1351226fff1d9933800ddc499bd6a3d043a5fe2f31ff793bd03f53100053",
+    "source": "0435733e4f7c79943b656b23025b0b14cedc22b6061b5ef584dc6b778dbe94e1",
+    "user_assignment": "3eff91de32631bae25ea6bb21152a0a6e8bf2985393fabf64e24c391150371cb"
+  },
+  "model_lock": {
+    "backend": "solar_p52",
+    "base_url": "https://api.upstage.ai/v1/solar",
+    "extraction": "whole-file code block",
+    "generations": 1,
+    "max_output_tokens": 1200,
+    "model": "solar-pro2-251215",
+    "repair_in_primary": false,
+    "sandbox": "controlled_local -> official evalplus grader (Linux)",
+    "temperature": 0,
+    "timeout_s": 20,
+    "top_p": 1.0
+  },
+  "note": "Do not present M3-M0/R3-R0 as evidence for contract format when R3-R2 is null.",
+  "primary_endpoint": "Pass@1(R3) - Pass@1(R0), paired by official target task",
+  "split_audit": {
+    "calibration_main_overlap": 0,
+    "dev_overlap": 0,
+    "n_calibration": 48,
+    "n_dev": 40,
+    "n_main": 120,
+    "n_source": 150,
+    "source_target_funcname_overlap": 0,
+    "source_target_task_overlap": 0
+  },
+  "split_hash": "c3cbf496cf2f6fb7505e61d958c4523f58776ee71ae28f992c49f11d0fd7c8b3",
+  "tau_abs": 0.43,
+  "tau_margin": 0.0
+}

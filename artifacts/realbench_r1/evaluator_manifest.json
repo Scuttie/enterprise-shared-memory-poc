@@ -1,0 +1,6 @@
+{
+  "benchmark": "MBPP+ (EvalPlus v0.2.0)",
+  "dataset_content_hash": "bbaa3bec889558881f14ad8e2cc9ea9d7b9bed2c283484e823cebf5ce86a777c",
+  "grader": "evalplus.eval.untrusted_check + trusted_exec ground-truth (Linux)",
+  "package_version": "0.3.1"
+}

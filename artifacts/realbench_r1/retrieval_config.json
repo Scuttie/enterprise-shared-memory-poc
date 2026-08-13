@@ -1,0 +1,9 @@
+{
+  "index_dim": 256,
+  "embedder": "deterministic-test-embedder-v1",
+  "rule": "inject top-1 shared source iff top1_sim >= tau_abs AND (top1-top2) >= tau_margin, else abstain",
+  "tau_abs": 0.43,
+  "tau_margin": 0.0,
+  "selection": "tau_abs = median top-1 similarity over the retrieval-dev split (40 disjoint MBPP+ targets vs the 150-source governed bank); margins between diverse MBPP sources are ~0.02 so no margin gate",
+  "search_limit": 1
+}

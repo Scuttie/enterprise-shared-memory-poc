@@ -1,0 +1,4 @@
+split: "main"
+n_targets: 120
+arms: ["R0", "R2", "R3", "R4", "R1"]
+split_hash: "c3cbf496cf2f6fb7505e61d958c4523f58776ee71ae28f992c49f11d0fd7c8b3"

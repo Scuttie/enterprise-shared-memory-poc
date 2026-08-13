@@ -50,6 +50,9 @@ def _repo_provider():
     if rp == "benchmark_p52":
         from .task_adapter import FrozenExecutableBenchmarkAdapterP52
         return FrozenExecutableBenchmarkAdapterP52()
+    if rp == "mbpp":
+        from experiments.realbench_r1.adapter import EvalPlusMBPPTaskAdapter
+        return EvalPlusMBPPTaskAdapter()
     return OfflineRepositoryProvider()
 
 

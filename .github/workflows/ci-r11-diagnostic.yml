@@ -1,0 +1,120 @@
+name: ci-r11-diagnostic
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/production-service-v0.2]
+permissions:
+  contents: read
+jobs:
+  diag:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[run-r11-diag]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    services:
+      postgres:
+        image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env: {POSTGRES_PASSWORD: postgres, POSTGRES_DB: esm}
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm" --health-interval 5s --health-timeout 5s --health-retries 30
+    env:
+      DATABASE_URL: postgresql://localhost:5432/esm
+      MIGRATION_USER: postgres
+      MIGRATION_PASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: esm
+      QDRANT_URL: http://localhost:6333
+      MINIO_ENDPOINT: http://localhost:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: esm-artifacts-r11
+      INDEX_DIM: "384"
+      EMBEDDER: st
+      ENVIRONMENT: ci
+      REPO_PROVIDER: mbpp
+      EXECUTION_BACKEND: solar_p52
+      SOLAR_MODEL: solar-pro2-251215
+      SOLAR_BASE_URL: https://api.upstage.ai/v1/solar
+      SOLAR_MAX_TOKENS: "1200"
+      UPSTAGE_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
+      OIDC_ISSUER: https://idp.e2e.local/
+      OIDC_AUDIENCE: esm-api
+      OIDC_JWKS_FILE: /tmp/r11_jwks.json
+      E2E_API_URL: http://127.0.0.1:8000
+      API_PORT: "8000"
+      RUN_DEADLINE: "6000"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - name: Guard secret
+        run: if [ -z "$UPSTAGE_API_KEY" ]; then echo "no UPSTAGE_API_KEY"; exit 1; fi
+      - name: Start Qdrant + MinIO
+        run: |
+          docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
+          docker run -d --name minio -p 9000:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e server /data
+      - name: Install
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev,postgres,qdrant,artifacts,oidc,realbench,embed]" pyjwt cryptography
+      - name: Wait services
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          def w(u):
+              for _ in range(60):
+                  try:
+                      r=urllib.request.urlopen(u,timeout=2)
+                      if r.status<500: return
+                  except Exception: pass
+                  time.sleep(2)
+              raise SystemExit("not ready "+u)
+          w("http://localhost:6333/readyz"); w("http://localhost:9000/minio/health/live")
+          PY
+      - name: Migrate + head check
+        run: python scripts/postgres_bootstrap.py && alembic upgrade head && alembic current | grep -E "0013.*\(head\)"
+      - name: MinIO bucket
+        run: |
+          python - <<'PY'
+          import boto3, os
+          c=boto3.client("s3",endpoint_url=os.environ["MINIO_ENDPOINT"],aws_access_key_id=os.environ["MINIO_ACCESS_KEY"],aws_secret_access_key=os.environ["MINIO_SECRET_KEY"],use_ssl=False,region_name="us-east-1")
+          try: c.create_bucket(Bucket=os.environ["MINIO_BUCKET"])
+          except Exception as e: print(e)
+          PY
+      - name: JWKS stub
+        run: echo '{"keys":[]}' > "$OIDC_JWKS_FILE"
+      - name: Prefetch MBPP+ + production embedder
+        run: |
+          python -c "from experiments.realbench_r1 import grader as G; G._dataset(); print('mbpp+ ready')"
+          python -c "from enterprise_memory.indexing.embeddings import SentenceTransformerEmbedder as E; e=E(); v=e.embed(['warm up the model']); print('embedder', e.provenance()['model_id'], 'dim', e.dim)"
+      - name: Start API
+        run: nohup python -m enterprise_memory.service.appcli > api.log 2>&1 & echo started
+      - name: Start 4 workers
+        run: for i in 1 2 3 4; do nohup env WORKER_ID=r11-worker-$i python -m enterprise_memory.service.solve_worker > worker-$i.log 2>&1 & done
+      - name: Wait API
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          for _ in range(60):
+              try:
+                  if urllib.request.urlopen("http://127.0.0.1:8000/health/live",timeout=2).status==200: raise SystemExit(0)
+              except SystemExit: raise
+              except Exception: pass
+              time.sleep(1)
+          raise SystemExit("api not live")
+          PY
+      - name: Run R1.1 diagnostic (D0-D8, production embedder, official MBPP+ grader)
+        run: python scripts/realbench_r11_run.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r11-diagnostic
+          path: |
+            artifacts/realbench_r1/diag/
+            api.log
+            worker-*.log

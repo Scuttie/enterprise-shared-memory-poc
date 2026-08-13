@@ -68,13 +68,23 @@ class DbTaskPolicyRepository:
         async with tenant_tx(engine, org_id) as c:
             r = (await c.execute(text(
                 "SELECT id, editable_paths, target_symbol, exact_signature, test_bundle_ref,"
-                " maximum_changed_lines, allowed_refs, version FROM task_execution_policies"
-                " WHERE repository_id=:r AND task_key=:tk AND active"), {"r": repo_id, "tk": task_key})).first()
+                " maximum_changed_lines, allowed_refs, version, target_path, family_id, domain,"
+                " repository_fixture_id, public_test_entry, hidden_test_manifest_id, runtime, timeout_seconds,"
+                " allowed_import_changes, allowed_new_files, source_world_id, target_world_id, policy_version"
+                " FROM task_execution_policies WHERE repository_id=:r AND task_key=:tk AND active"),
+                {"r": repo_id, "tk": task_key})).first()
         if r is None:
             return None
         return {"task_policy_id": str(r[0]), "editable_paths": list(r[1]), "target_symbol": r[2],
                 "exact_signature": r[3], "test_bundle_ref": r[4], "maximum_changed_lines": int(r[5]),
-                "allowed_refs": list(r[6]), "version": int(r[7])}
+                "allowed_refs": list(r[6]), "version": int(r[7]),
+                "target_path": r[8], "family_id": r[9], "domain": r[10], "repository_fixture_id": r[11],
+                "public_test_entry": r[12], "hidden_test_manifest_id": r[13], "runtime": r[14],
+                "timeout_seconds": (int(r[15]) if r[15] is not None else None),
+                "allowed_import_changes": (list(r[16]) if r[16] is not None else []),
+                "allowed_new_files": (list(r[17]) if r[17] is not None else []),
+                "source_world_id": r[18], "target_world_id": r[19],
+                "policy_version": (int(r[20]) if r[20] is not None else None)}
 
 
 class OfflineRepositoryProvider:

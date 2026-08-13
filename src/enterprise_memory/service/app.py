@@ -21,7 +21,7 @@ from . import durable as D
 from .p5deps import Unauthenticated, ref_allowed
 
 API_VERSION = "v1"
-MIGRATION_HEAD = "0009"
+MIGRATION_HEAD = "0011"
 
 ROUTE_SCOPES = {
     ("POST", "/v1/solve"): S.SOLVE_SUBMIT,
@@ -173,12 +173,16 @@ def create_app(container=None, environment=None):
         tree = c.repo_provider.resolve_tree(commit)
         installation = c.repo_provider.installation_for(ident.org_id)
         idem = request.headers.get("Idempotency-Key") or body.correlation_id or ("auto-" + str(uuid.uuid4()))
-        target_path = "src/app.py"
+        target_path = policy.get("target_path") or "src/app.py"   # server-owned; demo policy falls back
         spec = {"repository_id": body.repository_id, "task_id": body.task_id, "instruction": body.instruction,
                 "desired_ref": body.desired_ref, "commit_sha": commit, "tree_sha": tree,
                 "target_path": target_path, "editable_paths": policy["editable_paths"],
                 "target_symbol": policy["target_symbol"], "exact_signature": policy["exact_signature"],
-                "maximum_changed_lines": policy["maximum_changed_lines"]}
+                "maximum_changed_lines": policy["maximum_changed_lines"],
+                "family_id": policy.get("family_id"), "domain": policy.get("domain"),
+                "repository_fixture_id": policy.get("repository_fixture_id"),
+                "hidden_test_manifest_id": policy.get("hidden_test_manifest_id"),
+                "policy_version": policy.get("policy_version")}
         job_id, created = await D.create_solve_job(
             c.api_engine, org_id=ident.org_id, user_id=ident.subject_id, repo_id=body.repository_id,
             task_policy_id=policy["task_policy_id"], task_policy_version=policy["version"],

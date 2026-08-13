@@ -72,7 +72,7 @@ jobs:
       - name: Alembic upgrade
         run: alembic upgrade head
       - name: Head check
-        run: alembic current | grep -E "0010.*\(head\)"
+        run: alembic current | grep -E "0011.*\(head\)"
       - name: Schema validate
         run: python scripts/postgres_validate.py
       - name: Package import smoke (no qdrant/mem0 needed to import)

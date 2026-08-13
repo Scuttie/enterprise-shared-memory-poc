@@ -73,7 +73,7 @@ jobs:
           test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no secret"; exit 1; }
       - name: Start eval container (service host inside the image)
         run: |
-          docker run -d --name esm --network host --env-file /tmp/esm.env \
+          docker run -d --name esm --network host --env-file /tmp/esm.env -u 0 \
             -v "$PWD:/w" -w /w --entrypoint sleep "$EVAL_IMAGE" infinity
           echo '{"keys":[]}' > /tmp/jwks.json
       - name: Install ESM into the eval image (Python 3.10)

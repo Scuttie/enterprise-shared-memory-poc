@@ -21,12 +21,23 @@ async def _mk_repo_perm(c, org, repo, user, *, can_modify):
                     {"o": org, "r": repo, "u": user, "cm": can_modify})
 
 
+_USER_NS = uuid.UUID("3b1e9d7a-2c4f-4a8b-9e6d-5f0a1b2c3d4e")
+
+
 async def seed_cell(su_engine, index, embedder, cell, family):
-    """Seed one cell. Returns {org, target_user, repo, task_key, desired_ref, arm, cell_id}."""
+    """Seed one cell. Returns {org, target_user, repo, task_key, desired_ref, arm, cell_id}. Each cell runs in
+    its own org, so DB user ids are derived PER CELL (users.id is globally unique). The cross-user property is
+    preserved: source != target when the frozen assignment says so; source == target for M1 (own source)."""
     org = str(uuid.uuid4())
     repo = str(uuid.uuid4())
-    target_user = cell["target_user"]
-    source_user = cell["source_user"]
+    logical_target, logical_source = cell["target_user"], cell["source_user"]
+    target_user = str(uuid.uuid5(_USER_NS, cell["cell_id"] + "|target"))
+    if logical_source is None:
+        source_user = None
+    elif logical_source == logical_target:
+        source_user = target_user                      # M1 own-source: same DB user
+    else:
+        source_user = str(uuid.uuid5(_USER_NS, cell["cell_id"] + "|source"))   # distinct DB user
     exp_id = cell["cell_id"].rsplit("|", 2)[0] if "|" in cell["cell_id"] else cell["cell_id"]
     async with su_engine.begin() as c:
         await c.execute(text("INSERT INTO organisations(id,external_key) VALUES(:i,:k)"),

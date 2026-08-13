@@ -26,5 +26,7 @@ def test_canonical_passes_and_wrong_fails():
     assert wrong_fail == N, "a wrong solution must fail for all %d tasks (%d)" % (N, wrong_fail)
 
 
-def test_dataset_hash_pinned():
-    assert G.dataset_hash() == "92743def42b30b354a30898e4fa33fb0"
+def test_dataset_content_hash_pinned():
+    # platform-independent content anchor (get_mbpp_plus_hash is line-ending sensitive across OSes)
+    assert G.content_hash() == "bbaa3bec889558881f14ad8e2cc9ea9d7b9bed2c283484e823cebf5ce86a777c"
+    assert len(G.all_task_ids()) == 378

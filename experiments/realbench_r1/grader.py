@@ -31,7 +31,21 @@ def _groundtruth(task_id):
 
 
 def dataset_hash():
-    return _dataset()[1]
+    return _dataset()[1]                              # evalplus file hash (line-ending sensitive; informational)
+
+
+@functools.lru_cache(maxsize=1)
+def content_hash():
+    """Platform-independent content hash of the official MBPP+ tasks (task_id + entry_point + prompt +
+    canonical + base/plus inputs), so provenance is stable across OSes (unlike get_mbpp_plus_hash)."""
+    import hashlib
+    d = _dataset()[0]
+    h = hashlib.sha256()
+    for tid in sorted(d.keys()):
+        p = d[tid]
+        h.update(("%s|%s|%s|%s|%r|%r" % (tid, p["entry_point"], p["prompt"], p["canonical_solution"],
+                                         p["base_input"], p["plus_input"])).encode("utf-8", "replace"))
+    return h.hexdigest()
 
 
 def task(task_id):

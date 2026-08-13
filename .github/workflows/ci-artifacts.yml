@@ -69,7 +69,7 @@ jobs:
       - name: Alembic upgrade
         run: alembic upgrade head
       - name: Head check
-        run: alembic current | grep -E "0009.*\(head\)"
+        run: alembic current | grep -E "0010.*\(head\)"
       - name: Schema validate
         run: python scripts/postgres_validate.py
       - name: Artifact lifecycle tests (local store + S3/MinIO)

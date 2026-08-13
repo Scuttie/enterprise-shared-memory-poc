@@ -131,6 +131,15 @@ async def persist_retrieval_candidate(engine, org_id, job_id, *, scope, canonica
              "ipos": injected_position})
 
 
+async def persist_patches(engine, org_id, job_id, *, raw_patch, applied_patch):
+    """Durably record the raw model patch + the applied file for an experiment job (P5.2 G7 adoption audit)."""
+    async with tenant_tx(engine, org_id) as c:
+        await c.execute(text(
+            "INSERT INTO job_patches(org_id,job_id,raw_patch,applied_patch) VALUES(:o,:j,:rp,:ap)"
+            " ON CONFLICT (org_id,job_id) DO NOTHING"),
+            {"o": org_id, "j": job_id, "rp": (raw_patch or "")[:20000], "ap": (applied_patch or "")[:20000]})
+
+
 async def persist_outcome(engine, org_id, job_id, *, pass1, exec1, pass2, injected, content_hash):
     async with tenant_tx(engine, org_id) as c:
         await c.execute(text(

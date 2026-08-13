@@ -229,6 +229,9 @@ async def process_job(container, worker_id, ev):
                                           job_id=job_id)
             exec1 = 1 if sandbox_res.get("applied") else 0
             pass1 = 1 if sandbox_res.get("tests_passed") else 0
+            if is_experiment:           # durably record raw + applied patch for adoption forensics (G7)
+                await D.persist_patches(e, org, job_id, raw_patch=result.patch_text,
+                                        applied_patch=(new_text or ""))
             if not is_experiment and not pass1:
                 raise EditPolicyError("sandbox_tests_failed")
             await D.add_event(e, org, job_id, seq, "TESTING", "graded",

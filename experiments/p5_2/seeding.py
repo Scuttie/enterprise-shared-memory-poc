@@ -133,4 +133,5 @@ async def seed_cell(su, index, embedder, cell, family, dim):
 
     return {"org": org, "target_user": target_user, "repo": repo, "task_key": cell["target_task_id"],
             "desired_ref": "refs/heads/main", "arm": arm, "cell_id": cell["cell_id"], "experiment_id": exp_id,
-            "domain": cell["domain"], "stratum": cell["stratum"], "private_seeded": private_ct}
+            "domain": cell["domain"], "stratum": cell["stratum"], "private_seeded": private_ct,
+            "relevant_vid": oracle_id, "family_id": cell["family_id"]}

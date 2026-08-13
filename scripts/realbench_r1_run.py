@@ -129,6 +129,16 @@ def main():
         out["primary"]["diff"]), flush=True)
 
 
+def _frozen_split_hash():
+    """Read the committed freeze.json split_hash so C5 compares the run against the frozen preregistration
+    rather than asserting a hard-coded True (§1.4)."""
+    try:
+        with open(os.path.join("artifacts", "realbench_r1", "freeze.json"), encoding="utf-8") as f:
+            return json.load(f)["split_hash"]
+    except Exception:
+        return None
+
+
 def _pass1(rs):
     return sum(r["pass1"] for r in rs) / len(rs) if rs else 0.0
 
@@ -163,11 +173,20 @@ def _analyze(split_name, exp_id, sp, results):
                                 "cross_user_private_injection": cross, "no_memory_injected": m0_inj,
                                 "note": "every job traversed HTTP->worker; DB injected==payload by construction"},
         "C3_dynamic_range": {"pass": 0.10 <= r0_pass <= 0.85, "R0_pass1": r0_pass},
-        "C4_retrieval": {"pass": True, "note": "validated_search rejects invalid canonical; source!=target; "
-                         "augmented tests never in memory; abstention logged via injected counts",
+        # §1.4: computed run-local predicate (R0 must never inject); the deeper canonical-validity and
+        # augmented-tests-never-in-memory invariants are enforced/verified by the ci-realbench-* workflows.
+        "C4_retrieval": {"pass": (m0_inj == 0),
+                         "R0_injected": m0_inj,
                          "R2_injected_rate": sum(x["injected"] for x in by.get("R2", [])) / max(1, len(by.get("R2", []))),
-                         "R3_injected_rate": sum(x["injected"] for x in by.get("R3", [])) / max(1, len(by.get("R3", [])))},
-        "C5_reproducibility": {"pass": True, "split_hash": X.split_hash(sp),
+                         "R3_injected_rate": sum(x["injected"] for x in by.get("R3", [])) / max(1, len(by.get("R3", []))),
+                         "SEPARATE_CI_INVARIANT_VERIFIED": ["validated_search rejects invalid canonical",
+                                                            "source!=target", "augmented tests never in memory"]},
+        # §1.4: computed predicate — the run's split_hash must equal the frozen freeze.json split_hash and
+        # calibration must be disjoint from main.
+        "C5_reproducibility": {"pass": (X.split_hash(sp) == _frozen_split_hash()
+                                        and len(set(sp["calibration"]) & set(sp["main"])) == 0),
+                               "split_hash": X.split_hash(sp),
+                               "frozen_split_hash": _frozen_split_hash(),
                                "calibration_main_overlap": len(set(sp["calibration"]) & set(sp["main"]))},
     }
     allpass = all(g["pass"] for g in gates.values())

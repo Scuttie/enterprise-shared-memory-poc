@@ -22,36 +22,60 @@ def paired(diffs, r0, r3, tids):
 
 
 def transfer(by, split):
-    """For every memory-induced loss (R0 passed, memory arm failed) classify the patch (§14)."""
+    """SUPERSEDED HEURISTIC (kept only for the frozen R1 main artifact's reproducibility).
+
+    REALBENCH-R2 §1.3: this counted gains/losses but labelled every changed-and-failing memory-arm patch
+    PARTIAL_MEMORY_PATTERN_ADOPTION, which is NOT evidence of adoption. It also cannot distinguish adoption
+    classes because the R1 runner did not persist applied patches into the results artifact. Use
+    transfer_forensic() with persisted patches + source signatures instead (R1.1 diagnostic and R2)."""
     r0 = {r["tid"]: r for r in by.get("R0", [])}
     out = {}
-    classes = ("EXACT_MEMORY_PATTERN_ADOPTION", "PARTIAL_MEMORY_PATTERN_ADOPTION", "UNRELATED_ERROR",
-               "PARSER_OR_GRADER_FAILURE", "UNCLASSIFIED")
     for arm in ("R2", "R3", "R4", "R1"):
-        counts = {k: 0 for k in classes}
         losses = gains = 0
         for r in by.get(arm, []):
             base = r0.get(r["tid"])
             if base is None:
                 continue
-            if base["pass1"] == 1 and r["pass1"] == 0:         # memory-induced loss
+            if base["pass1"] == 1 and r["pass1"] == 0:
                 losses += 1
-                counts[_classify_loss(r, base)] += 1
             elif base["pass1"] == 0 and r["pass1"] == 1:
                 gains += 1
-        out[arm] = {"losses": losses, "gains": gains, "loss_classes": counts,
-                    "adoption_coverage": (1.0 if losses == 0 else sum(counts.values()) / losses)}
+        out[arm] = {"losses": losses, "gains": gains,
+                    "classifier": "HEURISTIC_SUPERSEDED_see_transfer_forensic"}
     return out
 
 
-def _classify_loss(r, base):
-    ap = r.get("applied_patch"); bp = base.get("applied_patch")
-    if not r.get("exec1"):
-        return "PARSER_OR_GRADER_FAILURE"
-    if not r.get("injected"):
-        return "UNRELATED_ERROR"                               # memory wasn't injected -> not a memory loss
-    if ap is None or bp is None:
-        return "UNCLASSIFIED"
-    if ap == bp:
-        return "UNRELATED_ERROR"                               # identical to no-memory patch
-    return "PARTIAL_MEMORY_PATTERN_ADOPTION"                    # injected memory + a different (failing) patch
+def transfer_forensic(by, source_sig_by_tid, base_arm="R0", arms=("R2", "R3", "R4", "R1")):
+    """Evidence-based transfer (§1.3/§14). Requires each result row to carry applied_patch + injected +
+    exec1 (+ optional grader_ok), and a per-source-task signature map (imports/apis/control_flow/operations
+    tags OR a verified source code trace). Classifies each memory-induced loss AND gain by AST/API evidence
+    against the source memory the arm actually used. Never infers adoption from Pass@1 alone."""
+    from experiments import patch_forensics as PF
+    base = {r["tid"]: r for r in by.get(base_arm, [])}
+    out = {}
+    for arm in arms:
+        rows, gains, losses = [], 0, 0
+        for r in by.get(arm, []):
+            b = base.get(r["tid"])
+            if b is None:
+                continue
+            src = source_sig_by_tid.get((arm, r["tid"])) or source_sig_by_tid.get(r["tid"])
+            if b["pass1"] == 1 and r["pass1"] == 0:
+                losses += 1
+                cls, ev = PF.classify_loss(r.get("applied_patch"), b.get("applied_patch"), src,
+                                           injected=bool(r.get("injected")), exec_ok=bool(r.get("exec1")),
+                                           grader_ok=bool(r.get("grader_ok", True)))
+                rows.append({"tid": r["tid"], "direction": "loss", "class": cls, "evidence": ev})
+            elif b["pass1"] == 0 and r["pass1"] == 1:
+                gains += 1
+                cls, ev = PF.classify_loss(r.get("applied_patch"), b.get("applied_patch"), src,
+                                           injected=bool(r.get("injected")), exec_ok=bool(r.get("exec1")),
+                                           grader_ok=bool(r.get("grader_ok", True)))
+                rows.append({"tid": r["tid"], "direction": "gain", "class": cls, "evidence": ev})
+        counts = {c: 0 for c in PF.CLASSES}
+        for row in rows:
+            counts[row["class"]] += 1
+        out[arm] = {"gains": gains, "losses": losses, "classes": counts,
+                    "adoption_total": sum(counts[c] for c in PF.CLASSES[:4]),
+                    "unrelated": counts["UNRELATED_IMPLEMENTATION_ERROR"], "rows": rows}
+    return out

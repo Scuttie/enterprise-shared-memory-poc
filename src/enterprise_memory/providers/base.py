@@ -6,7 +6,11 @@ from typing import List, Optional
 
 
 class ProviderError(Exception):
-    """Transport/5xx/exhaustion failure. Never carries the API key."""
+    """Transport/5xx/exhaustion failure. Never carries the API key. Carries the accounting record so the
+    caller can persist a LogicalModelCall on every outcome, not only success."""
+    def __init__(self, message, record=None):
+        super().__init__(message)
+        self.record = record
 
 
 class AuthError(ProviderError):
@@ -27,6 +31,21 @@ class ParserError(ProviderError):
 
 class CircuitOpenError(ProviderError):
     pass
+
+
+@dataclass
+class AttemptRecord:
+    attempt: int
+    start: float
+    end: float
+    provider_request_id: Optional[str] = None
+    status: Optional[int] = None
+    exception: Optional[str] = None
+    retry_decision: str = "stop"      # retry | stop
+    retry_delay: Optional[float] = None
+    input_tokens: Optional[int] = None
+    output_tokens: Optional[int] = None
+    error_code: Optional[str] = None
 
 
 @dataclass
@@ -68,9 +87,13 @@ class ModelCallRecord:
     redaction_status: str = "clean"
     circuit_state: str = "closed"
     created_at: Optional[str] = None
+    final_status: str = "success"     # success|auth|invalid|exhausted|deadline|parser|cancelled|circuit_open|transport
+    attempt_records: List[AttemptRecord] = field(default_factory=list)
 
     def to_dict(self) -> dict:
-        return {k: getattr(self, k) for k in self.__dataclass_fields__}
+        d = {k: getattr(self, k) for k in self.__dataclass_fields__}
+        d["attempt_records"] = [a.__dict__ for a in self.attempt_records]
+        return d
 
 
 class CodingModelProvider(ABC):

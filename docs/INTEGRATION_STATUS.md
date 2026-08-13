@@ -28,7 +28,7 @@ backup/restore + disaster recovery; load/soak/failure-injection. These are speci
 stubbed; they are not implemented as runnable adapters in this increment. These gaps are stated in the
 release notes and the readiness report -- not hidden.
 
-## Update — P2.1 + P3 (HEAD bd56e3c)
+## Update — P2.1 + P3 (HEAD afccf42)
 
 Now CI-validated (green: `ci`, `ci-postgres`, `ci-qdrant`, `ci-mem0`, `ci-oidc`, `ci-qdrant-outage`):
 - **Qdrant production outbox indexing** — PostgreSQL-authoritative, durable alias routing, pre-swap

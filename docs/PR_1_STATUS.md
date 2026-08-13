@@ -3,7 +3,7 @@
 **Do not merge.** Draft PR tracking the v0.2 production-service build. base = main.
 
 ## Head & CI
-- HEAD `bd56e3c`.
+- HEAD `afccf42`.
 - **Green:** `ci`, `ci-postgres`, `ci-qdrant`, `ci-mem0`, `ci-oidc` (+ `ci-qdrant-outage`).
 - PostgreSQL image digest-pinned; Qdrant image digest-pinned; qdrant-client pinned to a server-compatible
   minor (version check ON).
@@ -53,5 +53,15 @@ P1, P1.1, P2-0 (alembic 0003), P2-preflight (0004), P2-start (0005), **P2** core
 - **E = PARTIAL-advanced** — durable job/outbox + Qdrant outage replay validated; full worker/provider recovery later.
 - **Company certification: PENDING for every gate.**
 
+## In progress
+- **P3.1/P2.2**: versioned canonical codec, safe retrieval projection, private-recall re-authorization,
+  embedder revision pinning, OIDC network/JWK hardening, repository ref/installation policy hardening.
+- **P4**: S3/MinIO artifact store + retention/deletion lifecycle; async Solar provider (resilience,
+  accounting, redaction).
+- **P5**: real authenticated FastAPI `/v1` surface, durable job submission, separate worker process, and a
+  real HTTP → job → worker → outcome end-to-end path.
+
 ## Scope
-P4–P8 not implemented. Version `0.2.0.dev1`; no rc/beta tag. PR remains **DRAFT**; **do not merge**.
+- **Gate A stays PARTIAL until the P5 HTTP→worker E2E passes in CI.** P6–P8 not implemented.
+- Company certification remains **PENDING** for every gate.
+- Version `0.2.0.dev1`; no rc/beta tag. PR remains **DRAFT**; **do not merge**.

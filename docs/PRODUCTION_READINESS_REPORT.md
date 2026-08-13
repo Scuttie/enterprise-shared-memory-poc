@@ -15,7 +15,7 @@
 **Version `0.2.0.dev1`. No rc1.** ci-postgres validates persistence + tenant isolation on ephemeral
 PostgreSQL; this is NOT company-staging certification. Follow-up: pin the PostgreSQL image by digest.
 
-## P2.1 + P3 update (HEAD bd56e3c)
+## P2.1 + P3 update (HEAD afccf42)
 
 Green workflows: `ci`, `ci-postgres`, `ci-qdrant`, `ci-mem0`, `ci-oidc` (+ `ci-qdrant-outage`). Both the
 PostgreSQL and Qdrant images are digest-pinned; qdrant-client is pinned to a server-compatible minor.

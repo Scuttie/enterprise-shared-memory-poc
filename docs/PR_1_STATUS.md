@@ -4,8 +4,8 @@
 
 ## Head & CI
 - HEAD: latest on `codex/production-service-v0.2` (see PR commits; docs synced at `739a773`).
-- **Green (all 8):** `ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`,
-  `ci-artifacts`, `ci-solar`.
+- **Green (all 9):** `ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`,
+  `ci-artifacts`, `ci-solar`, **`ci-e2e`** (real HTTP → durable job → separate worker → SUCCEEDED).
 - PostgreSQL / Qdrant / MinIO images pinned; qdrant-client pinned to a server-compatible minor.
 
 ## Milestones (CI-validated)
@@ -87,27 +87,42 @@ rejected).
   Retry-After, stable logical_request_id, per-org+global concurrency, circuit breaker w/ half-open recovery,
   accounting record, redaction sanitizer. `ci-solar` (fake server) green; optional gated `solar-integration`.
 
-### P5 — FOUNDATION IN PLACE (green); API/worker/E2E remaining
-**Done & green:** preflight §1 (artifact existing-AVAILABLE integrity verification before returning; per-org
-artifact audit chain serialized with `pg_advisory_xact_lock` so concurrent transitions cannot fork the
-ledger — `ci-artifacts`); **alembic 0008** — solve-job identity/policy/ref snapshot columns + RLS-forced,
-tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates` tables + api/worker grants (applies clean
-across `ci-postgres`/`ci-qdrant`/`ci-mem0`/`ci-artifacts`).
+### P5 — COMPLETE (green: `ci-e2e`)
+The full **authenticated HTTP → durable PostgreSQL job → separate worker process → SUCCEEDED** path is
+CI-validated end-to-end (`ci-e2e`: digest-pinned Postgres + Qdrant + MinIO, local JWKS/OIDC + offline
+GitHub-App + fake execution backend + controlled local sandbox; API and solve worker run as SEPARATE
+processes; tests talk to the API over real HTTP):
+- **Legacy insecure PoC quarantined** (`create_offline_demo_app`, refused in ci/staging/production); the sole
+  production app is `service.app.create_app`. Regression tests: the `/v1/solve` schema forbids
+  org/user/patch/test_passed/editable_paths.
+- **15 `/v1` endpoints**, each bearer → OIDC verify → IdentityContext → exact route scope → tenant tx →
+  server-owned repository/task policy → audit. `POST /v1/solve` is durable (202; server-owned task policy +
+  modify authz + ref binding + immutable commit/tree; idempotency; no model/sandbox work in the handler).
+- **Pluggable `CodingExecutionBackend`** (Fake/Direct/ExternalHarness) — the worker is not hard-wired to Solar.
+- **Separate worker pipeline**: claim lease + heartbeat + stage deadline → immutable snapshot artifact → dual
+  private/shared `validated_search` (canonical reload) → retrieval evidence → ≤2 compact governed views →
+  backend → patch parse + edit-policy validation → controlled sandbox → outcome / private episode /
+  candidate-extraction outbox / audit → **atomic finalize**. `cross_user_private_injection_count == 0` is
+  **computed** from candidate owners.
+- **Positive E2E** (HTTP + separate worker, idempotency, full DB evidence, ordered events), **negative matrix**
+  (no/bad/expired token, wrong iss/aud, missing scope, body-identity spoof, no-modify, ref mismatch, unknown
+  policy, cross-tenant job hidden, foreign private memory, missing search scope), and **crash recovery** (a
+  crashed worker's lease reclaimed by an independent worker; exactly one terminal result; separate attempts;
+  stale worker cannot finalize) — all green. OpenAPI snapshot (`openapi_v1.json`) checked.
 
-**Remaining:** pluggable `CodingExecutionBackend` (Fake/Direct/ExternalHarness) + service-interface
-normalization + production `build_container` for ci/staging; removal/quarantine of the legacy insecure PoC
-app; the real authenticated FastAPI `/v1` surface (15 endpoints); durable `POST /v1/solve` (202, no
-model/sandbox in-handler); a **separate worker process** running the full solve pipeline (immutable repo
-snapshot → dual private/shared retrieval → canonical reload → compact literal view → execution backend →
-patch parse + edit-policy validation → controlled sandbox → outcome/private-episode/audit/outbox persistence,
-with `cross_user_private_injection_count == 0` computed); the HTTP→worker positive E2E, the negative matrix,
-crash-recovery E2E, OpenAPI snapshot, and `ci-e2e`. An existing in-process `service/` scaffolding
-(orchestrator + interfaces + local fakes) is the base to durably adapt. **Gate A stays PARTIAL until the P5
-HTTP→worker E2E passes.**
+P5 foundation (also green): preflight §1 (artifact existing-AVAILABLE integrity verification; per-org audit
+chain serialized with `pg_advisory_xact_lock` — no fork) + **alembic 0008** (solve-job snapshot columns +
+RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
 
-## Green workflows
-`ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`.
+## Gates (implementation)
+- **A = PASS in CI (with fake external providers)** — the HTTP→worker E2E is green in `ci-e2e`.
+- **B / C / E = PARTIAL-advanced.** **D = NOT MET** (production K8s sandbox is P6). **F / G = NOT MET.**
+- **Company certification: PENDING for every gate.**
+
+## Green workflows (all 9)
+`ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`, `ci-e2e`.
 
 ## Scope
-- P5 not started; P6–P8 not implemented. Company certification **PENDING** for every gate.
+- P6–P8 not implemented (reviewed promotion + K8s sandbox = P6; OTel/ops = P7; backup/DR = P8). Company
+  certification **PENDING** for every gate.
 - Version `0.2.0.dev1`; no rc/beta tag. PR remains **DRAFT**; **do not merge**.

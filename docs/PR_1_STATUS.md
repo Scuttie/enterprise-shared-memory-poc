@@ -112,11 +112,17 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
    authenticated HTTP → durable job → separate worker → governed retrieval → backend → sandbox → durable
    result path is green in `ci-e2e` using a fake execution backend, offline repository provider, file JWKS,
    and a controlled local sandbox. This is a plumbing claim, not an efficacy or real-provider claim.
-2. **Multi-user experiment readiness** = **NOT YET PASS.** Before the frozen experiment can be trusted, P5.1
-   closes: real private-view injection (DB `injected` must equal the backend payload byte-for-byte),
-   real-owner cross-user leakage computation, lease-loss/cancellation/atomic-finalisation correctness, a
-   non-toy frozen executable coding bank, a company-harness adapter boundary, and a preregistered freeze.
-   P5.1-A (injection + real-owner leakage) is the first of these commits.
+2. **Multi-user experiment readiness (P5.1)** = **CLOSED and CI-validated** (13 workflows green). Real
+   private-view injection (DB `injected` = backend payload byte-for-byte), real-owner cross-user leakage,
+   lease-loss/cancellation/atomic idempotent finalisation, a frozen executable coding bank (audited), a
+   company-harness adapter (fake-server CI), a preregistered freeze + seal tests, and a real-Solar calibration
+   through the service path. See `## P5.1` below.
+3. **First frozen experiment (efficacy)** = **NOT CLAIMED — STOP-CALIBRATION.** The frozen calibration
+   executed in full against real `solar-pro2-251215` (144 cells, HTTP → durable job → separate worker →
+   Solar → hidden-test grading). Governed cross-user memory produced a maximal lift (M3−M0 = +1.00, McNemar
+   p ≈ 3e-5) with clean critical safety, but two preregistered gates failed (G2 dynamic-range floor; G5
+   irrelevant-abstention), so per the frozen stop rule the **held-out main run was NOT executed** and no
+   efficacy claim is made. See `reports/P5_1_CALIBRATION_DECISION.md`.
 
 ## Gates (single table)
 | Gate | Status | Note |
@@ -129,6 +135,21 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
 | F / G | NOT MET | — |
 | Experiment readiness | NOT YET PASS | P5.1 in progress |
 | Company certification | PENDING (every gate) | — |
+
+## P5.1 — experiment readiness + first frozen calibration
+- **P5.1-A** real private-view injection + real-owner cross-user leakage (migration 0009); **P5.1-B**
+  lease-loss abort / per-stage cancellation / atomic idempotent finalisation (0010) + `ci-experiment-readiness`;
+  **P5.1-C** frozen executable coding bank (`benchmarks/p5_1_static`, audited) + server-owned task-policy
+  expansion (0011) + `RepositoryTaskAdapter`; **P5.1-D** company-harness adapter + `ci-company-harness`
+  (fake server) + MinIO digest pin.
+- **EXP-0** server-assigned arms (M0–M4, S1–S4) + deterministic multi-user assignment + memory bank +
+  hidden-test grading + Solar backend wiring (0012) + preregistration + freeze manifests + seal tests.
+- **EXP-1** calibration executed on real `solar-pro2-251215` via the service path (plan hash
+  `4eb030a9f6f18f6d`): M0 0.00 / M1 0.94 / M2 1.00 / M3 1.00 / M4 1.00; primary M3−M0 = **+1.00** (McNemar
+  p ≈ 3e-5); Exec@1 = 1.00 all arms; **STOP-CALIBRATION** on G2 (M0 floor) + G5 (irrelevant abstention).
+  **Main NOT run. No P6.**
+- **13 CI workflows green** (11 core + `ci-experiment-readiness` + `ci-company-harness`); the
+  `ci-experiment-calibration` workflow is manual (marker/dispatch) and uses the `UPSTAGE_API_KEY` secret.
 
 ## Reproducibility pinning
 - PostgreSQL and Qdrant images are digest-pinned in `ci-e2e`.

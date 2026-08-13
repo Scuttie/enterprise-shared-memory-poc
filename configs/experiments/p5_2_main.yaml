@@ -1,0 +1,8 @@
+experiment_id: "EXP_P5_2_MAIN"
+split: "main"
+n_per_domain: 8
+n_users: 12
+arms: ["M0", "M1", "M2", "M3", "M4", "S1", "S2", "S3", "S4"]
+plan_hash: "ca833519bd278fb9b166b61d420f89dd337e2be461d7942ee9da89755471c23f"
+tau_abs: 0.8
+tau_margin: 0.5

@@ -1,0 +1,3462 @@
+{
+  "calibration": [
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_internal_api_0|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_internal_api_0_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_internal_api_0|M1",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_internal_api_0_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_internal_api_0|M2",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_internal_api_0_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_internal_api_0|M3",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_internal_api_0_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_internal_api_0|M4",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_internal_api_0_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_internal_api_0|S1",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_internal_api_0_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_internal_api_0|S2",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_internal_api_0_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_internal_api_0|S3",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_internal_api_0_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_internal_api_0|S4",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_internal_api_0_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_internal_api_1|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_internal_api_1_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_internal_api_1|M1",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_internal_api_1_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_internal_api_1|M2",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_internal_api_1_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_internal_api_1|M3",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_internal_api_1_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_internal_api_1|M4",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_internal_api_1_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_internal_api_1|S1",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_internal_api_1_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_internal_api_1|S2",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_internal_api_1_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_internal_api_1|S3",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_internal_api_1_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_internal_api_1|S4",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_internal_api_1_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_internal_api_2|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_2_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_internal_api_2|M1",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_2_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_internal_api_2|M2",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_2_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_internal_api_2|M3",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_2_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_internal_api_2|M4",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_2_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_internal_api_2|S1",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_2_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_internal_api_2|S2",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_2_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_internal_api_2|S3",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_2_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_internal_api_2|S4",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_2_target",
+      "target_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_internal_api_3|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_internal_api_3|M1",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_internal_api_3|M2",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_internal_api_3|M3",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_internal_api_3|M4",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_internal_api_3|S1",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_internal_api_3|S2",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_internal_api_3|S3",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_internal_api_3|S4",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_internal_api_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_cache_0|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_cache_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_cache_0|M1",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_cache_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_cache_0|M2",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_cache_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_cache_0|M3",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_cache_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_cache_0|M4",
+      "source_user": "75a6506f-0069-5804-a982-eac110bbe799",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_cache_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_cache_0|S1",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_cache_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_cache_0|S2",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_cache_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_cache_0|S3",
+      "source_user": "75a6506f-0069-5804-a982-eac110bbe799",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_cache_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_cache_0|S4",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_cache_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_cache_1|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_cache_1_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_cache_1|M1",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_cache_1_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_cache_1|M2",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_cache_1_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_cache_1|M3",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_cache_1_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_cache_1|M4",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_cache_1_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_cache_1|S1",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_cache_1_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_cache_1|S2",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_cache_1_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_cache_1|S3",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_cache_1_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_cache_1|S4",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_cache_1_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_cache_2|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_2_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_cache_2|M1",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_2_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_cache_2|M2",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_2_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_cache_2|M3",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_2_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_cache_2|M4",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_2_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_cache_2|S1",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_2_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_cache_2|S2",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_2_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_cache_2|S3",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_2_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_cache_2|S4",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_2_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_cache_3|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_3_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_cache_3|M1",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_3_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_cache_3|M2",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_3_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_cache_3|M3",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_3_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_cache_3|M4",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_3_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_cache_3|S1",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_3_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_cache_3|S2",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_3_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_cache_3|S3",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_3_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_cache_3|S4",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_cache_3_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_config_0|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_config_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_config_0|M1",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_config_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_config_0|M2",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_config_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_config_0|M3",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_config_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_config_0|M4",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_config_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_config_0|S1",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_config_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_config_0|S2",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_config_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_config_0|S3",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_config_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_config_0|S4",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_config_0_target",
+      "target_user": "d0dd0369-6568-5b6d-847e-042ba23b56af"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_config_1|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_config_1_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_config_1|M1",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_config_1_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_config_1|M2",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_config_1_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_config_1|M3",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_config_1_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_config_1|M4",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_config_1_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_config_1|S1",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_config_1_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_config_1|S2",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_config_1_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_config_1|S3",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_config_1_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_config_1|S4",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_config_1_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_config_2|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_2_target",
+      "target_user": "0297f422-d032-56a2-8e3d-417c1564918b"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_config_2|M1",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_2_target",
+      "target_user": "0297f422-d032-56a2-8e3d-417c1564918b"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_config_2|M2",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_2_target",
+      "target_user": "0297f422-d032-56a2-8e3d-417c1564918b"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_config_2|M3",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_2_target",
+      "target_user": "0297f422-d032-56a2-8e3d-417c1564918b"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_config_2|M4",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_2_target",
+      "target_user": "0297f422-d032-56a2-8e3d-417c1564918b"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_config_2|S1",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_2_target",
+      "target_user": "0297f422-d032-56a2-8e3d-417c1564918b"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_config_2|S2",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_2_target",
+      "target_user": "0297f422-d032-56a2-8e3d-417c1564918b"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_config_2|S3",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_2_target",
+      "target_user": "0297f422-d032-56a2-8e3d-417c1564918b"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_config_2|S4",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_2_target",
+      "target_user": "0297f422-d032-56a2-8e3d-417c1564918b"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_config_3|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_3_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_config_3|M1",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_3_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_config_3|M2",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_3_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_config_3|M3",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_3_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_config_3|M4",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_3_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_config_3|S1",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_3_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_config_3|S2",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_3_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_config_3|S3",
+      "source_user": "75a6506f-0069-5804-a982-eac110bbe799",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_3_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_config_3|S4",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_config_3_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_schema_0|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_schema_0_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_schema_0|M1",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_schema_0_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_schema_0|M2",
+      "source_user": "75a6506f-0069-5804-a982-eac110bbe799",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_schema_0_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_schema_0|M3",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_schema_0_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_schema_0|M4",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_schema_0_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_schema_0|S1",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_schema_0_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_schema_0|S2",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_schema_0_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_schema_0|S3",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_schema_0_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_schema_0|S4",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_calibration_schema_0_target",
+      "target_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_schema_1|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_schema_1_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_schema_1|M1",
+      "source_user": "57653369-fcaf-5a59-a78f-56023eb1f98c",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_schema_1_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_schema_1|M2",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_schema_1_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_schema_1|M3",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_schema_1_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_schema_1|M4",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_schema_1_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_schema_1|S1",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_schema_1_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_schema_1|S2",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_schema_1_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_schema_1|S3",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_schema_1_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_schema_1|S4",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_calibration_schema_1_target",
+      "target_user": "57653369-fcaf-5a59-a78f-56023eb1f98c"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_schema_2|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_2_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_schema_2|M1",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_2_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_schema_2|M2",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_2_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_schema_2|M3",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_2_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_schema_2|M4",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_2_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_schema_2|S1",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_2_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_schema_2|S2",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_2_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_schema_2|S3",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_2_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_schema_2|S4",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_2_target",
+      "target_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "calibration|fam_calibration_schema_3|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "calibration|fam_calibration_schema_3|M1",
+      "source_user": "51a4a27d-fac4-5260-848e-f2a618810524",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "calibration|fam_calibration_schema_3|M2",
+      "source_user": "6fe8dde3-0614-50b1-bf51-462df0b67d23",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "calibration|fam_calibration_schema_3|M3",
+      "source_user": "0297f422-d032-56a2-8e3d-417c1564918b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "calibration|fam_calibration_schema_3|M4",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "calibration|fam_calibration_schema_3|S1",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "calibration|fam_calibration_schema_3|S2",
+      "source_user": "2fddc0e6-e519-5a1d-a70f-fff7e98449de",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "calibration|fam_calibration_schema_3|S3",
+      "source_user": "3992e6e9-da20-5c19-9814-e2fcb15e5b7d",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "calibration|fam_calibration_schema_3|S4",
+      "source_user": "d0dd0369-6568-5b6d-847e-042ba23b56af",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_calibration_schema_3_target",
+      "target_user": "51a4a27d-fac4-5260-848e-f2a618810524"
+    }
+  ],
+  "main": [
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_internal_api_0|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_0_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_internal_api_0|M1",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_0_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_internal_api_0|M2",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_0_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_internal_api_0|M3",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_0_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_internal_api_0|M4",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_0_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_internal_api_0|S1",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_0_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_internal_api_0|S2",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_0_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_internal_api_0|S3",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_0_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_internal_api_0|S4",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_0_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_internal_api_1|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_1_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_internal_api_1|M1",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_1_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_internal_api_1|M2",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_1_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_internal_api_1|M3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_1_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_internal_api_1|M4",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_1_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_internal_api_1|S1",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_1_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_internal_api_1|S2",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_1_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_internal_api_1|S3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_1_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_internal_api_1|S4",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_internal_api_1_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_internal_api_2|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_2_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_internal_api_2|M1",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_2_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_internal_api_2|M2",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_2_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_internal_api_2|M3",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_2_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_internal_api_2|M4",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_2_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_internal_api_2|S1",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_2_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_internal_api_2|S2",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_2_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_internal_api_2|S3",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_2_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_internal_api_2|S4",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_2_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_internal_api_3|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_internal_api_3|M1",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_internal_api_3|M2",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_internal_api_3|M3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_internal_api_3|M4",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_internal_api_3|S1",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_internal_api_3|S2",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_internal_api_3|S3",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_internal_api_3|S4",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_internal_api_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_internal_api_4|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_internal_api_4|M1",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_internal_api_4|M2",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_internal_api_4|M3",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_internal_api_4|M4",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_internal_api_4|S1",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_internal_api_4|S2",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_internal_api_4|S3",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_internal_api_4|S4",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_internal_api_5|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_internal_api_5|M1",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_internal_api_5|M2",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_internal_api_5|M3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_internal_api_5|M4",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_internal_api_5|S1",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_internal_api_5|S2",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_internal_api_5|S3",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_internal_api_5|S4",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_internal_api_6|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_6_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_internal_api_6|M1",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_6_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_internal_api_6|M2",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_6_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_internal_api_6|M3",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_6_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_internal_api_6|M4",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_6_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_internal_api_6|S1",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_6_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_internal_api_6|S2",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_6_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_internal_api_6|S3",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_6_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_internal_api_6|S4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_6_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_internal_api_7|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_7_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_internal_api_7|M1",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_7_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_internal_api_7|M2",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_7_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_internal_api_7|M3",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_7_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_internal_api_7|M4",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_7_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_internal_api_7|S1",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_7_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_internal_api_7|S2",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_7_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_internal_api_7|S3",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_7_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_internal_api_7|S4",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_internal_api_7_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_cache_0|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_0_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_cache_0|M1",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_0_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_cache_0|M2",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_0_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_cache_0|M3",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_0_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_cache_0|M4",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_0_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_cache_0|S1",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_0_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_cache_0|S2",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_0_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_cache_0|S3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_0_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_cache_0|S4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_0_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_cache_1|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_1_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_cache_1|M1",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_1_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_cache_1|M2",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_1_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_cache_1|M3",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_1_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_cache_1|M4",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_1_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_cache_1|S1",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_1_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_cache_1|S2",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_1_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_cache_1|S3",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_1_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_cache_1|S4",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_cache_1_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_cache_2|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_2_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_cache_2|M1",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_2_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_cache_2|M2",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_2_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_cache_2|M3",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_2_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_cache_2|M4",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_2_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_cache_2|S1",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_2_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_cache_2|S2",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_2_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_cache_2|S3",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_2_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_cache_2|S4",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_2_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_cache_3|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_3_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_cache_3|M1",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_3_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_cache_3|M2",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_3_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_cache_3|M3",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_3_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_cache_3|M4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_3_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_cache_3|S1",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_3_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_cache_3|S2",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_3_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_cache_3|S3",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_3_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_cache_3|S4",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_cache_3_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_cache_4|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_cache_4|M1",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_cache_4|M2",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_cache_4|M3",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_cache_4|M4",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_cache_4|S1",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_cache_4|S2",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_cache_4|S3",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_cache_4|S4",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_cache_5|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_cache_5|M1",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_cache_5|M2",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_cache_5|M3",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_cache_5|M4",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_cache_5|S1",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_cache_5|S2",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_cache_5|S3",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_cache_5|S4",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_5_target",
+      "target_user": "2762a518-4bfd-54af-ad83-9bf179bea292"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_cache_6|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_6_target",
+      "target_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_cache_6|M1",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_6_target",
+      "target_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_cache_6|M2",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_6_target",
+      "target_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_cache_6|M3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_6_target",
+      "target_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_cache_6|M4",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_6_target",
+      "target_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_cache_6|S1",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_6_target",
+      "target_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_cache_6|S2",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_6_target",
+      "target_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_cache_6|S3",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_6_target",
+      "target_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_cache_6|S4",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_6_target",
+      "target_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_cache_7|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_7_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_cache_7|M1",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_7_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_cache_7|M2",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_7_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_cache_7|M3",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_7_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_cache_7|M4",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_7_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_cache_7|S1",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_7_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_cache_7|S2",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_7_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_cache_7|S3",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_7_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_cache_7|S4",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_cache_7_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_config_0|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_0_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_config_0|M1",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_0_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_config_0|M2",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_0_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_config_0|M3",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_0_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_config_0|M4",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_0_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_config_0|S1",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_0_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_config_0|S2",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_0_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_config_0|S3",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_0_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_config_0|S4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_0_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_config_1|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_1_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_config_1|M1",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_1_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_config_1|M2",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_1_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_config_1|M3",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_1_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_config_1|M4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_1_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_config_1|S1",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_1_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_config_1|S2",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_1_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_config_1|S3",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_1_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_config_1|S4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_config_1_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_config_2|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_2_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_config_2|M1",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_2_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_config_2|M2",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_2_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_config_2|M3",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_2_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_config_2|M4",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_2_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_config_2|S1",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_2_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_config_2|S2",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_2_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_config_2|S3",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_2_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_config_2|S4",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_2_target",
+      "target_user": "711e4378-a681-513e-8156-8df5c3ec4078"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_config_3|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_3_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_config_3|M1",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_3_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_config_3|M2",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_3_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_config_3|M3",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_3_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_config_3|M4",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_3_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_config_3|S1",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_3_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_config_3|S2",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_3_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_config_3|S3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_3_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_config_3|S4",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_config_3_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_config_4|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_config_4|M1",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_config_4|M2",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_config_4|M3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_config_4|M4",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_config_4|S1",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_config_4|S2",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_config_4|S3",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_config_4|S4",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_4_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_config_5|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_5_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_config_5|M1",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_5_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_config_5|M2",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_5_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_config_5|M3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_5_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_config_5|M4",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_5_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_config_5|S1",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_5_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_config_5|S2",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_5_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_config_5|S3",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_5_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_config_5|S4",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_5_target",
+      "target_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_config_6|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_6_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_config_6|M1",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_6_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_config_6|M2",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_6_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_config_6|M3",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_6_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_config_6|M4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_6_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_config_6|S1",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_6_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_config_6|S2",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_6_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_config_6|S3",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_6_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_config_6|S4",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_6_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_config_7|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_7_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_config_7|M1",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_7_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_config_7|M2",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_7_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_config_7|M3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_7_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_config_7|M4",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_7_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_config_7|S1",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_7_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_config_7|S2",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_7_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_config_7|S3",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_7_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_config_7|S4",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_config_7_target",
+      "target_user": "630a7019-aac7-5eb5-93e9-55bde49903e4"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_schema_0|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_0_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_schema_0|M1",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_0_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_schema_0|M2",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_0_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_schema_0|M3",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_0_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_schema_0|M4",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_0_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_schema_0|S1",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_0_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_schema_0|S2",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_0_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_schema_0|S3",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_0_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_schema_0|S4",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_0_target",
+      "target_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_schema_1|M0",
+      "source_user": null,
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_1_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_schema_1|M1",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_1_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_schema_1|M2",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_1_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_schema_1|M3",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_1_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_schema_1|M4",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_1_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_schema_1|S1",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_1_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_schema_1|S2",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_1_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_schema_1|S3",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_1_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_schema_1|S4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_aligned",
+      "target_task_id": "fam_main_schema_1_target",
+      "target_user": "8bccb708-f411-5dcf-9772-e705f5a9e910"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_schema_2|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_2_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_schema_2|M1",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_2_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_schema_2|M2",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_2_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_schema_2|M3",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_2_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_schema_2|M4",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_2_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_schema_2|S1",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_2_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_schema_2|S2",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_2_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_schema_2|S3",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_2_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_schema_2|S4",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_2_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_schema_3|M0",
+      "source_user": null,
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_schema_3|M1",
+      "source_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_schema_3|M2",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_schema_3|M3",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_schema_3|M4",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_schema_3|S1",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_schema_3|S2",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_schema_3|S3",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_schema_3|S4",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "context_inferable",
+      "target_task_id": "fam_main_schema_3_target",
+      "target_user": "e85c107e-2a8e-59e6-acc1-778d7c5d4230"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_schema_4|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_schema_4|M1",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_schema_4|M2",
+      "source_user": "1b1861b8-9182-5b9b-a7cb-6cf3de2683d1",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_schema_4|M3",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_schema_4|M4",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_schema_4|S1",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_schema_4|S2",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_schema_4|S3",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_schema_4|S4",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_4_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_schema_5|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_5_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_schema_5|M1",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_5_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_schema_5|M2",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_5_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_schema_5|M3",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_5_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_schema_5|M4",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_5_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_schema_5|S1",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_5_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_schema_5|S2",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_5_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_schema_5|S3",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_5_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_schema_5|S4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_5_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_schema_6|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_6_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_schema_6|M1",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_6_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_schema_6|M2",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_6_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_schema_6|M3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_6_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_schema_6|M4",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_6_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_schema_6|S1",
+      "source_user": "8785fe58-2434-5bc9-98b3-e599e83f16a2",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_6_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_schema_6|S2",
+      "source_user": "630a7019-aac7-5eb5-93e9-55bde49903e4",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_6_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_schema_6|S3",
+      "source_user": "8bccb708-f411-5dcf-9772-e705f5a9e910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_6_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_schema_6|S4",
+      "source_user": "2762a518-4bfd-54af-ad83-9bf179bea292",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_6_target",
+      "target_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "main|fam_main_schema_7|M0",
+      "source_user": null,
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_7_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "main|fam_main_schema_7|M1",
+      "source_user": "a5c022f7-54bf-5d16-b5af-d300ea954380",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_7_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "main|fam_main_schema_7|M2",
+      "source_user": "77ba241e-383d-5a5c-a2fa-5e80eca48541",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_7_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "main|fam_main_schema_7|M3",
+      "source_user": "711e4378-a681-513e-8156-8df5c3ec4078",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_7_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "main|fam_main_schema_7|M4",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_7_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S1",
+      "cell_id": "main|fam_main_schema_7|S1",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_7_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "main|fam_main_schema_7|S2",
+      "source_user": "f7837d2f-52b1-5fa4-9796-16f4cf88fffe",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_7_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "main|fam_main_schema_7|S3",
+      "source_user": "d95b522f-d61b-5fe8-9bba-a242c3e29910",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_7_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    },
+    {
+      "arm": "S4",
+      "cell_id": "main|fam_main_schema_7|S4",
+      "source_user": "ac596afb-0fa3-5aaf-b9f8-dabf1814875b",
+      "stratum": "prior_conflict",
+      "target_task_id": "fam_main_schema_7_target",
+      "target_user": "a5c022f7-54bf-5d16-b5af-d300ea954380"
+    }
+  ]
+}

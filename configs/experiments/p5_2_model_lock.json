@@ -1,0 +1,15 @@
+{
+  "attempts": 1,
+  "backend": "solar_p52",
+  "base_url": "https://api.upstage.ai/v1/solar",
+  "max_output_tokens": 1200,
+  "model": "solar-pro2-251215",
+  "repair_in_primary": false,
+  "sandbox": {
+    "grading": "hidden_test",
+    "kind": "controlled_local",
+    "timeout_s": 20
+  },
+  "temperature": 0,
+  "top_p": 1.0
+}

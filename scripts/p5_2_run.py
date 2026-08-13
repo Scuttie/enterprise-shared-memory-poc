@@ -85,6 +85,8 @@ async def _collect(sub, fams):
                                             " AND injected AND scope='shared' LIMIT 1"), {"j": sub["job_id"]})).scalar()
             applied = (await c.execute(text("SELECT applied_patch FROM job_patches WHERE job_id=:j"),
                                        {"j": sub["job_id"]})).scalar()
+            model = (await c.execute(text("SELECT returned_model FROM model_calls WHERE job_id=:j ORDER BY"
+                                          " created_at DESC LIMIT 1"), {"j": sub["job_id"]})).scalar()
     finally:
         await e.dispose()
     arm = sub["arm"]
@@ -96,7 +98,7 @@ async def _collect(sub, fams):
            "cell_id": sub["cell_id"], "state": (st[0] if st else "MISSING"), "pass1": p1, "exec1": e1,
            "cross_user": int(st[1] or 0) if st else 0, "injected": injected,
            "relevant_injected": relevant_injected, "leak": 0, "injected_matches_payload": 1,
-           "source_ne_target": True}
+           "source_ne_target": True, "returned_model": model}
     if arm in ("S1", "S4"):
         row["adoption"] = AN.classify_adoption(applied, _task_of(fams, sub), arm)
         row["has_patch"] = 1 if (applied is not None) else 0

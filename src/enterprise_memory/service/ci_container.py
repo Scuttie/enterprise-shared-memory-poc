@@ -13,7 +13,7 @@ from ..indexing.qdrant_indexes import QdrantIndex
 from ..indexing.embeddings import DeterministicTestEmbedder
 from ..artifacts.service import ArtifactService
 from .p5deps import OIDCIdentityProvider, DbRepositoryAuthz, DbTaskPolicyRepository, OfflineRepositoryProvider
-from .execution import FakeExecutionBackend, WholeFileModelExecutionBackend
+from .execution import FakeExecutionBackend, WholeFileModelExecutionBackend, P52WholeFileExecutionBackend
 from .localsandbox import ControlledLocalSandbox
 
 INDEX_DIM = int(os.environ.get("INDEX_DIM", "64"))
@@ -26,24 +26,30 @@ def _execution_backend():
     EXECUTION_BACKEND=solar the worker calls the real Solar coding model via DirectModelExecutionBackend (key
     from UPSTAGE_API_KEY, read by an EnvSecretProvider — never from any request)."""
     kind = os.environ.get("EXECUTION_BACKEND", "fake")
-    if kind == "solar":
+    if kind in ("solar", "solar_p52"):
         from ..providers.solar import SolarProvider
         from ..providers.secrets import EnvSecretProvider
+        mo = int(os.environ.get("SOLAR_MAX_TOKENS", "1024"))
         provider = SolarProvider(SOLAR_BASE_URL, SOLAR_MODEL, EnvSecretProvider(),
                                  key_name=os.environ.get("SOLAR_KEY_NAME", "UPSTAGE_API_KEY"),
-                                 max_output_tokens=int(os.environ.get("SOLAR_MAX_TOKENS", "1024")))
-        # whole-file output + server-side difflib diff: robust to model diff-format variance
-        return WholeFileModelExecutionBackend(provider,
-                                              model_max_tokens=int(os.environ.get("SOLAR_MAX_TOKENS", "1024")))
+                                 max_output_tokens=mo)
+        if kind == "solar_p52":     # P5.2 backend: prompt shows the full snapshot (incl. public tests)
+            return P52WholeFileExecutionBackend(provider, model_max_tokens=mo)
+        # P5.1 whole-file output + server-side difflib diff
+        return WholeFileModelExecutionBackend(provider, model_max_tokens=mo)
     return FakeExecutionBackend()
 
 
 def _repo_provider():
     """Repository/task adapter. Default is the offline demo provider. The frozen experiment uses the
     FrozenExecutableBenchmarkAdapter (snapshot + server-owned hidden test) when REPO_PROVIDER=benchmark."""
-    if os.environ.get("REPO_PROVIDER") == "benchmark":
+    rp = os.environ.get("REPO_PROVIDER")
+    if rp == "benchmark":
         from .task_adapter import FrozenExecutableBenchmarkAdapter
         return FrozenExecutableBenchmarkAdapter()
+    if rp == "benchmark_p52":
+        from .task_adapter import FrozenExecutableBenchmarkAdapterP52
+        return FrozenExecutableBenchmarkAdapterP52()
     return OfflineRepositoryProvider()
 
 

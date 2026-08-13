@@ -127,6 +127,49 @@ class WholeFileModelExecutionBackend(CodingExecutionBackend):
                 % (task_context.get("instruction", ""), task_context.get("target_path", ""), original, mem))
 
 
+class P52WholeFileExecutionBackend(CodingExecutionBackend):
+    """P5.2 backend. Like the whole-file backend but the prompt shows the FULL read-only snapshot (target file
+    + the incomplete PUBLIC test), so the model fits the observable core behaviour rather than applying generic
+    domain priors, and the server builds the diff with difflib. Governed memory (if any) supplies the hidden
+    edge convention. Kept separate from WholeFileModelExecutionBackend so the frozen P5.1 prompt is unchanged."""
+    def __init__(self, provider, model_max_tokens=1024):
+        self._p = provider
+        self._max = model_max_tokens
+
+    async def execute(self, task_context, repository_snapshot, memory_views, *, logical_request_id, org_id):
+        import difflib
+        import re
+        target = task_context.get("target_path")
+        original = repository_snapshot.get(target, "")
+        prompt = self._build_prompt(task_context, repository_snapshot, memory_views)
+        req = ModelRequest(messages=[{"role": "user", "content": prompt}], max_output_tokens=self._max)
+        response, record = await self._p.generate(req, logical_request_id=logical_request_id, org_id=org_id)
+        m = re.search(r"```(?:python)?\s*(.*?)```", response.text, re.S)
+        new_file = (m.group(1) if m else response.text).strip("\n") + "\n"
+        diff = "".join(difflib.unified_diff(original.splitlines(keepends=True),
+                                            new_file.splitlines(keepends=True),
+                                            fromfile="a/%s" % target, tofile="b/%s" % target))
+        return ExecutionResult(
+            patch_text=diff, raw_response=response.text, returned_model=response.returned_model,
+            backend_type="p52_wholefile", model_call_records=[record.to_dict()],
+            harness_metadata={"prompt_hash": _sha(prompt), "mode": "p52_wholefile"})
+
+    @staticmethod
+    def _build_prompt(task_context, repository_snapshot, memory_views):
+        target = task_context.get("target_path", "")
+        files = "\n".join("### file: %s\n```python\n%s```" % (p, c)
+                          for p, c in sorted(repository_snapshot.items()))
+        views = "\n\n".join("### governed memory view %d\n%s" % (i, v) for i, v in enumerate(memory_views))
+        mem = ("\n\nGoverned memory (authoritative for any documented edge-case rule):\n%s" % views) if views \
+              else ""
+        return ("You are editing a small Python repository. Read the read-only snapshot below, which includes "
+                "the file to edit and its (incomplete) public test.\n\n%s%s\n\nRewrite the COMPLETE file `%s` "
+                "so that ALL tests pass — the visible public tests AND any additional hidden tests. Make the "
+                "observable public behaviour exactly match the public test. Keep the function signature "
+                "unchanged. Return ONLY the full file content in one ```python code block."
+                % (files, mem, target))
+
+
 class ExternalHarnessExecutionBackend(CodingExecutionBackend):
     """Boundary for a company Claude-Code-style/local-GLM harness. `harness` is an injected client with an
     async `run(payload) -> dict`. It receives ONLY governed inputs and returns a patch + sanitized metadata;

@@ -78,6 +78,20 @@ class FrozenExecutableBenchmarkAdapter(RepositoryTaskAdapter):
         return self.task_for_repo(repo_id).hidden_test
 
 
+class FrozenExecutableBenchmarkAdapterP52(FrozenExecutableBenchmarkAdapter):
+    """P5.2 instrument (benchmarks/p5_2_static). Same contract; indexes the P5.2 splits."""
+
+    def __init__(self, splits=(("instrument_dev", 2), ("calibration", 4), ("main", 8))):
+        from benchmarks.p5_2_static import generate
+        self._by_repo = {}
+        self._by_task = {}
+        for name, n in splits:
+            for fam in generate(name, n):
+                for t in fam.tasks.values():
+                    self._by_repo[t.repo_fixture_id] = t
+                    self._by_task[t.task_id] = t
+
+
 class CompanyAdapterNotConfigured(RuntimeError):
     pass
 

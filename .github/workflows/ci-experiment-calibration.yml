@@ -6,10 +6,17 @@ on:
         description: "calibration or main"
         default: "calibration"
         required: true
+  push:
+    branches: [codex/production-service-v0.2]   # gated below by a [run-cal]/[run-main] commit marker
 permissions:
   contents: read
 jobs:
   calibration:
+    # only runs on an explicit marker (avoids a Solar run on every push); dispatch always runs.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[run-cal]') ||
+      contains(github.event.head_commit.message, '[run-main]')
     runs-on: ubuntu-latest
     timeout-minutes: 75
     services:
@@ -125,13 +132,21 @@ jobs:
               time.sleep(1)
           raise SystemExit("api not live")
           PY
-      - name: Run calibration through the service path (Solar)
-        run: python scripts/p5_1_run.py "${{ github.event.inputs.split }}"
+      - name: Determine split
+        id: split
+        run: |
+          S="${{ github.event.inputs.split }}"
+          if [ -z "$S" ]; then
+            if echo "${{ github.event.head_commit.message }}" | grep -q '\[run-main\]'; then S=main; else S=calibration; fi
+          fi
+          echo "split=$S" >> "$GITHUB_OUTPUT"; echo "split=$S"
+      - name: Run through the service path (Solar)
+        run: python scripts/p5_1_run.py "${{ steps.split.outputs.split }}"
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: p5_1-${{ github.event.inputs.split }}-results
+          name: p5_1-${{ steps.split.outputs.split }}-results
           path: |
             artifacts/experiments/p5_1/results/
             api.log

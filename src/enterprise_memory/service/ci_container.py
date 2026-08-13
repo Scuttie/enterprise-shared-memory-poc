@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from ..persistence.database import make_engine
 from ..auth.oidc import OIDCConfig, JWKSCache
 from ..indexing.qdrant_indexes import QdrantIndex
-from ..indexing.embeddings import DeterministicTestEmbedder
+from ..indexing.embeddings import DeterministicTestEmbedder, SentenceTransformerEmbedder
 from ..artifacts.service import ArtifactService
 from .p5deps import OIDCIdentityProvider, DbRepositoryAuthz, DbTaskPolicyRepository, OfflineRepositoryProvider
 from .execution import FakeExecutionBackend, WholeFileModelExecutionBackend, P52WholeFileExecutionBackend
@@ -19,6 +19,18 @@ from .localsandbox import ControlledLocalSandbox
 INDEX_DIM = int(os.environ.get("INDEX_DIM", "64"))
 SOLAR_BASE_URL = os.environ.get("SOLAR_BASE_URL", "https://api.upstage.ai/v1/solar")
 SOLAR_MODEL = os.environ.get("SOLAR_MODEL", "solar-pro2-251215")
+EMBEDDER_KIND = os.environ.get("EMBEDDER", "deterministic")
+EMBED_MODEL_ID = os.environ.get("EMBED_MODEL_ID", "sentence-transformers/all-MiniLM-L6-v2")
+EMBED_REVISION = os.environ.get("EMBED_REVISION") or None
+
+
+def _embedder():
+    """Retrieval embedder. Default is the credential-free deterministic test embedder. The paid REALBENCH-R2
+    benchmark path sets EMBEDDER=st to use the PINNED PRODUCTION SentenceTransformerEmbedder (§6.2); the
+    worker, seeding, and runner all resolve the embedder the same way so index and query vectors match."""
+    if EMBEDDER_KIND in ("st", "sentence-transformers", "production"):
+        return SentenceTransformerEmbedder(EMBED_MODEL_ID, revision=EMBED_REVISION)
+    return DeterministicTestEmbedder(INDEX_DIM)
 
 
 def _execution_backend():
@@ -126,6 +138,6 @@ def build_container(environment=None) -> Container:
         repo_provider=_repo_provider(),
         artifacts=ArtifactService(_artifact_store()),
         index=QdrantIndex.from_env(INDEX_DIM),
-        embedder=DeterministicTestEmbedder(INDEX_DIM),
+        embedder=_embedder(),
         backend=_execution_backend(),
         sandbox=ControlledLocalSandbox(environment))

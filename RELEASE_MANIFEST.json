@@ -182,9 +182,10 @@
   {
    "source_commit": "4487ea6",
    "dest": "src/enterprise_memory/serving/api.py",
-   "bytes": 5210,
-   "sha256": "2ee6a657f502aebff23521daf7b84f141a6e85fc50c82cab147f7069674d5028",
-   "category": "implementation"
+   "bytes": 5768,
+   "sha256": "3da56a87af4661c2d3102eeb9de998f71cf566b802aefd0fde1dff99131ee175",
+   "category": "implementation",
+   "note": "P5: legacy PoC quarantined behind create_offline_demo_app (env-guarded)"
   },
   {
    "source_commit": "4487ea6",

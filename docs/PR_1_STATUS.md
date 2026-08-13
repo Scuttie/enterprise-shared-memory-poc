@@ -154,8 +154,15 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
   No P6.**
 - **11 CI workflows green** (9 core + `ci-experiment-readiness` + `ci-company-harness`); the
   `ci-experiment-calibration` workflow is manual (marker/dispatch) and uses the `UPSTAGE_API_KEY` secret.
-- **P5.2 (in progress):** dynamic-range + retrieval-abstention redesign under new experiment ids
-  `EXP_P5_2_*`; no P5.1 task/threshold/prompt/result/manifest is modified.
+- **P5.2 = STOP-P5.2-CALIBRATION.** The redesigned instrument fixed both P5.1 defects — **M0 = 0.375
+  (in-band)** via prior_aligned/context_inferable/prior_conflict strata (G2 dynamic-range floor fixed), and a
+  **competitive retrieval bank + frozen abstention** (relevant precision 1.00; expired/out-of-scope memory
+  rejected before injection; cross-user private = 0) — but the frozen calibration failed **G4** (relevant
+  recall 0.875 < 0.90) and **G5-as-measured** (4 near-miss decoys injected in S2/S3) due to test-embedder
+  retrieval variance at 16-family scale. Per the stop rule the **held-out main was NOT run**; no thresholds
+  retuned; P5.1 remains permanently frozen. Adoption artifact-verified (G7): S4 = wrong-rule adoption 12/16.
+  See `reports/P5_2_CALIBRATION_DECISION.md`. **15 CI workflows green** (adds ci-p5-2-forensics/-retrieval/
+  -benchmark/-seal).
 
 ## Reproducibility pinning
 - PostgreSQL, Qdrant, and MinIO images are all digest-pinned in `ci-e2e`.

@@ -21,11 +21,19 @@ Relative to the failed P5.1 instrument, P5.2 fixed the two P5.1 defects it targe
   programmatic classifier shows S4 = EXACT_WRONG_DEFAULT_ADOPTION for 12/16 (negative transfer from a stored
   wrong rule), not inferred from Pass@1.
 
-## Why it still stops
-The single remaining weakness is retrieval-ranking robustness at scale: the deterministic embedder's ~12%
-variance at 16 families pushes 2 relevant memories below, and 4 near-miss decoys above, the frozen τ_abs=0.80
-margin — failing G4 recall and the (any-injection) G5 measure. This is not a leakage or plumbing defect; it is
-a retrieval-separation limitation of the credential-free test embedder.
+## Why it still stops (corrected interpretation)
+Calibration exposed **two** unresolved components, not one:
+1. **Retrieval recall / abstention.** The deterministic embedder's ~12% ranking variance at 16 families pushes
+   2 relevant memories below, and 4 near-miss decoys above, the frozen τ_abs=0.80 margin — failing G4 recall
+   and the (any-injection) G5 measure. Not a leakage/plumbing defect.
+2. **Representation / execution loss.** M2 (plain shared summary) = 0.875 **exceeded both** M3
+   (governed) = 0.688 and oracle-governed M4 = 0.750. Because M4 injects the correct governed memory by oracle
+   and still trails M2, the governed **rendering/execution view itself loses information** relative to the
+   compact summary — retrieval alone (M4−M3 = +0.062) does not explain the M2/M3 gap.
+
+Component verdicts: expired/OOS relevant-memory gate safety = **PASS**; near-miss semantic abstention =
+**FAIL**; governed-format advantage = **NOT OBSERVED** (M3−M2 = −0.188); private-memory advantage =
+**NOT OBSERVED** (M1−M0 = −0.125); wrong reusable-pattern adoption = **12/16** (S4, artifact-verified).
 
 ## Required redesign (new experiment id, new preregistration)
 - Use a retrieval representation with a larger relevant/decoy margin at scale (e.g. a stronger embedding or a

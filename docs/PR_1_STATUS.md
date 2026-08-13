@@ -4,9 +4,28 @@
 
 ## Head & CI
 - HEAD: latest on `codex/production-service-v0.2` (see PR commits; docs synced at `739a773`).
-- **Green (all 9):** `ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`,
-  `ci-artifacts`, `ci-solar`, **`ci-e2e`** (real HTTP → durable job → separate worker → SUCCEEDED).
-- PostgreSQL / Qdrant / MinIO images pinned; qdrant-client pinned to a server-compatible minor.
+- PostgreSQL / Qdrant / MinIO images digest-pinned in `ci-e2e`.
+
+## CI workflows — one current table (all green)
+| # | Workflow | Trigger | Purpose |
+|---|----------|---------|---------|
+| 1 | `ci` | PR | unit/security/service/contracts + release checks |
+| 2 | `ci-postgres` | PR | RLS + migrations (head 0013) |
+| 3 | `ci-qdrant` | PR | validated search / indexing |
+| 4 | `ci-qdrant-outage` | PR | outage replay |
+| 5 | `ci-mem0` | PR | mem0 infer=False (0 hidden LLM calls) |
+| 6 | `ci-oidc` | PR | OIDC/JWKS hardening |
+| 7 | `ci-artifacts` | PR | artifact lifecycle (postgres+MinIO) |
+| 8 | `ci-solar` | PR | Solar provider (fake server) |
+| 9 | `ci-e2e` | PR | HTTP → durable job → separate worker → SUCCEEDED |
+| 10 | `ci-experiment-readiness` | PR | §2/§3/§4 injection/leakage/lease/atomicity (real PG+Qdrant) |
+| 11 | `ci-company-harness` | PR | company harness adapter (fake server) |
+| 12 | `ci-p5-2-forensics` | PR | P5.1 immutability + offline forensics |
+| 13 | `ci-p5-2-retrieval` | PR | competitive retrieval + frozen abstention |
+| 14 | `ci-p5-2-benchmark` | PR | P5.2 strata instrument audit |
+| 15 | `ci-p5-2-seal` | PR | P5.2 freeze seals (independent of P5.1) |
+| — | `ci-experiment-calibration` | manual/marker | P5.1 Solar calibration (secret-gated) |
+| — | `ci-p5-2-calibration` | manual/marker | P5.2 Solar calibration (secret-gated) |
 
 ## Milestones (CI-validated)
 P1, P1.1, P2-0 (alembic 0003), P2-preflight (0004), P2-start (0005), **P2** core candidate indexing,
@@ -152,7 +171,7 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
   **isolated** relevant-retrieval success under cell-isolated singleton banks, **not** competitive precision.
   **STOP-CALIBRATION** on G2 (M0 floor) + G5 (irrelevant abstention). **Main NOT run. P5.1 permanently frozen.
   No P6.**
-- **11 CI workflows green** (9 core + `ci-experiment-readiness` + `ci-company-harness`); the
+- all PR workflows green (see the CI workflows table above); the
   `ci-experiment-calibration` workflow is manual (marker/dispatch) and uses the `UPSTAGE_API_KEY` secret.
 - **P5.2 = STOP-P5.2-CALIBRATION.** The redesigned instrument fixed both P5.1 defects — **M0 = 0.375
   (in-band)** via prior_aligned/context_inferable/prior_conflict strata (G2 dynamic-range floor fixed), and a
@@ -167,9 +186,6 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
 ## Reproducibility pinning
 - PostgreSQL, Qdrant, and MinIO images are all digest-pinned in `ci-e2e`.
 
-## Green workflows (11)
-`ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`,
-`ci-e2e`, `ci-experiment-readiness`, `ci-company-harness`.
 
 ## Scope
 - P6–P8 not implemented (reviewed promotion + K8s sandbox = P6; OTel/ops = P7; backup/DR = P8). Company

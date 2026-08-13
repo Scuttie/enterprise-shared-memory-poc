@@ -68,6 +68,8 @@ jobs:
           SMOKE_K=6
           RUN_DEADLINE=2400
           HF_HUB_DISABLE_TELEMETRY=1
+          PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+          TRANSFORMERS_NO_ADVISORY_WARNINGS=1
           PYTHONPATH=/w:/w/src
           ENV
           test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no secret"; exit 1; }

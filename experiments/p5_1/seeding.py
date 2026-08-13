@@ -7,6 +7,7 @@ POSTs /v1/solve — the arm is never in the client request)."""
 from __future__ import annotations
 import json
 import uuid
+from datetime import datetime
 
 from sqlalchemy import text
 from enterprise_memory.contracts import codec
@@ -94,7 +95,8 @@ async def seed_cell(su_engine, index, embedder, cell, family):
         # validity from the column, not the canonical), so the governance gate actually rejects it.
         vfrom, vuntil = (None, None)
         if form == "negative_expired":
-            vfrom, vuntil = MB._PAST_FROM, MB._PAST_UNTIL
+            vfrom = datetime.strptime(MB._PAST_FROM, "%Y-%m-%d")
+            vuntil = datetime.strptime(MB._PAST_UNTIL, "%Y-%m-%d")
         await _seed_shared(su_engine, org, repo, canonical, chash_hint=contract.content_hash,
                            records=records, valid_from=vfrom, valid_until=vuntil)
 

@@ -31,7 +31,7 @@ jobs:
         run: docker run --rm --entrypoint python "$EVAL_IMAGE" -c "import sys,bigcodebench; print('image_python', sys.version.split()[0]); print('image_bigcodebench', getattr(bigcodebench,'__version__','n/a'))"
       - name: Probe (grade canonical PASS + wrong FAIL) inside the official image
         run: |
-          mkdir -p artifacts/bigcode_r2 && chmod -R 777 artifacts
+          mkdir -p artifacts/bigcode_r2 && chmod -R 777 artifacts configs
           docker run --rm --network host \
             -e BIGCODE_SUBSET=full -e PROBE_K=12 -e HF_HUB_DISABLE_TELEMETRY=1 -e PYTHONPATH=/w \
             -v "$PWD:/w" -w /w --entrypoint python "$EVAL_IMAGE" scripts/bigcode_r2_probe.py

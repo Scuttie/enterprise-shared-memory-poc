@@ -1,0 +1,31 @@
+{
+  "funcname_collision_source_target": 1,
+  "near_dup_quarantined": 20,
+  "overlaps": {
+    "calibration_main": 0,
+    "calibration_reserve": 0,
+    "discovery_calibration": 0,
+    "discovery_main": 0,
+    "discovery_reserve": 0,
+    "main_reserve": 0,
+    "retrieval_dev_calibration": 0,
+    "retrieval_dev_discovery": 0,
+    "retrieval_dev_main": 0,
+    "retrieval_dev_reserve": 0,
+    "source_calibration": 0,
+    "source_discovery": 0,
+    "source_main": 0,
+    "source_reserve": 0,
+    "source_retrieval_dev": 0
+  },
+  "overlaps_all_zero": true,
+  "sizes": {
+    "calibration": 80,
+    "discovery": 120,
+    "main": 500,
+    "reserve": 60,
+    "retrieval_dev": 80,
+    "source": 300
+  },
+  "source_target_near_dup_pairs": 0
+}

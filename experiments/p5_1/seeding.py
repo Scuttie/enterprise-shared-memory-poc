@@ -30,7 +30,7 @@ async def seed_cell(su_engine, index, embedder, cell, family):
     exp_id = cell["cell_id"].rsplit("|", 2)[0] if "|" in cell["cell_id"] else cell["cell_id"]
     async with su_engine.begin() as c:
         await c.execute(text("INSERT INTO organisations(id,external_key) VALUES(:i,:k)"),
-                        {"i": org, "k": "org-%s" % cell["cell_id"]})
+                        {"i": org, "k": "org-%s-%s" % (cell["cell_id"], org)})   # unique per seeded org
         # users (target always; source only if distinct)
         await c.execute(text("INSERT INTO users(id,org_id,external_subject) VALUES(:i,:o,:s)"),
                         {"i": target_user, "o": org, "s": "u-" + target_user})

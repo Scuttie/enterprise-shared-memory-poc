@@ -1,0 +1,61 @@
+{
+ "openapi": "3.1.0",
+ "paths": [
+  "/health/live",
+  "/health/ready",
+  "/v1/contracts",
+  "/v1/contracts/candidates",
+  "/v1/contracts/{contract_id}",
+  "/v1/feedback",
+  "/v1/jobs/{job_id}",
+  "/v1/jobs/{job_id}/cancel",
+  "/v1/jobs/{job_id}/events",
+  "/v1/memories/search",
+  "/v1/memories/{memory_id}",
+  "/v1/private/episodes",
+  "/v1/private/episodes/{episode_id}",
+  "/v1/solve",
+  "/version"
+ ],
+ "solve_request": {
+  "additionalProperties": false,
+  "properties": {
+   "correlation_id": {
+    "anyOf": [
+     {
+      "type": "string"
+     },
+     {
+      "type": "null"
+     }
+    ],
+    "default": null,
+    "title": "Correlation Id"
+   },
+   "desired_ref": {
+    "title": "Desired Ref",
+    "type": "string"
+   },
+   "instruction": {
+    "title": "Instruction",
+    "type": "string"
+   },
+   "repository_id": {
+    "title": "Repository Id",
+    "type": "string"
+   },
+   "task_id": {
+    "title": "Task Id",
+    "type": "string"
+   }
+  },
+  "required": [
+   "repository_id",
+   "task_id",
+   "instruction",
+   "desired_ref"
+  ],
+  "title": "SolveRequest",
+  "type": "object"
+ }
+}

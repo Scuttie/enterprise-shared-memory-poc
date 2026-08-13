@@ -3,10 +3,10 @@
 **Do not merge.** Draft PR tracking the v0.2 production-service build. base = main.
 
 ## Head & CI
-- HEAD `afccf42`.
-- **Green:** `ci`, `ci-postgres`, `ci-qdrant`, `ci-mem0`, `ci-oidc` (+ `ci-qdrant-outage`).
-- PostgreSQL image digest-pinned; Qdrant image digest-pinned; qdrant-client pinned to a server-compatible
-  minor (version check ON).
+- HEAD: latest on `codex/production-service-v0.2` (see PR commits; docs synced at `4557e6a`).
+- **Green (all 8):** `ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`,
+  `ci-artifacts`, `ci-solar`.
+- PostgreSQL / Qdrant / MinIO images pinned; qdrant-client pinned to a server-compatible minor.
 
 ## Milestones (CI-validated)
 P1, P1.1, P2-0 (alembic 0003), P2-preflight (0004), P2-start (0005), **P2** core candidate indexing,
@@ -84,5 +84,5 @@ E2E suite, and `ci-e2e`. **Gate A stays PARTIAL until the P5 E2E passes.**
 `ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`.
 
 ## Scope
-- P5 in progress / not yet green; P6–P8 not implemented. Company certification **PENDING** for every gate.
+- P5 not started (tip 4557e6a); P6–P8 not implemented. Company certification **PENDING** for every gate.
 - Version `0.2.0.dev1`; no rc/beta tag. PR remains **DRAFT**; **do not merge**.

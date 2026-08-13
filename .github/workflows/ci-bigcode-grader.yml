@@ -11,22 +11,29 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       contains(github.event.head_commit.message, '[run-bcb-probe]')
     runs-on: ubuntu-latest
-    timeout-minutes: 40
-    container:
-      image: bigcodebench/bigcodebench-evaluate:latest
+    timeout-minutes: 50
+    env:
+      EVAL_IMAGE: bigcodebench/bigcodebench-evaluate:v0.2.4
     steps:
       - uses: actions/checkout@v4
-      - name: Python + bigcodebench provenance (inside official eval image)
+      - name: Free disk space (~30GB) for the CUDA eval image
         run: |
-          python --version
-          python -c "import bigcodebench, sys; print('bigcodebench', bigcodebench.__version__ if hasattr(bigcodebench,'__version__') else 'n/a')" || true
-          pip show bigcodebench 2>/dev/null | grep -E "Version" || true
-      - name: Grade canonical (PASS) + corrupted (FAIL) + pin hashes
-        env:
-          BIGCODE_SUBSET: full
-          PROBE_K: "12"
-          HF_HUB_DISABLE_TELEMETRY: "1"
-        run: python scripts/bigcode_r2_probe.py
+          set -x
+          df -h /
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL \
+                      /usr/local/share/boost "/usr/local/share/powershell" /usr/share/swift || true
+          sudo docker image prune -af || true
+          sudo apt-get clean || true
+          df -h /
+      - name: Pull official eval image
+        run: docker pull "$EVAL_IMAGE"
+      - name: Show image python + bigcodebench version
+        run: docker run --rm --entrypoint python "$EVAL_IMAGE" -c "import sys,bigcodebench; print('image_python', sys.version.split()[0]); print('image_bigcodebench', getattr(bigcodebench,'__version__','n/a'))"
+      - name: Probe (grade canonical PASS + wrong FAIL) inside the official image
+        run: |
+          docker run --rm --network host \
+            -e BIGCODE_SUBSET=full -e PROBE_K=12 -e HF_HUB_DISABLE_TELEMETRY=1 -e PYTHONPATH=/w \
+            -v "$PWD:/w" -w /w --entrypoint python "$EVAL_IMAGE" scripts/bigcode_r2_probe.py
       - name: Upload provenance
         if: always()
         uses: actions/upload-artifact@v4

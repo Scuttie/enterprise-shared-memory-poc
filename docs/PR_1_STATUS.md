@@ -112,7 +112,7 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
    authenticated HTTP → durable job → separate worker → governed retrieval → backend → sandbox → durable
    result path is green in `ci-e2e` using a fake execution backend, offline repository provider, file JWKS,
    and a controlled local sandbox. This is a plumbing claim, not an efficacy or real-provider claim.
-2. **Multi-user experiment readiness (P5.1)** = **CLOSED and CI-validated** (13 workflows green). Real
+2. **Multi-user experiment readiness (P5.1)** = **CLOSED and CI-validated** (11 workflows green). Real
    private-view injection (DB `injected` = backend payload byte-for-byte), real-owner cross-user leakage,
    lease-loss/cancellation/atomic idempotent finalisation, a frozen executable coding bank (audited), a
    company-harness adapter (fake-server CI), a preregistered freeze + seal tests, and a real-Solar calibration
@@ -148,7 +148,7 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
   `4eb030a9f6f18f6d`): M0 0.00 / M1 0.94 / M2 1.00 / M3 1.00 / M4 1.00; primary M3−M0 = **+1.00** (McNemar
   p ≈ 3e-5); Exec@1 = 1.00 all arms; **STOP-CALIBRATION** on G2 (M0 floor) + G5 (irrelevant abstention).
   **Main NOT run. No P6.**
-- **13 CI workflows green** (11 core + `ci-experiment-readiness` + `ci-company-harness`); the
+- **11 CI workflows green** (9 core + `ci-experiment-readiness` + `ci-company-harness`); the
   `ci-experiment-calibration` workflow is manual (marker/dispatch) and uses the `UPSTAGE_API_KEY` secret.
 
 ## Reproducibility pinning

@@ -1,5 +1,5 @@
 {
-  "analysis_code_hash": "e5dc4e8d7a60f6f58d2f535a6d2c818defb917d45a52ed0c8f36e0eecb54d73b",
+  "analysis_code_hash": "c9f56b5390de9d5e8180f1b947f82e03f79ed59d107c3af9b79c3208b068bf98",
   "calibration": {
     "cells": 144,
     "experiment_id": "EXP_P5_1_CAL",
@@ -21,7 +21,7 @@
       "fam_calibration_schema_2",
       "fam_calibration_schema_3"
     ],
-    "plan_hash": "b0a713b257ca988a4ee2f76633d3840efb0d503125d54101e94082ae2c1af71a",
+    "plan_hash": "4eb030a9f6f18f6d196a113e4bba4999c8697bf41343cf897ce058561bbda44f",
     "users": 8
   },
   "call_budget": {
@@ -31,7 +31,7 @@
     "main_with_safety": 288
   },
   "experiment": "P5.1 static multi-user coding",
-  "generator_version": "p5.1-static/1.0.0",
+  "generator_version": "p5.1-static/2.0.0",
   "main": {
     "cells": 288,
     "experiment_id": "EXP_P5_1_MAIN",
@@ -69,14 +69,14 @@
       "fam_main_schema_6",
       "fam_main_schema_7"
     ],
-    "plan_hash": "12ee3371f473f59f63f26703b278e2cdffabac2ef56a1aeb7f20eaa07cdda017",
+    "plan_hash": "0e5fe2849a2581d206a046429d00fdaca02ae8667a70fea0c92b4cdd3b9f7d04",
     "users": 12
   },
   "manifest_hashes": {
     "memory_bank_manifest": "9400edf9253fe31225de98c323961952e73602fb336737c32d7f4ffc08b10a94",
-    "prompt_manifest": "9bea6aad69362a590591ccdc31ebfa8a31021f1f4a368baafd263e688d30e097",
+    "prompt_manifest": "3944b33ff1c63145f18e98764e1c571262ef4b2933565ec06afb2acee585369a",
     "source_target_pairs": "dd423394e023ff15289b8cdd139d5dc12cdf4c3ccac7c067ef4d16e642e3bdea",
-    "task_manifest": "37dedef3922cd84c888c3b775a4b60690791280651a020a15b30fdb078cdd9e7",
+    "task_manifest": "807c3b1a8780cfe6758ff080b7521cbb7541d027568ddb335590b4d9cf5fd9b4",
     "user_assignment": "3bb902fb703d380d802caab82071c5822bf50fbf9cdc247c120fbede4b1f5895"
   },
   "model_lock": {

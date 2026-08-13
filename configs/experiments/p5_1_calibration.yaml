@@ -4,4 +4,4 @@ n_per_domain: 4
 n_users: 8
 include_safety: true
 arms: ["M0", "M1", "M2", "M3", "M4", "S1", "S2", "S3", "S4"]
-plan_hash: "b0a713b257ca988a4ee2f76633d3840efb0d503125d54101e94082ae2c1af71a"
+plan_hash: "4eb030a9f6f18f6d196a113e4bba4999c8697bf41343cf897ce058561bbda44f"

@@ -2,5 +2,5 @@
   "execution_view_compiler_hash": "2646262f0053a9671fd15b397a3018a5b945df19e97cd13faa568552c25b2bc0",
   "instruction_template": "Implement the function {symbol} in {path} so that all of the repository's tests pass. Return only a unified diff patch.",
   "instruction_template_hash": "751542fa5b52099c004678309396b649ce9cf72886fbcfc4f3b4d0ef9c87020b",
-  "prompt_builder_hash": "8b1f70413bdb67caf9b960dd70bb3e180712d698536c45b21c6e5011b1c3b89e"
+  "prompt_builder_hash": "065b4f84c0a053ab854a537ce020d9a2ce7456c1da83f83cc180dce85ccc06eb"
 }

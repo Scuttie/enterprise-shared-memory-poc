@@ -15,8 +15,8 @@ def solved_file(task) -> str:
 def wrong_world_file(task) -> str:
     """A plausible un-memorised solution that uses the common prior default D instead of the convention C.
     It passes the (incomplete) public test but fails the hidden test."""
-    from .families import _body_expr
-    expr = _body_expr(task.domain, task.prior_default, task.base)
+    from .families import _DOMAIN
+    expr = _DOMAIN[task.domain]["expr"] % task.prior_default
     return "%s:\n    return %s\n" % (task.exact_signature, expr)
 
 

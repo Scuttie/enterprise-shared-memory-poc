@@ -24,21 +24,28 @@ def ungoverned_canonical(family):
             "domain": family.domain, "kind": "shared_summary"}
 
 
+def _formula_with(constant, family):
+    # the reusable technique = the formula SHAPE with the convention constant substituted (never the target's
+    # own base/answer, which the model reads from the task's own public test)
+    return family.target.formula_label.replace("C", str(constant))
+
+
 def _contract(org_id, repo_id, family, *, constant, summary, path_globs=None, valid_from="2020-01-01",
-              valid_until="", applies_when=None, does_not_apply_when=None):
+              valid_until="", applies_when=None, does_not_apply_when=None, formula=None):
+    formula = formula if formula is not None else _formula_with(constant, family)
     c = SS.MemoryContract(
         contract_id=str(uuid.uuid4()), schema_version=SS.SCHEMA_VERSION,
         title="%s convention" % family.domain,
-        canonical_summary="%s The convention constant is %d." % (summary, constant),
+        canonical_summary="%s Compute the result as: %s (the convention constant is %d)."
+                          % (summary, formula, constant),
         scope=SS.ContractScope(org_id=str(org_id), team_ids=[], repo_ids=[str(repo_id)],
                                path_globs=list(path_globs or []), language="python", framework="none",
                                dependency_version_constraints={}, branch_or_release_constraints=["main"],
                                error_signatures=["E_%s" % family.domain.upper()],
                                applies_when=applies_when or ["completing a %s function" % family.domain],
                                does_not_apply_when=does_not_apply_when or ["a different codebase/convention"]),
-        action=SS.ContractAction(ordered_steps=["apply the convention constant %d in the %s computation"
-                                                % (constant, family.domain)],
-                                 code_pattern="constant=%d" % constant, forbidden_patterns=[],
+        action=SS.ContractAction(ordered_steps=["return %s" % formula],
+                                 code_pattern="return %s" % formula, forbidden_patterns=[],
                                  required_inputs=[], operation_order=[]),
         validity=SS.ContractValidity(valid_from=valid_from, valid_until=valid_until,
                                      environment_constraints={}, version_constraints={},

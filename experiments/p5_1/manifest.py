@@ -5,7 +5,7 @@ import hashlib
 import inspect
 
 from .plan import INSTRUCTION_TEMPLATE
-from enterprise_memory.service.execution import DirectModelExecutionBackend
+from enterprise_memory.service.execution import WholeFileModelExecutionBackend
 from enterprise_memory.service import private_view
 from enterprise_memory.contracts import codec
 
@@ -25,7 +25,7 @@ def prompt_manifest():
     return {
         "instruction_template": INSTRUCTION_TEMPLATE,
         "instruction_template_hash": _sha(INSTRUCTION_TEMPLATE),
-        "prompt_builder_hash": _src_hash(DirectModelExecutionBackend._build_prompt),
+        "prompt_builder_hash": _src_hash(WholeFileModelExecutionBackend._build_prompt),
         "execution_view_compiler_hash": _src_hash(codec.retrieval_text_and_path_scope,
                                                   private_view.compile_private_view),
     }

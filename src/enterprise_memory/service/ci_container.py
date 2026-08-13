@@ -13,7 +13,7 @@ from ..indexing.qdrant_indexes import QdrantIndex
 from ..indexing.embeddings import DeterministicTestEmbedder
 from ..artifacts.service import ArtifactService
 from .p5deps import OIDCIdentityProvider, DbRepositoryAuthz, DbTaskPolicyRepository, OfflineRepositoryProvider
-from .execution import FakeExecutionBackend, DirectModelExecutionBackend
+from .execution import FakeExecutionBackend, WholeFileModelExecutionBackend
 from .localsandbox import ControlledLocalSandbox
 
 INDEX_DIM = int(os.environ.get("INDEX_DIM", "64"))
@@ -32,7 +32,9 @@ def _execution_backend():
         provider = SolarProvider(SOLAR_BASE_URL, SOLAR_MODEL, EnvSecretProvider(),
                                  key_name=os.environ.get("SOLAR_KEY_NAME", "UPSTAGE_API_KEY"),
                                  max_output_tokens=int(os.environ.get("SOLAR_MAX_TOKENS", "1024")))
-        return DirectModelExecutionBackend(provider)
+        # whole-file output + server-side difflib diff: robust to model diff-format variance
+        return WholeFileModelExecutionBackend(provider,
+                                              model_max_tokens=int(os.environ.get("SOLAR_MAX_TOKENS", "1024")))
     return FakeExecutionBackend()
 
 

@@ -91,6 +91,42 @@ class DirectModelExecutionBackend(CodingExecutionBackend):
                                                        task_context.get("target_path", ""), views, files))
 
 
+class WholeFileModelExecutionBackend(CodingExecutionBackend):
+    """Asks the model for the COMPLETE corrected target file (not a diff) and constructs the unified diff
+    server-side with difflib, so a valid rewrite always applies (robust to model diff-format variance). The
+    server still owns edit-policy validation, hidden tests, and the sandbox verdict."""
+    def __init__(self, provider, model_max_tokens=1024):
+        self._p = provider
+        self._max = model_max_tokens
+
+    async def execute(self, task_context, repository_snapshot, memory_views, *, logical_request_id, org_id):
+        import difflib
+        import re
+        target = task_context.get("target_path")
+        original = repository_snapshot.get(target, "")
+        prompt = self._build_prompt(task_context, original, memory_views)
+        req = ModelRequest(messages=[{"role": "user", "content": prompt}], max_output_tokens=self._max)
+        response, record = await self._p.generate(req, logical_request_id=logical_request_id, org_id=org_id)
+        m = re.search(r"```(?:python)?\s*(.*?)```", response.text, re.S)
+        new_file = (m.group(1) if m else response.text).strip("\n") + "\n"
+        diff = "".join(difflib.unified_diff(original.splitlines(keepends=True), new_file.splitlines(keepends=True),
+                                            fromfile="a/%s" % target, tofile="b/%s" % target))
+        return ExecutionResult(
+            patch_text=diff, raw_response=response.text, returned_model=response.returned_model,
+            backend_type="direct_model_wholefile", model_call_records=[record.to_dict()],
+            harness_metadata={"prompt_hash": _sha(prompt), "mode": "whole_file"})
+
+    @staticmethod
+    def _build_prompt(task_context, original, memory_views):
+        views = "\n\n".join("### governed memory view %d\n%s" % (i, v) for i, v in enumerate(memory_views))
+        mem = ("\n\n%s" % views) if views else ""
+        return ("You are completing a Python file. Task: %s\nEditable target file: %s\n\n"
+                "Current file contents:\n```python\n%s```%s\n\n"
+                "Rewrite the COMPLETE file so that all of the repository's tests pass. Keep the function "
+                "signature unchanged. Return ONLY the full file content in a single ```python code block."
+                % (task_context.get("instruction", ""), task_context.get("target_path", ""), original, mem))
+
+
 class ExternalHarnessExecutionBackend(CodingExecutionBackend):
     """Boundary for a company Claude-Code-style/local-GLM harness. `harness` is an injected client with an
     async `run(payload) -> dict`. It receives ONLY governed inputs and returns a patch + sanitized metadata;

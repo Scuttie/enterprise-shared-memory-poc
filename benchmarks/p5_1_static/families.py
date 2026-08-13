@@ -1,33 +1,41 @@
 """Deterministic generator for the frozen static instrument (P5.1 §6). Given a split name + count, it emits
 Families with three disjoint tasks each. Fully deterministic (constants/names derived by SHA-256 from the
 split+index, no RNG, no clock) so regeneration is bit-identical. Different splits ('calibration' vs 'main')
-produce disjoint families by construction."""
+produce disjoint families by construction.
+
+Each domain's function depends only on its argument and the family convention constant C (no per-task base),
+so the reusable technique (formula shape + C) fully determines a correct GENERAL implementation — exactly what
+governed memory carries. The three roles differ by a distinct hidden-test input, so their outputs differ while
+the code is identical. A memory-less model cannot recover the formula shape OR C from the (incomplete) public
+test, which only pins the C-independent case at input 0."""
 from __future__ import annotations
 import hashlib
 from .schema import Task, Family
 
-GENERATOR_VERSION = "p5.1-static/1.0.0"
+GENERATOR_VERSION = "p5.1-static/2.0.0"
 DOMAINS = ("internal_api", "cache", "config", "schema")
 
-# per-domain: prior default D, candidate convention constants (all != D), public/hidden inputs, base range,
-# the formula, and human labels. All formulas are integer-valued and executable.
+# distinct hidden-test input per role -> distinct outputs (all reveal C); public input is always 0 (reveals no C)
+ROLE_HIDDEN = {"own_source": 2, "cross_source": 3, "target": 4}
+
+# per-domain: prior default D, candidate convention constants (all != D), the formula expression over the arg
+# (with C as a %d slot), the arg name, and the human note (which states the general formula + C).
 _DOMAIN = {
-    "internal_api": {"prior": 2, "consts": (3, 4, 5), "public_in": 0, "hidden_in": 2, "bases": (1, 2, 3, 5),
-                     "label": "base * (C ** attempt)", "arg": "attempt",
-                     "note": "In this service retry backoff is base multiplied by the multiplier raised to the "
-                             "attempt number; the backoff multiplier for this codebase is %d."},
-    "cache": {"prior": 60, "consts": (30, 45, 90), "public_in": 0, "hidden_in": 3, "bases": (10, 20, 40, 80),
-              "label": "base + C * tier", "arg": "tier",
-              "note": "Cache TTL for a tier is the base TTL plus a fixed per-tier increment; the per-tier "
-                      "increment for this codebase is %d seconds."},
-    "config": {"prior": 100, "consts": (15, 25, 40), "public_in": 0, "hidden_in": 1, "bases": (5, 12, 30, 50),
-               "label": "base + (C if flag else 0)", "arg": "flag",
-               "note": "When the environment override flag is set this codebase adds a fixed increment to the "
-                       "base value; that override increment is %d."},
-    "schema": {"prior": 1, "consts": (3, 7, 9), "public_in": 0, "hidden_in": 5, "bases": (2, 4, 6, 8),
-               "label": "value * C", "arg": "value",
-               "note": "Field normalization in this codebase scales the raw value by a fixed factor; the scale "
-                       "factor is %d."},
+    "internal_api": {"prior": 2, "consts": (3, 4, 5), "arg": "attempt", "expr": "%d ** attempt",
+                     "label": "C ** attempt",
+                     "note": "In this service the retry backoff for an attempt is the backoff multiplier "
+                             "raised to the attempt number (backoff = multiplier ** attempt); the multiplier "
+                             "for this codebase is %d."},
+    "cache": {"prior": 60, "consts": (30, 45, 90), "arg": "tier", "expr": "%d * tier", "label": "C * tier",
+              "note": "Cache TTL for a tier is a fixed per-tier increment multiplied by the tier level "
+                      "(ttl = increment * tier); the per-tier increment for this codebase is %d."},
+    "config": {"prior": 10, "consts": (15, 25, 40), "arg": "level", "expr": "%d * level * level",
+               "label": "C * level * level",
+               "note": "The environment override for a level scales quadratically with the level "
+                       "(value = factor * level * level); the override factor for this codebase is %d."},
+    "schema": {"prior": 1, "consts": (3, 7, 9), "arg": "value", "expr": "value ** %d", "label": "value ** C",
+               "note": "Field normalization raises the raw value to a fixed power (normalized = value ** "
+                       "power); the power for this codebase is %d."},
 }
 
 
@@ -39,36 +47,15 @@ def _pick(seq, *parts):
     return seq[_h(*parts) % len(seq)]
 
 
-def _perm(seq, *parts):
-    """Deterministic permutation of `seq` (Fisher-Yates driven by SHA-256), so distinct picks are guaranteed."""
-    items = list(seq)
-    for i in range(len(items) - 1, 0, -1):
-        j = _h(*parts, i) % (i + 1)
-        items[i], items[j] = items[j], items[i]
-    return items
-
-
-def _formula(domain, C, base, x) -> int:
+def _eval(domain, C, n) -> int:
     if domain == "internal_api":
-        return base * (C ** x)
+        return C ** n
     if domain == "cache":
-        return base + C * x
+        return C * n
     if domain == "config":
-        return base + (C if x else 0)
+        return C * n * n
     if domain == "schema":
-        return x * C
-    raise ValueError(domain)
-
-
-def _body_expr(domain, C, base):
-    if domain == "internal_api":
-        return "%d * (%d ** attempt)" % (base, C)
-    if domain == "cache":
-        return "%d + %d * tier" % (base, C)
-    if domain == "config":
-        return "%d + (%d if flag else 0)" % (base, C)
-    if domain == "schema":
-        return "value * %d" % C
+        return n ** C
     raise ValueError(domain)
 
 
@@ -77,7 +64,7 @@ def _name(domain, split, fi, role):
     return "%s_%s" % ({"internal_api": "backoff", "cache": "ttl", "config": "cfg", "schema": "scale"}[domain], tag)
 
 
-def _task(domain, split, fi, role, C, D, base):
+def _task(domain, split, fi, role, C, D):
     d = _DOMAIN[domain]
     arg = d["arg"]
     fn = _name(domain, split, fi, role)
@@ -87,10 +74,12 @@ def _task(domain, split, fi, role, C, D, base):
     test_path = "tests/test_%s.py" % fn
     sig = "def %s(%s)" % (fn, arg)
     stub = "%s:\n    # TODO: implement per the service convention\n    return 0\n" % sig
-    gold_body = "%s:\n    return %s\n" % (sig, _body_expr(domain, C, base))
-    pub_in, hid_in = d["public_in"], d["hidden_in"]
-    pub_out = _formula(domain, C, base, pub_in)
-    hid_out = _formula(domain, C, base, hid_in)
+    body_expr = d["expr"] % C
+    gold_body = "%s:\n    return %s\n" % (sig, body_expr)
+    pub_in = 0
+    hid_in = ROLE_HIDDEN[role]
+    pub_out = _eval(domain, C, pub_in)
+    hid_out = _eval(domain, C, hid_in)
     public_test = ("from src.%s import %s\n\n\ndef test_public():\n    assert %s(%d) == %d\n"
                    % (fn, fn, fn, pub_in, pub_out))
     hidden_test = ("from src.%s import %s\n\n\ndef test_hidden():\n    assert %s(%d) == %d\n"
@@ -99,7 +88,7 @@ def _task(domain, split, fi, role, C, D, base):
                 target_path=src_path, editable_paths=["src/**"], target_symbol=fn, exact_signature=sig,
                 public_test_path=test_path, public_test=public_test, hidden_test=hidden_test, src_stub=stub,
                 world_constant=C, prior_default=D, formula_label=d["label"], public_input=pub_in,
-                hidden_input=hid_in, base=base, gold_body=gold_body, hidden_expected=hid_out)
+                hidden_input=hid_in, base=hid_in, gold_body=gold_body, hidden_expected=hid_out)
 
 
 def _family(domain, split, fi):
@@ -107,9 +96,8 @@ def _family(domain, split, fi):
     D = d["prior"]
     C = _pick(d["consts"], split, domain, fi, "C")
     fam = "fam_%s_%s_%d" % (split, domain, fi)
-    perm = _perm(d["bases"], split, domain, fi, "base")     # 3 distinct bases -> distinct outputs per role
     roles = ("own_source", "cross_source", "target")
-    tasks = {role: _task(domain, split, fi, role, C, D, perm[i]) for i, role in enumerate(roles)}
+    tasks = {role: _task(domain, split, fi, role, C, D) for role in roles}
     return Family(family_id=fam, domain=domain, world_constant=C, prior_default=D,
                   technique_note=(d["note"] % C), tasks=tasks)
 
@@ -134,5 +122,5 @@ def generation_hash(split: str, n_per_domain: int) -> str:
             t = f.tasks[role]
             h.update(("%s|%s|%d|%d|%s|%s|%s|%d" % (t.task_id, t.exact_signature, t.world_constant,
                                                    t.hidden_expected, t.src_stub, t.public_test, t.hidden_test,
-                                                   t.base)).encode())
+                                                   t.hidden_input)).encode())
     return h.hexdigest()

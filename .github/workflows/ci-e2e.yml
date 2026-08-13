@@ -76,7 +76,7 @@ jobs:
         run: |
           python scripts/postgres_bootstrap.py
           alembic upgrade head
-          alembic current | grep -E "0008.*\(head\)"
+          alembic current | grep -E "0009.*\(head\)"
       - name: Create MinIO bucket
         run: |
           python - <<'PY'

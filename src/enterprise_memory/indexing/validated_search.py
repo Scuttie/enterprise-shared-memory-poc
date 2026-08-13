@@ -41,8 +41,12 @@ def _path_decision(requested_path, path_scope):
     return None if any(fnmatch.fnmatch(requested_path, g) for g in path_scope) else RR.PATH_SCOPE_MISMATCH
 
 
-async def _validate(engine, embedder, scope, org_id, user_id, requested_path, p):
-    """Return (hit_or_None, reason_or_None) for one candidate payload `p`."""
+async def _validate(engine, embedder, scope, org_id, user_id, requested_path, p, meta=None):
+    """Return (hit_or_None, reason_or_None) for one candidate payload `p`. `meta` (if given) is filled with
+    the authoritative canonical owner/hash discovered during the PostgreSQL reload, so a rejected cross-user
+    candidate is still auditable (index_owner vs canonical_owner)."""
+    if meta is None:
+        meta = {}
     # 1 scope
     if p.get("scope") != scope:
         return None, RR.SCOPE_MISMATCH
@@ -69,6 +73,10 @@ async def _validate(engine, embedder, scope, org_id, user_id, requested_path, p)
         row = await cl.load_contract_version(engine, org_id, version_id)
     if row is None:
         return None, RR.NOT_IN_POSTGRES
+    # authoritative owner/hash from PostgreSQL — recorded for auditing even if a later gate rejects
+    meta["canonical_owner"] = row.get("owner_user_id")
+    meta["canonical_repository"] = row.get("repository_id")
+    meta["content_hash"] = row.get("content_hash")
     # 7 canonical org
     if str(row["org_id"]) != str(org_id):
         return None, RR.WRONG_ORG
@@ -125,7 +133,8 @@ async def _validate(engine, embedder, scope, org_id, user_id, requested_path, p)
         object_kind=row["object_type"], canonical_id=str(row.get("contract_id") or row["object_id"]),
         canonical_version_id=row["object_id"], org_id=row["org_id"], content_hash=row["content_hash"],
         score=0.0, canonical=row["canonical"], version_number=(row.get("version_number") or 1),
-        contract_id=row.get("contract_id"))
+        contract_id=row.get("contract_id"), owner_user_id=row.get("owner_user_id"),
+        repository_id=row.get("repository_id"))
     return hit, None
 
 
@@ -144,7 +153,18 @@ async def validated_search(engine, index, embedder, scope, org_id, query, user_i
     for cand in candidates:
         if len(result.hits) >= limit:
             break
-        hit, reason = await _validate(engine, embedder, scope, org_id, user_id, requested_path, cand.payload)
+        meta = {"pid": cand.pid, "scope": scope, "score": cand.score,
+                "index_owner": cand.payload.get("owner_user_id"), "canonical_owner": None,
+                "canonical_id": cand.payload.get("canonical_id"),
+                "canonical_version_id": cand.payload.get("canonical_version_id"),
+                "content_hash": cand.payload.get("canonical_content_hash")}
+        hit, reason = await _validate(engine, embedder, scope, org_id, user_id, requested_path,
+                                      cand.payload, meta)
+        # audit every candidate we validated (accepted or rejected). A rejected cross-user candidate keeps
+        # its authoritative canonical_owner from the reload — the owner is never inferred from query context.
+        meta["accepted"] = reason is None
+        meta["rejection_reason"] = (reason.value if reason is not None else None)
+        result.audit.append(meta)
         if reason is not None:
             result.reject(cand.pid, reason)
         else:
@@ -152,5 +172,6 @@ async def validated_search(engine, index, embedder, scope, org_id, query, user_i
                 object_kind=hit.object_kind, canonical_id=hit.canonical_id,
                 canonical_version_id=hit.canonical_version_id, org_id=hit.org_id,
                 content_hash=hit.content_hash, score=cand.score, canonical=hit.canonical,
-                version_number=hit.version_number, contract_id=hit.contract_id))
+                version_number=hit.version_number, contract_id=hit.contract_id,
+                owner_user_id=hit.owner_user_id, repository_id=hit.repository_id))
     return result

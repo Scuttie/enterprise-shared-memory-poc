@@ -46,13 +46,6 @@ P1, P1.1, P2-0 (alembic 0003), P2-preflight (0004), P2-start (0005), **P2** core
   server permissions, ref→immutable commit + tree, branch/path restrictions, host-path-traversal rejection,
   short-lived credentials never in the access decision; client cannot define its own permissions/paths/commit.
 
-## Gates (implementation)
-- **A = PARTIAL** — full HTTP/job/worker E2E is P5.
-- **B = PARTIAL-advanced** — RLS + canonical index validation CI-validated.
-- **C = PARTIAL-advanced** — canonical versioning/outbox/index-state validated; persistent promotion is P6.
-- **E = PARTIAL-advanced** — durable job/outbox + Qdrant outage replay validated; full worker/provider recovery later.
-- **Company certification: PENDING for every gate.**
-
 ### P3.1/P2.2 — COMPLETE (green)
 Versioned canonical codec (`contracts/codec.py`, schema `enterprise_memory/1.0.0`); safe target-free
 retrieval projection (provenance/hidden-tests/identities never enter Qdrant/Mem0 text); private-recall
@@ -114,10 +107,33 @@ P5 foundation (also green): preflight §1 (artifact existing-AVAILABLE integrity
 chain serialized with `pg_advisory_xact_lock` — no fork) + **alembic 0008** (solve-job snapshot columns +
 RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
 
-## Gates (implementation)
-- **A = PASS in CI (with fake external providers)** — the HTTP→worker E2E is green in `ci-e2e`.
-- **B / C / E = PARTIAL-advanced.** **D = NOT MET** (production K8s sandbox is P6). **F / G = NOT MET.**
-- **Company certification: PENDING for every gate.**
+## Status — two distinct claims (do not conflate)
+1. **P5 service plumbing** = **PASS in credential-free CI with fake repository/execution providers.** The
+   authenticated HTTP → durable job → separate worker → governed retrieval → backend → sandbox → durable
+   result path is green in `ci-e2e` using a fake execution backend, offline repository provider, file JWKS,
+   and a controlled local sandbox. This is a plumbing claim, not an efficacy or real-provider claim.
+2. **Multi-user experiment readiness** = **NOT YET PASS.** Before the frozen experiment can be trusted, P5.1
+   closes: real private-view injection (DB `injected` must equal the backend payload byte-for-byte),
+   real-owner cross-user leakage computation, lease-loss/cancellation/atomic-finalisation correctness, a
+   non-toy frozen executable coding bank, a company-harness adapter boundary, and a preregistered freeze.
+   P5.1-A (injection + real-owner leakage) is the first of these commits.
+
+## Gates (single table)
+| Gate | Status | Note |
+|------|--------|------|
+| A (end-to-end service) | PASS in CI (fake providers) | `ci-e2e` green; efficacy not claimed |
+| B (tenant/RLS isolation) | PARTIAL-advanced | RLS + canonical validation CI-validated |
+| C (canonical governance) | PARTIAL-advanced | versioning/outbox/index-state validated; reviewed promotion is P6 |
+| D (production sandbox) | NOT MET | K8s sandbox is P6 |
+| E (durability/recovery) | PARTIAL-advanced | durable job/outbox + Qdrant outage replay validated |
+| F / G | NOT MET | — |
+| Experiment readiness | NOT YET PASS | P5.1 in progress |
+| Company certification | PENDING (every gate) | — |
+
+## Reproducibility pinning
+- PostgreSQL and Qdrant images are digest-pinned in `ci-e2e`.
+- The `ci-e2e` MinIO image is currently `latest` and is **NOT digest-pinned**; it will be pinned by immutable
+  digest in P5.1-D, before any experiment freeze.
 
 ## Green workflows (all 9)
 `ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`, `ci-e2e`.

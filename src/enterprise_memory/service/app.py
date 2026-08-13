@@ -21,7 +21,7 @@ from . import durable as D
 from .p5deps import Unauthenticated, ref_allowed
 
 API_VERSION = "v1"
-MIGRATION_HEAD = "0008"
+MIGRATION_HEAD = "0009"
 
 ROUTE_SCOPES = {
     ("POST", "/v1/solve"): S.SOLVE_SUBMIT,

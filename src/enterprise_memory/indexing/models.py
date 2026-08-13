@@ -124,12 +124,18 @@ class ValidatedHit:
     canonical: dict                    # canonical_json loaded from PostgreSQL (the authoritative content)
     version_number: int = 1
     contract_id: Optional[str] = None
+    owner_user_id: Optional[str] = None   # authoritative owner from PostgreSQL (private episodes)
+    repository_id: Optional[str] = None   # authoritative repository from PostgreSQL
 
 
 @dataclass
 class SearchResult:
     hits: List[ValidatedHit] = field(default_factory=list)
     rejections: List[Tuple[str, RejectionReason]] = field(default_factory=list)
+    # per-candidate provenance for auditing (accepted AND rejected). Each row is a dict with keys:
+    # pid, scope, index_owner, canonical_owner, canonical_id, canonical_version_id, content_hash,
+    # accepted, rejection_reason. Populated by validated_search for every candidate examined.
+    audit: List[dict] = field(default_factory=list)
 
     def reject(self, pid: str, reason: RejectionReason):
         self.rejections.append((pid, reason))

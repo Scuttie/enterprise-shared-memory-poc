@@ -99,15 +99,19 @@ async def persist_model_call(engine, org_id, job_id, record: dict):
 
 
 async def persist_retrieval_candidate(engine, org_id, job_id, *, scope, canonical_id, canonical_version_id,
-                                      content_hash, private_owner_id, accepted, rejection_reason, injected):
+                                      content_hash, private_owner_id, accepted, rejection_reason, injected,
+                                      index_owner_id=None, canonical_owner_id=None, injected_view_hash=None,
+                                      injected_position=None):
     async with tenant_tx(engine, org_id) as c:
         await c.execute(text(
             "INSERT INTO retrieval_candidates(org_id,job_id,scope,canonical_id,canonical_version_id,"
-            "content_hash,private_owner_id,accepted,rejection_reason,injected) VALUES(:o,:j,:sc,:ci,:cv,:h,"
-            "cast(:po as uuid),:acc,:rr,:inj)"),
+            "content_hash,private_owner_id,accepted,rejection_reason,injected,index_owner_id,"
+            "canonical_owner_id,injected_view_hash,injected_position) VALUES(:o,:j,:sc,:ci,:cv,:h,"
+            "cast(:po as uuid),:acc,:rr,:inj,cast(:io as uuid),cast(:co as uuid),:ivh,:ipos)"),
             {"o": org_id, "j": job_id, "sc": scope, "ci": canonical_id, "cv": canonical_version_id,
              "h": content_hash, "po": private_owner_id, "acc": accepted, "rr": rejection_reason,
-             "inj": injected})
+             "inj": injected, "io": index_owner_id, "co": canonical_owner_id, "ivh": injected_view_hash,
+             "ipos": injected_position})
 
 
 async def persist_outcome(engine, org_id, job_id, *, pass1, exec1, pass2, injected, content_hash):

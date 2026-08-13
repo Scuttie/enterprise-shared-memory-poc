@@ -1,0 +1,21 @@
+{
+  "artifacts/experiments/p5_1/freeze.json": "6283c0ead0039791e1212e6f12b3552c7ecf1eca56ec47ac3ac37314459148fd",
+  "artifacts/experiments/p5_1/memory_bank_manifest.json": "a26fa51616f2622d60b8fcf273c3d6444cd09a0341bbc8c78fa924d3561efff0",
+  "artifacts/experiments/p5_1/prompt_manifest.json": "6a7cced84fc266934757fd1d50ba8a4d8aab19efb5fe193ee48fa8ee66f1c901",
+  "artifacts/experiments/p5_1/results/calibration_results.json": "62f72cf6c53f447ffe7aeee4cb8192d2c3a652bd93deab6a0089f7ffc3715772",
+  "artifacts/experiments/p5_1/source_target_pairs.json": "3266542c9b35d3834e5738b6090e706ac7440214380b9947826df9e9c10c9c7c",
+  "artifacts/experiments/p5_1/task_manifest.json": "b08f07621d8ec8e11d72bc9cf15c984d679ecb3f69096fabd53d14a2be166a46",
+  "artifacts/experiments/p5_1/user_assignment.json": "808c0c014dfd455361cf9dfe62834b00dc6846d618107f564b17fa154ef80b40",
+  "benchmarks/p5_1_static/__init__.py": "3d6129636dccca090f8a1d8c737d5b1a16cc76493adc3cb98dab186d74ca4ae1",
+  "benchmarks/p5_1_static/audit.py": "b1902cdeb041b7737f1a0cf0e2d876247671665da3c0b878b793df420a7d6e31",
+  "benchmarks/p5_1_static/families.py": "ee586fc4690c12ccf01c1fbcaab0f04a4e92587174e3a57f33413663081989ae",
+  "benchmarks/p5_1_static/fixtures.py": "61abc4bd9072d5a5ee4fd2b0ee0b4f283f197eb50885e386d151a0ffa7cc890a",
+  "benchmarks/p5_1_static/schema.py": "baeba8527cb990dab6e16ab32cb67182c0bfae4f236dce61f462ae967477522b",
+  "benchmarks/p5_1_static/solver.py": "9466c3cbd6bc5c69270fa75f0e80b5f8150f132dd41c979ea40285cdce86fddc",
+  "configs/experiments/p5_1_calibration.yaml": "9c148e57bb5c48391c861d9337bd206000f289aadaede1d703d6b468de750400",
+  "configs/experiments/p5_1_main.yaml": "3e940f21fc673529c8e5916829be13bfc535807df88e0e021edb37f613ce80a1",
+  "configs/experiments/p5_1_model_lock.json": "22daac10d0f2e98efc0d154ca30aebca0cb2f009ce35c1403501e8ae5683cef4",
+  "docs/P5_1_STATIC_MULTIUSER_PREREG.md": "1333646bb3653f75471d3be741ccaf8aee771165c169f364729098f334a73f24",
+  "reports/P5_1_CALIBRATION.md": "6d4e337be34ac57b7053484c116f76e94e0e4adeb9f3ace4126b9641d5a8e523",
+  "reports/P5_1_CALIBRATION_DECISION.md": "abd84097d3f0cad1e111a39d6dc45d87a4396b57d65d870ba159372e559069e9"
+}

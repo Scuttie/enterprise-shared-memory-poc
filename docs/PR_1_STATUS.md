@@ -117,12 +117,13 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
    lease-loss/cancellation/atomic idempotent finalisation, a frozen executable coding bank (audited), a
    company-harness adapter (fake-server CI), a preregistered freeze + seal tests, and a real-Solar calibration
    through the service path. See `## P5.1` below.
-3. **First frozen experiment (efficacy)** = **NOT CLAIMED — STOP-CALIBRATION.** The frozen calibration
+3. **First frozen experiment (efficacy)** = **STOP-CALIBRATION / UNRESOLVED.** The frozen P5.1 calibration
    executed in full against real `solar-pro2-251215` (144 cells, HTTP → durable job → separate worker →
-   Solar → hidden-test grading). Governed cross-user memory produced a maximal lift (M3−M0 = +1.00, McNemar
-   p ≈ 3e-5) with clean critical safety, but two preregistered gates failed (G2 dynamic-range floor; G5
-   irrelevant-abstention), so per the frozen stop rule the **held-out main run was NOT executed** and no
-   efficacy claim is made. See `reports/P5_1_CALIBRATION_DECISION.md`.
+   Solar → hidden-test grading), then STOP-CALIBRATION fired on gates **G2** (dynamic range) and **G5**
+   (irrelevant abstention). The observed M3−M0 = +1.00 is an **instrument-sensitivity positive control**, NOT
+   an efficacy result: M3−M2 = 0 (no governed-format advantage observed) and M4−M3 = 0 (retrieval headroom
+   not estimable). The P5.1 **held-out main run was NOT executed**. P5.1 is now permanently frozen; efficacy
+   is redesigned under **P5.2** (`EXP_P5_2_*`). See `reports/P5_1_CLOSURE_AND_CLAIM_BOUNDARY.md`.
 
 ## Gates (single table)
 | Gate | Status | Note |
@@ -133,7 +134,8 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
 | D (production sandbox) | NOT MET | K8s sandbox is P6 |
 | E (durability/recovery) | PARTIAL-advanced | durable job/outbox + Qdrant outage replay validated |
 | F / G | NOT MET | — |
-| Experiment readiness | NOT YET PASS | P5.1 in progress |
+| Experiment readiness (P5.1) | PASS / CLOSED | correctness + service path CI-validated |
+| Efficacy | STOP-CALIBRATION / UNRESOLVED | P5.1 gates G2+G5 failed; main not run; redesign under P5.2 |
 | Company certification | PENDING (every gate) | — |
 
 ## P5.1 — experiment readiness + first frozen calibration
@@ -145,19 +147,22 @@ RLS-forced, tenant-FK'd `job_events` / `model_calls` / `retrieval_candidates`).
 - **EXP-0** server-assigned arms (M0–M4, S1–S4) + deterministic multi-user assignment + memory bank +
   hidden-test grading + Solar backend wiring (0012) + preregistration + freeze manifests + seal tests.
 - **EXP-1** calibration executed on real `solar-pro2-251215` via the service path (plan hash
-  `4eb030a9f6f18f6d`): M0 0.00 / M1 0.94 / M2 1.00 / M3 1.00 / M4 1.00; primary M3−M0 = **+1.00** (McNemar
-  p ≈ 3e-5); Exec@1 = 1.00 all arms; **STOP-CALIBRATION** on G2 (M0 floor) + G5 (irrelevant abstention).
-  **Main NOT run. No P6.**
+  `4eb030a9f6f18f6d`): M0 0.00 / M1 0.94 / M2 1.00 / M3 1.00 / M4 1.00; primary M3−M0 = **+1.00** — an
+  **instrument-sensitivity positive control**, not an efficacy result (M3−M2 = 0, M4−M3 = 0). G4 was
+  **isolated** relevant-retrieval success under cell-isolated singleton banks, **not** competitive precision.
+  **STOP-CALIBRATION** on G2 (M0 floor) + G5 (irrelevant abstention). **Main NOT run. P5.1 permanently frozen.
+  No P6.**
 - **11 CI workflows green** (9 core + `ci-experiment-readiness` + `ci-company-harness`); the
   `ci-experiment-calibration` workflow is manual (marker/dispatch) and uses the `UPSTAGE_API_KEY` secret.
+- **P5.2 (in progress):** dynamic-range + retrieval-abstention redesign under new experiment ids
+  `EXP_P5_2_*`; no P5.1 task/threshold/prompt/result/manifest is modified.
 
 ## Reproducibility pinning
-- PostgreSQL and Qdrant images are digest-pinned in `ci-e2e`.
-- The `ci-e2e` MinIO image is currently `latest` and is **NOT digest-pinned**; it will be pinned by immutable
-  digest in P5.1-D, before any experiment freeze.
+- PostgreSQL, Qdrant, and MinIO images are all digest-pinned in `ci-e2e`.
 
-## Green workflows (all 9)
-`ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`, `ci-e2e`.
+## Green workflows (11)
+`ci`, `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-oidc`, `ci-artifacts`, `ci-solar`,
+`ci-e2e`, `ci-experiment-readiness`, `ci-company-harness`.
 
 ## Scope
 - P6–P8 not implemented (reviewed promotion + K8s sandbox = P6; OTel/ops = P7; backup/DR = P8). Company

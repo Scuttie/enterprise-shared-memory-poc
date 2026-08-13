@@ -108,8 +108,9 @@ jobs:
           docker exec esm python -c "from enterprise_memory.indexing.embeddings import SentenceTransformerEmbedder as E; e=E(); e.embed(['warm']); print('embedder', e.provenance()['model_id'], e.dim)"
       - name: Start API + workers (inside eval container)
         run: |
-          docker exec -d esm python -m enterprise_memory.service.appcli
-          for i in 1 2 3 4; do docker exec -d -e WORKER_ID=bcb-worker-$i esm python -m enterprise_memory.service.solve_worker; done
+          docker exec -d esm bash -lc 'cd /w && setsid nohup python -m enterprise_memory.service.appcli > /w/api.log 2>&1 < /dev/null'
+          for i in 1 2 3 4; do docker exec -d esm bash -lc "cd /w && setsid nohup env WORKER_ID=bcb-worker-$i python -m enterprise_memory.service.solve_worker > /w/worker-$i.log 2>&1 < /dev/null"; done
+          sleep 3
           docker exec esm python - <<'PY'
           import time, urllib.request
           for _ in range(60):

@@ -65,6 +65,9 @@ def _repo_provider():
     if rp == "mbpp":
         from experiments.realbench_r1.adapter import EvalPlusMBPPTaskAdapter
         return EvalPlusMBPPTaskAdapter()
+    if rp == "bigcode":
+        from experiments.bigcode_r2.adapter import BigCodeBenchTaskAdapter
+        return BigCodeBenchTaskAdapter()
     return OfflineRepositoryProvider()
 
 

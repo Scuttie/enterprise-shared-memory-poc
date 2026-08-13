@@ -1,0 +1,23 @@
+{
+  "benchmark": "BigCodeBench",
+  "variant": "BigCodeBench-Instruct",
+  "package": "bigcodebench",
+  "package_version": "0.2.5",
+  "dataset_hf": "bigcode/bigcodebench",
+  "dataset_version": "v0.1.4",
+  "subset": "full",
+  "official_task_count": 1140,
+  "license": "Apache-2.0",
+  "eval_python_version": "3.10",
+  "eval_image": "bigcodebench/bigcodebench-evaluate",
+  "eval_requirements": "Requirements/requirements-eval.txt (73 pinned deps incl. numpy==1.21.2, tensorflow==2.11.0, scikit-learn==1.3.1, pandas==2.0.3 -> Python 3.10 only)",
+  "grader": "bigcodebench.evaluate.check_correctness -> bigcodebench.eval.untrusted_check (self-contained unittest per task; Linux resource guards)",
+  "resource_limits": {"max_as_limit": 30720, "max_data_limit": 30720, "max_stack_limit": 10, "min_time_limit": 1.0, "gt_time_limit": 2.0},
+  "execution": "local (inside the official eval image); e2b/gradio remote backends NOT used",
+  "prompt_field": "instruct_prompt",
+  "grading_marker": "BIGCODE:",
+  "dataset_content_hash": "PENDING_CI_PROBE",
+  "official_dataset_hash": "PENDING_CI_PROBE",
+  "confirmed_task_count": "PENDING_CI_PROBE",
+  "note": "content_hash is a platform-independent sha256 over sorted official task fields (newline-normalised); official_dataset_hash is bigcodebench.get_bigcodebench_hash. No benchmark test or reference solution is modified."
+}

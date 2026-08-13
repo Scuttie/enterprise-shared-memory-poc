@@ -1,0 +1,35 @@
+name: ci-bigcode-grader
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/production-service-v0.2]
+permissions:
+  contents: read
+jobs:
+  probe:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[run-bcb-probe]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    container:
+      image: bigcodebench/bigcodebench-evaluate:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python + bigcodebench provenance (inside official eval image)
+        run: |
+          python --version
+          python -c "import bigcodebench, sys; print('bigcodebench', bigcodebench.__version__ if hasattr(bigcodebench,'__version__') else 'n/a')" || true
+          pip show bigcodebench 2>/dev/null | grep -E "Version" || true
+      - name: Grade canonical (PASS) + corrupted (FAIL) + pin hashes
+        env:
+          BIGCODE_SUBSET: full
+          PROBE_K: "12"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+        run: python scripts/bigcode_r2_probe.py
+      - name: Upload provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bigcode-provenance
+          path: artifacts/bigcode_r2/provenance_probe.json

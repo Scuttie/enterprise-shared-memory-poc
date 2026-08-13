@@ -7,9 +7,25 @@ import uuid
 from sqlalchemy import text
 from ..persistence.tenant_context import tenant_tx
 
+# deterministic namespace: one job -> one private episode id, so a reclaimed attempt / retry is idempotent
+_JOB_NS = uuid.UUID("2f1e6a4c-5b3d-4e2a-9c8b-7a6d5e4f3c2b")
+
+# required AVAILABLE artifacts before a job may enter SUCCEEDED (snapshot, sanitized model req + resp,
+# parsed patch, applied patch, sandbox result)
+REQUIRED_ARTIFACTS = 5
+
+
+class TerminalEvidenceMissing(Exception):
+    """A required evidence row (model call / artifacts / retrieval event) is absent at finalisation. The
+    terminal transaction rolls back and the job does NOT enter SUCCEEDED."""
+
 
 def sha(s: str) -> str:
     return hashlib.sha256((s or "").encode("utf-8")).hexdigest()
+
+
+def episode_id_for_job(job_id: str) -> str:
+    return str(uuid.uuid5(_JOB_NS, "episode:%s" % job_id))
 
 
 # ---------------------------------------------------------------- submission (API, api_service role)
@@ -149,10 +165,82 @@ async def finalize_success(engine, org_id, job_id, worker_id, cross_user_count, 
 
 
 async def mark_failed(engine, org_id, job_id, worker_id, reason, seq):
+    """Guarded FAILED transition. A stale worker (no longer the lease owner) writes NOTHING — not even the
+    FAILED job_event — so it cannot append a terminal event to a job it no longer owns."""
     from ..persistence.postgres import redact
     async with tenant_tx(engine, org_id) as c:
-        await c.execute(text(
+        n = (await c.execute(text(
             "UPDATE solve_jobs SET state='FAILED', updated_at=now(), lease_owner=NULL, lease_expires_at=NULL,"
-            " error_detail_sanitized=:d WHERE id=:i AND lease_owner=:w"),
-            {"d": redact(reason), "i": job_id, "w": worker_id})
-        await _event(c, org_id, job_id, seq, "FAILED", "failed", {"reason": redact(reason)})
+            " error_detail_sanitized=:d WHERE id=:i AND lease_owner=:w AND state <> ALL(ARRAY['SUCCEEDED',"
+            "'FAILED','CANCELLED','DEAD_LETTER'])"), {"d": redact(reason), "i": job_id, "w": worker_id})).rowcount
+        if n == 1:                                          # only the true lease owner appends the terminal event
+            await _event(c, org_id, job_id, seq, "FAILED", "failed", {"reason": redact(reason)})
+    return n == 1
+
+
+async def mark_cancelled(engine, org_id, job_id, worker_id, seq):
+    """Guarded CANCELLED transition (used when a cancel was requested and this worker still owns the lease)."""
+    async with tenant_tx(engine, org_id) as c:
+        n = (await c.execute(text(
+            "UPDATE solve_jobs SET state='CANCELLED', updated_at=now(), lease_owner=NULL, lease_expires_at=NULL,"
+            " heartbeat_at=NULL WHERE id=:i AND lease_owner=:w AND state <> ALL(ARRAY['SUCCEEDED','FAILED',"
+            "'CANCELLED','DEAD_LETTER'])"), {"i": job_id, "w": worker_id})).rowcount
+        if n == 1:
+            await _event(c, org_id, job_id, seq, "CANCELLED", "cancelled", {})
+    return n == 1
+
+
+async def finalize_success_atomic(engine, org_id, job_id, worker_id, *, cross_user_count, seq, outcome,
+                                  episode_canonical, user_id, repo_id):
+    """One authoritative terminal transaction (P5.1 §4.3). In a single tenant transaction: take the terminal
+    transition ONLY if this worker still owns the live lease (single winner), verify the required durable
+    evidence exists (fail-closed rollback otherwise), then write the terminal OutcomeObservation (one per job),
+    the single deterministic PrivateEpisode, the single candidate-extraction outbox event, the terminal audit,
+    the computed leakage count and the SUCCEEDED transition + event — together. Object-store bytes were already
+    persisted through the artifact state machine; here we only verify they are AVAILABLE.
+
+    Idempotent by job: the outcome has a UNIQUE(org_id,job_id); the episode id is deterministic per job (ON
+    CONFLICT DO NOTHING); the candidate outbox event is idempotent by its unique key. Returns the episode id."""
+    from ..persistence.postgres import publish_outbox, emit_audit
+    ep_id = episode_id_for_job(job_id)
+    ep_hash = "sha256:" + sha(json.dumps(episode_canonical, sort_keys=True))[:32]
+    async with tenant_tx(engine, org_id, user_id) as c:
+        # 1 lease-owned terminal transition — exactly one worker wins; a stale worker gets rowcount 0
+        n = (await c.execute(text(
+            "UPDATE solve_jobs SET state='SUCCEEDED', updated_at=now(), lease_owner=NULL, lease_expires_at=NULL,"
+            " heartbeat_at=NULL, cross_user_private_injection_count=:x WHERE id=:i AND lease_owner=:w"
+            " AND state <> ALL(ARRAY['SUCCEEDED','FAILED','CANCELLED','DEAD_LETTER'])"),
+            {"x": cross_user_count, "i": job_id, "w": worker_id})).rowcount
+        if n != 1:
+            raise PermissionError("not_lease_owner_or_terminal")
+        # 2 required-evidence gate (fail-closed: rollback -> job does NOT become SUCCEEDED)
+        mc = (await c.execute(text("SELECT count(*) FROM model_calls WHERE job_id=:j"), {"j": job_id})).scalar()
+        art = (await c.execute(text("SELECT count(*) FROM artifacts WHERE job_id=:j"
+                                    " AND deletion_state='AVAILABLE'"), {"j": job_id})).scalar()
+        retrieved = (await c.execute(text("SELECT count(*) FROM job_events WHERE job_id=:j"
+                                          " AND event_type='retrieved'"), {"j": job_id})).scalar()
+        att = (await c.execute(text("SELECT count(*) FROM solve_attempts WHERE job_id=:j"), {"j": job_id})).scalar()
+        if int(mc or 0) < 1 or int(art or 0) < REQUIRED_ARTIFACTS or int(retrieved or 0) < 1 or int(att or 0) < 1:
+            raise TerminalEvidenceMissing("evidence: model_calls=%s artifacts=%s retrieved=%s attempts=%s"
+                                          % (mc, art, retrieved, att))
+        # 3 terminal outcome (one per job)
+        await c.execute(text(
+            "INSERT INTO outcome_observations(org_id,job_id,pass1,exec1,pass2,injected_memories,content_hash)"
+            " VALUES(:o,:j,:p1,:e1,:p2,cast(:im as jsonb),:h) ON CONFLICT (org_id,job_id) DO NOTHING"),
+            {"o": org_id, "j": job_id, "p1": outcome["pass1"], "e1": outcome["exec1"], "p2": outcome["pass2"],
+             "im": json.dumps(outcome.get("injected", [])), "h": outcome.get("content_hash")})
+        # 4 single deterministic private episode
+        await c.execute(text(
+            "INSERT INTO private_episodes(id,org_id,owner_user_id,repository_id,canonical_json,content_hash,"
+            "state) VALUES(cast(:i as uuid),:o,:u,:r,cast(:j as jsonb),:h,'success') ON CONFLICT (id) DO NOTHING"),
+            {"i": ep_id, "o": org_id, "u": user_id, "r": repo_id,
+             "j": json.dumps(episode_canonical), "h": ep_hash})
+        # 5 single candidate-extraction outbox event (idempotent by unique key)
+        await publish_outbox(c, org_id, "CONTRACT_CANDIDATE", "private_episode", ep_id, 1, {"job_id": job_id})
+        # 6 terminal audit + 7 terminal job_event
+        await emit_audit(c, org_id, "solve_succeeded", "job", job_id,
+                         {"episode_id": ep_id, "cross_user_private_injection_count": cross_user_count},
+                         "", sha("%s|succeeded" % job_id))
+        await _event(c, org_id, job_id, seq, "SUCCEEDED", "completed",
+                     {"cross_user_private_injection_count": cross_user_count, "episode_id": ep_id})
+    return ep_id

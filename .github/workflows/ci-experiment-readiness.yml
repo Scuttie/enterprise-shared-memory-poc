@@ -1,0 +1,82 @@
+name: ci-experiment-readiness
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: esm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm"
+          --health-interval 5s --health-timeout 5s --health-retries 30
+      qdrant:
+        image: qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
+        ports:
+          - 6333:6333
+          - 6334:6334
+    env:
+      DATABASE_URL: postgresql://localhost:5432/esm
+      MIGRATION_USER: postgres
+      MIGRATION_PASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: esm
+      QDRANT_URL: http://localhost:6333
+      INDEX_DIM: "64"
+      ENVIRONMENT: ci
+      ARTIFACT_DIR: /tmp/esm-artifacts
+      OIDC_ISSUER: https://idp.e2e.local/
+      OIDC_AUDIENCE: esm-api
+      OIDC_JWKS_FILE: /tmp/er_jwks.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,postgres,qdrant,artifacts,oidc]"
+      - name: Wait for Qdrant
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          for i in range(60):
+              for ep in ("/readyz", "/healthz", "/"):
+                  try:
+                      with urllib.request.urlopen("http://localhost:6333" + ep, timeout=2) as r:
+                          if r.status < 500:
+                              print("qdrant ready via", ep); raise SystemExit(0)
+                  except SystemExit:
+                      raise
+                  except Exception:
+                      pass
+              time.sleep(2)
+          raise SystemExit("qdrant not ready")
+          PY
+      - name: Bootstrap roles
+        run: python scripts/postgres_bootstrap.py
+      - name: Alembic upgrade
+        run: alembic upgrade head
+      - name: Head check
+        run: alembic current | grep -E "0010.*\(head\)"
+      - name: Seed JWKS stub (build_container identity needs the file to exist; unused by these tests)
+        run: |
+          python - <<'PY'
+          import json
+          json.dump({"keys": []}, open("/tmp/er_jwks.json", "w"))
+          PY
+      - name: Experiment-readiness tests (§2/§3/§4 against real Postgres + Qdrant)
+        run: python -m pytest -q tests/experiment_readiness --timeout=180 --timeout-method=thread

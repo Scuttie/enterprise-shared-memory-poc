@@ -11,8 +11,9 @@ import json
 import os
 import uuid
 
+from sqlalchemy import text
 from ..persistence.tenant_context import tenant_tx
-from ..persistence.postgres import claim_job, heartbeat, publish_outbox, emit_audit, redact
+from ..persistence.postgres import claim_job, heartbeat, redact
 from ..indexing.validated_search import validated_search
 from ..indexing.models import PRIVATE, SHARED, SearchResult
 from ..artifacts import records as AR
@@ -26,6 +27,15 @@ _FORBIDDEN = ("tests/**", "**/test_*.py", "**/conftest.py", "**/*_test.py")
 
 class EditPolicyError(Exception):
     pass
+
+
+class LeaseLost(Exception):
+    """This worker no longer owns the live lease. It must abort immediately: no further model/sandbox/artifact
+    work, no terminal evidence, and it must NOT write any terminal state (it is now a stale worker)."""
+
+
+class Cancelled(Exception):
+    """The job was cancel-requested. The worker stops and, if it still owns the lease, transitions CANCELLED."""
 
 
 def _patch_paths(patch_text):
@@ -61,16 +71,43 @@ def validate_edit_policy(patch_text, editable_paths, max_changed_lines, snapshot
     return new_text, meta
 
 
-async def _heartbeat_loop(engine, org, job_id, worker_id, stop, interval=5):
+async def _heartbeat_loop(engine, org, job_id, worker_id, stop, lease_lost, interval=5):
+    """Renew the lease. If renewal fails because the lease is no longer owned/live, SIGNAL lease_lost so the
+    pipeline aborts before the next expensive stage — it must not keep running on a lost lease."""
     while not stop.is_set():
         try:
             await heartbeat(engine, org, job_id, worker_id)
+        except PermissionError:
+            lease_lost.set()
+            return
         except Exception:
+            # transient error renewing (e.g. a dropped connection): treat conservatively as lease-at-risk
+            lease_lost.set()
             return
         try:
             await asyncio.wait_for(stop.wait(), timeout=interval)
         except asyncio.TimeoutError:
             pass
+
+
+async def _checkpoint(engine, org, job_id, worker_id, lease_lost):
+    """Guard called before every expensive stage. Raises LeaseLost if the lease was lost (signalled by the
+    heartbeat loop OR observable now as an owner change / expiry), or Cancelled if a cancel was requested."""
+    if lease_lost.is_set():
+        raise LeaseLost("lease_lost")
+    async with tenant_tx(engine, org) as c:
+        r = (await c.execute(text(
+            "SELECT cancel_requested_at, lease_owner, state,"
+            " (lease_expires_at IS NOT NULL AND lease_expires_at > now()) AS live"
+            " FROM solve_jobs WHERE id=:j"), {"j": job_id})).first()
+    if r is None:
+        raise LeaseLost("job_vanished")
+    cancel_at, owner, state, live = r[0], r[1], r[2], r[3]
+    if owner != worker_id or not live or state in ("SUCCEEDED", "FAILED", "CANCELLED", "DEAD_LETTER"):
+        lease_lost.set()
+        raise LeaseLost("not_owner_or_expired")
+    if cancel_at is not None:
+        raise Cancelled("cancel_requested")
 
 
 async def process_job(container, worker_id, ev):
@@ -81,7 +118,8 @@ async def process_job(container, worker_id, ev):
     lrq = "mc-%s" % job_id
     seq = 1
     stop = asyncio.Event()
-    hb = asyncio.create_task(_heartbeat_loop(e, org, job_id, worker_id, stop))
+    lease_lost = asyncio.Event()
+    hb = asyncio.create_task(_heartbeat_loop(e, org, job_id, worker_id, stop, lease_lost))
     try:
         await D.add_event(e, org, job_id, seq, "RETRIEVING", "claimed", {"worker": worker_id}); seq += 1
         # revalidate repository modify authorization (server-side, current)
@@ -91,6 +129,7 @@ async def process_job(container, worker_id, ev):
         async def _pipeline():
             nonlocal seq
             # immutable snapshot -> artifact
+            await _checkpoint(e, org, job_id, worker_id, lease_lost)     # before snapshot
             snapshot = container.repo_provider.snapshot(repo_id, commit, target)
             snap_ref = await container.artifacts.put(e, org, AR.REPOSITORY_SNAPSHOT,
                                                      json.dumps(snapshot, sort_keys=True).encode(),
@@ -99,6 +138,7 @@ async def process_job(container, worker_id, ev):
 
             # dual retrieval (canonical reload happens INSIDE validated_search). The retrieval policy comes
             # from the server-assigned experiment arm (M0 disables retrieval; M4 is oracle) — never client.
+            await _checkpoint(e, org, job_id, worker_id, lease_lost)     # before retrieval
             rp = ev.get("retrieval_policy") or spec.get("retrieval_policy") or {}
             priv_scopes = rp.get("scopes", ["private", "shared"])
             max_inj = int(rp.get("max_injected", 2))
@@ -131,6 +171,7 @@ async def process_job(container, worker_id, ev):
                                "cross_user": cross_user}); seq += 1
 
             # execution backend
+            await _checkpoint(e, org, job_id, worker_id, lease_lost)     # before model/harness execution
             task_ctx = {"instruction": spec["instruction"], "target_path": target,
                         "repository_reference": {"repo": repo_id, "commit": commit},
                         "edit_policy": {"editable_paths": spec["editable_paths"],
@@ -152,11 +193,13 @@ async def process_job(container, worker_id, ev):
             await D.add_event(e, org, job_id, seq, "TESTING", "generated", {"backend": result.backend_type}); seq += 1
 
             # patch parse + edit policy
+            await _checkpoint(e, org, job_id, worker_id, lease_lost)     # before patch processing
             new_text, meta = validate_edit_policy(result.patch_text, spec["editable_paths"],
                                                   spec["maximum_changed_lines"], snapshot, target)
             await container.artifacts.put(e, org, AR.PARSED_PATCH, result.patch_text.encode(),
                                           created_by=user, job_id=job_id)
             # controlled sandbox
+            await _checkpoint(e, org, job_id, worker_id, lease_lost)     # before sandbox
             sandbox_res = container.sandbox.run(snapshot, result.patch_text, target)
             await container.artifacts.put(e, org, AR.APPLIED_PATCH, new_text.encode(), created_by=user, job_id=job_id)
             await container.artifacts.put(e, org, AR.SANDBOX_RESULT,
@@ -166,26 +209,36 @@ async def process_job(container, worker_id, ev):
                 raise EditPolicyError("sandbox_tests_failed")
             await D.add_event(e, org, job_id, seq, "TESTING", "sandbox_pass", {"changed": meta}); seq += 1
 
-            # outcome + private episode + candidate event
-            await D.persist_outcome(e, org, job_id, pass1=1, exec1=1, pass2=1, injected=injected_meta,
-                                    content_hash=D.sha(new_text))
+            # build (but do NOT yet persist) the terminal evidence; the atomic finaliser writes it all in one
+            # lease-owned transaction together with the SUCCEEDED transition.
+            outcome = {"pass1": 1, "exec1": 1, "pass2": 1, "injected": injected_meta,
+                       "content_hash": D.sha(new_text)}
             episode = {"task_id": spec["task_id"], "repo_id": repo_id, "commit": commit,
                        "outcome": "success", "injected_memory_ids": [m["version_id"] for m in injected_meta]}
-            episode_id = await D.persist_private_episode(e, org, user, repo_id, episode)
-            async with tenant_tx(e, org, user) as conn:
-                await publish_outbox(conn, org, "CONTRACT_CANDIDATE", "private_episode", episode_id, 1,
-                                     {"job_id": job_id})
-            return cross_user, episode_id
+            return cross_user, outcome, episode
 
-        cross_user, episode_id = await asyncio.wait_for(_pipeline(), timeout=STAGE_DEADLINE)
+        cross_user, outcome, episode = await asyncio.wait_for(_pipeline(), timeout=STAGE_DEADLINE)
 
-        # terminal audit + atomic finalize (lease-owner enforced)
-        async with tenant_tx(e, org) as conn:
-            await emit_audit(conn, org, "solve_succeeded", "job", job_id,
-                             {"episode_id": episode_id, "cross_user_private_injection_count": cross_user},
-                             "", D.sha("%s|succeeded" % job_id))
-        await D.finalize_success(e, org, job_id, worker_id, cross_user, seq)
-        return {"job_id": job_id, "status": "SUCCEEDED", "cross_user": cross_user}
+        # one authoritative terminal transaction (lease-owned, evidence-verified, idempotent); a stale worker
+        # or a lost race raises PermissionError and writes nothing terminal.
+        await _checkpoint(e, org, job_id, worker_id, lease_lost)         # before finalisation
+        episode_id = await D.finalize_success_atomic(
+            e, org, job_id, worker_id, cross_user_count=cross_user, seq=seq, outcome=outcome,
+            episode_canonical=episode, user_id=user, repo_id=repo_id)
+        return {"job_id": job_id, "status": "SUCCEEDED", "cross_user": cross_user, "episode_id": episode_id}
+    except LeaseLost as ex:
+        # stale worker: abort with NO terminal write (do not mark_failed — another worker owns the job now)
+        return {"job_id": job_id, "status": "LEASE_LOST", "reason": str(ex)}
+    except Cancelled:
+        # honour the cancellation; only the true lease owner records the terminal CANCELLED
+        try:
+            await D.mark_cancelled(e, org, job_id, worker_id, seq + 1)
+        except Exception:
+            pass
+        return {"job_id": job_id, "status": "CANCELLED"}
+    except PermissionError:
+        # lost the finalisation race / no longer the lease owner: write nothing terminal
+        return {"job_id": job_id, "status": "NOT_OWNER"}
     except Exception as ex:
         try:
             await D.mark_failed(e, org, job_id, worker_id, str(ex), seq + 1)

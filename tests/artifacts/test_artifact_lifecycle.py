@@ -1,5 +1,6 @@
 """Artifact lifecycle (P4 §10) — runs against a local store and, when MINIO_ENDPOINT is set, S3/MinIO."""
 import uuid
+import asyncio
 import pytest
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import text
@@ -141,6 +142,27 @@ def test_reconcile_readonly_detects_orphans(orgs, store):
         assert ref.artifact_id in rep["db_row_missing_object"]
         assert stray_key in rep["object_missing_db_row"] and rep["has_drift"]
         await e.dispose()
+    run(body())
+
+
+def test_concurrent_audit_chain_no_fork(orgs, store):
+    async def body():
+        a = orgs["A"]; svc = _svc(store); e1 = eng("api"); e2 = eng("api"); su = eng("postgres")
+        # two concurrent artifact writes on the same org -> the audit appends must serialize (no fork)
+        await asyncio.gather(svc.put(e1, a["org"], CLS, b"concurrent-one", created_by=a["user"]),
+                             svc.put(e2, a["org"], CLS, b"concurrent-two", created_by=a["user"]))
+        async with su.connect() as c:
+            rows = (await c.execute(text("SELECT previous_hash, event_hash FROM audit_events WHERE org_id=:o"
+                                         " AND event_type='ARTIFACT_LIFECYCLE' ORDER BY created_at"),
+                                    {"o": a["org"]})).fetchall()
+        for x in (e1, e2, su):
+            await x.dispose()
+        prevs = [r[0] for r in rows]
+        nonempty = [p for p in prevs if p]
+        assert len(nonempty) == len(set(nonempty))        # no duplicate non-empty previous_hash (no fork)
+        assert prevs.count("") <= 1                        # at most one genesis
+        hashes = {r[1] for r in rows}
+        assert all(p in hashes for p in nonempty)          # each links to a real earlier event (linear)
     run(body())
 
 

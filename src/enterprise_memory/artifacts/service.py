@@ -62,6 +62,9 @@ class ArtifactService:
     # ---------------------------------------------------------------- chained append-only audit
     async def _audit(self, conn, org_id, artifact_id, prior_state, new_state, *, object_hash=None,
                      result="ok", actor=None, request_id=None):
+        # §1.2: serialize the per-org audit chain so two concurrent transitions cannot read the same
+        # previous_hash and fork the ledger. The advisory lock is transaction-scoped.
+        await conn.execute(text("SELECT pg_advisory_xact_lock(hashtext(:o), 0)"), {"o": str(org_id)})
         prev = (await conn.execute(text(
             "SELECT event_hash FROM audit_events WHERE org_id=:o ORDER BY created_at DESC LIMIT 1"),
             {"o": org_id})).scalar() or ""
@@ -92,7 +95,28 @@ class ArtifactService:
             row = (await c.execute(text(_SEL + " WHERE org_id=:o AND object_key=:k"),
                                    {"o": org_id, "k": key})).first()
             if row is not None and row[7] == R.AVAILABLE:
-                return _ref(row)                                  # idempotent upload
+                existing_ref = _ref(row)                          # verify integrity before returning (§1.1)
+            else:
+                existing_ref = None
+        if existing_ref is not None:
+            head = await self._t(self._store.head, existing_ref.object_key)
+            ok = bool(head) and int(head.get("size", -1)) == len(data)
+            if ok and head.get("sha256") is not None:
+                ok = head.get("sha256") == h
+            if ok:
+                ok = await self._t(self._store.verify, existing_ref.object_key, h)
+            if not ok:
+                async with tenant_tx(engine, org_id) as c:
+                    await c.execute(text("UPDATE artifacts SET deletion_state='DELETE_FAILED',"
+                                         " optimistic_version=optimistic_version+1 WHERE id=:i"),
+                                    {"i": existing_ref.artifact_id})
+                    await self._audit(c, org_id, existing_ref.artifact_id, R.AVAILABLE, "DELETE_FAILED",
+                                      object_hash=h, result="integrity_failure", request_id=request_id)
+                raise ArtifactCorrupt("existing AVAILABLE artifact failed integrity verification")
+            return existing_ref                                   # idempotent upload, integrity confirmed
+        async with tenant_tx(engine, org_id) as c:
+            row = (await c.execute(text(_SEL + " WHERE org_id=:o AND object_key=:k"),
+                                   {"o": org_id, "k": key})).first()
             if row is None:
                 await c.execute(text(
                     "INSERT INTO artifacts(id,org_id,job_id,kind,object_key,content_hash,artifact_class,"

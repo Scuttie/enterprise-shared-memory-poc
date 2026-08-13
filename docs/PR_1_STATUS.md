@@ -3,7 +3,7 @@
 **Do not merge.** Draft PR tracking the v0.2 production-service build. base = main.
 
 ## Head & CI
-- HEAD: latest on `codex/production-service-v0.2` (see PR commits; docs synced at `739a773`).
+- HEAD: latest on `codex/production-service-v0.2` (see PR commits; docs synced at `30d97d7`).
 - PostgreSQL / Qdrant / MinIO images digest-pinned in `ci-e2e`.
 
 ## CI workflows — one current table (all green)
@@ -24,12 +24,30 @@
 | 13 | `ci-p5-2-retrieval` | PR | competitive retrieval + frozen abstention |
 | 14 | `ci-p5-2-benchmark` | PR | P5.2 strata instrument audit |
 | 15 | `ci-p5-2-seal` | PR | P5.2 freeze seals (independent of P5.1) |
+| 16 | `ci-realbench-adapter` | PR | EvalPlus MBPP+ adapter (backend sees only the prompt) |
+| 17 | `ci-realbench-grader` | PR | official MBPP+ grader on Linux (canonical 20/20, wrong 0/20) |
+| 18 | `ci-realbench-seal` | PR | REALBENCH-R1 freeze/preregistration seals |
 | — | `ci-experiment-calibration` | manual/marker | P5.1 Solar calibration (secret-gated) |
 | — | `ci-p5-2-calibration` | manual/marker | P5.2 Solar calibration (secret-gated) |
+| — | `ci-realbench-calibration` | manual/marker | REALBENCH-R1 MBPP+ calibration/main (Solar, secret-gated) |
 
 ## Milestones (CI-validated)
 P1, P1.1, P2-0 (alembic 0003), P2-preflight (0004), P2-start (0005), **P2** core candidate indexing,
-**P2.1** operational closure (0006), **P3** OIDC / scopes / repository authorization.
+**P2.1** operational closure (0006), **P3** OIDC / scopes / repository authorization,
+**REALBENCH-R1** official EvalPlus MBPP+ through the production service path.
+
+### REALBENCH-R1 — actual public-benchmark result (EvalPlus MBPP+ v0.2.0)
+The real MBPP+ benchmark (evalplus 0.3.1, dataset hash `bbaa3bec`) run through the full production path
+(HTTP → durable job → separate worker → memory retrieval/abstention → Solar `solar-pro2-251215` → **official
+EvalPlus grader** → durable evidence). Preregistered, frozen split (`c3cbf496`): source 150 / calibration 48
+/ main 120, disjoint (source↔target 0, funcname 0, near-dups excluded). Adapter gives the backend only the
+prompt; reference solutions / augmented tests never enter a prompt or memory. Grader is Linux-only → all
+grading in CI.
+- **Calibration** (240 jobs, all SUCCEEDED): C1–C5 **instrument** gates all PASS. R0=0.542.
+- **Held-out main** (600 jobs, 599 SUCCEEDED + 1 R0 infra dead-letter): actual **Pass@1 R0=0.575 / R2=0.617 /
+  R3=0.625 / R4 oracle=0.633 / R1=0.600**. Primary **R3−R0=+0.050**, 95% CI [−0.017, +0.117], McNemar p=0.238 —
+  **positive but not significant**. **R3−R2=+0.008** (governance format adds ~nothing over a plain shared
+  summary). Reports: `reports/REALBENCH_R1_CALIBRATION_DECISION.md`, `reports/REALBENCH_R1_MAIN_RESULTS.md`.
 
 ### P2.1 — operational closure
 - **Durable alias routing:** `enterprise_private_current` / `enterprise_shared_current` are the authoritative

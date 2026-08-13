@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from .models import PRIVATE, SHARED, ObjectType, INDEX_SCHEMA_VERSION, RejectionReason as RR, \
     SearchResult, ValidatedHit, sha256_hex
 from . import canonical_loaders as cl
+from ..contracts import codec
 
 _PRIVATE_UNSERVABLE = ("deleted", "quarantined", "tombstoned")
 
@@ -30,10 +31,14 @@ def _aware(dt):
     return dt
 
 
-def _path_ok(requested_path, path_scope):
-    if not requested_path or not path_scope:
-        return True
-    return any(fnmatch.fnmatch(requested_path, g) for g in path_scope)
+def _path_decision(requested_path, path_scope):
+    """None = ok; else the RejectionReason. A path restriction requires a matching requested path
+    (fail-closed): missing path -> PATH_REQUIRED, non-matching -> PATH_SCOPE_MISMATCH."""
+    if not path_scope:
+        return None
+    if not requested_path:
+        return RR.PATH_REQUIRED
+    return None if any(fnmatch.fnmatch(requested_path, g) for g in path_scope) else RR.PATH_SCOPE_MISMATCH
 
 
 async def _validate(engine, embedder, scope, org_id, user_id, requested_path, p):
@@ -70,8 +75,9 @@ async def _validate(engine, embedder, scope, org_id, user_id, requested_path, p)
     # 8 canonical owner (private)
     if scope == PRIVATE and str(row["owner_user_id"]) != str(user_id):
         return None, RR.NOT_OWNER
-    # 10 repository read permission (shared; private is owner-scoped and already authorised)
-    if scope == SHARED and not await cl.can_read_repo(engine, org_id, user_id, row.get("repository_id")):
+    # 10 repository read permission — re-checked for BOTH scopes (owner status alone is insufficient; a
+    # revoked repo permission must reject a private episode the user once created)
+    if not await cl.can_read_repo(engine, org_id, user_id, row.get("repository_id")):
         return None, RR.NO_READ_PERMISSION
     # 11 payload/canonical repository equality
     if str(p.get("repository_id")) != str(row.get("repository_id")):
@@ -106,11 +112,13 @@ async def _validate(engine, embedder, scope, org_id, user_id, requested_path, p)
     else:
         if (row.get("state") or "") in _PRIVATE_UNSERVABLE:
             return None, RR.DEPRECATED
-    # 20 path scope
-    if not _path_ok(requested_path, row.get("path_scope")):
-        return None, RR.PATH_SCOPE_MISMATCH
-    # 21 retrieval-text hash
-    if str(p.get("retrieval_text_hash")) != sha256_hex(cl.embed_text(row["canonical"])):
+    # 20 path scope (a restriction requires a matching requested path — fail-closed)
+    pd = _path_decision(requested_path, row.get("path_scope"))
+    if pd is not None:
+        return None, pd
+    # 21 retrieval-text hash (shared: safe codec projection; private: compact canonical)
+    expected_text = codec.retrieval_text(row["canonical"]) if scope == SHARED else cl.embed_text(row["canonical"])
+    if str(p.get("retrieval_text_hash")) != sha256_hex(expected_text):
         return None, RR.RETRIEVAL_HASH_MISMATCH
 
     hit = ValidatedHit(

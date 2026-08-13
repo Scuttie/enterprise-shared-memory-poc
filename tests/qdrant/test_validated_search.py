@@ -3,6 +3,7 @@ reloaded from PostgreSQL and passes every gate; the returned content is the cano
 payload. This exercises the full rejection matrix — each doctored candidate maps to one RejectionReason."""
 import uuid
 import pytest
+from sqlalchemy import text
 from conftest import run, eng, mk_record, seed_contract_version, seed_private, grant_repo_read
 from enterprise_memory.indexing.models import PRIVATE, SHARED, RejectionReason as RR
 from enterprise_memory.indexing.canonical_loaders import embed_text
@@ -13,8 +14,10 @@ QUERY = "retry once with backoff"
 
 
 async def _seed_valid(a, canonical=None, **seed_kw):
-    """Seed a current promoted contract with repo read granted to a['user']. Returns (cid, vid, h, canon)."""
-    canonical = canonical or {"text": QUERY, "path_scope": ["src/**"]}
+    """Seed a current promoted contract with repo read granted to a['user']. Returns (cid, vid, h, canon).
+    Default canonical carries NO path restriction so the rejection matrix isn't path-gated; path tests pass
+    an explicit canonical with path_scope."""
+    canonical = canonical or {"text": QUERY}
     su = eng("postgres")
     cid, vid, h = await seed_contract_version(su, a["org"], a["repo"], canonical, **seed_kw)
     await grant_repo_read(su, a["org"], a["repo"], a["user"])
@@ -61,7 +64,8 @@ def test_shared_returns_canonical(seeded, index, embedder):
 def test_private_returns_canonical_and_owner_isolation(seeded, index, embedder):
     async def body():
         a = seeded["A"]; canonical = {"text": QUERY}
-        su = eng("postgres"); eid, h = await seed_private(su, a["org"], a["user"], canonical, repo=a["repo"]); await su.dispose()
+        su = eng("postgres"); eid, h = await seed_private(su, a["org"], a["user"], canonical, repo=a["repo"])
+        await grant_repo_read(su, a["org"], a["repo"], a["user"]); await su.dispose()   # private recall re-checks repo read
         rec = mk_record(PRIVATE, canonical_version_id=eid, org_id=a["org"], content_hash=h,
                         text=embed_text(canonical), owner_user_id=a["user"], repository_id=a["repo"])
         await index.upsert([rec], embedder.embed([rec.text]))
@@ -69,6 +73,30 @@ def test_private_returns_canonical_and_owner_isolation(seeded, index, embedder):
         other = await _search(index, embedder, a, scope=PRIVATE, user=a["user2"])
         assert len(owner.hits) == 1 and owner.hits[0].canonical_version_id == eid
         assert other.hits == []                          # store-side owner filter isolates
+    run(body())
+
+
+def test_private_recall_rejects_after_repo_permission_revoked(seeded, index, embedder):
+    """§3: episode created while the user had repo access; permission is revoked; Qdrant still returns the
+    candidate; canonical validation rejects it -> no model-facing view."""
+    async def body():
+        a = seeded["A"]; canonical = {"text": QUERY}
+        su = eng("postgres")
+        eid, h = await seed_private(su, a["org"], a["user"], canonical, repo=a["repo"])
+        await grant_repo_read(su, a["org"], a["repo"], a["user"])
+        await su.dispose()
+        rec = mk_record(PRIVATE, canonical_version_id=eid, org_id=a["org"], content_hash=h,
+                        text=embed_text(canonical), owner_user_id=a["user"], repository_id=a["repo"])
+        await index.upsert([rec], embedder.embed([rec.text]))
+        r1 = await _search(index, embedder, a, scope=PRIVATE, user=a["user"])
+        assert len(r1.hits) == 1                                                  # with access -> hit
+        su = eng("postgres")                                                     # revoke repo permission
+        async with su.begin() as c:
+            await c.execute(text("DELETE FROM repository_permissions WHERE repository_id=:r AND subject_id=:u"),
+                            {"r": a["repo"], "u": a["user"]})
+        await su.dispose()
+        r2 = await _search(index, embedder, a, scope=PRIVATE, user=a["user"])
+        assert r2.hits == [] and RR.NO_READ_PERMISSION.value in r2.reasons()      # rejected fail-closed
     run(body())
 
 
@@ -154,10 +182,25 @@ def test_retrieval_hash_mismatch(seeded, index, embedder):
 
 
 def test_path_scope_mismatch(seeded, index, embedder):
-    _reject_case(seeded, index, embedder,
-                 lambda a, c, v, h, k: mk_record(SHARED, canonical_version_id=v, org_id=a["org"],
-                     content_hash=h, text=embed_text(k), contract_id=c, repository_id=a["repo"]),
-                 RR.PATH_SCOPE_MISMATCH, requested_path="docs/readme.md")   # canonical path_scope = src/**
+    async def body():
+        a = seeded["A"]; canon = {"text": QUERY, "path_scope": ["src/**"]}
+        cid, vid, h, _ = await _seed_valid(a, canonical=canon)
+        rec = _correct_shared(a, cid, vid, h, canon)
+        await index.upsert([rec], embedder.embed([rec.text]))
+        res = await _search(index, embedder, a, requested_path="docs/readme.md")   # not under src/**
+        assert res.hits == [] and RR.PATH_SCOPE_MISMATCH.value in res.reasons()
+    run(body())
+
+
+def test_path_required_when_restricted(seeded, index, embedder):
+    async def body():
+        a = seeded["A"]; canon = {"text": QUERY, "path_scope": ["src/**"]}
+        cid, vid, h, _ = await _seed_valid(a, canonical=canon)
+        rec = _correct_shared(a, cid, vid, h, canon)
+        await index.upsert([rec], embedder.embed([rec.text]))
+        res = await _search(index, embedder, a)                              # restriction present, no path
+        assert res.hits == [] and RR.PATH_REQUIRED.value in res.reasons()
+    run(body())
 
 
 def test_no_read_permission(seeded, index, embedder):

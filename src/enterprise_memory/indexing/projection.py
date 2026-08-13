@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from .models import IndexRecord, PRIVATE, SHARED, ObjectType
 from .canonical_loaders import embed_text, path_scope_of
+from ..contracts import codec
 
 
 def now_iso() -> str:
@@ -18,10 +19,13 @@ def _iso(v):
 
 
 def build_record(scope: str, row: dict, indexed_at: str = None) -> IndexRecord:
-    text = embed_text(row["canonical"])
-    path_scope = row.get("path_scope")
-    if path_scope is None:
-        path_scope = path_scope_of(row.get("canonical"))
+    # Shared contracts embed the SAFE, target-free retrieval projection (via the codec) — never the full
+    # canonical JSON. Private episodes are owner-isolated and use the compact canonical text.
+    if scope == SHARED:
+        text, path_scope = codec.retrieval_text_and_path_scope(row["canonical"])
+    else:
+        text = embed_text(row["canonical"])
+        path_scope = row.get("path_scope") or path_scope_of(row.get("canonical"))
     stamp = indexed_at or now_iso()
     if scope == SHARED:
         return IndexRecord(

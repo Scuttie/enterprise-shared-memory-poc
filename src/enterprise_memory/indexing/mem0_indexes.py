@@ -6,7 +6,57 @@ shared search. The wrapper targets the mem0.Memory API surface (add/search/delet
 can prove the governance contract — infer never True, hidden LLM calls == 0 — without torch, a model
 download, or any network in CI. The real Mem0 is import-guarded behind the `mem0` extra."""
 from __future__ import annotations
+import os
 from .models import PRIVATE, SHARED
+
+# P3.1 §4 — pinned embedder policy. The moving default branch is NOT acceptable in staging/production; the
+# adapter fails closed if it cannot enforce the pinned revision + trust policy + dimension.
+EMBEDDER_PIN = {
+    "model_id": "sentence-transformers/multi-qa-MiniLM-L6-cos-v1",
+    "dimension": 384,
+    "trust_remote_code": False,
+    "license": "Apache-2.0",
+    "revision_env": "EMBEDDER_REVISION",
+}
+
+
+class EmbedderPinError(Exception):
+    pass
+
+
+def enforce_embedder_pin(revision=None, trust_remote_code=False, environment="production",
+                         loader=None, info_fn=None) -> dict:
+    """Load the pinned embedder under the fixed trust policy and record its provenance. Raises
+    EmbedderPinError if trust_remote_code is requested, the dimension does not match, a revision cannot be
+    honored, or (in staging/production) no revision is pinned. `loader`/`info_fn` are injectable for tests."""
+    if trust_remote_code:
+        raise EmbedderPinError("trust_remote_code must be False")
+    revision = revision if revision is not None else os.environ.get(EMBEDDER_PIN["revision_env"])
+    if environment in ("staging", "production") and not revision:
+        raise EmbedderPinError("pinned embedder revision required in %s (no moving default)" % environment)
+    model_id = EMBEDDER_PIN["model_id"]
+    if loader is None:
+        def loader():
+            from sentence_transformers import SentenceTransformer
+            return SentenceTransformer(model_id, revision=revision, trust_remote_code=False)
+    model = loader()
+    dim = getattr(model, "get_sentence_embedding_dimension", lambda: EMBEDDER_PIN["dimension"])()
+    if int(dim) != EMBEDDER_PIN["dimension"]:
+        raise EmbedderPinError("embedding dimension mismatch: %s != %s" % (dim, EMBEDDER_PIN["dimension"]))
+    resolved = revision
+    if info_fn is not None:
+        try:
+            resolved = info_fn()
+        except Exception:
+            resolved = revision
+    else:
+        try:
+            from huggingface_hub import model_info
+            resolved = model_info(model_id, revision=revision).sha
+        except Exception:
+            resolved = revision
+    return {"model_id": model_id, "requested_revision": revision, "resolved_revision": resolved,
+            "dimension": int(dim), "trust_remote_code": False, "license": EMBEDDER_PIN["license"]}
 
 
 def mem0_available() -> bool:
@@ -52,11 +102,15 @@ class GovernedMem0Index:
         return [dict(r.get("metadata") or {}) for r in results]
 
 
-def build_real(paths: dict, embedder_model: str):
-    """Construct physically separated real Mem0 stores over local Qdrant (governed: no LLM). Requires the
-    `mem0` extra (mem0ai + torch); not installed in ci-qdrant, which exercises the stub path instead."""
+def build_real(paths: dict, embedder_model: str = None, environment: str = None):
+    """Construct physically separated real Mem0 stores over local Qdrant (governed: no LLM). Enforces the
+    pinned embedder (revision/trust/dimension) BEFORE constructing anything; the resolved provenance is
+    attached to the returned index. Requires the `mem0` extra."""
     if not mem0_available():
         raise RuntimeError("mem0 extra not installed")
+    env = environment or os.environ.get("ENVIRONMENT", "test")
+    provenance = enforce_embedder_pin(environment=env)          # fail-closed on trust/revision/dimension
+    model_id = provenance["model_id"]
     from ..backends.mem0_backend import Mem0Store
 
     class _Adapter:
@@ -80,6 +134,8 @@ def build_real(paths: dict, embedder_model: str):
         def delete(self, memory_id):
             return self._s.mem.delete(memory_id)
 
-    priv = _Adapter(Mem0Store(paths["private"], embedder_model, llm=None))
-    shar = _Adapter(Mem0Store(paths["shared"], embedder_model, llm=None))
-    return GovernedMem0Index(priv, shar)
+    priv = _Adapter(Mem0Store(paths["private"], model_id, llm=None))
+    shar = _Adapter(Mem0Store(paths["shared"], model_id, llm=None))
+    idx = GovernedMem0Index(priv, shar)
+    idx.embedder_provenance = provenance
+    return idx

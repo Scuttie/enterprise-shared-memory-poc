@@ -70,6 +70,7 @@ def test_private_index_then_delete(seeded, index, embedder):
         su = eng("postgres"); a = seeded["A"]
         canonical = {"text": QUERY}
         eid, _ = await seed_private(su, a["org"], a["user"], canonical, repo=a["repo"])
+        await grant_repo_read(su, a["org"], a["repo"], a["user"])   # private recall re-checks repo read
         await su.dispose()
         weng = eng("index")
         await _publish(a["org"], a["user"], W.PRIVATE_INDEX, "private_episode", eid, 1,

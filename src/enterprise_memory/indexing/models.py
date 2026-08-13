@@ -49,6 +49,7 @@ class RejectionReason(str, Enum):
     NOT_VALID_YET = "not_valid_yet"                  # canonical valid_from in the future
     EXPIRED = "expired"                              # canonical valid_until in the past
     SUPERSEDED = "superseded"                        # another version supersedes this one
+    PATH_REQUIRED = "path_required"                  # object has a path restriction but no path was requested
     PATH_SCOPE_MISMATCH = "path_scope_mismatch"      # requested path not covered by the contract path scope
     RETRIEVAL_HASH_MISMATCH = "retrieval_hash_mismatch"  # payload retrieval-text hash != recomputed hash
 

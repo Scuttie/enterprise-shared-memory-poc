@@ -67,6 +67,8 @@ def test_governed_real_mem0_infer_false_zero_llm_pg_reload(tmp_path, org_ids):
 
     before = dict(COUNT)
     idx = build_real(_paths(tmp_path), MODEL)               # real Mem0 stores, physically separate
+    prov = idx.embedder_provenance                          # §4: pinned embedder provenance recorded
+    assert prov["trust_remote_code"] is False and prov["dimension"] == 384 and prov["resolved_revision"]
     idx.index(rec)                                          # governed add: infer=False
 
     # get: the reference is stored under the org scope with its metadata intact

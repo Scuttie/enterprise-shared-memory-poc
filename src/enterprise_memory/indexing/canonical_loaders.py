@@ -21,11 +21,11 @@ def embed_text(canonical) -> str:
 
 
 def path_scope_of(canonical):
-    if isinstance(canonical, dict):
-        ps = canonical.get("path_scope")
-        if isinstance(ps, list):
-            return [str(x) for x in ps]
-    return None
+    """Path scope for serving: typed contracts -> scope.path_globs (via the codec); legacy fixtures ->
+    synthetic top-level path_scope. Delegated to the codec so there is one source of truth."""
+    from ..contracts import codec
+    ps = codec.path_scope(canonical)
+    return [str(x) for x in ps] if isinstance(ps, list) else None
 
 
 def _as_obj(v):

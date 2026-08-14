@@ -170,6 +170,45 @@ class P52WholeFileExecutionBackend(CodingExecutionBackend):
                 % (files, mem, target))
 
 
+class InstructWholeFileExecutionBackend(CodingExecutionBackend):
+    """Whole-file backend for INSTRUCTION-driven benchmarks (BigCodeBench-Instruct). Unlike the P5.1/P5.2
+    repo-edit backends whose prompt shows a file+public-test snapshot, THIS prompt is the natural-language
+    task instruction (task_context['instruction']) plus any injected memory views — the model writes the
+    COMPLETE self-contained solution from scratch. The server still builds a difflib diff against the
+    (placeholder) snapshot so the durable patch/sandbox model is unchanged. Memory is offered as advisory
+    prior knowledge (never the target's tests/solution)."""
+    def __init__(self, provider, model_max_tokens=1024):
+        self._p = provider
+        self._max = model_max_tokens
+
+    async def execute(self, task_context, repository_snapshot, memory_views, *, logical_request_id, org_id):
+        import difflib
+        import re
+        target = task_context.get("target_path")
+        original = repository_snapshot.get(target, "")
+        prompt = self._build_prompt(task_context, memory_views)
+        req = ModelRequest(messages=[{"role": "user", "content": prompt}], max_output_tokens=self._max)
+        response, record = await self._p.generate(req, logical_request_id=logical_request_id, org_id=org_id)
+        m = re.search(r"```(?:python)?\s*(.*?)```", response.text, re.S)
+        new_file = (m.group(1) if m else response.text).strip("\n") + "\n"
+        diff = "".join(difflib.unified_diff(original.splitlines(keepends=True),
+                                            new_file.splitlines(keepends=True),
+                                            fromfile="a/%s" % target, tofile="b/%s" % target))
+        return ExecutionResult(
+            patch_text=diff, raw_response=response.text, returned_model=response.returned_model,
+            backend_type="instruct_wholefile", model_call_records=[record.to_dict()],
+            harness_metadata={"prompt_hash": _sha(prompt), "mode": "instruct_wholefile"})
+
+    @staticmethod
+    def _build_prompt(task_context, memory_views):
+        instr = task_context.get("instruction", "")
+        mem = ("\n\nRelevant prior knowledge that may help (advisory; verify against the task):\n%s"
+               % "\n\n".join(memory_views)) if memory_views else ""
+        return ("Solve the following Python programming task. Write a COMPLETE, self-contained solution "
+                "including every necessary import and the exact function required by the task.\n\n"
+                "%s%s\n\nReturn ONLY the full solution as one ```python code block." % (instr, mem))
+
+
 class ExternalHarnessExecutionBackend(CodingExecutionBackend):
     """Boundary for a company Claude-Code-style/local-GLM harness. `harness` is an injected client with an
     async `run(payload) -> dict`. It receives ONLY governed inputs and returns a patch + sanitized metadata;

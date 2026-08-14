@@ -120,23 +120,30 @@ def main():
     print("seeded arms=%s targets=%d bank=%d" % (list(seeded["arm_targets"]), len(targets), seeded["bank_size"]),
           flush=True)
 
+    # INTERLEAVE submission target-by-target across arms so all arms progress evenly: if the run does not
+    # finish every job before the deadline, the COMPLETED targets still have ALL arms -> the paired E1/E2
+    # comparisons stay valid (both arms of each pair either both done or both scored-fail under ITT).
+    arm_order = list(seeded["arm_targets"].keys())
+    per_arm = seeded["arm_targets"]
+    max_i = max((len(v) for v in per_arm.values()), default=0)
+    submit_order = [(arm, per_arm[arm][i]) for i in range(max_i) for arm in arm_order if i < len(per_arm[arm])]
+
     jobs = []
     with httpx.Client(base_url=API_URL, timeout=60.0) as client:
-        for arm, tgts in seeded["arm_targets"].items():
-            for tg in tgts:
-                tok = sign(tg["user"], org)
-                r = client.post("/v1/solve", headers={"authorization": "Bearer " + tok,
-                                                      "Idempotency-Key": "%s-%s" % (arm, tg["tid"])},
-                                json={"repository_id": tg["repo"], "task_id": tg["tid"],
-                                      "instruction": tg["instruction"], "desired_ref": "refs/heads/main"})
-                if r.status_code != 202:
-                    raise SystemExit("submit %s %s: %d %s" % (arm, tg["tid"], r.status_code, r.text))
-                asrc = (labels["relevant"].get(tg["tid"]) if arm in ("M2", "M6", "M7")
-                        else labels["shuffled"].get(tg["tid"]) if arm == "M3"
-                        else assignment["private_source_of"].get(tg["tid"]) if arm == "M1" else None)
-                jobs.append({"arm": arm, "tid": tg["tid"], "job_id": r.json()["job_id"], "token": tok,
-                             "assigned": asrc})
-        print("submitted %d jobs" % len(jobs), flush=True)
+        for arm, tg in submit_order:
+            tok = sign(tg["user"], org)
+            r = client.post("/v1/solve", headers={"authorization": "Bearer " + tok,
+                                                  "Idempotency-Key": "%s-%s" % (arm, tg["tid"])},
+                            json={"repository_id": tg["repo"], "task_id": tg["tid"],
+                                  "instruction": tg["instruction"], "desired_ref": "refs/heads/main"})
+            if r.status_code != 202:
+                raise SystemExit("submit %s %s: %d %s" % (arm, tg["tid"], r.status_code, r.text))
+            asrc = (labels["relevant"].get(tg["tid"]) if arm in ("M2", "M6", "M7")
+                    else labels["shuffled"].get(tg["tid"]) if arm == "M3"
+                    else assignment["private_source_of"].get(tg["tid"]) if arm == "M1" else None)
+            jobs.append({"arm": arm, "tid": tg["tid"], "job_id": r.json()["job_id"], "token": tok,
+                         "assigned": asrc})
+        print("submitted %d jobs (interleaved)" % len(jobs), flush=True)
         deadline = time.time() + int(os.environ.get("RUN_DEADLINE", "24000"))
         pending = {(j["arm"], j["tid"]): j for j in jobs}
         while pending and time.time() < deadline:

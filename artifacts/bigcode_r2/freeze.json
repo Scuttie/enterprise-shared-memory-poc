@@ -1,0 +1,65 @@
+{
+  "N_main": 500,
+  "analysis": "fixed-sequence E1->E2, Holm secondary, ITT primary, interleaved submission",
+  "benchmark_lock": {
+    "benchmark": "BigCodeBench",
+    "confirmed_task_count": 1140,
+    "dataset_content_hash": "98e377a83cb12e90e244eef1a804a60b0dbcf0c062c623238596fd1dc7299172",
+    "dataset_hf": "bigcode/bigcodebench",
+    "dataset_version": "v0.1.4",
+    "eval_image": "bigcodebench/bigcodebench-evaluate:v0.2.4",
+    "eval_python_version": "3.10.16",
+    "eval_requirements": "Requirements/requirements-eval.txt (73 pinned deps incl. numpy==1.21.2, tensorflow==2.11.0, scikit-learn==1.3.1, pandas==2.0.3 -> Python 3.10 only)",
+    "execution": "local (inside the official eval image); e2b/gradio remote backends NOT used",
+    "grader": "bigcodebench.evaluate.check_correctness -> bigcodebench.eval.untrusted_check (self-contained unittest per task; Linux resource guards)",
+    "grading_marker": "BIGCODE:",
+    "license": "Apache-2.0",
+    "note": "content_hash is a platform-independent sha256 over sorted official task fields (newline-normalised); official_dataset_hash is bigcodebench.get_bigcodebench_hash. No benchmark test or reference solution is modified.",
+    "official_dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "official_task_count": 1140,
+    "package": "bigcodebench",
+    "package_version": "0.2.4",
+    "prompt_field": "instruct_prompt",
+    "resource_limits": {
+      "gt_time_limit": 2.0,
+      "max_as_limit": 30720,
+      "max_data_limit": 30720,
+      "max_stack_limit": 10,
+      "min_time_limit": 1.0
+    },
+    "shared_harness_entry_point": "task_func (single shared name across all 1140 tasks; distinct_entry_points=1)",
+    "subset": "full",
+    "variant": "BigCodeBench-Instruct"
+  },
+  "dataset_content_hash": "98e377a83cb12e90e244eef1a804a60b0dbcf0c062c623238596fd1dc7299172",
+  "experiment": "BIGCODE_R2",
+  "frozen_after_results": "no task/policy/threshold/arm/endpoint/N change (redesign=BIGCODE_R3)",
+  "manifest_hashes": {
+    "prereg": "sha256:32a944314c6e47150770361602e55936",
+    "selected_policy": "sha256:1dabb41947a0f8aea67b6792488688db",
+    "source_bank": "sha256:3e0a0562f76cc2726d76f8eeb2f5e6d2",
+    "task_partition": "sha256:ce643ce9cff18467b356045435c1d30f"
+  },
+  "model_lock": {
+    "backend": "bigcode_instruct",
+    "base_url": "https://api.upstage.ai/v1/solar",
+    "embedder": "sentence-transformers/all-MiniLM-L6-v2",
+    "generations": 1,
+    "index_dim": 384,
+    "max_output_tokens": 2048,
+    "model": "solar-pro2-251215",
+    "repair": false,
+    "temperature": 0
+  },
+  "primary_endpoint": "E1: Pass@1(M2 TRUE_RELEVANT) - Pass@1(M3 SHUFFLED_MATCHED), paired",
+  "selected_policy": {
+    "format": "F1_PLAIN_LESSON",
+    "policy": "P1_PROD_TOP1"
+  },
+  "source_bank": {
+    "coverage": 0.4467,
+    "n_verified": 134,
+    "users": 24
+  },
+  "split_hash": "6e0755582c77ea0b0da930e5fc9da58169cd1a4c81a8079acf9705a51c90829d"
+}

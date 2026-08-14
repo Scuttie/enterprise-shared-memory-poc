@@ -121,8 +121,9 @@ jobs:
           docker exec esm bash -lc '
             cd /w
             python -m enterprise_memory.service.appcli > /w/api.log 2>&1 &
+            python scripts/_wait_http.py http://127.0.0.1:8000/health/live 120
             for i in 1 2 3 4; do WORKER_ID=bcb-worker-$i python -m enterprise_memory.service.solve_worker > /w/worker-$i.log 2>&1 & done
-            python scripts/_wait_http.py http://127.0.0.1:8000/health/live 90
+            sleep 2
             python scripts/bigcode_r2_smoke.py
           '
       - name: Logs on failure

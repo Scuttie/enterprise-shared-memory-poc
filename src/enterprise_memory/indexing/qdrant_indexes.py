@@ -68,8 +68,15 @@ class QdrantIndex:
         existing = {c.name for c in self._c.get_collections().collections}
         if name in existing:
             return
-        self._c.create_collection(
-            name, vectors_config=qm.VectorParams(size=self.dim, distance=qm.Distance.COSINE))
+        try:
+            self._c.create_collection(
+                name, vectors_config=qm.VectorParams(size=self.dim, distance=qm.Distance.COSINE))
+        except Exception as e:
+            # idempotent: concurrent API+worker bootstrap can both pass the existence check and race here;
+            # a 409 "already exists" means another process won -> treat as success (TOCTOU-safe).
+            if "already exist" in str(e).lower():
+                return
+            raise
         if self._server:                 # payload indexes are a no-op (and warn) in local mode
             for f in ("org_id", "owner_user_id", "object_kind", "canonical_content_hash", "contract_id",
                       "index_schema_version"):

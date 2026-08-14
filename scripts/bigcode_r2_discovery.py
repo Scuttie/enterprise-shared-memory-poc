@@ -78,14 +78,18 @@ async def _collect(job_id, cell, tid, assigned):
 
 
 def main():
-    targets, facts = _load()
+    all_targets, facts = _load()
     sources = sorted(facts.keys())
-    print("discovery targets %d, verified sources %d" % (len(targets), len(sources)), flush=True)
-    if len(sources) < 10:
-        print("DISCOVERY_ABORT: too few verified sources (%d) for a meaningful bank" % len(sources), flush=True)
-        # still write what we have
+    # CHUNK="i/n" runs only this stride of the discovery targets (labels computed over ALL targets so the
+    # relevance/derangement are identical across chunks). Chunks write raw per-job results; bigcode_r2_
+    # discovery_combine.py aggregates cell stats + applies the §8 selection over the full set.
+    chunk = os.environ.get("CHUNK", "0/1")
+    ci, cn = (int(x) for x in chunk.split("/"))
+    targets = all_targets[ci::cn] if cn > 1 else all_targets
+    print("discovery chunk %s: %d of %d targets, verified sources %d" % (chunk, len(targets), len(all_targets),
+                                                                         len(sources)), flush=True)
     mem_len = {s: len(facts[s]["summary"] or "") for s in sources}
-    labels = REL.build_labels(sources, targets, mem_len)
+    labels = REL.build_labels(sources, all_targets, mem_len)
     os.makedirs(ART, exist_ok=True)
     json.dump({"relevant": labels["relevant"], "shuffled": labels["shuffled"],
                "irrelevant": labels["irrelevant"], "labels_hash": REL.labels_hash(labels)},
@@ -142,7 +146,14 @@ def main():
         print("terminal %d pending %d" % (len(jobs) - len(pending), len(pending)), flush=True)
 
     results = [asyncio.run(_collect(j["job_id"], j["cell"], j["tid"], j["assigned"])) for j in jobs]
-    out = _analyze(targets, labels, results)
+    if cn > 1:                        # chunked: persist RAW per-job results; selection happens in combine
+        raw = os.path.join(ART, "discovery_raw.%dof%d.json" % (ci, cn))
+        json.dump({"chunk": chunk, "results": results}, open(raw, "w", encoding="utf-8", newline="\n"),
+                  indent=2, sort_keys=True)
+        ex = sum(r["exec1"] for r in results) / max(1, len(results))
+        print("WROTE_RAW %s n=%d exec_rate=%.2f" % (raw, len(results), ex), flush=True)
+        return
+    out = _analyze(all_targets, labels, results)
     json.dump(out, open(os.path.join(ART, "discovery_results.json"), "w", encoding="utf-8", newline="\n"),
               indent=2, sort_keys=True)
     json.dump(out["selection"], open(os.path.join(ART, "selected_policy.json"), "w", encoding="utf-8",

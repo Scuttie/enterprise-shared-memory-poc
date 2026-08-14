@@ -139,9 +139,12 @@ class S3ArtifactStore(ArtifactStore):
         from botocore.config import Config
         self._bucket = bucket
         self._sse = sse
+        # path-style addressing is required for MinIO / IP-or-localhost endpoints (virtual-host style
+        # "bucket.localhost" does not resolve and yields spurious NoSuchBucket). Harmless for real S3.
         self._c = boto3.client("s3", endpoint_url=endpoint_url, aws_access_key_id=access_key,
                                aws_secret_access_key=secret_key, region_name=region,
                                use_ssl=secure, config=Config(signature_version="s3v4",
+                                                             s3={"addressing_style": "path"},
                                                              retries={"max_attempts": 3}))
 
     def _head_raw(self, key):

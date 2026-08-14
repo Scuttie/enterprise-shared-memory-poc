@@ -28,10 +28,9 @@ jobs:
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL \
                       /usr/local/share/boost "/usr/local/share/powershell" /usr/share/swift || true
           sudo docker image prune -af || true; df -h /
-      - name: Start Qdrant + MinIO (host)
+      - name: Start Qdrant (host)
         run: |
           docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
-          docker run -d --name minio -p 9000:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e server /data
       - name: Pull eval image
         run: docker pull "$EVAL_IMAGE"
       - name: Write env file
@@ -46,10 +45,7 @@ jobs:
           PGPASSWORD=postgres
           PGDATABASE=esm
           QDRANT_URL=http://localhost:6333
-          MINIO_ENDPOINT=http://localhost:9000
-          MINIO_ACCESS_KEY=minioadmin
-          MINIO_SECRET_KEY=minioadmin
-          MINIO_BUCKET=esm-artifacts-bcb
+          ARTIFACT_DIR=/tmp/esm-artifacts
           INDEX_DIM=384
           EMBEDDER=st
           ENVIRONMENT=ci
@@ -92,28 +88,14 @@ jobs:
                   except Exception: pass
                   time.sleep(2)
               raise SystemExit("not ready "+u)
-          w("http://localhost:6333/readyz"); w("http://localhost:9000/minio/health/live")
+          w("http://localhost:6333/readyz")
           PY
           docker exec esm python scripts/postgres_bootstrap.py
           docker exec esm alembic upgrade head
           docker exec esm bash -lc 'alembic current | grep -E "0013.*\(head\)"'
-      - name: MinIO bucket + warm embedder + dataset
+      - name: Warm embedder + dataset (local artifact store, no MinIO)
         run: |
-          docker exec esm python - <<'PY'
-          import boto3, os, sys, time
-          from botocore.config import Config
-          from botocore.exceptions import ClientError
-          c=boto3.client("s3",endpoint_url="http://localhost:9000",aws_access_key_id="minioadmin",aws_secret_access_key="minioadmin",use_ssl=False,region_name="us-east-1",config=Config(signature_version="s3v4",s3={"addressing_style":"path"}))
-          b=os.environ.get("MINIO_BUCKET","esm-artifacts-bcb")
-          for i in range(12):
-              try: c.create_bucket(Bucket=b)
-              except ClientError as e:
-                  if e.response["Error"]["Code"] not in ("BucketAlreadyOwnedByYou","BucketAlreadyExists"): print("create",e)
-              try:
-                  c.head_bucket(Bucket=b); print("BUCKET_OK",b); sys.exit(0)
-              except ClientError as e: print("head retry",i,e); time.sleep(2)
-          sys.exit("bucket not confirmed")
-          PY
+          docker exec esm bash -lc 'mkdir -p /tmp/esm-artifacts'
           docker exec esm python -c "from experiments.bigcode_r2 import grader as G; print('bcb tasks', G.task_count())"
           docker exec esm python -c "from enterprise_memory.indexing.embeddings import SentenceTransformerEmbedder as E; e=E(); e.embed(['warm']); print('embedder', e.provenance()['model_id'], e.dim)"
       - name: Start API + workers + run smoke (single exec session)

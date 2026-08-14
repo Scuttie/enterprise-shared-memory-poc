@@ -21,9 +21,13 @@ def _sha32(canonical):
     return "sha256:" + hashlib.sha256(json.dumps(canonical, sort_keys=True).encode()).hexdigest()[:32]
 
 
-async def _shared_contract(su, org, repo, canonical, chash):
+async def _shared_contract(su, org, repo, canonical, chash, conn=None):
+    """Insert a shared memory contract+version. If `conn` (an open transaction) is given, use it so a
+    repo-scoped contract is inserted in the SAME transaction that created the repo (avoids a FK violation on
+    the not-yet-committed repository). Otherwise open a fresh transaction (org-global bank, repo NULL)."""
     cid, vid = str(uuid.uuid4()), str(uuid.uuid4())
-    async with su.begin() as c:
+
+    async def _do(c):
         await c.execute(text("INSERT INTO memory_contracts(id,org_id,repository_id) VALUES(:i,:o,:r)"),
                         {"i": cid, "o": org, "r": repo})
         await c.execute(text("INSERT INTO memory_contract_versions(id,contract_id,org_id,version_number,"
@@ -32,6 +36,11 @@ async def _shared_contract(su, org, repo, canonical, chash):
                                                  "h": chash})
         await c.execute(text("UPDATE memory_contracts SET current_version_id=:v WHERE id=:c"),
                         {"v": vid, "c": cid})
+    if conn is not None:
+        await _do(conn)
+    else:
+        async with su.begin() as c:
+            await _do(c)
     return cid, vid
 
 
@@ -111,7 +120,7 @@ async def seed(su, index, embedder, targets, facts, labels, assignment, selected
                     src = labels["relevant"][t]
                     rendered = R.render(fmt, facts[src]); can = {"summary": rendered, "source_task": src,
                         "kind": "sharedrepo_%s" % fmt, "provenance_source_user": facts[src].get("owner_user")}
-                    chash = _sha32(can); cid, vid = await _shared_contract(su, org, repo, can, chash)
+                    chash = _sha32(can); cid, vid = await _shared_contract(su, org, repo, can, chash, conn=c)
                     await _index_shared(index, embedder, org, repo, cid, vid, can, chash, rendered)
                     rp = {"scopes": ["shared"], "max_injected": 1, "search_limit": 5, "oracle_id": vid}
                 await c.execute(text(

@@ -23,8 +23,7 @@ from enterprise_memory.persistence.database import make_engine            # noqa
 from enterprise_memory.indexing.qdrant_indexes import QdrantIndex          # noqa: E402
 from enterprise_memory.service.ci_container import _embedder               # noqa: E402
 from experiments.bigcode_r2 import grader as G, relevance as REL, users as U, main_seeding as MS, \
-    analysis as AN, main_arms as MA                                        # noqa: E402
-from experiments import patch_forensics as PF                             # noqa: E402
+    main_analysis as MAN                                                   # noqa: E402
 
 API_URL = os.environ["E2E_API_URL"]
 ART = os.path.join("artifacts", "bigcode_r2")
@@ -90,11 +89,17 @@ async def _collect(job_id, arm, tid, assigned):
 def main():
     split = sys.argv[1] if len(sys.argv) > 1 else "calibration"
     exp = "BIGCODE_R2_" + split.upper()
-    part, facts, fmt, targets = _load(split)
+    part, facts, fmt, all_targets = _load(split)
+    # CHUNK="i/n" runs only this stride of the split's targets (labels/assignment computed over ALL targets so
+    # relevance/derangement are identical across chunks). Raw per-job results are combined + analysed by
+    # bigcode_r2_combine.py. CHUNK unset (or "0/1") runs everything + analyses in-place.
+    chunk = os.environ.get("CHUNK", "0/1")
+    ci, cn = (int(x) for x in chunk.split("/"))
+    targets = all_targets[ci::cn] if cn > 1 else all_targets
     sources = sorted(facts.keys())
     mem_len = {s: len(facts[s]["summary"] or "") for s in sources}
-    labels = REL.build_labels(sources, targets, mem_len)
-    assignment = U.build_assignment(sources, targets)
+    labels = REL.build_labels(sources, all_targets, mem_len)
+    assignment = U.build_assignment(sources, all_targets)
     src_sig = {s: {k: set(facts[s].get(k, [])) for k in ("imports", "apis", "operations", "control_flow")}
                for s in sources}
 
@@ -145,8 +150,15 @@ def main():
         print("terminal %d pending %d" % (len(jobs) - len(pending), len(pending)), flush=True)
 
     results = [asyncio.run(_collect(j["job_id"], j["arm"], j["tid"], j["assigned"])) for j in jobs]
-    out = _analyze(split, exp, part, targets, fmt, labels, src_sig, results)
     d = os.path.join(ART, "results"); os.makedirs(d, exist_ok=True)
+    if cn > 1:                       # chunked run: persist RAW per-job results; analysis happens in combine
+        raw = os.path.join(d, "%s_raw.%dof%d.json" % (split, ci, cn))
+        json.dump({"split": split, "chunk": chunk, "selected_format": fmt, "results": results},
+                  open(raw, "w", encoding="utf-8", newline="\n"), indent=2, sort_keys=True)
+        print("WROTE_RAW", raw, "n=%d terminal-states=%s" % (len(results),
+              dict(collections.Counter(r["state"] for r in results))), flush=True)
+        return
+    out = MAN.analyze(split, exp, part, all_targets, fmt, src_sig, results)
     path = os.path.join(d, "%s_results.json" % split)
     json.dump(out, open(path, "w", encoding="utf-8", newline="\n"), indent=2, sort_keys=True)
     print("WROTE", path, json.dumps(out.get("arms_pass1", {})), flush=True)

@@ -74,8 +74,10 @@ async def seed_cell(su, index, embedder, org, cell, targets, facts, labels):
         src = labels["relevant"].get(t) if kind == "relevant" else \
             (labels["shuffled"].get(t) if kind == "shuffled" else None)
         async with su.begin() as c:
+            # external_repo_id is unique per (cell, task) to satisfy repositories(org_id,external_repo_id);
+            # the worker resolves the task from the policy's repository_fixture_id (base), not this key.
             await c.execute(text("INSERT INTO repositories(id,org_id,external_repo_id) VALUES(:i,:o,:r)"),
-                            {"i": repo, "o": org, "r": fixture_id(t)})
+                            {"i": repo, "o": org, "r": "%s__%s" % (fixture_id(t), cell["code"])})
             await c.execute(text("INSERT INTO repository_permissions(org_id,repository_id,subject_type,"
                                  "subject_id,can_read,can_modify) VALUES(:o,:r,'user',:u,true,true)"),
                             {"o": org, "r": repo, "u": user})

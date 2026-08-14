@@ -79,8 +79,9 @@ async def seed(su, index, embedder, targets, facts, labels, assignment, selected
             tu = tgt_users[assignment["target_of"][t]]
             rp = {"scopes": [], "max_injected": 0}
             async with su.begin() as c:
+                # external_repo_id unique per (arm, task); worker resolves task from policy repository_fixture_id
                 await c.execute(text("INSERT INTO repositories(id,org_id,external_repo_id) VALUES(:i,:o,:r)"),
-                                {"i": repo, "o": org, "r": fixture_id(t)})
+                                {"i": repo, "o": org, "r": "%s__%s" % (fixture_id(t), arm["code"])})
                 await c.execute(text("INSERT INTO repository_permissions(org_id,repository_id,subject_type,"
                                      "subject_id,can_read,can_modify) VALUES(:o,:r,'user',:u,true,true)"),
                                 {"o": org, "r": repo, "u": tu})

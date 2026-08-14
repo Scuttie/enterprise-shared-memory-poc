@@ -70,6 +70,7 @@ jobs:
           HF_HUB_DISABLE_TELEMETRY=1
           PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
           TRANSFORMERS_NO_ADVISORY_WARNINGS=1
+          PYTHONUNBUFFERED=1
           PYTHONPATH=/w:/w/src
           ENV
           test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no secret"; exit 1; }
@@ -117,7 +118,7 @@ jobs:
           '
       - name: Logs on failure
         if: failure()
-        run: docker exec esm bash -lc 'tail -n 80 /w/*.log 2>/dev/null || true; ls -la /w'
+        run: docker exec esm bash -lc 'for f in /w/api.log /w/worker-1.log; do echo "==== $f ===="; tail -n 60 "$f" 2>/dev/null || true; done'
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4

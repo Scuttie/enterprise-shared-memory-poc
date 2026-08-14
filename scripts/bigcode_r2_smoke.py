@@ -95,12 +95,22 @@ async def _collect(job_id):
         async with e.connect() as c:
             oc = (await c.execute(text("SELECT pass1,exec1 FROM outcome_observations WHERE job_id=:j"),
                                   {"j": job_id})).first()
-            model = (await c.execute(text("SELECT returned_model FROM model_calls WHERE job_id=:j "
-                                          "ORDER BY created_at DESC LIMIT 1"), {"j": job_id})).scalar()
+            st = (await c.execute(text("SELECT state FROM solve_jobs WHERE id=:j"), {"j": job_id})).scalar()
+            mc = (await c.execute(text("SELECT returned_model,final_status FROM model_calls WHERE job_id=:j "
+                                       "ORDER BY created_at DESC LIMIT 1"), {"j": job_id})).first()
+            err = None
+            try:
+                err = (await c.execute(text("SELECT error_class,error_detail FROM solve_job_events WHERE "
+                                            "job_id=:j AND error_class IS NOT NULL ORDER BY created_at DESC "
+                                            "LIMIT 1"), {"j": job_id})).first()
+            except Exception:
+                err = None
     finally:
         await e.dispose()
     return {"pass1": int(oc[0]) if oc and oc[0] is not None else 0,
-            "exec1": int(oc[1]) if oc and oc[1] is not None else 0, "model": model}
+            "exec1": int(oc[1]) if oc and oc[1] is not None else 0,
+            "state": st, "model": (mc[0] if mc else None), "model_status": (mc[1] if mc else None),
+            "error": ("%s:%s" % (err[0], str(err[1])[:200]) if err else None)}
 
 
 def main():
@@ -133,6 +143,12 @@ def main():
     res = [dict(tid=j["tid"], **asyncio.run(_collect(j["job_id"]))) for j in jobs]
     p1 = sum(r["pass1"] for r in res) / len(res)
     ex = sum(r["exec1"] for r in res) / len(res)
+    import collections as _c
+    print("STATES", dict(_c.Counter(r["state"] for r in res)), flush=True)
+    print("MODEL_STATUS", dict(_c.Counter(r["model_status"] for r in res)), flush=True)
+    for r in res:
+        if r["error"]:
+            print("ERR", r["tid"], r["error"], flush=True)
     out = {"k": len(res), "pass1": round(p1, 3), "exec1": round(ex, 3),
            "models": sorted({r["model"] for r in res if r["model"]}), "results": res}
     os.makedirs(os.path.join("artifacts", "bigcode_r2"), exist_ok=True)

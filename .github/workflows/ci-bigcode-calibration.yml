@@ -11,7 +11,7 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       contains(github.event.head_commit.message, '[run-bcb-cal]')
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 350
     services:
       postgres:
         image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
@@ -61,7 +61,7 @@ jobs:
           OIDC_JWKS_FILE=/tmp/jwks.json
           E2E_API_URL=http://127.0.0.1:8000
           API_PORT=8000
-                    RUN_DEADLINE=15000
+          RUN_DEADLINE=17000
           HF_HUB_DISABLE_TELEMETRY=1
           PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
           TRANSFORMERS_NO_ADVISORY_WARNINGS=1
@@ -103,7 +103,7 @@ jobs:
             cd /w
             python -m enterprise_memory.service.appcli > /w/api.log 2>&1 &
             python scripts/_wait_http.py http://127.0.0.1:8000/health/live 120
-            for i in $(seq 1 4); do WORKER_ID=bcb-worker-$i python -m enterprise_memory.service.solve_worker > /w/worker-$i.log 2>&1 & done
+            for i in 1 2 3; do WORKER_ID=bcb-worker-$i python -m enterprise_memory.service.solve_worker > /w/worker-$i.log 2>&1 & done
             sleep 2
             python scripts/bigcode_r2_run.py calibration
           '

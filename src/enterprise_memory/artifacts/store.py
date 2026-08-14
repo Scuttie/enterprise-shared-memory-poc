@@ -175,8 +175,23 @@ class S3ArtifactStore(ArtifactStore):
                   "Metadata": {"sha256": expected_hash}}
         if self._sse:                                    # SSE is configurable; MinIO w/o KMS uses none
             kwargs["ServerSideEncryption"] = self._sse
-        self._c.put_object(**kwargs)
+        try:
+            self._c.put_object(**kwargs)
+        except Exception as e:                           # defensive: a volumeless MinIO can lose the bucket
+            if "NoSuchBucket" in str(e) or "does not exist" in str(e):
+                self._ensure_bucket()
+                self._c.put_object(**kwargs)
+            else:
+                raise
         return {"size": len(data), "sha256": expected_hash, "existed": False}
+
+    def _ensure_bucket(self):
+        from botocore.exceptions import ClientError
+        try:
+            self._c.create_bucket(Bucket=self._bucket)
+        except ClientError as e:
+            if e.response.get("Error", {}).get("Code") not in ("BucketAlreadyOwnedByYou", "BucketAlreadyExists"):
+                raise
 
     def get(self, key: str) -> bytes:
         obj = self._c.get_object(Bucket=self._bucket, Key=key)

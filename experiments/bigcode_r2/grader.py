@@ -75,9 +75,15 @@ def grade(task_id, candidate_code):
     receives or uses the reference solution (BigCodeBench tests are self-contained assertions)."""
     from bigcodebench.evaluate import check_correctness
     prob = _dataset()[task_id]
-    ret = check_correctness(0, prob, candidate_code, LIMITS["max_as_limit"], LIMITS["max_data_limit"],
-                            LIMITS["max_stack_limit"], identifier=task_id,
-                            min_time_limit=LIMITS["min_time_limit"], gt_time_limit=LIMITS["gt_time_limit"])
-    status = ret["base"][0] if isinstance(ret["base"], (list, tuple)) else ret["base"]
+    try:
+        ret = check_correctness(0, prob, candidate_code, LIMITS["max_as_limit"], LIMITS["max_data_limit"],
+                                LIMITS["max_stack_limit"], identifier=task_id,
+                                min_time_limit=LIMITS["min_time_limit"], gt_time_limit=LIMITS["gt_time_limit"])
+        status = ret["base"][0] if isinstance(ret["base"], (list, tuple)) else ret["base"]
+    except Exception as e:
+        # A grader crash/timeout on a MODEL-generated candidate is a NON-PASS for that candidate (honest),
+        # not a job failure. The grader itself is validated separately (canonical 12/12 in ci-bigcode-grader).
+        return {"base_pass": False, "status": "grader_error:%s" % type(e).__name__, "exec_ok": False,
+                "bigcodebench_pass": False}
     return {"base_pass": (status == "pass"), "status": status, "exec_ok": (status != "timeout"),
             "bigcodebench_pass": (status == "pass")}

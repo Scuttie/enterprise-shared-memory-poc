@@ -95,22 +95,20 @@ async def _collect(job_id):
         async with e.connect() as c:
             oc = (await c.execute(text("SELECT pass1,exec1 FROM outcome_observations WHERE job_id=:j"),
                                   {"j": job_id})).first()
-            st = (await c.execute(text("SELECT state FROM solve_jobs WHERE id=:j"), {"j": job_id})).scalar()
+            jr = (await c.execute(text("SELECT state,error_detail_sanitized FROM solve_jobs WHERE id=:j"),
+                                  {"j": job_id})).first()
             mc = (await c.execute(text("SELECT returned_model,final_status FROM model_calls WHERE job_id=:j "
                                        "ORDER BY created_at DESC LIMIT 1"), {"j": job_id})).first()
-            err = None
-            try:
-                err = (await c.execute(text("SELECT error_class,error_detail FROM solve_job_events WHERE "
-                                            "job_id=:j AND error_class IS NOT NULL ORDER BY created_at DESC "
-                                            "LIMIT 1"), {"j": job_id})).first()
-            except Exception:
-                err = None
+            att = (await c.execute(text("SELECT state,detail_json FROM solve_attempts WHERE job_id=:j "
+                                        "ORDER BY attempt_number DESC LIMIT 1"), {"j": job_id})).first()
     finally:
         await e.dispose()
     return {"pass1": int(oc[0]) if oc and oc[0] is not None else 0,
             "exec1": int(oc[1]) if oc and oc[1] is not None else 0,
-            "state": st, "model": (mc[0] if mc else None), "model_status": (mc[1] if mc else None),
-            "error": ("%s:%s" % (err[0], str(err[1])[:200]) if err else None)}
+            "state": (jr[0] if jr else None), "job_error": (str(jr[1])[:300] if jr and jr[1] else None),
+            "model": (mc[0] if mc else None), "model_status": (mc[1] if mc else None),
+            "attempt_state": (att[0] if att else None),
+            "attempt_detail": (json.dumps(att[1])[:300] if att and att[1] else None)}
 
 
 def main():
@@ -146,9 +144,15 @@ def main():
     import collections as _c
     print("STATES", dict(_c.Counter(r["state"] for r in res)), flush=True)
     print("MODEL_STATUS", dict(_c.Counter(r["model_status"] for r in res)), flush=True)
+    print("ATTEMPT_STATES", dict(_c.Counter(r["attempt_state"] for r in res)), flush=True)
+    seen = set()
     for r in res:
-        if r["error"]:
-            print("ERR", r["tid"], r["error"], flush=True)
+        sig = (r["job_error"], r["attempt_detail"])
+        if sig in seen:
+            continue
+        seen.add(sig)
+        print("FAIL", r["tid"], "job_error=", r["job_error"], "| attempt=", r["attempt_state"],
+              "| detail=", r["attempt_detail"], flush=True)
     out = {"k": len(res), "pass1": round(p1, 3), "exec1": round(ex, 3),
            "models": sorted({r["model"] for r in res if r["model"]}), "results": res}
     os.makedirs(os.path.join("artifacts", "bigcode_r2"), exist_ok=True)

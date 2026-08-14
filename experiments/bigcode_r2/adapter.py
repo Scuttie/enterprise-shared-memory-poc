@@ -39,10 +39,16 @@ class BigCodeBenchTaskAdapter(RepositoryTaskAdapter):
     def resolve_tree(self, commit_sha) -> str:
         return _sha("tree|%s" % commit_sha)[:40]
 
+    # A minimal placeholder file. Instruct semantics are preserved because the model writes the whole
+    # solution from the NATURAL-LANGUAGE instruct_prompt, which the worker passes as the INSTRUCTION (not as
+    # the file). Using a code stub here would turn this into BigCodeBench-Complete (a semantics change, §21) —
+    # so the file is a neutral placeholder that carries no signature/docstring. It also makes the whole-file
+    # model output diff cleanly against a tiny context (a prose instruct_prompt as the file does not).
+    PLACEHOLDER = "# Implement the required solution in this file.\n"
+
     def snapshot(self, repo_id, commit_sha, target_path) -> dict:
-        p = G.task(self._tid(repo_id))
-        # model sees ONLY the official BigCodeBench-Instruct prompt as the file to complete
-        return {"src/solution.py": p["instruct_prompt"]}
+        self._tid(repo_id)                                 # validate the fixture maps to a task
+        return {"src/solution.py": self.PLACEHOLDER}
 
     def hidden_test(self, repo_id):
         return GRADER_MARKER + self._tid(repo_id)      # server-side marker -> official grader (never to backend)

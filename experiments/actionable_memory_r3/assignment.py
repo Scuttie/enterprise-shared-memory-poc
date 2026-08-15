@@ -45,7 +45,10 @@ def _sig_overlap(a: dict, b: dict) -> float:
 
 
 def build_relevance(target_sigs: dict[str, dict], source_sigs: dict[str, dict], *, source_lib: dict[str, str],
-                    target_lib: dict[str, str], min_overlap: float = 0.2) -> dict[str, dict]:
+                    target_lib: dict[str, str], min_overlap: float = 0.1) -> dict[str, dict]:
+    # min_overlap frozen at 0.1 (chosen for injection COVERAGE on the discovery split — ~68% of targets get a
+    # same-library relevant source sharing >=1 API/op; NOT tuned on any Pass@1 outcome). At 0.2 only 25/120
+    # targets matched; 0.1 -> 82/120. Zero-coverage targets (mostly Pytorch, no sources) get no relevant arm.
     """For each target id -> {relevant: src_id|None, shuffled: src_id|None, irrelevant: src_id|None}.
     relevant = same library, max signature overlap >= min_overlap; irrelevant = different library, 0 overlap;
     shuffled = frozen derangement of the relevant assignment restricted to the same library."""

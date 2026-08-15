@@ -137,11 +137,14 @@ jobs:
             python scripts/_wait_http.py http://127.0.0.1:8000/health/live 120
             for i in 1 2; do WORKER_ID=r3-worker-$i python -m enterprise_memory.service.solve_worker > worker-$i.log 2>&1 & done
             sleep 2
-            timeout "${R3_RUN_TIMEOUT:-1800}" python scripts/r3_source_bank_run.py 2>&1 | tee r3run.log
+            # --signal=KILL: a runner (or child) that ignores SIGTERM would make plain `timeout` wait forever.
+            timeout --signal=KILL "${R3_RUN_TIMEOUT:-1800}" python scripts/r3_source_bank_run.py 2>&1 | tee r3run.log
             RC=${PIPESTATUS[0]}
-            pkill -f "enterprise_memory.service.solve_worker" || true
-            pkill -f "enterprise_memory.service.appcli" || true
             echo "runner exit code: $RC"
+            # background API/workers + their grade subprocesses run on the runner directly; GitHub waits for the
+            # whole process tree, so SIGKILL everything ESM-related or the step hangs forever.
+            pkill -9 -f "enterprise_memory" || true
+            pkill -9 -f "r3_ds1000_grade_one" || true
             exit $RC
           '
       - name: Worker/API logs (always)

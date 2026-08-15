@@ -59,7 +59,7 @@ jobs:
       - name: Write env file
         run: |
           test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no UPSTAGE_API_KEY secret"; exit 1; }
-          RD=5400; [ -n "${{ github.event.inputs.subset }}" ] && RD=900   # short deadline for smokes
+          RD=5400; RT=6000; [ -n "${{ github.event.inputs.subset }}" ] && { RD=600; RT=900; }  # short for smokes
           cat > ds1000.env <<ENV
           DATABASE_URL=postgresql://localhost:5432/esm
           MIGRATION_USER=postgres
@@ -91,6 +91,7 @@ jobs:
           E2E_API_URL=http://127.0.0.1:8000
           API_PORT=8000
           RUN_DEADLINE=$RD
+          R3_RUN_TIMEOUT=$RT
           R3_GRADE_SUBPROCESS=1
           R3_ABSTRACT_CONCURRENCY=4
           R3_SOURCE_SUBSET=${{ github.event.inputs.subset }}
@@ -128,16 +129,24 @@ jobs:
       - name: Start API + workers + build source bank
         run: |
           set -a; source ds1000.env; set +a
+          # NOTE: background API/workers run on the runner directly; GitHub waits for the step's whole process
+          # tree, so we MUST kill them after the runner returns or the step hangs forever. Also bound the runner
+          # with `timeout` and tee its output so a stuck submit/abstraction phase cannot block the step.
           micromamba run -n ds1000-3.10 bash -lc '
             python -m enterprise_memory.service.appcli > api.log 2>&1 &
             python scripts/_wait_http.py http://127.0.0.1:8000/health/live 120
             for i in 1 2; do WORKER_ID=r3-worker-$i python -m enterprise_memory.service.solve_worker > worker-$i.log 2>&1 & done
             sleep 2
-            python scripts/r3_source_bank_run.py
+            timeout "${R3_RUN_TIMEOUT:-1800}" python scripts/r3_source_bank_run.py 2>&1 | tee r3run.log
+            RC=${PIPESTATUS[0]}
+            pkill -f "enterprise_memory.service.solve_worker" || true
+            pkill -f "enterprise_memory.service.appcli" || true
+            echo "runner exit code: $RC"
+            exit $RC
           '
       - name: Worker/API logs (always)
         if: always()
-        run: for f in api.log worker-1.log worker-2.log; do echo "==== $f ===="; tail -n 100 "$f" 2>/dev/null || true; done
+        run: for f in r3run.log api.log worker-1.log worker-2.log; do echo "==== $f ===="; tail -n 120 "$f" 2>/dev/null || true; done
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4

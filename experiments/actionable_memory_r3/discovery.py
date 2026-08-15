@@ -19,11 +19,7 @@ from enterprise_memory.indexing.projection import build_record
 from enterprise_memory.indexing.models import SHARED
 from experiments.actionable_memory_r3 import renderers as R
 from experiments.actionable_memory_r3.service_adapter import fixture_id
-
-BUNDLES = R.BUNDLE_ORDER                       # B0..B9
-ARMS = ["D0"] + ["D1"] + ["D%d" % (i + 2) for i in range(len(BUNDLES))]   # D0,D1,D2..D11
-ARM_BUNDLE = {"D%d" % (i + 2): b for i, b in enumerate(BUNDLES)}          # D2->B0 ... D11->B9
-BASELINE_BUNDLE = "B0"
+from experiments.actionable_memory_r3.discovery_arms import BUNDLES, ARMS, ARM_BUNDLE, BASELINE_BUNDLE
 
 
 def _sha32(canonical):

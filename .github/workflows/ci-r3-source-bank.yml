@@ -70,6 +70,7 @@ jobs:
           PGDATABASE=esm
           QDRANT_URL=http://localhost:6333
           ARTIFACT_DIR=/tmp/esm-artifacts
+          ARTIFACT_PER_JOB=1
           INDEX_DIM=384
           EMBEDDER=st
           ENVIRONMENT=ci
@@ -92,6 +93,9 @@ jobs:
           R3_SOURCE_SUBSET=${{ github.event.inputs.subset }}
           HF_HUB_DISABLE_TELEMETRY=1
           PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+          USE_TF=0
+          USE_TORCH=1
+          TRANSFORMERS_NO_ADVISORY_WARNINGS=1
           PYTHONUNBUFFERED=1
           PYTHONPATH=$PWD:$PWD/src:$PWD/DS-1000
           ENV

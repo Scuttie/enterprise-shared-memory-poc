@@ -151,9 +151,18 @@ async def process_job(container, worker_id, ev):
             priv = SearchResult() if "private" not in priv_scopes else await validated_search(
                 e, container.index, container.embedder, PRIVATE, org, spec["instruction"],
                 user_id=user, limit=slimit)
-            shared = SearchResult() if "shared" not in priv_scopes else await validated_search(
-                e, container.index, container.embedder, SHARED, org, spec["instruction"],
-                user_id=user, limit=slimit)
+            if "shared" not in priv_scopes:
+                shared = SearchResult()
+            elif oracle_id is not None:
+                # oracle direct-load: inject exactly this promoted version regardless of semantic rank (a
+                # rendered execution view — e.g. a diff template — is dissimilar to the NL instruction and would
+                # otherwise never enter the top-k, so vector-search-then-filter drops it -> no injection).
+                from ..indexing.validated_search import load_shared_oracle_hit
+                shared = await load_shared_oracle_hit(e, org, oracle_id)
+            else:
+                shared = await validated_search(
+                    e, container.index, container.embedder, SHARED, org, spec["instruction"],
+                    user_id=user, limit=slimit)
             # deterministic joint ranking + REAL safe-view compilation + <=max_inj selection. `injected` is
             # set only for views actually placed in the backend payload; leakage is computed from real owners.
             rejected_audit = [a for a in (priv.audit + shared.audit) if not a.get("accepted")]

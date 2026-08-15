@@ -16,10 +16,16 @@ a null BigCodeBench result and its p-value is never pooled with BigCodeBench.
 | Eval | run the task's `test_code` (pytest) inside the task's `docker_image` against the agent's change to `repo_url@repo_commit` |
 | Docker images | official, e.g. `zhangyiiiiii/swe-skills-bench-python`, `zhangyiiiiii/swe-skills-bench-jvm` |
 
-## Endpoint-A analysis — RULED OUT (reproducible)
-Dataset (with skills, task prompts, pinned repo+commit, docker image, and pytest acceptance tests) is public
-under MIT. Evaluation is deterministic execution-based (pytest in the pinned container). No modification of any
-official test is required.
+## Endpoint-A analysis — UPDATED after inspecting the release: TECHNICAL STOP
+Initial scoping assumed a function-style benchmark. Inspecting the actual HF release (49 tasks) shows the
+DATASET is public/MIT, BUT the OFFICIAL EVALUATION cannot be faithfully reproduced here: the tasks are
+**agentic repo modifications** (42 `feature` / edit-multiple-files, e.g. modify PyTorch `aten/…/BinaryOps.cpp`),
+the repos are baked into **8 heavy per-language build images** (13/49 need compilation), and the official
+**agent harness** (the paper's GitHub repo) is **404/unavailable** — so how changes are applied and `test_code`
+is run is unknown. Our single-shot whole-file DirectModel backend cannot perform multi-file repository edits,
+and reverse-engineering a substitute harness would change benchmark semantics (§22 hard stop). **See
+SWESKILLS_R3_RESULTS.md — endpoint A TECHNICAL STOP for the external-validity leg.** (Original "reproducible"
+note below is superseded.)
 
 ## Integration plan (built after the BigCode main, §20 SWESKILLS-R3)
 Arms Q0 NO_SKILL / Q1 ORIGINAL_SKILL_DOCUMENT / Q2 GOVERNED_COMPACT_SKILL (governed rendering of the SAME

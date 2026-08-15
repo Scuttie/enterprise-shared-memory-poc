@@ -1,0 +1,30 @@
+name: ci-r3-renderers
+
+# REALBENCH-R3 §9/§10/§24: renderer + decoder integrity — same canonical object across bundles, <=220-token
+# budget under the frozen tokenizer, no source-constant leakage, matched decoder present, decoder hashes frozen,
+# and the committed renderer/decoder manifests match the code. Fast + free; runs on every push.
+
+on:
+  push:
+    branches: [codex/production-service-v0.2]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  renderers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --quiet tiktoken pytest
+      - name: Renderer + decoder integrity tests
+        run: python -m pytest tests/test_r3_renderers.py -q
+      - name: Manifests match committed
+        run: |
+          python scripts/r3_build_manifests.py
+          git diff --exit-code -- artifacts/actionable_memory_r3/renderer_manifest.json \
+            artifacts/actionable_memory_r3/decoder_manifest.json \
+            || { echo "renderer/decoder manifest drift — re-run scripts/r3_build_manifests.py and commit"; exit 1; }

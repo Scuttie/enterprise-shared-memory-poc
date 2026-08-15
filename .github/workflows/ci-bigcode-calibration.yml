@@ -72,6 +72,11 @@ jobs:
           TRANSFORMERS_NO_ADVISORY_WARNINGS=1
           PYTHONUNBUFFERED=1
           ARTIFACT_PER_JOB=1
+          SOLAR_MAX_ATTEMPTS=12
+          SOLAR_TOTAL_DEADLINE=480
+          SOLAR_READ_TIMEOUT=90
+          SOLAR_BACKOFF_MAX=60
+          SOLAR_RETRY_AFTER_MAX=180
           PYTHONPATH=/w:/w/src
           ENV
           test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no secret"; exit 1; }
@@ -109,7 +114,7 @@ jobs:
             cd /w
             python -m enterprise_memory.service.appcli > /w/api.log 2>&1 &
             python scripts/_wait_http.py http://127.0.0.1:8000/health/live 120
-            for i in 1 2 3; do WORKER_ID=bcb-worker-$i python -m enterprise_memory.service.solve_worker > /w/worker-$i.log 2>&1 & done
+            for i in 1 2; do WORKER_ID=bcb-worker-$i python -m enterprise_memory.service.solve_worker > /w/worker-$i.log 2>&1 & done
             sleep 2
             python scripts/bigcode_r2_run.py calibration
           '

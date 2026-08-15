@@ -43,9 +43,17 @@ def _execution_backend():
         from ..providers.solar import SolarProvider
         from ..providers.secrets import EnvSecretProvider
         mo = int(os.environ.get("SOLAR_MAX_TOKENS", "1024"))
+        # Under a large parallel benchmark the Upstage API rate-limits (429). Ride it out: many retries with
+        # long, Retry-After-honoring backoff and a generous per-request deadline, so a 429'd job waits and
+        # succeeds instead of exhausting. Tunable via env for the paid benchmark workflows.
         provider = SolarProvider(SOLAR_BASE_URL, SOLAR_MODEL, EnvSecretProvider(),
                                  key_name=os.environ.get("SOLAR_KEY_NAME", "UPSTAGE_API_KEY"),
-                                 max_output_tokens=mo)
+                                 max_output_tokens=mo,
+                                 max_attempts=int(os.environ.get("SOLAR_MAX_ATTEMPTS", "4")),
+                                 total_deadline=float(os.environ.get("SOLAR_TOTAL_DEADLINE", "60")),
+                                 read_timeout=float(os.environ.get("SOLAR_READ_TIMEOUT", "30")),
+                                 backoff_max=float(os.environ.get("SOLAR_BACKOFF_MAX", "8")),
+                                 retry_after_max=float(os.environ.get("SOLAR_RETRY_AFTER_MAX", "30")))
         if kind == "bigcode_instruct":   # REALBENCH-R2: prompt IS the NL instruct_prompt (+memory), whole file
             return InstructWholeFileExecutionBackend(provider, model_max_tokens=mo)
         if kind == "solar_p52":     # P5.2 backend: prompt shows the full snapshot (incl. public tests)

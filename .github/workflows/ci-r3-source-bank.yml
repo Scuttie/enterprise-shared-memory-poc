@@ -89,7 +89,8 @@ jobs:
           OIDC_JWKS_FILE=$PWD/jwks.json
           E2E_API_URL=http://127.0.0.1:8000
           API_PORT=8000
-          RUN_DEADLINE=12000
+          RUN_DEADLINE=5400
+          R3_GRADE_SUBPROCESS=1
           R3_SOURCE_SUBSET=${{ github.event.inputs.subset }}
           HF_HUB_DISABLE_TELEMETRY=1
           PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
@@ -116,9 +117,9 @@ jobs:
             sleep 2
             python scripts/r3_source_bank_run.py
           '
-      - name: Logs on failure
-        if: failure()
-        run: for f in api.log worker-1.log worker-2.log; do echo "==== $f ===="; tail -n 80 "$f" 2>/dev/null || true; done
+      - name: Worker/API logs (always)
+        if: always()
+        run: for f in api.log worker-1.log worker-2.log; do echo "==== $f ===="; tail -n 100 "$f" 2>/dev/null || true; done
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4

@@ -62,10 +62,35 @@ def grade(answer_code: str, code_context: str, timeout: float = 120.0, completio
 def grade_by_id(problem_id, raw_or_answer: str, *, already_extracted: bool = False,
                 timeout: float = 120.0) -> dict:
     """Grade a service-path candidate for DS-1000 `problem_id`. `raw_or_answer` is the model's raw output
-    (extracted here) unless already_extracted. Returns {'passed', 'result', 'answer'}."""
+    (extracted here) unless already_extracted. Returns {'passed', 'result', 'answer'}.
+
+    In the ESM service (R3_GRADE_SUBPROCESS=1, and NOT already inside the isolated child) the official grader is
+    run in a CLEAN subprocess (scripts/r3_ds1000_grade_one.py) so its multiprocessing.Process fork never forks
+    the heavy async worker (torch/tf/ST loaded -> fork+threads deadlock). Otherwise it runs in-process (used by
+    the child and by the reference-reproduction driver, which already runs in a clean interpreter)."""
+    answer = raw_or_answer if already_extracted else extract_completion(raw_or_answer)
+    if os.environ.get("R3_GRADE_SUBPROCESS") == "1" and os.environ.get("R3_GRADE_IN_CHILD") != "1":
+        return _grade_subprocess(problem_id, answer, timeout=timeout)
     task = _tasks(_data_path()).get(str(problem_id))
     if task is None:
         return {"passed": False, "result": "unknown_problem_id:%s" % problem_id, "answer": ""}
-    answer = raw_or_answer if already_extracted else extract_completion(raw_or_answer)
     r = grade(answer, task["code_context"], timeout=timeout)
     return {"passed": r["passed"], "result": r["result"], "answer": answer}
+
+
+def _grade_subprocess(problem_id, answer: str, *, timeout: float = 120.0) -> dict:
+    import json as _json
+    import subprocess
+    import sys
+    script = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                          "scripts", "r3_ds1000_grade_one.py")
+    try:
+        p = subprocess.run([sys.executable, script, str(problem_id)], input=answer, text=True,
+                           capture_output=True, timeout=timeout + 60)
+        line = [ln for ln in (p.stdout or "").splitlines() if ln.strip().startswith("{")]
+        if not line:
+            return {"passed": False, "result": "no_grade_output:%s" % (p.stderr or "")[:160], "answer": answer}
+        d = _json.loads(line[-1])
+        return {"passed": bool(d.get("passed")), "result": d.get("result"), "answer": answer}
+    except subprocess.TimeoutExpired:
+        return {"passed": False, "result": "grade_subprocess_timeout", "answer": answer}

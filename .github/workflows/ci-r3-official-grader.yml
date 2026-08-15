@@ -1,0 +1,76 @@
+name: ci-r3-official-grader
+
+# REALBENCH-R3 §4 GATE: reproduce the OFFICIAL DS-1000 evaluator on the OFFICIAL reference solutions.
+# Clones xlang-ai/DS-1000 at the pinned commit, builds the official conda env (environment.yml), and asserts
+# reference_code passes the upstream execution.check_correctness at >= REF_PASS_MIN. Failure => TECHNICAL STOP.
+
+on:
+  workflow_dispatch:
+    inputs:
+      subset:
+        description: "first-N-per-library smoke (blank = full 1000)"
+        required: false
+        default: ""
+  push:
+    branches: [codex/production-service-v0.2]
+
+concurrency:
+  group: ci-r3-grader-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reference-repro:
+    # only run when the head commit asks for it (marker) or on manual dispatch
+    if: contains(github.event.head_commit.message, '[run-r3-grader]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone DS-1000 at pinned commit
+        run: |
+          set -euo pipefail
+          git clone --no-checkout https://github.com/xlang-ai/DS-1000.git DS-1000
+          cd DS-1000
+          git checkout b39aab71da6d23ef8d3cac59a7c5f834516ab334
+          echo "DS-1000 HEAD: $(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD)" = "b39aab71da6d23ef8d3cac59a7c5f834516ab334"
+          ls -la data/ds1000.jsonl.gz
+
+      - name: Set up official conda env (environment.yml)
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: DS-1000/environment.yml
+          cache-environment: true
+          init-shell: bash
+
+      - name: Extra harness deps
+        run: micromamba run -n ds1000-3.10 python -m pip install --no-input datasets tqdm
+
+      - name: Sanity — versions + adapter hash
+        run: |
+          micromamba run -n ds1000-3.10 python - <<'PY'
+          import numpy, pandas, scipy, sklearn, matplotlib
+          print("numpy", numpy.__version__, "pandas", pandas.__version__, "scipy", scipy.__version__,
+                "sklearn", sklearn.__version__, "matplotlib", matplotlib.__version__)
+          PY
+          DS1000_DATA=DS-1000/data/ds1000.jsonl.gz micromamba run -n ds1000-3.10 \
+            python experiments/actionable_memory_r3/ds1000_adapter.py
+
+      - name: Reference reproduction (GATE)
+        env:
+          DS1000_REPO: DS-1000
+          DS1000_SUBSET: ${{ github.event.inputs.subset }}
+          REF_PASS_MIN: "0.99"
+          MAXW: "16"
+        run: micromamba run -n ds1000-3.10 python scripts/r3_ds1000_reference_repro.py
+
+      - name: Upload reproduction artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ds1000-reference-repro
+          path: artifacts/actionable_memory_r3/ds1000_reference_repro.json

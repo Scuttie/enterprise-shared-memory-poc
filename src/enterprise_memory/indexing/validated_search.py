@@ -182,21 +182,16 @@ async def load_shared_oracle_hit(engine, org_id, version_id):
     PostgreSQL (the authoritative content) and return it as a single-hit SearchResult, BYPASSING vector search.
     Oracle injection means 'inject exactly THIS promoted memory' — it must not depend on whether the rendered
     view happens to rank in the top-k semantic hits (a diff-template view is dissimilar to the NL instruction and
-    would otherwise never be retrieved). Only promoted shared versions in the same org are loadable this way."""
-    import json as _json
-    from sqlalchemy import text as _text
-    async with engine.connect() as c:
-        row = (await c.execute(_text(
-            "SELECT id, contract_id, org_id, canonical_json, content_hash, version_number "
-            "FROM memory_contract_versions WHERE id=:v AND org_id=:o AND governance_state='promoted'"),
-            {"v": str(version_id), "o": str(org_id)})).first()
-    if not row:
+    would otherwise never be retrieved). Uses cl.load_contract_version, which runs inside the tenant transaction
+    (RLS context) — a plain connection would be filtered to zero rows by row-level security."""
+    row = await cl.load_contract_version(engine, org_id, version_id)
+    if not row or str(row.get("org_id")) != str(org_id) or row.get("governance_state") != "promoted":
         return SearchResult()
-    canon = row[3] if isinstance(row[3], dict) else _json.loads(row[3])
-    hit = ValidatedHit(object_kind="shared_memory", canonical_id=str(row[1]), canonical_version_id=str(row[0]),
-                       org_id=str(row[2]), content_hash=row[4], score=1.0, canonical=canon,
-                       version_number=int(row[5] or 1), contract_id=str(row[1]))
-    return SearchResult(hits=[hit], audit=[{"pid": str(row[0]), "scope": "shared", "index_owner": None,
-                        "canonical_owner": None, "canonical_id": str(row[1]),
-                        "canonical_version_id": str(row[0]), "content_hash": row[4], "accepted": True,
-                        "rejection_reason": None}])
+    hit = ValidatedHit(object_kind="shared_memory", canonical_id=row["contract_id"],
+                       canonical_version_id=row["object_id"], org_id=row["org_id"],
+                       content_hash=row["content_hash"], score=1.0, canonical=row["canonical"],
+                       version_number=row["version_number"], contract_id=row["contract_id"])
+    return SearchResult(hits=[hit], audit=[{"pid": row["object_id"], "scope": "shared", "index_owner": None,
+                        "canonical_owner": None, "canonical_id": row["contract_id"],
+                        "canonical_version_id": row["object_id"], "content_hash": row["content_hash"],
+                        "accepted": True, "rejection_reason": None}])

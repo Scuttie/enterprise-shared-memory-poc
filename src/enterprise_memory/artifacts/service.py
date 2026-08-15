@@ -7,6 +7,7 @@ deletion; physical deletion is confirmed only after the object is verified absen
 from __future__ import annotations
 import asyncio
 import json
+import os
 import uuid
 from datetime import datetime, timezone
 
@@ -88,6 +89,13 @@ class ArtifactService:
             raise ArtifactError("unknown artifact_class %r" % (artifact_class,))
         h = R.sha256_hex(data)
         key = R.content_key(org_id, artifact_class, h)
+        # Per-job evidence (ARTIFACT_PER_JOB): a multi-arm experiment in ONE org (§5) produces byte-identical
+        # artifacts across arms at temperature 0 (e.g. a no-injection arm == the no-memory arm for the same
+        # task); content-addressed dedup would then drop the later arm's per-job artifact rows and fail the
+        # terminal evidence gate. Appending the job id keeps dedup WITHIN a job but gives each job its own
+        # evidence. Off by default (other workflows keep pure content addressing).
+        if job_id is not None and os.environ.get("ARTIFACT_PER_JOB"):
+            key = "%s/%s" % (key, job_id)
         if not key.startswith("org/%s/" % org_id):                # tenant-prefixed key (defence)
             raise ArtifactError("key not tenant-prefixed")
         aid = str(uuid.uuid4())

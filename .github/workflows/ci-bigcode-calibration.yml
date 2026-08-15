@@ -71,6 +71,7 @@ jobs:
           PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
           TRANSFORMERS_NO_ADVISORY_WARNINGS=1
           PYTHONUNBUFFERED=1
+          ARTIFACT_PER_JOB=1
           PYTHONPATH=/w:/w/src
           ENV
           test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no secret"; exit 1; }

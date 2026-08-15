@@ -10,17 +10,40 @@
   "hf_revision": "4416080ac5cb80bdf7576aefb8f9a0b4d5426a44",
   "data_file_repo": "data/ds1000.jsonl.gz",
   "data_file_repo_bytes": 418089,
-  "data_file_sha256": "PENDING_CI",
+  "data_file_sha256": "e8c6daa9d7223976bce0296644f3933f78d7f47830669ff05cd61da62c6ba9b3",
   "data_file_hf": "test.jsonl",
   "license_code": "CC-BY-SA-4.0",
   "license_dataset": "CC-BY-SA-4.0",
   "task_count": 1000,
-  "record_fields": ["prompt", "reference_code", "code_context", "metadata"],
-  "metadata_fields": ["problem_id", "library", "perturbation_type", "library_problem_id",
-                      "perturbation_origin_id", "test_case_cnt"],
-  "library_counts": {"Pandas": 291, "Numpy": 220, "Matplotlib": 155, "Sklearn": 115, "Scipy": 106,
-                     "Pytorch": 68, "Tensorflow": 45},
-  "perturbation_counts": {"Origin": 452, "Semantic": 234, "Difficult-Rewrite": 162, "Surface": 152},
+  "record_fields": [
+    "prompt",
+    "reference_code",
+    "code_context",
+    "metadata"
+  ],
+  "metadata_fields": [
+    "problem_id",
+    "library",
+    "perturbation_type",
+    "library_problem_id",
+    "perturbation_origin_id",
+    "test_case_cnt"
+  ],
+  "library_counts": {
+    "Pandas": 291,
+    "Numpy": 220,
+    "Matplotlib": 155,
+    "Sklearn": 115,
+    "Scipy": 106,
+    "Pytorch": 68,
+    "Tensorflow": 45
+  },
+  "perturbation_counts": {
+    "Origin": 452,
+    "Semantic": 234,
+    "Difficult-Rewrite": 162,
+    "Surface": 152
+  },
   "evaluator": {
     "mode": "completion_only",
     "insertion_mode": "removed_upstream",
@@ -29,20 +52,44 @@
     "isolation": "multiprocessing.Process per task (mandatory: stateful tensorflow/matplotlib)",
     "timeout_s": 120,
     "score": "1 if result['passed'] else 0",
-    "source_files": ["test_ds1000.py", "execution.py"]
+    "source_files": [
+      "test_ds1000.py",
+      "execution.py"
+    ]
   },
   "environment": {
     "manager": "conda (environment.yml, env name ds1000-3.10)",
     "python": "3.10",
     "pins": {
-      "numpy": "1.26.4", "pandas": "1.5.3", "scipy": "1.12.0", "scikit-learn": "1.4.0",
-      "matplotlib": "3.8.4", "pytorch": "2.2.0", "tensorflow-cpu": "2.16.1", "xgboost": "2.0.3",
-      "gensim": "4.3.2", "seaborn": "0.13.2", "statsmodels": "0.14.1"
+      "numpy": "1.26.4",
+      "pandas": "1.5.3",
+      "scipy": "1.12.0",
+      "scikit-learn": "1.4.0",
+      "matplotlib": "3.8.4",
+      "pytorch": "2.2.0",
+      "tensorflow-cpu": "2.16.1",
+      "xgboost": "2.0.3",
+      "gensim": "4.3.2",
+      "seaborn": "0.13.2",
+      "statsmodels": "0.14.1"
     },
-    "extra_pip": ["datasets", "tqdm"]
+    "extra_pip": [
+      "datasets",
+      "tqdm"
+    ]
   },
   "reproduction_anchor": "GitHub commit b39aab71da6d23ef8d3cac59a7c5f834516ab334 + HF revision 4416080ac5cb80bdf7576aefb8f9a0b4d5426a44",
   "gate": "official reference_code must pass the official evaluator at ~100% (>=0.99) or TECHNICAL STOP",
   "verified_on": "2026-08-15",
-  "not_verified": ["explicit matplotlib.use('Agg')", "explicit TF-determinism block"]
+  "not_verified": [
+    "explicit matplotlib.use('Agg')",
+    "explicit TF-determinism block"
+  ],
+  "data_content_hash": "3fd0b7aef93ea709880524eeeaa0269957bd8785aedac48069b4450078db54c4",
+  "reference_reproduction": {
+    "run": "31882070895",
+    "rate": 1.0,
+    "n": 1000,
+    "reproduced": true
+  }
 }

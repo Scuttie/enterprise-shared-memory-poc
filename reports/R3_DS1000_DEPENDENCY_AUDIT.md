@@ -53,6 +53,13 @@ reproduced here → **§0-A TECHNICAL STOP**; no substitute benchmark is used (�
 No explicit `matplotlib.use('Agg')` or TF-determinism block was found in `execution.py`; per-process isolation
 is the mechanism upstream relies on. Recorded in the lock under `not_verified`.
 
-## STATUS
-`ci-r3-official-grader` triggered (`[run-r3-grader]`). Measured reference-pass rate + data hash to be filled from
-the run before proceeding to §5 partition freeze.
+## STATUS — GATE PASSED
+`ci-r3-official-grader` run `31882070895` (public repo, micromamba env from the official `environment.yml`):
+- **Reference reproduction = 1.0000 (1000/1000)**, every library 100% (Pandas 291, Numpy 220, Matplotlib 155,
+  Sklearn 115, Scipy 106, Pytorch 68, Tensorflow 45). 0 failures.
+- Data fingerprint verified: `data_sha256 = e8c6daa9…` (matches lock), order-independent
+  `content_hash = 3fd0b7aef93ea709…`, task_count 1000.
+- Artifact `artifacts/actionable_memory_r3/ds1000_reference_repro.json`.
+
+The official evaluator is faithfully reproduced (≥0.99 gate met at 1.00) → **no TECHNICAL STOP**. Proceed to §5
+partition freeze (done, `split_hash e16bfb852f7395cb`) and R3-M0 (canonical memory + multi-user source bank).

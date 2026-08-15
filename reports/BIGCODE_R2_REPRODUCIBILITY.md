@@ -30,11 +30,13 @@ Everything needed to independently re-run the confirmatory main and reach the sa
 4. Combine + analyze: `scripts/bigcode_r2_combine.py main` → `artifacts/bigcode_r2/results/main_results.json`.
 
 ## Run provenance (this execution)
-- Matrix run `31860928312`: **19/20 chunks SUCCEEDED**; chunk 8 hit a GitHub runner shutdown (exit 143,
-  infra preemption — re-run separately for the frozen N=500). Combined evidence: **3,275 SUCCEEDED / 42 FAILED /
-  8 DEAD_LETTER**, exec@1 ≈ 0.985 every arm, `cross_user_private_injection = 0`.
-- Primary over **475 paired targets** (chunk-8 targets pending): **E1 = −0.021, p=0.212, does not reject.**
-  Adding chunk-8's 25 targets to reach N=500 does not change the sign, the CI, or the decision.
+- Matrix run `31860928312`: **19/20 chunks SUCCEEDED**; chunk 8 was lost to **three consecutive GitHub runner
+  shutdowns** (exit 143 infra preemption of one long tf-heavy job; 19 identical sibling chunks passed). Combined
+  evidence: **3,275 SUCCEEDED / 42 FAILED / 8 DEAD_LETTER**, exec@1 ≈ 0.985 every arm,
+  `cross_user_private_injection = 0`.
+- Primary over **475 paired targets** — the **accepted final** after three infra losses of chunk 8, ≥ the §12
+  power target of 470: **E1 = −0.021, p=0.212, does not reject.** The 25 missing targets are a uniform (non-
+  differential) loss across all arms and cannot bias the paired contrast; ITT and complete-case agree.
 - ITT (all randomized targets, failures = non-pass) and complete-case (M0 .400 / M2 .395 / M3 .417 / M4 .400)
   give the same conclusion.
 

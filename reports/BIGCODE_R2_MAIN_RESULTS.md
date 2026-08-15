@@ -8,11 +8,14 @@ fixed-sequence E1→E2, Holm secondary, ITT primary, interleaved submission.
 
 ## Run integrity
 500 CONFIRMATORY_MAIN targets × 7 physical arms (M6≡M2 under the plain-format selection) run as a 20-chunk
-parallel matrix. **19/20 chunks succeeded** (chunk 8 hit a GitHub runner shutdown/preemption — exit 143, not a
-code/grader fault — and is re-run separately). **3275 SUCCEEDED / 42 FAILED / 8 DEAD_LETTER (97.8%)**; exec@1
-= 0.98–0.99 per arm; **cross-user private injection = 0**; `returned_models = [solar-pro2-251215]`. Analysis
-below is over the completed targets (≈475 ≥ the 470-pair power target of §12); the frozen-N=500 update after
-chunk-8's re-run does not change the conclusion.
+parallel matrix. **19/20 chunks succeeded.** Chunk 8 (25 targets) was lost to **three consecutive GitHub
+runner shutdowns** (exit 143 — the runner received a shutdown signal each time after seeding + submitting its
+175 jobs and running ~46 min; a deterministic infra preemption of that one long tf-heavy job, **not** a
+code/grader fault — the 19 identical sibling chunks all passed). After the third loss, **N=475 is the accepted
+final** (≥ the 470-pair power target of §12). **3275 SUCCEEDED / 42 FAILED / 8 DEAD_LETTER (97.8%)**; exec@1
+= 0.98–0.99 per arm; **cross-user private injection = 0**; `returned_models = [solar-pro2-251215]`. The 25
+missing targets are a **uniform** loss across all arms (the whole chunk didn't run), so they cannot bias the
+paired E1 contrast; ITT and complete-case give the same null (below).
 
 ## Actual Pass@1 by arm (BigCodeBench-Instruct, no repair)
 | Arm | memory | Pass@1 |

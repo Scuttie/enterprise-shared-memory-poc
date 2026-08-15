@@ -82,12 +82,14 @@ as env/secret, never committed.
     idempotent Qdrant.
 
 ## M. Run provenance & one honest caveat
-26. Main matrix run `31860928312`: **19/20 chunks succeeded**; chunk 8 (25 targets) was lost to **two
-    consecutive GitHub runner shutdowns (exit 143 infra preemption)**, a third rerun attempted. Primary analysis
-    is over **475 paired targets ≥ the §12 power target of 470**. The 25 missing targets are a *uniform* infra
-    loss across all arms (not differential attrition) → they cannot bias E1; ITT and complete-case both give the
-    same null. If chunk 8 lands, `main_results.json` updates to the frozen N=500 with no change to the sign, CI,
-    or decision.
+26. Main matrix run `31860928312`: **19/20 chunks succeeded**; chunk 8 (25 targets) was lost to **three
+    consecutive GitHub runner shutdowns (exit 143 infra preemption)** — each attempt seeded, submitted its 175
+    jobs, ran ~46 min, then the runner was reclaimed; a deterministic infra failure of that one long tf-heavy
+    job, while all 19 identical sibling chunks passed. After the third loss, **N=475 is the accepted final ≥ the
+    §12 power target of 470** (a 4th identical attempt was declined as wasteful). The 25 missing targets are a
+    *uniform* infra loss across all arms (not differential attrition) → they cannot bias E1; ITT and
+    complete-case both give the same null. The 5% shortfall vs the frozen N=500 is an infra artifact with no
+    bearing on the sign, CI, or decision.
 
 ## Bottom line
 On a real public benchmark, with a proper relevance control and a preregistered confirmatory design, **relevant

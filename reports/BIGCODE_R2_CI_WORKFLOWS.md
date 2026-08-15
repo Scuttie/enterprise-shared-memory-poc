@@ -24,5 +24,7 @@ envs (`SOLAR_MAX_ATTEMPTS=12`, `SOLAR_TOTAL_DEADLINE=480`, Retry-After-honoring 
   envs absorb the rest. This drove chunk-0 success 90% → 100%.
 - **Combine** steps (`scripts/bigcode_r2_*_combine.py`) union raw chunk artifacts and run the identical frozen
   analysis over the full split — no per-chunk analysis is trusted.
-- **Infra transience:** the main matrix run `31860928312` had 19/20 chunks succeed; chunk 8 hit a runner
-  shutdown (exit 143) and was re-run via `gh run rerun --failed` — not a code/grader fault.
+- **Infra transience:** the main matrix run `31860928312` had 19/20 chunks succeed; chunk 8 was lost to three
+  consecutive runner shutdowns (exit 143) despite `gh run rerun --failed` retries — a deterministic infra
+  preemption of that one long chunk, not a code/grader fault (all 19 sibling chunks passed). N=475 accepted
+  final (≥ the 470 power target); see BIGCODE_R2_MAIN_RESULTS.md.

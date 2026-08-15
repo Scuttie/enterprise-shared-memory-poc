@@ -59,7 +59,8 @@ async def seed(su, index, embedder, targets, canon_by_src, labels, target_user_o
     # org-global bank: version per (source, bundle) rendered view -> version_id
     bank, recs, texts = {}, [], []
     needed = set()
-    for tid in targets:
+    for t in targets:
+        tid = t["_id"] if isinstance(t, dict) else t
         for key in ("relevant", "shuffled"):
             s = labels.get(tid, {}).get(key)
             if s is not None:

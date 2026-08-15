@@ -59,6 +59,7 @@ jobs:
       - name: Write env file
         run: |
           test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no UPSTAGE_API_KEY secret"; exit 1; }
+          RD=5400; [ -n "${{ github.event.inputs.subset }}" ] && RD=900   # short deadline for smokes
           cat > ds1000.env <<ENV
           DATABASE_URL=postgresql://localhost:5432/esm
           MIGRATION_USER=postgres
@@ -89,8 +90,9 @@ jobs:
           OIDC_JWKS_FILE=$PWD/jwks.json
           E2E_API_URL=http://127.0.0.1:8000
           API_PORT=8000
-          RUN_DEADLINE=5400
+          RUN_DEADLINE=$RD
           R3_GRADE_SUBPROCESS=1
+          R3_ABSTRACT_CONCURRENCY=4
           R3_SOURCE_SUBSET=${{ github.event.inputs.subset }}
           HF_HUB_DISABLE_TELEMETRY=1
           PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python

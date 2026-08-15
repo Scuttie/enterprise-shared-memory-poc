@@ -183,18 +183,28 @@ def main():
     by_user = collections.Counter()
 
     async def _build():
+        # collect outcomes + GOLD facts (no model calls) first
+        successes = []
         for j in jobs:
             r = await _collect(j["job_id"])
             task = j["task"]
-            # GOLD: reference solution -> structural-only canonical (verified-fact oracle)
             gcam = SB.CB.assemble(task, task["reference_code"], "gold", EVAL_HASH, semantic={})
             gold.append(SB.gold_record(gcam))
             if r["pass1"] == 1 and r["applied_patch"]:
+                successes.append((j, r))
+        print("solves done: %d verified -> abstracting canonical (concurrent)" % len(successes), flush=True)
+        sem = asyncio.Semaphore(int(os.environ.get("R3_ABSTRACT_CONCURRENCY", "4")))
+
+        async def _one(j, r):
+            task = j["task"]
+            async with sem:
                 cam = await SB.abstract_canonical(provider, task, r["applied_patch"], j["user"], EVAL_HASH,
                                                   org_id=org, logical_request_id="r3-canon-" + j["tid"])
-                cam.assert_no_target_leakage(task.get("reference_code", ""), task.get("code_context", ""))
-                rec = SB.user_success_record(cam)
-                user_success.append(rec); canon.append(rec); by_user[j["user"]] += 1
+            cam.assert_no_target_leakage(task.get("reference_code", ""), task.get("code_context", ""))
+            return SB.user_success_record(cam), j["user"]
+        for rec, usr in await asyncio.gather(*[_one(j, r) for j, r in successes]):
+            user_success.append(rec); canon.append(rec); by_user[usr] += 1
+        print("canonical abstraction done: %d records" % len(user_success), flush=True)
     asyncio.run(_build())
 
     os.makedirs(ART, exist_ok=True)

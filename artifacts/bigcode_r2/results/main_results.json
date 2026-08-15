@@ -1,0 +1,252 @@
+{
+  "E1": {
+    "ci": {
+      "hi": 0.008421052631578947,
+      "lo": -0.05052631578947368
+    },
+    "contrast": "M2_TRUE_RELEVANT - M3_SHUFFLED_MATCHED",
+    "diff": -0.021052631578947368,
+    "mcnemar": {
+      "b": 21,
+      "c": 31,
+      "n_discordant": 52,
+      "p_value": 0.21160856876151612
+    },
+    "n": 475,
+    "reject": false
+  },
+  "E2": {
+    "contrast": "M4_DEPLOYABLE - M0_NO_MEMORY",
+    "diff": null,
+    "gated_out": "E1 did not reject"
+  },
+  "arms_pass1": {
+    "M0": 0.3937,
+    "M1": 0.4168,
+    "M2": 0.3895,
+    "M3": 0.4105,
+    "M4": 0.3937,
+    "M5": 0.4021,
+    "M7": 0.3958
+  },
+  "chunks_combined": [
+    "main_raw.0of20.json",
+    "main_raw.10of20.json",
+    "main_raw.11of20.json",
+    "main_raw.12of20.json",
+    "main_raw.13of20.json",
+    "main_raw.14of20.json",
+    "main_raw.15of20.json",
+    "main_raw.16of20.json",
+    "main_raw.17of20.json",
+    "main_raw.18of20.json",
+    "main_raw.19of20.json",
+    "main_raw.1of20.json",
+    "main_raw.2of20.json",
+    "main_raw.3of20.json",
+    "main_raw.4of20.json",
+    "main_raw.5of20.json",
+    "main_raw.6of20.json",
+    "main_raw.7of20.json",
+    "main_raw.9of20.json"
+  ],
+  "complete_case_sensitivity": {
+    "M0": 0.3996,
+    "M2": 0.3953,
+    "M3": 0.4167,
+    "M4": 0.3996
+  },
+  "cross_user_private_injection": 0,
+  "dataset_content_hash": "98e377a83cb12e90e244eef1a804a60b0dbcf0c062c623238596fd1dc7299172",
+  "efficiency": {
+    "M0": {
+      "injection_rate": 0.0,
+      "mean_out_tokens": 469.4,
+      "pass@1": 0.3937,
+      "pass_per_kilotoken": 0.8386
+    },
+    "M1": {
+      "injection_rate": 1.0,
+      "mean_out_tokens": 455.2,
+      "pass@1": 0.4168,
+      "pass_per_kilotoken": 0.9158
+    },
+    "M2": {
+      "injection_rate": 0.4147,
+      "mean_out_tokens": 465.8,
+      "pass@1": 0.3895,
+      "pass_per_kilotoken": 0.8361
+    },
+    "M3": {
+      "injection_rate": 0.0337,
+      "mean_out_tokens": 432.1,
+      "pass@1": 0.4105,
+      "pass_per_kilotoken": 0.9502
+    },
+    "M4": {
+      "injection_rate": 0.9958,
+      "mean_out_tokens": 475.9,
+      "pass@1": 0.3937,
+      "pass_per_kilotoken": 0.8272
+    },
+    "M5": {
+      "injection_rate": 1.0,
+      "mean_out_tokens": 469.5,
+      "pass@1": 0.4021,
+      "pass_per_kilotoken": 0.8564
+    },
+    "M7": {
+      "injection_rate": 0.4947,
+      "mean_out_tokens": 469.0,
+      "pass@1": 0.3958,
+      "pass_per_kilotoken": 0.8439
+    }
+  },
+  "exec_rate": {
+    "M0": 0.9853,
+    "M1": 0.9853,
+    "M2": 0.9853,
+    "M3": 0.9853,
+    "M4": 0.9853,
+    "M5": 0.9853,
+    "M7": 0.9832
+  },
+  "experiment_id": "BIGCODE_R2_MAIN",
+  "n_targets": 500,
+  "returned_models": [
+    "solar-pro2-251215"
+  ],
+  "secondary": {
+    "M1_minus_M0_private_effect": {
+      "ci": {
+        "hi": 0.05263157894736842,
+        "lo": -0.004210526315789474
+      },
+      "diff": 0.023157894736842106,
+      "holm": {
+        "p": 0.14386508844054902,
+        "reject": false,
+        "threshold": 0.0125
+      },
+      "mcnemar": {
+        "b": 29,
+        "c": 18,
+        "n_discordant": 47,
+        "p_value": 0.14386508844054902
+      },
+      "n": 475
+    },
+    "M2_minus_M4_retrieval_headroom": {
+      "ci": {
+        "hi": 0.029473684210526315,
+        "lo": -0.037894736842105266
+      },
+      "diff": -0.004210526315789474,
+      "holm": {
+        "p": 0.9021585000966993,
+        "reject": false,
+        "threshold": 0.05
+      },
+      "mcnemar": {
+        "b": 32,
+        "c": 34,
+        "n_discordant": 66,
+        "p_value": 0.9021585000966993
+      },
+      "n": 475
+    },
+    "M5_minus_M4_threshold_effect": {
+      "ci": {
+        "hi": 0.03368421052631579,
+        "lo": -0.014736842105263158
+      },
+      "diff": 0.008421052631578947,
+      "holm": {
+        "p": 0.6075913612730801,
+        "reject": false,
+        "threshold": 0.016666666666666666
+      },
+      "mcnemar": {
+        "b": 19,
+        "c": 15,
+        "n_discordant": 34,
+        "p_value": 0.6075913612730801
+      },
+      "n": 475
+    },
+    "M7_minus_M6_governed_vs_plain": {
+      "ci": {
+        "hi": 0.037894736842105266,
+        "lo": -0.023157894736842106
+      },
+      "diff": 0.00631578947368421,
+      "holm": {
+        "p": 0.7838463022094988,
+        "reject": false,
+        "threshold": 0.025
+      },
+      "mcnemar": {
+        "b": 28,
+        "c": 25,
+        "n_discordant": 53,
+        "p_value": 0.7838463022094988
+      },
+      "n": 475
+    }
+  },
+  "selected_format": "F1_PLAIN_LESSON",
+  "split": "main",
+  "split_hash": "6e0755582c77ea0b0da930e5fc9da58169cd1a4c81a8079acf9705a51c90829d",
+  "states": {
+    "DEAD_LETTER": 8,
+    "FAILED": 42,
+    "SUCCEEDED": 3275
+  },
+  "transfer": {
+    "M1": {
+      "adoption_total": 2,
+      "gains": 29,
+      "loss_classes": {
+        "SOURCE_API_CALL_ADOPTION": 1,
+        "SOURCE_CONTROL_FLOW_ADOPTION": 1,
+        "UNRELATED_IMPLEMENTATION_ERROR": 16
+      },
+      "losses": 18
+    },
+    "M2": {
+      "adoption_total": 7,
+      "gains": 30,
+      "loss_classes": {
+        "SOURCE_API_CALL_ADOPTION": 7,
+        "UNRELATED_IMPLEMENTATION_ERROR": 25
+      },
+      "losses": 32
+    },
+    "M3": {
+      "adoption_total": 0,
+      "gains": 29,
+      "loss_classes": {
+        "PARSER_OR_APPLY_FAILURE": 1,
+        "UNRELATED_IMPLEMENTATION_ERROR": 20
+      },
+      "losses": 21
+    },
+    "M6": {
+      "adoption_total": 0,
+      "gains": 0,
+      "loss_classes": {},
+      "losses": 0
+    },
+    "M7": {
+      "adoption_total": 10,
+      "gains": 35,
+      "loss_classes": {
+        "PARSER_OR_APPLY_FAILURE": 1,
+        "SOURCE_API_CALL_ADOPTION": 9,
+        "SOURCE_CONTROL_FLOW_ADOPTION": 1,
+        "UNRELATED_IMPLEMENTATION_ERROR": 23
+      },
+      "losses": 34
+    }
+  }
+}

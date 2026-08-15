@@ -1,0 +1,66 @@
+{
+  "benchmark_lock": {
+    "benchmark": "DS-1000",
+    "data_content_hash": "3fd0b7aef93ea709880524eeeaa0269957bd8785aedac48069b4450078db54c4",
+    "data_sha256": "e8c6daa9d7223976bce0296644f3933f78d7f47830669ff05cd61da62c6ba9b3",
+    "github_commit": "b39aab71da6d23ef8d3cac59a7c5f834516ab334",
+    "hf_revision": "4416080ac5cb80bdf7576aefb8f9a0b4d5426a44",
+    "license": "CC-BY-SA-4.0",
+    "reference_reproduction": {
+      "n": 1000,
+      "rate": 1.0,
+      "reproduced": true,
+      "run": "31882070895"
+    }
+  },
+  "calibration": {
+    "C0_no_memory_pass1": 0.98,
+    "G3": "FAIL",
+    "decision": "CALIBRATION_STOP"
+  },
+  "decoder_manifest_hash": "sha256:3a004972a2d571224f39d0a38ed21d5f",
+  "discovery": {
+    "best_lift": 0.008,
+    "n_targets": 120,
+    "result": "null representation effect (injection audited 82/82 per arm)",
+    "selected_bundle": "B5",
+    "selection_rule": "\u00a714 lexicographic (B5 by efficiency tie-break among null-lift bundles)"
+  },
+  "endpoint": "\u00a70-C CALIBRATION STOP (G3 dynamic-range fail; confirmatory main not run)",
+  "experiment": "REALBENCH_ACTIONABLE_MEMORY_R3",
+  "model_lock": {
+    "backend": "ds1000 completion",
+    "embedder": "all-MiniLM-L6-v2 (384d)",
+    "execution": "official DS-1000 evaluator inside conda env ds1000-3.10",
+    "model": "solar-pro2-251215",
+    "temperature": 0
+  },
+  "not_run": [
+    "\u00a717 confirmatory main (M0-M6)",
+    "\u00a718 H1/H2",
+    "\u00a720 safety subset",
+    "\u00a715 retrieval thresholds",
+    "\u00a713 decoder ablation (paid)"
+  ],
+  "redesign_requires": "REALBENCH_ACTIONABLE_MEMORY_R4",
+  "relevance_threshold": 0.1,
+  "renderer_manifest_hash": "sha256:e6b0791e88ffc0ace713213dd7bd580b",
+  "renderer_tokenizer": "cl100k_base",
+  "source_bank": {
+    "canonical_manifest_hash": "sha256:ab4d01350a177f26ea940f8b578c53b9",
+    "gold_manifest_hash": "sha256:94f9d0b948b174b25fcdf7794b7d1b35",
+    "manifest_hash": "sha256:84676a556e8a1b3ac695c0940ee5ed78",
+    "n_source": 200,
+    "n_verified": 183
+  },
+  "split_hash": "e16bfb852f7395cb",
+  "split_sizes": {
+    "CONFIRMATORY_MAIN": 451,
+    "INSTRUMENT_CALIBRATION": 100,
+    "REPRESENTATION_DISCOVERY": 120,
+    "RESERVE": 50,
+    "RETRIEVAL_DEV": 79,
+    "SOURCE_POOL": 200
+  },
+  "token_budget": 220
+}

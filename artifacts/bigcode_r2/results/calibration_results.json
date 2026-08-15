@@ -1,13 +1,13 @@
 {
   "all_gates_pass": false,
   "arms_pass1": {
-    "M0": 0.35,
-    "M1": 0.35,
-    "M2": 0.175,
-    "M3": 0.025,
-    "M4": 0.2375,
-    "M5": 0.025,
-    "M7": 0.15
+    "M0": 0.3875,
+    "M1": 0.375,
+    "M2": 0.3875,
+    "M3": 0.3625,
+    "M4": 0.3,
+    "M5": 0.3625,
+    "M7": 0.35
   },
   "chunks_combined": [
     "calibration_raw.0of3.json",
@@ -17,19 +17,19 @@
   "cross_user_private_injection": 0,
   "dataset_content_hash": "98e377a83cb12e90e244eef1a804a60b0dbcf0c062c623238596fd1dc7299172",
   "exec_rate": {
-    "M0": 0.8375,
-    "M1": 0.8125,
-    "M2": 0.3625,
-    "M3": 0.1125,
-    "M4": 0.7,
-    "M5": 0.125,
-    "M7": 0.25
+    "M0": 0.9,
+    "M1": 0.825,
+    "M2": 0.8875,
+    "M3": 0.875,
+    "M4": 0.9,
+    "M5": 0.875,
+    "M7": 0.85
   },
   "experiment_id": "BIGCODE_R2_CALIBRATION",
   "gates": {
     "C1_official_grader": {
       "SEPARATE_CI_INVARIANT_VERIFIED": "canonical 100% pass in ci-bigcode-grader",
-      "malformed_rate": 0.425,
+      "malformed_rate": 0.0286,
       "pass": false,
       "setup_failure": 0
     },
@@ -38,7 +38,7 @@
       "pass": false
     },
     "C3_dynamic_range": {
-      "M0_pass1": 0.35,
+      "M0_pass1": 0.3875,
       "pass": true
     },
     "C4_multiuser_safety": {
@@ -48,7 +48,7 @@
       "pass": true
     },
     "C5_retrieval_integrity": {
-      "M2_injected_rate": 0.4,
+      "M2_injected_rate": 0.375,
       "M4_injected_rate": 1.0375,
       "SEPARATE_CI_INVARIANT_VERIFIED": "prod embedder enforced; invalid canonical rejected by validated_search; target/test leakage 0",
       "embedder": "?",
@@ -68,8 +68,8 @@
   "split": "calibration",
   "split_hash": "6e0755582c77ea0b0da930e5fc9da58169cd1a4c81a8079acf9705a51c90829d",
   "states": {
-    "DEAD_LETTER": 8,
-    "FAILED": 296,
-    "SUCCEEDED": 256
+    "DEAD_LETTER": 6,
+    "FAILED": 65,
+    "SUCCEEDED": 489
   }
 }

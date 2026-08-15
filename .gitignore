@@ -24,3 +24,4 @@ model_cache/
 *.jsonl
 *.log
 data/
+artifacts/bigcode_r2/results/*_raw.*.json

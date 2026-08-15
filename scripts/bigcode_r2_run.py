@@ -65,8 +65,8 @@ async def _collect(job_id, arm, tid, assigned):
         async with e.connect() as c:
             oc = (await c.execute(text("SELECT pass1,exec1 FROM outcome_observations WHERE job_id=:j"),
                                   {"j": job_id})).first()
-            st = (await c.execute(text("SELECT state,cross_user_private_injection_count FROM solve_jobs "
-                                       "WHERE id=:j"), {"j": job_id})).first()
+            st = (await c.execute(text("SELECT state,cross_user_private_injection_count,error_detail_sanitized "
+                                       "FROM solve_jobs WHERE id=:j"), {"j": job_id})).first()
             inj = (await c.execute(text("SELECT count(*) FROM retrieval_candidates WHERE job_id=:j AND injected"),
                                    {"j": job_id})).scalar()
             applied = (await c.execute(text("SELECT applied_patch FROM job_patches WHERE job_id=:j"),
@@ -81,6 +81,7 @@ async def _collect(job_id, arm, tid, assigned):
             "pass1": int(oc[0]) if oc and oc[0] is not None else 0,          # ITT: missing -> 0
             "exec1": int(oc[1]) if oc and oc[1] is not None else 0,
             "cross_user": int(st[1] or 0) if st else 0, "injected": int(inj or 0),
+            "job_error": (str(st[2])[:200] if st and len(st) > 2 and st[2] else None),
             "applied_patch": applied, "returned_model": (mc[0] if mc else None),
             "model_status": (mc[1] if mc else None), "out_tok": (mc[2] if mc else 0),
             "in_tok": (mc[3] if mc else 0)}
@@ -157,6 +158,9 @@ def main():
         print("terminal %d pending %d" % (len(jobs) - len(pending), len(pending)), flush=True)
 
     results = [asyncio.run(_collect(j["job_id"], j["arm"], j["tid"], j["assigned"])) for j in jobs]
+    errs = collections.Counter((r["state"], r.get("job_error")) for r in results
+                               if r["state"] not in ("SUCCEEDED",))
+    print("JOB_ERRORS:", dict(errs.most_common(12)), flush=True)
     d = os.path.join(ART, "results"); os.makedirs(d, exist_ok=True)
     if cn > 1:                       # chunked run: persist RAW per-job results; analysis happens in combine
         raw = os.path.join(d, "%s_raw.%dof%d.json" % (split, ci, cn))

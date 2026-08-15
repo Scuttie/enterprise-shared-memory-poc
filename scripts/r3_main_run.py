@@ -61,6 +61,13 @@ def _targets():
     part = json.load(open(os.path.join(ART, "task_partition.json"), encoding="utf-8"))
     ids = set(part["sets"][SPLIT])
     tasks = [t for t in AD.load_tasks(DS_DATA) if t["_id"] in ids]
+    sub = os.environ.get("R3_SUBSET") or os.environ.get("DISCOVERY_SUBSET")
+    if sub:
+        import collections as _c
+        byl = _c.defaultdict(list)
+        for t in sorted(tasks, key=lambda x: int(x["_id"].split("_")[1])):
+            byl[t["_library"]].append(t)
+        tasks = [t for lib in byl.values() for t in lib[:int(sub)]]
     ch = os.environ.get("CHUNK")
     if ch:
         i, n = [int(x) for x in ch.split("/")]

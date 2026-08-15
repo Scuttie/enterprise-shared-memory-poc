@@ -24,10 +24,7 @@ from experiments.actionable_memory_r3 import renderers as R
 from experiments.actionable_memory_r3.discovery import _shared_version, render_view, _sha32
 from experiments.actionable_memory_r3.service_adapter import fixture_id
 
-MAIN_ARMS = ["M0", "M1", "M2", "M3", "M4", "M5", "M6"]
-CALIB_ARMS = ["C0", "C1", "C2", "C3", "C4", "C5"]
-# calibration arm -> the main arm whose injection it mirrors
-CALIB_EQUIV = {"C0": "M0", "C1": "M2", "C2": "M3", "C3": "M4", "C4": "M1", "C5": "M6"}
+from experiments.actionable_memory_r3.main_arms import MAIN_ARMS, CALIB_ARMS, CALIB_EQUIV
 
 
 async def seed(su, index, embedder, targets, canon_by_src, gold_by_src, labels, private_src_of, target_user_of,

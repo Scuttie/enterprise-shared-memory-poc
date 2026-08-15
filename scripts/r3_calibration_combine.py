@@ -9,7 +9,7 @@ import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
-from experiments.actionable_memory_r3.main_seeding import CALIB_ARMS  # noqa: E402
+from experiments.actionable_memory_r3.main_arms import CALIB_ARMS  # noqa: E402
 
 ART = os.path.join(REPO, "artifacts", "actionable_memory_r3")
 

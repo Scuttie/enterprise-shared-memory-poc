@@ -1,0 +1,2153 @@
+{
+ "chunk": "2/3",
+ "labels": {
+  "ds1000_110": {
+   "irrelevant": "ds1000_545",
+   "relevant": "ds1000_29",
+   "shuffled": "ds1000_13"
+  },
+  "ds1000_142": {
+   "irrelevant": "ds1000_915",
+   "relevant": "ds1000_29",
+   "shuffled": "ds1000_29"
+  },
+  "ds1000_187": {
+   "irrelevant": "ds1000_575",
+   "relevant": "ds1000_33",
+   "shuffled": "ds1000_29"
+  },
+  "ds1000_208": {
+   "irrelevant": "ds1000_307",
+   "relevant": "ds1000_29",
+   "shuffled": "ds1000_33"
+  },
+  "ds1000_214": {
+   "irrelevant": "ds1000_558",
+   "relevant": "ds1000_149",
+   "shuffled": "ds1000_54"
+  },
+  "ds1000_245": {
+   "irrelevant": "ds1000_802",
+   "relevant": "ds1000_149",
+   "shuffled": "ds1000_29"
+  },
+  "ds1000_25": {
+   "irrelevant": "ds1000_552",
+   "relevant": "ds1000_13",
+   "shuffled": "ds1000_29"
+  },
+  "ds1000_268": {
+   "irrelevant": "ds1000_683",
+   "relevant": "ds1000_54",
+   "shuffled": "ds1000_149"
+  },
+  "ds1000_300": {
+   "irrelevant": "ds1000_842",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_344": {
+   "irrelevant": "ds1000_613",
+   "relevant": "ds1000_317",
+   "shuffled": "ds1000_327"
+  },
+  "ds1000_347": {
+   "irrelevant": "ds1000_929",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_369": {
+   "irrelevant": "ds1000_286",
+   "relevant": "ds1000_468",
+   "shuffled": "ds1000_317"
+  },
+  "ds1000_436": {
+   "irrelevant": "ds1000_758",
+   "relevant": "ds1000_327",
+   "shuffled": "ds1000_468"
+  },
+  "ds1000_44": {
+   "irrelevant": "ds1000_930",
+   "relevant": "ds1000_29",
+   "shuffled": "ds1000_149"
+  },
+  "ds1000_441": {
+   "irrelevant": "ds1000_13",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_480": {
+   "irrelevant": "ds1000_619",
+   "relevant": "ds1000_321",
+   "shuffled": "ds1000_348"
+  },
+  "ds1000_492": {
+   "irrelevant": "ds1000_275",
+   "relevant": "ds1000_348",
+   "shuffled": "ds1000_321"
+  },
+  "ds1000_538": {
+   "irrelevant": "ds1000_55",
+   "relevant": "ds1000_551",
+   "shuffled": "ds1000_552"
+  },
+  "ds1000_596": {
+   "irrelevant": "ds1000_172",
+   "relevant": "ds1000_522",
+   "shuffled": "ds1000_590"
+  },
+  "ds1000_608": {
+   "irrelevant": "ds1000_32",
+   "relevant": "ds1000_590",
+   "shuffled": "ds1000_522"
+  },
+  "ds1000_638": {
+   "irrelevant": "ds1000_462",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_662": {
+   "irrelevant": "ds1000_30",
+   "relevant": "ds1000_552",
+   "shuffled": "ds1000_551"
+  },
+  "ds1000_698": {
+   "irrelevant": "ds1000_918",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_767": {
+   "irrelevant": "ds1000_869",
+   "relevant": "ds1000_751",
+   "shuffled": "ds1000_794"
+  },
+  "ds1000_781": {
+   "irrelevant": "ds1000_572",
+   "relevant": "ds1000_794",
+   "shuffled": "ds1000_751"
+  },
+  "ds1000_807": {
+   "irrelevant": "ds1000_30",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_814": {
+   "irrelevant": "ds1000_627",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_840": {
+   "irrelevant": "ds1000_467",
+   "relevant": "ds1000_869",
+   "shuffled": "ds1000_918"
+  },
+  "ds1000_852": {
+   "irrelevant": "ds1000_27",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_907": {
+   "irrelevant": "ds1000_682",
+   "relevant": "ds1000_918",
+   "shuffled": "ds1000_869"
+  },
+  "ds1000_910": {
+   "irrelevant": "ds1000_570",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_950": {
+   "irrelevant": "ds1000_181",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_970": {
+   "irrelevant": "ds1000_598",
+   "relevant": null,
+   "shuffled": null
+  }
+ },
+ "rows": [
+  {
+   "applied_patch": "df = pd.DataFrame({'Date': ['2018-01-01', '2018-02-08', '2018-02-08', '2018-02-08', '2018-02-08']})\ndf['Date'] = pd.to_datetime(df['Date'])\ndate_range = pd.to_datetime(['2017-08-17', '2018-01-31'])\nfiltered_df = df[(df['Date'] >= date_range[0]) & (df['Date'] <= date_range[1])]\nfiltered_df['Date'] = filtered_df['Date'].dt.strftime('%d-%b-%Y') + ' ' + filtered_df['Date'].dt.day_name()\nresult = filtered_df\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_25"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Date': ['2018-01-01', '2018-02-08', '2018-02-08', '2018-02-08', '2018-02-08']})\ndf['Date'] = pd.to_datetime(df['Date'])\ndate_list = pd.to_datetime(['2017-08-17', '2018-01-31'])\nmask = df['Date'].between(date_list[0], date_list[1])\ndf.loc[mask, 'Date'] = df.loc[mask, 'Date'].dt.strftime('%d-%b-%Y %A')\nresult = df\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_25"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Date': ['2018-01-01', '2018-02-08', '2018-02-08', '2018-02-08', '2018-02-08']})\ndf['Date'] = pd.to_datetime(df['Date'])\ndate_list = pd.to_datetime(['2017-08-17', '2018-01-31'])\n\n# Filter dates within the specified range\nmask = (df['Date'] >= date_list[0]) & (df['Date'] <= date_list[1])\nfiltered_df = df[mask]\n\n# Format the dates as requested\nfiltered_df['Date'] = filtered_df['Date'].dt.strftime('%d-%b-%Y %A')\ndf = filtered_df\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_25"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Date': ['2018-01-01', '2018-02-08', '2018-02-08', '2018-02-08', '2018-02-08']})\ndf['Date'] = pd.to_datetime(df['Date'])\ndate_list = pd.to_datetime(['2017-08-17', '2018-01-31'])\nmask = df['Date'].between(date_list[0], date_list[1], inclusive='both')\nfiltered_df = df[mask].copy()\nfiltered_df['Date'] = filtered_df['Date'].dt.strftime('%d-%b-%Y %A')\ndf = filtered_df.reset_index(drop=True)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_25"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Date': ['2018-01-01', '2018-02-08', '2018-02-08', '2018-02-08', '2018-02-08']})\ndf['Date'] = pd.to_datetime(df['Date'])\ndate_list = pd.to_datetime(['2017-08-17', '2018-01-31'])\n\n# Filter dates within the specified range\nmask = (df['Date'] >= date_list[0]) & (df['Date'] <= date_list[1])\nfiltered_df = df[mask]\n\n# Format the dates as requested\nfiltered_df['Date'] = filtered_df['Date'].dt.strftime('%d-%b-%Y %A')\ndf = filtered_df.reset_index(drop=True)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_25"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Date': ['2018-01-01', '2018-02-08', '2018-02-08', '2018-02-08', '2018-02-08']})\ndf['Date'] = pd.to_datetime(df['Date'])\ndate_list = pd.to_datetime(['2017-08-17', '2018-01-31'])\nfiltered_df = df[(df['Date'] >= date_list[0]) & (df['Date'] <= date_list[1])]\nfiltered_df['Date'] = filtered_df['Date'].dt.strftime('%d-%b-%Y %A')\ndf = filtered_df.reset_index(drop=True)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_25"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(np.where(df.isna(), np.nan, np.fliplr(df.values)), columns=df.columns, index=df.index)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_44"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame([[3,1,2],[np.nan,1,2],[np.nan,np.nan,2]],columns=['0','1','2'])\n\n# Create a mask of non-null values\nmask = df.notnull()\n\n# Get the indices where values are not null\nnon_null_indices = np.argwhere(mask.values)\n\n# Get the total number of non-null values per row\ncounts = mask.sum(axis=1).values[:, None]\n\n# Create an array of column indices for each row\nrow_indices = np.arange(len(df))[:, None]\n\n# Create the output array\nresult = np.full_like(df.values, np.nan)\n\n# Fill the output array with shifted values\nresult[row_indices, (row_indices * df.shape[1] + np.argsort(non_null_indices[:, 0]) - \n                     (row_indices * (row_indices + 1)) // 2) % df.shape[1]] = \\\n    df.values[non_null_indices[:, 0], non_null_indices[:, 1]]\n\nresult = pd.DataFrame(result, columns=df.columns)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_44"
+  },
+  {
+   "applied_patch": "# Create a mask of non-null values\nmask = df.notnull()\n\n# Get the indices of non-null values in each row\nidx = np.argwhere(mask.values)\n\n# Get the number of non-null values in each row\ncounts = np.diff(np.concatenate(([0], np.cumsum(mask.values.astype(int), axis=1) + 1, [df.shape[1] + 1])), axis=1)\n\n# Create an output array filled with NaNs\nout = np.full_like(df.values, np.nan)\n\n# Fill the output array with shifted values\nfor i, (row_idx, start_col), count in zip(range(df.shape[0]), idx[:, [0, 1]], counts[:, 0]):\n    out[i, start_col:start_col + count] = df.values[i, start_col:start_col + count]\n    out[i, :count] = df.values[i, start_col:start_col + count]\n\nresult = pd.DataFrame(out, columns=df.columns, index=df.index)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_44"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(np.where(df.isna(), np.nan, np.fliplr(df.values)), index=df.index, columns=df.columns)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_44"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame([[3,1,2],[np.nan,1,2],[np.nan,np.nan,2]], columns=['0','1','2'])\n\n# Create a mask of non-null values\nmask = df.notna()\n\n# Get the indices of non-null values along rows\nnon_null_indices = np.argwhere(mask.values)\n\n# Create an output array filled with NaNs\nresult_values = np.full_like(df.values, np.nan)\n\n# For each row, place the non-null values in a cyclic shifted manner\nfor row_idx in range(df.shape[0]):\n    # Get the non-null column indices for the current row\n    cols = non_null_indices[non_null_indices[:, 0] == row_idx][:, 1]\n    # Place the values cyclically\n    if len(cols) > 0:\n        values = df.values[row_idx, cols]\n        result_values[row_idx, cols - np.arange(len(cols))] = values\n\nresult = pd.DataFrame(result_values, columns=df.columns)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_44"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame([[3,1,2],[np.nan,1,2],[np.nan,np.nan,2]],columns=['0','1','2'])\n\n# Create a mask of non-null values\nmask = df.notna()\n\n# Get the cumulative maximum along axis=1 to find positions to shift values\nshift_positions = mask.cumsum(axis=1).sub(mask.cumsum(axis=1).min(axis=1), axis=0)\n\n# Create an output array filled with NaNs\nresult = np.full_like(df.values, np.nan)\n\n# Fill the values based on calculated positions\nrow_indices, col_indices = np.where(mask)\nresult[row_indices, shift_positions[row_indices, col_indices].values] = df.values[row_indices, col_indices]\n\nresult = pd.DataFrame(result, columns=df.columns)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_44"
+  },
+  {
+   "applied_patch": "df['state'] = df.apply(lambda row: row['col1'] if (row['col2'] <= 50 and row['col3'] <= 50) else max(row['col1'], row['col2'], row['col3']), axis=1)\ndf = df\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_110"
+  },
+  {
+   "applied_patch": "df['state'] = df.apply(lambda row: row['col1'] if (row['col2'] <= 50 and row['col3'] <= 50) else max(row['col1'], row['col2'], row['col3']), axis=1)\ndf\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_110"
+  },
+  {
+   "applied_patch": "df['state'] = df.apply(lambda row: row['col1'] if (row['col2'] <= 50 and row['col3'] <= 50) else max(row[['col1', 'col2', 'col3']]), axis=1)\ndf\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_110"
+  },
+  {
+   "applied_patch": "df['state'] = df.apply(lambda row: row['col1'] if (row['col2'] <= 50 and row['col3'] <= 50) else max(row['col1'], row['col2'], row['col3']), axis=1)\ndf\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_110"
+  },
+  {
+   "applied_patch": "df['state'] = df.apply(lambda row: row['col1'] if (row['col2'] <= 50 and row['col3'] <= 50) else max(row['col1'], row['col2'], row['col3']), axis=1)\ndf\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_110"
+  },
+  {
+   "applied_patch": "df['state'] = df.apply(lambda row: row['col1'] if (row['col2'] <= 50 and row['col3'] <= 50) else max(row[['col1', 'col2', 'col3']]), axis=1)\ndf\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_110"
+  },
+  {
+   "applied_patch": "result = df.melt(\n    id_vars=[], \n    value_vars=[col for col in df.columns],\n    var_name=['variable_2', 'variable_1', 'variable_0'],\n    value_name='value'\n).rename(columns={'variable_0': 'variable_2', 'variable_1': 'variable_0', 'variable_2': 'variable_1'})[\n    ['variable_0', 'variable_1', 'variable_2', 'value']\n]\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_142"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\n# Reconstruct the DataFrame with MultiIndex columns\ndf = pd.DataFrame({'col1': {0: 'a', 1: 'b', 2: 'c'},\n                   'col2': {0: 1, 1: 3, 2: 5},\n                   'col3': {0: 2, 1: 4, 2: 6},\n                   'col4': {0: 3, 1: 6, 2: 2},\n                   'col5': {0: 7, 1: 2, 2: 3},\n                   'col6': {0: 2, 1: 9, 2: 5},\n                  })\ndf.columns = pd.MultiIndex.from_tuples([(a, b, c) for a, b, c in zip(list('AAAAAA'), list('BBCCDD'), list('EFGHIJ'))])\n\n# Melt the DataFrame\nresult = df.melt(\n    value_vars=[col for col in df.columns if col[2] == 'A'],\n    var_name=['variable_0', 'variable_1', 'variable_2'],\n    value_name='value'\n)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_142"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\n# Reconstruct the DataFrame with MultiIndex columns\ndf = pd.DataFrame({'col1': {0: 'a', 1: 'b', 2: 'c'},\n                   'col2': {0: 1, 1: 3, 2: 5},\n                   'col3': {0: 2, 1: 4, 2: 6},\n                   'col4': {0: 3, 1: 6, 2: 2},\n                   'col5': {0: 7, 1: 2, 2: 3},\n                   'col6': {0: 2, 1: 9, 2: 5},\n                  })\ndf.columns = pd.MultiIndex.from_tuples([('A', 'B', 'E'), ('A', 'B', 'F'), \n                                        ('A', 'C', 'G'), ('A', 'C', 'H'), \n                                        ('A', 'D', 'I'), ('A', 'D', 'J')])\n\n# Melt the DataFrame\nresult = df.melt(\n    value_vars=df.columns.droplevel(2),  # Drop the third level to get (A,B), (A,C), (A,D)\n    var_name=['variable_1', 'variable_0'],  # Assign column names (note order)\n    value_name='value'\n)\n# Add the third level back as variable_2\nresult['variable_2'] = result.apply(lambda row: df.columns.get_level_values(2)[\n    (df.columns.get_level_values(0) == row['variable_1']) & \n    (df.columns.get_level_values(1) == row['variable_0'])\n].iloc[0], axis=1)\n# Reorder columns to match expected output\nresult = result[['variable_0', 'variable_1', 'variable_2', 'value']]\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_142"
+  },
+  {
+   "applied_patch": "result = df.melt(\n    id_vars=[('A', 'B', 'A')],\n    value_vars=[col for col in df.columns if col != ('A', 'B', 'A')],\n    var_name=('variable_0', 'variable_1', 'variable_2'),\n    value_name='value'\n)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_142"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\n# Reconstruct the DataFrame with MultiIndex columns\narrays = [list('AAAAAA'), list('BBCCDD'), list('EFGHIJ')]\ndf.columns = pd.MultiIndex.from_arrays(arrays)\n\n# Generate all possible value_vars tuples\nvalue_vars = [col for col in df.columns if col[0] != 'A']\n\n# Melt the DataFrame\nresult = df.melt(\n    id_vars=['A'],\n    value_vars=value_vars,\n    var_name=['variable_2', 'variable_1', 'variable_0'],\n    value_name='value'\n)\n\n# Reorder columns to match expected output\nresult = result[['variable_0', 'variable_1', 'variable_2', 'value']]\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_142"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\n# Reconstruct the DataFrame with MultiIndex columns\narrays = [list('AAAAAA'), list('BBCCDD'), list('EFGHIJ')]\ndf.columns = pd.MultiIndex.from_arrays(arrays)\n\n# Get all possible combinations of column level values\nlevel_combinations = df.columns.get_level_values([0, 1, 2]).to_numpy().reshape(-1, 3)\nunique_combinations = pd.DataFrame(level_combinations, columns=['var0', 'var1', 'var2']).drop_duplicates().values.tolist()\n\n# Melt the DataFrame using the unique combinations\nresult = pd.melt(df.reset_index(), \n                 id_vars=['index'], \n                 value_vars=unique_combinations, \n                 var_name=['variable_0', 'variable_1', 'variable_2'], \n                 value_name='value')\nresult = result.drop(columns='index')\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_142"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\nd = ({'Date': ['1/1/18','1/1/18','1/1/18','2/1/18','3/1/18','1/2/18','1/3/18','2/1/19','3/1/19'],\n      'Val': ['A','A','B','C','D','A','B','C','D']})\ndf = pd.DataFrame(data=d)\ndf['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%y')\n\n# Daily count\ndf['Count_d'] = df.groupby('Date')['Date'].transform('count')\n\n# Monthly count (year + month)\ndf['Count_m'] = df.groupby([df['Date'].dt.year, df['Date'].dt.month])['Date'].transform('count')\n\n# Yearly count\ndf['Count_y'] = df.groupby(df['Date'].dt.year)['Date'].transform('count')\n\n# Weekday count (Monday=0 to Sunday=6)\ndf['Count_w'] = df.groupby(df['Date'].dt.weekday)['Date'].transform('count')\n\n# Value count per date\ndf['Count_Val'] = df.groupby(['Date', 'Val'])['Val'].transform('count')\n\nresult = df\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_187"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\nd = ({'Date': ['1/1/18','1/1/18','1/1/18','2/1/18','3/1/18','1/2/18','1/3/18','2/1/19','3/1/19'],\n      'Val': ['A','A','B','C','D','A','B','C','D']})\ndf = pd.DataFrame(data=d)\ndf['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%y')\n\n# Daily count\ndf['Count_d'] = df.groupby('Date')['Date'].transform('size')\n\n# Monthly count (year + month)\ndf['Count_m'] = df.groupby([df['Date'].dt.year, df['Date'].dt.month])['Date'].transform('size')\n\n# Yearly count\ndf['Count_y'] = df.groupby(df['Date'].dt.year)['Date'].transform('size')\n\n# Weekday count (Monday=0 to Sunday=6)\ndf['Count_w'] = df.groupby(df['Date'].dt.weekday)['Date'].transform('size')\n\n# Val count per date\ndf['Count_Val'] = df.groupby('Date')['Val'].transform('nunique')\n\nresult = df\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_187"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\nd = ({'Date': ['1/1/18','1/1/18','1/1/18','2/1/18','3/1/18','1/2/18','1/3/18','2/1/19','3/1/19'],\n      'Val': ['A','A','B','C','D','A','B','C','D']})\ndf = pd.DataFrame(data=d)\ndf['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%y')\n\n# Daily count\ndf['Count_d'] = df.groupby('Date')['Date'].transform('size')\n\n# Monthly count (year + month)\ndf['Count_m'] = df.groupby([df['Date'].dt.year, df['Date'].dt.month])['Date'].transform('size')\n\n# Yearly count\ndf['Count_y'] = df.groupby(df['Date'].dt.year)['Date'].transform('size')\n\n# Weekday count (Monday=0 to Sunday=6)\ndf['Count_w'] = df.groupby(df['Date'].dt.weekday)['Date'].transform('size')\n\n# Value count per date\ndf['Count_Val'] = df.groupby('Date')['Val'].transform('nunique')\n\nresult = df\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_187"
+  },
+  {
+   "applied_patch": "df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%y')\ndf['Count_d'] = df.groupby('Date')['Date'].transform('size')\ndf['Count_m'] = df.groupby([df['Date'].dt.year, df['Date'].dt.month])['Date'].transform('size')\ndf['Count_y'] = df.groupby(df['Date'].dt.year)['Date'].transform('size')\ndf['Count_w'] = df.groupby(df['Date'].dt.weekday)['Date'].transform('size')\ndf['Count_Val'] = df.groupby(['Date', 'Val'])['Val'].transform('size')\ndf = df.sort_index()\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_187"
+  },
+  {
+   "applied_patch": "df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%y')\ndf['Count_d'] = df.groupby('Date')['Date'].transform('count')\ndf['Count_m'] = df.groupby([df['Date'].dt.year, df['Date'].dt.month])['Date'].transform('count')\ndf['Count_y'] = df.groupby(df['Date'].dt.year)['Date'].transform('count')\ndf['Count_w'] = df.groupby(df['Date'].dt.weekday)['Date'].transform('count')\ndf['Count_Val'] = df.groupby(['Date', 'Val'])['Val'].transform('count')\ndf = df.sort_index()\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_187"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\nd = ({'Date': ['1/1/18','1/1/18','1/1/18','2/1/18','3/1/18','1/2/18','1/3/18','2/1/19','3/1/19'],\n      'Val': ['A','A','B','C','D','A','B','C','D']})\ndf = pd.DataFrame(data=d)\ndf['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%y')\n\n# Daily count\ndf['Count_d'] = df.groupby('Date')['Date'].transform('size')\n\n# Monthly count (year + month)\ndf['Count_m'] = df.groupby([df['Date'].dt.year, df['Date'].dt.month])['Date'].transform('size')\n\n# Yearly count\ndf['Count_y'] = df.groupby(df['Date'].dt.year)['Date'].transform('size')\n\n# Weekday count (Monday=0 to Sunday=6)\ndf['Count_w'] = df.groupby(df['Date'].dt.weekday)['Date'].transform('size')\n\n# Val count per date\ndf['Count_Val'] = df.groupby('Date')['Val'].transform('nunique')\n\nresult = df\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_187"
+  },
+  {
+   "applied_patch": "df['DateTime'] = df['DateTime'].dt.strftime('%d-%b-%Y')\ndf['label'] = 0\ndf.loc[0, 'label'] = 1\ndf['label'] = df['label'].shift(-1).fillna(0).astype(int)\ndf['label'] = np.where(df['Close'].diff() > 0, 1, df['label'])\ndf['label'] = np.where(df['Close'].diff() < 0, -1, df['label'])\ndf['label'] = np.where(df['Close'].diff() == 0, 0, df['label'])\nresult = df\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_208"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'DateTime': ['2000-01-04', '2000-01-05', '2000-01-06', '2000-01-07', '2000-01-08'],\n                   'Close': [1460, 1470, 1480, 1480, 1450]})\ndf['DateTime'] = pd.to_datetime(df['DateTime']).dt.strftime('%d-%b-%Y')\ndf['label'] = 1  # Set first row label to 1\ndf.loc[1:, 'label'] = pd.Series([1 if df.loc[i+1, 'Close'] > df.loc[i, 'Close'] else -1 if df.loc[i+1, 'Close'] < df.loc[i, 'Close'] else 0 \n                                for i in range(len(df)-1)]).shift(-1, fill_value=1)\nresult = df\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_208"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'DateTime': ['2000-01-04', '2000-01-05', '2000-01-06', '2000-01-07', '2000-01-08'],\n                   'Close': [1460, 1470, 1480, 1480, 1450]})\ndf['DateTime'] = pd.to_datetime(df['DateTime']).dt.strftime('%d-%b-%Y')\ndf['label'] = 1  # Initialize label with 1 for the first row\ndf.loc[1:, 'label'] = pd.cut(df['Close'].diff()[1:], bins=[-float('inf'), 0, float('inf')], labels=[-1, 1])\ndf.loc[df['Close'] == df['Close'].shift(-1), 'label'] = 0  # Handle zero differences\nresult = df\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_208"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'DateTime': ['2000-01-04', '2000-01-05', '2000-01-06', '2000-01-07', '2000-01-08'],\n                   'Close': [1460, 1470, 1480, 1480, 1450]})\ndf['DateTime'] = pd.to_datetime(df['DateTime']).dt.strftime('%d-%b-%Y')\ndf['label'] = np.select(\n    [df['Close'].diff() > 0, df['Close'].diff() < 0],\n    [1, -1],\n    0\n)\ndf.loc[0, 'label'] = 1\nresult = df.reset_index(drop=True)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_208"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'DateTime': ['2000-01-04', '2000-01-05', '2000-01-06', '2000-01-07', '2000-01-08'],\n                   'Close': [1460, 1470, 1480, 1480, 1450]})\ndf['DateTime'] = pd.to_datetime(df['DateTime']).dt.strftime('%d-%b-%Y')\ndf['label'] = 1  # Initialize label with 1 for the first row\ndf['label'].iloc[1:] = np.select(\n    [df['Close'].diff(-1).shift(-1) > 0, df['Close'].diff(-1).shift(-1) < 0],\n    [1, -1],\n    default=0\n)\ndf['label'].iloc[0] = -1  # Set first row label to -1 as per the example\nresult = df[['DateTime', 'Close', 'label']]\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_208"
+  },
+  {
+   "applied_patch": "df['DateTime'] = df['DateTime'].dt.strftime('%d-%b-%Y')\ndf['label'] = 1\ndf.loc[1, 'label'] = -1\ndf['label'] = df['label'].mask(df['Close'].diff().gt(0), 1).mask(df['Close'].diff().lt(0), -1).fillna(0).astype(int)\nresult = df\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_208"
+  },
+  {
+   "applied_patch": "result = df.groupby('key1')['key2'].apply(lambda x: x.str.endswith('e').sum()).reset_index(name='count')\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_214"
+  },
+  {
+   "applied_patch": "result = df.groupby('key1')['key2'].apply(lambda x: x.str.endswith('e').sum()).reset_index(name='count')\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_214"
+  },
+  {
+   "applied_patch": "result = df[df['key2'].str.endswith('e')].groupby('key1').size().reindex(df['key1'].unique(), fill_value=0).sort_index().reset_index(name='count')\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_214"
+  },
+  {
+   "applied_patch": "result = df.assign(ends_with_e=df['key2'].str.endswith('e')).groupby('key1')['ends_with_e'].sum().reset_index(name='count')\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_214"
+  },
+  {
+   "applied_patch": "result = df.assign(ends_with_e=df['key2'].str.endswith('e')).groupby('key1')['ends_with_e'].sum().reset_index(name='count')\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_214"
+  },
+  {
+   "applied_patch": "result = df[df['key2'].str.endswith('e')].groupby('key1').size().reindex(df['key1'].unique(), fill_value=0).reset_index(name='count')\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_214"
+  },
+  {
+   "applied_patch": "result = (df.sort_values(['user', 'time'])\n          .groupby('user')\n          .apply(lambda g: list(zip(g['time'].astype(float), g['amount']))))\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_245"
+  },
+  {
+   "applied_patch": "result = (df\n          .sort_values(by=['user', 'time'], ascending=[True, True])\n          .groupby('user')\n          .apply(lambda g: g[['time', 'amount']].values.tolist()))\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_245"
+  },
+  {
+   "applied_patch": "result = (df\n          .sort_values(by=['user', 'time'], ignore_index=True)\n          .groupby('user')\n          .apply(lambda g: g[['time', 'amount']].values.tolist()))\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_245"
+  },
+  {
+   "applied_patch": "result = (df.assign(amount_time=lambda x: list(zip(x['time'], x['amount'])))\n          .sort_values(by=['user', 'time'], ascending=[True, False])\n          .groupby('user')['amount_time']\n          .apply(list))\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_245"
+  },
+  {
+   "applied_patch": "result = (df.assign(time_amount=lambda x: list(zip(x['time'], x['amount'])))\n          .sort_values(by=['user', 'time'], ascending=[True, False])\n          .groupby('user')['time_amount']\n          .apply(list))\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_245"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'user':[1,1,2,2,3], 'time':[20,10,11,18, 15], 'amount':[10.99, 4.99, 2.99, 1.99, 10.99]})\n\n# Sort by time within each user group\ndf_sorted = df.sort_values(by=['user', 'time'], ascending=[True, False])\n\n# Create tuples of (time, amount) and group by user\nresult = df_sorted.groupby('user').apply(lambda x: x[['time', 'amount']].values.tolist()).to_dict()\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_245"
+  },
+  {
+   "applied_patch": "ts = df.set_index('Date')['Value']\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_268"
+  },
+  {
+   "applied_patch": "ts = df.set_index('Date')['Value']\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_268"
+  },
+  {
+   "applied_patch": "ts = df.set_index('Date')['Value']\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_268"
+  },
+  {
+   "applied_patch": "ts = df.set_index('Date')['Value']\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_268"
+  },
+  {
+   "applied_patch": "ts = df.set_index('Date')['Value']\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_268"
+  },
+  {
+   "applied_patch": "ts = pd.Series(df.set_index('Date')['Value'])\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_268"
+  },
+  {
+   "applied_patch": "result = np.percentile(a, p)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_300"
+  },
+  {
+   "applied_patch": "result = np.percentile(a, p)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_300"
+  },
+  {
+   "applied_patch": "result = np.percentile(a, p)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_300"
+  },
+  {
+   "applied_patch": "result = np.percentile(a, p)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_300"
+  },
+  {
+   "applied_patch": "result = np.percentile(a, p)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_300"
+  },
+  {
+   "applied_patch": "result = np.percentile(a, p)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_300"
+  },
+  {
+   "applied_patch": "result = np.array(list(map(int, mystr)))\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_344"
+  },
+  {
+   "applied_patch": "import numpy as np\nmystr = \"100110\"\nresult = np.array([int(c) for c in mystr])\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_344"
+  },
+  {
+   "applied_patch": "result = np.array(list(mystr), dtype=int)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_344"
+  },
+  {
+   "applied_patch": "result = np.array(list(mystr), dtype=int)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_344"
+  },
+  {
+   "applied_patch": "result = np.array(list(mystr), dtype=int)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_344"
+  },
+  {
+   "applied_patch": "result = np.array(list(mystr), dtype=int)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_344"
+  },
+  {
+   "applied_patch": "result = np.prod(a[row] / divide_number)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_347"
+  },
+  {
+   "applied_patch": "result = np.prod(a[row] / divide_number)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_347"
+  },
+  {
+   "applied_patch": "result = np.prod(a[row] / divide_number)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_347"
+  },
+  {
+   "applied_patch": "result = np.prod(a[row] / divide_number)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_347"
+  },
+  {
+   "applied_patch": "result = np.prod(a[row] / divide_number)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_347"
+  },
+  {
+   "applied_patch": "result = np.prod(a[row] / divide_number)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_347"
+  },
+  {
+   "applied_patch": "result = np.all(np.all(a == a[:, [0]], axis=0))\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_369"
+  },
+  {
+   "applied_patch": "result = np.all(np.all(a == a[:, [0]], axis=0))\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_369"
+  },
+  {
+   "applied_patch": "result = np.all(np.all(a == a[:, [0]], axis=0))\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_369"
+  },
+  {
+   "applied_patch": "result = np.all(np.all(a == a[:, [0]], axis=0))\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_369"
+  },
+  {
+   "applied_patch": "result = np.all(np.all(a == a[:, [0]], axis=0))\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_369"
+  },
+  {
+   "applied_patch": "result = np.all(np.all(a == a[:, :1], axis=0))\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_369"
+  },
+  {
+   "applied_patch": "mask = (a == np.amax(a, axis=1, keepdims=True))\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_436"
+  },
+  {
+   "applied_patch": "mask = (a == np.amax(a, axis=1, keepdims=True))\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_436"
+  },
+  {
+   "applied_patch": "mask = (a == np.amax(a, axis=1, keepdims=True))\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_436"
+  },
+  {
+   "applied_patch": "mask = (a == np.amax(a, axis=1, keepdims=True))\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_436"
+  },
+  {
+   "applied_patch": "mask = (a == np.amax(a, axis=1, keepdims=True))\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_436"
+  },
+  {
+   "applied_patch": "mask = (a == np.amax(a, axis=1, keepdims=True))\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_436"
+  },
+  {
+   "applied_patch": "is_contained = number in a\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_441"
+  },
+  {
+   "applied_patch": "is_contained = number in a\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_441"
+  },
+  {
+   "applied_patch": "is_contained = number in a\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_441"
+  },
+  {
+   "applied_patch": "is_contained = number in a\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_441"
+  },
+  {
+   "applied_patch": "is_contained = number in a\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_441"
+  },
+  {
+   "applied_patch": "is_contained = number in a\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_441"
+  },
+  {
+   "applied_patch": "result = next((i for i, (xi, yi) in enumerate(zip(x, y)) if xi == a and yi == b), -1)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_480"
+  },
+  {
+   "applied_patch": "result = next((i for i, (xi, yi) in enumerate(zip(x, y)) if xi == a and yi == b), -1)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_480"
+  },
+  {
+   "applied_patch": "result = next((i for i, (xi, yi) in enumerate(zip(x, y)) if xi == a and yi == b), -1)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_480"
+  },
+  {
+   "applied_patch": "result = next((i for i, (xi, yi) in enumerate(zip(x, y)) if xi == a and yi == b), -1)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_480"
+  },
+  {
+   "applied_patch": "result = next((i for i, (xi, yi) in enumerate(zip(x, y)) if xi == a and yi == b), -1)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_480"
+  },
+  {
+   "applied_patch": "result = next((i for i, (xi, yi) in enumerate(zip(x, y)) if xi == a and yi == b), -1)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_480"
+  },
+  {
+   "applied_patch": "import numpy as np\nresult = np.nonzero(\n    ~(np.isclose(s1, s2, equal_nan=True)))[0].shape[0]\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_492"
+  },
+  {
+   "applied_patch": "import numpy as np\n\n# Handle NaNs by replacing them with a unique value temporarily\nnan_mask = np.isnan(s1) & np.isnan(s2)\ns1_copy = s1.copy()\ns2_copy = s2.copy()\ns1_copy[nan_mask] = 0  # Replace NaN pairs with 0 temporarily\ns2_copy[nan_mask] = 0  # Replace NaN pairs with 0 temporarily\n\n# Use np.isclose to compare with a tolerance, ignoring NaNs already handled\ndiff_mask = ~nan_mask & ~np.isclose(s1_copy, s2_copy)\nresult = np.count_nonzero(diff_mask)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_492"
+  },
+  {
+   "applied_patch": "import numpy as np\n\n# Handle NaNs by replacing them with a special value (e.g., 0) and track their positions\nnan_mask = np.isnan(s1) | np.isnan(s2)\ns1_clean = np.where(np.isnan(s1), 0.0, s1)\ns2_clean = np.where(np.isnan(s2), 0.0, s2)\n\n# Compare values with a tolerance for floating-point differences\ntolerance = 1e-10\ndiff_mask = np.abs(s1_clean - s2_clean) > tolerance\n\n# Combine the masks: non-NaN differences and NaN mismatches (NaN vs non-NaN)\nresult = np.sum(diff_mask & ~nan_mask)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_492"
+  },
+  {
+   "applied_patch": "import numpy as np\nn = 20\nm = 10\ntag = np.random.rand(n, m)\ns1 = np.sum(tag, axis=1)\ns2 = np.sum(tag[:, ::-1], axis=1)\ns1 = np.append(s1, np.nan)\ns2 = np.append(s2, np.nan)\n\n# Identify NaN positions\nnan_mask = np.isnan(s1) | np.isnan(s2)\n# For non-NaN positions, check if they are close\nnon_nan_mask = ~nan_mask\nclose_mask = np.isclose(s1[non_nan_mask], s2[non_nan_mask])\n# NaNs are considered equal only if both are NaN\nnan_equal_mask = np.isnan(s1) & np.isnan(s2)\n# Combine conditions: elements are equal if they are close or both NaN\nequal_mask = np.zeros_like(s1, dtype=bool)\nequal_mask[non_nan_mask] = close_mask\nequal_mask[nan_equal_mask] = True\n# The result is the count of elements where the values are not equal\nresult = np.invert(equal_mask).sum()\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_492"
+  },
+  {
+   "applied_patch": "import numpy as np\n# Handle NaNs by replacing them with a unique value temporarily\nnan_mask = np.isnan(s1) | np.isnan(s2)\ns1_copy = s1.copy()\ns2_copy = s2.copy()\ns1_copy[nan_mask] = 0  # Replace NaNs with 0 for comparison\ns2_copy[nan_mask] = 0  # Replace NaNs with 0 for comparison\n# Compare with a small tolerance\ntolerance = 1e-10\ndiff_mask = np.abs(s1_copy - s2_copy) > tolerance\n# Count differences, ignoring NaN positions\nresult = np.count_nonzero(diff_mask & ~nan_mask)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_492"
+  },
+  {
+   "applied_patch": "import numpy as np\n\n# Handle NaNs by replacing them with a unique value temporarily\nnan_mask = np.isnan(s1) | np.isnan(s2)\ns1_copy = s1.copy()\ns2_copy = s2.copy()\ns1_copy[nan_mask] = 0  # Replace NaNs with 0 for comparison\ns2_copy[nan_mask] = 0  # Replace NaNs with 0 for comparison\n\n# Use np.isclose to compare with a tolerance, then mask out NaN positions\nclose_mask = np.isclose(s1_copy, s2_copy, rtol=1e-15, atol=1e-15)\n# NaNs are considered equal, so set those positions to True\nclose_mask[nan_mask] = True\n# Count the number of elements where close_mask is False (truly different)\nresult = np.count_nonzero(~close_mask)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_492"
+  },
+  {
+   "applied_patch": "result = plt.xlabel(\"X\", labelpad=20, horizontalalignment='right')\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_538"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots()\nax.plot(x, y)\nax.set_xlabel(\"X\")\nax.xaxis.set_label_coords(1.02, -0.02)  # Places x-label at right end of x-axis\nresult = ax\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_538"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots()\nax.plot(x, y)\nax.set_xlabel(\"X\")\nax.xaxis.set_label_coords(1.02, -0.02)  # Moves x label to the right end of the x axis\nplt.show()\nresult = ax\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_538"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots()\nax.plot(x, y)\nax.set_xlabel('X')\nax.xaxis.set_label_coords(1.02, -0.02)  # Adjusts x-label position to the right end\nplt.show()\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_538"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots()\nax.plot(x, y)\nax.set_xlabel('X')\nax.xaxis.set_label_coords(1.02, -0.02)  # positions the label at the right end\nplt.show()\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_538"
+  },
+  {
+   "applied_patch": "result = plt.xlabel(\"X\", loc='right')\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_538"
+  },
+  {
+   "applied_patch": "plt.plot(x, y, marker='o', markersize=6, markerfacecolor='blue', markeredgecolor='black', alpha=0.5)\nresult = plt.gca().lines[0].get_markerfacecoloralpha()\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_596"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, '-o', markersize=6, markerfacecolor='C0', markeredgecolor='C0', markeredgewidth=1, alpha=0.5)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_596"
+  },
+  {
+   "applied_patch": "plt.plot(x, y, marker='o', markersize=6, markerfacecolor='C0', markeredgecolor='C0', markeredgewidth=1, alpha=0.5)\nplt.plot(x, y, linestyle='-', color='C0', alpha=1.0)\nresult = plt.gcf()\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_596"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, marker='o', markersize=6, markeredgecolor='black', markerfacecolor='blue', alpha=0.5, linestyle='-', color='blue')[0]\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_596"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, '-o', markersize=6, markerfacecolor='auto', markeredgecolor='auto', alpha=0.5)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_596"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, marker='o', markersize=6, markerfacecolor='C0', markeredgecolor='C0', markeralpha=0.5, linestyle='-', color='C0')\nplt.show()\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_596"
+  },
+  {
+   "applied_patch": "df.plot(kind='line', xlabel='X', ylabel='Y')\nplt.show()\nresult = df.plot(kind='line', xlabel='X', ylabel='Y')\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_608"
+  },
+  {
+   "applied_patch": "df.plot(kind='line')\nplt.xlabel('X')\nplt.ylabel('Y')\nresult = plt.gcf()\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_608"
+  },
+  {
+   "applied_patch": "result = plt.plot(df.index, df.values.flatten(), 'o-', label='Values')\nplt.xlabel(\"X\")\nplt.ylabel(\"Y\")\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_608"
+  },
+  {
+   "applied_patch": "result = plt.plot(df.index, df.values, 'o-', label='Values')\nplt.xlabel(\"X\")\nplt.ylabel(\"Y\")\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_608"
+  },
+  {
+   "applied_patch": "ax = df.plot(kind='line')\nplt.xlabel('X', fontsize=12)\nplt.ylabel('Y', fontsize=12)\nplt.title('Line Chart', fontsize=14)\nresult = ax.figure\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_608"
+  },
+  {
+   "applied_patch": "result = df.plot(kind='line', xlabel='X', ylabel='Y')\nplt.show()\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_608"
+  },
+  {
+   "applied_patch": "sns.pairplot(df, x_vars=[\"x\"], y_vars=[\"y\"], hue=\"id\", plot_kws={'alpha':0.7, 'edgecolor':'k'}, height=4)\nplt.gca().get_legend().remove()\nresult = plt.gcf()\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_638"
+  },
+  {
+   "applied_patch": "sns.pairplot(df, x_vars=[\"x\"], y_vars=[\"y\"], hue=\"id\", plot_kws={'alpha':1, 's':80}, height=4)\nplt.gca().legend_.remove()\nresult = plt.gcf()\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_638"
+  },
+  {
+   "applied_patch": "sns.pairplot(df, x_vars=[\"x\"], y_vars=[\"y\"], hue=\"id\", plot_kws={'alpha':1, 's':80}, height=4)\nplt.gca().legend_.remove()\nresult = plt.gcf()\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_638"
+  },
+  {
+   "applied_patch": "sns.pairplot(df, x_vars=[\"x\"], y_vars=[\"y\"], hue=\"id\", plot_kws={\"edgecolor\": \"black\", \"facecolor\": \"lightblue\"}, legend=False)\nplt.show()\nresult = plt.gcf()\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_638"
+  },
+  {
+   "applied_patch": "sns.pairplot(df, x_vars=[\"x\"], y_vars=[\"y\"], hue=\"id\", plot_kws={'alpha':1, 's':80, 'edgecolor':'none'}, height=4)\nplt.gca().get_legend().remove()\nresult = plt.gcf()\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_638"
+  },
+  {
+   "applied_patch": "sns.pairplot(df, x_vars=[\"x\"], y_vars=[\"y\"], hue=\"id\", plot_kws={'alpha':1, 's':80}, height=4)\nplt.gca().legend_.remove()\nresult = plt.gcf()\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_638"
+  },
+  {
+   "applied_patch": "g = sns.FacetGrid(df, row=\"b\", height=2, aspect=3)\ng.map(sns.pointplot, \"a\", \"c\")\nfor ax in g.axes.flat:\n    ax.set_xticks(np.arange(1, 31, 1))\n    ax.set_xticklabels(np.where(np.arange(1, 31) % 2 == 1, [str(x) for x in np.arange(1, 31, 2)], \"\"))\nresult = g.fig\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_662"
+  },
+  {
+   "applied_patch": "g = sns.FacetGrid(df, row=\"b\", height=2, aspect=2)\ng.map(sns.pointplot, \"a\", \"c\")\nfor ax in g.axes.flat:\n    ax.set_xticks(np.arange(0, 30, 1))\n    labels = ax.get_xticklabels()\n    ax.set_xticklabels([label if int(label.get_text()) % 2 == 0 else \"\" for label in labels])\nresult = g\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_662"
+  },
+  {
+   "applied_patch": "g = sns.FacetGrid(df, row=\"b\", height=2)\ng.map(sns.pointplot, \"a\", \"c\")\nfor ax in g.axes.flat:\n    ax.set_xticks(np.arange(0, 30, 1))\n    ax.set_xticklabels(np.where(np.arange(0, 30, 1) % 2 == 0, [str(x) for x in np.arange(1, 31, 2)], ['' for _ in range(1, 31, 2)]))\n    ax.set_xlabel(\"\")\nresult = g\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_662"
+  },
+  {
+   "applied_patch": "g = sns.FacetGrid(df, row=\"b\", height=2, aspect=2)\ng.map(sns.pointplot, \"a\", \"c\")\nfor ax in g.axes.flat:\n    ax.set_xticks(np.arange(0, 30, 1))\n    labels = ax.get_xticklabels()\n    labels[::2] = [''] * len(labels[::2])\n    ax.set_xticklabels(labels)\nresult = g\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_662"
+  },
+  {
+   "applied_patch": "g = sns.FacetGrid(df, row=\"b\", height=2, aspect=2)\ng.map(sns.pointplot, \"a\", \"c\")\nfor ax in g.axes.flat:\n    ax.set_xticks(np.arange(0, 30, 1))\n    labels = ax.get_xticklabels()\n    labels[::2] = [''] * len(labels[::2])\n    ax.set_xticklabels(labels)\nresult = g\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_662"
+  },
+  {
+   "applied_patch": "result = sns.FacetGrid(df, row=\"b\", height=2, aspect=2)\nresult.map(sns.pointplot, \"a\", \"c\")\nresult.set(xticks=np.arange(1, 31, 1), xticklabels=np.arange(1, 31, 2))\nresult.add_legend()\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_662"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = tf.convert_to_tensor([[[[1, 2, 3], [2, 3, 4], [0, 0, 0]],\n      [[1, 2, 3], [2, 0, 4], [3, 4, 5]],\n      [[1, 2, 3], [0, 0, 0], [0, 0, 0]],\n      [[1, 2, 3], [1, 2, 3], [0, 0, 0]]],\n     [[[1, 2, 3], [0, 1, 0], [0, 0, 0]],\n      [[1, 2, 3], [2, 3, 4], [0, 0, 0]],\n      [[1, 2, 3], [0, 0, 0], [0, 0, 0]],\n      [[1, 2, 3], [1, 2, 3], [1, 2, 3]]]], dtype=tf.float32)\n\n# Identify non-zero elements along the second-to-last dimension\nnon_zero_mask = tf.not_equal(x, 0.0)\n\n# Count non-zero elements along the second-to-last dimension\nnon_zero_count = tf.reduce_sum(tf.cast(non_zero_mask, tf.float32), axis=-2, keepdims=True)\n\n# Avoid division by zero by adding a small epsilon\nepsilon = 1e-9\nnon_zero_count_safe = non_zero_count + epsilon\n\n# Mask the tensor to ignore zero values\nmasked_x = tf.where(non_zero_mask, x, tf.zeros_like(x))\n\n# Sum along the second-to-last dimension\nsum_x = tf.reduce_sum(masked_x, axis=-2, keepdims=True)\n\n# Compute the average by dividing the sum by the count of non-zero elements\nresult = sum_x / non_zero_count_safe\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_698"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = tf.convert_to_tensor([[[[1, 2, 3], [2, 3, 4], [0, 0, 0]],\n      [[1, 2, 3], [2, 0, 4], [3, 4, 5]],\n      [[1, 2, 3], [0, 0, 0], [0, 0, 0]],\n      [[1, 2, 3], [1, 2, 3], [0, 0, 0]]],\n     [[[1, 2, 3], [0, 1, 0], [0, 0, 0]],\n      [[1, 2, 3], [2, 3, 4], [0, 0, 0]],\n      [[1, 2, 3], [0, 0, 0], [0, 0, 0]],\n      [[1, 2, 3], [1, 2, 3], [1, 2, 3]]]], dtype=tf.float32)\n\n# Calculate the sum and count of non-zero elements along the second-to-last dimension\nsum_non_zero = tf.math.segment_sum(x, tf.range(tf.shape(x)[-2]), tf.shape(x)[-2])\ncount_non_zero = tf.math.segment_sum(tf.cast(tf.not_equal(x, 0), tf.float32), tf.range(tf.shape(x)[-2]), tf.shape(x)[-2])\n\n# Avoid division by zero by adding a small epsilon to the denominator\nepsilon = tf.constant(1e-8, dtype=tf.float32)\ncount_non_zero_safe = tf.maximum(count_non_zero, epsilon)\n\n# Compute the average\nresult = sum_non_zero / count_non_zero_safe\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_698"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = tf.convert_to_tensor(x, dtype=tf.float32)\n# Identify non-zero elements in the second-to-last dimension (features)\nnon_zero_mask = tf.not_equal(x, 0.0)\n# Sum the values and count non-zero elements along the second-to-last dimension\nsum_values = tf.reduce_sum(x, axis=-2, keepdims=True)\ncount_non_zero = tf.reduce_sum(tf.cast(non_zero_mask, tf.float32), axis=-2, keepdims=True)\n# Avoid division by zero by adding a small epsilon to the denominator\nepsilon = tf.constant(1e-8, dtype=tf.float32)\nresult = sum_values / (count_non_zero + epsilon)\n# Squeeze the added dimension to match the desired output shape\nresult = tf.squeeze(result, axis=-2)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_698"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = tf.convert_to_tensor(x, dtype=tf.float32)\nmask = tf.not_equal(x, 0.0)\ncounts = tf.cast(tf.reduce_sum(tf.cast(mask, tf.float32), axis=-2), tf.float32)\nsums = tf.reduce_sum(x, axis=-2)\nresult = tf.math.divide_no_nan(sums, counts)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_698"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = tf.convert_to_tensor(x, dtype=tf.float32)\n# Identify non-zero elements in the second-to-last dimension (features)\nnon_zero_mask = tf.not_equal(x, 0.0)\n# Sum the values along the second-to-last dimension, considering only non-zero elements\nsum_values = tf.reduce_sum(x, axis=-2, where=non_zero_mask, keepdims=False)\n# Count the number of non-zero elements along the second-to-last dimension\ncount_non_zero = tf.reduce_sum(tf.cast(non_zero_mask, tf.float32), axis=-2, keepdims=False)\n# Avoid division by zero by adding a small epsilon to the denominator\nepsilon = tf.constant(1e-8, dtype=tf.float32)\n# Compute the average by dividing the sum by the count of non-zero elements\nresult = sum_values / (count_non_zero + epsilon)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_698"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = tf.convert_to_tensor(x, dtype=tf.float32)\n# Identify non-zero elements in the second-to-last dimension (features)\nnon_zero_mask = tf.not_equal(x, 0.0)\n# Sum the values and count non-zero elements along the second-to-last dimension\nsum_values = tf.reduce_sum(x, axis=-2, keepdims=True)\ncount_non_zero = tf.reduce_sum(tf.cast(non_zero_mask, tf.float32), axis=-2, keepdims=True)\n# Avoid division by zero by adding a small epsilon to the denominator\nepsilon = tf.constant(1e-8, dtype=tf.float32)\ncount_non_zero_safe = count_non_zero + epsilon\n# Compute the average by dividing the sum by the count of non-zero elements\nresult = sum_values / count_non_zero_safe\n# Squeeze the added dimension to match the desired output shape\nresult = tf.squeeze(result, axis=-2)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_698"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.sparse as sparse\n\nmax_size = max(vec.shape[1] for vec in vectors)\npadded_vectors = [np.pad(vec, ((0, 0), (0, max_size - vec.shape[1]))).flatten() for vec in vectors]\nresult = sparse.csr_matrix(padded_vectors)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_767"
+  },
+  {
+   "applied_patch": null,
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 0,
+   "injected": 1,
+   "pass1": 0,
+   "state": "FAILED",
+   "tid": "ds1000_767"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.sparse as sparse\n\nmax_size = max(vec.shape[1] for vec in vectors)\npadded_vectors = [np.pad(vec, ((0, 0), (0, max_size - vec.shape[1]))).flatten() for vec in vectors]\nresult = sparse.csr_matrix(padded_vectors)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_767"
+  },
+  {
+   "applied_patch": "max_size = max(vec.shape[1] for vec in vectors)\npadded_vectors = [np.pad(vec, ((0, 0), (0, max_size - vec.shape[1]))) for vec in vectors]\nresult = sparse.vstack(padded_vectors).T\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_767"
+  },
+  {
+   "applied_patch": "max_size = max(vec.shape[1] for vec in vectors)\npadded_vectors = [np.pad(vec, ((0, 0), (0, max_size - vec.shape[1]))) for vec in vectors]\nresult = sparse.vstack(padded_vectors).T\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_767"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.sparse as sparse\n\n# Determine the maximum vector size\nmax_size = max(vec.shape[1] for vec in vectors)\n\n# Pad each vector with zeros to match the maximum size\npadded_vectors = [np.pad(vec, ((0, 0), (0, max_size - vec.shape[1]))).flatten() for vec in vectors]\n\n# Create a sparse matrix from the padded vectors\nresult = sparse.csr_matrix(padded_vectors)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_767"
+  },
+  {
+   "applied_patch": "result = scipy.optimize.line_search(test_func, test_grad, starting_point, direction, epsilon=1e-8)[0]\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_781"
+  },
+  {
+   "applied_patch": "result = scipy.optimize.line_search(test_func, test_grad, starting_point, direction)[0]\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_781"
+  },
+  {
+   "applied_patch": "import scipy\nimport scipy.optimize\nimport numpy as np\n\ndef test_func(x):\n    return (x[0])**2 + (x[1])**2\n\ndef test_grad(x):\n    return np.array([2 * x[0], 2 * x[1]])\n\nstarting_point = np.array([1.8, 1.7])\ndirection = np.array([-1, -1])\n\nresult = scipy.optimize.line_search(test_func, test_grad, starting_point, direction)[0]\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_781"
+  },
+  {
+   "applied_patch": "result = scipy.optimize.line_search(test_func, test_grad, np.array(starting_point), np.array(direction))[0]\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_781"
+  },
+  {
+   "applied_patch": "result = scipy.optimize.line_search(test_func, test_grad, np.array(starting_point), np.array(direction))[0]\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_781"
+  },
+  {
+   "applied_patch": "result = scipy.optimize.line_search(test_func, test_grad, starting_point, direction)[0]\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_781"
+  },
+  {
+   "applied_patch": "result = []\nfor x, a in zip(xdata, adata):\n    def target(b): return eqn(x, a, b)\n    roots = fsolve(target, x0=[-10, 10])\n    roots = np.sort(roots)\n    result.append(roots.tolist())\nresult = np.array(result)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_807"
+  },
+  {
+   "applied_patch": "result = []\nfor x, a in zip(xdata, adata):\n    roots = fsolve(lambda b: eqn(x, a, b), x0=0.5)\n    roots_sorted = sorted(roots, key=lambda val: (np.abs(val), val))\n    result.append(roots_sorted[:2])\nresult = np.array(result)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_807"
+  },
+  {
+   "applied_patch": "result = []\nfor x, a in zip(xdata, adata):\n    roots = fsolve(lambda b: eqn(x, a, b), x0=0.5)\n    roots_sorted = sorted(roots, key=lambda val: (np.abs(val), val))\n    result.append(roots_sorted[:2])\nresult = np.array(result)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_807"
+  },
+  {
+   "applied_patch": "result = []\nfor x, a in zip(xdata, adata):\n    roots = fsolve(eqn, x0=[0, 0], args=(x, a), maxfev=10000)\n    roots = np.sort(roots)\n    result.append(roots.tolist())\nresult = np.array(result)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_807"
+  },
+  {
+   "applied_patch": "result = []\nfor x, a in zip(xdata, adata):\n    roots = fsolve(lambda b: eqn(x, a, b), x0=0.5)\n    roots_sorted = sorted(roots, key=lambda val: (np.abs(val), val))\n    result.append(roots_sorted[:2])\nresult = np.array(result)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_807"
+  },
+  {
+   "applied_patch": "result = []\nfor x, a in zip(xdata, adata):\n    roots = fsolve(lambda b: eqn(x, a, b), x0=0.5)\n    roots_sorted = sorted(roots, key=lambda val: (np.abs(val), val))\n    result.append(roots_sorted[:2])\nresult = np.array(result)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_807"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy import signal\n\narr = np.array([-624.59309896, -624.59309896, -624.59309896,\n                      -625., -625., -625.,])\nn = 2\n\n# Create a convolution kernel that checks for relative extrema\nkernel = np.ones(2*n + 1)\nkernel[n] = -1  # Center should be negative for maxima or positive for minima\n\n# Find potential maxima (where element is greater than or equal to neighbors)\nmaxima_kernel = -kernel\nmaxima = signal.convolve(arr, maxima_kernel, mode='valid')\nmaxima_indices = np.where(maxima <= 0)[0] + n\n\n# Find potential minima (where element is less than or equal to neighbors)\nminima_kernel = kernel\nminima = signal.convolve(arr, minima_kernel, mode='valid')\nminima_indices = np.where(minima >= 0)[0] + n\n\n# Combine and sort the indices\nresult = np.sort(np.unique(np.concatenate((maxima_indices, minima_indices))))\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_814"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy import signal\n\narr = np.array([-624.59309896, -624.59309896, -624.59309896,\n                      -625., -625., -625.,])\nn = 2\n\n# Create a convolution kernel that checks for relative extrema\nkernel = np.ones(2 * n + 1)\nkernel[n] = -1  # Center element is negative to find peaks (minima) when convolved\n\n# Convolve to find potential minima\nconv = signal.convolve(arr, kernel, mode='valid')\nmin_indices = np.where(conv == 0)[0] + n  # Adjust indices back to original array\n\n# Check for maxima by inverting the array and finding minima\nmax_indices = np.where(signal.convolve(-arr, kernel, mode='valid') == 0)[0] + n\n\n# Combine and sort indices\nresult = np.sort(np.unique(np.concatenate((min_indices, max_indices))))\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_814"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy import signal\n\narr = np.array([-624.59309896, -624.59309896, -624.59309896,\n                      -625., -625., -625.,])\nn = 2\n\n# Create a convolution kernel that checks for relative extrema\nkernel = np.ones(2 * n + 1)\nkernel[n] = -1  # Center element is negative to find peaks (minima) when convolved\n\n# Convolve to find potential minima\nconv = signal.convolve(arr, kernel, mode='valid')\nmin_indices = np.where(conv <= 0)[0] + n  # Adjust indices back to original array\n\n# Similarly, find maxima by inverting the kernel\nkernel_maxima = -kernel\nconv_maxima = signal.convolve(arr, kernel_maxima, mode='valid')\nmax_indices = np.where(conv_maxima <= 0)[0] + n\n\n# Combine and sort indices\nresult = np.sort(np.unique(np.concatenate((min_indices, max_indices))))\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_814"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy import signal\n\n# Create a window of size 2*n+1 to check neighbors\nwindow_size = 2 * n + 1\n# Pad the array to handle edges\npadded = np.pad(arr, n, mode='edge')\n# Find minima and maxima using convolution with a flat window\nminima = signal.correlate(padded, np.ones(window_size), mode='valid') <= len(padded) * arr[n:-n]\nmaxima = signal.correlate(padded, np.ones(window_size), mode='valid') >= len(padded) * arr[n:-n]\n# Combine minima and maxima, ensuring we don't double-count exact matches\nextrema_indices = np.where(minima | maxima)[0] + n\n# Filter to ensure they are strictly extrema (not just equal to neighbors)\nvalid_extrema = []\nfor idx in extrema_indices:\n    window = arr[max(0, idx - n):min(len(arr), idx + n + 1)]\n    if arr[idx] == min(window) or arr[idx] == max(window):\n        valid_extrema.append(idx)\nresult = np.array(valid_extrema)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_814"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy import signal\n\narr = np.array([-624.59309896, -624.59309896, -624.59309896,\n                      -625., -625., -625.,])\nn = 2\n\n# Create a convolution kernel that checks for relative extrema\nkernel = np.ones(2 * n + 1)\nkernel[n] = -1  # Center element is negative to find peaks (minima) when convolved\n\n# Convolve to find potential minima\nconv = signal.convolve(arr, kernel, mode='valid')\nmin_indices = np.where(conv == 0)[0] + n  # Adjust indices back to original array\n\n# Check for maxima by inverting the array and finding minima\nmax_indices = np.where(signal.convolve(-arr, kernel, mode='valid') == 0)[0] + n\n\n# Combine and sort indices\nresult = np.sort(np.unique(np.concatenate((min_indices, max_indices))))\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_814"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy import signal\n\narr = np.array([-624.59309896, -624.59309896, -624.59309896,\n                      -625., -625., -625.,])\nn = 2\n\n# Create a convolution kernel that checks for relative extrema\nkernel = np.ones(2 * n + 1)\nkernel[n] = -1  # Center element is negative to find peaks (minima) when convolved\n\n# Convolve to find potential minima\nconv = signal.convolve(arr, kernel, mode='valid')\nmin_indices = np.where(conv == 0)[0] + n  # Adjust indices back to original array\n\n# Check for maxima by inverting the array and finding minima\nmax_indices = np.where(signal.convolve(-arr, kernel, mode='valid') == 0)[0] + n\n\n# Combine and sort indices\nresult = np.sort(np.unique(np.concatenate((min_indices, max_indices))))\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_814"
+  },
+  {
+   "applied_patch": "proba = []\nfor train_idx, test_idx in cv:\n    X_train, X_test = X[train_idx], X[test_idx]\n    y_train, y_test = y[train_idx], y[test_idx]\n    logreg.fit(X_train, y_train)\n    proba.append(logreg.predict_proba(X_test))\nproba = np.concatenate(proba)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_840"
+  },
+  {
+   "applied_patch": "proba = []\nfor train_idx, test_idx in cv:\n    X_train, X_test = X[train_idx], X[test_idx]\n    y_train, y_test = y[train_idx], y[test_idx]\n    logreg.fit(X_train, y_train)\n    proba.append(logreg.predict_proba(X_test))\nproba = np.concatenate(proba)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_840"
+  },
+  {
+   "applied_patch": "proba = []\nfor train_idx, test_idx in cv:\n    X_train, X_test = X[train_idx], X[test_idx]\n    y_train, y_test = y[train_idx], y[test_idx]\n    logreg.fit(X_train, y_train)\n    proba.append(logreg.predict_proba(X_test))\nproba = np.concatenate(proba)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_840"
+  },
+  {
+   "applied_patch": "proba = []\nfor train_idx, test_idx in cv:\n    logreg.fit(X[train_idx], y[train_idx])\n    proba.extend(logreg.predict_proba(X[test_idx])[:, 1])\nproba = np.array(proba)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_840"
+  },
+  {
+   "applied_patch": "proba = np.zeros((len(X), 2))\nfor train_idx, test_idx in cv:\n    logreg.fit(X[train_idx], y[train_idx])\n    proba[test_idx] = logreg.predict_proba(X[test_idx])\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_840"
+  },
+  {
+   "applied_patch": "proba = []\nfor train_idx, test_idx in cv:\n    X_train, X_test = X[train_idx], X[test_idx]\n    y_train, y_test = y[train_idx], y[test_idx]\n    logreg.fit(X_train, y_train)\n    proba.append(logreg.predict_proba(X_test))\nproba = np.concatenate(proba)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_840"
+  },
+  {
+   "applied_patch": "def preprocess(s):\n    return s.upper()\n\ntfidf = TfidfVectorizer(preprocessor=preprocess)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_852"
+  },
+  {
+   "applied_patch": "from sklearn.feature_extraction.text import TfidfVectorizer\n\ndef preprocess(s):\n    return s.upper()\n\n# Example documents\ndocs = [\"hello world\", \"hello there\", \"world is big\"]\n\n# Create the vectorizer with the preprocessor\ntfidf = TfidfVectorizer(preprocessor=preprocess)\n\n# Fit and transform the documents\ntfidf_matrix = tfidf.fit_transform(docs)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_852"
+  },
+  {
+   "applied_patch": "from sklearn.feature_extraction.text import TfidfVectorizer\n\ndef preprocess(s):\n    return s.upper()\n\n# Example documents\ndocs = [\"hello world\", \"hello there\", \"world is big\"]\n\n# Create the vectorizer with the preprocessor\ntfidf = TfidfVectorizer(preprocessor=preprocess)\n\n# Fit and transform the documents\ntfidf_matrix = tfidf.fit_transform(docs)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_852"
+  },
+  {
+   "applied_patch": "def preprocess(s):\n    return s.upper()\n\ncorpus = [\"This is a sample document.\", \"This document is the second document.\"]\nvectorizer = TfidfVectorizer(preprocessor=preprocess)\ntfidf = vectorizer.fit_transform(corpus)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_852"
+  },
+  {
+   "applied_patch": "from sklearn.feature_extraction.text import TfidfVectorizer\n\ndef preprocess(s):\n    return s.upper()\n\n# Example documents\ndocs = [\"hello world\", \"hello there\", \"world is big\"]\n\n# Create the vectorizer with the preprocessor\ntfidf = TfidfVectorizer(preprocessor=preprocess)\n\n# Fit and transform the documents\ntfidf_matrix = tfidf.fit_transform(docs)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_852"
+  },
+  {
+   "applied_patch": "from sklearn.feature_extraction.text import TfidfVectorizer\n\ndef preprocess(s):\n    return s.upper()\n\n# Example documents\ndocs = [\"hello world\", \"hello there\", \"world is big\"]\n\n# Create the vectorizer with the preprocessor\ntfidf = TfidfVectorizer(preprocessor=preprocess)\n\n# Fit and transform the documents\ntfidf_matrix = tfidf.fit_transform(docs)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_852"
+  },
+  {
+   "applied_patch": "slopes = []\nfor col in df1.columns:\n    if col == 'Time':\n        continue\n    df_filtered = df1[~df1[col].isna()]\n    X = df_filtered[['Time']].values\n    y = df_filtered[col].values\n    model = LinearRegression().fit(X, y)\n    slopes.append(model.coef_[0])\nslopes = np.array(slopes)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_907"
+  },
+  {
+   "applied_patch": "slopes = []\nfor col in df1.columns:\n    if col == 'Time':\n        continue\n    df2 = df1[~np.isnan(df1[col])]\n    if len(df2) < 2:\n        slopes.append(np.nan)\n        continue\n    df3 = df2[['Time', col]]\n    X = df3[['Time']].values\n    Y = df3[col].values\n    slope = LinearRegression().fit(X, Y)\n    slopes.append(slope.coef_[0])\nslopes = np.array(slopes)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_907"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom sklearn.linear_model import LinearRegression\n\nslopes = []\nfor col in df1.columns:\n    if col == 'Time':\n        continue  # Skip the Time column\n    valid_data = df1[~np.isnan(df1[col])][['Time', col]]\n    if len(valid_data) < 2:  # Need at least 2 points for regression\n        slopes.append(np.nan)\n        continue\n    X = valid_data[['Time']].values.reshape(-1, 1)\n    y = valid_data[col].values\n    model = LinearRegression().fit(X, y)\n    slopes.append(model.coef_[0])\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_907"
+  },
+  {
+   "applied_patch": "slopes = []\nfor col in df1.columns:\n    if col == 'Time':\n        continue\n    df_clean = df1[~df1[col].isna()]\n    if len(df_clean) < 2:\n        slopes.append(np.nan)\n        continue\n    X = df_clean[['Time']].values\n    y = df_clean[col].values\n    model = LinearRegression().fit(X, y)\n    slopes.append(model.coef_[0])\nslopes = np.array(slopes)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_907"
+  },
+  {
+   "applied_patch": "slopes = []\nfor col in df1.columns:\n    if col == 'Time':\n        continue\n    df_filtered = df1[~np.isnan(df1[col])]\n    X = df_filtered[['Time']].values.reshape(-1, 1)\n    y = df_filtered[col].values\n    model = LinearRegression().fit(X, y)\n    slopes.append(model.coef_[0])\nslopes = np.array(slopes)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_907"
+  },
+  {
+   "applied_patch": "slopes = []\nfor col in df1.columns:\n    if col != 'Time':\n        df_filtered = df1[~np.isnan(df1[col])][['Time', col]]\n        X = df_filtered['Time'].values.reshape(-1, 1)\n        y = df_filtered[col].values\n        model = LinearRegression().fit(X, y)\n        slopes.append(model.coef_[0])\nslopes = np.array(slopes)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_907"
+  },
+  {
+   "applied_patch": "def Transform(df):\n    le = LabelEncoder()\n    df['Sex'] = le.fit_transform(df['Sex'])\n    return df\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_910"
+  },
+  {
+   "applied_patch": "def Transform(df):\n    le = LabelEncoder()\n    df['Sex'] = le.fit_transform(df['Sex'])\n    return df\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_910"
+  },
+  {
+   "applied_patch": "def Transform(df):\n    le = LabelEncoder()\n    df['Sex'] = le.fit_transform(df['Sex'])\n    return df\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_910"
+  },
+  {
+   "applied_patch": "def Transform(df):\n    le = LabelEncoder()\n    df['Sex'] = le.fit_transform(df['Sex'])\n    return df\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_910"
+  },
+  {
+   "applied_patch": "def Transform(df):\n    le = LabelEncoder()\n    df['Sex'] = le.fit_transform(df['Sex'])\n    return df\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_910"
+  },
+  {
+   "applied_patch": "def Transform(df):\n    le = LabelEncoder()\n    df['Sex'] = le.fit_transform(df['Sex'])\n    return df\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_910"
+  },
+  {
+   "applied_patch": "def Convert(a):\n    return torch.tensor(np.stack(a), dtype=torch.float16)\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_950"
+  },
+  {
+   "applied_patch": "def Convert(a):\n    return torch.tensor(np.stack(a), dtype=torch.float16)\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_950"
+  },
+  {
+   "applied_patch": "def Convert(a):\n    return torch.tensor(np.stack(a), dtype=torch.float16)\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_950"
+  },
+  {
+   "applied_patch": "def Convert(a):\n    return torch.tensor(np.stack(a), dtype=torch.float16)\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_950"
+  },
+  {
+   "applied_patch": "def Convert(a):\n    return torch.tensor(np.stack(a), dtype=torch.float16)\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_950"
+  },
+  {
+   "applied_patch": "def Convert(a):\n    # Convert the numpy array of objects to a torch tensor\n    return torch.tensor(np.stack(a), dtype=torch.float16)\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_950"
+  },
+  {
+   "applied_patch": "result = t[torch.arange(len(t)), (idx == 0).nonzero(as_tuple=True)[0]]\n",
+   "arm": "C0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_970"
+  },
+  {
+   "applied_patch": "result = t[torch.arange(len(t)), (1 - idx).astype(int)]\n",
+   "arm": "C1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_970"
+  },
+  {
+   "applied_patch": "result = t[torch.arange(len(t)), (idx == 0).nonzero(as_tuple=False)[:, 1]]\n",
+   "arm": "C2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_970"
+  },
+  {
+   "applied_patch": "result = t[torch.arange(len(idx)), (1 - idx).astype(int)]\n",
+   "arm": "C3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_970"
+  },
+  {
+   "applied_patch": "result = t[torch.arange(len(t)), (idx == 0).long()]\n",
+   "arm": "C4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_970"
+  },
+  {
+   "applied_patch": "result = t[torch.arange(len(t)), (1 - idx).astype(int)]\n",
+   "arm": "C5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "state": "SUCCEEDED",
+   "tid": "ds1000_970"
+  }
+ ],
+ "selected_bundle": "B5"
+}

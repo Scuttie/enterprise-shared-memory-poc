@@ -1,6 +1,6 @@
 {
   "calculation": {
-    "best_lift": 0.0,
+    "best_lift": 0.0083,
     "rule": "lexicographic: safety -> actionability -> robustness -> realisation -> efficiency -> order",
     "selected": "B5",
     "selected_lift": 0.0,
@@ -19,32 +19,28 @@
       ],
       "2_actionability_survivors": [
         "B3",
-        "B4",
-        "B5",
-        "B7",
-        "B8",
-        "B9",
+        "B0",
         "B1",
         "B2",
-        "B6"
+        "B4",
+        "B5",
+        "B6",
+        "B9"
       ],
-      "2_best_lift": 0.0,
+      "2_best_lift": 0.0083,
       "3_robustness_survivors": [
+        "B0",
         "B1",
         "B2",
         "B3",
         "B4",
         "B5",
         "B6",
-        "B7",
-        "B8",
         "B9"
       ],
       "4_code_realisation_survivors": [
-        "B4",
         "B5",
-        "B7",
-        "B8"
+        "B9"
       ],
       "5_efficiency_survivors": [
         "B5"
@@ -56,15 +52,15 @@
   },
   "hard_safety_pass": true,
   "relevant_bundle_lift": {
-    "B0": -0.0166,
-    "B1": -0.0083,
-    "B2": -0.0083,
-    "B3": 0.0,
+    "B0": 0.0,
+    "B1": 0.0,
+    "B2": 0.0,
+    "B3": 0.0083,
     "B4": 0.0,
     "B5": 0.0,
-    "B6": -0.0083,
-    "B7": 0.0,
-    "B8": 0.0,
+    "B6": 0.0,
+    "B7": -0.0083,
+    "B8": -0.0083,
     "B9": 0.0
   },
   "selected": "B5"

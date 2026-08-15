@@ -1,0 +1,2267 @@
+{
+ "chunk": "4/6",
+ "labels": {
+  "ds1000_160": {
+   "irrelevant": "ds1000_352",
+   "relevant": "ds1000_149",
+   "shuffled": "ds1000_282"
+  },
+  "ds1000_220": {
+   "irrelevant": "ds1000_591",
+   "relevant": "ds1000_282",
+   "shuffled": "ds1000_149"
+  },
+  "ds1000_251": {
+   "irrelevant": "ds1000_613",
+   "relevant": "ds1000_55",
+   "shuffled": "ds1000_36"
+  },
+  "ds1000_257": {
+   "irrelevant": "ds1000_341",
+   "relevant": "ds1000_34",
+   "shuffled": "ds1000_55"
+  },
+  "ds1000_272": {
+   "irrelevant": "ds1000_546",
+   "relevant": "ds1000_282",
+   "shuffled": "ds1000_282"
+  },
+  "ds1000_330": {
+   "irrelevant": "ds1000_170",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_393": {
+   "irrelevant": "ds1000_831",
+   "relevant": "ds1000_322",
+   "shuffled": "ds1000_322"
+  },
+  "ds1000_455": {
+   "irrelevant": "ds1000_28",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_477": {
+   "irrelevant": "ds1000_33",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_48": {
+   "irrelevant": "ds1000_547",
+   "relevant": "ds1000_36",
+   "shuffled": "ds1000_34"
+  },
+  "ds1000_548": {
+   "irrelevant": "ds1000_868",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_585": {
+   "irrelevant": "ds1000_881",
+   "relevant": "ds1000_613",
+   "shuffled": "ds1000_580"
+  },
+  "ds1000_626": {
+   "irrelevant": "ds1000_343",
+   "relevant": "ds1000_580",
+   "shuffled": "ds1000_613"
+  },
+  "ds1000_687": {
+   "irrelevant": "ds1000_333",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_723": {
+   "irrelevant": "ds1000_915",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_768": {
+   "irrelevant": "ds1000_882",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_830": {
+   "irrelevant": "ds1000_14",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_892": {
+   "irrelevant": "ds1000_284",
+   "relevant": "ds1000_917",
+   "shuffled": "ds1000_917"
+  },
+  "ds1000_957": {
+   "irrelevant": "ds1000_400",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_991": {
+   "irrelevant": "ds1000_30",
+   "relevant": null,
+   "shuffled": null
+  }
+ },
+ "rows": [
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Separate rows above and below threshold\nabove = df[df['value'] > thresh]\nbelow = df[df['value'] <= thresh]\n\n# Compute average of above-threshold rows\navg_above = pd.DataFrame({'value': [above['value'].mean()]}, index=['X'])\n\n# Concatenate the below-threshold rows and the average row\nresult = pd.concat([below, avg_above]).sort_index()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Separate rows above/below threshold\nabove = df[df['value'] > thresh]\nbelow = df[df['value'] <= thresh]\n\n# Create new row for above-threshold average\navg_row = pd.DataFrame({'value': [above['value'].mean()]}, index=['X'])\n\n# Combine below-threshold rows with new average row\nresult = pd.concat([below, avg_row]).sort_index()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "# Separate rows above and below threshold\nabove = df[df['value'] > thresh]\nbelow = df[df['value'] <= thresh]\n\n# Calculate mean of above threshold rows\nmean_above = above['value'].mean()\n\n# Create new row for mean\nmean_row = pd.DataFrame({'value': [mean_above]}, index=['X'])\n\n# Combine below threshold rows with mean row\nresult = pd.concat([below, mean_row]).sort_index()\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Select rows above threshold and compute mean\nabove_threshold = df[df['value'] > thresh]\nmean_value = above_threshold['value'].mean()\n\n# Select rows below or equal to threshold\nbelow_threshold = df[df['value'] <= thresh]\n\n# Create new row for the mean\nnew_row = pd.DataFrame({'value': [mean_value]}, index=['X'])\n\n# Concatenate the below threshold rows with the new mean row\nresult = pd.concat([below_threshold, new_row]).sort_index()\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "# Split the DataFrame into two parts: values below threshold and values above threshold\nbelow_threshold = df[df['value'] <= thresh]\nabove_threshold = df[df['value'] > thresh]\n\n# Calculate the mean of the above threshold values\nmean_above = above_threshold['value'].mean()\n\n# Create a new DataFrame with the below threshold values and the mean value\nresult = below_threshold.append(pd.DataFrame({'value': [mean_above]}, index=['X']))\n\n# Sort the index if needed (optional)\nresult = result.sort_index()\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "# Calculate mean of values above threshold\nmean_above = df[df['value'] > thresh]['value'].mean()\n\n# Create new DataFrame with values below or equal to threshold\nbelow = df[df['value'] <= thresh]\n\n# Concatenate with new row for mean value\nresult = pd.concat([below, pd.DataFrame({'value': [mean_above]}, index=['X'])])\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "# Calculate mean of values above threshold\nmean_above = df.loc[df['value'] > thresh, 'value'].mean()\n\n# Create new DataFrame with values below or equal to threshold\nbelow_df = df.loc[df['value'] <= thresh].copy()\n\n# Add new row with mean of values above threshold\nbelow_df.loc['X'] = mean_above\n\n# Reindex to maintain original order (excluding A,B,C)\nresult = below_df.reindex(sorted(below_df.index, key=lambda x: (x != 'X', x)), sort=False)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Identify rows to aggregate and keep\nmask_keep = df['value'] <= thresh\nmask_agg = ~mask_keep\n\n# Calculate average of rows to aggregate\navg_value = df.loc[mask_agg, 'value'].mean()\n\n# Create new row for aggregated values\nnew_row = pd.DataFrame({'value': [avg_value]}, index=['X'])\n\n# Combine kept rows and new row\nresult = pd.concat([df.loc[mask_keep], new_row]).sort_index()\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "# Calculate the mean of values above threshold\nmean_above = df[df['value'] > thresh]['value'].mean()\n\n# Create a new DataFrame with values below or equal to threshold\nbelow_df = df[df['value'] <= thresh].copy()\n\n# Add the mean as a new row with label 'X'\nbelow_df.loc['X'] = mean_above\n\nresult = below_df\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "# Calculate mean of values above threshold\nmean_above = df.loc[df['value'] > thresh, 'value'].mean()\n# Create new DataFrame with values below or equal to threshold\nbelow = df.loc[df['value'] <= thresh]\n# Add new row with mean of values above threshold\nbelow.loc['X', 'value'] = mean_above\n# Assign to result\nresult = below\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "# Calculate the mean of values above threshold\nmean_above = df.loc[df['value'] > thresh, 'value'].mean()\n\n# Create a new DataFrame with values below or equal to threshold\nbelow = df.loc[df['value'] <= thresh].copy()\n\n# Add the mean as a new row with label 'X'\nbelow.loc['X', 'value'] = mean_above\n\nresult = below\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Separate rows above/below threshold\nabove = df[df['value'] > thresh]\nbelow = df[df['value'] <= thresh]\n\n# Compute average of above-threshold rows\navg_value = above['value'].mean()\n\n# Create new row for aggregated values\nnew_row = pd.DataFrame({'value': [avg_value]}, index=['X'])\n\n# Combine below-threshold rows with new aggregated row\nresult = pd.concat([below, new_row])\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_48"
+  },
+  {
+   "applied_patch": "result = df.groupby('cokey', group_keys=False).apply(lambda x: x.sort_values('A')).reset_index(drop=True).sort_index(kind='stable')\nresult = result.set_index('cokey', append=True).swaplevel(0,1).sort_index()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').groupby(level=0).apply(lambda g: g.sort_values('A')).swaplevel(i=0, level=1).sort_index()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').groupby(level=0).apply(lambda x: x.sort_values('A')).sort_index()\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index().sort_values('A', kind='mergesort').groupby(level=0).apply(lambda x: x.sort_values('A', kind='mergesort')).swaplevel().sort_index()\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, sort=True).sort_values(by='A', key=lambda x: x.abs()).swaplevel(i=0, level=1).sort_index(level=1)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, kind='mergesort').sort_values(by='A', key=lambda x: x.astype(float), kind='mergesort').swaplevel(i=0, level=1).sort_index(level=1).reset_index(drop=True).set_index('cokey', append=True).sort_index()\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, kind='mergesort').sort_values(by='A', key=lambda x: x.abs(), ignore_index=True, level=0).reset_index(level=0).rename(columns={'level_1':'index'}).set_index(['cokey', 'index'], append=True).swaplevel(0,1, axis=0).sort_index()\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').groupby(level=0).apply(lambda x: x.sort_values('A')).sort_index()\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey', append=True).sort_index(level=0, kind='mergesort')\nresult = result.reset_index(level=1, drop=True).sort_index(kind='mergesort')\nresult = result.reset_index()\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, kind='mergesort').sort_values(by='A', key=lambda x: x.notna(), ignore_index=True, level=0).swaplevel(0, 1).sort_index(level=1).reset_index(level=1, drop=True).reset_index()\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, kind='mergesort').sort_values(by='A', key=lambda x: x.ne(x.iloc[0]), kind='stable').reset_index(level=0).sort_index(kind='mergesort')\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "result = df.sort_values(by=['cokey', 'A']).set_index(['cokey', pd.RangeIndex(len(df)) // 2]).sort_index()\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_160"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df = df.assign(SOURCE_NAME=df['SOURCE_NAME'].str.rsplit('_', n=1).str[0])\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df = df['SOURCE_NAME'].str.rsplit('_', n=1).str[0]\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df = df.copy()\ndf['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df = df.copy()\ndf['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df = df.copy()\ndf['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df = df.copy()\ndf['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df = df.copy()\ndf['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.rsplit('_', 1).str[0]\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_220"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'codes':[[71020], [77085], [36415], [99213, 99287], [99233, 99233, 99233]]})\nresult = pd.DataFrame(df['codes'].tolist()).rename(columns=lambda x: f'code_{x}').replace({np.nan: float('nan')})\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_prefix('code_').astype(float)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{x[1:]}').astype(float)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_prefix('code_')\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_prefix('code_')\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{int(x[1:])}').fillna(float('nan'))\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).T.rename(columns=lambda x: f'code_{x}')\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{x[1:]}')\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_suffix('_0').rename(columns=lambda x: x.replace('_0', f'_{x}'))\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{x}').astype(float)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{x}').astype(float)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).rename(columns=lambda x: f'code_{x}').reindex(df.index)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_251"
+  },
+  {
+   "applied_patch": "result = (df.set_index('Time')\n            .resample('2T')\n            .agg({'Value': ['mean', 'count']})\n            .loc[lambda x: x['Value', 'count'] > 1]\n            .drop(columns=('Value', 'count'))\n            .rename(columns={'Value': 'Value'})\n            .reset_index())\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "df = df.set_index('Time').resample('2T').agg({'Value': ['mean', 'count']}).loc[lambda x: x['Value', 'count'] > 1].droplevel(1, axis=1)\ndf.index = df.index.normalize()\ndf = df.reset_index()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "df.set_index('Time', inplace=True)\nresampled = df.resample('2T').agg({'Value': ['mean', 'count']})\nresampled = resampled[resampled[('Value', 'count')] > 1]\nresampled = resampled[[('Value', 'mean')]]\nresampled.columns = ['Value']\nresampled = resampled.rename_axis('Time').reset_index()\ndf = resampled\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "df.set_index('Time', inplace=True)\nbinned = df.resample('2T').agg({'Value': ['mean', 'count']})\nbinned = binned[binned[('Value', 'count')] > 1]\nbinned = binned.drop(columns=[('Value', 'count')])\nbinned.columns = ['Value']\nbinned = binned.reset_index()\ndf = binned\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\n\n# Set the Time column as the index\ndf.set_index('Time', inplace=True)\n\n# Resample to 2-minute bins, compute mean, and filter bins with more than one observation\nresult = df.resample('2T').mean().loc[df.resample('2T').size().gt(1)]\n\n# Reset the index to get Time back as a column\nresult.reset_index(inplace=True)\n\n# Round the Time to the nearest 2-minute mark (optional, based on desired output)\nresult['Time'] = result['Time'] - pd.offsets.Second(result['Time'].dt.second) - pd.offsets.Millisecond(result['Time'].dt.microsecond // 1000)\n\n# Sort by Time (if needed)\nresult = result.sort_values('Time').reset_index(drop=True)\n\ndf = result\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "result = (df.set_index('Time')\n          .resample('2T')\n          .mean()\n          .dropna()\n          .reset_index()\n          .reindex(columns=['Time', 'Value']))\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\ndf.set_index('Time', inplace=True)\nresult = df.resample('2T').agg({'Value': ['mean', 'count']})\nresult = result[result[('Value', 'count')] > 1].drop(columns=[('Value', 'count')])\nresult.index = result.index.normalize() + pd.to_timedelta(result.index.time.astype(str).str.slice(0, 5) + '00')\nresult = result.rename(columns={'Value': 'Value'}).reset_index()\ndf = result\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\ndf.set_index('Time', inplace=True)\nresult = df.resample('2T').agg({'Value': ['mean']}).dropna()\nresult = result.reset_index()\nresult.columns = ['Time', 'Value']\nresult['Time'] = result['Time'].dt.floor('60S')\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\ndf.set_index('Time', inplace=True)\nresult = df.resample('2T').agg({'Value': ['mean', 'count']})\nresult = result[result['Value']['count'] > 1].drop(columns='count')\nresult = result.rename(columns={'Value': 'Value'})\nresult = result.reset_index()\nresult['Time'] = result['Time'].dt.floor('60s')\nresult = result.sort_values('Time').reset_index(drop=True)\nresult\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "df.set_index('Time', inplace=True)\nresult = df.resample('2T').agg({'Value': 'mean'}).dropna()\nresult = result.reset_index()\nresult['Time'] = result['Time'].dt.floor('T')\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\ndf.set_index('Time', inplace=True)\nresult = (df.resample('2T')\n          .agg({'Value': ['mean', 'count']})\n          .loc[lambda x: x[('Value', 'count')] > 1]\n          .drop(columns=[('Value', 'count')])\n          .rename(columns={'mean': 'Value'})\n          .reset_index())\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "df.set_index('Time', inplace=True)\nresampled = df.resample('2T').agg({'Value': ['mean', 'count']})\nresampled = resampled[resampled[('Value', 'count')] > 1]\nresampled = resampled[[('Value', 'mean')]]\nresampled.columns = ['Value']\ndf = resampled.reset_index()\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_257"
+  },
+  {
+   "applied_patch": "df = df.apply(lambda x: x.round(2) if not x.isna().any() else x)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "df = df.apply(lambda x: x.round(2) if not x.isna().any() else x)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "df = df.apply(lambda x: x.round(2) if x.dtype != 'float64' else x.fillna(pd.NA).round(2))\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "df = df.fillna({col: pd.NA for col in df.columns if df[col].dtype == 'float64'}).round(2).where(df.isna(), df)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame([(.21, .3212), (.01, .61237), (.66123, pd.NA), (.21, .18),(pd.NA, .188)],\n                  columns=['dogs', 'cats'])\n\n# Convert columns to Float64Dtype to handle pd.NA properly\ndf['dogs'] = df['dogs'].astype('Float64')\ndf['cats'] = df['cats'].astype('Float64')\n\n# Now rounding works without errors\ndf['dogs'] = df['dogs'].round(2)\ndf['cats'] = df['cats'].round(2)\n\n# For the specific case where rounding should not affect values with more than 2 decimal places (like 0.66123 in 'dogs' column)\n# We need to selectively round only values that have 2 or fewer decimal places\ndef conditional_round(series, decimals=2):\n    return series.where(series % (10**(-decimals - 1)) != 0, series.round(decimals))\n\ndf['dogs'] = conditional_round(df['dogs'], 2)\ndf['cats'] = conditional_round(df['cats'], 2)\n\ndf\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "df = df.copy()\ndf['dogs'] = df['dogs'].fillna(pd.NA).round(2)\ndf['cats'] = df['cats'].fillna(pd.NA).round(2)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "df = df.copy()\nfor col in df.columns:\n    df[col] = df[col].round(2)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame([(.21, .3212), (.01, .61237), (.66123, pd.NA), (.21, .18),(pd.NA, .188)],\n                  columns=['dogs', 'cats'])\ndf = df.fillna(pd.NA).astype({'dogs': 'Float64', 'cats': 'Float64'})\ndf['dogs'] = df['dogs'].round(2)\ndf['cats'] = df['cats'].round(2)\ndf = df.astype({'dogs': 'string', 'cats': 'string'}).replace({'.0': ''})\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame([(.21, .3212), (.01, .61237), (.66123, pd.NA), (.21, .18),(pd.NA, .188)],\n                  columns=['dogs', 'cats'])\n\n# Solution to round without converting NA values to strings\ndf['dogs'] = df['dogs'].combine_first(df['dogs'].fillna(0).round(2))\ndf['cats'] = df['cats'].combine_first(df['cats'].fillna(0).round(3))\nresult = df\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "df = df.apply(lambda x: x.round(2) if not x.dtype.kind in ['f', 'i'] or not x.isna().any() else x)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "df = df.fillna({col: '' for col in df.columns if df[col].isna().any()}).round(2).replace('', pd.NA)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "df = df.apply(lambda x: x.round(2) if not x.isna().any() else x)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_272"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "import numpy as np\nexample_a = np.arange(4).reshape(2, 2)\ndef f(a=example_a, power=5):\n    result = np.power(a, power)\n    return result\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_330"
+  },
+  {
+   "applied_patch": "result = a[:, max(low, 0):min(high, a.shape[1])]\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, np.clip(np.arange(low, high), 0, a.shape[1])]\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, np.clip(np.arange(low, high), 0, a.shape[1])]\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, np.clip(np.arange(low, high), 0, a.shape[1] - 1)]\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, np.clip(np.arange(low, min(high, a.shape[1])), 0, a.shape[1] - 1)]\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, np.clip(np.arange(low, min(high, a.shape[1])), 0, a.shape[1] - 1)]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, np.clip(np.arange(low, high), 0, a.shape[1] - 1)]\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, np.clip(np.arange(low, high), 0, a.shape[1])]\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, max(low, 0):min(high, a.shape[1])]\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, np.clip(np.arange(low, high), 0, a.shape[1])]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, np.clip(np.arange(low, high), 0, a.shape[1])]\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = a[:, max(low, 0):min(high, a.shape[1])]\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_393"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "result = df[\"a\"].str.contains(target, case=False).replace({True: choices[0]})\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_455"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "i = np.diag(i.A.flatten())\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_477"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "ax.lines[0].set_linestyle('--')\nresult = ax\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_548"
+  },
+  {
+   "applied_patch": "import matplotlib.pyplot as plt\nimport numpy as np\n\na, b = 1, 1\nc, d = 3, 4\n\nx_values = np.linspace(0, 5, 400)\nslope = (d - b) / (c - a)\nintercept = b - slope * a\ny_values = slope * x_values + intercept\n\nplt.plot(x_values, y_values, 'b-')\nplt.xlim(0, 5)\nplt.ylim(0, 5)\nplt.gca().set_aspect('equal')\nresult = plt.gcf()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "import matplotlib.pyplot as plt\nimport matplotlib.font_manager as fm\n\n# Calculate slope and intercept for the line equation y = mx + c\nm = (d - b) / (c - a)\nc_line = b - m * a\n\n# Generate x values for the line\nx_vals = [0, 5]\ny_vals = [m * x + c_line for x in x_vals]\n\n# Plot the line\nplt.plot(x_vals, y_vals, label=f'y = {m:.2f}x + {c_line:.2f}')\n\n# Set axis limits\nplt.xlim(0, 5)\nplt.ylim(0, 5)\n\n# Create legend with styled title\nfont_prop = fm.FontProperties(size=12, weight='bold')\nplt.legend(title='Line Equation', title_fontproperties=font_prop)\n\n# The result variable as requested (legend title text)\nresult = plt.legend(title='Line Equation', title_fontproperties=font_prop).get_title().get_text()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "import matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.linspace(0, 5, 400)\ny = b + (d - b) / (c - a) * (x - a)\nplt.plot(x, y, 'k-')\nplt.xlim(0, 5)\nplt.ylim(0, 5)\nplt.gca().set_aspect('equal')\nresult = plt.gca()\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "plt.plot([a, c], [b, d], 'r-')\nplt.xlim(0, 5)\nplt.ylim(0, 5)\nresult = plt.gca().get_xlim(), plt.gca().get_ylim()\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "import matplotlib.pyplot as plt\n\na, b = 1, 1\nc, d = 3, 4\n\n# Calculate line equation: y = mx + c\nm = (d - b) / (c - a) if (c - a) != 0 else None\nx_vals = [0, 5]  # Full x range\ny_vals = [m * x + (b - m * a) for x in x_vals] if m is not None else [b, b]\n\nplt.plot(x_vals, y_vals, 'b-')\nplt.xlim(0, 5)\nplt.ylim(0, 5)\nplt.gca().set_aspect('equal')\nplt.show()\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "plt.plot([a, c], [b, d], '-')\nplt.xlim(0, 5)\nplt.ylim(0, 5)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "import matplotlib.pyplot as plt\nimport numpy as np\n\na, b = 1, 1\nc, d = 3, 4\n\n# Calculate slope and intercept for the line equation y = mx + c\nm = (d - b) / (c - a)\nx_vals = np.linspace(0, 5, 400)\ny_vals = m * (x_vals - a) + b\n\n# Create the plot with imshow and set extent and origin\nplt.imshow([[0, 0], [0, 0]], extent=[0, 5, 0, 5], origin='lower', cmap='gray')\nplt.plot(x_vals, y_vals, 'r-')\nplt.xlim(0, 5)\nplt.ylim(0, 5)\nresult = plt.gca()\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "import matplotlib.pyplot as plt\nimport numpy as np\n\na, b = 1, 1\nc, d = 3, 4\n\n# Calculate slope and intercept for the line equation y = mx + c\nm = (d - b) / (c - a)\nx_intercept = (b - m * a) / -m if m != 0 else 0  # Handle vertical line case\ny_intercept = b - m * a\n\n# Generate x values from 0 to 5\nx_vals = np.linspace(0, 5, 400)\n# Calculate corresponding y values\ny_vals = m * x_vals + y_intercept\n\n# Plot the line\nplt.plot(x_vals, y_vals, 'b-', label=f'Line through ({a}, {b}) and ({c}, {d})')\n\n# Set axis limits\nplt.xlim(0, 5)\nplt.ylim(0, 5)\n\n# Add grid and labels for clarity\nplt.grid(True)\nplt.xlabel('x')\nplt.ylabel('y')\nplt.title('Line through two points')\n\n# Show plot\nplt.show()\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "import matplotlib.pyplot as plt\nimport numpy as np\n\na, b = 1, 1\nc, d = 3, 4\n\n# Calculate slope and intercept for the line equation y = mx + c\nm = (d - b) / (c - a)\nx_vals = np.linspace(0, 5, 400)\ny_vals = m * x_vals + (b - m * a)\n\nplt.plot(x_vals, y_vals, 'b-')\nplt.xlim(0, 5)\nplt.ylim(0, 5)\nplt.gca().set_aspect('equal')\nresult = plt.gcf()\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "import matplotlib.pyplot as plt\n\na, b = 1, 1\nc, d = 3, 4\n\nslope = (d - b) / (c - a) if (c - a) != 0 else float('inf')\nif slope == float('inf'):\n    x_val = a\n    plt.plot([x_val, x_val], [0, 5], 'k-')\nelse:\n    intercept = b - slope * a\n    x_vals = [0, 5]\n    y_vals = [intercept, slope * 5 + intercept]\n    plt.plot(x_vals, y_vals, 'k-')\n\nplt.xlim(0, 5)\nplt.ylim(0, 5)\nplt.gca().set_aspect('equal')\nresult = plt.gca().lines[0]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport matplotlib.pyplot as plt\n\na, b = 1, 1\nc, d = 3, 4\n\n# Create a grid for the line equation\nx_vals = np.linspace(0, 5, 400)\ny_vals = ((d - b) / (c - a)) * (x_vals - a) + b\n\n# Create an image with extent matching the desired axis limits\nimg = plt.imshow(np.zeros((1, 1)), extent=[0, 5, 0, 5], origin='lower', aspect='auto')\nline, = plt.plot(x_vals, y_vals, 'r-')\n\n# Set the axis limits\nplt.xlim(0, 5)\nplt.ylim(0, 5)\n\nresult = (img, line)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "plt.plot([a, c], [b, d], 'r-')\nplt.xlim(0, 5)\nplt.ylim(0, 5)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_585"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nline1, = ax1.plot(x, y, label='y over x')\nline2, = ax2.plot(a, z, label='z over a')\nax1.legend(handles=[line1, line2])\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nline1, = ax1.plot(x, y, label='y over x')\nline2, = ax2.plot(a, z, label='z over a')\nax1.legend(handles=[line1, line2])\nplt.show()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nax1.plot(x, y, label='y over x')\nax1.plot(a, z, label='z over a')\nax1.legend(title='Legend', title_fontproperties={'fontsize': 10})\nax2.plot(a, z)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nax1.plot(x, y, label='y over x')\nax2.plot(a, z, label='z over a')\nax1.legend(title='Legend', title_fontproperties={'fontsize': 10})\nresult = fig\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nax1.plot(x, y, label='y over x')\nax2.plot(a, z, label='z over a')\nfont_prop = plt.matplotlib.font_manager.FontProperties(size=12)\nax1.legend(title='Legend', title_fontproperties=font_prop)\nresult = fig\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nax1.plot(x, y, label='y over x')\nax2.plot(a, z, label='z over a')\nax1.legend(title='Legend', title_fontproperties={'weight': 'bold'})\nresult = ax1.get_legend().get_title().get_text()\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nax1.plot(x, y, label='y over x')\nax2.plot(a, z, label='z over a')\nax1.legend()\nresult = fig\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nline1, = ax1.plot(x, y, label='y over x')\nline2, = ax2.plot(a, z, label='z over a')\nax1.legend(handles=[line1, line2])\nresult = fig\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nline1, = ax1.plot(x, y, label='y over x')\nline2, = ax1.plot(x, z, label='z over x')  # Using x for both as per subplot 1\nline3, = ax2.plot(a, z, label='z over a')  # This label is for subplot 2 but won't appear in legend\nax1.legend(title='Legend Title', title_fontsize='large')  # Title matches property spec\nlegend_title = ax1.get_legend().get_title().get_text()\nresult = (line1.get_label() == 'y over x' and line2.get_label() == 'z over x' and \n          line3.get_label() == 'z over a' and legend_title == 'Legend Title')\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nax1.plot(x, y, label='Y vs X')\nax1.plot(a, z, label='Z vs A')\nax1.legend(title='Legend', title_fontproperties={'family': 'monospace', 'weight': 'bold', 'size': 12})\nax2.plot(a, z)\nresult = fig\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nline1, = ax1.plot(x, y, label='y over x')\nline2, = ax1.plot(x, z, label='z over x')  # Using x for both as per subplot 1\nline3, = ax2.plot(a, z, label='z over a')  # This label is for subplot 2 but won't appear in legend\nax1.legend(title='Data Series', bbox_to_anchor=(1, 1))  # Place legend on first subplot\nresult = fig  # Assigning the figure object as the result\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2)\nax1.plot(x, y, label=\"y over x\")\nax2.plot(a, z, label=\"z over a\")\nax1.legend(title=\"Legend\", title_fontproperties={\"family\": \"monospace\"})\nresult = fig\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_626"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = tf.math.reciprocal(A)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_687"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB).T)\n    ### \n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "result = sA.multiply(sparse.csr_matrix(sB, shape=(1, sA.shape[1])))\n    ### \n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_723"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport scipy.ndimage as nd\n\na = np.zeros((5, 5))\na[1:4, 1:4] = np.arange(3*3).reshape((3, 3))\nb = nd.median_filter(a, size=3, origin=(-1.0, 0.0))\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_768"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "def solve(df, transform_output):\n    sparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n    result = pd.concat([df, sparse_df], axis=1)\n    return result\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_830"
+  },
+  {
+   "applied_patch": "transformed_text = CountVectorizer(token_pattern=r\"(?u)\\b\\w+\\b|[!?\\\"']\", tokenizer=lambda x: x.split()).build_tokenizer()(text)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "from sklearn.feature_extraction.text import CountVectorizer\n\nvectorizer = CountVectorizer(token_pattern=r\"(?u)\\b\\w\\w+\\b|[!?\\\"']\")\ntransformed_text = vectorizer.fit_transform(text)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": null,
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 0,
+   "injected": 1,
+   "pass1": 0,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "transformed_text = CountVectorizer(token_pattern=r\"(?u)\\b\\w+\\b|[!?\\\"']\").fit_transform(text)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "from sklearn.feature_extraction.text import CountVectorizer\n\n# Create a CountVectorizer that preserves punctuation marks !, ?, \", and '\nvectorizer = CountVectorizer(token_pattern=r\"(?u)\\b\\w\\w+\\b|['\\\"]|[!?]\")\n\n# Fit and transform the text data\ntransformed_text = vectorizer.fit_transform(text)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "vectorizer = CountVectorizer(token_pattern=r\"(?u)\\b\\w+\\b|[!?\\\"']\")\ntransformed_text = vectorizer.build_token_image(text)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "vectorizer = CountVectorizer(token_pattern=r\"(?u)\\b\\w+\\b|[!?\\\"']\")\ntransformed_text = vectorizer.fit_transform(text)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "from sklearn.feature_extraction.text import CountVectorizer\n\nvectorizer = CountVectorizer(token_pattern=r\"(?u)\\b\\w+\\b|[!?\\\"']\")\ntransformed_text = vectorizer.fit_transform(text)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "vectorizer = CountVectorizer(token_pattern=r\"(?u)\\b\\w+\\b|[!?\\\"']\")\ntransformed_text = vectorizer.fit_transform(text)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "vectorizer = CountVectorizer(token_pattern=r\"(?u)\\b\\w+\\b|[!?\\\"']\")\ntransformed_text = vectorizer.fit_transform(text)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "from sklearn.feature_extraction.text import CountVectorizer\n\n# Create a CountVectorizer that preserves punctuation marks !, ?, \", and '\nvectorizer = CountVectorizer(token_pattern=r\"(?u)\\b\\w\\w+\\b|['\\\"]|[!?]\")\n\n# Fit and transform the text data\ntransformed_text = vectorizer.fit_transform(text)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "from sklearn.feature_extraction.text import CountVectorizer\n\nvectorizer = CountVectorizer(tokenizer=lambda x: x, preprocessor=lambda x: x, tokenizer=lambda x: list(x))\ntransformed_text = vectorizer.build_vocabulary([text])\nvocab = vectorizer.vocabulary_\nfiltered_vocab = {char: idx for char, idx in vocab.items() if char in {'!', '?', '\"', \"'\"}}\nprint(filtered_vocab)  # This shows how punctuation is preserved in vocabulary\n# For actual transformation:\nvectorizer = CountVectorizer(vocabulary=filtered_vocab, tokenizer=lambda x: x, preprocessor=lambda x: x, tokenizer=lambda x: list(x))\ntransformed_text = vectorizer.transform([text]).toarray()\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 0,
+   "tid": "ds1000_892"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b.expand(a.size(0), -1)), dim=0)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_957"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y)\nsigned_max = max_abs * torch.where(mask, sign_x, sign_y)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmax_abs = torch.max(abs_x, abs_y)\n# Create a mask where abs_x >= abs_y to select sign_x, else sign_y\nmask = (abs_x >= abs_y).type_as(sign_x)\nselected_sign = torch.where(mask, sign_x, sign_y)\nsigned_max = selected_sign * max_abs\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_991"
+  }
+ ]
+}

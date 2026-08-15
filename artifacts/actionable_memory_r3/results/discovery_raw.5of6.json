@@ -1,0 +1,2267 @@
+{
+ "chunk": "5/6",
+ "labels": {
+  "ds1000_161": {
+   "irrelevant": "ds1000_542",
+   "relevant": "ds1000_149",
+   "shuffled": "ds1000_29"
+  },
+  "ds1000_221": {
+   "irrelevant": "ds1000_570",
+   "relevant": "ds1000_282",
+   "shuffled": "ds1000_34"
+  },
+  "ds1000_252": {
+   "irrelevant": "ds1000_917",
+   "relevant": "ds1000_29",
+   "shuffled": "ds1000_36"
+  },
+  "ds1000_258": {
+   "irrelevant": "ds1000_467",
+   "relevant": "ds1000_34",
+   "shuffled": "ds1000_282"
+  },
+  "ds1000_292": {
+   "irrelevant": "ds1000_844",
+   "relevant": "ds1000_468",
+   "shuffled": "ds1000_478"
+  },
+  "ds1000_373": {
+   "irrelevant": "ds1000_27",
+   "relevant": "ds1000_461",
+   "shuffled": "ds1000_348"
+  },
+  "ds1000_412": {
+   "irrelevant": "ds1000_802",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_469": {
+   "irrelevant": "ds1000_832",
+   "relevant": "ds1000_348",
+   "shuffled": "ds1000_461"
+  },
+  "ds1000_489": {
+   "irrelevant": "ds1000_918",
+   "relevant": "ds1000_478",
+   "shuffled": "ds1000_468"
+  },
+  "ds1000_49": {
+   "irrelevant": "ds1000_744",
+   "relevant": "ds1000_36",
+   "shuffled": "ds1000_149"
+  },
+  "ds1000_561": {
+   "irrelevant": "ds1000_744",
+   "relevant": "ds1000_570",
+   "shuffled": "ds1000_547"
+  },
+  "ds1000_588": {
+   "irrelevant": "ds1000_33",
+   "relevant": "ds1000_572",
+   "shuffled": "ds1000_570"
+  },
+  "ds1000_629": {
+   "irrelevant": "ds1000_116",
+   "relevant": "ds1000_547",
+   "shuffled": "ds1000_572"
+  },
+  "ds1000_696": {
+   "irrelevant": "ds1000_627",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_727": {
+   "irrelevant": "ds1000_468",
+   "relevant": "ds1000_764",
+   "shuffled": "ds1000_794"
+  },
+  "ds1000_808": {
+   "irrelevant": "ds1000_619",
+   "relevant": "ds1000_794",
+   "shuffled": "ds1000_764"
+  },
+  "ds1000_883": {
+   "irrelevant": "ds1000_331",
+   "relevant": "ds1000_918",
+   "shuffled": "ds1000_869"
+  },
+  "ds1000_919": {
+   "irrelevant": "ds1000_122",
+   "relevant": "ds1000_869",
+   "shuffled": "ds1000_918"
+  },
+  "ds1000_958": {
+   "irrelevant": "ds1000_274",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_992": {
+   "irrelevant": "ds1000_592",
+   "relevant": null,
+   "shuffled": null
+  }
+ },
+ "rows": [
+  {
+   "applied_patch": "mask = ~df['value'].between(section_left, section_right, inclusive='both')\noutside_values = df[mask]\naverage_value = outside_values['value'].mean()\nresult = df[~mask].copy()\nif not outside_values.empty:\n    result.loc['X'] = average_value\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "# Identify rows outside the section\noutside = df[(df['value'] < section_left) | (df['value'] > section_right)]\n# Calculate average of those rows\navg_value = outside['value'].mean()\n# Create new row for the average\nnew_row = pd.DataFrame({'value': [avg_value]}, index=['X'])\n# Keep rows within the section\nwithin = df[(df['value'] >= section_left) & (df['value'] <= section_right)]\n# Combine within-section rows with the new average row\nresult = pd.concat([within, new_row]).sort_index()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "# Identify rows outside the section\nmask = ~df['value'].between(section_left, section_right)\n# Calculate mean of those rows\nmean_value = df.loc[mask, 'value'].mean()\n# Create new DataFrame with rows inside section and the new row\nresult = df[~mask].copy()\nif not result.empty and not result.index.duplicated().any():\n    result = pd.concat([result, pd.DataFrame({'value': [mean_value]}, index=['X'])])\nelse:\n    result = pd.DataFrame({'value': [mean_value]}, index=['X'])\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nsection_left = 4\nsection_right = 38\n\n# Identify rows within the section\nin_section = df[(df['value'] >= section_left) & (df['value'] <= section_right)].index.tolist()\n# Identify rows outside the section\nout_section = df[~df.index.isin(in_section)].index.tolist()\n\n# Calculate mean of out_section rows\nmean_value = df.loc[out_section, 'value'].mean()\n\n# Create new DataFrame with in_section rows and the mean row\nresult = df.loc[in_section].copy()\nresult.loc['X'] = mean_value\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nsection_left = 4\nsection_right = 38\n\n# Identify rows within the section\nin_section = df[(section_left <= df['value']) & (df['value'] <= section_right)]\n# Identify rows outside the section\nout_section = df[~((section_left <= df['value']) & (df['value'] <= section_right))]\n\n# Calculate average of out_section values\navg_value = out_section['value'].mean()\n\n# Create new row for out_section average\nnew_row = pd.DataFrame({'value': [avg_value]}, index=['X'])\n\n# Combine in_section with new row\nresult = pd.concat([in_section, new_row]).sort_index()\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "# Identify rows outside the section\noutside = df[(df['value'] < section_left) | (df['value'] > section_right)]\n# Calculate mean of those rows\nmean_value = outside['value'].mean()\n# Create new row for the mean\nnew_row = pd.DataFrame({'value': [mean_value]}, index=['X'])\n# Combine rows inside section with new row\nresult = pd.concat([df[(df['value'] >= section_left) & (df['value'] <= section_right)], new_row])\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "# Identify rows outside the section\nmask = ~df['value'].between(section_left, section_right)\n# Calculate mean of those rows\nmean_value = df.loc[mask, 'value'].mean()\n# Create new DataFrame with rows inside section and the mean row\nresult = pd.concat([\n    df[~mask],\n    pd.DataFrame({'value': [mean_value]}, index=['X'])\n]).sort_index()\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nsection_left = 4\nsection_right = 38\n\n# Identify rows within the section\nin_section = df[(section_left <= df['value']) & (df['value'] <= section_right)]\n# Identify rows outside the section\nout_section = df[~((section_left <= df['value']) & (df['value'] <= section_right))]\n\n# Create a new DataFrame with the section rows\nresult = in_section.copy()\n\n# If there are rows outside the section, add their average as a new row\nif not out_section.empty:\n    avg_value = out_section['value'].mean()\n    result = pd.concat([result, pd.DataFrame({'value': [avg_value]}, index=['X'])])\n\nresult = result.sort_index()\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "# Identify rows outside the section\noutside = df[(df['value'] < section_left) | (df['value'] > section_right)]\n# Calculate mean of these rows\nmean_value = outside['value'].mean()\n# Create new DataFrame with rows inside the section\ninside = df[(df['value'] >= section_left) & (df['value'] <= section_right)]\n# Add the new row with the mean value\nresult = pd.concat([inside, pd.DataFrame({'value': [mean_value]}, index=['X'])])\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "# Identify rows outside the section\nmask = ~df['value'].between(section_left, section_right)\n# Calculate mean of those rows\nmean_value = df.loc[mask, 'value'].mean()\n# Create new DataFrame with rows inside section and the new row\nresult = df.loc[~mask].copy()\nresult.loc['X', 'value'] = mean_value\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nsection_left = 4\nsection_right = 38\n\n# Identify rows within the section\nin_section = df[(section_left <= df['value']) & (df['value'] <= section_right)]\n# Identify rows outside the section\nout_section = df[~((section_left <= df['value']) & (df['value'] <= section_right))]\n\n# Calculate mean of out_section values\nmean_out = out_section['value'].mean()\n\n# Create new row for out_section mean\nnew_row = pd.DataFrame({'value': [mean_out]}, index=['X'])\n\n# Combine in_section and new row\nresult = pd.concat([in_section, new_row]).sort_index()\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "mask = ~df['value'].between(section_left, section_right)\ngrouped = df[mask].copy()\ngrouped['lab'] = 'X'\nresult = pd.concat([df[~mask], grouped]).groupby('lab', as_index=True).mean()\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_49"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').groupby(level=0).apply(lambda x: x.sort_values(by='A', ascending=False)).sort_index()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').groupby(level=0, group_keys=False).apply(lambda g: g.sort_values('A')).sort_index()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.sort_values('A', key=lambda x: x.groupby(df['cokey']))\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, sort=True).sort_values(by='A', ascending=False, kind='mergesort')\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_values('A', ascending=False).groupby(level=0).apply(lambda x: x.sort_values('A', ascending=False))\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, sort=True).sort_values(by='A', ascending=False, kind='mergesort', ignore_index=False).groupby(level=0).apply(lambda x: x.sort_values(by='A', ascending=False)).swaplevel(i=0, level=1).sort_index()\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, kind='mergesort').sort_values(by='A', ascending=False).swaplevel(i=0, level=1).sort_index(level=1)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').groupby(level=0, group_keys=False).apply(lambda g: g.sort_values('A')).sort_index()\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, sort=True).sort_values(by='A', ascending=False, kind='mergesort', ignore_index=False).swaplevel().sort_index()\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_index(level=0, sort=True).sort_values(by='A', ascending=False, kind='mergesort', ignore_index=False).swaplevel(i=0, level=1).sort_index(level=1)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey').sort_values('A', ascending=False).groupby(level=0).apply(lambda x: x.sort_values('A'))\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "result = df.set_index('cokey', append=True).sort_index(level=0, kind='mergesort')\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_161"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.split('_').str[-1] if '_' in df['SOURCE_NAME'] else df['SOURCE_NAME']\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.split('_').str[-1] if df['SOURCE_NAME'].str.contains('_').any() else df['SOURCE_NAME']\ndf = df\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df = df.assign(SOURCE_NAME=df['SOURCE_NAME'].str.split('_').str[-1].where(lambda x: x.str.contains('_'), df['SOURCE_NAME']))\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df = df.assign(SOURCE_NAME=df['SOURCE_NAME'].str.split('_').str[-1].where(lambda x: x.str.contains('_'), df['SOURCE_NAME']))\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df = df.assign(SOURCE_NAME=df['SOURCE_NAME'].str.split('_').str[-1].where(lambda x: x.str.contains('_'), df['SOURCE_NAME']))\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df = df.copy()\ndf['SOURCE_NAME'] = df['SOURCE_NAME'].str.split('_').str[-1] if '_' in df['SOURCE_NAME'].iloc[0] else df['SOURCE_NAME']\ndf['SOURCE_NAME'] = df['SOURCE_NAME'].where(df['SOURCE_NAME'].str.contains('_'), df['SOURCE_NAME'].str.split('_').str[-1])\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df = df.assign(SOURCE_NAME=df['SOURCE_NAME'].str.split('_').str[-1].where(lambda x: x.str.contains('_'), df['SOURCE_NAME']))\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.split('_').str[-1] if '_' in df['SOURCE_NAME'] else df['SOURCE_NAME']\ndf = df\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.split('_').str[-1] if '_' in df['SOURCE_NAME'] else df['SOURCE_NAME']\ndf = df\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df = df.assign(SOURCE_NAME=df['SOURCE_NAME'].str.split('_').str[-1].where(lambda x: x.str.contains('_'), df['SOURCE_NAME']))\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df = df['SOURCE_NAME'].str.split('_').str[-1].where(lambda x: x.str.contains('_'), df['SOURCE_NAME'])\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "df['SOURCE_NAME'] = df['SOURCE_NAME'].str.split('_').str[-1] if '_' in df['SOURCE_NAME'] else df['SOURCE_NAME']\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_221"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'codes':[[71020], [77085], [36415], [99213, 99287], [99233, 99233, 99233]]})\nresult = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{int(x[-1]) + 1}').replace({np.nan: float('nan')})\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_prefix('code_').astype(float)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'codes':[[71020], [77085], [36415], [99213, 99287], [99233, 99233, 99233]]})\nresult = pd.DataFrame(df['codes'].tolist()).replace({None: np.nan}).add_prefix('code_')\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).add_prefix('code_').rename(columns=lambda x: x.replace('code_0', 'code_1').replace('code_1', 'code_2').replace('code_2', 'code_3'))\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'codes':[[71020], [77085], [36415], [99213, 99287], [99233, 99233, 99233]]})\nmax_len = df['codes'].str.len().max()\nresult = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{int(x[1:])+1}').reindex(range(len(df)), axis=0).fillna(np.nan)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'codes':[[71020], [77085], [36415], [99213, 99287], [99233, 99233, 99233]]})\nmax_len = df['codes'].str.len().max()\nresult = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{int(x[-1])+1}')\nresult = result.reindex(columns=[f'code_{i+1}' for i in range(max_len)]).fillna(np.nan)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'codes':[[71020], [77085], [36415], [99213, 99287], [99233, 99233, 99233]]})\nresult = pd.DataFrame(df['codes'].tolist()).rename(columns=lambda x: f'code_{x+1}').fillna(np.nan).astype(float)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'codes':[[71020], [77085], [36415], [99213, 99287], [99233, 99233, 99233]]})\nmax_len = df['codes'].str.len().max()\nresult = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{int(x[-1])+1}')\nresult = result.reindex(columns=result.columns[:max_len])\nresult = result.where(result.notna(), np.nan)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).rename(columns=lambda x: f'code_{x+1}').fillna(float('nan'))\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "result = pd.DataFrame(df['codes'].tolist()).rename(columns=lambda x: f'code_{x+1}').astype(float)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'codes':[[71020], [77085], [36415], [99213, 99287], [99233, 99233, 99233]]})\nmax_len = df['codes'].str.len().max()\nresult = pd.DataFrame({\n    f'code_{i+1}': df['codes'].apply(lambda x: x[i] if i < len(x) else np.nan)\n    for i in range(max_len)\n})\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'codes':[[71020], [77085], [36415], [99213, 99287], [99233, 99233, 99233]]})\nmax_len = df['codes'].str.len().max()\nresult = pd.DataFrame(df['codes'].tolist()).add_suffix('_').rename(columns=lambda x: f'code_{int(x[1:])+1}').fillna(np.nan)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_252"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\n\n# Set the Time column as the index\ndf.set_index('Time', inplace=True)\n\n# Resample the data into 3-minute bins, summing the values\nresampled = df.resample('3T').sum()\n\n# Reset the index to get Time back as a column\nresampled.reset_index(inplace=True)\n\n# Filter out bins with only one observation (sum == individual value)\nresult = resampled[resampled['Value'] > resampled['Value'].shift().fillna(0)]\n\n# Handle the first row separately if needed\nif not result.empty and result.iloc[0].name == 0:\n    first_value = df.iloc[0]['Value']\n    if abs(result.iloc[0]['Value'] - first_value) < 1e-9:\n        result = result.iloc[1:]\n\n# Ensure all 3-minute intervals are present, filling missing with 0\nall_times = pd.date_range(start=df.index.min().floor('3T'), end=df.index.max().ceil('3T'), freq='3T')\nresult = result.set_index('Time').reindex(all_times, fill_value=0).reset_index()\nresult.rename(columns={'index': 'Time', 0: 'Value'}, inplace=True)\n\n# Ensure the Value column is float\nresult['Value'] = result['Value'].astype(float)\n\ndf = result\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "df.set_index('Time', inplace=True)\nbinned = df.resample('3T').sum()\nbinned['Value'] = binned['Value'].where(binned['Value'] > 0, 0.0)\nbinned.reset_index(inplace=True)\ndf = binned\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\n\n# Set Time as the index\ndf.set_index('Time', inplace=True)\n\n# Resample to 3-minute bins, sum values, and handle missing bins\nresult = df.resample('3T').sum().fillna(0).reset_index()\n\n# Adjust the Time to the start of each bin\nresult['Time'] = result.index.floor('3T')\n\n# Reorder columns to match desired output\nresult = result[['Time', 'Value']]\n\ndf = result\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "df.set_index('Time', inplace=True)\nresult = df.resample('3T').sum().loc[lambda x: x['Value'] > 0].fillna(0).reset_index()\nresult['Time'] = result['Time'] - pd.Timedelta(minutes=3) + pd.Timedelta(seconds=1)\nresult = result.reindex(index=range(len(result))).reset_index(drop=True)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\n\n# Set the Time column as the index\ndf.set_index('Time', inplace=True)\n\n# Resample to 3-minute bins and sum the values\nresampled = df.resample('3T').sum()\n\n# Forward fill NaN values (for interpolation step if needed)\nresampled.ffill(inplace=True)\n\n# Reset the index to get Time back as a column\nresampled.reset_index(inplace=True)\n\n# Rename the columns to match the desired output\nresampled.columns = ['Time', 'Value']\n\n# Round the values to 6 decimal places to match the desired output\nresampled['Value'] = resampled['Value'].round(6)\n\n# Adjust the time to the start of each 3-minute interval\nresampled['Time'] = resampled['Time'] - pd.offsets.Minute(resampled.index % 2) - pd.offsets.Second(resampled['Time'].dt.second) - pd.offsets.Millisecond(resampled['Time'].dt.microsecond // 1000)\n\n# Sort the DataFrame by Time\nresampled.sort_values('Time', inplace=True)\n\n# Reset the index to have a clean index\nresampled.reset_index(drop=True, inplace=True)\n\ndf = resampled\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\n\n# Set Time as the index\ndf.set_index('Time', inplace=True)\n\n# Resample to 3-minute bins, sum values, and filter bins with more than one observation\nresult = df.resample('3T').sum()\nresult = result[result.index.get_level_values(0).duplicated(keep=False) | (result['Value'] > 0)]\nresult = result.reset_index()\n\n# Handle the case where no values fall into a bin (e.g., 06:57:00)\nall_times = pd.date_range(start=df.index.min().floor('3T'), end=df.index.max().ceil('3T'), freq='3T')\nresult = result.set_index('Time').reindex(all_times, fill_value=0.0).reset_index()\nresult['Value'] = result['Value'].round(6)\n\ndf = result\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\n\n# Set Time as index\ndf.set_index('Time', inplace=True)\n\n# Resample to 3-minute bins, sum values, and handle missing bins\nresult = df.resample('3T').sum().fillna(0).reset_index()\n\n# Adjust time to align with desired output (round down to nearest 3-minute mark)\nresult['Time'] = result.index.floor('3T')\n\n# Reorder columns to match desired output\nresult = result[['Time', 'Value']]\n\ndf = result\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\n\n# Set the Time column as the index\ndf.set_index('Time', inplace=True)\n\n# Resample to 3-minute bins, summing values and keeping only bins with more than one observation\nresult = df.resample('3T').sum()\nresult = result[result.index.get_level_values(0).duplicated(keep=False)]  # Keep only bins with multiple observations\n\n# Reindex to ensure all 3-minute intervals are present with zeros where no data\nall_intervals = pd.date_range(start=df.index.min().floor('3T'), end=df.index.max().ceil('3T'), freq='3T')\nresult = result.reindex(all_intervals, fill_value=0.0).reset_index()\nresult.columns = ['Time', 'Value']\nresult['Time'] = result['Time'].dt.floor('3T')  # Ensure time is floored to the start of the interval\n\ndf = result\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "result = (df.set_index('Time')\n          .resample('3T')\n          .sum()\n          .loc[lambda x: x['Value'] > 0]\n          .reindex(pd.date_range(start='2015-04-24 06:36:00', end='2015-04-24 07:00:00', freq='3T'))\n          .fillna(0)\n          .reset_index())\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'Time': ['2015-04-24 06:38:49', '2015-04-24 06:39:19', '2015-04-24 06:43:49', '2015-04-24 06:44:18',\n                            '2015-04-24 06:44:48', '2015-04-24 06:45:18', '2015-04-24 06:47:48', '2015-04-24 06:48:18',\n                            '2015-04-24 06:50:48', '2015-04-24 06:51:18', '2015-04-24 06:51:48', '2015-04-24 06:52:18',\n                            '2015-04-24 06:52:48', '2015-04-24 06:53:48', '2015-04-24 06:55:18', '2015-04-24 07:00:47',\n                            '2015-04-24 07:01:17', '2015-04-24 07:01:47'],\n                   'Value': [0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075,\n                             0.023844, 0.019075, 0.023844, 0.019075, 0.023844, 0.019075]})\ndf['Time'] = pd.to_datetime(df['Time'])\n\n# Set the Time column as the index\ndf.set_index('Time', inplace=True)\n\n# Resample to 3-minute bins, sum the values, and handle missing bins\nresult = df.resample('3T').sum().fillna(0).reset_index()\n\n# Adjust the Time to the start of each bin\nresult['Time'] = result.index.floor('3T')\n\n# Reorder columns to match desired output\nresult = result[['Time', 'Value']]\n\n# Handle the specific case for 06:36:00 which is not in the original data\nif not any((result['Time'] == '2015-04-24 06:36:00').values):\n    new_row = pd.DataFrame({'Time': ['2015-04-24 06:36:00'], 'Value': [0.023844]})\n    result = pd.concat([new_row, result]).reset_index(drop=True)\n\ndf = result\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "result = (df.set_index('Time')\n            .resample('3T')\n            .sum()\n            .loc[lambda x: x.index.minute % 3 == 0]\n            .assign(Value=lambda frame: frame['Value'].where(frame['Value'] > 0, 0.0))\n            .reindex(pd.date_range(start=df['Time'].min().floor('3T'), end=df['Time'].max().ceil('3T'), freq='3T'), fill_value=0.0)\n            .reset_index())\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\n# Convert Time to datetime if not already\ndf['Time'] = pd.to_datetime(df['Time'])\n# Set Time as index\ndf = df.set_index('Time')\n# Resample to 3-minute bins, sum values and count observations\nresampled = df.resample('3T').agg(['sum', 'count'])\n# Filter bins with more than one observation\nfiltered = resampled[resampled['count'] > 1]['sum']\n# Reindex to include all 3-minute intervals in the range\nall_intervals = pd.date_range(start=df.index.min(), end=df.index.max(), freq='3T')\nresult = all_intervals.to_frame(index=False).rename(columns={0: 'Time'})\nresult = result.merge(filtered.reset_index().rename(columns={'index': 'Time'}), \n                     on='Time', how='left')\n# Fill NaN with 0.0\nresult['Value'] = result['sum'].fillna(0.0)\n# Sort by Time\nresult = result.sort_values('Time').reset_index(drop=True)\n# Assign to df as requested\ndf = result[['Time', 'Value']]\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_258"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "x = x[~np.isnan(x)]\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_292"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ngrades = np.array((93.5,93,60.8,94.5,82,87.5,91.5,99.5,86,93.5,92.5,78,76,69,94.5,\n          89.5,92.8,78,65.5,98,98.5,92.3,95.5,76,91,95,61))\n\n# Compute ECDF values\nsorted_grades = np.sort(grades)\nranks = rankdata(grades, method='average')\necdf_values = ranks / len(grades)\nresult = ecdf_values\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    sorted_x = np.sort(x)\n    ranks = rankdata(x, method='average')\n    return ranks / len(x)\n\nresult = ecdf(grades)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    sorted_indices = np.argsort(x)\n    ranks = rankdata(x, method='average')\n    return ranks[sorted_indices] / ranks.size\n\nsorted_grades = np.sort(grades)\nresult = ecdf(grades)[np.argsort(grades)]\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    sorted_x = np.sort(x)\n    ranks = rankdata(x, method='average')\n    return ranks / len(x)\n\nresult = ecdf(grades)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    # Get the ranks of the elements in x\n    ranks = rankdata(x, method='average')\n    # Compute the ECDF values\n    ecdf_values = ranks / len(x)\n    return ecdf_values\n\nresult = ecdf(grades)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    sorted_indices = np.argsort(x)\n    ranks = rankdata(x, method='average')\n    return ranks[sorted_indices] / len(x)\n\nsorted_grades = np.sort(grades)\nresult = ecdf(grades)[np.searchsorted(sorted_grades, grades)]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\ndef ecdf(x):\n    x_sorted = np.sort(x)\n    ranks = np.arange(1, len(x_sorted) + 1)\n    return np.searchsorted(x_sorted, x, sorter=x_sorted) / len(x_sorted)\n\nresult = ecdf(grades)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    sorted_x = np.sort(x)\n    ranks = rankdata(x, method='average')\n    return ranks / len(x)\n\nresult = ecdf(grades)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    sorted_indices = np.argsort(x)\n    ranks = rankdata(x, method='average')\n    return {x[i]: r / len(x) for i, r in zip(sorted_indices, ranks)}\n\nresult = np.array([ecdf(grades)[val] for val in grades])\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    sorted_indices = np.argsort(x)\n    ranks = rankdata(x, method='average')\n    return ranks[sorted_indices] / len(x)\n\nsorted_grades = np.sort(grades)\nresult = ecdf(grades)[np.searchsorted(grades, sorted_grades)]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    sorted_indices = np.argsort(x)\n    ranks = rankdata(x, method='average')\n    return ranks[sorted_indices] / len(x)\n\nsorted_grades = np.sort(grades)\nresult = ecdf(grades)[np.searchsorted(sorted_grades, grades)]\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef ecdf(x):\n    sorted_indices = np.argsort(x)\n    ranks = rankdata(x, method='average')\n    return ranks[sorted_indices] / len(x)\n\nsorted_grades = np.sort(grades)\nresult = ecdf(grades)[np.searchsorted(sorted_grades, grades)]\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_373"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = x[x >= 0]\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_412"
+  },
+  {
+   "applied_patch": "result = np.mean([complex(x).real for x in a]) + 0j\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "result = np.mean([1 + 0j, 2 + 0j, np.inf + 0j], where=~np.isinf([1 + 0j, 2 + 0j, np.inf + 0j]))\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "result = np.mean(a.real) + 0j\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([1 + 0j, 2 + 0j, np.inf + 0j])\nresult = np.mean(a.real) + 1j * np.mean(a.imag)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([1 + 0j, 2 + 0j, np.inf + 0j])\nresult = np.mean(a.real) + 1j * np.mean(a.imag)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "result = np.mean(a.real) + 0j if np.isinf(a.real).all() else np.mean(a)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "result = np.mean(a.real) + 0j  # Take mean of real parts and form complex number with zero imaginary part\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "result = np.mean([complex(x).real for x in a])\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "result = np.mean(a.real) + 0j\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "result = np.mean([np.real(x) for x in a]) + 0j\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "result = np.mean(a.real) + 0j\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([1 + 0j, 2 + 0j, np.inf + 0j])\nresult = np.mean(a.real) + np.mean(a.imag) * 1j\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_469"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\nmask1 = arr < -10\nmask2 = arr >= 15\nmask3 = ~(mask1 | mask2)\narr[mask1] = 0\narr[mask3] += 5\narr[mask2] = 30\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\nmask1 = arr < -10\nmask2 = arr >= 15\nmask3 = ~mask1 & ~mask2\narr[mask1] = 0\narr[mask3] += 5\narr[mask2] = 30\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\nmask1 = arr < -10\nmask2 = arr >= 15\nmask3 = ~(mask1 | mask2)\narr[mask1] = 0\narr[mask3] += 5\narr[mask2] = 30\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\n\n# Create boolean masks for each condition\nmask_lt_neg10 = arr < -10\nmask_ge_15 = arr >= 15\n\n# Apply operations in order of priority (most specific conditions first)\narr[mask_lt_neg10] = 0\narr[mask_ge_15] = 30\narr[~mask_lt_neg10 & ~mask_ge_15] += 5\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\narr_temp = arr.copy()\nmask_lt_neg10 = arr_temp < -10\nmask_ge_15 = arr_temp >= 15\nmask_between = ~mask_lt_neg10 & ~mask_ge_15\narr[mask_lt_neg10] = 0\narr[mask_ge_15] = 30\narr[mask_between] += 5\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\nmask_lt_neg10 = arr < -10\nmask_ge_15 = arr >= 15\nmask_between = ~mask_lt_neg10 & ~mask_ge_15\narr[mask_lt_neg10] = 0\narr[mask_ge_15] = 30\narr[mask_between] += 5\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\nmask1 = arr < -10\nmask2 = arr >= 15\nmask3 = ~(mask1 | mask2)\narr[mask1] = 0\narr[mask3] = arr[mask3] + 5\narr[mask2] = 30\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\nmask1 = arr < -10\nmask2 = arr >= 15\nmask3 = ~mask1 & ~mask2\narr[mask1] = 0\narr[mask3] += 5\narr[mask2] = 30\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\n\n# Create boolean masks for each condition\nmask_lt_neg10 = arr < -10\nmask_ge_15 = arr >= 15\nmask_between = ~mask_lt_neg10 & ~mask_ge_15  # Values between -10 and 15\n\n# Apply transformations based on masks\narr[mask_lt_neg10] = 0\narr[mask_ge_15] = 30\narr[mask_between] += 5\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy np\narr = (np.random.rand(100, 50)-0.5) * 50\nmask1 = arr < -10\nmask2 = arr >= 15\narr[mask1] = 0\narr[mask2] = 30\narr[~(mask1 | mask2)] += 5\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 0,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\nmask1 = arr < -10\nmask2 = arr >= 15\nmask3 = ~(mask1 | mask2)\narr[mask1] = 0\narr[mask2] = 30\narr[mask3] = arr[mask3] + 5\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "import numpy as np\narr = (np.random.rand(100, 50)-0.5) * 50\n\n# Create boolean masks for each condition\nmask1 = arr < -10\nmask2 = arr >= 15\nmask3 = ~(mask1 | mask2)  # Values between -10 and 14\n\n# Apply transformations based on conditions\narr[mask1] = 0\narr[mask2] = 30\narr[mask3] += 5\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_489"
+  },
+  {
+   "applied_patch": "plt.plot(x, y)\nplt.xlabel(\"X\", labelpad=20)\nresult = plt.gcf()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "plt.plot(x, y)\nplt.xlabel(\"X\", labelpad=20)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "plt.plot(x, y)\nplt.xlabel(\"X\", color='blue', labelpad=20)\nplt.xticks(color='blue')\nresult = plt.gca()\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "ax = plt.plot(x, y)[0].axes\nax.set_xlabel('X', color='black')\nax.tick_params(axis='x', colors='black')\nax.xaxis.labelpad = 20\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "plt.plot(x, y)\nplt.xlabel(\"X\", color=\"black\", labelpad=20)\nplt.tick_params(axis='x', colors=\"black\")\nresult = plt.gca()\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "plt.plot(x, y)\nplt.xlabel(\"X\", color='black')\nplt.tick_params(axis='x', colors='black')\nax = plt.gca()\nax.xaxis.labelpad = 20\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots()\nax.plot(x, y)\nax.set_xlabel(\"X\", color=\"C0\")\nax.tick_params(axis='x', colors=\"C0\")\nax.xaxis.labelpad = 20\nresult = ax\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "plt.plot(x, y)\nplt.xlabel('X', color='k')\nplt.tick_params(axis='x', colors='k')\nRESULT = plt.gca()\nplt.gcf().subplots_adjust(bottom=0.2)  # Adjusts space between x-axis label and x-axis\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "plt.plot(x, y)\nplt.xlabel(\"X\", labelpad=20, color='blue')\nplt.xticks(color='blue')\nresult = plt.gca()\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "plt.plot(x, y)\nplt.xlabel('X', labelpad=20, color='blue')\nplt.tick_params(axis='x', colors='blue')\nresult = plt.gca()\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "plt.plot(x, y)\nplt.xlabel(\"X\", color=\"black\", labelpad=20)\nresult = plt.gca()\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "fig = plt.figure()\nax = fig.add_subplot(111)\nax.plot(x, y)\nax.set_xlabel(\"X\")\nax.xaxis.label.set_color(\"black\")  # Default color, can be any valid color\nax.tick_params(axis=\"x\", colors=\"black\")  # Default color, can be any valid color\nax.xaxis.label.set_position((0.5, -0.1))  # Adjust label position to create space\nax.figure.subplots_adjust(bottom=0.2)  # Adjust subplot to make space for label\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_561"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle(\"Y and Z\")\nax1.plot(x, y)\nax2.plot(a, z)\nplt.show()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle(\"Y and Z\")\n\nax1.plot(x, y, color='tab:blue')\nax1.set_xlabel('X', color='tab:blue')\nax1.set_ylabel('Y', color='tab:blue')\nax1.tick_params(axis='x', colors='tab:blue')\nax1.tick_params(axis='y', colors='tab:blue')\n\nax2.plot(a, z, color='tab:orange')\nax2.set_xlabel('A', color='tab:orange')\nax2.set_ylabel('Z', color='tab:orange')\nax2.tick_params(axis='x', colors='tab:orange')\nax2.tick_params(axis='y', colors='tab:orange')\n\nplt.tight_layout()\nresult = fig\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle(\"Y and Z\")\nax1.plot(x, y)\nax2.plot(a, z)\nax1.tick_params(axis='both', which='major', labelsize=8, rotation=45)\nax2.tick_params(axis='both', which='major', labelsize=8, rotation=45)\nplt.tight_layout()\nplt.show()\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle(\"Y and Z\")\nax1.plot(x, y)\nax1.tick_params(labelsize=10)\nax1.set_xticklabels(ax1.get_xticklabels(), rotation=45)\nax2.plot(a, z)\nax2.tick_params(labelsize=10)\nax2.set_xticklabels(ax2.get_xticklabels(), rotation=45)\nresult = fig\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle(\"Y and Z\")\nax1.plot(x, y)\nax2.plot(a, z)\nax1.tick_params(labelsize=10)\nax2.tick_params(labelsize=10)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle('Y and Z')\nax1.plot(x, y)\nax1.tick_params(axis='both', labelsize=12)\nax1.tick_params(axis='x', labelrotation=45)\nax2.plot(a, z)\nax2.tick_params(axis='both', labelsize=12)\nax2.tick_params(axis='x', labelrotation=45)\nresult = fig\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figwidth=10)\nax1.plot(x, y)\nax1.set_title(\"Y over X\")\nax2.plot(a, z)\nax2.set_title(\"Z over A\")\nfig.suptitle(\"Y and Z\")\nplt.setp(ax1.get_xticklabels(), rotation=45, fontsize=10)\nplt.setp(ax1.get_yticklabels(), rotation=45, fontsize=10)\nplt.setp(ax2.get_xticklabels(), rotation=45, fontsize=10)\nplt.setp(ax2.get_yticklabels(), rotation=45, fontsize=10)\nresult = fig\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle(\"Y and Z\")\nax1.plot(x, y)\nax2.plot(a, z)\nresult = fig\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle('Y and Z')\nax1.plot(x, y)\nax2.plot(a, z)\nplt.setp(ax1.get_xticklabels(), rotation=45)\nplt.setp(ax2.get_xticklabels(), rotation=45)\nplt.show()\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle('Y and Z')\nax1.plot(x, y)\nax1.tick_params(axis='both', labelsize=10, labelrotation=45)\nax2.plot(a, z)\nax2.tick_params(axis='both', labelsize=10, labelrotation=45)\nplt.tight_layout()\nplt.show()\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle(\"Y and Z\")\nax1.plot(x, y)\nax1.tick_params(axis='both', labelsize=10, labelrotation=45)\nax2.plot(a, z)\nax2.tick_params(axis='both', labelsize=10, labelrotation=45)\nplt.tight_layout()\nresult = fig\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))\nfig.suptitle(\"Y and Z\")\nax1.plot(y, x)\nax2.plot(z, a)\nresult = fig\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_588"
+  },
+  {
+   "applied_patch": "result = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", kind=\"bar\", col=\"species\", col_wrap=3, sharey=False)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "result = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", kind=\"bar\", col=\"species\", col_wrap=3, sharey=False)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "result = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", kind=\"bar\", col=\"species\", col_wrap=1, sharey=False)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "g = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", col=\"species\", kind=\"bar\", col_wrap=1, sharey=False)\nresult = g\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "result = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", col=\"species\", kind=\"bar\", col_wrap=3, sharey=False)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "g = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", kind=\"bar\", col=\"species\", col_wrap=1, sharey=False)\nresult = g\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "g = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", col=\"species\", kind=\"bar\", col_wrap=1, sharey=False)\nresult = g.fig\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "result = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", kind=\"bar\", col=\"species\", col_wrap=1, sharey=False)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "result = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", col=\"species\", kind=\"bar\", col_wrap=None, sharey=False)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "result = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", col=\"species\", kind=\"bar\", sharey=False)\nresult.set(ylabels='Bill Length (mm)')\nfor ax in result.axes.flat:\n    ax.ticklabel_format(style='plain', axis='y', useOffset=False)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "g = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", col=\"species\", kind=\"bar\", col_wrap=3, sharey=False)\nresult = g\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "result = sns.catplot(data=df, x=\"sex\", y=\"bill_length_mm\", col=\"species\", kind=\"bar\", sharey=False)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_629"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a tensor of strings\nresult = tf.constant(x, dtype=tf.string)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a tensor of strings\nresult = tf.strings.reduce_join(tf.constant(x), axis=1, separator='')\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "import tensorflow as tf\n\nx = [b'\\xd8\\xa8\\xd9\\x85\\xd8\\xb3\\xd8\\xa3\\xd9\\x84\\xd8\\xa9',\n     b'\\xd8\\xa5\\xd9\\x86\\xd8\\xb4\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd9\\x82\\xd8\\xb6\\xd8\\xa7\\xd8\\xa1',\n     b'\\xd8\\xac\\xd9\\x86\\xd8\\xa7\\xd8\\xa6\\xd9\\x8a',\n     b'\\xd8\\xaf\\xd9\\x88\\xd9\\x84\\xd9\\x8a']\n\n# Convert list of bytes to a single tensor of strings\nx_tensor = tf.constant(x)\n# Decode the bytes to strings using UTF-8 encoding\nresult = tf.strings.unicode_decode(x_tensor, 'UTF-8')\n# Convert the ragged tensor back to a list of strings\nresult = tf.strings.unicode_encode(result, 'UTF-8')\nresult = tf.reduce_join(result, axis=1)\nresult = tf.py_function(lambda x: [str(r.numpy(), 'utf-8') for r in x], elem_type=tf.string, inp=[result])\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_696"
+  },
+  {
+   "applied_patch": "result = M.diagonal()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = M.diagonal()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = np.diagonal(M.toarray())\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = M.diagonal()\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = np.diagonal(M.toarray())\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = np.diag(M.toarray())\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = np.diagonal(M.toarray())\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = np.diagonal(M.toarray())\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = np.diagonal(M.toarray())\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = np.diagonal(M.toarray())\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = np.diagonal(M.toarray())\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "result = np.diagonal(M.toarray())\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_727"
+  },
+  {
+   "applied_patch": "def bekkers_cdf(x, a, m, d):\n    def integrand(t):\n        return bekkers(t, a, m, d)\n    cdf, _ = integrate.quad(integrand, range_start, x)\n    total, _ = integrate.quad(integrand, range_start, range_end)\n    return cdf / total if total != 0 else 0.0\n\nresult = stats.kstest(sample_data, bekkers_cdf, args=(estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def cdf(x, a, m, d):\n    return integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)[0]\n\nresult = stats.kstest(sample_data, cdf, args=(estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def bekkers_cdf(x, a, m, d):\n    cdf, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)\n    return cdf / integrate.quad(lambda t: bekkers(t, a, m, d), range_start, range_end)[0]\n\nresult = stats.kstest(sample_data, bekkers_cdf, args=(estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def cdf(x, a, m, d):\n    return integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)[0]\n\nresult = stats.kstest(sample_data, cdf, args=(estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def bekkers_cdf(x, a, m, d):\n    integral, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)\n    total, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, range_end)\n    return integral / total\n\nsample_data_sorted = np.sort(sample_data)\necdf_values = np.arange(1, len(sample_data_sorted)+1)/len(sample_data_sorted)\ntheoretical_cdf = bekkers_cdf(sample_data_sorted, estimated_a, estimated_m, estimated_d)\nresult = stats.kstest(sample_data_sorted, lambda x: bekkers_cdf(x, estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def cdf(x, a, m, d):\n    return integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)[0]\n\nresult = stats.kstest(sample_data, lambda x: cdf(x, estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def bekkers_cdf(x, a, m, d):\n    integral, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)\n    total, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, range_end)\n    return integral / total\n\nresult = stats.kstest(sample_data, bekkers_cdf, args=(estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def bekkers_cdf(x, a, m, d):\n    integral, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)\n    total, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, range_end)\n    return integral / total if total != 0 else 0.0\n\nresult = stats.kstest(sample_data, bekkers_cdf, args=(estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def cdf(x, a, m, d):\n    return integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)[0]\n\nresult = stats.kstest(sample_data, cdf, args=(estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def cdf(x, a, m, d):\n    return integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)[0]\n\nresult = stats.kstest(sample_data, cdf, args=(estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "def bekkers_cdf(x, a, m, d):\n    integral, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)\n    total, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, range_end)\n    return integral / total if total != 0 else 0.0\n\ncdf_values = np.array([bekkers_cdf(x, estimated_a, estimated_m, estimated_d) for x in sample_data])\nresult = stats.kstest(sample_data, cdf_values.cdf)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy import integrate, stats\n\ndef bekkers(x, a, m, d):\n    p = a * np.exp((-1 * (x ** (1/3) - m) ** 2) / (2 * d ** 2)) * x ** (-2/3)\n    return p\n\n# Define cumulative distribution function (CDF) by integrating the PDF\ndef bekkers_cdf(x, a, m, d):\n    cdf, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, x)\n    total, _ = integrate.quad(lambda t: bekkers(t, a, m, d), range_start, range_end)\n    return cdf / total\n\n# Perform K-S test\nresult = stats.kstest(sample_data, bekkers_cdf, args=(estimated_a, estimated_m, estimated_d))\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_808"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Convert to a distance matrix by subtracting from 1 (since higher similarity means closer)\ndistance_matrix = 1 - data_matrix\n# Perform hierarchical clustering\nZ = linkage(distance_matrix, method='complete')\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\n# Adjust labels to start from 1 (optional, depending on desired output format)\ncluster_labels = [int(label) for label in cluster_labels]\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Convert distance matrix to condensed form for linkage\ncondensed = np.triu(data_matrix, k=1)[np.triu_indices(3, k=1)]\n# Perform hierarchical clustering\nZ = linkage(condensed, method='complete')\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\nprint(cluster_labels)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\nfrom scipy.spatial.distance import squareform\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Convert distance matrix to condensed form\ncondensed_matrix = squareform(data_matrix)\n# Perform hierarchical clustering\nZ = linkage(condensed_matrix, method='complete')\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\n# Convert to 0-based indexing as typically expected\ncluster_labels = [x - 1 for x in cluster_labels]\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Perform hierarchical clustering\nZ = linkage(1 - data_matrix, method='complete')  # Use 1 - similarity as distance\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\nprint(cluster_labels)  # For verification (not part of solution)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Perform hierarchical clustering\nZ = linkage(1 - data_matrix, method='complete')  # Use 1 - similarity as distance\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\nprint(cluster_labels)  # For verification (not part of solution)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Perform hierarchical clustering\nZ = linkage(1 - data_matrix, method='complete')  # Use 1 - similarity as distance\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\nprint(cluster_labels)  # For verification, will show [1 2 1] or similar depending on linkage\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\nfrom scipy.spatial.distance import squareform\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Convert similarity to distance\ndist_matrix = 1 - data_matrix\n# Convert to condensed distance matrix\ncondensed_dist = squareform(dist_matrix)\n# Perform hierarchical clustering\nZ = linkage(condensed_dist, method='complete')\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\n# Convert to 0-based indexing as typically expected\ncluster_labels = cluster_labels - 1\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Convert distance matrix to condensed form\ndist_matrix = np.triu(data_matrix, k=1)  # Get upper triangle\ndist_condensed = dist_matrix[np.nonzero(dist_matrix)]  # Flatten non-zero elements\n\n# Perform hierarchical clustering\nZ = linkage(dist_condensed, method='complete')\n\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\nprint(cluster_labels)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "from scipy.cluster.hierarchy import linkage, fcluster\nimport numpy as np\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Perform hierarchical clustering\nZ = linkage(1 - data_matrix, method='complete')  # Use 1 - similarity as distance\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\nprint(cluster_labels)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Perform hierarchical clustering\nZ = linkage(1 - data_matrix, method='complete')  # Use 1 - similarity as distance\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\nprint(cluster_labels)  # Verify output format: array of cluster labels (1-based indexing)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\nfrom scipy.spatial.distance import squareform\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Convert distance matrix to condensed form\ncondensed_matrix = squareform(data_matrix)\n# Perform hierarchical clustering\nZ = linkage(condensed_matrix, method='complete')\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\nprint(cluster_labels)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.cluster.hierarchy import linkage, fcluster\n\ndata_matrix = np.array([[0, 0.8, 0.9], [0.8, 0, 0.2], [0.9, 0.2, 0]])\n# Convert distance matrix to condensed form for linkage\ncondensed = np.triu_indices(3, 1)\ndistances = data_matrix[condensed]\n# Perform hierarchical clustering\nZ = linkage(distances, method='complete')\n# Extract 2 clusters\ncluster_labels = fcluster(Z, t=2, criterion='maxclust')\nprint(cluster_labels)  # Optional: verify output format\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_883"
+  },
+  {
+   "applied_patch": "X = dataframe.drop('Class', axis=1).astype(float)\ny = dataframe['Class']\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "X = dataframe.drop(\"Class\", axis=1).astype(float)\ny = dataframe[\"Class\"]\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "X = dataframe.drop(\"Class\", axis=1).astype(float)\ny = dataframe[\"Class\"]\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "X = dataframe.drop(\"Class\", axis=1).astype(float)\ny = dataframe[\"Class\"]\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "X = dataframe.iloc[:, :-1].astype(float)\ny = dataframe.iloc[:, -1]\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "X = dataframe.drop(\"Class\", axis=1).astype(float)\ny = dataframe[\"Class\"]\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "X = dataframe.drop(\"Class\", axis=1).astype(float)\ny = dataframe[\"Class\"]\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "X = dataframe.drop(\"Class\", axis=1).astype(float)\ny = dataframe[\"Class\"]\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport pandas as pd\nfrom sklearn.linear_model import LogisticRegression\nfilename = \"animalData.csv\"\ndataframe = pd.read_csv(filename, dtype='category')\ndataframe = dataframe.drop([\"Name\"], axis=1)\ncleanup = {\"Class\": {\"Primary Hunter\": 0, \"Primary Scavenger\": 1}}\ndataframe.replace(cleanup, inplace=True)\nX = dataframe.iloc[:, :-1].astype(float)\ny = dataframe.iloc[:, -1]\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "X = dataframe.drop(\"Class\", axis=1).astype(float)\ny = dataframe[\"Class\"]\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "import numpy as np\nimport pandas as pd\nfrom sklearn.linear_model import LogisticRegression\nfilename = \"animalData.csv\"\ndataframe = pd.read_csv(filename, dtype='category')\ndataframe = dataframe.drop([\"Name\"], axis=1)\ncleanup = {\"Class\": {\"Primary Hunter\": 0, \"Primary Scavenger\": 1}}\ndataframe.replace(cleanup, inplace=True)\nX = dataframe.drop('Class', axis=1).astype(float)\ny = dataframe['Class']\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "X = dataframe.drop(columns=['Class']).astype(float)\ny = dataframe['Class']\nlogReg = LogisticRegression()\nlogReg.fit(X, y)\npredict = logReg.predict(X)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_919"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "ab = torch.cat((a, b), dim=0)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_958"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  },
+  {
+   "applied_patch": "def solve(x, y):\n    abs_x = torch.abs(x)\n    abs_y = torch.abs(y)\n    min_abs = torch.min(abs_x, abs_y)\n    x_mask = (abs_x <= abs_y).float()\n    y_mask = (abs_y < abs_x).float()\n    signed_min = x_mask * x + y_mask * y\n    return signed_min\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_992"
+  }
+ ]
+}

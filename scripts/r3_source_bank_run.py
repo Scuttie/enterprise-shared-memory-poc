@@ -159,15 +159,24 @@ def main():
         print("submitted %d source solves" % len(jobs), flush=True)
         deadline = time.time() + int(os.environ.get("RUN_DEADLINE", "12000"))
         pending = {j["tid"]: j for j in jobs}
+        last_log = 0.0
+        states = collections.Counter()
         while pending and time.time() < deadline:
+            states = collections.Counter()
             for tid in list(pending):
                 st = client.get("/v1/jobs/%s" % pending[tid]["job_id"],
                                 headers={"authorization": "Bearer " + pending[tid]["token"]}).json().get("state")
+                states[st] += 1
                 if st in ("SUCCEEDED", "FAILED", "CANCELLED", "DEAD_LETTER"):
                     pending.pop(tid)
+            if time.time() - last_log > 25:
+                print("poll: terminal=%d pending=%d states=%s" % (len(jobs) - len(pending), len(pending),
+                                                                  dict(states)), flush=True)
+                last_log = time.time()
             if pending:
                 time.sleep(5)
-        print("terminal %d pending %d" % (len(jobs) - len(pending), len(pending)), flush=True)
+        print("terminal %d pending %d final_states=%s" % (len(jobs) - len(pending), len(pending), dict(states)),
+              flush=True)
 
     provider = _provider()
     user_success, gold, canon = [], [], []

@@ -100,6 +100,22 @@ jobs:
           PYTHONUNBUFFERED=1
           PYTHONPATH=$PWD:$PWD/src:$PWD/DS-1000
           ENV
+      - name: Grader subprocess sanity (isolates grading from the service path)
+        run: |
+          set -a; source ds1000.env; set +a
+          # grade ONE reference solution through the isolated subprocess grader; expect passed=true, fast.
+          micromamba run -n ds1000-3.10 python - <<'PY'
+          import gzip, json, os, subprocess, sys, time
+          data=os.environ["DS1000_DATA"]
+          t=[json.loads(l) for l in gzip.open(data,"rt",encoding="utf-8") if l.strip()][0]
+          pid=str(t["metadata"]["problem_id"]); ans=t["reference_code"]
+          t0=time.time()
+          p=subprocess.run([sys.executable,"scripts/r3_ds1000_grade_one.py",pid],input=ans,text=True,
+                           capture_output=True,timeout=240)
+          print("grade-one stdout:",p.stdout.strip()[:200],"stderr:",p.stderr.strip()[-200:],"secs=%.1f"%(time.time()-t0))
+          assert '"passed": true' in p.stdout, "isolated grader did not pass the reference solution"
+          print("GRADER SUBPROCESS SANITY OK")
+          PY
       - name: Migrate + warm embedder
         run: |
           set -a; source ds1000.env; set +a

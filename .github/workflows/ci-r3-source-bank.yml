@@ -1,0 +1,123 @@
+name: ci-r3-source-bank
+
+# REALBENCH-R3 §6: build the DS-1000 multi-user source bank through the real service path inside the OFFICIAL
+# DS-1000 conda env. Submits SOURCE_POOL tasks NO-MEMORY, grades with the official evaluator, and derives
+# canonical memories from verified solves. Dispatch with `subset` (first-N-per-library) for a smoke; blank = full.
+
+on:
+  workflow_dispatch:
+    inputs:
+      subset:
+        description: "first-N-per-library smoke (blank = full SOURCE_POOL)"
+        required: false
+        default: ""
+  push:
+    branches: [codex/production-service-v0.2]
+
+concurrency:
+  group: ci-r3-sourcebank-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-bank:
+    if: contains(github.event.head_commit.message, '[run-r3-sourcebank]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    defaults:
+      run:
+        shell: bash -el {0}
+    services:
+      postgres:
+        image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env: {POSTGRES_PASSWORD: postgres, POSTGRES_DB: esm}
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm" --health-interval 5s --health-timeout 5s --health-retries 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start Qdrant
+        run: docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
+      - name: Clone DS-1000 at pinned commit
+        run: |
+          git clone --no-checkout https://github.com/xlang-ai/DS-1000.git DS-1000
+          cd DS-1000 && git checkout b39aab71da6d23ef8d3cac59a7c5f834516ab334
+          test "$(git rev-parse HEAD)" = "b39aab71da6d23ef8d3cac59a7c5f834516ab334"
+      - name: Official DS-1000 conda env
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: DS-1000/environment.yml
+          cache-environment: true
+          init-shell: bash
+      - name: Install ESM into the env (pinned constraints)
+        run: |
+          micromamba run -n ds1000-3.10 python -m pip install --no-input \
+            -c configs/actionable_memory_r3/ds1000_pip_constraints.txt \
+            -e ".[dev,postgres,qdrant,artifacts,oidc,embed]" pyjwt cryptography datasets tqdm
+          micromamba run -n ds1000-3.10 python -c "import numpy,pandas;print('numpy',numpy.__version__,'pandas',pandas.__version__)"
+      - name: Build/verify frozen partition (bound to data sha)
+        run: DS1000_DATA=DS-1000/data/ds1000.jsonl.gz micromamba run -n ds1000-3.10 python scripts/r3_build_partition.py
+      - name: Write env file
+        run: |
+          test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no UPSTAGE_API_KEY secret"; exit 1; }
+          cat > ds1000.env <<ENV
+          DATABASE_URL=postgresql://localhost:5432/esm
+          MIGRATION_USER=postgres
+          MIGRATION_PASSWORD=postgres
+          PGHOST=localhost
+          PGPORT=5432
+          PGUSER=postgres
+          PGPASSWORD=postgres
+          PGDATABASE=esm
+          QDRANT_URL=http://localhost:6333
+          ARTIFACT_DIR=/tmp/esm-artifacts
+          INDEX_DIM=384
+          EMBEDDER=st
+          ENVIRONMENT=ci
+          REPO_PROVIDER=ds1000
+          EXECUTION_BACKEND=ds1000
+          DS1000_REPO=$PWD/DS-1000
+          DS1000_DATA=$PWD/DS-1000/data/ds1000.jsonl.gz
+          SOLAR_MODEL=solar-pro2-251215
+          SOLAR_BASE_URL=https://api.upstage.ai/v1/solar
+          SOLAR_MAX_TOKENS=1024
+          SOLAR_MAX_ATTEMPTS=10
+          SOLAR_TOTAL_DEADLINE=360
+          UPSTAGE_API_KEY=${{ secrets.UPSTAGE_API_KEY }}
+          OIDC_ISSUER=https://idp.e2e.local/
+          OIDC_AUDIENCE=esm-api
+          OIDC_JWKS_FILE=$PWD/jwks.json
+          E2E_API_URL=http://127.0.0.1:8000
+          API_PORT=8000
+          RUN_DEADLINE=12000
+          R3_SOURCE_SUBSET=${{ github.event.inputs.subset }}
+          HF_HUB_DISABLE_TELEMETRY=1
+          PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+          PYTHONUNBUFFERED=1
+          PYTHONPATH=$PWD:$PWD/src:$PWD/DS-1000
+          ENV
+      - name: Migrate + warm embedder
+        run: |
+          set -a; source ds1000.env; set +a
+          micromamba run -n ds1000-3.10 python scripts/postgres_bootstrap.py
+          micromamba run -n ds1000-3.10 alembic upgrade head
+          mkdir -p /tmp/esm-artifacts
+          micromamba run -n ds1000-3.10 python -c "from enterprise_memory.indexing.embeddings import SentenceTransformerEmbedder as E; e=E(); e.embed(['warm']); print('embedder', e.provenance()['model_id'], e.dim)"
+      - name: Start API + workers + build source bank
+        run: |
+          set -a; source ds1000.env; set +a
+          micromamba run -n ds1000-3.10 bash -lc '
+            python -m enterprise_memory.service.appcli > api.log 2>&1 &
+            python scripts/_wait_http.py http://127.0.0.1:8000/health/live 120
+            for i in 1 2; do WORKER_ID=r3-worker-$i python -m enterprise_memory.service.solve_worker > worker-$i.log 2>&1 & done
+            sleep 2
+            python scripts/r3_source_bank_run.py
+          '
+      - name: Logs on failure
+        if: failure()
+        run: for f in api.log worker-1.log worker-2.log; do echo "==== $f ===="; tail -n 80 "$f" 2>/dev/null || true; done
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r3-source-bank${{ github.event.inputs.subset && '-smoke' || '' }}
+          path: artifacts/actionable_memory_r3/*.json

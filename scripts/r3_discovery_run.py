@@ -86,8 +86,8 @@ async def _collect(job_id):
                                   {"j": job_id})).scalar()
             inj = (await c.execute(text("SELECT COUNT(*) FROM retrieval_candidates WHERE job_id=:j AND injected"),
                                    {"j": job_id})).scalar()
-            cu = (await c.execute(text("SELECT cross_user_private_injection FROM outcome_observations WHERE "
-                                       "job_id=:j"), {"j": job_id})).scalar()
+            cu = (await c.execute(text("SELECT cross_user_private_injection_count FROM solve_jobs WHERE id=:j"),
+                                  {"j": job_id})).scalar()
     finally:
         await e.dispose()
     return {"pass1": int(oc[0]) if oc and oc[0] is not None else 0,

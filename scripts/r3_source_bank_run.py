@@ -86,7 +86,7 @@ async def _seed(org, user_uuid, tasks, assign):
                                 {"i": u, "o": org, "s": "u-" + u})
         out = []
         for t in tasks:
-            tid = t["_id"]; pid = tid.split("_")[1]; u = user_uuid[assign[tid]]; repo = str(uuid.uuid4())
+            tid = t["_id"]; pid = tid.split("_")[1]; u = user_uuid[tid]; repo = str(uuid.uuid4())
             async with e.begin() as c:
                 await c.execute(text("INSERT INTO repositories(id,org_id,external_repo_id) VALUES(:i,:o,:r)"),
                                 {"i": repo, "o": org, "r": fixture_id(pid)})

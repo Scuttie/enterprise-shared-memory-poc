@@ -1,17 +1,71 @@
 """REALBENCH-R3 — thin wrapper over the OFFICIAL DS-1000 evaluator. We import the upstream `execution` module
 (cloned at the pinned commit, placed on PYTHONPATH) and call its `check_correctness` verbatim — we never
-reimplement or modify the benchmark's tests (§26 hard stop). This wrapper only assembles the completion-mode
-program and returns pass/fail, so the same official grader is used for reference reproduction, source-bank
-verification, calibration, and the confirmatory main.
+reimplement or modify the benchmark's tests (§26 hard stop). The same official grader is used for reference
+reproduction, source-bank verification, calibration, and the confirmatory main (service path routes here via the
+`DS1000:<problem_id>` grading marker).
 """
 from __future__ import annotations
+import functools
+import gzip
+import json
+import os
+import re
+
 from experiments.actionable_memory_r3.ds1000_adapter import assemble_program
 
 
+@functools.lru_cache(maxsize=1)
+def _tasks(data_path: str) -> dict:
+    """problem_id(str) -> task record, from the pinned ds1000.jsonl.gz."""
+    out = {}
+    with gzip.open(data_path, "rt", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            r = json.loads(line)
+            out[str(r["metadata"]["problem_id"])] = r
+    return out
+
+
+def _data_path() -> str:
+    return os.environ.get("DS1000_DATA", os.path.join(os.environ.get("DS1000_REPO", "DS-1000"),
+                                                       "data", "ds1000.jsonl.gz"))
+
+
+def extract_completion(raw: str) -> str:
+    """Extract the DS-1000 solution snippet from a chat model's raw output. Deterministic post-processing:
+    take a fenced ```python block if present, else the raw text; then cut at the upstream solution markers
+    (END SOLUTION / </code>) and drop a leading BEGIN SOLUTION marker. No benchmark semantics are altered —
+    this only recovers the completion string the official grader assigns to `code`."""
+    if raw is None:
+        return ""
+    m = re.search(r"```(?:python)?\s*(.*?)```", raw, re.S)
+    body = m.group(1) if m else raw
+    # drop everything from an explicit solution terminator onward
+    for term in ("END SOLUTION", "</code>", "\nprint(", "\nresult ="):
+        pass
+    idx = min([i for i in (body.find("END SOLUTION"), body.find("</code>")) if i != -1], default=-1)
+    if idx != -1:
+        body = body[:idx]
+    body = body.replace("BEGIN SOLUTION", "")
+    return body.strip("\n") + "\n"
+
+
 def grade(answer_code: str, code_context: str, timeout: float = 120.0, completion_id=None) -> dict:
-    """Return {'passed': bool, 'result': str, 'passed_raw': <official dict>}. Import is deferred so this module
-    is importable without the heavy DS-1000 env (only the CI grader job has it)."""
     import execution  # official upstream module, on PYTHONPATH in the grader env
     program = assemble_program(answer_code, code_context)
     out = execution.check_correctness(program, timeout=timeout, completion_id=completion_id)
     return {"passed": bool(out.get("passed")), "result": out.get("result"), "passed_raw": out}
+
+
+def grade_by_id(problem_id, raw_or_answer: str, *, already_extracted: bool = False,
+                timeout: float = 120.0) -> dict:
+    """Grade a service-path candidate for DS-1000 `problem_id`. `raw_or_answer` is the model's raw output
+    (extracted here) unless already_extracted. Returns {'passed', 'result', 'answer'}."""
+    task = _tasks(_data_path()).get(str(problem_id))
+    if task is None:
+        return {"passed": False, "result": "unknown_problem_id:%s" % problem_id, "answer": ""}
+    answer = raw_or_answer if already_extracted else extract_completion(raw_or_answer)
+    r = grade(answer, task["code_context"], timeout=timeout)
+    return {"passed": r["passed"], "result": r["result"], "answer": answer}

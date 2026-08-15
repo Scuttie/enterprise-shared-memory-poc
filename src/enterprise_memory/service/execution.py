@@ -209,6 +209,44 @@ class InstructWholeFileExecutionBackend(CodingExecutionBackend):
                 "%s%s\n\nReturn ONLY the full solution as one ```python code block." % (instr, mem))
 
 
+class DS1000ExecutionBackend(CodingExecutionBackend):
+    """REALBENCH-R3 whole-completion backend for DS-1000. The prompt is the task's NL `prompt` (which already
+    ends at BEGIN SOLUTION) with any injected memory views placed at a FIXED position (a preamble block before
+    the problem) so context position is identical across all representation arms (§10). The model writes the
+    solution snippet; we extract the completion deterministically (ds1000_grader.extract_completion) and store
+    it as the applied file. Grading routes to the OFFICIAL DS-1000 evaluator via the `DS1000:<problem_id>`
+    marker. Memory is advisory prior knowledge (never the target's tests/solution)."""
+    def __init__(self, provider, model_max_tokens=1024):
+        self._p = provider
+        self._max = model_max_tokens
+
+    async def execute(self, task_context, repository_snapshot, memory_views, *, logical_request_id, org_id):
+        import difflib
+        from experiments.actionable_memory_r3.ds1000_grader import extract_completion
+        target = task_context.get("target_path")
+        original = repository_snapshot.get(target, "")
+        prompt = self._build_prompt(task_context, memory_views)
+        req = ModelRequest(messages=[{"role": "user", "content": prompt}], max_output_tokens=self._max)
+        response, record = await self._p.generate(req, logical_request_id=logical_request_id, org_id=org_id)
+        completion = extract_completion(response.text)
+        diff = "".join(difflib.unified_diff(original.splitlines(keepends=True),
+                                            completion.splitlines(keepends=True),
+                                            fromfile="a/%s" % target, tofile="b/%s" % target))
+        return ExecutionResult(
+            patch_text=diff, raw_response=response.text, returned_model=response.returned_model,
+            backend_type="ds1000", model_call_records=[record.to_dict()],
+            harness_metadata={"prompt_hash": _sha(prompt), "mode": "ds1000_completion"})
+
+    @staticmethod
+    def _build_prompt(task_context, memory_views):
+        instr = task_context.get("instruction", "")
+        mem = ("Relevant prior knowledge that may help (advisory; verify against the task before use):\n%s\n\n"
+               "----\n\n" % "\n\n".join(memory_views)) if memory_views else ""
+        return ("%sComplete the following DS-1000 problem. Write ONLY the solution code that assigns the "
+                "requested result variable; do not repeat the problem setup or the tests. Return the solution "
+                "in one ```python code block.\n\n%s" % (mem, instr))
+
+
 class ExternalHarnessExecutionBackend(CodingExecutionBackend):
     """Boundary for a company Claude-Code-style/local-GLM harness. `harness` is an injected client with an
     async `run(payload) -> dict`. It receives ONLY governed inputs and returns a patch + sanitized metadata;

@@ -60,6 +60,14 @@ class ControlledLocalSandbox:
                     "output": ("ok" if r["bigcodebench_pass"] else "bigcode_fail"),
                     "base_pass": r["base_pass"], "status": r["status"], "exec_ok": r["exec_ok"],
                     "changed_files": [target_path], "meta": meta, "patched_text": new_text}
+        # REALBENCH-R3: a "DS1000:<problem_id>" grading marker routes to the OFFICIAL DS-1000 evaluator
+        # (Linux + official conda env only). new_text is the already-extracted completion snippet.
+        if grading_test is not None and grading_test.startswith("DS1000:"):
+            from experiments.actionable_memory_r3 import ds1000_grader as _DS
+            r = _DS.grade_by_id(grading_test[len("DS1000:"):], new_text, already_extracted=True)
+            return {"applied": True, "tests_passed": bool(r["passed"]),
+                    "output": ("ok" if r["passed"] else "ds1000_fail"), "exec_ok": True,
+                    "changed_files": [target_path], "meta": meta, "patched_text": new_text}
         # grade on the server-owned test (hidden for experiment tasks); fall back to the snapshot public test
         test_src = grading_test if grading_test is not None else snapshot.get("tests/test_app.py", "")
         passed = _run_test(new_text, target_path, test_src)

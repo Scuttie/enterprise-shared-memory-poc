@@ -39,7 +39,7 @@ def _execution_backend():
     EXECUTION_BACKEND=solar the worker calls the real Solar coding model via DirectModelExecutionBackend (key
     from UPSTAGE_API_KEY, read by an EnvSecretProvider — never from any request)."""
     kind = os.environ.get("EXECUTION_BACKEND", "fake")
-    if kind in ("solar", "solar_p52", "bigcode_instruct"):
+    if kind in ("solar", "solar_p52", "bigcode_instruct", "ds1000"):
         from ..providers.solar import SolarProvider
         from ..providers.secrets import EnvSecretProvider
         mo = int(os.environ.get("SOLAR_MAX_TOKENS", "1024"))
@@ -56,6 +56,9 @@ def _execution_backend():
                                  retry_after_max=float(os.environ.get("SOLAR_RETRY_AFTER_MAX", "30")))
         if kind == "bigcode_instruct":   # REALBENCH-R2: prompt IS the NL instruct_prompt (+memory), whole file
             return InstructWholeFileExecutionBackend(provider, model_max_tokens=mo)
+        if kind == "ds1000":             # REALBENCH-R3: prompt IS the DS-1000 NL problem (+memory), completion
+            from .execution import DS1000ExecutionBackend
+            return DS1000ExecutionBackend(provider, model_max_tokens=mo)
         if kind == "solar_p52":     # P5.2 backend: prompt shows the full snapshot (incl. public tests)
             return P52WholeFileExecutionBackend(provider, model_max_tokens=mo)
         # P5.1 whole-file output + server-side difflib diff
@@ -79,6 +82,9 @@ def _repo_provider():
     if rp == "bigcode":
         from experiments.bigcode_r2.adapter import BigCodeBenchTaskAdapter
         return BigCodeBenchTaskAdapter()
+    if rp == "ds1000":
+        from experiments.actionable_memory_r3.service_adapter import DS1000TaskAdapter
+        return DS1000TaskAdapter()
     return OfflineRepositoryProvider()
 
 

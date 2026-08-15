@@ -166,14 +166,32 @@ def main():
                 time.sleep(5)
         print("terminal=%d pending=%d" % (len(jobs) - len(pending), len(pending)), flush=True)
 
-    rows = []
-    for j in jobs:
-        r = asyncio.run(_collect(j["job_id"]))
-        rows.append({**j, **r})
-    asyncio.run(engine.dispose())
+    async def _collect_all():
+        e = su()
+        out = []
+        try:
+            async with e.connect() as c:
+                for j in jobs:
+                    oc = (await c.execute(text("SELECT pass1,exec1 FROM outcome_observations WHERE job_id=:j"),
+                                          {"j": j["job_id"]})).first()
+                    ap = (await c.execute(text("SELECT applied_patch FROM job_patches WHERE job_id=:j"),
+                                          {"j": j["job_id"]})).scalar()
+                    inj = (await c.execute(text("SELECT COUNT(*) FROM retrieval_candidates WHERE job_id=:j "
+                                               "AND injected"), {"j": j["job_id"]})).scalar()
+                    cu = (await c.execute(text("SELECT cross_user_private_injection_count FROM solve_jobs "
+                                               "WHERE id=:j"), {"j": j["job_id"]})).scalar()
+                    out.append({"arm": j["arm"], "tid": j["tid"],
+                                "pass1": int(oc[0]) if oc and oc[0] is not None else 0,
+                                "exec1": int(oc[1]) if oc and oc[1] is not None else 0,
+                                "applied_patch": ap, "injected": int(inj or 0), "cross_user": int(cu or 0)})
+        finally:
+            await e.dispose()
+        return out
+    rows = asyncio.run(_collect_all())
 
     if os.environ.get("CHUNK"):
         i, n = os.environ["CHUNK"].split("/")
+        os.makedirs(os.path.join(ART, "results"), exist_ok=True)
         json.dump({"chunk": os.environ["CHUNK"], "rows": rows, "labels": labels},
                   open(os.path.join(ART, "results", "discovery_raw.%sof%s.json" % (i, n)), "w",
                        encoding="utf-8", newline="\n"), indent=1, sort_keys=True)

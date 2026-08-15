@@ -1,0 +1,2267 @@
+{
+ "chunk": "2/6",
+ "labels": {
+  "ds1000_196": {
+   "irrelevant": "ds1000_558",
+   "relevant": "ds1000_34",
+   "shuffled": "ds1000_184"
+  },
+  "ds1000_22": {
+   "irrelevant": "ds1000_307",
+   "relevant": "ds1000_29",
+   "shuffled": "ds1000_34"
+  },
+  "ds1000_230": {
+   "irrelevant": "ds1000_321",
+   "relevant": "ds1000_159",
+   "shuffled": "ds1000_115"
+  },
+  "ds1000_255": {
+   "irrelevant": "ds1000_522",
+   "relevant": "ds1000_37",
+   "shuffled": "ds1000_159"
+  },
+  "ds1000_261": {
+   "irrelevant": "ds1000_790",
+   "relevant": "ds1000_184",
+   "shuffled": "ds1000_29"
+  },
+  "ds1000_308": {
+   "irrelevant": "ds1000_930",
+   "relevant": "ds1000_342",
+   "shuffled": "ds1000_468"
+  },
+  "ds1000_391": {
+   "irrelevant": "ds1000_571",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_446": {
+   "irrelevant": "ds1000_559",
+   "relevant": "ds1000_327",
+   "shuffled": "ds1000_342"
+  },
+  "ds1000_474": {
+   "irrelevant": "ds1000_14",
+   "relevant": "ds1000_468",
+   "shuffled": "ds1000_327"
+  },
+  "ds1000_519": {
+   "irrelevant": "ds1000_284",
+   "relevant": "ds1000_613",
+   "shuffled": "ds1000_598"
+  },
+  "ds1000_578": {
+   "irrelevant": "ds1000_401",
+   "relevant": "ds1000_598",
+   "shuffled": "ds1000_598"
+  },
+  "ds1000_617": {
+   "irrelevant": "ds1000_30",
+   "relevant": "ds1000_598",
+   "shuffled": "ds1000_613"
+  },
+  "ds1000_685": {
+   "irrelevant": "ds1000_468",
+   "relevant": "ds1000_690",
+   "shuffled": "ds1000_690"
+  },
+  "ds1000_715": {
+   "irrelevant": "ds1000_572",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_761": {
+   "irrelevant": "ds1000_543",
+   "relevant": "ds1000_743",
+   "shuffled": "ds1000_743"
+  },
+  "ds1000_828": {
+   "irrelevant": "ds1000_684",
+   "relevant": "ds1000_928",
+   "shuffled": "ds1000_928"
+  },
+  "ds1000_890": {
+   "irrelevant": "ds1000_27",
+   "relevant": "ds1000_917",
+   "shuffled": "ds1000_928"
+  },
+  "ds1000_925": {
+   "irrelevant": "ds1000_684",
+   "relevant": "ds1000_928",
+   "shuffled": "ds1000_917"
+  },
+  "ds1000_95": {
+   "irrelevant": "ds1000_790",
+   "relevant": "ds1000_115",
+   "shuffled": "ds1000_37"
+  },
+  "ds1000_989": {
+   "irrelevant": "ds1000_706",
+   "relevant": null,
+   "shuffled": null
+  }
+ },
+ "rows": [
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col in df.columns if row[col] == 1], axis=1)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col, val in row.items() if val == 1], axis=1)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col, val in row.items() if val == 1], axis=1)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col, val in row.items() if val == 1], axis=1)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col, val in row.items() if val == 1], axis=1)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col in row.index if row[col] == 1], axis=1)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col in row.index if row[col] == 1], axis=1)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col in row.index if row[col] == 1], axis=1)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col in row.index if row[col] == 1], axis=1)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col in row.index if row[col] == 1], axis=1)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col in row.index if row[col] == 1], axis=1)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df['category'] = df.apply(lambda row: [col for col in df.columns if row[col] == 1], axis=1)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_22"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(level=0).T.reset_index().melt(\n    id_vars=['variable'], value_vars=['Argentina', 'Brazil'], var_name='Country', value_name='value'\n).pivot_table(index=['Country', 'variable'], columns='year', values='value').reset_index().rename_columns({'variable': 'Variable'}).rename_axis(columns=None)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(1).reset_index().rename(columns={'level_2': 'year', 0: 'value'})\ndf = df.pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf = df.rename(columns=lambda x: x.lower() if x not in ['Country', 'year'] else x)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(fill_value=0).T.reset_index(drop=True).melt(id_vars='variable', value_vars=[2000, 2001, 2002, 2003, 2004, 2005], var_name='year', value_name='value').pivot(index=['Country', 'year'], columns='variable', values='value').reset_index().rename(columns=lambda x: x.strip('var'))\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(1).reset_index().rename(columns={'level_2': 'year', 0: 'value'})\ndf = df.pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf = df.rename(columns=lambda x: x.lower() if x not in ['Country', 'year'] else x)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(1).reset_index().rename(columns={'level_2': 'year', 0: 'value'})\ndf = df.pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf = df.rename(columns=lambda x: x.lower() if x not in ['Country', 'year'] else x)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(1).reset_index().rename(columns={'level_2': 'year', 0: 'value'})\ndf = df.pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf = df.rename(columns=lambda x: x.lower() if x not in ['Country', 'year'] else x)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(1).reset_index().rename(columns={'level_2': 'year', 0: 'value'})\ndf = df.pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf = df.rename(columns=lambda x: x.lower() if x not in ['Country', 'year'] else x)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(level=0).T.reset_index().melt(\n    id_vars=['year'], value_vars=['Argentina', 'Brazil'], var_name='Country', value_name='value'\n).pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf.columns.name = None\nresult = df\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(1).reset_index().rename(columns={'level_2': 'year', 0: 'value'})\ndf = df.pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf = df.rename(columns=lambda x: x.lower() if x not in ['Country', 'year'] else x)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(1).reset_index().rename(columns={'level_2': 'year', 0: 'value'})\ndf = df.pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf = df.rename(columns=lambda x: x.lower() if x not in ['Country', 'year'] else x)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(level=0).T.reset_index().melt(\n    id_vars=['year'], value_vars=['Argentina', 'Brazil'], var_name='Country', value_name='value'\n).pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf.columns.name = None\nresult = df\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "df = df.set_index(['Country', 'Variable']).stack().unstack(1).reset_index().rename(columns={'level_2': 'year', 0: 'value'})\ndf = df.pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\ndf = df.rename(columns=lambda x: x.lower() if x not in ['Country', 'year'] else x)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_95"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('your_file.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(row):\n    splits = row['var2'].split('-')\n    return pd.DataFrame({'var1': [row['var1']] * len(splits), 'var2': splits})\n\n# Apply the function to each row and concatenate the results\nresult = ddf.map_partitions(lambda part: part.apply(split_row, axis=1).sum()).compute()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('your_file.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(group):\n    splits = group['var2'].str.split('-')\n    rows = []\n    for _, row in group.iterrows():\n        for val in splits.loc[_]:\n            if pd.notna(val):\n                rows.append({'var1': row['var1'], 'var2': val})\n    return pd.DataFrame(rows)\n\n# Apply the split_row function to each partition\nresult = ddf.map_partitions(split_row).reset_index(drop=True)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('input.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(group):\n    splits = group['var2'].str.split('-')\n    rows = []\n    for i, split in splits.items():\n        for val in split:\n            rows.append({'var1': group.loc[i, 'var1'], 'var2': val})\n    return pd.DataFrame(rows)\n\n# Apply the split function to each partition\nresult = ddf.map_partitions(split_row).reset_index(drop=True)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('input.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(group):\n    splits = group['var2'].str.split('-')\n    rows = []\n    for i, split in splits.items():\n        for val in split:\n            rows.append({'var1': group.loc[i, 'var1'], 'var2': val})\n    return pd.DataFrame(rows)\n\n# Apply the split function to each partition\nresult = ddf.map_partitions(split_row).reset_index(drop=True)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('input.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(group):\n    splits = group['var2'].str.split('-')\n    rows = []\n    for i, split in splits.items():\n        for val in split:\n            rows.append({'var1': group.loc[i, 'var1'], 'var2': val})\n    return pd.DataFrame(rows)\n\n# Apply the split function to each partition\nresult = ddf.map_partitions(split_row).reset_index(drop=True)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('input.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(row):\n    splits = row['var2'].split('-')\n    return pd.DataFrame({'var1': [row['var1']] * len(splits), 'var2': splits})\n\n# Apply the split function to each row and concatenate the results\nresult = ddf.map_partitions(lambda part: part.apply(split_row, axis=1)).dropna().reset_index(drop=True)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('input.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(group):\n    splits = group['var2'].str.split('-')\n    rows = []\n    for i, split in splits.items():\n        for val in split:\n            rows.append({'var1': group.loc[i, 'var1'], 'var2': val})\n    return pd.DataFrame(rows)\n\n# Apply the split function to each partition\nresult = ddf.map_partitions(split_row).reset_index(drop=True)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('input.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(row):\n    splits = row['var2'].split('-')\n    return pd.DataFrame({'var1': [row['var1']] * len(splits), 'var2': splits})\n\n# Apply the split function to each row and concatenate the results\nresult = ddf.map_partitions(lambda part: part.apply(split_row, axis=1)).dropna().reset_index(drop=True)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('input.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(group):\n    splits = group['var2'].str.split('-')\n    rows = []\n    for i, split in splits.items():\n        for val in split:\n            rows.append({'var1': group.loc[i, 'var1'], 'var2': val})\n    return pd.DataFrame(rows)\n\n# Apply the split function to each partition\nresult = ddf.map_partitions(split_row).reset_index(drop=True)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('input.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(row):\n    splits = row['var2'].split('-')\n    return pd.DataFrame({'var1': [row['var1']] * len(splits), 'var2': splits})\n\n# Apply the split function to each row and concatenate the results\nresult = ddf.map_partitions(lambda part: part.apply(split_row, axis=1)).dropna().reset_index(drop=True)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('your_file.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(row):\n    splits = row['var2'].split('-')\n    return pd.DataFrame({'var1': [row['var1']] * len(splits), 'var2': splits})\n\n# Apply the function to each row and concatenate the results\nresult = ddf.map_partitions(lambda part: part.apply(split_row, axis=1)).dropna().reset_index(drop=True)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "import dask.dataframe as dd\nimport pandas as pd\n\n# Read the CSV file into a Dask DataFrame\nddf = dd.read_csv('your_file.csv', header=0)\n\n# Define a function to split the 'var2' column\ndef split_row(row):\n    splits = row['var2'].split('-')\n    return pd.DataFrame({'var1': [row['var1']] * len(splits), 'var2': splits})\n\n# Apply the function to each row and concatenate the results\nresult = ddf.map_partitions(lambda part: part.apply(split_row, axis=1)).dropna().reset_index(drop=True)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_196"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts().unstack(fill_value=0))\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts().unstack(fill_value=0))\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts().unstack(fill_value=0))\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts()).unstack(fill_value=0).T\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.assign(bin=pd.cut(df['views'], bins=bins, right=True, include_lowest=True)) \\\n         .groupby(['username', 'bin']) \\\n         .size() \\\n         .unstack(fill_value=0) \\\n         .reindex(columns=pd.IntervalIndex.from_breaks(bins))\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts().unstack(fill_value=0))\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts().unstack(fill_value=0))\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts().unstack(fill_value=0))\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts().unstack(fill_value=0))\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts().unstack(fill_value=0))\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(pd.cut, bins=bins).value_counts().unstack(fill_value=0).reindex(bins, axis=1, fill_value=0).T\nresult.index.name = 'views'\nresult.columns.name = 'username'\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(pd.cut, bins=bins).unstack(fill_value=0).astype(int)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_230"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "import pandas as pd\nfrom ast import literal_eval\n\ndf = pd.DataFrame(dict(col1=[['1', '2', '3'], ['4', '5']]))\n# Convert string representations to actual lists\ndf['col1'] = df['col1'].apply(literal_eval)\n# Reverse each list and join elements\nresult = ','.join([str(x) for lst in df.loc[0:1, 'col1'].apply(lambda x: x[::-1]) for x in lst])\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, reversed(lst))) for lst in df['col1'].tolist())\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_255"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False, method='dense').astype(int)\ndf['TIME'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\nresult = df\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False, method='dense').astype(int)\ndf['TIME'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\nresult = df\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False)\nresult = df\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "df['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False, method='dense').astype(int)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False).astype(int)\nresult = df\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False).astype(int)\nresult = df\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False).astype(int)\nresult = df\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False)\nresult = df\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False).astype(int)\nresult = df\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False).astype(int)\nresult = df\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False).astype(int)\nresult = df\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'ID': ['01', '01', '01', '02', '02'],\n                   'TIME': ['2018-07-11 11:12:20', '2018-07-12 12:00:23', '2018-07-13 12:00:00', '2019-09-11 11:00:00', '2019-09-12 12:00:00']})\ndf['TIME'] = pd.to_datetime(df['TIME'])\ndf['TIME_STR'] = df['TIME'].dt.strftime('%d-%b-%Y %a %H:%M:%S')\ndf['RANK'] = df.groupby('ID')['TIME'].rank(ascending=False).astype(int)\nresult = df\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_261"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set a fixed seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nnp.random.seed(42)  # Reset the seed to the same value\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set the seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set the seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nnp.random.seed(42)  # Reset seed to same value\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Ensure reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nnp.random.seed(42)  # Reset seed to same value\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set the seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set the seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set the seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set the seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set the seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set the seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "import numpy as np\n\nnp.random.seed(42)  # Set the seed for reproducibility\nr_old = np.random.randint(3, size=(100, 2000)) - 1\nr_new = np.random.randint(3, size=(100, 2000)) - 1\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_308"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "result = a[:, low:high]\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_391"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse_indices = np.unique(a, return_inverse=True)\nvalue_counts = np.bincount(inverse_indices)\nsorted_indices = np.argsort(-a)\ndense_ranks = rankdata(-a, method='dense').astype(int) - 1\nresult = np.zeros_like(a)\ncurrent_rank = len(a) - 1\nfor i in sorted_indices:\n    result[i] = current_rank\n    current_rank -= 1\nresult = len(a) - 1 - result\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse_indices = np.unique(a, return_inverse=True)\nvalue_counts = np.bincount(inverse_indices, minlength=len(unique_values))\nsorted_indices = np.argsort(-unique_values)\nsorted_values = unique_values[sorted_indices]\nrank = np.cumsum(value_counts[sorted_indices]) - 1\nresult = np.take(rank, inverse_indices)\nresult = len(a) - 1 - result\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse_indices = np.unique(a, return_inverse=True)\nvalue_ranks = {value: idx for idx, value in enumerate(sorted(unique_values, reverse=True))}\nresult = np.array([value_ranks[value] for value in a])\nresult = len(a) - 1 - result\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse_indices = np.unique(a, return_inverse=True)\nvalue_ranks = {value: idx for idx, value in enumerate(sorted(unique_values, reverse=True))}\nresult = np.array([value_ranks[value] for value in a])\nresult = len(a) - 1 - result\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse_indices = np.unique(a, return_inverse=True)\nvalue_ranks = {value: idx for idx, value in enumerate(sorted(unique_values, reverse=True))}\nresult = np.array([value_ranks[value] for value in a])\nresult = len(a) - 1 - result\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse = np.unique(a, return_inverse=True)\nsorted_indices = np.argsort(unique_values)[::-1]\nrank = np.searchsorted(unique_values[sorted_indices], a, side='right')\nresult = len(unique_values) - 1 - rank\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = [1, 2, 3, 4, 3, 2, 3, 4]\nunique_values, inverse_indices = np.unique(a, return_inverse=True)\nsorted_indices = np.argsort(-unique_values)\nrank = np.empty_like(inverse_indices)\nrank[np.argsort(inverse_indices)] = np.argsort(sorted_indices[inverse_indices])\nresult = len(a) - 1 - rank\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse = np.unique(a, return_inverse=True)\nsorted_indices = np.argsort(unique_values)[::-1]\nrank = np.searchsorted(unique_values[sorted_indices], a, side='right') - 1\ntie_adjustment = np.argsort(inverse).argsort(kind='stable')\nresult = len(a) - 1 - (rank + tie_adjustment)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\ndesc_rank = len(a) - rankdata(-a, method='dense').astype(int)\nresult = desc_rank - 1\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse_indices = np.unique(a, return_inverse=True)\nvalue_counts = np.bincount(inverse_indices, minlength=len(unique_values))\nsorted_indices = np.argsort(-unique_values)\nsorted_values = unique_values[sorted_indices]\ncumulative_counts = np.zeros_like(value_counts)\nfor i in range(1, len(sorted_values)):\n    cumulative_counts[i] = cumulative_counts[i - 1] + value_counts[sorted_indices[i - 1]]\nrank = len(a) - 1 - (cumulative_counts[inverse_indices] + np.arange(len(a))[np.argsort(inverse_indices)][inverse_indices.argmax() == inverse_indices])\nresult = np.zeros_like(a, dtype=int)\ncurrent_rank = len(a) - 1\nfor value in sorted_values:\n    indices = np.where(a == value)[0]\n    for idx in indices:\n        result[idx] = current_rank\n        current_rank -= 1\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse_indices = np.unique(a, return_inverse=True)\nvalue_counts = np.bincount(inverse_indices, minlength=len(unique_values))\nsorted_indices = np.argsort(-unique_values)\nsorted_values = unique_values[sorted_indices]\ncumulative_counts = np.zeros_like(value_counts)\nfor i in range(1, len(sorted_values)):\n    cumulative_counts[sorted_indices[i]] = cumulative_counts[sorted_indices[i-1]] + value_counts[sorted_indices[i-1]]\ncumulative_counts[sorted_indices[0]] = 0\nrank = np.zeros_like(a, dtype=int)\nfor i, val in enumerate(sorted_values):\n    mask = (a == val)\n    start = int(cumulative_counts[sorted_indices[i]])\n    end = start + np.sum(mask)\n    rank[mask] = np.arange(end-1, start-1, -1)\nresult = rank\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\na = np.array([1, 2, 3, 4, 3, 2, 3, 4])\nunique_values, inverse_indices = np.unique(a, return_inverse=True)\nvalue_ranks = {value: idx for idx, value in enumerate(sorted(unique_values, reverse=True))}\nresult = np.array([value_ranks[value] for value in a])\nresult = len(a) - 1 - result\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_446"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, arr) if not np.isnan(c).any() and not np.isnan(arr).any() else \n              np.nan_to_num(c, nan=0).data == np.nan_to_num(arr, nan=0).data).all() \n             for arr in CNTS)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, arr) if not (np.isnan(c).any() or np.isnan(arr).any()) else \n              np.nan_to_num(c, nan=0).data == np.nan_to_num(arr, nan=0).data).all() \n             for arr in CNTS)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, arr) if not (np.isnan(c).any() or np.isnan(arr).any()) else \n              np.nan_to_num(c, nan=0).data == np.nan_to_num(arr, nan=0).data).all() \n             for arr in CNTS)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any(np.array_equal(c, cnt, equal_nan=True) for cnt in CNTS)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "import numpy as np\n\ndef arrays_equal(a, b):\n    # Check if arrays have the same shape\n    if a.shape != b.shape:\n        return False\n    # Compare elements, treating NaNs as equal\n    return np.nan_to_num(a) == np.nan_to_num(b)\n\nresult = any(arrays_equal(c, cnt) for cnt in CNTS)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, arr) if not (np.isnan(c).any() or np.isnan(arr).any()) else \n              np.nan_to_num(c, nan=0).data == np.nan_to_num(arr, nan=0).data).all() \n             for arr in CNTS)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, arr) if not (np.isnan(c).any() or np.isnan(arr).any()) else \n              np.nan_to_num(c, nan=0).data == np.nan_to_num(arr, nan=0).data).all() \n             for arr in CNTS)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, arr) if not (np.isnan(c).any() or np.isnan(arr).any()) else \n              np.nan_to_num(c, nan=0).data == np.nan_to_num(arr, nan=0).data).all() \n             for arr in CNTS)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, arr) if not (np.isnan(c).any() or np.isnan(arr).any()) else \n              np.nan_to_num(c, nan=0).data == np.nan_to_num(arr, nan=0).data).all() \n             for arr in CNTS)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, arr) if not (np.isnan(c).any() or np.isnan(arr).any()) else \n              np.nan_to_num(c, nan=0).data == np.nan_to_num(arr, nan=0).data).all() \n             for arr in CNTS)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, cnt, equal_nan=True) for cnt in CNTS))\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "result = any((np.array_equal(c, arr) if not (np.isnan(c).any() or np.isnan(arr).any()) else \n              np.nan_to_num(c, nan=0).data == np.nan_to_num(arr, nan=0).data).all() \n             for arr in CNTS)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_474"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "ax.set_ylim(0, 40)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_519"
+  },
+  {
+   "applied_patch": "result = plt.scatter(a, b)\nfor i, txt in enumerate(c):\n    plt.annotate(txt, (a[i], b[i]))\nplt.xlabel('a')\nplt.ylabel('b')\nplt.title('Scatter plot of a over b with annotations from c')\nplt.show()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "result = plt.scatter(a, b)\nfor i, txt in enumerate(c):\n    plt.annotate(txt, (a[i], b[i]))\nplt.xlabel('a')\nplt.ylabel('b')\nplt.title('Scatter plot of a over b with annotations from c')\nplt.show()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "result = plt.scatter(a, b)\nfor i, txt in enumerate(c):\n    plt.annotate(txt, (a[i], b[i]))\nplt.xlabel('a')\nplt.ylabel('b')\nplt.title('Scatter plot of a over b with annotations from c')\nplt.show()\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "import seaborn as sns\n\ndf = pd.DataFrame({'COL1': a, 'COL2': b, 'COL3': c})\nfig, (ax1) = plt.subplots(1, 1, figsize=(8, 6))\nsns.regplot(x='COL1', y='COL2', data=df, scatter_kws={'s': 100}, line_kws={'color': 'red'}, ax=ax1)\nfor i, txt in enumerate(df['COL3']):\n    ax1.annotate(f'{txt}', (df['COL1'][i], df['COL2'][i]), textcoords=\"offset points\", xytext=(0,10), ha='center')\nplt.show()\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "result = plt.figure()\nax1 = result.add_subplot(111)\nscatter = ax1.scatter(b, a)\nfor i, (x, y, c_val) in enumerate(zip(b, a, c)):\n    ax1.annotate(f'{c_val}', (x, y), textcoords=\"offset points\", xytext=(0,10), ha='center')\nax1.set_xlabel('b')\nax1.set_ylabel('a')\nplt.show()\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "result = plt.scatter(a, b)\nfor i, txt in enumerate(c):\n    plt.annotate(txt, (a[i], b[i]))\nplt.xlabel('a')\nplt.ylabel('b')\nplt.title('Scatter plot of a over b with annotations from c')\nplt.show()\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)\nax1.scatter(b, a)\nfor i, (x, y, label) in enumerate(zip(b, a, c)):\n    ax1.annotate(f'{label}', (x, y))\nax2.scatter(b, a)\nfor i, (x, y, label) in enumerate(zip(b, a, c)):\n    ax2.annotate(f'{label}', (x, y))\nresult = fig\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "result = plt.scatter(a, b)\nfor i, txt in enumerate(c):\n    plt.annotate(txt, (a[i], b[i]))\nplt.xlabel('a')\nplt.ylabel('b')\nplt.title('Scatter plot of a over b with annotations from c')\nplt.show()\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "import seaborn as sns\n\ndf = pd.DataFrame({'x': a, 'y': b, 'c': c})\nfig, (ax1, ax2) = plt.subplots(1, 2, sharey=True, figsize=(10, 5))\nsns.regplot(x='x', y='y', data=df, ax=ax1)\nfor i, (xi, yi, ci) in enumerate(zip(a, b, c)):\n    ax2.text(xi, yi, f'{ci}', ha='center', va='center')\nsns.scatterplot(x='x', y='y', data=df, ax=ax2)\nresult = fig\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "result = plt.scatter(a, b)\nfor i, txt in enumerate(c):\n    plt.annotate(txt, (a[i], b[i]))\nplt.xlabel('a')\nplt.ylabel('b')\nplt.title('Scatter plot of a over b with annotations from c')\nplt.show()\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "result = plt.scatter(a, b)\nfor i, txt in enumerate(c):\n    plt.annotate(txt, (a[i], b[i]))\nplt.xlabel('a')\nplt.ylabel('b')\nplt.title('Scatter plot of a over b with annotations from c')\nplt.show()\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "result = plt.figure(figsize=(8, 6))\nax = result.add_subplot(111)\nscatter = ax.scatter(b, a)\nfor i, (x, y, c_val) in enumerate(zip(b, a, c)):\n    ax.annotate(f'{c_val}', (x, y), textcoords=\"offset points\", xytext=(0,10), ha='center')\nax.set_xlabel('b')\nax.set_ylabel('a')\nresult\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_578"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nbars = ax.bar(labels, height, align='center')\nax.set_xticks(ax.get_xticks())\nax.set_xticklabels(labels)\nresult = fig\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nbars = ax.bar(labels, height, align='center')\nax.set_xticks(ax.get_xticks())  # Ensure labels are displayed correctly\nresult = fig\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nwedges, texts = ax.pie(height, labels=labels, startangle=90)\nax.set_theta_offset(np.pi / 2)\nax.set_theta_direction(-1)\nresult = fig\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nwedges, texts = ax.bar(labels, height)\nplt.show()\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nbars = ax.bar(labels, height, align='center')\nax.set_xticks(ax.get_xticks())  # Ensure labels are displayed correctly\nresult = fig\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nbars = ax.bar(labels, height, align='center')\nax.set_xticks(ax.get_xticks())  # Ensure labels are displayed correctly\nresult = fig\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nbars = ax.bar(labels, height, align='center')\nax.set_xticks(ax.get_xticks())  # Ensure labels are displayed correctly\nresult = fig\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nbars = ax.bar(labels, height, align='center')\nax.set_xticks(ax.get_xticks())  # Ensure labels are displayed correctly\nresult = fig\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nax.bar(labels, height)\nresult = fig\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nbars = ax.bar(labels, height, align='center')\nax.set_xticks(ax.get_xticks())  # Ensure labels are displayed correctly\nresult = fig\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nbars = ax.bar(labels, height, align='center')\nax.set_xticks(ax.get_xticks())  # Ensure labels are displayed correctly\nresult = fig\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\nbars = ax.bar(labels, height, align='center')\nax.set_yticklabels([])  # Hide radial tick labels if desired\nresult = fig\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_617"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "result = tf.reduce_sum(A, axis=1)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_685"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "from scipy.stats import ks_2samp\nresult = ks_2samp(x, y).pvalue < alpha\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_715"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a)\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a)\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a, ddof=0)  # Population standard deviation\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a)\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a, ddof=0)  # Population standard deviation\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a, ddof=0)  # Population standard deviation\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a, ddof=0)  # Population standard deviation\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a, ddof=0)  # Population standard deviation\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a, ddof=0)  # Population standard deviation\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a, ddof=0)  # Population standard deviation\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a, ddof=0)  # Population standard deviation\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "import numpy as np\na = np.array([   1. ,    2. ,    2.5,  400. ,    6. ,    0. ])\nmean = np.mean(a)\nstd = np.std(a, ddof=0)  # Population standard deviation\nkurtosis_result = np.mean(((a - mean)/std)**4) - 3\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_761"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names and the new one-hot encoded column names\noriginal_columns = df_origin.columns.difference(sparse_df.columns)\nnew_columns = sparse_df.columns\n\n# Concatenate the original DataFrame (without the encoded columns) with the sparse DataFrame\ndf = pd.concat([df_origin[original_columns], sparse_df], axis=1)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names and the new one-hot encoded column names\noriginal_columns = df_origin.columns.difference(sparse_df.columns)\nnew_columns = sparse_df.columns\n\n# Concatenate the original DataFrame (without the encoded columns) with the sparse DataFrame\ndf = pd.concat([df_origin[original_columns], sparse_df], axis=1)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names and the new one-hot encoded column names\noriginal_columns = df_origin.columns.difference(sparse_df.columns)\nnew_columns = sparse_df.columns\n\n# Concatenate the original DataFrame (without the encoded columns) with the sparse DataFrame\ndf = pd.concat([df_origin[original_columns], sparse_df], axis=1)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names and the new one-hot encoded column names\noriginal_columns = df_origin.columns.difference(sparse_df.columns)\nnew_columns = sparse_df.columns\n\n# Concatenate the original DataFrame (without the encoded columns) with the sparse DataFrame\ndf = pd.concat([df_origin[original_columns], sparse_df], axis=1)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names and the new one-hot encoded column names\noriginal_columns = df_origin.columns.difference(sparse_df.columns)\nnew_columns = sparse_df.columns\n\n# Concatenate the original DataFrame (without the encoded columns) with the sparse DataFrame\ndf = pd.concat([df_origin[original_columns], sparse_df], axis=1)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "import pandas as pd\nfrom scipy.sparse import csr_matrix\n\n# Convert sparse matrix to DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names from the OneHotEncoder\nfeature_names = df_origin.columns.get_indexer(transform_output.nonzero()[1])\nencoded_columns = [f\"encoded_{i}\" for i in range(transform_output.shape[1])]\n\n# Create a DataFrame with the encoded columns\nencoded_df = pd.DataFrame(transform_output.toarray(), columns=encoded_columns, index=df_origin.index)\n\n# Merge with original DataFrame (excluding columns that were encoded)\noriginal_columns = df_origin.columns.difference(feature_names)\ndf = pd.concat([df_origin[original_columns], encoded_df], axis=1)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Reset the index of the original DataFrame to align with the sparse DataFrame\ndf_origin_reset = df_origin.reset_index(drop=True)\n\n# Concatenate the original DataFrame with the sparse DataFrame\ndf = pd.concat([df_origin_reset, sparse_df], axis=1)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names and the new one-hot encoded column names\noriginal_columns = df_origin.columns.difference(sparse_df.columns)\nnew_columns = sparse_df.columns\n\n# Concatenate the original DataFrame (without the encoded columns) with the sparse DataFrame\ndf = pd.concat([df_origin[original_columns], sparse_df], axis=1)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names and the new one-hot encoded column names\noriginal_columns = df_origin.columns.difference(sparse_df.columns)\nnew_columns = sparse_df.columns\n\n# Concatenate the original DataFrame (without the encoded columns) with the sparse DataFrame\ndf = pd.concat([df_origin[original_columns], sparse_df], axis=1)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names and the new one-hot encoded column names\noriginal_columns = df_origin.columns.difference(sparse_df.columns)\nnew_columns = sparse_df.columns\n\n# Concatenate the original DataFrame (without the encoded columns) with the sparse DataFrame\ndf = pd.concat([df_origin[original_columns], sparse_df], axis=1)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Reset the index of the original DataFrame to align with the sparse DataFrame\ndf_origin_reset = df_origin.reset_index(drop=True)\n\n# Concatenate the original DataFrame with the sparse DataFrame\ndf = pd.concat([df_origin_reset, sparse_df], axis=1)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from scipy.sparse import csr_matrix\nimport pandas as pd\n\n# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Get the original column names and the new one-hot encoded column names\noriginal_columns = df_origin.columns.difference(sparse_df.columns)\nnew_columns = sparse_df.columns\n\n# Concatenate the original DataFrame (without the encoded columns) with the sparse DataFrame\ndf = pd.concat([df_origin[original_columns], sparse_df], axis=1)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_828"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nimport numpy as np\n\n# Assuming load_data() returns a numpy array as per the assertion\ndata = load_data()\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\n\n# Assuming data is a numpy array with shape (n_samples, n_features)\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\n\n# Assuming data is a numpy array with shape (n_samples, n_features)\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nimport numpy as np\n\n# Assuming load_data() returns the predictors array as described\ndata = load_data()\nassert type(data) == np.ndarray\n\n# Initialize PowerTransformer with Yeo-Johnson method\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\n\n# Assuming data is a numpy array with shape (n_samples, n_features)\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nimport numpy as np\n\n# Convert data to DataFrame if it's a numpy array\nif isinstance(data, np.ndarray):\n    data = pd.DataFrame(data)\n\n# Apply Yeo-Johnson transformation\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\nyeo_johnson_data = pd.DataFrame(yeo_johnson_data, columns=data.columns)\nyeo_johnson_data = yeo_johnson_data.to_numpy()  # Convert back to numpy array if needed\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nimport numpy as np\n\n# Assuming load_data() returns the predictors DataFrame as a numpy array\ndata = load_data()\nassert type(data) == np.ndarray\n\n# Apply Yeo-Johnson transformation using PowerTransformer\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\n\n# Assuming data is a numpy array with shape (n_samples, n_features)\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\n\n# Assuming data is a numpy array with shape (n_samples, n_features)\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\n\n# Assuming data is a numpy array with shape (n_samples, n_features)\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\n\n# Assuming data is a numpy array with shape (n_samples, n_features)\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nimport numpy as np\n\n# Convert data to 2D array if necessary\nX = np.array(data) if len(data.shape) == 1 else data\n\n# Apply Yeo-Johnson transformation\npt = PowerTransformer(method='yeo-johnson', standardize=True)\nyeo_johnson_data = pt.fit_transform(X)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_890"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nfor col in cols:\n    myData[f'new_{col}'] = myData.groupby('Month')[col].transform(lambda x: scaler.fit_transform(x.values.reshape(-1, 1)).flatten())\nmyData = myData\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nfor col in cols:\n    myData[f'new_{col}'] = myData.groupby('Month')[col].transform(lambda x: scaler.fit_transform(x.values.reshape(-1, 1)).flatten())\nresult = myData\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nresult = myData.copy()\n\nfor month, group in myData.groupby('Month'):\n    scaled = scaler.fit_transform(group[cols])\n    scaled_df = pd.DataFrame(scaled, columns=cols, index=group.index)\n    for col in cols:\n        result[f'new_{col}'] = scaled_df[col]\n\nmyData = result\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "scaler = MinMaxScaler()\nresult = myData.copy()\nfor month, group in result.groupby('Month', group_keys=False):\n    scaled = scaler.fit_transform(group[['A2', 'A3']])\n    result.loc[group.index, ['new_A2', 'new_A3']] = scaled\nmyData = result\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nfor col in cols:\n    myData[f'new_{col}'] = myData.groupby('Month')[col].transform(lambda x: scaler.fit_transform(x.values.reshape(-1, 1)).flatten())\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nfor col in cols:\n    myData[f'new_{col}'] = myData.groupby('Month')[col].transform(lambda x: scaler.fit_transform(x.values.reshape(-1, 1)).flatten())\nresult = myData\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nfor col in cols:\n    myData['new_' + col] = myData.groupby('Month')[col].transform(lambda x: scaler.fit_transform(x.values.reshape(-1, 1)).flatten())\nmyData = myData\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "scaler = MinMaxScaler()\nresult = myData.copy()\nfor month, group in result.groupby('Month', group_keys=False):\n    scaled = scaler.fit_transform(group[['A2', 'A3']])\n    result.loc[group.index, ['new_A2', 'new_A3']] = scaled\nmyData = result\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nfor col in cols:\n    myData[f'new_{col}'] = myData.groupby('Month')[col].transform(lambda x: scaler.fit_transform(x.values.reshape(-1, 1)).flatten())\nresult = myData\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nfor col in cols:\n    myData[f'new_{col}'] = myData.groupby('Month')[col].transform(lambda x: scaler.fit_transform(x.values.reshape(-1, 1)).flatten())\nresult = myData\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nresult = myData.copy()\n\nfor month, group in myData.groupby('Month'):\n    scaled = scaler.fit_transform(group[cols])\n    scaled_df = pd.DataFrame(scaled, columns=cols, index=group.index)\n    for col in cols:\n        result[f'new_{col}'] = scaled_df[col]\n\nmyData = result\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\nmyData = pd.DataFrame({\n    'Month': [3, 3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 8, 8],\n    'A1': [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],\n    'A2': [31, 13, 13, 13, 33, 33, 81, 38, 18, 38, 18, 18, 118],\n    'A3': [81, 38, 18, 38, 18, 18, 118, 31, 13, 13, 13, 33, 33],\n    'A4': [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8],\n})\n\nscaler = MinMaxScaler()\ncols = ['A2', 'A3']\nfor col in cols:\n    myData[f'new_{col}'] = myData.groupby('Month')[col].transform(lambda x: scaler.fit_transform(x.values.reshape(-1, 1)).flatten())\nresult = myData\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_925"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-2) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  },
+  {
+   "applied_patch": "output = torch.where(mask.unsqueeze(-1) == 0, clean_input_spectrogram, output)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_989"
+  }
+ ]
+}

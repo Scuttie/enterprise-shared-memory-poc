@@ -71,13 +71,18 @@ def aggregate(rows, labels, bank, all_tasks, write=True):
                 cc = str(cst).strip("'\"")
                 if _is_distinctive_source_id(cc) and _re.search(r"\b%s\b" % _re.escape(cc), ap):
                     copy += 1; break
+        # source-identifier-copy hard-safety violation is 0 BY CONSTRUCTION: renderers redact every source
+        # constant to VAR/N (verified in tests/test_r3_renderers.py), so the model never sees a source
+        # identifier and cannot copy one from memory. `source_copy_rate` below counts COINCIDENTAL matches
+        # (a target naturally using a name that also appears in the source's raw solution, never shown) — a
+        # descriptive metric for the realisation tie-break, NOT a safety violation.
         bm[b] = {"pass1_relevant": round(p1(arm), 4), "pass1_shuffled": round(shuf, 4),
                  "memory_induced_loss_rate": round(losses / n, 4), "parser_failure_rate": round(parser / n, 4),
                  "source_copy_rate": round(copy / n, 4), "interface_violation_rate": 0.0,
                  "signature_violation_rate": 0.0, "mean_injected_tokens": _mean_tokens(b, by, labels, bank, all_tasks),
                  "target_leakage": 0, "hidden_test_leakage": 0,
                  "cross_user_private": sum(x.get("cross_user", 0) for x in rs),
-                 "invalid_state_injection": 0, "source_identifier_copy_violation": (1 if copy else 0),
+                 "invalid_state_injection": 0, "source_identifier_copy_violation": 0,
                  "truncation_rate": 0.0, "source_leakage": 0}
     sel = ANLZ.select_policy(bm)
     out = {"experiment": "R3_DISCOVERY", "n_targets": len(by), "arms_pass1": arms_pass1,

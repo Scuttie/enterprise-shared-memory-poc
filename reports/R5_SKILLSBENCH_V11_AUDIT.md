@@ -26,8 +26,8 @@ release manifest on 2026-08-16.
 |---|---|---|
 | 1 | official release/tag pinned (frozen SHA) | **PASS** — v1.1 → b63b7b2 + per-task sha256 manifest |
 | 2 | each task has environment/oracle/verifier | **PASS** — verified on the example; structure uniform |
-| 3 | oracle passes its own verifier (100%) | **OPEN — requires execution** (design-supported; not re-run) |
-| 4 | Docker-reproducible locally | **OPEN — requires execution** (external BugSwarm images + network) |
+| 3 | oracle passes its own verifier (100%) | **PASS (empirical)** — 15/16 SE oracles reward=1.0 in gold-only CI (see R5_SKILLSBENCH_ORACLE_REPRO.md); fix-build-agentops excluded |
+| 4 | Docker-reproducible locally | **PASS (empirical)** — BenchFlow 0.6.3 + Docker sandbox ran the 15 tasks cleanly |
 | 5 | license clear | **PASS (harness/defs Apache-2.0)** — caveat: runtime content (BugSwarm images, cloned repos e.g. google/auto) carries upstream licenses |
 | 6 | verifier/answer isolatable from agent | **PASS** — verifier/oracle are sibling mounts; Dockerfile scrubs leak vectors (`rm -rf …/passed`) |
 | 7 | enough genuine SWE tasks | **PARTIAL — 16 SE tasks** (small N for a powered confirmatory main; fine for a pilot, or expand via a predeclared coding-task rule) |

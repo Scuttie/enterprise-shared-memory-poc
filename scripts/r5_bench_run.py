@@ -71,8 +71,24 @@ def main():
                         if m:
                             reward = float(m.group(1)); break
         passed = reward == 1 or (reward is None and re.search(r"\[PASS\]|1/1 \(100", blob) is not None)
+        # capture the newest result.json diagnostics (api_error_info, tool-call counts) for debugging the agent
+        diag = {}
+        rj = sorted(glob.glob(os.path.join(SB, "jobs", "*", "**", "result.json"), recursive=True),
+                    key=os.path.getmtime)
+        if rj:
+            try:
+                rjd = json.load(open(rj[-1], encoding="utf-8"))
+                for k in ("api_error_info", "transport_error_info", "error", "tool_calls", "num_tool_calls",
+                          "reward", "usage", "tokens"):
+                    if k in json.dumps(rjd):
+                        m = re.search(r'"%s"\s*:\s*("[^"]*"|\{[^}]*\}|\[[^\]]*\]|[0-9.]+)' % k, json.dumps(rjd))
+                        if m:
+                            diag[k] = m.group(1)[:400]
+            except Exception:
+                pass
         results[tid] = {"rc": rc, "reward": reward, "passed": bool(passed), "secs": round(time.time() - t0, 1),
-                        "tail": blob[-1500:], "summary_path": (os.path.basename(os.path.dirname(summ)) if summ else None)}
+                        "tail": blob[-1500:], "diag": diag,
+                        "summary_path": (os.path.basename(os.path.dirname(summ)) if summ else None)}
         print("== %s [%s] rc=%s reward=%s passed=%s (%.0fs)" %
               (tid, ARM, rc, reward, passed, results[tid]["secs"]), flush=True)
     npass = sum(1 for r in results.values() if r["passed"])

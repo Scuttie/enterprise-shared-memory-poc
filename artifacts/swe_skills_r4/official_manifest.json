@@ -1,0 +1,398 @@
+{
+  "n_public_rows": 49,
+  "public_dataset_sha256": "616373200363f5faf1cda6699f8952ee47f6b3a506bfdd8026f3655bf5dc6fe6",
+  "skills": [
+    {
+      "skill_id": "add-uint-support",
+      "name": "Add UInt Support",
+      "type": "repair",
+      "repo_url": "",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-pytorch:latest"
+    },
+    {
+      "skill_id": "fix",
+      "name": "React Code Fix & Linter",
+      "type": "fix",
+      "repo_url": "https://github.com/michaelasper/upgradle",
+      "repo_commit_pinned": true,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "tdd-workflow",
+      "name": "TDD Workflow",
+      "type": "feature",
+      "repo_url": "https://github.com/tdd-starters/python",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "security-review",
+      "name": "Security Review (zh-TW)",
+      "type": "feature",
+      "repo_url": "https://github.com/babybuddy/babybuddy",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "springboot-tdd",
+      "name": "Spring Boot TDD",
+      "type": "feature",
+      "repo_url": "https://github.com/spring-projects/spring-petclinic",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-jvm"
+    },
+    {
+      "skill_id": "add-admin-api-endpoint",
+      "name": "Ghost Admin API Endpoint Creator",
+      "type": "feature",
+      "repo_url": "https://github.com/TryGhost/Ghost",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "mcp-builder",
+      "name": "MCP Server Builder",
+      "type": "feature",
+      "repo_url": "https://github.com/modelcontextprotocol/servers",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "python-resilience",
+      "name": "Python Resilience Patterns",
+      "type": "feature",
+      "repo_url": "https://github.com/encode/httpx",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "xlsx",
+      "name": "Excel & Spreadsheet Automation",
+      "type": "feature",
+      "repo_url": "https://github.com/ericgazoni/openpyxl",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "turborepo",
+      "name": "Turborepo Monorepo Build System",
+      "type": "feature",
+      "repo_url": "https://github.com/vercel/turbo",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "github-actions-templates",
+      "name": "GitHub Actions Templates",
+      "type": "feature",
+      "repo_url": "https://github.com/actions/starter-workflows",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "analytics-events",
+      "name": "Metabase Frontend Analytics Events",
+      "type": "feature",
+      "repo_url": "https://github.com/metabase/metabase",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "prometheus-configuration",
+      "name": "Prometheus Configuration",
+      "type": "feature",
+      "repo_url": "https://github.com/prometheus/prometheus",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-golang"
+    },
+    {
+      "skill_id": "python-anti-patterns",
+      "name": "Python Anti-Pattern Review",
+      "type": "refactor",
+      "repo_url": "https://github.com/mahmoud/boltons",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "implementing-jsc-classes-zig",
+      "name": "Bun Zig-JS Class Generator",
+      "type": "feature",
+      "repo_url": "https://github.com/oven-sh/bun",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "add-malli-schemas",
+      "name": "Metabase Malli Schema Architect",
+      "type": "feature",
+      "repo_url": "https://github.com/metabase/metabase",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-clojure"
+    },
+    {
+      "skill_id": "clojure-write",
+      "name": "Clojure Development & REPL Workflow",
+      "type": "feature",
+      "repo_url": "https://github.com/metabase/metabase",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-clojure"
+    },
+    {
+      "skill_id": "django-patterns",
+      "name": "Django Architecture Patterns",
+      "type": "feature",
+      "repo_url": "https://github.com/saleor/saleor",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "python-background-jobs",
+      "name": "Python Background Jobs",
+      "type": "feature",
+      "repo_url": "https://github.com/celery/celery",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "python-configuration",
+      "name": "Python Configuration Management",
+      "type": "feature",
+      "repo_url": "https://github.com/fastapi/fastapi",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "creating-financial-models",
+      "name": "Financial Modeling Suite",
+      "type": "feature",
+      "repo_url": "https://github.com/lballabio/QuantLib",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "prompt-engineering-patterns",
+      "name": "Prompt Engineering Patterns",
+      "type": "feature",
+      "repo_url": "https://github.com/langchain-ai/langchain",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "risk-metrics-calculation",
+      "name": "Risk Metrics Calculation",
+      "type": "feature",
+      "repo_url": "https://github.com/quantopian/pyfolio",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "vector-index-tuning",
+      "name": "Vector Index Tuning",
+      "type": "feature",
+      "repo_url": "https://github.com/facebookresearch/faiss",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "rag-implementation",
+      "name": "RAG Implementation Framework",
+      "type": "feature",
+      "repo_url": "https://github.com/langchain-ai/langchain",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "spark-optimization",
+      "name": "Spark Optimization",
+      "type": "feature",
+      "repo_url": "https://github.com/apache/spark",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-jvm"
+    },
+    {
+      "skill_id": "similarity-search-patterns",
+      "name": "Similarity Search Patterns",
+      "type": "feature",
+      "repo_url": "https://github.com/milvus-io/milvus",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-golang"
+    },
+    {
+      "skill_id": "llm-evaluation",
+      "name": "LLM Evaluation",
+      "type": "feature",
+      "repo_url": "https://github.com/stanford-crfm/helm",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "analyze-ci",
+      "name": "CI Failure Analyzer",
+      "type": "feature",
+      "repo_url": "https://github.com/getsentry/sentry",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "python-packaging",
+      "name": "Python Packaging & Distribution",
+      "type": "test",
+      "repo_url": "https://github.com/pypa/packaging",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "gitops-workflow",
+      "name": "GitOps Workflow for Kubernetes",
+      "type": "feature",
+      "repo_url": "https://github.com/fluxcd/flux2",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-golang"
+    },
+    {
+      "skill_id": "linkerd-patterns",
+      "name": "Linkerd Service Mesh Patterns",
+      "type": "feature",
+      "repo_url": "https://github.com/linkerd/linkerd2",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-golang"
+    },
+    {
+      "skill_id": "changelog-automation",
+      "name": "Changelog Automation",
+      "type": "feature",
+      "repo_url": "https://github.com/github-changelog-generator/github-changelog-generator",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-ruby"
+    },
+    {
+      "skill_id": "k8s-manifest-generator",
+      "name": "Kubernetes Manifest Generator",
+      "type": "feature",
+      "repo_url": "https://github.com/kubernetes-sigs/kustomize",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-golang"
+    },
+    {
+      "skill_id": "nx-workspace-patterns",
+      "name": "Nx Workspace Patterns",
+      "type": "test",
+      "repo_url": "https://github.com/nrwl/nx",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "bazel-build-optimization",
+      "name": "Bazel Build Optimization",
+      "type": "feature",
+      "repo_url": "https://github.com/bazelbuild/bazel",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-bazel"
+    },
+    {
+      "skill_id": "istio-traffic-management",
+      "name": "Istio Traffic Management",
+      "type": "feature",
+      "repo_url": "https://github.com/istio/istio",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "bash-defensive-patterns",
+      "name": "Bash Defensive Patterns",
+      "type": "feature",
+      "repo_url": "https://github.com/koalaman/shellcheck",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "gitlab-ci-patterns",
+      "name": "GitLab CI Patterns",
+      "type": "fix",
+      "repo_url": "https://github.com/gitlabhq/gitlabhq",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-ruby"
+    },
+    {
+      "skill_id": "implementing-agent-modes",
+      "name": "PostHog Agent Mode Architect",
+      "type": "feature",
+      "repo_url": "https://github.com/PostHog/posthog",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "python-observability",
+      "name": "Python Observability Patterns",
+      "type": "feature",
+      "repo_url": "https://github.com/open-telemetry/opentelemetry-python",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "distributed-tracing",
+      "name": "Distributed Tracing & Observability",
+      "type": "feature",
+      "repo_url": "https://github.com/open-telemetry/opentelemetry-collector",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-golang"
+    },
+    {
+      "skill_id": "service-mesh-observability",
+      "name": "Service Mesh Observability",
+      "type": "feature",
+      "repo_url": "https://github.com/linkerd/linkerd2",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-golang"
+    },
+    {
+      "skill_id": "slo-implementation",
+      "name": "SLO Implementation Framework",
+      "type": "feature",
+      "repo_url": "https://github.com/google/slo-generator",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "python-performance-optimization",
+      "name": "Python Performance Optimizer",
+      "type": "feature",
+      "repo_url": "https://github.com/benfred/py-spy",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-rust"
+    },
+    {
+      "skill_id": "grafana-dashboards",
+      "name": "Grafana Dashboards",
+      "type": "feature",
+      "repo_url": "https://github.com/grafana/grafana",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-golang"
+    },
+    {
+      "skill_id": "dbt-transformation-patterns",
+      "name": "dbt Transformation Patterns",
+      "type": "test",
+      "repo_url": "https://github.com/dbt-labs/dbt-core",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "langsmith-fetch",
+      "name": "LangSmith Fetch",
+      "type": "feature",
+      "repo_url": "https://github.com/langchain-ai/langchain",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    },
+    {
+      "skill_id": "v3-performance-optimization",
+      "name": "V3 Performance Optimization",
+      "type": "feature",
+      "repo_url": "https://github.com/Dao-AILab/flash-attention",
+      "repo_commit_pinned": false,
+      "docker_image": "zhangyiiiiii/swe-skills-bench-python"
+    }
+  ]
+}

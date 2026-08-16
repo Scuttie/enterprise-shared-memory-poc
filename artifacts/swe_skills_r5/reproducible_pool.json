@@ -1,0 +1,35 @@
+{
+  "gate": "skillsbench_v11_oracle_reproduction",
+  "benchflow": "0.6.3",
+  "commit": "b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af",
+  "se_tested": 16,
+  "se_reproduced": 15,
+  "reproducible_se_pool": [
+    "azure-bgp-oscillation-route-leak",
+    "data-to-d3",
+    "debug-trl-grpo",
+    "dialogue-parser",
+    "fix-build-google-auto",
+    "fix-visual-stability",
+    "flink-query",
+    "jax-computing-basics",
+    "llm-prefix-cache-replay",
+    "parallel-tfidf-search",
+    "python-scala-translation",
+    "react-performance-debugging",
+    "simpo-code-reproduction",
+    "spring-boot-jakarta-migration",
+    "tictoc-unnecessary-abort-detection"
+  ],
+  "excluded": {
+    "fix-build-agentops": "oracle reward=0.0 on 2 runs (own gold does not satisfy own verifier in clean CI)"
+  },
+  "extended_coding_tasks_pending_sweep": "15 (from coding_inclusion_rule.json; oracle sweep required before inclusion)",
+  "conditions_closed": {
+    "2": "PASS",
+    "3": "PASS (15/16 SE reward=1.0)",
+    "4": "PASS",
+    "6": "PASS"
+  },
+  "note": "gold-only, no paid model; tasks whose oracle does not reproduce are excluded (never grade-nondeterministic tasks)"
+}

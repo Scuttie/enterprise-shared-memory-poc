@@ -49,7 +49,8 @@ def main():
         blob = out_run + "\n" + out_chk
         # defensive reward parse: reward.txt, or "reward": 1, or reward=1, or pass/PASSED markers
         reward = None
-        m = re.search(r'"?reward"?\s*[:=]\s*([01](?:\.0)?)', blob)
+        # match "reward": 1.0 / 'reward': 1.0 / reward=1 / Rewards: {'reward': 1.0}
+        m = re.search(r"['\"]?reward['\"]?\s*[:=]\s*([01](?:\.\d+)?)", blob)
         if m:
             reward = float(m.group(1))
         rewards = _find_reward()

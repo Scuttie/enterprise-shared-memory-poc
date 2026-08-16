@@ -46,12 +46,17 @@ jobs:
             -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
             -d '{"model":"solar-pro2-251215","messages":[{"role":"user","content":"Run ls."}],"max_tokens":64,"parallel_tool_calls":true,"tools":[{"type":"function","function":{"name":"run_shell","description":"x","parameters":{"type":"object","properties":{"cmd":{"type":"string"}}}}}]}')
           echo "HTTP $code"; head -c 500 /tmp/s5.json; echo
-          echo "===== 6) system msg + 6 tools + biggish prompt ====="
-          BIG=$(python3 -c "print('You are a coding agent working in a repo. '+('context line. '*400))")
+          echo "===== 6) system msg + 6 tools + LARGE prompt (~12k tokens) ====="
+          python3 -c "
+          import json
+          big='You are a coding agent working in a repository.\n'+('This is repository context line with some code and files. '*2500)
+          body={'model':'solar-pro2-251215','messages':[{'role':'system','content':big},{'role':'user','content':'Implement the parser.'}],'max_tokens':64,'tools':[{'type':'function','function':{'name':'t%d'%i,'description':'a shell/file tool number %d'%i,'parameters':{'type':'object','properties':{'a':{'type':'string'}}}}} for i in range(6)]}
+          open('/tmp/body6.json','w').write(json.dumps(body))
+          print('body bytes:',len(json.dumps(body)))
+          "
           code=$(curl -s -o /tmp/s6.json -w "%{http_code}" https://api.upstage.ai/v1/chat/completions \
-            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
-            -d "$(python3 -c "import json,os; print(json.dumps({'model':'solar-pro2-251215','messages':[{'role':'system','content':os.environ['BIG']},{'role':'user','content':'Implement the parser.'}],'max_tokens':64,'tools':[{'type':'function','function':{'name':'t%d'%i,'description':'x','parameters':{'type':'object','properties':{'a':{'type':'string'}}}}} for i in range(6)]}))" BIG="$BIG")")
-          echo "HTTP $code"; head -c 500 /tmp/s6.json; echo
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" --data @/tmp/body6.json)
+          echo "HTTP $code"; head -c 600 /tmp/s6.json; echo
           echo "===== verdict ====="
           python3 - <<'PY'
           import json

@@ -12,6 +12,8 @@ on:
         description: "comma-separated SkillsBench task ids (SWE subset)"
         required: false
         default: "dialogue-parser,python-scala-translation"
+  push:
+    branches: [codex/production-service-v0.2]
 
 concurrency:
   group: ci-r5-oracle-${{ github.ref }}
@@ -19,6 +21,7 @@ concurrency:
 
 jobs:
   oracle-repro:
+    if: contains(github.event.head_commit.message, '[run-r5-oracle]') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -51,7 +54,7 @@ jobs:
       - name: Oracle reproduction (gold-only)
         env:
           SKILLSBENCH_DIR: ${{ github.workspace }}/skillsbench
-          R5_TASKS: ${{ github.event.inputs.tasks }}
+          R5_TASKS: ${{ github.event.inputs.tasks || 'dialogue-parser,python-scala-translation' }}
           R5_TASK_TIMEOUT: "2000"
         run: python scripts/r5_oracle_repro.py
       - name: Upload result

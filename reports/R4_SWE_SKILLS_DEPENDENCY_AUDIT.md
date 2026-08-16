@@ -1,8 +1,17 @@
 # R4 §2/§3 — SWE-Skills-Bench Dependency Audit → §0-A TECHNICAL STOP
 
-Determination of whether the **official SWE-Skills-Bench** can be reproduced without altering benchmark
-semantics. All facts below were verified against primary sources (arXiv, Hugging Face API, GitHub API, Docker
-Hub registry) on 2026-08-16. Lock: `configs/swe_skills_r4/benchmark_lock.json`; public manifest:
+**Precise scope of this finding:** *As of 2026-08-16, the publicly released artifacts do not permit reproducing
+the ~565-instance SWE-Skills-Bench evaluation reported in the paper. The public Hugging Face release provides
+only 49 skill-level rows, and the full instance corpus and the official harness repository are inaccessible.*
+This is **not** a claim that the benchmark is fake or unreproducible in principle — the paper (a preliminary
+work-in-progress preprint) states it generated ~565 instances, and a repo/artifacts release could reappear
+later. The determination is anchored to **live HTTP/API results on 2026-08-16**, not cached search snippets:
+GitHub API returned 404 for both `repos/GeniusHTX/SWE-Skills-Bench` and `users/GeniusHTX`; the HF dataset API
+returned a public MIT dataset of 49 rows; the arXiv abstract returned 200. (A stale GitHub README may still be
+search-cached, but the current live fetch/API is 404.)
+
+Verification method: primary-source live checks (arXiv, HF API, GitHub REST API, Docker Hub registry) on
+2026-08-16. Lock: `configs/swe_skills_r4/benchmark_lock.json`; public manifest:
 `artifacts/swe_skills_r4/official_manifest.json`.
 
 ## The benchmark is REAL
@@ -49,9 +58,20 @@ SWE-Skills-Bench as the paper/§5 define it (which needs multiple instances per 
 held-out split and ≥80 held-out instances), and running it would be an **unpreregistered redesign** — which §16
 states *"a redesign requires REALBENCH_SWE_SKILLS_R5."* It is therefore **not** run here.
 
+## Do NOT inflate 49 → 565 by repetition
+Running the same 49 instances under multiple seeds/trajectories does **not** reconstruct the paper's ~565
+instances: **10 trajectories are not 10 task instances.** Treating repeated runs of one problem as ten distinct
+repository requirements would fabricate effective sample size and skill-clustering variance. Likewise, writing
+the missing requirements/verifiers ourselves would make it **our own benchmark**, not a reproduction of
+SWE-Skills-Bench — reporting that under the official name is forbidden and would not survive review.
+
 ## Honest note on repetition
 REALBENCH-R2 previously reached a technical stop on SWE-Skills for the single-shot service path. This R4 audit
 re-investigated freshly and at the repository-agent level, and reaches the same conclusion for a **more precise,
-now-documented reason**: the benchmark is real, but its harness and full instance set are not public and its
-repositories are not pinned. This is a genuine artifact-availability failure (§0-A), not benchmark-shopping
-(R4 produced no result to flee).
+now-documented reason**: as of 2026-08-16 the publicly released artifacts (49 skill-level rows, no official
+harness, 1/49 pinned commits) do not permit reproducing the ~565-instance evaluation. This is a genuine
+artifact-availability failure at the gate **before the first model call** (§0-A) — basic reproducibility
+hygiene, not benchmark-shopping (R4 produced no result to flee). If the authors later release the full
+instance corpus + harness, a fresh study under a new experiment ID (`REALBENCH_SWE_SKILLS_R5_FULL_RELEASE`) and
+a new freeze would revive it; this R4 stop remains the honest historical record of the release state on
+2026-08-16.

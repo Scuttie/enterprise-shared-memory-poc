@@ -12,6 +12,10 @@ on:
         description: "comma-separated task ids"
         required: false
         default: "dialogue-parser"
+      agent:
+        description: "BenchFlow agent (must speak openai-completions for Solar)"
+        required: false
+        default: "goose"
   push:
     branches: [codex/production-service-v0.2]
 
@@ -43,11 +47,13 @@ jobs:
       - name: Sync task deps (best effort)
         working-directory: skillsbench
         run: uv sync --locked 2>&1 | tail -3 || uv sync 2>&1 | tail -3 || true
+      - name: List available agents (diagnostic — find one that speaks openai-completions)
+        run: bench agent list 2>&1 | head -60 || bench agents list 2>&1 | head -60 || true
       - name: A0 NO_SKILL calibration (Solar repository-agent, PAID)
         env:
           SKILLSBENCH_DIR: ${{ github.workspace }}/skillsbench
           R5_TASKS: ${{ github.event.inputs.tasks || 'dialogue-parser' }}
-          AGENT: claude-agent-acp
+          AGENT: ${{ github.event.inputs.agent || 'goose' }}
           MODEL: openai/solar-pro2-251215
           SKILL_MODE: no-skill
           ARM_LABEL: A0

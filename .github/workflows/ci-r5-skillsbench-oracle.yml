@@ -1,0 +1,62 @@
+name: ci-r5-skillsbench-oracle
+
+# REALBENCH-R5-A0 GATE (gold-only, NO paid model): reproduce the SkillsBench v1.1 ORACLE through each task's own
+# verifier in Docker, to close audit conditions 3 (oracle passes verifier) + 4 (Docker reproducible). Clones
+# skillsbench @ the pinned v1.1 commit, installs BenchFlow, and runs `bench eval run --agent oracle` on a small
+# diverse SWE subset. Dispatch-only (manual); default exploratory subset.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tasks:
+        description: "comma-separated SkillsBench task ids (SWE subset)"
+        required: false
+        default: "dialogue-parser,python-scala-translation"
+
+concurrency:
+  group: ci-r5-oracle-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  oracle-repro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL \
+                      /usr/local/share/boost "/usr/local/share/powershell" /usr/share/swift || true
+          df -h /
+      - name: Clone SkillsBench @ pinned v1.1 commit
+        run: |
+          set -euo pipefail
+          git clone --no-checkout https://github.com/benchflow-ai/skillsbench.git skillsbench
+          cd skillsbench
+          git checkout b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af
+          test "$(git rev-parse HEAD)" = "b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af"
+          echo "license:"; head -1 LICENSE
+          ls tasks/dialogue-parser
+      - uses: astral-sh/setup-uv@v5
+      - name: Install BenchFlow runner (pinned)
+        run: |
+          set -euo pipefail
+          uv tool install "benchflow>=0.6.3,<0.7" || uv tool install benchflow
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          which bench || uv tool run --from "benchflow>=0.6.3,<0.7" bench --help | head -5 || true
+          bench --help 2>&1 | head -20 || true
+      - name: Sync task deps (best effort)
+        working-directory: skillsbench
+        run: uv sync --locked 2>&1 | tail -5 || uv sync 2>&1 | tail -5 || true
+      - name: Oracle reproduction (gold-only)
+        env:
+          SKILLSBENCH_DIR: ${{ github.workspace }}/skillsbench
+          R5_TASKS: ${{ github.event.inputs.tasks }}
+          R5_TASK_TIMEOUT: "2000"
+        run: python scripts/r5_oracle_repro.py
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r5-oracle-repro
+          path: artifacts/swe_skills_r5/oracle_repro.json

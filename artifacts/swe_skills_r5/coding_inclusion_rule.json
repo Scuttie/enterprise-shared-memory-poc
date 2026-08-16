@@ -1,0 +1,271 @@
+{
+  "rule_id": "r5-coding-inclusion-1",
+  "frozen": "before any result (2026-08-16)",
+  "definition": "INCLUDE task iff category=='software-engineering' OR tags intersect the frozen CODE_TAGS set",
+  "code_tags": [
+    "algorithm",
+    "build",
+    "code-translation",
+    "compilation",
+    "concurrency",
+    "data-structures",
+    "debugging",
+    "migration",
+    "optimization",
+    "parser",
+    "python"
+  ],
+  "n_software_engineering": 16,
+  "n_extended_coding": 15,
+  "n_total_pool": 31,
+  "pool": [
+    {
+      "name": "azure-bgp-oscillation-route-leak",
+      "category": "software-engineering",
+      "subcategory": "network-engineering",
+      "reason": "SE-category",
+      "digest": "sha256:58a862b7c0704fbe5ca545f18eeabac39599be94c857e0a7d80781dbbc0a52ef",
+      "path": "tasks/azure-bgp-oscillation-route-leak"
+    },
+    {
+      "name": "data-to-d3",
+      "category": "software-engineering",
+      "subcategory": "data-visualization-frontend",
+      "reason": "SE-category",
+      "digest": "sha256:6bd955ce55b21352a441a5706b0e3faaad42b37891145e614b27387f44d38808",
+      "path": "tasks/data-to-d3"
+    },
+    {
+      "name": "debug-trl-grpo",
+      "category": "software-engineering",
+      "subcategory": "debugging",
+      "reason": "SE-category",
+      "digest": "sha256:6224b1d6251416451c50c5f32436299d251945cd33bd5331c85bac9acb3b4dce",
+      "path": "tasks/debug-trl-grpo"
+    },
+    {
+      "name": "dialogue-parser",
+      "category": "software-engineering",
+      "subcategory": "parser-implementation",
+      "reason": "SE-category",
+      "digest": "sha256:4d48e3b0e7146cb3596bf3f56f9d37cecab57fcbb32058f229e5401182cd191d",
+      "path": "tasks/dialogue-parser"
+    },
+    {
+      "name": "fix-build-agentops",
+      "category": "software-engineering",
+      "subcategory": "build-repair",
+      "reason": "SE-category",
+      "digest": "sha256:f03d658eee4f3f1e3ac7d91ad41cd63a8145759dc06281482efa7fe671d48edf",
+      "path": "tasks/fix-build-agentops"
+    },
+    {
+      "name": "fix-build-google-auto",
+      "category": "software-engineering",
+      "subcategory": "build-repair",
+      "reason": "SE-category",
+      "digest": "sha256:a71d138003aa4c28222d6877e0dd65c3ddfbd9f407d5878fd0a235a32e9df8a4",
+      "path": "tasks/fix-build-google-auto"
+    },
+    {
+      "name": "fix-visual-stability",
+      "category": "software-engineering",
+      "subcategory": "performance-optimization",
+      "reason": "SE-category",
+      "digest": "sha256:6f4f0977e3f06e6d3fb9b903966e1c1f0b3d1f9b2e3ac60aa7ed27f478a5252d",
+      "path": "tasks/fix-visual-stability"
+    },
+    {
+      "name": "flink-query",
+      "category": "software-engineering",
+      "subcategory": "implementation",
+      "reason": "SE-category",
+      "digest": "sha256:9c47e12a691f2bc0b94941962ee9b7878b2a2f8edf6aec30f02dd602cdc81850",
+      "path": "tasks/flink-query"
+    },
+    {
+      "name": "jax-computing-basics",
+      "category": "software-engineering",
+      "subcategory": "library-api-usage",
+      "reason": "SE-category",
+      "digest": "sha256:85f8adc808c68bfacd1fa06b17b91bb82b09aac0848c2ba55e512feb84137b35",
+      "path": "tasks/jax-computing-basics"
+    },
+    {
+      "name": "llm-prefix-cache-replay",
+      "category": "software-engineering",
+      "subcategory": "performance-optimization",
+      "reason": "SE-category",
+      "digest": "sha256:ac5d31f79c6fb25306e9e7216ccf56407f637a12097f31930ed494c0cada5deb",
+      "path": "tasks/llm-prefix-cache-replay"
+    },
+    {
+      "name": "parallel-tfidf-search",
+      "category": "software-engineering",
+      "subcategory": "performance-optimization",
+      "reason": "SE-category",
+      "digest": "sha256:482f37d1b1cb39de2c6dcfe36ad1db5b5594ebf0ca76abb9c504d061a27e3b02",
+      "path": "tasks/parallel-tfidf-search"
+    },
+    {
+      "name": "python-scala-translation",
+      "category": "software-engineering",
+      "subcategory": "code-translation",
+      "reason": "SE-category",
+      "digest": "sha256:d84a2aae85cce5480402fed5095a06495efa07a4ca458505171515d7707fc013",
+      "path": "tasks/python-scala-translation"
+    },
+    {
+      "name": "react-performance-debugging",
+      "category": "software-engineering",
+      "subcategory": "performance-optimization",
+      "reason": "SE-category",
+      "digest": "sha256:598d880dbacaa43e05cd93786ab88d424690c47fd2636b41f2e6602fb385d4d8",
+      "path": "tasks/react-performance-debugging"
+    },
+    {
+      "name": "simpo-code-reproduction",
+      "category": "software-engineering",
+      "subcategory": "paper-to-code-reproduction",
+      "reason": "SE-category",
+      "digest": "sha256:a436e280e9d3aabba9486530d1c10fc1ebcfa4f883bc4b9765259300767568af",
+      "path": "tasks/simpo-code-reproduction"
+    },
+    {
+      "name": "spring-boot-jakarta-migration",
+      "category": "software-engineering",
+      "subcategory": "migration",
+      "reason": "SE-category",
+      "digest": "sha256:2f5a32911b6e7bba86a6eb94e012e088f536d13ea823e7d0760b6ea93de51fba",
+      "path": "tasks/spring-boot-jakarta-migration"
+    },
+    {
+      "name": "tictoc-unnecessary-abort-detection",
+      "category": "software-engineering",
+      "subcategory": "concurrency-control",
+      "reason": "SE-category",
+      "digest": "sha256:2142ae37cde1142f7ffbe4be59107d94171221d28ed6d390c4ec736bf26d2906",
+      "path": "tasks/tictoc-unnecessary-abort-detection"
+    },
+    {
+      "name": "3d-scan-calc",
+      "category": "industrial-physical-systems",
+      "subcategory": "3d-printing-mass-calculation",
+      "reason": "coding-tag:algorithm",
+      "digest": "sha256:b25e882d1d3a44e4089cd3cea60ebfdfb1b5ac163b2cce0c5ab12a2d439ccf40",
+      "path": "tasks/3d-scan-calc"
+    },
+    {
+      "name": "adaptive-cruise-control",
+      "category": "industrial-physical-systems",
+      "subcategory": "vehicle-control",
+      "reason": "coding-tag:python",
+      "digest": "sha256:827d48c1c91dbcac670558b710f0ea6f76f9b5e6c531e4480a48cfe1c77c675c",
+      "path": "tasks/adaptive-cruise-control"
+    },
+    {
+      "name": "civ6-adjacency-optimizer",
+      "category": "mathematics-or-formal-reasoning",
+      "subcategory": "combinatorial-optimization",
+      "reason": "coding-tag:optimization",
+      "digest": "sha256:5e3b398dd390add962fc8e0188734a725477fde38b9ad575f2fed60d91c2bef3",
+      "path": "tasks/civ6-adjacency-optimizer"
+    },
+    {
+      "name": "econ-detrending-correlation",
+      "category": "finance-economics",
+      "subcategory": "macroeconomic-time-series",
+      "reason": "coding-tag:python",
+      "digest": "sha256:9b238639d4d2c03792ec2bb0ccce3f43b63a91a030a614dadfc755be8ca747b9",
+      "path": "tasks/econ-detrending-correlation"
+    },
+    {
+      "name": "energy-market-pricing",
+      "category": "industrial-physical-systems",
+      "subcategory": "electricity-market-pricing",
+      "reason": "coding-tag:optimization",
+      "digest": "sha256:57b3eee7ab0006de70664e6709cb7de5350bf7c64ea18b45ef202fafb4b78363",
+      "path": "tasks/energy-market-pricing"
+    },
+    {
+      "name": "exam-block-sequencing",
+      "category": "mathematics-or-formal-reasoning",
+      "subcategory": "mathematical-optimization",
+      "reason": "coding-tag:optimization",
+      "digest": "sha256:653a63535682be320086511f8ccde3671d3eb5f25d75fb36d78298ffc13f90cc",
+      "path": "tasks/exam-block-sequencing"
+    },
+    {
+      "name": "exoplanet-detection-period",
+      "category": "natural-science",
+      "subcategory": "astronomy",
+      "reason": "coding-tag:python",
+      "digest": "sha256:67bb300e81cee8649477be83aae60b4e145d41c5547694ee93b9bd6a1d6e33b4",
+      "path": "tasks/exoplanet-detection-period"
+    },
+    {
+      "name": "gravitational-wave-detection",
+      "category": "natural-science",
+      "subcategory": "astronomy",
+      "reason": "coding-tag:python",
+      "digest": "sha256:473c6c69fe42578e2fa476f8a0c2250ce87a6318def1f77b59f4f516972bd56f",
+      "path": "tasks/gravitational-wave-detection"
+    },
+    {
+      "name": "grid-dispatch-operator",
+      "category": "industrial-physical-systems",
+      "subcategory": "grid-dispatch",
+      "reason": "coding-tag:optimization",
+      "digest": "sha256:60c5bca1ec15bdb2053dd672016f8153ce6e64c922f8b0fc0a73228ff24e25b4",
+      "path": "tasks/grid-dispatch-operator"
+    },
+    {
+      "name": "hvac-control",
+      "category": "industrial-physical-systems",
+      "subcategory": "control-systems",
+      "reason": "coding-tag:python",
+      "digest": "sha256:fd4a8c1ffc1b9f5826407486012d96b89a574d4bcb09bdb5075fbe0542ad99e8",
+      "path": "tasks/hvac-control"
+    },
+    {
+      "name": "manufacturing-fjsp-optimization",
+      "category": "industrial-physical-systems",
+      "subcategory": "production-scheduling",
+      "reason": "coding-tag:optimization",
+      "digest": "sha256:7b1e01c2d74c6333e629c63c09d963eff9f846b5ac96318d13cc0cde95a3d444",
+      "path": "tasks/manufacturing-fjsp-optimization"
+    },
+    {
+      "name": "mars-clouds-clustering",
+      "category": "natural-science",
+      "subcategory": "astronomy",
+      "reason": "coding-tag:optimization,python",
+      "digest": "sha256:df164f340bb3df4ef99997a5fca44fec0c36f4f11c34762a9a1da87cac05dc68",
+      "path": "tasks/mars-clouds-clustering"
+    },
+    {
+      "name": "r2r-mpc-control",
+      "category": "industrial-physical-systems",
+      "subcategory": "control-systems",
+      "reason": "coding-tag:python",
+      "digest": "sha256:1b0b77e7fccaa8a88e763cb5fd39e32f1d439dceef3b971f18beee224a7ffeac",
+      "path": "tasks/r2r-mpc-control"
+    },
+    {
+      "name": "radar-vital-signs",
+      "category": "natural-science",
+      "subcategory": "biomedical-analysis",
+      "reason": "coding-tag:python",
+      "digest": "sha256:a0cd2e92dfb6933cff15749879de04566c496051f7560bf05a998b6b93ed1b18",
+      "path": "tasks/radar-vital-signs"
+    },
+    {
+      "name": "setup-fuzzing-py",
+      "category": "cybersecurity",
+      "subcategory": "fuzzing",
+      "reason": "coding-tag:build,python",
+      "digest": "sha256:ac70897b525ee19474225247a9132f4beaa9365ad8a4af064305321997147c0d",
+      "path": "tasks/setup-fuzzing-py"
+    }
+  ]
+}

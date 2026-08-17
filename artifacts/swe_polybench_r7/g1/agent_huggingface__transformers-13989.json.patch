@@ -1,0 +1,13 @@
+diff --git a/src/transformers/models/auto/configuration_auto.py b/src/transformers/models/auto/configuration_auto.py
+index 78a33659a..fcdd28b37 100644
+--- a/src/transformers/models/auto/configuration_auto.py
++++ b/src/transformers/models/auto/configuration_auto.py
+@@ -302,7 +302,7 @@ class _LazyConfigMapping(OrderedDict):
+         return item in self._mapping
+ 
+ 
+-CONFIG_MAPPING = _LazyConfigMapping(CONFIG_MAPPING_NAMES)
++CONFIG_MAPPING = _LazyConfigMapping(CONFIG_MAPPING_NAMES, add_custom=True)
+ 
+ 
+ class _LazyLoadAllMappings(OrderedDict):

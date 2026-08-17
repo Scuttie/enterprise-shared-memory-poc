@@ -1,0 +1,21 @@
+{
+  "instance_id": "prettier__prettier-12930",
+  "language": "JavaScript",
+  "repo": "prettier/prettier",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.prettier__prettier-12930:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.prettier__prettier-12930@sha256:39b721cb2d9fef1e2434a2f6829479ec5eb1501d71c42bca6ffd7bf03cf1ad92",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 40,
+  "edited_files": [],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 195414,
+    "completion": 3926
+  },
+  "grader_rc": 0,
+  "secs": 1033.3
+}

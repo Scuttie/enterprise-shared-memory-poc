@@ -1,0 +1,46 @@
+diff --git a/src/cli-util.js b/src/cli-util.js
+index 27c0494d..6827c730 100644
+--- a/src/cli-util.js
++++ b/src/cli-util.js
+@@ -356,21 +356,30 @@ function formatFiles(argv) {
+       // mtime based caches.
+       if (output === input) {
+         if (!argv["list-different"]) {
+-          console.log(`${chalk.grey(filename)} ${Date.now() - start}ms`);
++          // Only log duration if loglevel is not silent
++          if (argv["loglevel"] !== "silent") {
++            console.log(`${chalk.grey(filename)} ${Date.now() - start}ms`);
++          }
+         }
+       } else {
+         if (argv["list-different"]) {
+-          console.log(filename);
++          // Only log filename if loglevel is not silent
++          if (argv["loglevel"] !== "silent") {
++            console.log(filename);
++          }
+         } else {
+-          console.log(`${filename} ${Date.now() - start}ms`);
+-        }
+-
+-        try {
+-          fs.writeFileSync(filename, output, "utf8");
+-        } catch (error) {
+-          logger.error(`Unable to write file: ${filename}\n${error.message}`);
+-          // Don't exit the process if one file failed
+-          process.exitCode = 2;
++          // Only log duration if loglevel is not silent
++          if (argv["loglevel"] !== "silent") {
++            console.log(`${filename} ${Date.now() - start}ms`);
++          }
++
++          try {
++            fs.writeFileSync(filename, output, "utf8");
++          } catch (error) {
++            logger.error(`Unable to write file: ${filename}\n${error.message}`);
++            // Don't exit the process if one file failed
++            process.exitCode = 2;
++          }
+         }
+       }
+     } else if (argv["debug-check"]) {

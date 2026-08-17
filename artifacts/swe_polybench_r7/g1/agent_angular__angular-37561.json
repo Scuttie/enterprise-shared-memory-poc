@@ -1,0 +1,21 @@
+{
+  "instance_id": "angular__angular-37561",
+  "language": "TypeScript",
+  "repo": "angular/angular",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.angular__angular-37561:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.angular__angular-37561@sha256:63e2e9154cdd1ccbe59567c9b674bb369347feed8dee90747914cdf7f9e1a37d",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 40,
+  "edited_files": [],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 430941,
+    "completion": 5274
+  },
+  "grader_rc": 0,
+  "secs": 1007.7
+}

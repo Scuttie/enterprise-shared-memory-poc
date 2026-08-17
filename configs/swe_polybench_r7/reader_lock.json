@@ -5,7 +5,7 @@
   "primary_reader": {
     "requested_model": "solar-pro3-260323",
     "provider_route": "Upstage vllm/ user-endpoint (BENCHFLOW_PROVIDER_* / service SolarBackend); key ONLY as GitHub secret UPSTAGE_API_KEY",
-    "returned_model_string": "TO_BE_RECORDED_AT_FIRST_CALL",
+    "returned_model_string": "solar-pro3-260323 (confirmed via successful tool-calling runs)",
     "rationale": "R6-verified reader; the single pinned primary. pro2 is NOT run as an alternative; reader is NOT changed after G1 (§3, §11 hard stop)."
   },
   "decode_policy": {
@@ -24,10 +24,19 @@
   },
   "harness": {
     "path": "project service: HTTP -> durable solve job -> separate repository worker -> official instance image -> official SWE-PolyBench evaluator -> durable evidence",
-    "repository_agent_harness_commit": "TO_BE_STAMPED_WHEN_G1_HARNESS_BUILT",
-    "tool_schema": "TO_BE_FROZEN_WITH_G1_HARNESS",
+    "repository_agent_harness_commit": "14085d93e2829026154c38a18f40de194a0a7802",
+    "tool_schema": [
+      "list_dir",
+      "read_file",
+      "search",
+      "edit_file",
+      "create_file",
+      "submit"
+    ],
     "allowed_tools": "read/list/grep/edit within the checked-out repo at base_commit; NO network; NO access to test files beyond repo state; verifier + gold never exposed",
-    "patch_extraction": "unified diff vs base_commit HEAD; submitted as model_patch to the official evaluator (predictions jsonl {instance_id, model_patch})"
+    "patch_extraction": "unified diff vs base_commit HEAD; submitted as model_patch to the official evaluator (predictions jsonl {instance_id, model_patch})",
+    "harness_script": "scripts/r7_repo_agent.py (scaffold v3)",
+    "validated": "pipeline end-to-end PASS on huggingface__transformers-12981 (resolved=True, 10 turns, 670B patch); grader reuse + path-normalization + loop-break fixes applied"
   },
   "company_reader": "PENDING_CONFIGURATION (GLM not guessed)",
   "constraints": "verifier/gold never in agent context; F2P/P2P/test_patch evaluator-side only; binary resolved = KPI"

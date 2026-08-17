@@ -1,0 +1,133 @@
+{
+  "agent": "deepagents",
+  "arm": "A0",
+  "model": "vllm/solar-pro2-251215",
+  "n": 10,
+  "n_pass": 0,
+  "pass_rate": 0.0,
+  "results": {
+    "mars-clouds-clustering": {
+      "diag": {
+        "reward": "0.0"
+      },
+      "passed": false,
+      "rc": 0,
+      "reward": 0.0,
+      "secs": 378.0,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": "\n\u2717 Score: 0/1 (0.0%), errors=0\nArtifacts: jobs/2026-08-17__03-17-11\nSummary:   jobs/2026-08-17__03-17-11/summary.json\n\nJob: 1 tasks, 0 done, 1 to run (concurrency=4)\nStarting environment: mars-clouds-clustering\nInstalling deepagents in sandbox (timeout=900s)...\nSetting up sandbox user: agent\nSandbox user agent ready (workspace=/root)\n[Step] scene-0-turn-0-agent scene=default role=agent\nHTTP Request: GET http://172.17.0.1:56127/health/liveliness \"HTTP/1.1 200 OK\"\nLiteLLM proxy listening on http://172.17.0.1:56127\nAgent sandboxed as: agent\nDocker process started (pid=5685, project=mars-clouds-clustering__305501a8)\nContainerTransport: agent started (if setpriv --help 2>&1 | grep -q reuid; then exec setpriv --reuid=agent --regid=agent --init-groups -- bash -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; else exec su -l agent -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; fi)\nACP agent: deepagents\nSession: deepagents-d3d67706\nModel set to: benchflow-vllm-solar-pro2-251215\nPrompt 1/1: # Mars Cloud Clustering Optimization\n\n## Task\n\nOptimize DBSCAN hyperparameters t...\n  \u2192 end_turn, 7 total tool calls\nProcess terminated\nDiscovered 1 pytest plugins from sandbox\nRunning verifier...\nRewards: {'reward': 0.0}\n[FAIL] mars-clouds-clustering (tools=7)\nJob complete: 0/1 (0.0%), errors=0, idle_timeouts=0, time=6.3min\n"
+    },
+    "parallel-tfidf-search": {
+      "diag": {
+        "error": "\"Docker compose command failed for environment parallel-tfidf-search. Command: docker compose --project-name parallel-tfidf-search__942a1701 --project-directory /tmp/benchflow-task-myejv2hh/parallel-tfidf-search/environment -f /home/runner/.local/share/uv/tools/benchflow/lib/python3.12/site-packages/benchflow/sandbox/_compose_files/docker-compose-base.yaml -f /home/runner/.local/share/uv/tools/ben"
+      },
+      "passed": false,
+      "rc": 1,
+      "reward": null,
+      "secs": 21.6,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": "e\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 DONE 0.1s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 2B done\n#4 DONE 0.0s\n\n#5 [1/4] FROM docker.io/library/python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 126B done\n#6 DONE 0.0s\n\n#7 [2/4] RUN apt-get update && apt-get install -y     build-essential     && rm -rf /var/lib/apt/lists/*\n#7 CACHED\n\n#8 [3/4] WORKDIR /root\n#8 CACHED\n\n#9 [4/4] COPY workspace/ /root/workspace/\n#9 CACHED\n\n#10 exporting to image\n#10 exporting layers done\n#10 writing image sha256:971f9d94fa8c10ae9e62f7cb8fe872cfa25eae536c05f8337e09611e2f2e4558 done\n#10 naming to docker.io/library/parallel-tfidf-search__942a1701-main 0.0s done\n#10 DONE 0.0s\n\n#11 resolving provenance for metadata file\n#11 DONE 0.0s\n main  Built\n Network parallel-tfidf-search__942a1701_default  Creating\n Network parallel-tfidf-search__942a1701_default  Created\n Container parallel-tfidf-search__942a1701-main-1  Creating\n Container parallel-tfidf-search__942a1701-main-1  Error response from daemon: range of CPUs is from 0.01 to 4.00, as there are only 4 CPUs available\nError response from daemon: range of CPUs is from 0.01 to 4.00, as there are only 4 CPUs available\n. Stderr: None. \n[ERR] parallel-tfidf-search (tools=0) (Docker compose command failed for environment\u2026)\nJob complete: 0/2 (0.0%), errors=1, idle_timeouts=0, time=0.3min\n"
+    },
+    "python-scala-translation": {
+      "diag": {
+        "reward": "0.0"
+      },
+      "passed": false,
+      "rc": 0,
+      "reward": 0.0,
+      "secs": 255.2,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": ", errors=0\nArtifacts: jobs/2026-08-17__03-17-11\nSummary:   jobs/2026-08-17__03-17-11/summary.json\n\nResuming into existing job directory: 2026-08-17__03-17-11\nJob: 2 tasks, 1 done, 1 to run (concurrency=4)\nStarting environment: python-scala-translation\nInstalling deepagents in sandbox (timeout=900s)...\nSetting up sandbox user: agent\nSandbox user agent ready (workspace=/root)\n[Step] scene-0-turn-0-agent scene=default role=agent\nHTTP Request: GET http://172.17.0.1:33269/health/liveliness \"HTTP/1.1 200 OK\"\nLiteLLM proxy listening on http://172.17.0.1:33269\nAgent sandboxed as: agent\nDocker process started (pid=17054, project=python-scala-translation__e9828656)\nContainerTransport: agent started (if setpriv --help 2>&1 | grep -q reuid; then exec setpriv --reuid=agent --regid=agent --init-groups -- bash -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; else exec su -l agent -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; fi)\nACP agent: deepagents\nSession: deepagents-a1c6ef04\nModel set to: benchflow-vllm-solar-pro2-251215\nPrompt 1/1: # Python to Scala Code Translation\n\n'/root/Tokenizer.py' is a python code for da...\n  \u2192 end_turn, 8 total tool calls\nProcess terminated\nDiscovered 0 pytest plugins from sandbox\nRunning verifier...\nRewards: {'reward': 0.0}\n[FAIL] python-scala-translation (tools=8)\nJob complete: 0/2 (0.0%), errors=0, idle_timeouts=0, time=4.2min\n"
+    },
+    "r2r-mpc-control": {
+      "diag": {
+        "reward": "0.0"
+      },
+      "passed": false,
+      "rc": 0,
+      "reward": 0.0,
+      "secs": 354.9,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": "\n\u2717 Score: 0/3 (0.0%), errors=0\nArtifacts: jobs/2026-08-17__03-17-11\nSummary:   jobs/2026-08-17__03-17-11/summary.json\n\nResuming into existing job directory: 2026-08-17__03-17-11\nJob: 3 tasks, 2 done, 1 to run (concurrency=4)\nStarting environment: r2r-mpc-control\nInstalling deepagents in sandbox (timeout=900s)...\nSetting up sandbox user: agent\nSandbox user agent ready (workspace=/root)\n[Step] scene-0-turn-0-agent scene=default role=agent\nHTTP Request: GET http://172.17.0.1:52175/health/liveliness \"HTTP/1.1 200 OK\"\nLiteLLM proxy listening on http://172.17.0.1:52175\nAgent sandboxed as: agent\nDocker process started (pid=25192, project=r2r-mpc-control__9f3ae5d2)\nContainerTransport: agent started (if setpriv --help 2>&1 | grep -q reuid; then exec setpriv --reuid=agent --regid=agent --init-groups -- bash -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; else exec su -l agent -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; fi)\nACP agent: deepagents\nSession: deepagents-ba0d2179\nModel set to: benchflow-vllm-solar-pro2-251215\nPrompt 1/1: The task is designed for a 6-section Roll-to-Roll manufacturing line. You need t...\n  \u2192 end_turn, 14 total tool calls\nProcess terminated\nDiscovered 0 pytest plugins from sandbox\nRunning verifier...\nRewards: {'reward': 0.0}\n[FAIL] r2r-mpc-control (tools=14)\nJob complete: 0/3 (0.0%), errors=0, idle_timeouts=0, time=5.9min\n"
+    },
+    "radar-vital-signs": {
+      "diag": {
+        "reward": "0.0"
+      },
+      "passed": false,
+      "rc": 0,
+      "reward": 0.0,
+      "secs": 957.4,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": " Score: 0/4 (0.0%), errors=0\nArtifacts: jobs/2026-08-17__03-17-11\nSummary:   jobs/2026-08-17__03-17-11/summary.json\n\nResuming into existing job directory: 2026-08-17__03-17-11\nJob: 4 tasks, 3 done, 1 to run (concurrency=4)\nStarting environment: radar-vital-signs\nInstalling deepagents in sandbox (timeout=900s)...\nSetting up sandbox user: agent\nSandbox user agent ready (workspace=/root)\n[Step] scene-0-turn-0-agent scene=default role=agent\nHTTP Request: GET http://172.17.0.1:39405/health/liveliness \"HTTP/1.1 200 OK\"\nLiteLLM proxy listening on http://172.17.0.1:39405\nAgent sandboxed as: agent\nDocker process started (pid=30516, project=radar-vital-signs__ba7cee76)\nContainerTransport: agent started (if setpriv --help 2>&1 | grep -q reuid; then exec setpriv --reuid=agent --regid=agent --init-groups -- bash -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; else exec su -l agent -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; fi)\nACP agent: deepagents\nSession: deepagents-47fe45eb\nModel set to: benchflow-vllm-solar-pro2-251215\nPrompt 1/1: Task:\nEstimate heart rate and breathing rate from 15 24 GHz continuous-wave rada...\n  \u2192 end_turn, 14 total tool calls\nProcess terminated\nDiscovered 0 pytest plugins from sandbox\nRunning verifier...\nRewards: {'reward': 0.0}\n[FAIL] radar-vital-signs (tools=14)\nJob complete: 0/4 (0.0%), errors=0, idle_timeouts=0, time=15.9min\n"
+    },
+    "react-performance-debugging": {
+      "diag": {
+        "reward": "0.0"
+      },
+      "passed": false,
+      "rc": 0,
+      "reward": 0.0,
+      "secs": 576.6,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": "\nArtifacts: jobs/2026-08-17__03-17-11\nSummary:   jobs/2026-08-17__03-17-11/summary.json\n\nResuming into existing job directory: 2026-08-17__03-17-11\nJob: 5 tasks, 4 done, 1 to run (concurrency=4)\nStarting environment: react-performance-debugging\nInstalling deepagents in sandbox (timeout=900s)...\nSetting up sandbox user: agent\nSandbox user agent ready (workspace=/app)\n[Step] scene-0-turn-0-agent scene=default role=agent\nHTTP Request: GET http://172.17.0.1:53287/health/liveliness \"HTTP/1.1 200 OK\"\nLiteLLM proxy listening on http://172.17.0.1:53287\nAgent sandboxed as: agent\nDocker process started (pid=40837, project=react-performance-debugging__ab1b106b)\nContainerTransport: agent started (if setpriv --help 2>&1 | grep -q reuid; then exec setpriv --reuid=agent --regid=agent --init-groups -- bash -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; else exec su -l agent -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; fi)\nACP agent: deepagents\nSession: deepagents-b835da6f\nModel set to: benchflow-vllm-solar-pro2-251215\nPrompt 1/1: There's an e-commerce website implemented in Next.js that is extremely slow and ...\n  \u2192 end_turn, 17 total tool calls\nProcess terminated\nDiscovered 4 pytest plugins from sandbox\nRunning verifier...\nRewards: {'reward': 0.0}\n[FAIL] react-performance-debugging (tools=17)\nJob complete: 0/5 (0.0%), errors=0, idle_timeouts=0, time=9.6min\n"
+    },
+    "setup-fuzzing-py": {
+      "diag": {
+        "error": "\"Docker compose command failed for environment setup-fuzzing-py. Command: docker compose --project-name setup-fuzzing-py__2824cfae --project-directory /tmp/benchflow-task-ex5vm4l1/setup-fuzzing-py/environment -f /home/runner/.local/share/uv/tools/benchflow/lib/python3.12/site-packages/benchflow/sandbox/_compose_files/docker-compose-base.yaml -f /home/runner/.local/share/uv/tools/benchflow/lib/pyth"
+      },
+      "passed": false,
+      "rc": 1,
+      "reward": null,
+      "secs": 60.8,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": "rring context: 2B done\n#4 DONE 0.0s\n\n#5 [1/7] FROM gcr.io/oss-fuzz-base/base-builder-python:latest@sha256:6b2b3a7e4a2da50de47f94925cffbe34747e1aae4f33d7f07ba6c681dd648b23\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 38B done\n#6 DONE 0.0s\n\n#7 [2/7] RUN curl -LsSf https://astral.sh/uv/0.9.22/install.sh | sh\n#7 CACHED\n\n#8 [5/7] COPY build_dataset.sh /app/build_dataset.sh\n#8 CACHED\n\n#9 [3/7] RUN apt-get update && apt-get install -y tree git make wget\n#9 CACHED\n\n#10 [4/7] WORKDIR /app\n#10 CACHED\n\n#11 [6/7] RUN bash /app/build_dataset.sh\n#11 CACHED\n\n#12 [7/7] RUN rm -rf /app/build_dataset.sh\n#12 CACHED\n\n#13 exporting to image\n#13 exporting layers done\n#13 writing image sha256:e1391b933564fbe254b5196311121869caf36460b00fb54335b03584c5c397ee done\n#13 naming to docker.io/library/setup-fuzzing-py__2824cfae-main done\n#13 DONE 0.0s\n\n#14 resolving provenance for metadata file\n#14 DONE 0.0s\n main  Built\n Network setup-fuzzing-py__2824cfae_default  Creating\n Network setup-fuzzing-py__2824cfae_default  Created\n Container setup-fuzzing-py__2824cfae-main-1  Creating\n Container setup-fuzzing-py__2824cfae-main-1  Error response from daemon: range of CPUs is from 0.01 to 4.00, as there are only 4 CPUs available\nError response from daemon: range of CPUs is from 0.01 to 4.00, as there are only 4 CPUs available\n. Stderr: None. \n[ERR] setup-fuzzing-py (tools=0) (Docker compose command failed for environment\u2026)\nJob complete: 0/6 (0.0%), errors=1, idle_timeouts=0, time=1.0min\n"
+    },
+    "simpo-code-reproduction": {
+      "diag": {
+        "reward": "0.0"
+      },
+      "passed": false,
+      "rc": 0,
+      "reward": 0.0,
+      "secs": 90.7,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": "0%), errors=0\nArtifacts: jobs/2026-08-17__03-17-11\nSummary:   jobs/2026-08-17__03-17-11/summary.json\n\nResuming into existing job directory: 2026-08-17__03-17-11\nJob: 6 tasks, 5 done, 1 to run (concurrency=4)\nStarting environment: simpo-code-reproduction\nInstalling deepagents in sandbox (timeout=900s)...\nSetting up sandbox user: agent\nSandbox user agent ready (workspace=/root)\n[Step] scene-0-turn-0-agent scene=default role=agent\nHTTP Request: GET http://172.17.0.1:47667/health/liveliness \"HTTP/1.1 200 OK\"\nLiteLLM proxy listening on http://172.17.0.1:47667\nAgent sandboxed as: agent\nDocker process started (pid=48771, project=simpo-code-reproduction__f1eb11b0)\nContainerTransport: agent started (if setpriv --help 2>&1 | grep -q reuid; then exec setpriv --reuid=agent --regid=agent --init-groups -- bash -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; else exec su -l agent -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; fi)\nACP agent: deepagents\nSession: deepagents-2cd3252b\nModel set to: benchflow-vllm-solar-pro2-251215\nPrompt 1/1: You will reproduce a code repo for NLP papers.\n\nImplement the `simpo_loss` funct...\n  \u2192 end_turn, 5 total tool calls\nProcess terminated\nDiscovered 0 pytest plugins from sandbox\nRunning verifier...\nRewards: {'reward': 0.0}\n[FAIL] simpo-code-reproduction (tools=5)\nJob complete: 0/6 (0.0%), errors=0, idle_timeouts=0, time=1.5min\n"
+    },
+    "spring-boot-jakarta-migration": {
+      "diag": {
+        "reward": "0.0"
+      },
+      "passed": false,
+      "rc": 0,
+      "reward": 0.0,
+      "secs": 488.4,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": "jobs/2026-08-17__03-17-11\nSummary:   jobs/2026-08-17__03-17-11/summary.json\n\nResuming into existing job directory: 2026-08-17__03-17-11\nJob: 7 tasks, 6 done, 1 to run (concurrency=4)\nStarting environment: spring-boot-jakarta-migration\nInstalling deepagents in sandbox (timeout=900s)...\nSetting up sandbox user: agent\nSandbox user agent ready (workspace=/workspace)\n[Step] scene-0-turn-0-agent scene=default role=agent\nHTTP Request: GET http://172.17.0.1:44223/health/liveliness \"HTTP/1.1 200 OK\"\nLiteLLM proxy listening on http://172.17.0.1:44223\nAgent sandboxed as: agent\nDocker process started (pid=56441, project=spring-boot-jakarta-migration__fc91d7ce)\nContainerTransport: agent started (if setpriv --help 2>&1 | grep -q reuid; then exec setpriv --reuid=agent --regid=agent --init-groups -- bash -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; else exec su -l agent -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; fi)\nACP agent: deepagents\nSession: deepagents-aba12d28\nModel set to: benchflow-vllm-solar-pro2-251215\nPrompt 1/1: Under the `/workspace/` folder, there is a legacy user management microservice t...\n  \u2192 end_turn, 29 total tool calls\nProcess terminated\nDiscovered 0 pytest plugins from sandbox\nRunning verifier...\nRewards: {'reward': 0.0}\n[FAIL] spring-boot-jakarta-migration (tools=29)\nJob complete: 0/7 (0.0%), errors=0, idle_timeouts=0, time=8.1min\n"
+    },
+    "tictoc-unnecessary-abort-detection": {
+      "diag": {
+        "reward": "0.0"
+      },
+      "passed": false,
+      "rc": 0,
+      "reward": 0.0,
+      "secs": 99.4,
+      "summary_path": "2026-08-17__03-17-11",
+      "tail": "08-17__03-17-11\nSummary:   jobs/2026-08-17__03-17-11/summary.json\n\nResuming into existing job directory: 2026-08-17__03-17-11\nJob: 8 tasks, 7 done, 1 to run (concurrency=4)\nStarting environment: tictoc-unnecessary-abort-detection\nInstalling deepagents in sandbox (timeout=900s)...\nSetting up sandbox user: agent\nSandbox user agent ready (workspace=/root)\n[Step] scene-0-turn-0-agent scene=default role=agent\nHTTP Request: GET http://172.17.0.1:46939/health/liveliness \"HTTP/1.1 200 OK\"\nLiteLLM proxy listening on http://172.17.0.1:46939\nAgent sandboxed as: agent\nDocker process started (pid=60648, project=tictoc-unnecessary-abort-detection__4f2c3e0f)\nContainerTransport: agent started (if setpriv --help 2>&1 | grep -q reuid; then exec setpriv --reuid=agent --regid=agent --init-groups -- bash -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; else exec su -l agent -c 'export HOME=/home/agent && /opt/benchflow/deepagents-venv/bin/python /opt/benchflow/bin/deepagents-acp-shim'; fi)\nACP agent: deepagents\nSession: deepagents-b47b244b\nModel set to: benchflow-vllm-solar-pro2-251215\nPrompt 1/1: The famous TicToc concurrency-control mechanism can sometimes abort transactions...\n  \u2192 end_turn, 15 total tool calls\nProcess terminated\nDiscovered 0 pytest plugins from sandbox\nRunning verifier...\nRewards: {'reward': 0.0}\n[FAIL] tictoc-unnecessary-abort-detection (tools=15)\nJob complete: 0/8 (0.0%), errors=0, idle_timeouts=0, time=1.6min\n"
+    }
+  },
+  "skill_mode": "no-skill",
+  "tasks": [
+    "mars-clouds-clustering",
+    "parallel-tfidf-search",
+    "python-scala-translation",
+    "r2r-mpc-control",
+    "radar-vital-signs",
+    "react-performance-debugging",
+    "setup-fuzzing-py",
+    "simpo-code-reproduction",
+    "spring-boot-jakarta-migration",
+    "tictoc-unnecessary-abort-detection"
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "arm": "A0",
+  "agent": "deepagents",
+  "model": "vllm/solar-pro2-251215",
+  "skill_mode": "no-skill",
+  "reader": "Solar-pro2 repository-agent via BenchFlow deepagents (vllm/ user-endpoint route to Upstage)",
+  "n": 30,
+  "n_pass": 0,
+  "no_skill_pass_at_1": 0.0,
+  "genuine_attempts": 25,
+  "errors_reward_none": 3,
+  "per_task": {
+    "3d-scan-calc": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 0,
+      "secs": 113.0
+    },
+    "adaptive-cruise-control": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 0,
+      "secs": 112.9
+    },
+    "azure-bgp-oscillation-route-leak": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 4,
+      "secs": 71.6
+    },
+    "civ6-adjacency-optimizer": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 8,
+      "secs": 98.8
+    },
+    "data-to-d3": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 3,
+      "secs": 163.6
+    },
+    "debug-trl-grpo": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 18,
+      "secs": 171.3
+    },
+    "dialogue-parser": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 1,
+      "secs": 84.9
+    },
+    "econ-detrending-correlation": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 5,
+      "secs": 91.7
+    },
+    "energy-market-pricing": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 13,
+      "secs": 213.8
+    },
+    "exam-block-sequencing": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 4,
+      "secs": 94.1
+    },
+    "exoplanet-detection-period": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 9,
+      "secs": 168.8
+    },
+    "fix-build-google-auto": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 3,
+      "secs": 305.6
+    },
+    "fix-visual-stability": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 12,
+      "secs": 245.8
+    },
+    "flink-query": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 11,
+      "secs": 125.3
+    },
+    "gravitational-wave-detection": {
+      "reward": null,
+      "passed": false,
+      "tool_calls": null,
+      "secs": 61.4
+    },
+    "grid-dispatch-operator": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 1,
+      "secs": 323.1
+    },
+    "hvac-control": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 23,
+      "secs": 678.3
+    },
+    "jax-computing-basics": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 10,
+      "secs": 102.8
+    },
+    "llm-prefix-cache-replay": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 9,
+      "secs": 97.3
+    },
+    "manufacturing-fjsp-optimization": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 20,
+      "secs": 198.2
+    },
+    "mars-clouds-clustering": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 7,
+      "secs": 378.0
+    },
+    "parallel-tfidf-search": {
+      "reward": null,
+      "passed": false,
+      "tool_calls": null,
+      "secs": 21.6
+    },
+    "python-scala-translation": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 8,
+      "secs": 255.2
+    },
+    "r2r-mpc-control": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 14,
+      "secs": 354.9
+    },
+    "radar-vital-signs": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 14,
+      "secs": 957.4
+    },
+    "react-performance-debugging": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 17,
+      "secs": 576.6
+    },
+    "setup-fuzzing-py": {
+      "reward": null,
+      "passed": false,
+      "tool_calls": null,
+      "secs": 60.8
+    },
+    "simpo-code-reproduction": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 5,
+      "secs": 90.7
+    },
+    "spring-boot-jakarta-migration": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 29,
+      "secs": 488.4
+    },
+    "tictoc-unnecessary-abort-detection": {
+      "reward": 0.0,
+      "passed": false,
+      "tool_calls": 15,
+      "secs": 99.4
+    }
+  }
+}

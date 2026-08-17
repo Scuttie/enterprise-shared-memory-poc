@@ -93,6 +93,20 @@
     "created_at_present": 382,
     "asserts": "len==382, per-lang exact, ids unique, base_commit len40, patch/test_patch/F2P/P2P present -> ALL PASS",
     "manifest": "artifacts/swe_polybench_r7/official_manifest.json (382 ids + per-instance content sha256)",
-    "note_394": "HF card text 394 is stale; pinned test.csv authoritative at 382 (documentation-only discrepancy)"
+    "note_394": "HF card text 394 is stale; pinned test.csv authoritative at 382 (documentation-only discrepancy)",
+    "license_detail": {
+      "top_level_LICENSE": "MIT (Copyright 2025 Amazon Science)",
+      "github_detected_spdx": "MIT",
+      "hf_dataset_card": "mit",
+      "per_file_headers": "src/poly_bench_evaluation/*.py carry SPDX-License-Identifier: CC-BY-NC-4.0 (non-commercial)",
+      "discrepancy": "Repo LICENSE/GitHub/dataset = MIT, but source-file SPDX headers = CC-BY-NC-4.0. Research reproduction OK under either; FLAG for commercial/company use."
+    }
+  },
+  "license": {
+    "top_level_LICENSE": "MIT (Copyright 2025 Amazon Science)",
+    "github_detected_spdx": "MIT",
+    "hf_dataset_card": "mit",
+    "per_file_headers": "src/poly_bench_evaluation/*.py carry SPDX-License-Identifier: CC-BY-NC-4.0 (non-commercial)",
+    "discrepancy": "Repo LICENSE/GitHub/dataset = MIT, but source-file SPDX headers = CC-BY-NC-4.0. Research reproduction OK under either; FLAG for commercial/company use."
   }
 }

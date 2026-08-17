@@ -13,7 +13,13 @@
   "sha256": "0c8138e73c34fa29a5276b675b146b72d78ce001fcc4560d76302c908b4808a5",
   "bytes": 12410402
  },
- "license": "MIT (code + dataset)",
+ "license": {
+  "top_level_LICENSE": "MIT (Copyright 2025 Amazon Science)",
+  "github_detected_spdx": "MIT",
+  "hf_dataset_card": "mit",
+  "per_file_headers": "src/poly_bench_evaluation/*.py carry SPDX-License-Identifier: CC-BY-NC-4.0 (non-commercial)",
+  "discrepancy": "Repo LICENSE/GitHub/dataset = MIT, but source-file SPDX headers = CC-BY-NC-4.0. Research reproduction OK under either; FLAG for commercial/company use."
+ },
  "asserts": {
   "len": 382,
   "per_language": {

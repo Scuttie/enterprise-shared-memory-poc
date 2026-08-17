@@ -1,0 +1,77 @@
+name: ci-r6-skills-diagnostic
+
+# REALBENCH-R6 §2 frozen 2x2 diagnostic (PAID): reader {solar-pro2, solar-pro3} x condition {A0 no-skill, A1
+# official-skill} on the frozen R5 30-task pool. Tests whether the OFFICIAL skill moves a reader off the R5
+# no-skill floor. Reader = repository-agent via BenchFlow deepagents + vllm/ route to Upstage. Diagnostic only —
+# no confirmatory claim. Dispatch with model/skill_mode/arm/tasks.
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "bare Upstage model id (solar-pro2-251215 | solar-pro3-260323)"
+        required: true
+        default: "solar-pro3-260323"
+      skill_mode:
+        description: "no-skill | with-skill"
+        required: true
+        default: "no-skill"
+      arm:
+        description: "arm label (e.g. P3-A0)"
+        required: true
+        default: "P3-A0"
+      tasks:
+        description: "comma-separated task ids"
+        required: false
+        default: "dialogue-parser"
+  push:
+    branches: [codex/production-service-v0.2]
+
+concurrency:
+  group: ci-r6-diag-${{ github.ref }}-${{ github.event.inputs.arm }}
+  cancel-in-progress: false
+
+jobs:
+  diag:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "/usr/local/share/powershell" /usr/share/swift || true
+      - name: Clone SkillsBench @ pinned v1.1
+        run: |
+          git clone --no-checkout https://github.com/benchflow-ai/skillsbench.git skillsbench
+          cd skillsbench && git checkout b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af
+          test "$(git rev-parse HEAD)" = "b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af"
+      - uses: astral-sh/setup-uv@v5
+      - name: Install BenchFlow (v1.1-contemporaneous)
+        run: |
+          uv tool install "benchflow==0.6.3" || uv tool install "benchflow<0.7"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Sync task deps (best effort)
+        working-directory: skillsbench
+        run: uv sync --locked 2>&1 | tail -3 || uv sync 2>&1 | tail -3 || true
+      - name: 2x2 diagnostic cell (PAID, Solar repository-agent)
+        env:
+          SKILLSBENCH_DIR: ${{ github.workspace }}/skillsbench
+          R5_TASKS: ${{ github.event.inputs.tasks }}
+          AGENT: deepagents
+          MODEL: vllm/${{ github.event.inputs.model }}
+          SKILL_MODE: ${{ github.event.inputs.skill_mode }}
+          SKILLS_DIR: tasks/<id>/environment/skills/
+          ARM_LABEL: ${{ github.event.inputs.arm }}
+          R5_TASK_TIMEOUT: "3000"
+          AGENT_ENV: "BENCHFLOW_PROVIDER_BASE_URL=https://api.upstage.ai/v1;BENCHFLOW_PROVIDER_API_KEY=${{ secrets.UPSTAGE_API_KEY }};BENCHFLOW_PROVIDER_MODEL=${{ github.event.inputs.model }}"
+          BENCHFLOW_PROVIDER_BASE_URL: https://api.upstage.ai/v1
+          BENCHFLOW_PROVIDER_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
+        run: |
+          test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no UPSTAGE_API_KEY"; exit 1; }
+          python scripts/r5_bench_run.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r6-diag-${{ github.event.inputs.arm }}
+          path: artifacts/swe_skills_r5/bench_run_${{ github.event.inputs.arm }}.json

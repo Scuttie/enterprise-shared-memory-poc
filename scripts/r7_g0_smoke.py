@@ -58,10 +58,12 @@ def run_leg(client, row, image_id, apply_gold):
         pass
     dm.create_container()
     try:
-        dm.apply_patch_to_container(patch_content=test_patch, patch_type="test")
+        # apply_patch_to_container returns int 0==success (and RAISES on real failure).
+        rt = dm.apply_patch_to_container(patch_content=test_patch, patch_type="test")
+        assert rt == 0, "test patch failed to apply"
         if apply_gold:
-            ok = dm.apply_patch_to_container(patch_content=gold_patch, patch_type="code")
-            assert ok, "gold patch failed to apply"
+            rc = dm.apply_patch_to_container(patch_content=gold_patch, patch_type="code")
+            assert rc == 0, "gold patch failed to apply"
         run_timeout = JAVA_TIMEOUT if language.lower() == "java" else DEFAULT_TIMEOUT
         dm.docker_run(test_command=test_command, timeout=run_timeout)
         run_logs_string = "\n".join(dm.run_logs)

@@ -85,12 +85,13 @@ def t_list_dir(path="."):
     return "\n".join(out)[:MAX_OUT]
 
 
-def t_read_file(path, start_line=1, end_line=400):
+def t_read_file(path, start_line=1, end_line=None):
     p = _safe(path)
     if not os.path.isfile(p):
         return f"not a file: {path}"
     lines = open(p, encoding="utf-8", errors="replace").read().splitlines()
-    s = max(1, int(start_line)); e = min(len(lines), int(end_line))
+    s = max(1, int(start_line))
+    e = min(len(lines), int(end_line) if end_line else s + 150)  # generous default window
     body = "\n".join(f"{i+1}\t{lines[i]}" for i in range(s - 1, e))
     return body[:MAX_OUT] or "(empty range)"
 
@@ -226,10 +227,17 @@ def main():
         if MEM_FILE and os.path.isfile(MEM_FILE):
             mem = open(MEM_FILE, encoding="utf-8", errors="replace").read()[:8000]
         sys_prompt = (
-            "You are an expert software engineer. Fix the issue described by the user by editing the repository "
-            "with the provided tools. You do NOT have access to the test suite; write a correct general fix. "
-            "Explore first (list_dir/read_file/search), then make minimal edits, then call submit. "
-            "Do not edit test files. Temperature is 0; you get ONE attempt.")
+            "You are an expert software engineer fixing a real bug in a repository. You have a STRICT budget of "
+            f"{MAX_TURNS} tool calls and ONE attempt (temperature 0).\n\n"
+            "REQUIRED WORKFLOW:\n"
+            "1. Briefly explore to locate the buggy code (a few list_dir/search/read_file calls; read generously, "
+            "150+ lines at a time — do NOT scroll 10 lines at a time).\n"
+            "2. As soon as you have located the cause (usually within ~10 calls), you MUST fix it with edit_file "
+            "(or create_file). Reading alone fixes nothing and wastes your budget.\n"
+            "3. After editing, call submit.\n\n"
+            "You do NOT have access to the test suite; write a correct, general fix to the source code. Do not edit "
+            "test files. It is far better to make a reasonable edit than to keep reading. If unsure, make your best "
+            "edit and submit.")
         if mem:
             sys_prompt += "\n\n[RETRIEVED MEMORY — read-only context]\n" + mem
         messages = [{"role": "system", "content": sys_prompt},
@@ -261,10 +269,15 @@ def main():
                         result = f"tool error: {ex}"
                 arg_brief = {k: (str(v)[:40]) for k, v in list(args.items())[:2]}
                 print(f"[{INST}] turn {turns}: {fn}({arg_brief}) -> {str(result)[:80].replace(chr(10),' ')}")
-                messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": str(result)[:MAX_OUT]})
-            # nudge: if the model has explored a while without editing, remind it to act
-            if turns == 20 and not EDITED:
-                messages.append({"role": "user", "content": "Reminder: you have explored enough. Make the necessary edits now with edit_file/create_file, then call submit. Do not keep only reading."})
+                left = MAX_TURNS - turns
+                suffix = f"\n[budget: {left} tool calls left; edits made so far: {len(EDITED)}]" if fn != "submit" else ""
+                messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": str(result)[:MAX_OUT] + suffix})
+            # escalating nudge if the model keeps reading without editing
+            if turns in (8, 15, 22, 30) and not EDITED:
+                messages.append({"role": "user", "content":
+                    f"STOP READING. You have made {turns} calls and 0 edits, with {MAX_TURNS-turns} left. "
+                    "Your NEXT action MUST be edit_file or create_file to implement the fix, then submit. "
+                    "Make your best-judgment edit now even if not fully certain."})
             if done:
                 print(f"[{INST}] submitted at turn {turns}; edited={sorted(EDITED)}")
                 break

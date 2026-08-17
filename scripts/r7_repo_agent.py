@@ -187,7 +187,9 @@ def tools_for(turns, edited):
     tools so it must read-then-edit, and finally must edit/submit. A forced imperfect edit is a fair attempt
     (resolved by the official grader); endless reading is a scaffold artifact."""
     names = None
-    if not edited and turns > 30:
+    if not edited and turns > 34:
+        names = {"edit_file", "replace_lines", "create_file", "submit"}  # must act: no more reading
+    elif not edited and turns > 30:
         names = {"read_file", "edit_file", "replace_lines", "create_file", "submit"}
     elif not edited and turns > 24:
         names = {"read_file", "search", "edit_file", "replace_lines", "create_file", "submit"}

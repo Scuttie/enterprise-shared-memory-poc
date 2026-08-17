@@ -163,9 +163,23 @@ def trim_history(messages, keep=22):
     return head + tail
 
 
-def call_solar(messages):
+def tools_for(turns, edited):
+    """Progressively force action: if the model keeps exploring without editing, remove the broad exploration
+    tools so it must read-then-edit, and finally must edit/submit. A forced imperfect edit is a fair attempt
+    (resolved by the official grader); endless reading is a scaffold artifact."""
+    names = None
+    if not edited and turns > 30:
+        names = {"read_file", "edit_file", "create_file", "submit"}
+    elif not edited and turns > 24:
+        names = {"read_file", "search", "edit_file", "create_file", "submit"}
+    if names is None:
+        return TOOLS
+    return [t for t in TOOLS if t["function"]["name"] in names]
+
+
+def call_solar(messages, tools=None):
     import random
-    body = json.dumps({"model": MODEL, "messages": messages, "tools": TOOLS,
+    body = json.dumps({"model": MODEL, "messages": messages, "tools": tools or TOOLS,
                        "tool_choice": "auto", "temperature": 0}).encode()
     last = None
     for attempt in range(10):
@@ -201,30 +215,53 @@ def build_model_patch():
 
 
 def grade(model_patch, row):
-    resdir = os.path.abspath("grade_out"); sh(["rm", "-rf", resdir]); os.makedirs(resdir)
-    onerow = os.path.abspath("one_row.csv")
-    pd.DataFrame([row]).to_csv(onerow, index=False)
-    preds = os.path.abspath("preds.jsonl")
-    open(preds, "w", encoding="utf-8").write(json.dumps({"instance_id": INST, "model_patch": model_patch}) + "\n")
-    env = dict(os.environ, PYTHONPATH=os.path.join(POLY, "src"))
-    rc, o, e = sh([sys.executable, "-m", "poly_bench_evaluation.run_evaluation",
-                   "--dataset-path", onerow, "--predictions-path", preds,
-                   "--result-path", resdir, "--num-threads", "1"], cwd=POLY, timeout=2400)
-    print(f"[{INST}] grader rc={rc}\n{o[-800:]}\n{e[-400:]}")
-    # find per-instance result json
-    import glob
-    resolved = None
-    for f in glob.glob(os.path.join(resdir, "**", "*.json"), recursive=True):
+    """Grade via the official harness modules directly (imported), reusing the locally-tagged prebuilt image.
+    This is the exact path validated in the §2 G0 smoke (8/8 all languages); it avoids run_evaluation.py's
+    Java base-image *build* fallback that fails in CI. Applies test_patch then model_patch in a fresh container,
+    runs the official test_command, parses with the repo's official parser, and scores F2P/P2P."""
+    import ast as _ast
+    from poly_bench_evaluation.docker_utils import DockerManager
+    from poly_bench_evaluation.scoring import instance_level_scoring
+    from poly_bench_evaluation.constants import DEFAULT_TIMEOUT, JAVA_TIMEOUT, REPO_TO_PARSER_CLASS
+    import poly_bench_evaluation.parsers as all_parsers
+    import docker as _docker
+
+    def _to_list(v):
+        if isinstance(v, list):
+            return v
+        if v is None or (isinstance(v, float) and pd.isna(v)):
+            return []
+        return _ast.literal_eval(v)
+
+    language = row["language"]; repo = row["repo"]
+    image_id = f"polybench_{language.lower()}_{INST.lower()}"
+    parser_class_name = REPO_TO_PARSER_CLASS[repo]
+    f2p = _to_list(row["F2P"]); p2p = _to_list(row["P2P"])
+    client = _docker.from_env()
+    dm = DockerManager(image_id=image_id, delete_image=False, client=client)
+    if not dm.check_image_local(local_image_name=image_id):
+        if not dm.try_pull_prebuilt_image(INST):
+            return None, 1
+    dm.create_container()
+    try:
+        if dm.apply_patch_to_container(patch_content=row["test_patch"], patch_type="test") != 0:
+            return None, 2
+        if model_patch.strip():
+            if dm.apply_patch_to_container(patch_content=model_patch, patch_type="code") != 0:
+                # model patch failed to apply -> official semantics: not resolved
+                return False, 0
+        run_timeout = JAVA_TIMEOUT if language.lower() == "java" else DEFAULT_TIMEOUT
+        dm.docker_run(test_command=row["test_command"], timeout=run_timeout)
+        logs = "\n".join(dm.run_logs)
+        result = getattr(all_parsers, parser_class_name)(test_content=logs).parse()
+        out = instance_level_scoring(instance_id=INST, result=result, f2p=f2p, p2p=p2p,
+                                     patch_applied=True, generation=True)
+        return bool(getattr(out, "resolved", False)), 0
+    finally:
         try:
-            d = json.load(open(f, encoding="utf-8"))
+            dm.__del__()
         except Exception:
-            continue
-        d = d if isinstance(d, dict) else {}
-        if d.get("instance_id") == INST and "resolved" in d:
-            resolved = bool(d["resolved"]); break
-        if "resolved" in d and resolved is None:
-            resolved = bool(d["resolved"])
-    return resolved, rc
+            pass
 
 
 def main():
@@ -261,7 +298,7 @@ def main():
         while turns < MAX_TURNS and (time.time() - t0) < DEADLINE_S:
             turns += 1
             messages = trim_history(messages)
-            resp = call_solar(messages)
+            resp = call_solar(messages, tools=tools_for(turns, bool(EDITED)))
             u = resp.get("usage", {}); tokens["prompt"] += u.get("prompt_tokens", 0); tokens["completion"] += u.get("completion_tokens", 0)
             msg = resp["choices"][0]["message"]
             messages.append(msg)

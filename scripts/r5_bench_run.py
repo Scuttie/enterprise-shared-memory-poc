@@ -51,6 +51,11 @@ def main():
                "--skill-mode", SKILL_MODE]
         if MODEL:
             cmd += ["--model", MODEL]
+        # --agent-env KEY=VALUE (repeatable): route BenchFlow's user-endpoint provider (vllm/litellm) to Upstage
+        for kv in os.environ.get("AGENT_ENV", "").split(";"):
+            kv = kv.strip()
+            if kv:
+                cmd += ["--agent-env", kv]
         if SKILL_MODE == "with-skill" and SKILLS_DIR:
             cmd += ["--skills-dir", SKILLS_DIR.replace("<id>", tid)]
         t0 = time.time()

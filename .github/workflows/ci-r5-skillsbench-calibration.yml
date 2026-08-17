@@ -13,9 +13,9 @@ on:
         required: false
         default: "dialogue-parser"
       agent:
-        description: "BenchFlow agent (must speak openai-completions for Solar)"
+        description: "BenchFlow agent (generic openai-completions; mini-swe/deepagents)"
         required: false
-        default: "goose"
+        default: "mini-swe"
   push:
     branches: [codex/production-service-v0.2]
 
@@ -53,17 +53,16 @@ jobs:
         env:
           SKILLSBENCH_DIR: ${{ github.workspace }}/skillsbench
           R5_TASKS: ${{ github.event.inputs.tasks || 'dialogue-parser' }}
-          AGENT: ${{ github.event.inputs.agent || 'goose' }}
-          MODEL: openai/solar-pro2-251215
+          AGENT: ${{ github.event.inputs.agent || 'mini-swe' }}
+          # user-endpoint provider prefix (vllm) so BenchFlow honors BENCHFLOW_PROVIDER_BASE_URL (its `openai`
+          # provider is hardcoded to api.openai.com and ignores OPENAI_BASE_URL).
+          MODEL: vllm/solar-pro2-251215
           SKILL_MODE: no-skill
           ARM_LABEL: A0
           R5_TASK_TIMEOUT: "3000"
-          OPENAI_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
-          OPENAI_BASE_URL: https://api.upstage.ai/v1
-          OPENAI_API_BASE: https://api.upstage.ai/v1
-          LLM_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
-          LLM_BASE_URL: https://api.upstage.ai/v1
+          AGENT_ENV: "BENCHFLOW_PROVIDER_BASE_URL=https://api.upstage.ai/v1;BENCHFLOW_PROVIDER_API_KEY=${{ secrets.UPSTAGE_API_KEY }};BENCHFLOW_PROVIDER_MODEL=solar-pro2-251215"
           BENCHFLOW_PROVIDER_BASE_URL: https://api.upstage.ai/v1
+          BENCHFLOW_PROVIDER_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
         run: |
           test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no UPSTAGE_API_KEY"; exit 1; }
           python scripts/r5_bench_run.py

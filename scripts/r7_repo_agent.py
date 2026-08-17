@@ -164,23 +164,32 @@ def trim_history(messages, keep=22):
 
 
 def call_solar(messages):
+    import random
     body = json.dumps({"model": MODEL, "messages": messages, "tools": TOOLS,
                        "tool_choice": "auto", "temperature": 0}).encode()
-    req = urllib.request.Request(BASE_URL + "/chat/completions", data=body,
-        headers={"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"})
     last = None
-    for attempt in range(5):
+    for attempt in range(10):
         try:
+            req = urllib.request.Request(BASE_URL + "/chat/completions", data=body,
+                headers={"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"})
             with urllib.request.urlopen(req, timeout=180) as r:
                 return json.loads(r.read())
         except urllib.error.HTTPError as ex:
-            last = f"HTTP {ex.code}: {ex.read()[:200]}"
-            if ex.code in (429, 500, 502, 503, 504):
-                time.sleep(2 * (attempt + 1)); continue
+            hdr = getattr(ex, "headers", None)
+            ra = None
+            try:
+                ra = float(hdr.get("Retry-After")) if hdr and hdr.get("Retry-After") else None
+            except Exception:
+                ra = None
+            last = f"HTTP {ex.code}"
+            if ex.code in (429, 403, 500, 502, 503, 504):
+                wait = ra if ra else min(60, 5 * (2 ** attempt))
+                wait += random.uniform(0, 5)  # jitter (plain Python CI script; random is available)
+                time.sleep(wait); continue
             raise
         except Exception as ex:
-            last = str(ex); time.sleep(2 * (attempt + 1))
-    raise RuntimeError(f"solar call failed: {last}")
+            last = str(ex)[:120]; time.sleep(min(60, 5 * (2 ** attempt)) + random.uniform(0, 5))
+    raise RuntimeError(f"solar call failed after retries: {last}")
 
 
 def build_model_patch():
@@ -219,6 +228,8 @@ def grade(model_patch, row):
 
 
 def main():
+    import random
+    time.sleep(random.uniform(0, 30))  # startup stagger to desync concurrent jobs' API bursts
     df = pd.read_csv(CSV)
     row = df[df["instance_id"] == INST].iloc[0].to_dict()
     t0 = time.time()

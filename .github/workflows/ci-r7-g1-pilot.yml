@@ -55,7 +55,7 @@ jobs:
     timeout-minutes: 120
     strategy:
       fail-fast: false
-      max-parallel: 12
+      max-parallel: 4
       matrix:
         instance: ${{ fromJSON(needs.setup.outputs.list) }}
     steps:
@@ -83,6 +83,7 @@ jobs:
           R7_MODEL: solar-pro3-260323
           R7_ARM: M0
           R7_MAX_TURNS: "40"
+          R7_WALLCLOCK_S: "1800"
           UPSTAGE_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
         run: |
           test -n "$UPSTAGE_API_KEY" || { echo "no UPSTAGE_API_KEY"; exit 1; }

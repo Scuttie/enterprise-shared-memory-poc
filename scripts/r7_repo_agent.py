@@ -282,8 +282,9 @@ def main():
             "You are an expert software engineer fixing a real bug in a repository. You have a STRICT budget of "
             f"{MAX_TURNS} tool calls and ONE attempt (temperature 0).\n\n"
             "REQUIRED WORKFLOW:\n"
-            "1. Briefly explore to locate the buggy code (a few list_dir/search/read_file calls; read generously, "
-            "150+ lines at a time — do NOT scroll 10 lines at a time).\n"
+            "1. Locate the buggy code FAST: use search() with distinctive keywords/symbols from the issue "
+            "(class names, error strings, function names) instead of navigating directories one by one with "
+            "list_dir. Read generously (150+ lines), not 10 at a time.\n"
             "2. As soon as you have located the cause (usually within ~10 calls), you MUST fix it with edit_file "
             "(or create_file). Reading alone fixes nothing and wastes your budget.\n"
             "3. After editing, call submit.\n\n"
@@ -294,11 +295,13 @@ def main():
             sys_prompt += "\n\n[RETRIEVED MEMORY — read-only context]\n" + mem
         messages = [{"role": "system", "content": sys_prompt},
                     {"role": "user", "content": f"Repository issue to fix (instance {INST}, language {row['language']}):\n\n{row['problem_statement']}"}]
-        last_sig = None; rep = 0
+        last_sig = None; rep = 0; explore_calls = 0
         while turns < MAX_TURNS and (time.time() - t0) < DEADLINE_S:
             turns += 1
             messages = trim_history(messages)
-            resp = call_solar(messages, tools=tools_for(turns, bool(EDITED)))
+            offered = tools_for(turns, bool(EDITED))
+            allowed_names = {t["function"]["name"] for t in offered}
+            resp = call_solar(messages, tools=offered)
             u = resp.get("usage", {}); tokens["prompt"] += u.get("prompt_tokens", 0); tokens["completion"] += u.get("completion_tokens", 0)
             msg = resp["choices"][0]["message"]
             messages.append(msg)
@@ -313,7 +316,17 @@ def main():
                     args = json.loads(tc["function"].get("arguments") or "{}")
                 except Exception:
                     args = {}
-                if fn == "submit":
+                # enforce the (possibly restricted) tool set — Upstage does not reject out-of-list tool calls,
+                # so a lost model can keep navigating forever unless we refuse disallowed tools ourselves.
+                if fn in ("list_dir", "search"):
+                    explore_calls += 1
+                if fn != "submit" and fn not in allowed_names:
+                    result = (f"'{fn}' is disabled now — you have explored enough. Read the ONE relevant file "
+                              "with read_file, then fix it with edit_file/create_file, or call submit.")
+                elif fn == "list_dir" and explore_calls > 12:
+                    result = ("Exploration budget exhausted. Use search to find the relevant symbol, or read_file "
+                              "the file you already found, then edit_file. Stop listing directories.")
+                elif fn == "submit":
                     result = "submitted"; done = True
                 else:
                     try:

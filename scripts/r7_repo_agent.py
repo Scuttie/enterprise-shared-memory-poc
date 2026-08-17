@@ -132,8 +132,25 @@ def t_create_file(path, content):
     return "ok"
 
 
+def t_replace_lines(path, start_line, end_line, new_content):
+    """Replace lines [start_line, end_line] (1-based, inclusive, matching read_file numbering) with new_content.
+    Robust for models that cannot reproduce exact whitespace for edit_file.old_string."""
+    p = _safe(path)
+    if not os.path.isfile(p):
+        return f"not a file: {path}"
+    raw = open(p, encoding="utf-8", errors="replace").read()
+    lines = raw.split("\n")
+    s = int(start_line); e = int(end_line)
+    if s < 1 or e > len(lines) or s > e:
+        return f"invalid range: file has {len(lines)} lines; you gave {s}-{e}. Re-read the file for current numbers."
+    new_lines = lines[:s - 1] + new_content.split("\n") + lines[e:]
+    open(p, "w", encoding="utf-8").write("\n".join(new_lines))
+    EDITED.add(os.path.relpath(p, REPO).replace(os.sep, "/"))
+    return f"replaced lines {s}-{e} ({e - s + 1} lines) with {len(new_content.splitlines())} new lines"
+
+
 TOOLS_IMPL = {"list_dir": t_list_dir, "read_file": t_read_file, "search": t_search,
-              "edit_file": t_edit_file, "create_file": t_create_file}
+              "edit_file": t_edit_file, "create_file": t_create_file, "replace_lines": t_replace_lines}
 
 TOOLS = [
     {"type": "function", "function": {"name": "list_dir", "description": "List entries of a directory in the repo.",
@@ -146,6 +163,8 @@ TOOLS = [
       "parameters": {"type": "object", "properties": {"path": {"type": "string"}, "old_string": {"type": "string"}, "new_string": {"type": "string"}}, "required": ["path", "old_string", "new_string"]}}},
     {"type": "function", "function": {"name": "create_file", "description": "Create a new file with content.",
       "parameters": {"type": "object", "properties": {"path": {"type": "string"}, "content": {"type": "string"}}, "required": ["path", "content"]}}},
+    {"type": "function", "function": {"name": "replace_lines", "description": "Replace an inclusive 1-based line range (as shown by read_file) with new_content. Preferred for edits — no need to reproduce exact whitespace. Re-read the file first to get current line numbers.",
+      "parameters": {"type": "object", "properties": {"path": {"type": "string"}, "start_line": {"type": "integer"}, "end_line": {"type": "integer"}, "new_content": {"type": "string"}}, "required": ["path", "start_line", "end_line", "new_content"]}}},
     {"type": "function", "function": {"name": "submit", "description": "Finish: the fix is complete.",
       "parameters": {"type": "object", "properties": {}}}},
 ]
@@ -169,9 +188,9 @@ def tools_for(turns, edited):
     (resolved by the official grader); endless reading is a scaffold artifact."""
     names = None
     if not edited and turns > 30:
-        names = {"read_file", "edit_file", "create_file", "submit"}
+        names = {"read_file", "edit_file", "replace_lines", "create_file", "submit"}
     elif not edited and turns > 24:
-        names = {"read_file", "search", "edit_file", "create_file", "submit"}
+        names = {"read_file", "search", "edit_file", "replace_lines", "create_file", "submit"}
     if names is None:
         return TOOLS
     return [t for t in TOOLS if t["function"]["name"] in names]
@@ -285,8 +304,10 @@ def main():
             "1. Locate the buggy code FAST: use search() with distinctive keywords/symbols from the issue "
             "(class names, error strings, function names) instead of navigating directories one by one with "
             "list_dir. Read generously (150+ lines), not 10 at a time.\n"
-            "2. As soon as you have located the cause (usually within ~10 calls), you MUST fix it with edit_file "
-            "(or create_file). Reading alone fixes nothing and wastes your budget.\n"
+            "2. As soon as you have located the cause (usually within ~10 calls), you MUST fix it. PREFER "
+            "replace_lines(path, start_line, end_line, new_content) using the line numbers shown by read_file — "
+            "it does not require reproducing exact whitespace (edit_file needs a verbatim unique old_string, which "
+            "often fails). Reading alone fixes nothing and wastes your budget.\n"
             "3. After editing, call submit.\n\n"
             "You do NOT have access to the test suite; write a correct, general fix to the source code. Do not edit "
             "test files. It is far better to make a reasonable edit than to keep reading. If unsure, make your best "

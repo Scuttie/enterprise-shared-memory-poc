@@ -1,0 +1,47 @@
+{
+  "experiment": "REALBENCH_SKILLS_READER_R6_DIAGNOSTIC",
+  "cells": {
+    "P2-A0": {
+      "n": 30,
+      "exact": 0,
+      "exec_ran": 27,
+      "env_err": 3
+    },
+    "P2-A1": {
+      "n": 30,
+      "exact": 0,
+      "exec_ran": 27,
+      "env_err": 3
+    },
+    "P3-A0": {
+      "n": 30,
+      "exact": 0,
+      "exec_ran": 27,
+      "env_err": 3
+    },
+    "P3-A1": {
+      "n": 30,
+      "exact": 0,
+      "exec_ran": 27,
+      "env_err": 3
+    }
+  },
+  "viability": {
+    "P2/solar-pro2": {
+      "A1_exact": 0,
+      "A1_exec_ran": 27,
+      "A1_env_err": 3,
+      "net_gain_over_A0": 0,
+      "regressions": 0,
+      "viable": false
+    },
+    "P3/solar-pro3": {
+      "A1_exact": 0,
+      "A1_exec_ran": 27,
+      "A1_env_err": 3,
+      "net_gain_over_A0": 0,
+      "regressions": 0,
+      "viable": false
+    }
+  }
+}

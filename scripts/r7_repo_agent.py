@@ -356,6 +356,10 @@ def main():
                 elif fn == "list_dir" and explore_calls > 12:
                     result = ("Exploration budget exhausted. Use search to find the relevant symbol, or read_file "
                               "the file you already found, then edit_file. Stop listing directories.")
+                elif fn == "submit" and not EDITED:
+                    # do not let the model 'finish' without having produced any edit
+                    result = ("You cannot submit yet — you have made NO edit. Implement the fix first with "
+                              "replace_lines (preferred) or edit_file/create_file, THEN submit.")
                 elif fn == "submit":
                     result = "submitted"; done = True
                 else:

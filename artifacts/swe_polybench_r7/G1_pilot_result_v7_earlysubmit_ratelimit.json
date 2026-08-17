@@ -1,0 +1,331 @@
+{
+  "experiment": "REALBENCH_SWE_POLYBENCH_R7",
+  "stage": "G1_no_memory_pilot",
+  "n": 40,
+  "graded": 31,
+  "failures": 9,
+  "resolved": 0,
+  "per_language": {
+    "Python": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 8
+    },
+    "TypeScript": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 10
+    },
+    "Java": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 7
+    },
+    "JavaScript": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 6
+    }
+  },
+  "gates": {
+    "G1a_graded_ge38": false,
+    "G1b_failures_le2": false,
+    "G1c_leakage_zero": true,
+    "G1d_resolved_in_4_28": false,
+    "gate_pass": false
+  },
+  "resolved_ids": [],
+  "failure_ids": [
+    "apache__dubbo-3317",
+    "apache__dubbo-4567",
+    "apache__dubbo-5356",
+    "huggingface__transformers-13491",
+    "huggingface__transformers-15473",
+    "prettier__prettier-11000",
+    "prettier__prettier-14400",
+    "prettier__prettier-3436",
+    "prettier__prettier-3515"
+  ],
+  "per_task": {
+    "Significant-Gravitas__AutoGPT-4652": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 674.2,
+      "lang": "Python"
+    },
+    "angular__angular-37561": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1089.7,
+      "lang": "TypeScript"
+    },
+    "apache__dubbo-3093": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 11,
+      "secs": 183.0,
+      "lang": "Java"
+    },
+    "apache__dubbo-3317": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 24,
+      "secs": 1256.4,
+      "lang": "Java"
+    },
+    "apache__dubbo-3622": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 747.5,
+      "lang": "Java"
+    },
+    "apache__dubbo-3855": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 12,
+      "secs": 269.9,
+      "lang": "Java"
+    },
+    "apache__dubbo-4026": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 35,
+      "secs": 1956.1,
+      "lang": "Java"
+    },
+    "apache__dubbo-4515": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 35,
+      "secs": 1835.2,
+      "lang": "Java"
+    },
+    "apache__dubbo-4567": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 29,
+      "secs": 936.0,
+      "lang": "Java"
+    },
+    "apache__dubbo-4678": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1218.2,
+      "lang": "Java"
+    },
+    "apache__dubbo-5356": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 13,
+      "secs": 768.8,
+      "lang": "Java"
+    },
+    "apache__dubbo-5708": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1210.1,
+      "lang": "Java"
+    },
+    "coder__code-server-3277": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1452.6,
+      "lang": "TypeScript"
+    },
+    "coder__code-server-4923": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1094.3,
+      "lang": "TypeScript"
+    },
+    "coder__code-server-6278": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1517.3,
+      "lang": "TypeScript"
+    },
+    "huggingface__transformers-12981": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1820.7,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13491": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 37,
+      "secs": 729.0,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13693": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1034.1,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13865": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1042.1,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13919": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 910.9,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13989": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1379.1,
+      "lang": "Python"
+    },
+    "huggingface__transformers-15158": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 30,
+      "secs": 1822.9,
+      "lang": "Python"
+    },
+    "huggingface__transformers-15473": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 1,
+      "secs": 532.4,
+      "lang": "Python"
+    },
+    "huggingface__transformers-15795": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 17,
+      "secs": 381.1,
+      "lang": "Python"
+    },
+    "microsoft__vscode-106767": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1484.9,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-108964": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1875.6,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-109750": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 946.5,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-110094": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 35,
+      "secs": 1903.5,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-113837": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 27,
+      "secs": 1954.4,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-122991": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 997.3,
+      "lang": "TypeScript"
+    },
+    "mrdoob__three.js-14836": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1132.1,
+      "lang": "JavaScript"
+    },
+    "mrdoob__three.js-18648": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 886.0,
+      "lang": "JavaScript"
+    },
+    "mrdoob__three.js-20991": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1245.9,
+      "lang": "JavaScript"
+    },
+    "mrdoob__three.js-24461": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1254.6,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-11000": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 32,
+      "secs": 1970.9,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-11637": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 913.0,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-12930": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1392.5,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-14400": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 12,
+      "secs": 881.9,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-3436": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 8,
+      "secs": 982.8,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-3515": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 27,
+      "secs": 2359.7,
+      "lang": "JavaScript"
+    }
+  }
+}

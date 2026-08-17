@@ -1,0 +1,23 @@
+{
+  "_status": "PENDING_CONFIGURATION — unfilled template. R8 cannot start until the company supplies these exact values. GLM/any identity is NOT guessed.",
+  "_source_of_truth": "src/enterprise_memory/service/company_harness.py :: CompanyManifest",
+  "harness_name": "<REQUIRED e.g. company Claude-Code-style harness name>",
+  "harness_version": "<REQUIRED>",
+  "model_id": "<REQUIRED exact served model id — NOT guessed>",
+  "model_revision": "<REQUIRED>",
+  "serving_protocol": "<REQUIRED: anthropic | openai | jsonrpc>",
+  "endpoint": "<REQUIRED reachable-from-CI URL>",
+  "context_window": 0,
+  "max_output_tokens": 0,
+  "tool_schema_hash": "<REQUIRED>",
+  "repository_mount_mode": "<REQUIRED>",
+  "sandbox_test_ownership": "service",
+  "streaming": false,
+  "timeout_seconds": 0,
+  "build_id": "<REQUIRED>",
+  "_also_required": {
+    "approved_endpoint_reachable_from_ci": false,
+    "secret_env_var_name": "<REQUIRED name of a GitHub secret holding the company API key; currently only UPSTAGE_API_KEY exists>",
+    "secret_value_set": false
+  }
+}

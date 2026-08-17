@@ -49,3 +49,13 @@ benchmark, or the pool (audit PASS; oracle repro 30/31; pool = 30 frozen). Optio
 faithful, controllable path; but it is meaningful engineering, so it needs an explicit go-ahead. No fabricated
 results either way; no paid confirmatory arms until the reader is settled and the R5 preregistration is approved.
 **P6 not started; R1–R4 frozen.**
+
+## RESOLVED — Solar repository-agent works
+Root cause: `--model openai/solar-pro2-251215` made BenchFlow's LangChain path send the **prefixed** string
+`openai/solar-pro2-251215` to Upstage as the model name (Upstage has no such model → HTTP 500). Fix: route via a
+**user-endpoint provider** — `--model vllm/solar-pro2-251215` + `--agent-env BENCHFLOW_PROVIDER_BASE_URL=<upstage>`
+`--agent-env BENCHFLOW_PROVIDER_API_KEY=<key>` `--agent-env BENCHFLOW_PROVIDER_MODEL=solar-pro2-251215`, agent
+`deepagents`. Verified on dialogue-parser (no-skill): **`end_turn, 13 total tool calls`, errors=0**, verifier ran
+(reward 0.0 — a genuine no-skill failure, not an infra error). **The R5 reader (Solar-pro2 repository-agent via
+BenchFlow deepagents) is validated.** (mini-swe/goose fail to install into the sandbox; deepagents installs +
+launches + now drives Solar correctly.)

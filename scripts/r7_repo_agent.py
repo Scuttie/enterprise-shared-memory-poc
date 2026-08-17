@@ -48,6 +48,9 @@ def extract_repo(row):
     digest = digest.strip()
     rc, workdir, _ = sh(["docker", "inspect", "--format", "{{.Config.WorkingDir}}", img])
     workdir = workdir.strip() or "/"
+    # tag as the harness's local image name so run_evaluation reuses it (no re-pull / no base-image build)
+    local_name = f"polybench_{str(row['language']).lower()}_{INST.lower()}"
+    sh(["docker", "tag", img, local_name])
     rc, cid, e = sh(["docker", "create", img, "tail", "-f", "/dev/null"])
     assert rc == 0, f"create failed: {e[-300:]}"
     cid = cid.strip()
@@ -143,6 +146,18 @@ TOOLS = [
 ]
 
 
+def trim_history(messages, keep=22):
+    """Bound context: keep system + initial user + a recent tail, without orphaning a 'tool' message
+    (a tool result must follow its assistant tool_call, or the API rejects it)."""
+    if len(messages) <= keep + 2:
+        return messages
+    head = messages[:2]  # system + initial user issue
+    tail = messages[-keep:]
+    while tail and tail[0].get("role") == "tool":
+        tail = tail[1:]
+    return head + tail
+
+
 def call_solar(messages):
     body = json.dumps({"model": MODEL, "messages": messages, "tools": TOOLS,
                        "tool_choice": "auto", "temperature": 0}).encode()
@@ -221,12 +236,14 @@ def main():
                     {"role": "user", "content": f"Repository issue to fix (instance {INST}, language {row['language']}):\n\n{row['problem_statement']}"}]
         while turns < MAX_TURNS and (time.time() - t0) < DEADLINE_S:
             turns += 1
+            messages = trim_history(messages)
             resp = call_solar(messages)
             u = resp.get("usage", {}); tokens["prompt"] += u.get("prompt_tokens", 0); tokens["completion"] += u.get("completion_tokens", 0)
             msg = resp["choices"][0]["message"]
             messages.append(msg)
             tcs = msg.get("tool_calls") or []
             if not tcs:
+                print(f"[{INST}] turn {turns}: no tool_call -> stop. content={str(msg.get('content'))[:120]}")
                 break  # model produced final text without a tool call -> stop
             done = False
             for tc in tcs:
@@ -242,8 +259,14 @@ def main():
                         result = TOOLS_IMPL[fn](**args)
                     except Exception as ex:
                         result = f"tool error: {ex}"
+                arg_brief = {k: (str(v)[:40]) for k, v in list(args.items())[:2]}
+                print(f"[{INST}] turn {turns}: {fn}({arg_brief}) -> {str(result)[:80].replace(chr(10),' ')}")
                 messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": str(result)[:MAX_OUT]})
+            # nudge: if the model has explored a while without editing, remind it to act
+            if turns == 20 and not EDITED:
+                messages.append({"role": "user", "content": "Reminder: you have explored enough. Make the necessary edits now with edit_file/create_file, then call submit. Do not keep only reading."})
             if done:
+                print(f"[{INST}] submitted at turn {turns}; edited={sorted(EDITED)}")
                 break
         patch = build_model_patch()
         if not patch.strip():

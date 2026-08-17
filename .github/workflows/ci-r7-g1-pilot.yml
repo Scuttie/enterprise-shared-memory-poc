@@ -12,6 +12,10 @@ on:
         description: "run only the first N frozen targets (0 = all 40)"
         required: false
         default: "0"
+      single:
+        description: "run only this one instance_id (overrides limit; blank = use limit)"
+        required: false
+        default: ""
   push:
     branches: [codex/production-service-v0.2]
     paths: ['.github/workflows/ci-r7-g1-pilot.yml']
@@ -33,12 +37,17 @@ jobs:
           python - <<'PY' >> "$GITHUB_OUTPUT"
           import json, os
           flat = json.load(open('configs/swe_polybench_r7/g1_targets.json'))['flat']
-          lim = int(os.environ.get('LIM','0') or '0')
-          if lim > 0: flat = flat[:lim]
+          single = (os.environ.get('SINGLE','') or '').strip()
+          if single:
+              flat = [single]
+          else:
+              lim = int(os.environ.get('LIM','0') or '0')
+              if lim > 0: flat = flat[:lim]
           print("list=" + json.dumps(flat))
           PY
         env:
           LIM: ${{ github.event.inputs.limit }}
+          SINGLE: ${{ github.event.inputs.single }}
 
   agent:
     needs: setup

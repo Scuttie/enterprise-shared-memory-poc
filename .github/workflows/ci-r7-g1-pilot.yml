@@ -1,0 +1,88 @@
+name: ci-r7-g1-pilot
+
+# REALBENCH-R7 §4 — G1 no-memory pilot (PAID). solar-pro3 repository agent (no memory, temp=0, 1 trajectory)
+# on the frozen 40 targets (10/language). Path: pull official GHCR image -> extract repo @ base_commit -> agent
+# -> git-diff model_patch -> official run_evaluation grades resolved. Durable per-task-arm evidence (§10).
+# Gate G1a-d evaluated by the aggregator. Frozen pins: SWE-PolyBench @ 9c836c5, Verified @ b3fca77.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "run only the first N frozen targets (0 = all 40)"
+        required: false
+        default: "0"
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/ci-r7-g1-pilot.yml']
+
+concurrency:
+  group: ci-r7-g1-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.gen.outputs.list }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: gen
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, os
+          flat = json.load(open('configs/swe_polybench_r7/g1_targets.json'))['flat']
+          lim = int(os.environ.get('LIM','0') or '0')
+          if lim > 0: flat = flat[:lim]
+          print("list=" + json.dumps(flat))
+          PY
+        env:
+          LIM: ${{ github.event.inputs.limit }}
+
+  agent:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix:
+        instance: ${{ fromJSON(needs.setup.outputs.list) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "/usr/local/share/powershell" /usr/share/swift || true
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Clone + install SWE-PolyBench harness @ pinned
+        run: |
+          git clone --no-checkout https://github.com/amazon-science/SWE-PolyBench.git polybench
+          cd polybench && git checkout 9c836c5d7f3cb991934132b77d29e6941d912a07
+          test "$(git rev-parse HEAD)" = "9c836c5d7f3cb991934132b77d29e6941d912a07"
+          pip install -r requirements.txt && pip install -e .
+      - name: Download pinned Verified test.csv
+        run: |
+          curl -sL "https://huggingface.co/datasets/AmazonScience/SWE-PolyBench_Verified/resolve/b3fca77b637379f0c01ad86d18753a7ac1998b53/test.csv" -o verified.csv
+          test "$(sha256sum verified.csv | cut -d' ' -f1)" = "0c8138e73c34fa29a5276b675b146b72d78ce001fcc4560d76302c908b4808a5"
+      - name: G1 agent (no memory) + official grade
+        env:
+          R7_INSTANCE_ID: ${{ matrix.instance }}
+          R7_CSV: ${{ github.workspace }}/verified.csv
+          R7_OUT: ${{ github.workspace }}/agent_${{ matrix.instance }}.json
+          R7_POLYBENCH: ${{ github.workspace }}/polybench
+          R7_MODEL: solar-pro3-260323
+          R7_ARM: M0
+          R7_MAX_TURNS: "40"
+          UPSTAGE_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
+        run: |
+          test -n "$UPSTAGE_API_KEY" || { echo "no UPSTAGE_API_KEY"; exit 1; }
+          python scripts/r7_repo_agent.py
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r7-g1-${{ matrix.instance }}
+          path: |
+            agent_${{ matrix.instance }}.json
+            agent_${{ matrix.instance }}.json.patch

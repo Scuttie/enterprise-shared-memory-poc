@@ -68,9 +68,13 @@ def extract_repo(row):
 
 # ---------- tools (operate on REPO, bounded, path-guarded) ----------
 def _safe(path):
-    p = os.path.abspath(os.path.join(REPO, path))
+    # models often pass absolute-style paths ("/src/...") or "./..."; treat everything as repo-relative
+    rel = str(path).strip().lstrip("/").lstrip("\\")
+    if rel.startswith("./"):
+        rel = rel[2:]
+    p = os.path.abspath(os.path.join(REPO, rel))
     if not (p == REPO or p.startswith(REPO + os.sep)):
-        raise ValueError("path escapes repo")
+        raise ValueError("path escapes repo; use a repo-relative path like 'src/transformers/trainer.py'")
     return p
 
 
@@ -242,6 +246,7 @@ def main():
             sys_prompt += "\n\n[RETRIEVED MEMORY — read-only context]\n" + mem
         messages = [{"role": "system", "content": sys_prompt},
                     {"role": "user", "content": f"Repository issue to fix (instance {INST}, language {row['language']}):\n\n{row['problem_statement']}"}]
+        last_sig = None; rep = 0
         while turns < MAX_TURNS and (time.time() - t0) < DEADLINE_S:
             turns += 1
             messages = trim_history(messages)
@@ -272,6 +277,15 @@ def main():
                 left = MAX_TURNS - turns
                 suffix = f"\n[budget: {left} tool calls left; edits made so far: {len(EDITED)}]" if fn != "submit" else ""
                 messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": str(result)[:MAX_OUT] + suffix})
+                sig = fn + "|" + json.dumps(args, sort_keys=True)[:200]
+                rep = rep + 1 if sig == last_sig else 0
+                last_sig = sig
+                if rep >= 2:
+                    messages.append({"role": "user", "content":
+                        "You are repeating the same call. Change your approach: re-read the file to get the EXACT "
+                        "current text for edit_file.old_string (it must match verbatim and be unique), or try a "
+                        "different edit. Do not repeat the identical call again."})
+                    rep = 0
             # escalating nudge if the model keeps reading without editing
             if turns in (8, 15, 22, 30) and not EDITED:
                 messages.append({"role": "user", "content":

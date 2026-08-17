@@ -1,0 +1,31 @@
+{
+  "instance_id": "apache__dubbo-3093",
+  "language": "Java",
+  "repo": "apache/dubbo",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-3093:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-3093@sha256:73eb26f5a9236aa21c6bd5c19fc7c03cc692cf40265e35947dba9d65405a98a5",
+  "baseline": {
+    "resolved": false,
+    "f2p_all_passed": false,
+    "p2p_all_passed": null,
+    "p2p_any_failed": null,
+    "n_passed": 0,
+    "n_failed": 0,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-3093@sha256:73eb26f5a9236aa21c6bd5c19fc7c03cc692cf40265e35947dba9d65405a98a5"
+  },
+  "gold": {
+    "resolved": true,
+    "f2p_all_passed": true,
+    "p2p_all_passed": null,
+    "p2p_any_failed": null,
+    "n_passed": 37,
+    "n_failed": 0,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-3093@sha256:73eb26f5a9236aa21c6bd5c19fc7c03cc692cf40265e35947dba9d65405a98a5"
+  },
+  "checks": {
+    "image_pulled": true,
+    "baseline_bug_present": true,
+    "gold_resolved": true
+  },
+  "smoke_pass": true
+}

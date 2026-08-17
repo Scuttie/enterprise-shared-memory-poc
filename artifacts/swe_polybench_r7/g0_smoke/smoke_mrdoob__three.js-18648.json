@@ -1,0 +1,31 @@
+{
+  "instance_id": "mrdoob__three.js-18648",
+  "language": "JavaScript",
+  "repo": "mrdoob/three.js",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-18648:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-18648@sha256:77f4a711250885fc5f92ac6e8190ecddc8cf401360e39f41e948a8d8ed5e30ab",
+  "baseline": {
+    "resolved": false,
+    "f2p_all_passed": false,
+    "p2p_all_passed": true,
+    "p2p_any_failed": false,
+    "n_passed": 699,
+    "n_failed": 946,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-18648@sha256:77f4a711250885fc5f92ac6e8190ecddc8cf401360e39f41e948a8d8ed5e30ab"
+  },
+  "gold": {
+    "resolved": true,
+    "f2p_all_passed": true,
+    "p2p_all_passed": true,
+    "p2p_any_failed": false,
+    "n_passed": 700,
+    "n_failed": 945,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-18648@sha256:77f4a711250885fc5f92ac6e8190ecddc8cf401360e39f41e948a8d8ed5e30ab"
+  },
+  "checks": {
+    "image_pulled": true,
+    "baseline_bug_present": true,
+    "gold_resolved": true
+  },
+  "smoke_pass": true
+}

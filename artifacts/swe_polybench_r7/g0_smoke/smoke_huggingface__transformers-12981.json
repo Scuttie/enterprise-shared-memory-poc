@@ -1,0 +1,31 @@
+{
+  "instance_id": "huggingface__transformers-12981",
+  "language": "Python",
+  "repo": "huggingface/transformers",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-12981:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-12981@sha256:a7bb9d03db363ab9e858597e4be687fa7cd30aad2166cce0daa6eb7f72041dbb",
+  "baseline": {
+    "resolved": false,
+    "f2p_all_passed": false,
+    "p2p_all_passed": true,
+    "p2p_any_failed": false,
+    "n_passed": 33,
+    "n_failed": 1,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-12981@sha256:a7bb9d03db363ab9e858597e4be687fa7cd30aad2166cce0daa6eb7f72041dbb"
+  },
+  "gold": {
+    "resolved": true,
+    "f2p_all_passed": true,
+    "p2p_all_passed": true,
+    "p2p_any_failed": false,
+    "n_passed": 34,
+    "n_failed": 0,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-12981@sha256:a7bb9d03db363ab9e858597e4be687fa7cd30aad2166cce0daa6eb7f72041dbb"
+  },
+  "checks": {
+    "image_pulled": true,
+    "baseline_bug_present": true,
+    "gold_resolved": true
+  },
+  "smoke_pass": true
+}

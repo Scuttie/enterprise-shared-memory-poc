@@ -330,8 +330,15 @@ def main():
             messages.append(msg)
             tcs = msg.get("tool_calls") or []
             if not tcs:
-                print(f"[{INST}] turn {turns}: no tool_call -> stop. content={str(msg.get('content'))[:120]}")
-                break  # model produced final text without a tool call -> stop
+                if EDITED:
+                    print(f"[{INST}] turn {turns}: no tool_call after editing -> done.")
+                    break  # model finished after making edits
+                # rambled without editing -> push it to act instead of ending the episode
+                print(f"[{INST}] turn {turns}: no tool_call, no edits -> forcing action. content={str(msg.get('content'))[:100]}")
+                messages.append({"role": "user", "content":
+                    "You replied with text but made NO edit and did not call a tool. You MUST implement the fix now "
+                    "by calling replace_lines (preferred) or edit_file/create_file. Then call submit. Act now."})
+                continue
             done = False
             for tc in tcs:
                 fn = tc["function"]["name"]

@@ -1,0 +1,336 @@
+{
+  "experiment": "REALBENCH_SWE_POLYBENCH_R7",
+  "stage": "G1_no_memory_pilot",
+  "n": 40,
+  "graded": 26,
+  "failures": 14,
+  "resolved": 0,
+  "per_language": {
+    "Python": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 9
+    },
+    "TypeScript": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 10
+    },
+    "Java": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 0
+    },
+    "JavaScript": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 7
+    }
+  },
+  "gates": {
+    "G1a_graded_ge38": false,
+    "G1b_failures_le2": false,
+    "G1c_leakage_zero": true,
+    "G1d_resolved_in_4_28": false,
+    "gate_pass": false
+  },
+  "resolved_ids": [],
+  "failure_ids": [
+    "apache__dubbo-3093",
+    "apache__dubbo-3317",
+    "apache__dubbo-3622",
+    "apache__dubbo-3855",
+    "apache__dubbo-4026",
+    "apache__dubbo-4515",
+    "apache__dubbo-4567",
+    "apache__dubbo-4678",
+    "apache__dubbo-5356",
+    "apache__dubbo-5708",
+    "huggingface__transformers-15473",
+    "mrdoob__three.js-14836",
+    "mrdoob__three.js-20991",
+    "prettier__prettier-3436"
+  ],
+  "per_task": {
+    "Significant-Gravitas__AutoGPT-4652": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 528.1,
+      "lang": "Python"
+    },
+    "angular__angular-37561": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 10,
+      "secs": 459.5,
+      "lang": "TypeScript"
+    },
+    "apache__dubbo-3093": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 40,
+      "secs": 541.0,
+      "lang": "Java"
+    },
+    "apache__dubbo-3317": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 21,
+      "secs": 202.8,
+      "lang": "Java"
+    },
+    "apache__dubbo-3622": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 40,
+      "secs": 727.6,
+      "lang": "Java"
+    },
+    "apache__dubbo-3855": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 40,
+      "secs": 563.6,
+      "lang": "Java"
+    },
+    "apache__dubbo-4026": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 40,
+      "secs": 437.0,
+      "lang": "Java"
+    },
+    "apache__dubbo-4515": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 40,
+      "secs": 812.5,
+      "lang": "Java"
+    },
+    "apache__dubbo-4567": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 37,
+      "secs": 561.0,
+      "lang": "Java"
+    },
+    "apache__dubbo-4678": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 40,
+      "secs": 745.7,
+      "lang": "Java"
+    },
+    "apache__dubbo-5356": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 40,
+      "secs": 611.6,
+      "lang": "Java"
+    },
+    "apache__dubbo-5708": {
+      "resolved": null,
+      "terminal": "grader_no_result",
+      "turns": 24,
+      "secs": 222.5,
+      "lang": "Java"
+    },
+    "coder__code-server-3277": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 544.7,
+      "lang": "TypeScript"
+    },
+    "coder__code-server-4923": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 40,
+      "secs": 774.3,
+      "lang": "TypeScript"
+    },
+    "coder__code-server-6278": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 24,
+      "secs": 577.2,
+      "lang": "TypeScript"
+    },
+    "huggingface__transformers-12981": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1575.4,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13491": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1401.0,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13693": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 10,
+      "secs": 150.2,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13865": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1198.2,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13919": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 862.6,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13989": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 39,
+      "secs": 1849.4,
+      "lang": "Python"
+    },
+    "huggingface__transformers-15158": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 534.6,
+      "lang": "Python"
+    },
+    "huggingface__transformers-15473": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 26,
+      "secs": 861.7,
+      "lang": "Python"
+    },
+    "huggingface__transformers-15795": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 10,
+      "secs": 886.8,
+      "lang": "Python"
+    },
+    "microsoft__vscode-106767": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 546.4,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-108964": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 695.9,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-109750": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 495.6,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-110094": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 611.3,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-113837": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 10,
+      "secs": 532.6,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-122991": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 35,
+      "secs": 752.5,
+      "lang": "TypeScript"
+    },
+    "mrdoob__three.js-14836": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 25,
+      "secs": 820.2,
+      "lang": "JavaScript"
+    },
+    "mrdoob__three.js-18648": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 40,
+      "secs": 774.0,
+      "lang": "JavaScript"
+    },
+    "mrdoob__three.js-20991": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 10,
+      "secs": 474.9,
+      "lang": "JavaScript"
+    },
+    "mrdoob__three.js-24461": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1297.7,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-11000": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1284.3,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-11637": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 935.2,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-12930": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 32,
+      "secs": 1020.0,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-14400": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 31,
+      "secs": 568.4,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-3436": {
+      "resolved": null,
+      "terminal": "error",
+      "turns": 10,
+      "secs": 85.3,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-3515": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 578.4,
+      "lang": "JavaScript"
+    }
+  }
+}

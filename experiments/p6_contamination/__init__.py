@@ -3,4 +3,4 @@ P6-A0: frozen date-stratified no-memory sweep -> Pass@1 contamination gradient b
 P6-B0: governance re-attestation over R11 artifacts. Not a new benchmark; static efficacy track stays closed.
 """
 EXPERIMENT_ID = "P6_CONTAMINATION_GOVERNANCE"
-STATUS = "STARTED_A0_GRADIENT"
+STATUS = "A0_GRADIENT_DONE_B0_GOVERNANCE_DONE"  # no monotone contamination gradient; governance 13/13 PASS

@@ -79,6 +79,13 @@ def main():
     import random
     time.sleep(random.uniform(0, 20))
     allp = load_code_generation_dataset(release_version=RELEASE)
+    if os.environ.get("R11_DUMP") == "1":
+        universe = [{"question_id": p.question_id, "contest_date": str(getattr(p, "contest_date", "")),
+                     "platform": str(getattr(p, "platform", "")), "difficulty": str(getattr(p, "difficulty", "")),
+                     "has_starter": bool(getattr(p, "starter_code", "") and p.starter_code.strip())} for p in allp]
+        json.dump({"release": RELEASE, "n": len(universe), "universe": universe},
+                  open(OUT, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+        print("[R11] dumped %d tasks -> %s" % (len(universe), OUT)); return
     by_id = {p.question_id: p for p in allp}
     if QIDS:
         targets = [by_id[q] for q in QIDS if q in by_id]
@@ -87,17 +94,22 @@ def main():
         targets = sorted(allp, key=lambda p: p.question_id)[:limit]  # deterministic smoke selection
     print("[R11] release=%s arm=%s targets=%d (dataset=%d)" % (RELEASE, ARM, len(targets), len(allp)))
 
+    WRONG = os.environ.get("R11_WRONG") == "1"  # grader-discrimination check: inject a deliberately wrong body
     gens, samples, meta = [], [], []
     for p in targets:
         rec = {"question_id": p.question_id, "contest_date": str(getattr(p, "contest_date", "")),
                "difficulty": str(getattr(p, "difficulty", "")), "platform": str(getattr(p, "platform", "")),
                "arm": ARM, "terminal": "ok", "returned_model": None, "usage": {}}
-        try:
-            out, usage, rmodel = call_solar(build_prompt(p, MEM.get(p.question_id, "") if ARM != "M0" else ""))
-            code = extract_code(out, LMStyle.OpenAIChat)
-            rec["returned_model"] = rmodel; rec["usage"] = usage; rec["code_len"] = len(code)
-        except Exception as ex:
-            code = ""; rec["terminal"] = "infra_error"; rec["error"] = str(ex)[:200]
+        if WRONG:
+            code = "import sys\ndef f(*a, **k):\n    return None\nprint(-987654321)\n"  # passes nothing
+            rec["returned_model"] = "WRONG_INJECTED"
+        else:
+            try:
+                out, usage, rmodel = call_solar(build_prompt(p, MEM.get(p.question_id, "") if ARM != "M0" else ""))
+                code = extract_code(out, LMStyle.OpenAIChat)
+                rec["returned_model"] = rmodel; rec["usage"] = usage; rec["code_len"] = len(code)
+            except Exception as ex:
+                code = ""; rec["terminal"] = "infra_error"; rec["error"] = str(ex)[:200]
         gens.append([code])
         samples.append(p.get_evaluation_sample())
         meta.append(rec)
@@ -105,12 +117,19 @@ def main():
     # official grading (Pass@1). ITT: empty/failed code grades as fail, not dropped.
     passed = [False] * len(targets)
     try:
-        metrics, results = codegen_metrics(samples, gens, k_list=[1], num_process_evaluate=4, timeout=6)[:2]
+        res = codegen_metrics(samples, gens, k_list=[1], num_process_evaluate=4, timeout=6)
+        metrics = res[0]; results = res[1]
+        detail = (metrics or {}).get("detail", {}).get("pass@1", {})
+        print("[R11] official metrics pass@1 aggregate=%s" % (metrics or {}).get("pass@1"))
         for i in range(len(targets)):
-            r = results.get(i) if isinstance(results, dict) else results[i]
-            # r is list over generations of list-over-tests (or bools); pass@1 = all tests of gen0 pass
-            g0 = r[0] if r else []
-            passed[i] = bool(g0) and all(bool(x) is True or x == 1 or x is True for x in (g0 if isinstance(g0, (list, tuple)) else [g0]))
+            # prefer the official per-problem pass@1 detail (0.0/1.0 for a single generation)
+            if str(i) in detail or i in detail:
+                passed[i] = float(detail.get(str(i), detail.get(i, 0.0))) >= 1.0
+            else:
+                r = results.get(i) if isinstance(results, dict) else results[i]
+                g0 = r[0] if r else []
+                flat = g0 if isinstance(g0, (list, tuple)) else [g0]
+                passed[i] = len(flat) > 0 and all((x is True or x == 1) for x in flat)
     except Exception as ex:
         print("[R11] grader error: %s" % str(ex)[:300])
         for m in meta:

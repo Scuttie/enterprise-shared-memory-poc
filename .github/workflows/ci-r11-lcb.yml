@@ -27,6 +27,14 @@ on:
         description: "fixed generation token budget"
         required: false
         default: "4096"
+      wrong:
+        description: "1 = inject deliberately wrong body (grader discrimination check)"
+        required: false
+        default: "0"
+      dump:
+        description: "1 = dump dataset (qid/date/platform/difficulty), no Solar"
+        required: false
+        default: "0"
   push:
     branches: [codex/production-service-v0.2]
     paths: ['.github/workflows/ci-r11-lcb.yml']
@@ -64,6 +72,8 @@ jobs:
           R11_MAX_TOKENS: ${{ github.event.inputs.max_tokens }}
           R11_OUT: ${{ github.workspace }}/lcb_${{ github.event.inputs.arm }}.json
           R11_MODEL: solar-pro3-260323
+          R11_WRONG: ${{ github.event.inputs.wrong }}
+          R11_DUMP: ${{ github.event.inputs.dump }}
           UPSTAGE_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
           PYTHONPATH: ${{ github.workspace }}/lcb
         run: |

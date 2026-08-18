@@ -45,15 +45,15 @@ jobs:
       - name: Free disk
         run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "/usr/local/share/powershell" /usr/share/swift || true
       - uses: actions/setup-python@v5
-        with: {python-version: '3.11'}
+        with: {python-version: '3.10'}
       - name: Clone + install LiveCodeBench @ pinned (eval deps only)
         run: |
           git clone --no-checkout https://github.com/LiveCodeBench/LiveCodeBench.git lcb
           cd lcb && git checkout 28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24
           test "$(git rev-parse HEAD)" = "28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24"
-          pip install -q "datasets>=3.2.0" "pebble>=5.1.0" numpy tqdm
-          python -c "import datasets, pebble, numpy; print('core deps OK', datasets.__version__)"
-          pip install -q pyext || echo "pyext optional — skipped (function-harness may need a fallback)"
+          # datasets<3 keeps dataset-script support (LCB lite loads via code_generation_lite.py); py3.10 lets pyext build
+          pip install -q "datasets==2.21.0" "pebble>=5.1.0" numpy tqdm pyext
+          python -c "import datasets, pebble, numpy, pyext; print('deps OK', datasets.__version__)"
           pip install -q -e . --no-deps
       - name: Run (generation + official grade)
         env:

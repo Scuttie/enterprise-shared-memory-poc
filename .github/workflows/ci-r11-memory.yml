@@ -1,0 +1,43 @@
+name: ci-r11-memory
+
+# REALBENCH-R11 memory build (PAID: Solar lesson generation). Derives M1/M2/M3 memory maps from verified sources.
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/ci-r11-memory.yml']
+
+jobs:
+  memory:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.10'}
+      - name: Install LCB loader
+        run: |
+          git clone --no-checkout https://github.com/LiveCodeBench/LiveCodeBench.git lcb
+          cd lcb && git checkout 28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24
+          pip install -q "datasets==2.21.0" pebble numpy pyext
+          pip install -q -e . --no-deps
+      - name: Build memory (Solar lessons)
+        env:
+          R11_RELEASE: release_v6
+          R11_MODEL: solar-pro3-260323
+          UPSTAGE_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
+          PYTHONPATH: ${{ github.workspace }}/lcb
+        run: |
+          test -n "$UPSTAGE_API_KEY" || { echo "no key"; exit 1; }
+          python scripts/r11_build_memory.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r11-memory
+          path: |
+            artifacts/livecodebench_r11/memory_M1.json
+            artifacts/livecodebench_r11/memory_M2.json
+            artifacts/livecodebench_r11/memory_M3.json
+            artifacts/livecodebench_r11/memory_assignments.json

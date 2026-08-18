@@ -51,7 +51,9 @@ jobs:
           git clone --no-checkout https://github.com/LiveCodeBench/LiveCodeBench.git lcb
           cd lcb && git checkout 28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24
           test "$(git rev-parse HEAD)" = "28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24"
-          pip install -q "datasets>=3.2.0" "pebble>=5.1.0" numpy pyext || true
+          pip install -q "datasets>=3.2.0" "pebble>=5.1.0" numpy tqdm
+          python -c "import datasets, pebble, numpy; print('core deps OK', datasets.__version__)"
+          pip install -q pyext || echo "pyext optional — skipped (function-harness may need a fallback)"
           pip install -q -e . --no-deps
       - name: Run (generation + official grade)
         env:

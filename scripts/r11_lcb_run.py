@@ -118,6 +118,7 @@ def main():
                 rec["returned_model"] = rmodel; rec["usage"] = usage; rec["code_len"] = len(code)
             except Exception as ex:
                 code = ""; rec["terminal"] = "infra_error"; rec["error"] = str(ex)[:200]
+        rec["code"] = code[:6000]  # persisted evidence (§14) + source-lesson derivation
         gens.append([code])
         samples.append(p.get_evaluation_sample())
         meta.append(rec)

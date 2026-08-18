@@ -88,7 +88,10 @@ def main():
         print("[R11] dumped %d tasks -> %s" % (len(universe), OUT)); return
     by_id = {p.question_id: p for p in allp}
     part_path = "artifacts/livecodebench_r11/task_partition.json"
-    if QIDS == ["SOLVESET"]:
+    if QIDS == ["P6GRADIENT"]:
+        ids = json.load(open("configs/p6_contamination/gradient_sample.json", encoding="utf-8"))["ids"]
+        targets = [by_id[q] for q in ids if q in by_id]
+    elif QIDS == ["SOLVESET"]:
         ids = json.load(open("artifacts/livecodebench_r11/source_solve_set.json", encoding="utf-8"))["ids"]
         off = int(os.environ.get("R11_OFFSET", "0")); lim = int(os.environ.get("R11_LIMIT", "0") or "0")
         ids = ids[off:off + lim] if lim else ids[off:]

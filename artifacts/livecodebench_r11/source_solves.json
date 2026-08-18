@@ -1030,5 +1030,797 @@
  "arc188_d": {
   "passed": false,
   "code": ""
+ },
+ "1899_B": {
+  "passed": false,
+  "code": ""
+ },
+ "2727": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def countSeniors(self, details: List[str]) -> int:\n        count = 0\n        for d in details:\n            age = int(d[11:13])\n            if age > 60:\n                count += 1\n        return count"
+ },
+ "2728": {
+  "passed": false,
+  "code": ""
+ },
+ "2730": {
+  "passed": false,
+  "code": ""
+ },
+ "2757": {
+  "passed": false,
+  "code": ""
+ },
+ "2786": {
+  "passed": false,
+  "code": ""
+ },
+ "2800": {
+  "passed": true,
+  "code": "class Solution:\n    def minLength(self, s: str) -> int:\n        stack = []\n        for c in s:\n            if stack and stack[-1] + c in (\"AB\", \"CD\"):\n                stack.pop()\n            else:\n                stack.append(c)\n        return len(stack)"
+ },
+ "2810": {
+  "passed": false,
+  "code": ""
+ },
+ "2816": {
+  "passed": false,
+  "code": ""
+ },
+ "2817": {
+  "passed": false,
+  "code": ""
+ },
+ "2827": {
+  "passed": false,
+  "code": ""
+ },
+ "2839": {
+  "passed": false,
+  "code": "from typing import List\nimport bisect\n\nclass Solution:\n    def maximumSumQueries(self, nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n        n = len(nums1)\n        points = [(nums1[i], nums2[i], nums1[i] + nums2[i]) for i in range(n)]\n        # compress b values\n        all_b = sorted(set(nums2 + [y for x, y in queries]))\n        m = len(all_b)\n        b_to_idx = {b: i for i, b in enumerate(all_b)}\n        # sort points by a descending\n        points.sort(key=lambda p: p[0], reverse=True)\n        # sort queries by x descending, keep original index\n        q_with_idx = [(x, y, i) for i, (x, y) in enumerate(queries)]\n        q_with_idx.sort(key=lambda q: q[0], reverse=True)\n        \n        # segment tree for max over b\n        size = 1\n        while size < m:\n            size <<= 1\n        seg = [-1] * (2 * size)\n        \n        def update(pos, val):\n            # pos is compressed index (0-based)\n            idx = pos + size\n            if seg[idx] < val:\n                seg[idx] = val\n                idx >>= 1\n                while idx:\n                    new_val = max(seg[2*idx], seg[2*idx+1])\n                    if seg[idx] == new_val:\n                        break\n                    seg[idx] = new_val\n                    idx >>= 1\n        \n        def query(l, r):\n            # inclusive range [l, r] in compressed indices\n            if l > r:\n                return -1\n            l += size\n            r += size\n            res = -1\n            while l <= r:\n                if l & 1:\n                    res = max(res, seg[l])\n                    l += 1\n                if not (r & 1):\n                    res = max(res, seg[r])\n                    r -= 1\n                l >>= 1\n                r >>= 1\n            return res\n        \n        ans = [-1] * n\n        p = 0\n        for x, y, idx in q_with_idx:\n            # add all points with a >= x\n            while p < n and points[p][0] >= x:\n                a, b, s = points[p]\n                pos = b_to_idx[b]  # b is in all_b, so mapping exists\n                update(pos, s)\n                p += 1\n            # query for b >= y\n            l = bisect.bisect_left(all_b, y)\n            res = query(l, m-1)\n            ans[idx] = res\n        return ans"
+ },
+ "2845": {
+  "passed": false,
+  "code": ""
+ },
+ "2850": {
+  "passed": false,
+  "code": ""
+ },
+ "2854": {
+  "passed": false,
+  "code": "\nWe'll write:\n"
+ },
+ "2855": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def maximumJumps(self, nums: List[int], target: int) -> int:\n        n = len(nums)\n        dp = [-1] * n\n        dp[0] = 0\n        for i in range(n):\n            if dp[i] == -1:\n                continue\n            for j in range(i+1, n):\n                if -target <= nums[j] - nums[i] <= target:\n                    if dp[j] < dp[i] + 1:\n                        dp[j] = dp[i] + 1\n        return dp[n-1]"
+ },
+ "2879": {
+  "passed": false,
+  "code": ""
+ },
+ "2883": {
+  "passed": false,
+  "code": ""
+ },
+ "2891": {
+  "passed": false,
+  "code": ""
+ },
+ "2917": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def countPairs(self, nums: List[int], target: int) -> int:\n        nums.sort()\n        n = len(nums)\n        count = 0\n        left, right = 0, n - 1\n        while left < right:\n            if nums[left] + nums[right] < target:\n                count += right - left\n                left += 1\n            else:\n                right -= 1\n        return count"
+ },
+ "2979": {
+  "passed": true,
+  "code": "from typing import List\nimport bisect\n\nclass Solution:\n    def maximizeTheProfit(self, n: int, offers: List[List[int]]) -> int:\n        # Sort offers by end coordinate\n        offers.sort(key=lambda x: x[1])\n        ends = [offer[1] for offer in offers]\n        m = len(offers)\n        dp = [0] * (m + 1)\n        for i in range(1, m + 1):\n            start, gold = offers[i-1][0], offers[i-1][2]\n            # Find the last interval that ends before start\n            idx = bisect.bisect_left(ends, start)  # first index with end >= start\n            prev = idx - 1  # number of intervals with end < start\n            # dp[i] = max profit using first i intervals\n            dp[i] = max(dp[i-1], dp[prev+1] + gold)\n        return dp[m]"
+ },
+ "3024": {
+  "passed": false,
+  "code": ""
+ },
+ "3031": {
+  "passed": false,
+  "code": ""
+ },
+ "3044": {
+  "passed": false,
+  "code": ""
+ },
+ "3106": {
+  "passed": false,
+  "code": ""
+ },
+ "3114": {
+  "passed": false,
+  "code": ""
+ },
+ "3171": {
+  "passed": false,
+  "code": ""
+ },
+ "3184": {
+  "passed": false,
+  "code": ""
+ },
+ "3192": {
+  "passed": false,
+  "code": ""
+ },
+ "3196": {
+  "passed": false,
+  "code": ""
+ },
+ "3213": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def countSubarrays(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        M = max(nums)\n        total_M = 0\n        for x in nums:\n            if x == M:\n                total_M += 1\n        if total_M < k:\n            return 0\n        left = 0\n        count = 0\n        ans_less = 0\n        for right in range(n):\n            if nums[right] == M:\n                count += 1\n            while count >= k:\n                if nums[left] == M:\n                    count -= 1\n                left += 1\n            ans_less += (right - left + 1)\n        total_subarrays = n * (n + 1) // 2\n        return total_subarrays - ans_less"
+ },
+ "3228": {
+  "passed": false,
+  "code": ""
+ },
+ "3229": {
+  "passed": false,
+  "code": ""
+ },
+ "3233": {
+  "passed": false,
+  "code": ""
+ },
+ "3235": {
+  "passed": false,
+  "code": "\nBut we need to be careful: The arrays original, changed, cost are of same length m. We can iterate over them directly.\n\nWe can also use a dictionary to store edges, but not necessary.\n\nTime complexity: O(26^3 + n) ~ 17576 + 1e5 = fine.\n\nMemory: O(26^2) = 676.\n\nThus solution is correct.\n\nBut wait: The problem might have a twist: The operations are allowed only if there exists an index j such that cost[j] == z, original[j] == x, changed[j] == y. That means the cost is tied to a specific transformation, but we can use any j that matches. So we have multiple possible costs for same transformation, we take min. That's what we did.\n\nAlso, note that we can apply operations in any order, and we can apply multiple operations to the same character. So shortest path is correct.\n\nThus final answer.\n"
+ },
+ "3243": {
+  "passed": false,
+  "code": ""
+ },
+ "3251": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def areaOfMaxDiagonal(self, dimensions: List[List[int]]) -> int:\n        best_diag_sq = -1\n        best_area = 0\n        for l, w in dimensions:\n            diag_sq = l*l + w*w\n            area = l*w\n            if diag_sq > best_diag_sq:\n                best_diag_sq = diag_sq\n                best_area = area\n            elif diag_sq == best_diag_sq and area > best_area:\n                best_area = area\n        return best_area"
+ },
+ "3306": {
+  "passed": false,
+  "code": ""
+ },
+ "3313": {
+  "passed": false,
+  "code": ""
+ },
+ "3317": {
+  "passed": false,
+  "code": ""
+ },
+ "3346": {
+  "passed": false,
+  "code": ""
+ },
+ "3363": {
+  "passed": true,
+  "code": "from typing import List\nimport heapq\nfrom collections import defaultdict\n\nclass Solution:\n    def mostFrequentIDs(self, nums: List[int], freq: List[int]) -> List[int]:\n        freq_map = defaultdict(int)\n        heap = []  # max-heap via negative counts\n        ans = []\n        for i in range(len(nums)):\n            id = nums[i]\n            delta = freq[i]\n            freq_map[id] += delta\n            heapq.heappush(heap, (-freq_map[id], id))\n            # Clean up stale entries\n            while heap:\n                neg_cnt, id_top = heap[0]\n                cnt = -neg_cnt\n                if freq_map[id_top] == cnt:\n                    break\n                heapq.heappop(heap)\n            if heap:\n                ans.append(-heap[0][0])\n            else:\n                ans.append(0)\n        return ans"
+ },
+ "3364": {
+  "passed": false,
+  "code": ""
+ },
+ "3367": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def sumOfEncryptedInt(self, nums: List[int]) -> int:\n        total = 0\n        for num in nums:\n            s = str(num)\n            max_digit = max(s)\n            encrypted = int(max_digit * len(s))\n            total += encrypted\n        return total"
+ },
+ "3372": {
+  "passed": false,
+  "code": "\nThat's it.\n\nBut we need to ensure it's efficient: O(n) time, O(1) space.\n\nWe'll output that.\n"
+ },
+ "3381": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def minimumSubarrayLength(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        min_len = n + 1\n        for i in range(n):\n            cur_or = 0\n            for j in range(i, n):\n                cur_or |= nums[j]\n                if cur_or >= k:\n                    min_len = min(min_len, j - i + 1)\n                    break\n        return min_len if min_len <= n else -1"
+ },
+ "3384": {
+  "passed": false,
+  "code": ""
+ },
+ "3388": {
+  "passed": false,
+  "code": ""
+ },
+ "3408": {
+  "passed": false,
+  "code": ""
+ },
+ "3412": {
+  "passed": false,
+  "code": ""
+ },
+ "3413": {
+  "passed": false,
+  "code": ""
+ },
+ "3421": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def countCompleteDayPairs(self, hours: List[int]) -> int:\n        freq = [0] * 24\n        for h in hours:\n            freq[h % 24] += 1\n        total = freq[0] * (freq[0] - 1) // 2\n        for r in range(1, 12):\n            total += freq[r] * freq[24 - r]\n        total += freq[12] * (freq[12] - 1) // 2\n        return total"
+ },
+ "3438": {
+  "passed": false,
+  "code": ""
+ },
+ "3450": {
+  "passed": false,
+  "code": ""
+ },
+ "3453": {
+  "passed": false,
+  "code": "\nBut we might also consider using iterative approach to avoid recursion depth? Not needed.\n\nAlternatively, we could generate using DP: for i in range(1, n+1): for each string in dp[i-1], add '1' to get dp[i]; for each string in dp[i-2], add '0' to get dp[i]. But that requires storing all strings. That's also fine. But recursion is simpler.\n\nWe'll go with recursion.\n\nNow, ensure we import List. The starter code didn't include import, but we can add it.\n\nWe'll output the code block.\n"
+ },
+ "3494": {
+  "passed": false,
+  "code": ""
+ },
+ "3518": {
+  "passed": false,
+  "code": ""
+ },
+ "3522": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def resultsArray(self, nums: List[int], k: int) -> List[int]:\n        n = len(nums)\n        res = []\n        for i in range(n - k + 1):\n            valid = True\n            for j in range(i, i + k - 1):\n                if nums[j+1] != nums[j] + 1:\n                    valid = False\n                    break\n            if valid:\n                res.append(nums[i + k - 1])\n            else:\n                res.append(-1)\n        return res"
+ },
+ "3526": {
+  "passed": false,
+  "code": "\nBut we can also compute col_flips by iterating over rows and columns similarly. That's fine.\n\nBut note: The loops for columns: for j in range(n): for i in range(m//2): compare grid[i][j] and grid[m-1-i][j]. That's O(m*n) as well.\n\nAlternatively, we could compute col_flips by iterating over rows and columns simultaneously: for i in range(m//2): for j in range(n): compare grid[i][j] and grid[m-1-i][j]. That's also O(m*n). Both fine.\n\nI'll use the latter for clarity:\n"
+ },
+ "3533": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def finalPositionOfSnake(self, n: int, commands: List[str]) -> int:\n        row, col = 0, 0\n        for cmd in commands:\n            if cmd == \"UP\":\n                row -= 1\n            elif cmd == \"DOWN\":\n                row += 1\n            elif cmd == \"LEFT\":\n                col -= 1\n            elif cmd == \"RIGHT\":\n                col += 1\n        return row * n + col"
+ },
+ "3543": {
+  "passed": true,
+  "code": "class Solution:\n    def countKConstraintSubstrings(self, s: str, k: int) -> int:\n        n = len(s)\n        prefix0 = [0] * (n + 1)\n        prefix1 = [0] * (n + 1)\n        for i, ch in enumerate(s):\n            prefix0[i+1] = prefix0[i] + (ch == '0')\n            prefix1[i+1] = prefix1[i] + (ch == '1')\n        count = 0\n        for i in range(n):\n            for j in range(i, n):\n                zeros = prefix0[j+1] - prefix0[i]\n                ones = prefix1[j+1] - prefix1[i]\n                if zeros <= k or ones <= k:\n                    count += 1\n        return count"
+ },
+ "3560": {
+  "passed": false,
+  "code": ""
+ },
+ "3579": {
+  "passed": false,
+  "code": ""
+ },
+ "3583": {
+  "passed": false,
+  "code": ""
+ },
+ "3587": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def maxScore(self, n: int, k: int, stayScore: List[List[int]], travelScore: List[List[int]]) -> int:\n        dp = [0] * n\n        for day in range(k):\n            new_dp = [0] * n\n            for curr in range(n):\n                # Option 1: stay in current city\n                stay_val = stayScore[day][curr] + dp[curr]\n                if stay_val > new_dp[curr]:\n                    new_dp[curr] = stay_val\n                # Option 2: move to another city\n                for dest in range(n):\n                    if dest != curr:\n                        move_val = travelScore[curr][dest] + dp[curr]\n                        if move_val > new_dp[dest]:\n                            new_dp[dest] = move_val\n            dp = new_dp\n        return max(dp)"
+ },
+ "3591": {
+  "passed": false,
+  "code": ""
+ },
+ "3600": {
+  "passed": true,
+  "code": "class Solution:\n    def kthCharacter(self, k: int) -> str:\n        word = \"a\"\n        while len(word) < k:\n            # transform each character to next (cyclic)\n            transformed = ''.join(chr((ord(ch) - ord('a') + 1) % 26 + ord('a')) for ch in word)\n            word += transformed\n        return word[k-1]"
+ },
+ "3607": {
+  "passed": false,
+  "code": ""
+ },
+ "3612": {
+  "passed": false,
+  "code": ""
+ },
+ "3620": {
+  "passed": false,
+  "code": ""
+ },
+ "3621": {
+  "passed": false,
+  "code": ""
+ },
+ "3627": {
+  "passed": false,
+  "code": ""
+ },
+ "3632": {
+  "passed": false,
+  "code": ""
+ },
+ "3636": {
+  "passed": false,
+  "code": ""
+ },
+ "3648": {
+  "passed": false,
+  "code": ""
+ },
+ "3651": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def constructTransformedArray(self, nums: List[int]) -> List[int]:\n        n = len(nums)\n        return [nums[(i + nums[i]) % n] for i in range(n)]"
+ },
+ "3654": {
+  "passed": false,
+  "code": ""
+ },
+ "3656": {
+  "passed": false,
+  "code": ""
+ },
+ "3682": {
+  "passed": false,
+  "code": ""
+ },
+ "3690": {
+  "passed": false,
+  "code": ""
+ },
+ "abc301_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc301_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc301_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc302_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc303_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().split()\n    if not data:\n        return\n    N = int(data[0])\n    S = data[1]\n    T = data[2]\n    for i in range(N):\n        a, b = S[i], T[i]\n        if a == b:\n            continue\n        if (a == '1' and b == 'l') or (a == 'l' and b == '1'):\n            continue\n        if (a == '0' and b == 'o') or (a == 'o' and b == '0'):\n            continue\n        print(\"No\")\n        return\n    print(\"Yes\")\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc303_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc303_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc304_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc304_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc306_c": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = list(map(int, sys.stdin.read().split()))\n    if not data:\n        return\n    N = data[0]\n    A = data[1:]\n    # Ensure length is 3N, but we trust input.\n    first = [0] * (N + 1)\n    second = [0] * (N + 1)\n    for idx, val in enumerate(A, start=1):\n        if first[val] == 0:\n            first[val] = idx\n        elif second[val] == 0:\n            second[val] = idx\n        # else third occurrence, ignore\n    f = [0] * (3 * N + 1)  # index from 1 to 3N\n    for i in range(1, N + 1):\n        f[second[i]] = i\n    out = []\n    for i in range(1, 3 * N + 1):\n        if f[i]:\n            out.append(str(f[i]))\n    sys.stdout.write(' '.join(out))\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc306_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc307_e": {
+  "passed": true,
+  "code": "import sys\n\nMOD = 998244353\n\ndef main():\n    N, M = map(int, sys.stdin.readline().split())\n    a = M - 1\n    pow_val = pow(a, N, MOD)\n    if N % 2 == 0:\n        ans = (pow_val + a) % MOD\n    else:\n        ans = (pow_val - a) % MOD\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc308_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc309_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc310_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc311_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc311_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc311_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc311_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc312_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc314_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc315_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc320_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc320_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc322_b": {
+  "passed": false,
+  "code": "\nThus final answer: a Python code block containing the solution.\n\nWe'll include a main guard.\n\nWe'll write:\n\nimport sys\n\ndef solve():\n    data = sys.stdin.read().split()\n    if not data: return\n    N = int(data[0])\n    M = int(data[1])\n    S = data[2]\n    T = data[3]\n    prefix = T[:N] == S\n    suffix = T[-N:] == S\n    if prefix and suffix:\n        print(0)\n    elif prefix:\n        print(1)\n    elif suffix:\n        print(2)\n    else:\n        print(3)\n\nif __name__ == \"__main__\":\n    solve()\n\nThat's it.\n\nBut we need to ensure that we handle the case where N and M are given but maybe there are extra lines? The input format is exactly as described, so reading all tokens works.\n\nWe'll output the code block.\n"
+ },
+ "abc322_c": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().split()\n    if not data:\n        return\n    it = iter(data)\n    N = int(next(it))\n    M = int(next(it))\n    A = [int(next(it)) for _ in range(M)]\n    is_fireworks = [False]*(N+1)\n    for a in A:\n        is_fireworks[a] = True\n    next_day = N\n    ans = [0]*(N+1)\n    for i in range(N, 0, -1):\n        if is_fireworks[i]:\n            next_day = i\n            ans[i] = 0\n        else:\n            ans[i] = next_day - i\n    out = '\\n'.join(str(ans[i]) for i in range(1, N+1))\n    sys.stdout.write(out)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc323_b": {
+  "passed": false,
+  "code": "\nWe'll include a main function or just script.\n\nWe'll use:\n\nimport sys\n\ndef main():\n    data = sys.stdin.read().split()\n    N = int(data[0])\n    S = data[1:]\n    # Ensure we have N strings\n    players = []\n    for i in range(N):\n        s = S[i]\n        wins = s.count('o') - 1  # because s[i] is '-'\n        players.append((wins, i+1))\n    players.sort(key=lambda x: (-x[0], x[1]))\n    result = ' '.join(str(p[1]) for p in players)\n    print(result)\n\nif __name__ == \"__main__\":\n    main()\n\nBut careful: s.count('o') counts all 'o's including possibly at position i? Since s[i] is '-', it's fine. So wins = s.count('o') - 1.\n\nAlternatively, we can iterate over j and count if s[j]=='o'.\n\nWe'll use count for simplicity.\n\nEdge: N=2, strings: \"-o\" and \"o-\"? Actually if player1 beats player2, S1: \"-o\", S2: \"o-\". Then wins: player1:1, player2:1. Tie: smaller number ranks higher, so output \"1 2\". Our sort: (-1,1) and (-1,2) -> (1,2) then (2,1) -> output \"1 2\". Good.\n\nNow produce final answer.\n"
+ },
+ "abc324_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc324_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc325_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc326_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc327_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc329_b": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().strip().split()\n    if not data:\n        return\n    N = int(data[0])\n    A = list(map(int, data[1:1+N]))\n    max_val = max(A)\n    ans = max(x for x in A if x != max_val)\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc329_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc330_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc330_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc331_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc331_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc332_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc334_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc335_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc336_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc337_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc338_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc339_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    S = sys.stdin.readline().strip()\n    # Find the last occurrence of '.'\n    idx = S.rfind('.')\n    # The answer is the substring after the last dot\n    print(S[idx+1:])\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc341_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    N = int(sys.stdin.readline())\n    print('10' * N + '1')\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc342_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc342_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc343_b": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().split()\n    if not data:\n        return\n    it = iter(data)\n    N = int(next(it))\n    adj = [[int(next(it)) for _ in range(N)] for _ in range(N)]\n    out = []\n    for i in range(N):\n        neighbors = [str(j+1) for j in range(N) if adj[i][j] == 1 and j != i]\n        out.append(' '.join(neighbors))\n    sys.stdout.write('\\n'.join(out))\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc343_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc344_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    S = sys.stdin.readline().strip()\n    first = S.find('|')\n    second = S.find('|', first+1)\n    result = S[:first] + S[second+1:]\n    print(result)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc346_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc347_b": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    s = sys.stdin.readline().strip()\n    n = len(s)\n    distinct = set()\n    for i in range(n):\n        for j in range(i+1, n+1):\n            distinct.add(s[i:j])\n    print(len(distinct))\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc347_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc348_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc348_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc348_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc349_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc349_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc350_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc351_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc351_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc352_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc353_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc354_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc355_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    A, B = map(int, sys.stdin.read().split())\n    if A != B:\n        print(6 - A - B)\n    else:\n        print(-1)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc355_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc356_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().strip().split()\n    if not data:\n        return\n    N, L, R = map(int, data)\n    A = list(range(1, N+1))\n    A[L-1:R] = reversed(A[L-1:R])\n    print(' '.join(map(str, A)))\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc357_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc359_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    input_data = sys.stdin.read().splitlines()\n    if not input_data:\n        return\n    n = int(input_data[0])\n    count = 0\n    for i in range(1, n+1):\n        if input_data[i] == \"Takahashi\":\n            count += 1\n    print(count)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc359_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc361_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().strip().split()\n    if not data:\n        return\n    N, K, X = map(int, data[:3])\n    A = list(map(int, data[3:3+N]))\n    B = A[:K] + [X] + A[K:]\n    print(' '.join(map(str, B)))\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc361_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc361_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc363_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc364_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc365_b": {
+  "passed": true,
+  "code": "import sys\n\ndef solve():\n    data = sys.stdin.read().strip().split()\n    if not data:\n        return\n    N = int(data[0])\n    A = list(map(int, data[1:1+N]))\n    # sort by value descending, keep original indices\n    sorted_pairs = sorted([(val, idx) for idx, val in enumerate(A)], key=lambda x: x[0], reverse=True)\n    # second largest is the second element in sorted list\n    second_val, second_idx = sorted_pairs[1]\n    print(second_idx + 1)\n\nif __name__ == \"__main__\":\n    solve()"
+ },
+ "abc365_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc366_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc366_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc367_b": {
+  "passed": false,
+  "code": "\nBut we should consider that the input might have multiple lines? The problem says input is given in format X, so one line. So reading one line is fine.\n\nAlternatively, we could use sys.stdin.read() to handle any whitespace. But it's okay.\n\nNow, check sample:\n\nInput: \"1.012\" -> int_part=\"1\", dec_part=\"012\", rstrip -> \"012\", print \"1.012\". Good.\n\nInput: \"12.340\" -> dec_part=\"340\", rstrip -> \"34\", print \"12.34\". Good.\n\nInput: \"99.900\" -> dec_part=\"900\", rstrip -> \"9\", print \"99.9\". Good.\n\nInput: \"0.000\" -> dec_part=\"\", print \"0\". Good.\n\nThus correct.\n\nBut what about \"0.001\"? -> \"0.001\". Good.\n\nNow, is there any case where the integer part could be something like \"00\"? Not likely because X is a real number, integer part is the integer part, so no leading zeros. But if input is \"00.123\"? That would be weird. But constraints say 0 ≤ X < 100, so integer part is between 0 and 99, but could be \"0\" or \"99\". So no leading zeros.\n\nThus solution is fine.\n\nBut we might also consider using Decimal to avoid any issues, but string manipulation is simpler.\n\nNow, we need to output the final solution. We'll include the code block.\n"
+ },
+ "abc367_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc367_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc368_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc368_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc369_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc369_c": {
+  "passed": false,
+  "code": "\nBut careful: The inner while condition: we need to compare differences. We can compute diff_i = A[i+1] - A[i] and then extend while diff_j == diff_i. That's fine.\n\nEdge: N=2: diff length 1, run_len=1, ans = 2 + 1*2/2=2+1=3. Subarrays: (1,1),(2,2),(1,2) =>3. Good.\n\nThus final solution.\n\nBut wait: The problem statement says \"subsequence (A_l, A_{l+1}, ..., A_r)\" which is contiguous. So yes.\n\nNow, is there any trick? Possibly the array can be large, but O(N) is fine.\n\nThus final answer.\n"
+ },
+ "abc370_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    L, R = map(int, sys.stdin.read().split())\n    if L == 1 and R == 0:\n        print(\"Yes\")\n    elif L == 0 and R == 1:\n        print(\"No\")\n    else:\n        print(\"Invalid\")\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc370_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc371_d": {
+  "passed": true,
+  "code": "import sys\nimport bisect\n\ndef main():\n    data = sys.stdin.read().split()\n    it = iter(data)\n    N = int(next(it))\n    X = [int(next(it)) for _ in range(N)]\n    P = [int(next(it)) for _ in range(N)]\n    Q = int(next(it))\n    queries = [(int(next(it)), int(next(it))) for _ in range(Q)]\n\n    # prefix sums\n    pref = [0] * (N+1)\n    for i in range(N):\n        pref[i+1] = pref[i] + P[i]\n\n    out = []\n    for L, R in queries:\n        i = bisect.bisect_left(X, L)\n        j = bisect.bisect_right(X, R) - 1\n        if i > j:\n            out.append('0')\n        else:\n            out.append(str(pref[j+1] - pref[i]))\n    sys.stdout.write('\\n'.join(out))\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc371_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc371_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc372_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc372_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc372_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc376_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc377_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc378_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc378_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc379_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc379_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc379_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc380_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc380_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc380_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc381_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc382_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc383_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc385_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    A, B, C = map(int, sys.stdin.read().split())\n    total = A + B + C\n    if total % 2 == 0:\n        half = total // 2\n        if A == half or B == half or C == half or A+B == half or A+C == half or B+C == half:\n            print(\"Yes\")\n            return\n    if total % 3 == 0:\n        third = total // 3\n        if A == third and B == third and C == third:\n            print(\"Yes\")\n            return\n    print(\"No\")\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc385_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc385_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc386_e": {
+  "passed": false,
+  "code": ""
+ },
+ "arc181_d": {
+  "passed": false,
+  "code": ""
+ },
+ "arc183_a": {
+  "passed": false,
+  "code": ""
+ },
+ "arc183_c": {
+  "passed": false,
+  "code": ""
+ },
+ "arc183_d": {
+  "passed": false,
+  "code": ""
+ },
+ "arc188_a": {
+  "passed": false,
+  "code": ""
+ },
+ "arc189_b": {
+  "passed": false,
+  "code": ""
  }
 }

@@ -1,0 +1,33 @@
+{
+ "checks": {
+  "partition_disjoint": true,
+  "all_M1M3_sources_in_source_pool": true,
+  "all_M1M3_sources_verified": true,
+  "no_memory_source_is_a_target": true,
+  "all_M2_sources_verified": true,
+  "M1_M3_same_source_by_construction": true,
+  "target_id_in_own_memory": true,
+  "matched_injection_position": true,
+  "M1_M2_M3_same_covered_set": true,
+  "M0_n182_all_terminal_ok": true,
+  "M1_n182_all_terminal_ok": true,
+  "M2_n182_all_terminal_ok": true,
+  "M3_n182_all_terminal_ok": true
+ },
+ "raw": {
+  "partition_disjoint": true,
+  "all_M1M3_sources_in_source_pool": true,
+  "all_M1M3_sources_verified": true,
+  "no_memory_source_is_a_target": true,
+  "all_M2_sources_verified": true,
+  "M1_M3_same_source_by_construction": true,
+  "target_id_in_own_memory": 0,
+  "matched_injection_position": true,
+  "M1_M2_M3_same_covered_set": true,
+  "M0_n182_all_terminal_ok": true,
+  "M1_n182_all_terminal_ok": true,
+  "M2_n182_all_terminal_ok": true,
+  "M3_n182_all_terminal_ok": true
+ },
+ "all_pass": true
+}

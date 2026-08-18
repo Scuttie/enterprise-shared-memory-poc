@@ -1,0 +1,32 @@
+{
+  "experiment_id": "REALBENCH_EXECREPOBENCH_R10",
+  "stage": "A0_fallback_audit",
+  "audit_date": "2026-08-18",
+  "audit_method": "live HTTP (GitHub REST+raw, HuggingFace API/datasets-server, arXiv), not cached memory",
+  "benchmark": {
+    "name": "ExecRepoBench (Yang et al., arXiv:2412.11990)",
+    "code_repo": "https://github.com/QwenLM/Qwen2.5-Coder (redirects to Qwen3-Coder)",
+    "code_path": "qwencoder-eval/base/benchmarks/ExecRepoBench",
+    "code_commit": "33bc6aabd7791ad7b32f7e92104f11f2359ba890",
+    "data": "https://huggingface.co/datasets/CSJianYang/ExecRepoBench",
+    "data_revision": "fa61028ce495c9ceff58398b8a7c47b5ae9f5276",
+    "data_files": ["exec_repo_bench.jsonl","repos.zip","README.md"],
+    "site": "https://execrepobench.github.io/"
+  },
+  "sample_count": {"released_rows": 1164, "advertised_site_intro": "1.5K", "advertised_site_abstract": "1.0K",
+                   "paper_and_readmes": "1.2K", "note": "released 1164 != any advertised headline (~22% below 1.5K)"},
+  "task_structure": {"type": "repository-level fill-in-the-middle (prefix/middle/suffix + cross-file context)",
+    "granularity": "line/span/AST unit (expr/stmt/function/class)", "test_files_excluded_from_masking": true,
+    "grader": "execution-based: build prefix+generated+suffix, run evaluate_repo.py in repo conda env, pass iff returncode==0, 240s timeout",
+    "metric": "Pass@1 (+ Edit-Similarity secondary)", "per_repo_conda_env_required": true},
+  "leakage": {"answer_in_prompt": "not evident (middle_code + tests not in model input)",
+    "caveat": "distributed jsonl ships baseline generated_middle_code/is_pass/stderr/es columns; reference middle_code + tests in repos.zip (training-contamination risk if scraped)"},
+  "license": {
+    "benchmark_harness_code": "NONE — GitHub license=null; raw LICENSE 404; no LICENSE/NOTICE anywhere in repo root -> UNRESOLVED (genuinely absent, not API-null-but-present). Qwen MODEL weights Apache-2.0 do NOT license this eval repo.",
+    "data_hf": "MIT (HF card) — covers packaging only; cannot relicense third-party code redistributed in repos.zip",
+    "underlying_~25_source_repos": "NEITHER ENUMERATED NOR LICENSE-ATTRIBUTED; extracted from the-stack-v2 filtered by stars/file-length with NO stated license filter; repos.zip redistributes full repos with no per-repo license map -> UNRESOLVED (worse than DevEval, which at least manifested 115 repo names)",
+    "resolution_for_research_use": "UNRESOLVABLE (unlicensed harness + unmanifested/redistributed source repos)"
+  },
+  "reproducibility": "technically reproducible today (artifacts live, execution-based) but license is the disqualifier",
+  "verdict": "NOT ELIGIBLE (license unresolvable) -> per §15 close the static public-benchmark search; do not select a third benchmark"
+}

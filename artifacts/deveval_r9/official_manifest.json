@@ -1,0 +1,34 @@
+{
+  "experiment_id": "REALBENCH_DEVEVAL_R9",
+  "stage": "A0_provenance_license_audit",
+  "audit_date": "2026-08-18",
+  "audit_method": "live HTTP (GitHub REST API + raw, HuggingFace API, arXiv), not cached memory",
+  "benchmark": {
+    "name": "DevEval (Li et al., ACL 2024 Findings, arXiv:2405.19856)",
+    "official_repo": "https://github.com/seketeam/DevEval",
+    "repo_commit": "c1653455e0a18480a29aa07ba51636070f113316",
+    "repo_commit_date": "2024-09-04T13:05:50Z",
+    "default_branch": "main",
+    "namesake_to_avoid": "https://github.com/open-compass/DevEval (DIFFERENT benchmark)",
+    "data": {"metadata": "data.tar.gz committed in repo root -> data.jsonl",
+             "source_code": "https://huggingface.co/datasets/LJ0815/DevEval Source_Code.tar.gz",
+             "dependency_data": "https://huggingface.co/datasets/LJ0815/DevEval Dependency_Data.tar.gz",
+             "hf_public": true, "hf_gated": false, "size_gb": 2.59, "viewer": "broken (cosmetic; raw download works)"}
+  },
+  "task_count": {"released_readme": "1825 samples / 115 repos / 10 topics",
+                 "paper_abstract": "1874 samples / 117 repos / 10 topics",
+                 "DISCREPANCY": "released 1825/115 != paper 1874/117 (~49 samples / 2 repos); use released count for reproduction"},
+  "task_structure": {"fields": ["namespace","project_path","completion_path","requirement(Functionality,Arguments)","tests","dependency(intra_class,intra_file,cross_file)","signature/body positions"],
+    "eval_settings": ["Without_Context","Local File (Completion)","Local File (Infilling) = signature+requirement+local context above+below, no target body"],
+    "infilling_setting_present": true},
+  "grader": {"execution_based": true, "scripts": ["pass_k.py","run_pass_k.sh","parser/recall_k.py","check_source_code.py"],
+             "metric": "Pass@k (gpt-4-turbo Pass@1=53.04%)", "per_repo_env_setup_required": true},
+  "license": {
+    "benchmark_code": "NONE (GitHub API license=null; no LICENSE/COPYING/NOTICE in repo root) -> all-rights-reserved by default -> UNRESOLVED",
+    "data_hf": "CC-BY-4.0 (HF card) -> resolved for annotations/metadata only",
+    "underlying_115_source_repos": "NOT documented per-repo; paper only asserts 'open-source licenses' with no SPDX manifest / no redistribution terms -> UNRESOLVED; CC-BY-4.0 on the HF bundle cannot override upstream repo licenses",
+    "resolution_for_research_use": "UNRESOLVABLE (code unlicensed + source-repo terms unmanifested)"
+  },
+  "reproducibility": "reproducible in principle (all artifacts live, no credential gate) BUT per-repo 2024-era env setup friction; the blocker is license, not availability",
+  "verdict": "DEVEVAL TECHNICAL STOP (endpoint A) — license cannot be resolved for the intended research use (executing/materializing unlicensed benchmark code + license-unmanifested source repos)"
+}

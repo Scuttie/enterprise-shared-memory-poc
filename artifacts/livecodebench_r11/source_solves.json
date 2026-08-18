@@ -1,0 +1,1034 @@
+{
+ "1883_C": {
+  "passed": false,
+  "code": ""
+ },
+ "2777": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def distinctDifferenceArray(self, nums: List[int]) -> List[int]:\n        n = len(nums)\n        prefix = [0] * n\n        seen = set()\n        for i in range(n):\n            seen.add(nums[i])\n            prefix[i] = len(seen)\n        suffix = [0] * (n + 1)\n        seen = set()\n        for j in range(n - 1, -1, -1):\n            seen.add(nums[j])\n            suffix[j] = len(seen)\n        suffix[n] = 0\n        diff = [0] * n\n        for i in range(n):\n            diff[i] = prefix[i] - suffix[i + 1]\n        return diff"
+ },
+ "2785": {
+  "passed": false,
+  "code": ""
+ },
+ "2808": {
+  "passed": false,
+  "code": ""
+ },
+ "2824": {
+  "passed": false,
+  "code": "\nBut we might also want to check that there are no zeros explicitly, but set check covers it.\n\nAlternatively, we could check sorted(s) == sorted('123456789').\n\nI'll use set.\n\nBut note: The set equality check will be True if s contains exactly those digits, but if s contains duplicates, set size will be less than 9, so condition fails. So it's fine.\n\nThus final solution.\n\nBut the problem says \"Return true if n is fascinating, or false otherwise.\" So we return bool.\n"
+ },
+ "2825": {
+  "passed": false,
+  "code": ""
+ },
+ "2832": {
+  "passed": false,
+  "code": ""
+ },
+ "2833": {
+  "passed": false,
+  "code": ""
+ },
+ "2869": {
+  "passed": false,
+  "code": ""
+ },
+ "2870": {
+  "passed": false,
+  "code": ""
+ },
+ "2877": {
+  "passed": false,
+  "code": ""
+ },
+ "2878": {
+  "passed": false,
+  "code": ""
+ },
+ "2893": {
+  "passed": false,
+  "code": ""
+ },
+ "2919": {
+  "passed": false,
+  "code": ""
+ },
+ "2952": {
+  "passed": false,
+  "code": ""
+ },
+ "2953": {
+  "passed": true,
+  "code": "from typing import List\nfrom collections import defaultdict\n\nclass Solution:\n    def countPairs(self, coordinates: List[List[int]], k: int) -> int:\n        freq = defaultdict(int)\n        ans = 0\n        for x, y in coordinates:\n            for a in range(k+1):\n                b = k - a\n                target_x = x ^ a\n                target_y = y ^ b\n                ans += freq[(target_x, target_y)]\n            freq[(x, y)] += 1\n        return ans"
+ },
+ "2954": {
+  "passed": false,
+  "code": ""
+ },
+ "3000": {
+  "passed": false,
+  "code": ""
+ },
+ "3017": {
+  "passed": false,
+  "code": ""
+ },
+ "3019": {
+  "passed": false,
+  "code": ""
+ },
+ "3033": {
+  "passed": false,
+  "code": ""
+ },
+ "3045": {
+  "passed": false,
+  "code": ""
+ },
+ "3055": {
+  "passed": false,
+  "code": "\nBut wait: The problem might be from LeetCode? Actually, I recall a problem \"Maximum Odd Binary Number\" from LeetCode (maybe 2358). The solution is exactly that. So it's correct.\n\nBut let's double-check: Could there be any nuance about \"maximum odd binary number\" meaning the largest odd number when interpreted as binary? Yes. The arrangement described yields the largest odd number because we put all ones except one at the most significant positions, and zeros after them, and the final one at the least significant position. This is indeed the maximum odd number because any other arrangement would either have a zero in a more significant position (reducing value) or have the final bit zero (making it even). So it's optimal.\n\nThus final solution.\n"
+ },
+ "3081": {
+  "passed": false,
+  "code": ""
+ },
+ "3094": {
+  "passed": false,
+  "code": ""
+ },
+ "3151": {
+  "passed": false,
+  "code": ""
+ },
+ "3164": {
+  "passed": false,
+  "code": "\nBut wait: The definition says \"Let nums be the 0-indexed array of integers seen so far and nums_reverse be the reverse of nums, then the integer at (k - 1)^th index of nums_reverse will be the last visited integer for this 'prev'.\" That is exactly nums[-k] if k <= len(nums). However, careful: If k=0? But k is at least 1 because we only compute for prev strings. So fine.\n\nDouble-check with example 1: \nwords: \"1\" -> nums=[1], prev_block_len=0\n\"2\" -> nums=[1,2], prev_block_len=0\n\"prev\": prev_block_len=1, k=1, len(nums)=2 => nums[-1]=2 -> result=[2]\n\"prev\": prev_block_len=2, k=2, len(nums)=2 => nums[-2]=1 -> result=[2,1]\n\"prev\": prev_block_len=3, k=3, len(nums)=2 => -1 -> result=[2,1,-1] correct.\n\nThus solution is correct.\n\nBut is there any nuance about \"consecutive prev strings seen so far (containing the current string)\"? Could it be that we consider the entire array up to current, but only consecutive prevs? Yes, we did.\n"
+ },
+ "3166": {
+  "passed": false,
+  "code": ""
+ },
+ "3190": {
+  "passed": false,
+  "code": ""
+ },
+ "3200": {
+  "passed": false,
+  "code": ""
+ },
+ "3203": {
+  "passed": false,
+  "code": ""
+ },
+ "3209": {
+  "passed": false,
+  "code": ""
+ },
+ "3211": {
+  "passed": false,
+  "code": ""
+ },
+ "3212": {
+  "passed": false,
+  "code": ""
+ },
+ "3225": {
+  "passed": false,
+  "code": "\nBut we need to ensure we include the class and method as given. Also we might need to handle large input efficiently, but it's fine.\n\nThus final answer: Provide the code.\n"
+ },
+ "3231": {
+  "passed": false,
+  "code": ""
+ },
+ "3244": {
+  "passed": false,
+  "code": ""
+ },
+ "3252": {
+  "passed": false,
+  "code": ""
+ },
+ "3263": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def minimumCost(self, nums: List[int]) -> int:\n        n = len(nums)\n        min_sum = float('inf')\n        for i in range(1, n-1):\n            for j in range(i+1, n):\n                min_sum = min(min_sum, nums[i] + nums[j])\n        return nums[0] + min_sum"
+ },
+ "3265": {
+  "passed": false,
+  "code": "class Solution:\n    def maximumSubarraySum(self, nums: List[int], k: int) -> int:"
+ },
+ "3267": {
+  "passed": false,
+  "code": "class Solution:\n    def maximumLength(self, s: str) -> int:"
+ },
+ "3320": {
+  "passed": false,
+  "code": ""
+ },
+ "3329": {
+  "passed": false,
+  "code": ""
+ },
+ "3334": {
+  "passed": false,
+  "code": "\nBut we should consider if there is any scenario where we might need to use a box with capacity less than some pack? No.\n\nThus, answer.\n\nBut the problem might be more subtle: maybe we need to consider that we cannot split a pack across boxes? But they explicitly say we can. So it's fine.\n\nDouble-check: The note says \"apples from the same pack can be distributed into different boxes.\" So yes.\n\nThus, final answer.\n\nBut wait, the problem statement: \"Return the minimum number of boxes you need to select to redistribute these n packs of apples into boxes.\" Could it be that we are not allowed to split packs? The note says we can, so it's allowed.\n\nThus, solution is correct.\n\nBut let's think about potential pitfalls: The greedy algorithm picks the largest capacities. However, what if there are multiple boxes with same capacity? Doesn't matter.\n\nThus, final.\n\nBut the problem might be from a contest where they expect a DP solution because they might have intended that you cannot split packs, but they added the note to clarify that you can. So it's fine.\n\nGiven the constraints, we could also do DP: dp[i][s] = min boxes to achieve sum s using first i boxes. But greedy is simpler.\n\nThus, I'll output the greedy solution.\n"
+ },
+ "3344": {
+  "passed": false,
+  "code": ""
+ },
+ "3347": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def resultArray(self, nums: List[int]) -> List[int]:\n        arr1 = [nums[0]]\n        arr2 = [nums[1]]\n        for i in range(2, len(nums)):\n            if arr1[-1] > arr2[-1]:\n                arr1.append(nums[i])\n            else:\n                arr2.append(nums[i])\n        return arr1 + arr2"
+ },
+ "3349": {
+  "passed": false,
+  "code": ""
+ },
+ "3353": {
+  "passed": true,
+  "code": "class Solution:\n    def isSubstringPresent(self, s: str) -> bool:\n        if len(s) < 2:\n            return False\n        sub_set = {s[i:i+2] for i in range(len(s)-1)}\n        return any(s[i:i+2] in s[::-1] for i in range(len(s)-1))"
+ },
+ "3354": {
+  "passed": false,
+  "code": ""
+ },
+ "3373": {
+  "passed": false,
+  "code": "\nBut we need to ensure that if there is only one prime, first == last, so return 0. That's fine.\n\nWe could also use a more concise approach: find min index and max index of primes. But we need to be careful: if there is only one prime, min and max are same, distance 0.\n\nThus final.\n\nBut wait: the problem says \"Return an integer that is the maximum distance between the indices of two (not necessarily different) prime numbers in nums.\" Could there be a scenario where the maximum distance is not between the first and last prime because the first prime might be at index i and last prime at index j, but maybe there is a prime at index k that is farther from some other prime than i and j? No, because distance between any two indices is at most j - i. So the maximum is j - i.\n\nThus solution is correct.\n\nBut we should also consider that the array may have primes at indices that are not the extremes? Actually extremes are the extremes. So it's fine.\n\nThus final answer.\n\nBut the problem might be expecting a more complex solution? Possibly they want to consider that the two primes could be the same element, but that's covered.\n\nThus I'll output the code.\n"
+ },
+ "3375": {
+  "passed": false,
+  "code": ""
+ },
+ "3376": {
+  "passed": false,
+  "code": ""
+ },
+ "3379": {
+  "passed": true,
+  "code": "class Solution:\n    def scoreOfString(self, s: str) -> int:\n        total = 0\n        for i in range(1, len(s)):\n            total += abs(ord(s[i]) - ord(s[i-1]))\n        return total"
+ },
+ "3382": {
+  "passed": false,
+  "code": ""
+ },
+ "3402": {
+  "passed": false,
+  "code": ""
+ },
+ "3416": {
+  "passed": false,
+  "code": "\nThat's fine.\n\nNow, we need to ensure we handle large n efficiently: The inner loop over str_nums for each pos is O(n*d). That's okay.\n\nBut we can also compute contributions using a more clever method: For each position, we can compute sum of digits and sum of squares? Actually, equal_pairs = sum(cnt*(cnt-1)/2) = (sum(cnt^2) - sum(cnt))/2. Since sum(cnt)=n, equal_pairs = (sum(cnt^2) - n)/2. So contribution = total_pairs - (sum(cnt^2)-n)/2 = total_pairs - sum(cnt^2)/2 + n/2 = (n*(n-1)/2) - sum(cnt^2)/2 + n/2 = (n*(n-1) + n)/2 - sum(cnt^2)/2 = (n^2)/2 - sum(cnt^2)/2. So contribution = (n^2 - sum(cnt^2)) / 2. That's a simpler formula: For each position, contribution = (n^2 - sum_{d} cnt_d^2) / 2. Because total_pairs = n*(n-1)/2, and equal_pairs = (sum(cnt^2)-n)/2, so total_pairs - equal_pairs = (n*(n-1) - (sum(cnt^2)-n))/2 = (n^2 - n - sum(cnt^2) + n)/2 = (n^2 - sum(cnt^2))/2. Yes.\n\nThus we can compute sum of squares of digit frequencies per position. That might be slightly faster because we avoid computing combinations. But both are fine.\n\nWe'll use the combination method for clarity.\n\nBut note: n^2 can be up to 1e10, which fits in Python int.\n\nNow, we should also consider that numbers may have leading zeros? Not needed.\n\nThus final solution.\n\nBut the problem might be from a platform where they expect a solution with O(n) time? Actually O(n*d) is O(n) since d is constant (max 10). So it's linear.\n\nNow, we output the code.\n"
+ },
+ "3420": {
+  "passed": false,
+  "code": ""
+ },
+ "3430": {
+  "passed": false,
+  "code": ""
+ },
+ "3439": {
+  "passed": false,
+  "code": ""
+ },
+ "3442": {
+  "passed": false,
+  "code": ""
+ },
+ "3446": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def numberOfPairs(self, nums1: List[int], nums2: List[int], k: int) -> int:\n        total = 0\n        for x in nums1:\n            for y in nums2:\n                if x % (y * k) == 0:\n                    total += 1\n        return total"
+ },
+ "3454": {
+  "passed": false,
+  "code": ""
+ },
+ "3455": {
+  "passed": false,
+  "code": ""
+ },
+ "3456": {
+  "passed": false,
+  "code": ""
+ },
+ "3461": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def minimumArea(self, grid: List[List[int]]) -> int:\n        n = len(grid)\n        m = len(grid[0]) if n > 0 else 0\n        min_row, max_row = n, -1\n        min_col, max_col = m, -1\n        for i in range(n):\n            for j in range(m):\n                if grid[i][j] == 1:\n                    if i < min_row:\n                        min_row = i\n                    if i > max_row:\n                        max_row = i\n                    if j < min_col:\n                        min_col = j\n                    if j > max_col:\n                        max_col = j\n        # At least one 1, so min_row <= max_row and min_col <= max_col\n        return (max_row - min_row + 1) * (max_col - min_col + 1)"
+ },
+ "3464": {
+  "passed": false,
+  "code": ""
+ },
+ "3466": {
+  "passed": false,
+  "code": "\nBut is there any issue with using dict for prev? The size of prev is at most 31, so it's fine.\n\nBut we might also consider using a list of pairs to avoid dict overhead? Not necessary.\n\nNow, we should test with a larger random case to ensure no bug.\n\nBut wait: There is a nuance: The AND of a subarray can be k, but we are counting subarrays ending at each index. However, the algorithm as described counts all subarrays exactly once. Let's confirm: For each right index i, we consider all subarrays that end at i. Those are defined by left index j from 0 to i. The AND of subarray nums[j..i] is computed by starting from nums[i] and ANDing with previous AND values for subarrays ending at i-1. Indeed, if we have a list of AND values for subarrays ending at i-1, each corresponds to some left index. When we extend to i, we get new AND values for subarrays ending at i. So it's correct.\n\nNow, we need to ensure that we don't miss subarrays that start at i? That's covered by the initial {x:1} which corresponds to subarray [i,i].\n\nThus solution is correct.\n\nBut we should also consider that the problem might have constraints that require O(n) or O(n log n) but this is O(n * bits) which is acceptable.\n\nNow, we need to output final answer.\n"
+ },
+ "3475": {
+  "passed": false,
+  "code": ""
+ },
+ "3479": {
+  "passed": false,
+  "code": ""
+ },
+ "3484": {
+  "passed": true,
+  "code": "class Solution:\n    def getSmallestString(self, s: str) -> str:\n        n = len(s)\n        best = s\n        for i in range(n - 1):\n            if (int(s[i]) % 2) == (int(s[i+1]) % 2):\n                candidate = s[:i] + s[i+1] + s[i] + s[i+2:]\n                if candidate < best:\n                    best = candidate\n        return best"
+ },
+ "3485": {
+  "passed": false,
+  "code": ""
+ },
+ "3490": {
+  "passed": false,
+  "code": ""
+ },
+ "3493": {
+  "passed": false,
+  "code": ""
+ },
+ "3498": {
+  "passed": false,
+  "code": ""
+ },
+ "3502": {
+  "passed": false,
+  "code": ""
+ },
+ "3507": {
+  "passed": true,
+  "code": "import math\nimport bisect\n\nclass Solution:\n    _primes = None\n    _limit = 31623\n\n    @staticmethod\n    def _sieve(limit):\n        is_prime = [True] * (limit + 1)\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, int(limit ** 0.5) + 1):\n            if is_prime[i]:\n                for j in range(i * i, limit + 1, i):\n                    is_prime[j] = False\n        return [i for i, val in enumerate(is_prime) if val]\n\n    def nonSpecialCount(self, l: int, r: int) -> int:\n        if Solution._primes is None:\n            Solution._primes = Solution._sieve(Solution._limit)\n        low = math.isqrt(l)\n        if low * low < l:\n            low += 1\n        high = math.isqrt(r)\n        # count primes in [low, high]\n        left = bisect.bisect_left(Solution._primes, low)\n        right = bisect.bisect_right(Solution._primes, high)\n        count = right - left\n        total = r - l + 1\n        return total - count"
+ },
+ "3511": {
+  "passed": true,
+  "code": "class Solution:\n    def losingPlayer(self, x: int, y: int) -> str:\n        moves = min(x, y // 4)\n        return \"Alice\" if moves % 2 == 1 else \"Bob\""
+ },
+ "3528": {
+  "passed": false,
+  "code": ""
+ },
+ "3532": {
+  "passed": false,
+  "code": ""
+ },
+ "3540": {
+  "passed": true,
+  "code": "class Solution:\n    def stringHash(self, s: str, k: int) -> str:\n        n = len(s)\n        result = []\n        for i in range(0, n, k):\n            substring = s[i:i+k]\n            total = sum(ord(ch) - ord('a') for ch in substring) % 26\n            result.append(chr(ord('a') + total))\n        return ''.join(result)"
+ },
+ "3541": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def reportSpam(self, message: List[str], bannedWords: List[str]) -> bool:\n        banned_set = set(bannedWords)\n        count = 0\n        for word in message:\n            if word in banned_set:\n                count += 1\n                if count >= 2:\n                    return True\n        return False"
+ },
+ "3558": {
+  "passed": false,
+  "code": ""
+ },
+ "3563": {
+  "passed": false,
+  "code": ""
+ },
+ "3571": {
+  "passed": false,
+  "code": ""
+ },
+ "3580": {
+  "passed": false,
+  "code": ""
+ },
+ "3584": {
+  "passed": false,
+  "code": ""
+ },
+ "3593": {
+  "passed": true,
+  "code": "from typing import List\nimport math\n\nclass Solution:\n    def maxScore(self, nums: List[int]) -> int:\n        n = len(nums)\n        max_score = 0\n        \n        # No removal\n        g = nums[0]\n        l = nums[0]\n        for j in range(1, n):\n            g = math.gcd(g, nums[j])\n            l = l * nums[j] // math.gcd(l, nums[j])\n        max_score = max(max_score, g * l)\n        \n        # Remove each element\n        for i in range(n):\n            g = 0\n            l = 1\n            for j in range(n):\n                if j == i:\n                    continue\n                g = math.gcd(g, nums[j])\n                l = l * nums[j] // math.gcd(l, nums[j])\n            max_score = max(max_score, g * l)\n        \n        return max_score"
+ },
+ "3606": {
+  "passed": true,
+  "code": "from typing import List\n\nclass Solution:\n    def minElement(self, nums: List[int]) -> int:\n        def digit_sum(num: int) -> int:\n            total = 0\n            while num:\n                total += num % 10\n                num //= 10\n            return total\n        return min(digit_sum(x) for x in nums)"
+ },
+ "3622": {
+  "passed": false,
+  "code": ""
+ },
+ "3625": {
+  "passed": false,
+  "code": ""
+ },
+ "3629": {
+  "passed": false,
+  "code": ""
+ },
+ "3638": {
+  "passed": false,
+  "code": ""
+ },
+ "3639": {
+  "passed": false,
+  "code": ""
+ },
+ "3646": {
+  "passed": false,
+  "code": ""
+ },
+ "3647": {
+  "passed": false,
+  "code": ""
+ },
+ "3653": {
+  "passed": false,
+  "code": ""
+ },
+ "3657": {
+  "passed": false,
+  "code": ""
+ },
+ "3658": {
+  "passed": false,
+  "code": ""
+ },
+ "3659": {
+  "passed": false,
+  "code": ""
+ },
+ "3675": {
+  "passed": false,
+  "code": ""
+ },
+ "3680": {
+  "passed": false,
+  "code": ""
+ },
+ "3681": {
+  "passed": false,
+  "code": "\nThus final answer: a python code block with the solution.\n\nWe'll include necessary imports.\n\nWe'll also add a comment maybe.\n\nBut we must ensure the code runs in Python 3.\n\nWe'll write:\n"
+ },
+ "abc301_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc302_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc302_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc305_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc306_a": {
+  "passed": false,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().split()\n    if not data:\n        return\n    N = int(data[0])\n    S = data[1]\n    print(S + S)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc307_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc307_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc308_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc308_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc308_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc309_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc309_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc310_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc310_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc312_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc313_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc313_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc315_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc318_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc318_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc319_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc319_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc320_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc321_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    N = sys.stdin.readline().strip()\n    # N is a string of digits, but could have leading zeros? No, positive integer, so no leading zeros.\n    # Check if digits are strictly decreasing.\n    for i in range(len(N)-1):\n        if N[i] <= N[i+1]:\n            print(\"No\")\n            return\n    print(\"Yes\")\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc321_d": {
+  "passed": false,
+  "code": "\nWe should also consider that the input might have multiple lines, but we read accordingly.\n\nThus final answer.\n\nBut wait: There is a nuance: The sum of min(a+b, P) can be computed as sum_i sum_j min(a_i+b_j, P). Our method uses sorted B and prefix sums. However, we must ensure that we treat each a independently. That's fine.\n\nBut is there any possibility of overflow in Python? No.\n\nThus final solution.\n\nBut let's test with sample 3 manually? Not needed.\n\nWe'll produce final code.\n\nBut the problem might be from AtCoder, and they often require fast I/O. We used sys.stdin.readline.\n\nThus final.\n\nBut we should also consider that we could compute total sum of A and B and then adjust? Let's see if there is a more symmetric approach: total = N * sum(A) + M * sum(B) - sum_{i,j: a_i+b_j > P} (a_i+b_j - P). The second term is sum over pairs where sum > P of (a_i+b_j - P). That can be computed by sorting both arrays and using two-pointer to count pairs with sum > P and sum of those sums. But our method is simpler.\n\nBut we need to be careful: The sum of min = sum_{i,j} (a_i+b_j) - sum_{i,j: a_i+b_j > P} (a_i+b_j - P). The first term is easy: N*sum(A) + M*sum(B). The second term: For each a, we need sum over b > P-a of (a+b-P) = a * count_large + sum_large - P * count_large. So total = N*sum(A) + M*sum(B) - sum_i [ a_i * count_i_large + sum_large_i - P * count_i_large ] where count_i_large = M - count_i_small, sum_large_i = total_B - sum_small_i. So total = N*sum(A) + M*sum(B) - sum_i [ a_i*(M - cnt_i) + (total_B - sum_small_i) - P*(M - cnt_i) ] = N*sum(A) + M*sum(B) - sum_i [ a_i*(M - cnt_i) - P*(M - cnt_i) + total_B - sum_small_i ] = N*sum(A) + M*sum(B) - sum_i [ (a_i - P)*(M - cnt_i) + total_B - sum_small_i ].\n\nBut that's not simpler.\n\nOur direct method is fine.\n\nThus final code.\n\nBut we should also consider that we might need to handle large N and M, but Python loops are fine.\n\nNow, output the code block.\n"
+ },
+ "abc321_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc322_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc323_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc324_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc324_b": {
+  "passed": false,
+  "code": "\nThus final answer: a Python program.\n\nWe'll include a main guard maybe.\n\nLet's write:\n\nimport sys\n\ndef main():\n    N = int(sys.stdin.readline().strip())\n    while N % 2 == 0:\n        N //= 2\n    while N % 3 == 0:\n        N //= 3\n    print(\"Yes\" if N == 1 else \"No\")\n\nif __name__ == \"__main__\":\n    main()\n\nThat's fine.\n\nBut we can also use input().\n\nWe'll use input().\n\nNow, ensure it's correct.\n\nTest with samples:\n\n324: 324/2=162, /2=81, then /3=27, /3=9, /3=3, /3=1 => Yes.\n\n5: not divisible by 2 or 3, remains 5 => No.\n\n32: divisible by 2 five times => 1 => Yes.\n\n37748736: Let's check: 37748736 /2? 2^? Actually 37748736 = 2^? * 3^? Let's compute: 37748736 / 2 = 18874368, /2=9437184, /2=4718592, /2=2359296, /2=1179648, /2=589824, /2=294912, /2=147456, /2=73728, /2=36864, /2=18432, /2=9216, /2=4608, /2=2304, /2=1152, /2=576, /2=288, /2=144, /2=72, /2=36, /2=18, /2=9, then /3=3, /3=1. So yes.\n\nThus correct.\n\nWe'll output code block.\n"
+ },
+ "abc324_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc325_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc326_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc327_b": {
+  "passed": false,
+  "code": "\nThus final answer: Provide the Python code.\n\nBut we might also consider using while loop with exponentiation, but for loop is fine.\n\nWe should also consider that pow(A, A) might be computed many times, but only 15 times, trivial.\n\nThus final code.\n\nBut wait: The problem statement says \"If there exists a positive integer A such that A^A = B, print its value; otherwise, output -1.\" It also says \"If there are multiple positive integers A such that A^A = B, any of them will be accepted.\" But since A^A is strictly increasing for A>=1, there is at most one A. So no issue.\n\nThus final solution.\n\nBut we should also consider that B can be 1, and A=1 works. So loop includes A=1.\n\nThus final.\n\nNow, I'll produce the code.\n\nBut maybe we should also handle input with trailing spaces, etc.\n\nThus final answer.\n"
+ },
+ "abc327_d": {
+  "passed": false,
+  "code": "\nThus final answer: Provide Python code.\n\nLet's write:\n\nimport sys\nfrom collections import deque\n\ndef main():\n    data = sys.stdin.read().split()\n    if not data:\n        return\n    it = iter(data)\n    N = int(next(it))\n    M = int(next(it))\n    adj = [[] for _ in range(N+1)]\n    for _ in range(M):\n        a = int(next(it))\n        b = int(next(it))\n        if a == b:\n            print(\"No\")\n            return\n        adj[a].append(b)\n        adj[b].append(a)\n    color = [0]*(N+1)\n    for v in range(1, N+1):\n        if color[v] == 0:\n            color[v] = 1\n            q = deque([v])\n            while q:\n                u = q.popleft()\n                for w in adj[u]:\n                    if color[w] == 0:\n                        color[w] = 1 - color[u]\n                        q.append(w)\n                    elif color[w] == color[u]:\n                        print(\"No\")\n                        return\n    print(\"Yes\")\n\nif __name__ == \"__main__\":\n    main()\n\nThat's it.\n\nBut we need to ensure that we handle the case where there is a self-loop: we already check and print No.\n\nCheck sample 1: N=3, M=2, edges (1,2),(2,3). Graph: 1-2-3, bipartite. Yes.\n\nSample 2: N=3, M=3, edges (1,2),(2,3),(3,1) -> triangle, odd cycle, not bipartite. No.\n\nSample 3: N=1, M=1, edge (1,1) self-loop -> No.\n\nSample 4: N=7, M=8, edges: (1,6),(2,7),(2,5),(4,7),(5,1),(4,2),(2,3),(3,3). There is self-loop (2,3) and (3,3) -> self-loop, so No? Wait sample output 4 is Yes. Let's check sample 4: Input:\n\n7 8\n1 6 2 7 5 4 2 2\n3 2 7 2 1 2 3 3\n\nSo A: [1,6,2,7,5,4,2,2]; B: [3,2,7,2,1,2,3,3].\n\nEdges:\n1-3\n6-2\n2-7\n7-2 (duplicate)\n5-1\n4-2\n2-3\n3-3 (self-loop)\n\nThere is a self-loop at (3,3). According to our logic, that would make it impossible. But sample output says Yes. So maybe I misinterpret: The condition is X_{S_i} != X_{T_i} for each i. If S_i = T_i, then we require X_{S_i} != X_{S_i}, which is impossible. So indeed a self-loop should make it impossible. But sample 4 says Yes. Let's double-check sample 4: The last two pairs: A_7=2, B_7=3; A_8=2, B_8=3. So there is an edge (2,3) twice, and also (3,3)? Wait B_8=3, A_8=2, so that's (2,3). There is no (3,3). Let's list carefully:\n\nIndices:\n1: A1=1, B1=3 -> edge 1-3\n2: A2=6, B2=2 -> edge 6-2\n3: A3=2, B3=7 -> edge 2-7\n4: A4=7, B4=2 -> edge 7-2 (duplicate)\n5: A5=5, B5=1 -> edge 5-1\n6: A6=4, B6=2 -> edge 4-2\n7: A7=2, B7=3 -> edge 2-3\n8: A8=2, B8=3 -> edge 2-3 (duplicate)\n\nSo there is no self-loop. I misread: B_8=3, A_8=2, so it's (2,3). So no self-loop. Good.\n\nThus our logic stands.\n\nBut wait: There is also edge (2,3) and (2,7) and (6,2) and (4,2) and (1,3) and (5,1). Let's see if graph is bipartite. Let's try to color: assign 1=0, then 3 must be 1 (since 1-3). 5 must be 1 (since 5-1). 2 is connected to 6,7,4,3. 2 is adjacent to 3 (color 1) so 2 must be 0. Then 6 adjacent to 2 (0) so 6=1. 7 adjacent to 2 (0) so 7=1. 4 adjacent to 2 (0) so 4=1. Check edges: 2-3: 0 vs 1 ok; 2-7: 0 vs 1 ok; 2-4: 0 vs 1 ok; 2-6: 0 vs 1 ok; 1-3: 0 vs 1 ok; 5-1: 1 vs 0 ok. So bipartite. Yes.\n\nThus solution works.\n\nNow we need to output code.\n\nBut the problem might be from AtCoder? Possibly \"Good Pair\" or something. But anyway.\n\nWe'll produce final code.\n\nBut we should also consider that N and M up to 2e5, adjacency list memory: O(N+M) fine.\n\nWe'll use sys.setrecursionlimit if using DFS, but BFS is fine.\n\nThus final answer.\n"
+ },
+ "abc327_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc328_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc328_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc329_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc330_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc330_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc331_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc331_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc332_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc333_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc333_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc333_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc334_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc334_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc335_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc336_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc336_b": {
+  "passed": false,
+  "code": "def main():\n    N = int(input())\n    print((N & -N).bit_length() - 1)"
+ },
+ "abc337_c": {
+  "passed": false,
+  "code": "\nCheck sample 2: N=10, A = [-1,1,2,3,4,5,6,7,8,9]. behind[1]=2, behind[2]=3, ..., behind[9]=10, head=1. Traversal: 1,2,3,4,5,6,7,8,9,10. Output matches.\n\nSample 3: We'll trust.\n\nThus solution is correct.\n\nBut we should consider if there is any scenario where behind[head] is not set? That would mean head has no one behind, but then N=1, behind[head]=0, traversal works.\n\nNow, is there any need to handle multiple -1? The problem says exactly one way, so exactly one -1. So head is unique.\n\nThus final answer.\n"
+ },
+ "abc337_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc338_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc338_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc339_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc340_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc340_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc341_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc341_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc342_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc342_d": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().split()\n    if not data:\n        return\n    N = int(data[0])\n    A = list(map(int, data[1:1+N]))\n    max_val = max(A) if A else 0\n    # Precompute smallest prime factor up to max_val (or up to 200000)\n    limit = max_val if max_val > 1 else 2\n    spf = list(range(limit+1))\n    for i in range(2, int(limit**0.5)+1):\n        if spf[i] == i:\n            for j in range(i*i, limit+1, i):\n                if spf[j] == j:\n                    spf[j] = i\n    cnt0 = A.count(0)\n    freq = {}\n    for x in A:\n        if x == 0:\n            continue\n        s = 1\n        while x > 1:\n            p = spf[x]\n            cnt = 0\n            while x % p == 0:\n                x //= p\n                cnt += 1\n            if cnt & 1:\n                s *= p\n        freq[s] = freq.get(s, 0) + 1\n    ans = 0\n    for f in freq.values():\n        ans += f*(f-1)//2\n    ans += cnt0 * (N - cnt0) + cnt0*(cnt0-1)//2\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc343_a": {
+  "passed": false,
+  "code": "import sys\n\ndef main():\n    A, B = map(int, sys.stdin.read().split())\n    s = A + B\n    if s == 0:\n        print(1)\n    else:\n        print(0)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc344_b": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().strip().split()\n    if not data:\n        return\n    nums = [int(x) for x in data]\n    # nums[-1] is guaranteed to be 0, but we can just reverse.\n    for num in reversed(nums):\n        print(num)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc346_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().strip().split()\n    if not data:\n        return\n    N = int(data[0])\n    A = list(map(int, data[1:1+N]))\n    B = [A[i] * A[i+1] for i in range(N-1)]\n    print(' '.join(map(str, B)))\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc346_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc346_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc347_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().strip().split()\n    if not data:\n        return\n    N, K = map(int, data[:2])\n    A = list(map(int, data[2:2+N]))\n    quotients = [a // K for a in A if a % K == 0]\n    quotients.sort()\n    print(' '.join(map(str, quotients)))\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc349_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc350_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc350_c": {
+  "passed": false,
+  "code": "\nThat's it.\n\nBut we should double-check: The problem says \"Print K+1 lines. The first line should contain K. The (l+1)-th line (1≤l≤K) should contain the integers i and j chosen for the l-th operation, separated by a space.\" So we output K then K lines. That's what we do.\n\nNow, is there any scenario where j < i? As argued, it shouldn't happen if we maintain correctness. But let's test with a case where we might have j < i due to some bug? Suppose we have A = [2,1,3]. i=0 target=1, j=pos[1]=1, j>i. Good. i=1 target=2, A[1]=1 !=2, j=pos[2]=0, j=0 < i=1. That would be a problem because swapping would disturb position 0 which is already fixed (A[0]=2? Actually after first swap, A becomes [1,2,3]? Wait, let's simulate: initial A=[2,1,3]. pos:1->1,2->0,3->2.\ni=0 target=1, j=pos[1]=1, swap indices 0 and 1: A becomes [1,2,3]; update pos[1]=0, pos[2]=1. Now i=1 target=2, A[1]=2 correct. So j=pos[2]=1, not 0. So j>i. So it's fine.\n\nBut what if we didn't fix earlier? Actually the algorithm ensures that after fixing i, we never need to swap again for that position. So j will always be >= i. So safe.\n\nThus solution is correct.\n"
+ },
+ "abc351_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc351_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc353_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc353_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc354_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc355_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc355_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc356_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc356_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc359_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc359_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc359_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc360_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc360_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc360_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc361_e": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = list(map(int, sys.stdin.read().split()))\n    if not data:\n        return\n    it = iter(data)\n    N = next(it)\n    adj = [[] for _ in range(N+1)]\n    total = 0\n    for _ in range(N-1):\n        a = next(it); b = next(it); c = next(it)\n        adj[a].append((b, c))\n        adj[b].append((a, c))\n        total += c\n\n    def farthest(start):\n        max_dist = 0\n        farthest_node = start\n        stack = [(start, 0, 0)]\n        while stack:\n            node, parent, dist = stack.pop()\n            if dist > max_dist:\n                max_dist = dist\n                farthest_node = node\n            for nb, w in adj[node]:\n                if nb != parent:\n                    stack.append((nb, node, dist + w))\n        return farthest_node, max_dist\n\n    u, _ = farthest(1)\n    v, diameter = farthest(u)\n    ans = 2 * total - diameter\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc361_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc362_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().strip().split()\n    if not data:\n        return\n    R, G, B = map(int, data[:3])\n    C = data[3]\n    if C == \"Red\":\n        ans = min(G, B)\n    elif C == \"Green\":\n        ans = min(R, B)\n    else:  # Blue\n        ans = min(R, G)\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc362_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc362_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc362_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc363_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    R = int(sys.stdin.readline().strip())\n    if R <= 99:\n        ans = 100 - R\n    elif R <= 199:\n        ans = 200 - R\n    else:  # R <= 299\n        ans = 300 - R\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc363_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc364_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc364_b": {
+  "passed": false,
+  "code": "\nBut careful: indexing: grid is list of strings, each string length W. For row r (1-indexed), the string is grid[r-1]. For column c (1-indexed), index is c-1. So for left: check c>1 and grid[r-1][c-2] == '.'; for right: c<W and grid[r-1][c-1] == '.'; for up: r>1 and grid[r-2][c-1] == '.'; for down: r<H and grid[r][c-1] == '.'.\n\nYes.\n\nAlternatively, we could convert grid to list of lists for easier access, but strings are fine.\n\nWe'll output the code.\n\nBut the problem might require reading from standard input and writing to standard output. The code above does that.\n\nWe should ensure that we handle trailing newline correctly. Using splitlines() is fine.\n\nWe'll output the code block.\n"
+ },
+ "abc364_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc364_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc365_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    Y = int(sys.stdin.readline().strip())\n    if Y % 400 == 0:\n        days = 366\n    elif Y % 100 == 0:\n        days = 365\n    elif Y % 4 == 0:\n        days = 366\n    else:\n        days = 365\n    print(days)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc365_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc366_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc366_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc366_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc367_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc367_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc368_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().split()\n    if not data:\n        return\n    N, K = map(int, data[:2])\n    A = list(map(int, data[2:2+N]))\n    # Move bottom K cards to top\n    result = A[N-K:] + A[:N-K]\n    print(' '.join(map(str, result)))\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc368_b": {
+  "passed": false,
+  "code": ""
+ },
+ "abc368_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc368_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc369_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc370_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc370_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc370_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc370_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc371_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc372_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    s = sys.stdin.readline().strip()\n    result = s.replace('.', '')\n    print(result)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc373_c": {
+  "passed": false,
+  "code": "\nThat's it.\n"
+ },
+ "abc373_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc375_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc375_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc375_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc376_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc377_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc377_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc377_e": {
+  "passed": false,
+  "code": ""
+ },
+ "abc377_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc378_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc378_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc378_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc379_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc379_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc379_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc380_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc382_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc384_a": {
+  "passed": true,
+  "code": "import sys\n\ndef main():\n    data = sys.stdin.read().split()\n    if not data:\n        return\n    N = int(data[0])\n    c1 = data[1]\n    c2 = data[2]\n    S = data[3]\n    # Build result\n    res = ''.join(c2 if ch != c1 else ch for ch in S)\n    print(res)\n\nif __name__ == \"__main__\":\n    main()"
+ },
+ "abc384_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc384_f": {
+  "passed": false,
+  "code": ""
+ },
+ "abc384_g": {
+  "passed": false,
+  "code": ""
+ },
+ "abc385_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc386_a": {
+  "passed": false,
+  "code": ""
+ },
+ "abc386_c": {
+  "passed": false,
+  "code": ""
+ },
+ "abc386_d": {
+  "passed": false,
+  "code": ""
+ },
+ "abc386_f": {
+  "passed": false,
+  "code": ""
+ },
+ "arc181_a": {
+  "passed": false,
+  "code": ""
+ },
+ "arc182_c": {
+  "passed": false,
+  "code": ""
+ },
+ "arc182_d": {
+  "passed": false,
+  "code": ""
+ },
+ "arc183_b": {
+  "passed": false,
+  "code": ""
+ },
+ "arc184_e": {
+  "passed": false,
+  "code": ""
+ },
+ "arc185_b": {
+  "passed": false,
+  "code": ""
+ },
+ "arc185_c": {
+  "passed": false,
+  "code": ""
+ },
+ "arc185_e": {
+  "passed": false,
+  "code": ""
+ },
+ "arc186_b": {
+  "passed": false,
+  "code": ""
+ },
+ "arc186_e": {
+  "passed": false,
+  "code": ""
+ },
+ "arc187_b": {
+  "passed": false,
+  "code": ""
+ },
+ "arc188_d": {
+  "passed": false,
+  "code": ""
+ }
+}

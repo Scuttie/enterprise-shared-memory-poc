@@ -1,0 +1,529 @@
+{
+  "release": "release_v6",
+  "arm": "M0",
+  "n": 20,
+  "n_pass": 1,
+  "pass_at_1": 0.05,
+  "results": [
+    {
+      "question_id": "3562",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 603,
+        "completion_tokens": 4096,
+        "total_tokens": 4699,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3634",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 550,
+        "completion_tokens": 4096,
+        "total_tokens": 4646,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3674",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 592,
+        "completion_tokens": 4096,
+        "total_tokens": 4688,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3677",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 705,
+        "completion_tokens": 4096,
+        "total_tokens": 4801,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3684",
+      "contest_date": "2025-01-04 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 380,
+        "completion_tokens": 4096,
+        "total_tokens": 4476,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3687",
+      "contest_date": "2025-01-18 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 620,
+        "completion_tokens": 4096,
+        "total_tokens": 4716,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3688",
+      "contest_date": "2025-01-04 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 594,
+        "completion_tokens": 4096,
+        "total_tokens": 4690,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3692",
+      "contest_date": "2025-02-15 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 428,
+        "completion_tokens": 4096,
+        "total_tokens": 4524,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3696",
+      "contest_date": "2025-02-08 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 485,
+        "completion_tokens": 4096,
+        "total_tokens": 4581,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3697",
+      "contest_date": "2025-02-01 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 438,
+        "completion_tokens": 4096,
+        "total_tokens": 4534,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3701",
+      "contest_date": "2025-02-01 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 616,
+        "completion_tokens": 4096,
+        "total_tokens": 4712,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3702",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 492,
+        "completion_tokens": 4096,
+        "total_tokens": 4588,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3704",
+      "contest_date": "2025-01-25 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 521,
+        "completion_tokens": 1148,
+        "total_tokens": 1669,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 127,
+      "passed": false
+    },
+    {
+      "question_id": "3705",
+      "contest_date": "2025-03-01 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 731,
+        "completion_tokens": 3491,
+        "total_tokens": 4222,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 753,
+      "passed": false
+    },
+    {
+      "question_id": "3708",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 447,
+        "completion_tokens": 2617,
+        "total_tokens": 3064,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 441,
+      "passed": true
+    },
+    {
+      "question_id": "3709",
+      "contest_date": "2025-02-15 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 408,
+        "completion_tokens": 4096,
+        "total_tokens": 4504,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3714",
+      "contest_date": "2025-01-18 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 528,
+        "completion_tokens": 4096,
+        "total_tokens": 4624,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3715",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 475,
+        "completion_tokens": 4096,
+        "total_tokens": 4571,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3716",
+      "contest_date": "2025-01-04 06:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 511,
+        "completion_tokens": 4096,
+        "total_tokens": 4607,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    },
+    {
+      "question_id": "3717",
+      "contest_date": "2025-03-29 19:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 652,
+        "completion_tokens": 4096,
+        "total_tokens": 4748,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "passed": false
+    }
+  ]
+}

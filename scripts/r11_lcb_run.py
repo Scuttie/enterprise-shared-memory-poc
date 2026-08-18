@@ -87,7 +87,15 @@ def main():
                   open(OUT, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
         print("[R11] dumped %d tasks -> %s" % (len(universe), OUT)); return
     by_id = {p.question_id: p for p in allp}
-    if QIDS:
+    part_path = "artifacts/livecodebench_r11/task_partition.json"
+    if QIDS == ["TARGETS"] or QIDS == ["SOURCES"]:
+        part = json.load(open(part_path, encoding="utf-8"))
+        key = "main_target" if QIDS == ["TARGETS"] else "source_pool"
+        ids = part[key]["ids"]
+        off = int(os.environ.get("R11_OFFSET", "0")); lim = int(os.environ.get("R11_LIMIT", "0") or "0")
+        ids = ids[off:off + lim] if lim else ids[off:]
+        targets = [by_id[q] for q in ids if q in by_id]
+    elif QIDS:
         targets = [by_id[q] for q in QIDS if q in by_id]
     else:
         limit = int(os.environ.get("R11_LIMIT", "20"))

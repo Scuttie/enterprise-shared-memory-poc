@@ -1,0 +1,63 @@
+{
+  "experiment": "REALBENCH_LIVECODEBENCH_R11",
+  "pass_at_1_by_arm": {
+    "M0": 0.1154,
+    "M1": 0.1044,
+    "M2": 0.0989,
+    "M3": 0.0824
+  },
+  "memory_coverage_targets": 109,
+  "contrasts": {
+    "H1_primary_M1_minus_M2": {
+      "contrast": "H1 M1-M2",
+      "n": 109,
+      "passA": 15,
+      "passB": 14,
+      "rateA": 0.1376,
+      "rateB": 0.1284,
+      "diff_M1_minus_M2": 0.0092,
+      "positive_transfer(A>B)": 8,
+      "discordant_Apass_Bfail": 9,
+      "discordant_Afail_Bpass": 8,
+      "mcnemar_exact_p": 1.0,
+      "boot95ci_diff": [
+        -0.0734,
+        0.0826
+      ]
+    },
+    "H2_M1_minus_M0": {
+      "contrast": "M1-M0",
+      "n": 109,
+      "passA": 15,
+      "passB": 16,
+      "rateA": 0.1376,
+      "rateB": 0.1468,
+      "diff_M1_minus_M0": -0.0092,
+      "positive_transfer(A>B)": 9,
+      "discordant_Apass_Bfail": 8,
+      "discordant_Afail_Bpass": 9,
+      "mcnemar_exact_p": 1.0,
+      "boot95ci_diff": [
+        -0.0826,
+        0.0642
+      ]
+    },
+    "H3_M3_minus_M1": {
+      "contrast": "M3-M1",
+      "n": 109,
+      "passA": 9,
+      "passB": 15,
+      "rateA": 0.0826,
+      "rateB": 0.1376,
+      "diff_M3_minus_M1": -0.055,
+      "positive_transfer(A>B)": 9,
+      "discordant_Apass_Bfail": 3,
+      "discordant_Afail_Bpass": 9,
+      "mcnemar_exact_p": 0.146,
+      "boot95ci_diff": [
+        -0.1193,
+        0.0092
+      ]
+    }
+  }
+}

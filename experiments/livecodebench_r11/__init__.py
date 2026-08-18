@@ -4,4 +4,4 @@ M1-M2). Official evaluator, official full code-generation setting, temporal sour
 contest_date. Endpoint: LIVEBENCH MAIN COMPLETE regardless of positive/null/negative. No benchmark ladder.
 """
 EXPERIMENT_ID = "REALBENCH_LIVECODEBENCH_R11"
-STATUS = "PROVENANCE_PINNED"
+STATUS = "LIVEBENCH_MAIN_COMPLETE_NULL"  # H1 M1-M2=+0.009 p=1.0; track closed; no third benchmark

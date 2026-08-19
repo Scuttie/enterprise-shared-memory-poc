@@ -1,0 +1,1085 @@
+{
+ "n": 120,
+ "assignments": {
+  "django__django-14155": {
+   "target_user": "u03",
+   "m1_source": "django__django-14140",
+   "m1_user": "u19",
+   "m2_source": "sphinx-doc__sphinx-8459",
+   "m2_user": "u18",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-10614": {
+   "target_user": "u01",
+   "m1_source": "sphinx-doc__sphinx-10466",
+   "m1_user": "u20",
+   "m2_source": "pydata__xarray-4966",
+   "m2_user": "u20",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "django__django-13925": {
+   "target_user": "u22",
+   "m1_source": "django__django-13837",
+   "m1_user": "u12",
+   "m2_source": "pytest-dev__pytest-6202",
+   "m2_user": "u08",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "scikit-learn__scikit-learn-14983": {
+   "target_user": "u11",
+   "m1_source": "scikit-learn__scikit-learn-14710",
+   "m1_user": "u06",
+   "m2_source": "psf__requests-1766",
+   "m2_user": "u12",
+   "repo": "scikit-learn/scikit-learn",
+   "source_before_target": true
+  },
+  "django__django-11119": {
+   "target_user": "u00",
+   "m1_source": "django__django-11099",
+   "m1_user": "u14",
+   "m2_source": "scikit-learn__scikit-learn-10297",
+   "m2_user": "u22",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-13401": {
+   "target_user": "u21",
+   "m1_source": "django__django-13363",
+   "m1_user": "u04",
+   "m2_source": "pytest-dev__pytest-5787",
+   "m2_user": "u03",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-15987": {
+   "target_user": "u12",
+   "m1_source": "django__django-15973",
+   "m1_user": "u15",
+   "m2_source": "scikit-learn__scikit-learn-14629",
+   "m2_user": "u15",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-16527": {
+   "target_user": "u21",
+   "m1_source": "django__django-16493",
+   "m1_user": "u08",
+   "m2_source": "sphinx-doc__sphinx-8475",
+   "m2_user": "u17",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-16667": {
+   "target_user": "u10",
+   "m1_source": "django__django-16662",
+   "m1_user": "u15",
+   "m2_source": "sphinx-doc__sphinx-8265",
+   "m2_user": "u05",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-14404": {
+   "target_user": "u02",
+   "m1_source": "django__django-14376",
+   "m1_user": "u18",
+   "m2_source": "sympy__sympy-18189",
+   "m2_user": "u20",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-10880": {
+   "target_user": "u16",
+   "m1_source": "django__django-10554",
+   "m1_user": "u13",
+   "m2_source": "psf__requests-1142",
+   "m2_user": "u13",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-9296": {
+   "target_user": "u10",
+   "m1_source": "django__django-7530",
+   "m1_user": "u00",
+   "m2_source": "scikit-learn__scikit-learn-9288",
+   "m2_user": "u12",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-14608": {
+   "target_user": "u13",
+   "m1_source": "django__django-14559",
+   "m1_user": "u20",
+   "m2_source": "sphinx-doc__sphinx-7910",
+   "m2_user": "u21",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-15851": {
+   "target_user": "u21",
+   "m1_source": "django__django-15814",
+   "m1_user": "u06",
+   "m2_source": "sphinx-doc__sphinx-8459",
+   "m2_user": "u18",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-16819": {
+   "target_user": "u01",
+   "m1_source": "django__django-16662",
+   "m1_user": "u15",
+   "m2_source": "scikit-learn__scikit-learn-12585",
+   "m2_user": "u08",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-11163": {
+   "target_user": "u00",
+   "m1_source": "django__django-11149",
+   "m1_user": "u19",
+   "m2_source": "scikit-learn__scikit-learn-13124",
+   "m2_user": "u12",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-8269": {
+   "target_user": "u10",
+   "m1_source": "sphinx-doc__sphinx-8265",
+   "m1_user": "u05",
+   "m2_source": "sympy__sympy-13852",
+   "m2_user": "u13",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "django__django-13033": {
+   "target_user": "u01",
+   "m1_source": "django__django-13028",
+   "m1_user": "u06",
+   "m2_source": "scikit-learn__scikit-learn-14496",
+   "m2_user": "u18",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-9281": {
+   "target_user": "u05",
+   "m1_source": "sphinx-doc__sphinx-9258",
+   "m1_user": "u22",
+   "m2_source": "django__django-13343",
+   "m2_user": "u03",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "django__django-14765": {
+   "target_user": "u19",
+   "m1_source": "django__django-14752",
+   "m1_user": "u15",
+   "m2_source": "matplotlib__matplotlib-13989",
+   "m2_user": "u13",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-10914": {
+   "target_user": "u21",
+   "m1_source": "django__django-10554",
+   "m1_user": "u13",
+   "m2_source": "sympy__sympy-14976",
+   "m2_user": "u13",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-14315": {
+   "target_user": "u23",
+   "m1_source": "django__django-14311",
+   "m1_user": "u22",
+   "m2_source": "pytest-dev__pytest-5787",
+   "m2_user": "u03",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-15104": {
+   "target_user": "u19",
+   "m1_source": "django__django-15103",
+   "m1_user": "u15",
+   "m2_source": "sympy__sympy-18189",
+   "m2_user": "u20",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "astropy__astropy-14508": {
+   "target_user": "u00",
+   "m1_source": "astropy__astropy-14369",
+   "m1_user": "u03",
+   "m2_source": "django__django-13964",
+   "m2_user": "u01",
+   "repo": "astropy/astropy",
+   "source_before_target": true
+  },
+  "sympy__sympy-12489": {
+   "target_user": "u22",
+   "m1_source": "sympy__sympy-12419",
+   "m1_user": "u10",
+   "m2_source": "django__django-7530",
+   "m2_user": "u00",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-7985": {
+   "target_user": "u05",
+   "m1_source": "sphinx-doc__sphinx-7910",
+   "m1_user": "u21",
+   "m2_source": "django__django-10097",
+   "m2_user": "u09",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "django__django-15561": {
+   "target_user": "u10",
+   "m1_source": "django__django-15554",
+   "m1_user": "u22",
+   "m2_source": "sphinx-doc__sphinx-7910",
+   "m2_user": "u21",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-16801": {
+   "target_user": "u23",
+   "m1_source": "django__django-16662",
+   "m1_user": "u15",
+   "m2_source": "pylint-dev__pylint-7277",
+   "m2_user": "u12",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sympy__sympy-19783": {
+   "target_user": "u19",
+   "m1_source": "sympy__sympy-19637",
+   "m1_user": "u16",
+   "m2_source": "psf__requests-1921",
+   "m2_user": "u08",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "django__django-14493": {
+   "target_user": "u06",
+   "m1_source": "django__django-14376",
+   "m1_user": "u18",
+   "m2_source": "matplotlib__matplotlib-13989",
+   "m2_user": "u13",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-11276": {
+   "target_user": "u14",
+   "m1_source": "django__django-11239",
+   "m1_user": "u00",
+   "m2_source": "scikit-learn__scikit-learn-12682",
+   "m2_user": "u18",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sympy__sympy-15349": {
+   "target_user": "u18",
+   "m1_source": "sympy__sympy-14976",
+   "m1_user": "u13",
+   "m2_source": "astropy__astropy-7166",
+   "m2_user": "u06",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "scikit-learn__scikit-learn-14087": {
+   "target_user": "u00",
+   "m1_source": "scikit-learn__scikit-learn-13439",
+   "m1_user": "u01",
+   "m2_source": "sympy__sympy-13852",
+   "m2_user": "u13",
+   "repo": "scikit-learn/scikit-learn",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-8120": {
+   "target_user": "u07",
+   "m1_source": "sphinx-doc__sphinx-8035",
+   "m1_user": "u08",
+   "m2_source": "django__django-13297",
+   "m2_user": "u05",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-9320": {
+   "target_user": "u13",
+   "m1_source": "sphinx-doc__sphinx-9258",
+   "m1_user": "u22",
+   "m2_source": "pytest-dev__pytest-6202",
+   "m2_user": "u08",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "django__django-13568": {
+   "target_user": "u05",
+   "m1_source": "django__django-13551",
+   "m1_user": "u23",
+   "m2_source": "matplotlib__matplotlib-13989",
+   "m2_user": "u13",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "matplotlib__matplotlib-23412": {
+   "target_user": "u03",
+   "m1_source": "matplotlib__matplotlib-23314",
+   "m1_user": "u08",
+   "m2_source": "pylint-dev__pylint-4970",
+   "m2_user": "u09",
+   "repo": "matplotlib/matplotlib",
+   "source_before_target": true
+  },
+  "sympy__sympy-12481": {
+   "target_user": "u04",
+   "m1_source": "sympy__sympy-12419",
+   "m1_user": "u10",
+   "m2_source": "psf__requests-1142",
+   "m2_user": "u13",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "matplotlib__matplotlib-26466": {
+   "target_user": "u10",
+   "m1_source": "matplotlib__matplotlib-26342",
+   "m1_user": "u23",
+   "m2_source": "sphinx-doc__sphinx-8638",
+   "m2_user": "u07",
+   "repo": "matplotlib/matplotlib",
+   "source_before_target": true
+  },
+  "sympy__sympy-20428": {
+   "target_user": "u09",
+   "m1_source": "sympy__sympy-20154",
+   "m1_user": "u22",
+   "m2_source": "django__django-13212",
+   "m2_user": "u16",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "django__django-15863": {
+   "target_user": "u07",
+   "m1_source": "django__django-15814",
+   "m1_user": "u06",
+   "m2_source": "sympy__sympy-18698",
+   "m2_user": "u09",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "matplotlib__matplotlib-23476": {
+   "target_user": "u19",
+   "m1_source": "matplotlib__matplotlib-23314",
+   "m1_user": "u08",
+   "m2_source": "sympy__sympy-20590",
+   "m2_user": "u17",
+   "repo": "matplotlib/matplotlib",
+   "source_before_target": true
+  },
+  "pytest-dev__pytest-10051": {
+   "target_user": "u12",
+   "m1_source": "pytest-dev__pytest-8399",
+   "m1_user": "u17",
+   "m2_source": "django__django-11551",
+   "m2_user": "u03",
+   "repo": "pytest-dev/pytest",
+   "source_before_target": true
+  },
+  "sympy__sympy-22080": {
+   "target_user": "u14",
+   "m1_source": "sympy__sympy-21930",
+   "m1_user": "u15",
+   "m2_source": "scikit-learn__scikit-learn-12682",
+   "m2_user": "u18",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "django__django-14034": {
+   "target_user": "u09",
+   "m1_source": "django__django-14017",
+   "m1_user": "u14",
+   "m2_source": "sympy__sympy-13852",
+   "m2_user": "u13",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-13023": {
+   "target_user": "u23",
+   "m1_source": "django__django-12965",
+   "m1_user": "u00",
+   "m2_source": "sympy__sympy-11618",
+   "m2_user": "u00",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-8548": {
+   "target_user": "u22",
+   "m1_source": "sphinx-doc__sphinx-8475",
+   "m1_user": "u17",
+   "m2_source": "django__django-12262",
+   "m2_user": "u23",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "django__django-12713": {
+   "target_user": "u14",
+   "m1_source": "django__django-12708",
+   "m1_user": "u23",
+   "m2_source": "sympy__sympy-16597",
+   "m2_user": "u01",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sympy__sympy-17655": {
+   "target_user": "u02",
+   "m1_source": "sympy__sympy-17630",
+   "m1_user": "u03",
+   "m2_source": "django__django-11099",
+   "m2_user": "u14",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-7757": {
+   "target_user": "u19",
+   "m1_source": "sphinx-doc__sphinx-7748",
+   "m1_user": "u02",
+   "m2_source": "sympy__sympy-13551",
+   "m2_user": "u22",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "scikit-learn__scikit-learn-25931": {
+   "target_user": "u12",
+   "m1_source": "scikit-learn__scikit-learn-25232",
+   "m1_user": "u22",
+   "m2_source": "sphinx-doc__sphinx-7462",
+   "m2_user": "u04",
+   "repo": "scikit-learn/scikit-learn",
+   "source_before_target": true
+  },
+  "django__django-13933": {
+   "target_user": "u13",
+   "m1_source": "django__django-13837",
+   "m1_user": "u12",
+   "m2_source": "sympy__sympy-13852",
+   "m2_user": "u14",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-16642": {
+   "target_user": "u14",
+   "m1_source": "django__django-16631",
+   "m1_user": "u05",
+   "m2_source": "matplotlib__matplotlib-24177",
+   "m2_user": "u05",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "pydata__xarray-3305": {
+   "target_user": "u21",
+   "m1_source": "pydata__xarray-3151",
+   "m1_user": "u17",
+   "m2_source": "psf__requests-1766",
+   "m2_user": "u12",
+   "repo": "pydata/xarray",
+   "source_before_target": true
+  },
+  "astropy__astropy-7606": {
+   "target_user": "u17",
+   "m1_source": "astropy__astropy-7336",
+   "m1_user": "u02",
+   "m2_source": "sympy__sympy-13615",
+   "m2_user": "u05",
+   "repo": "astropy/astropy",
+   "source_before_target": true
+  },
+  "sympy__sympy-15017": {
+   "target_user": "u22",
+   "m1_source": "sympy__sympy-14976",
+   "m1_user": "u13",
+   "m2_source": "astropy__astropy-7336",
+   "m2_user": "u02",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "pytest-dev__pytest-5840": {
+   "target_user": "u00",
+   "m1_source": "pytest-dev__pytest-5809",
+   "m1_user": "u07",
+   "m2_source": "django__django-11133",
+   "m2_user": "u06",
+   "repo": "pytest-dev/pytest",
+   "source_before_target": true
+  },
+  "django__django-14351": {
+   "target_user": "u11",
+   "m1_source": "django__django-14349",
+   "m1_user": "u22",
+   "m2_source": "sympy__sympy-18189",
+   "m2_user": "u20",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "scikit-learn__scikit-learn-13496": {
+   "target_user": "u08",
+   "m1_source": "scikit-learn__scikit-learn-13439",
+   "m1_user": "u01",
+   "m2_source": "sympy__sympy-13615",
+   "m2_user": "u05",
+   "repo": "scikit-learn/scikit-learn",
+   "source_before_target": true
+  },
+  "sympy__sympy-13480": {
+   "target_user": "u10",
+   "m1_source": "sympy__sympy-13372",
+   "m1_user": "u17",
+   "m2_source": "psf__requests-1921",
+   "m2_user": "u08",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "pydata__xarray-7233": {
+   "target_user": "u09",
+   "m1_source": "pydata__xarray-7229",
+   "m1_user": "u15",
+   "m2_source": "pylint-dev__pylint-4661",
+   "m2_user": "u11",
+   "repo": "pydata/xarray",
+   "source_before_target": true
+  },
+  "django__django-15375": {
+   "target_user": "u22",
+   "m1_source": "django__django-15368",
+   "m1_user": "u18",
+   "m2_source": "sympy__sympy-13372",
+   "m2_user": "u17",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-14771": {
+   "target_user": "u03",
+   "m1_source": "django__django-14752",
+   "m1_user": "u15",
+   "m2_source": "sympy__sympy-14976",
+   "m2_user": "u13",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "psf__requests-5414": {
+   "target_user": "u16",
+   "m1_source": "psf__requests-1921",
+   "m1_user": "u08",
+   "m2_source": "django__django-11815",
+   "m2_user": "u06",
+   "repo": "psf/requests",
+   "source_before_target": true
+  },
+  "matplotlib__matplotlib-22865": {
+   "target_user": "u16",
+   "m1_source": "matplotlib__matplotlib-22719",
+   "m1_user": "u06",
+   "m2_source": "django__django-13417",
+   "m2_user": "u12",
+   "repo": "matplotlib/matplotlib",
+   "source_before_target": true
+  },
+  "django__django-14534": {
+   "target_user": "u13",
+   "m1_source": "django__django-14500",
+   "m1_user": "u16",
+   "m2_source": "sympy__sympy-20916",
+   "m2_user": "u05",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "scikit-learn__scikit-learn-14894": {
+   "target_user": "u11",
+   "m1_source": "scikit-learn__scikit-learn-14710",
+   "m1_user": "u06",
+   "m2_source": "sympy__sympy-15599",
+   "m2_user": "u12",
+   "repo": "scikit-learn/scikit-learn",
+   "source_before_target": true
+  },
+  "sympy__sympy-19346": {
+   "target_user": "u00",
+   "m1_source": "sympy__sympy-19040",
+   "m1_user": "u12",
+   "m2_source": "django__django-11603",
+   "m2_user": "u16",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-10449": {
+   "target_user": "u15",
+   "m1_source": "sphinx-doc__sphinx-10435",
+   "m1_user": "u23",
+   "m2_source": "astropy__astropy-12907",
+   "m2_user": "u12",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "django__django-11951": {
+   "target_user": "u02",
+   "m1_source": "django__django-11848",
+   "m1_user": "u03",
+   "m2_source": "scikit-learn__scikit-learn-13328",
+   "m2_user": "u16",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "scikit-learn__scikit-learn-12973": {
+   "target_user": "u09",
+   "m1_source": "scikit-learn__scikit-learn-12682",
+   "m1_user": "u18",
+   "m2_source": "psf__requests-1142",
+   "m2_user": "u13",
+   "repo": "scikit-learn/scikit-learn",
+   "source_before_target": true
+  },
+  "sympy__sympy-24213": {
+   "target_user": "u12",
+   "m1_source": "sympy__sympy-24066",
+   "m1_user": "u01",
+   "m2_source": "django__django-16116",
+   "m2_user": "u06",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-7889": {
+   "target_user": "u04",
+   "m1_source": "sphinx-doc__sphinx-7748",
+   "m1_user": "u02",
+   "m2_source": "sympy__sympy-13372",
+   "m2_user": "u17",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "sphinx-doc__sphinx-8721": {
+   "target_user": "u07",
+   "m1_source": "sphinx-doc__sphinx-8638",
+   "m1_user": "u08",
+   "m2_source": "django__django-13449",
+   "m2_user": "u10",
+   "repo": "sphinx-doc/sphinx",
+   "source_before_target": true
+  },
+  "django__django-12308": {
+   "target_user": "u12",
+   "m1_source": "django__django-12304",
+   "m1_user": "u20",
+   "m2_source": "psf__requests-1921",
+   "m2_user": "u08",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-13315": {
+   "target_user": "u01",
+   "m1_source": "django__django-13297",
+   "m1_user": "u05",
+   "m2_source": "scikit-learn__scikit-learn-12585",
+   "m2_user": "u08",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sympy__sympy-21596": {
+   "target_user": "u00",
+   "m1_source": "sympy__sympy-21379",
+   "m1_user": "u21",
+   "m2_source": "matplotlib__matplotlib-13989",
+   "m2_user": "u13",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "django__django-15128": {
+   "target_user": "u10",
+   "m1_source": "django__django-15127",
+   "m1_user": "u03",
+   "m2_source": "sympy__sympy-15809",
+   "m2_user": "u18",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "matplotlib__matplotlib-25311": {
+   "target_user": "u13",
+   "m1_source": "matplotlib__matplotlib-25287",
+   "m1_user": "u18",
+   "m2_source": "sympy__sympy-19637",
+   "m2_user": "u16",
+   "repo": "matplotlib/matplotlib",
+   "source_before_target": true
+  },
+  "pytest-dev__pytest-7490": {
+   "target_user": "u10",
+   "m1_source": "pytest-dev__pytest-7432",
+   "m1_user": "u19",
+   "m2_source": "sympy__sympy-13615",
+   "m2_user": "u05",
+   "repo": "pytest-dev/pytest",
+   "source_before_target": true
+  },
+  "pydata__xarray-4629": {
+   "target_user": "u12",
+   "m1_source": "pydata__xarray-4094",
+   "m1_user": "u09",
+   "m2_source": "scikit-learn__scikit-learn-10297",
+   "m2_user": "u22",
+   "repo": "pydata/xarray",
+   "source_before_target": true
+  },
+  "pydata__xarray-4075": {
+   "target_user": "u15",
+   "m1_source": "pydata__xarray-3993",
+   "m1_user": "u13",
+   "m2_source": "django__django-12304",
+   "m2_user": "u20",
+   "repo": "pydata/xarray",
+   "source_before_target": true
+  },
+  "sympy__sympy-23950": {
+   "target_user": "u05",
+   "m1_source": "sympy__sympy-23824",
+   "m1_user": "u21",
+   "m2_source": "django__django-11999",
+   "m2_user": "u10",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "django__django-13012": {
+   "target_user": "u00",
+   "m1_source": "django__django-12965",
+   "m1_user": "u01",
+   "m2_source": "sympy__sympy-15599",
+   "m2_user": "u11",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sympy__sympy-18763": {
+   "target_user": "u01",
+   "m1_source": "sympy__sympy-18698",
+   "m1_user": "u09",
+   "m2_source": "psf__requests-1766",
+   "m2_user": "u12",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "django__django-13670": {
+   "target_user": "u08",
+   "m1_source": "django__django-13658",
+   "m1_user": "u23",
+   "m2_source": "scikit-learn__scikit-learn-10844",
+   "m2_user": "u19",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-11265": {
+   "target_user": "u08",
+   "m1_source": "django__django-11239",
+   "m1_user": "u00",
+   "m2_source": "sympy__sympy-15976",
+   "m2_user": "u00",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-17087": {
+   "target_user": "u04",
+   "m1_source": "django__django-17084",
+   "m1_user": "u11",
+   "m2_source": "sympy__sympy-18189",
+   "m2_user": "u20",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "pydata__xarray-7393": {
+   "target_user": "u04",
+   "m1_source": "pydata__xarray-7229",
+   "m1_user": "u15",
+   "m2_source": "django__django-14376",
+   "m2_user": "u18",
+   "repo": "pydata/xarray",
+   "source_before_target": true
+  },
+  "django__django-11138": {
+   "target_user": "u13",
+   "m1_source": "django__django-11133",
+   "m1_user": "u06",
+   "m2_source": "sympy__sympy-13091",
+   "m2_user": "u17",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sympy__sympy-15345": {
+   "target_user": "u14",
+   "m1_source": "sympy__sympy-14976",
+   "m1_user": "u13",
+   "m2_source": "astropy__astropy-7336",
+   "m2_user": "u02",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "matplotlib__matplotlib-24870": {
+   "target_user": "u09",
+   "m1_source": "matplotlib__matplotlib-24637",
+   "m1_user": "u03",
+   "m2_source": "django__django-15127",
+   "m2_user": "u03",
+   "repo": "matplotlib/matplotlib",
+   "source_before_target": true
+  },
+  "scikit-learn__scikit-learn-26194": {
+   "target_user": "u06",
+   "m1_source": "scikit-learn__scikit-learn-25973",
+   "m1_user": "u12",
+   "m2_source": "sympy__sympy-20916",
+   "m2_user": "u05",
+   "repo": "scikit-learn/scikit-learn",
+   "source_before_target": true
+  },
+  "psf__requests-2317": {
+   "target_user": "u05",
+   "m1_source": "psf__requests-1921",
+   "m1_user": "u08",
+   "m2_source": null,
+   "m2_user": null,
+   "repo": "psf/requests",
+   "source_before_target": true
+  },
+  "django__django-16485": {
+   "target_user": "u06",
+   "m1_source": "django__django-16429",
+   "m1_user": "u02",
+   "m2_source": "sphinx-doc__sphinx-7590",
+   "m2_user": "u23",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "sympy__sympy-24562": {
+   "target_user": "u02",
+   "m1_source": "sympy__sympy-24539",
+   "m1_user": "u08",
+   "m2_source": "sphinx-doc__sphinx-9367",
+   "m2_user": "u13",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "django__django-13158": {
+   "target_user": "u10",
+   "m1_source": "django__django-13128",
+   "m1_user": "u20",
+   "m2_source": "sympy__sympy-19637",
+   "m2_user": "u16",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-15499": {
+   "target_user": "u10",
+   "m1_source": "django__django-15382",
+   "m1_user": "u23",
+   "m2_source": "astropy__astropy-7166",
+   "m2_user": "u06",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-15467": {
+   "target_user": "u17",
+   "m1_source": "django__django-15382",
+   "m1_user": "u23",
+   "m2_source": "scikit-learn__scikit-learn-13124",
+   "m2_user": "u12",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-14434": {
+   "target_user": "u08",
+   "m1_source": "django__django-14376",
+   "m1_user": "u18",
+   "m2_source": "sphinx-doc__sphinx-8593",
+   "m2_user": "u02",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "scikit-learn__scikit-learn-14053": {
+   "target_user": "u00",
+   "m1_source": "scikit-learn__scikit-learn-13439",
+   "m1_user": "u01",
+   "m2_source": "sympy__sympy-15976",
+   "m2_user": "u01",
+   "repo": "scikit-learn/scikit-learn",
+   "source_before_target": true
+  },
+  "django__django-12273": {
+   "target_user": "u04",
+   "m1_source": "django__django-12262",
+   "m1_user": "u22",
+   "m2_source": "scikit-learn__scikit-learn-15100",
+   "m2_user": "u16",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-16569": {
+   "target_user": "u18",
+   "m1_source": "django__django-16560",
+   "m1_user": "u12",
+   "m2_source": "scikit-learn__scikit-learn-14710",
+   "m2_user": "u06",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "astropy__astropy-13977": {
+   "target_user": "u22",
+   "m1_source": "astropy__astropy-13579",
+   "m1_user": "u23",
+   "m2_source": "sympy__sympy-13647",
+   "m2_user": "u16",
+   "repo": "astropy/astropy",
+   "source_before_target": true
+  },
+  "django__django-14539": {
+   "target_user": "u16",
+   "m1_source": "django__django-14500",
+   "m1_user": "u17",
+   "m2_source": "astropy__astropy-7166",
+   "m2_user": "u06",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "matplotlib__matplotlib-20488": {
+   "target_user": "u13",
+   "m1_source": "matplotlib__matplotlib-13989",
+   "m1_user": "u14",
+   "m2_source": "django__django-14500",
+   "m2_user": "u16",
+   "repo": "matplotlib/matplotlib",
+   "source_before_target": true
+  },
+  "django__django-15503": {
+   "target_user": "u20",
+   "m1_source": "django__django-15382",
+   "m1_user": "u23",
+   "m2_source": "sphinx-doc__sphinx-7590",
+   "m2_user": "u23",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-11433": {
+   "target_user": "u02",
+   "m1_source": "django__django-11400",
+   "m1_user": "u06",
+   "m2_source": "psf__requests-1921",
+   "m2_user": "u08",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-14580": {
+   "target_user": "u19",
+   "m1_source": "django__django-14559",
+   "m1_user": "u20",
+   "m2_source": "pytest-dev__pytest-8399",
+   "m2_user": "u17",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "matplotlib__matplotlib-26291": {
+   "target_user": "u11",
+   "m1_source": "matplotlib__matplotlib-26208",
+   "m1_user": "u01",
+   "m2_source": "django__django-15814",
+   "m2_user": "u06",
+   "repo": "matplotlib/matplotlib",
+   "source_before_target": true
+  },
+  "django__django-10999": {
+   "target_user": "u23",
+   "m1_source": "django__django-10973",
+   "m1_user": "u01",
+   "m2_source": "sympy__sympy-15976",
+   "m2_user": "u00",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-13821": {
+   "target_user": "u17",
+   "m1_source": "django__django-13810",
+   "m1_user": "u18",
+   "m2_source": "sphinx-doc__sphinx-8459",
+   "m2_user": "u18",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "django__django-11333": {
+   "target_user": "u10",
+   "m1_source": "django__django-11299",
+   "m1_user": "u16",
+   "m2_source": "sympy__sympy-16766",
+   "m2_user": "u22",
+   "repo": "django/django",
+   "source_before_target": true
+  },
+  "pytest-dev__pytest-10356": {
+   "target_user": "u09",
+   "m1_source": "pytest-dev__pytest-10081",
+   "m1_user": "u03",
+   "m2_source": "scikit-learn__scikit-learn-12585",
+   "m2_user": "u08",
+   "repo": "pytest-dev/pytest",
+   "source_before_target": true
+  },
+  "astropy__astropy-14182": {
+   "target_user": "u17",
+   "m1_source": "astropy__astropy-14096",
+   "m1_user": "u20",
+   "m2_source": "sympy__sympy-21379",
+   "m2_user": "u21",
+   "repo": "astropy/astropy",
+   "source_before_target": true
+  },
+  "sympy__sympy-16886": {
+   "target_user": "u08",
+   "m1_source": "sympy__sympy-16766",
+   "m1_user": "u22",
+   "m2_source": "matplotlib__matplotlib-13989",
+   "m2_user": "u13",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "sympy__sympy-14531": {
+   "target_user": "u12",
+   "m1_source": "sympy__sympy-14248",
+   "m1_user": "u00",
+   "m2_source": "psf__requests-1142",
+   "m2_user": "u13",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "sympy__sympy-17139": {
+   "target_user": "u07",
+   "m1_source": "sympy__sympy-16766",
+   "m1_user": "u22",
+   "m2_source": "astropy__astropy-7336",
+   "m2_user": "u02",
+   "repo": "sympy/sympy",
+   "source_before_target": true
+  },
+  "astropy__astropy-13236": {
+   "target_user": "u21",
+   "m1_source": "astropy__astropy-13033",
+   "m1_user": "u15",
+   "m2_source": "django__django-15569",
+   "m2_user": "u22",
+   "repo": "astropy/astropy",
+   "source_before_target": true
+  },
+  "pylint-dev__pylint-6528": {
+   "target_user": "u08",
+   "m1_source": "pylint-dev__pylint-6386",
+   "m1_user": "u09",
+   "m2_source": "django__django-13513",
+   "m2_user": "u19",
+   "repo": "pylint-dev/pylint",
+   "source_before_target": true
+  }
+ }
+}

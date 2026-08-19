@@ -3,7 +3,7 @@ name: ci-r14-swebench
 on:
   workflow_dispatch:
     inputs:
-      taskset: {description: "band_pilot|main", required: false, default: "band_pilot"}
+      taskset: {description: "band_pilot|main|confirm", required: false, default: "band_pilot"}
       arm: {description: "M0/M1/M2", required: false, default: "M0"}
       memory_file: {description: "memory json for M1/M2", required: false, default: ""}
       single: {description: "one instance_id (smoke)", required: false, default: ""}
@@ -29,7 +29,9 @@ jobs:
           python - <<'PY' >> "$GITHUB_OUTPUT"
           import json, os
           ts = os.environ.get('TASKSET','band_pilot')
-          f = 'configs/swebench_r14/band_pilot.json' if ts=='band_pilot' else 'configs/swebench_r14/main_targets.json'
+          f = {'band_pilot':'configs/swebench_r14/band_pilot.json',
+               'main':'configs/swebench_r14/main_targets.json',
+               'confirm':'configs/swebench_r14/confirm_targets.json'}.get(ts, 'configs/swebench_r14/band_pilot.json')
           flat = json.load(open(f))['ids']
           s=(os.environ.get('SINGLE') or '').strip()
           if s: flat=[s]

@@ -1,0 +1,13 @@
+{
+  "experiment_id": "REALBENCH_OPENAI_READER_R12",
+  "audit_date": "2026-08-19",
+  "status": "PRECONDITION_BLOCK — OPENAI_API_KEY absent; live model-list not obtainable; requested IDs pinned, returned IDs PENDING",
+  "candidates": {
+    "O0_LEGACY_NON_REASONING_CONTROL": {"requested_model": "gpt-4o-mini-2024-07-18", "family": "gpt4o", "temperature": 0, "reasoning": null},
+    "O1_LOW_COST_REASONING": {"requested_model": "gpt-5.6-luna", "family": "gpt5.6", "reasoning_effort": "medium", "temperature": "OMITTED"},
+    "O2_BALANCED_STRONGER_REASONING": {"requested_model": "gpt-5.6-terra", "family": "gpt5.6", "reasoning_effort": "medium", "temperature": "OMITTED"}
+  },
+  "forbidden_substitutions": ["gpt-5-nano", "any other GPT alias", "preview model", "guessed replacement of an unavailable model"],
+  "availability_rule": "mark only the unavailable candidate; do not silently change its model; continue only if >=1 GPT-5.6 candidate available",
+  "returned_models": "PENDING (requires live model-list via OPENAI_API_KEY)"
+}

@@ -1,0 +1,18 @@
+name: openai-integration
+# R12 — MANUAL, SECRET-GATED live OpenAI smoke/audit. Requires OPENAI_API_KEY. Never runs on PR. BLOCKED until
+# the secret is provisioned (R12 PRECONDITION BLOCK as of 2026-08-19).
+on:
+  workflow_dispatch:
+    inputs:
+      phase: {description: "smoke|band|r11|repo", required: true, default: "smoke"}
+jobs:
+  live:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require OPENAI_API_KEY (PRECONDITION)
+        env: {OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}"}
+        run: |
+          test -n "$OPENAI_API_KEY" || { echo "PRECONDITION BLOCK: OPENAI_API_KEY absent"; exit 1; }
+          echo "key present — live phases would run here (provider wired; runner activation pending)"

@@ -89,7 +89,7 @@ def grade(model_patch):
     rid = "r14-" + INST.replace("__", "-")[:40]
     rc, o, e = sh([sys.executable, "-m", "swebench.harness.run_evaluation",
                    "--dataset_name", DATASET, "--predictions_path", preds, "--run_id", rid,
-                   "--max_workers", "1", "--instance_ids", INST, "--cache_level", "env", "--timeout", "1800"],
+                   "--max_workers", "1", "--instance_ids", INST, "--timeout", "1800"],
                   timeout=2400)
     print(f"[{INST}] swebench rc={rc}\n{o[-500:]}\n{e[-300:]}")
     # per-instance report.json under logs/run_evaluation/<rid>/r14/<inst>/report.json

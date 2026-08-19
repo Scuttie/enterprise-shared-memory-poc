@@ -1,18 +1,37 @@
 name: openai-integration
-# R12 — MANUAL, SECRET-GATED live OpenAI smoke/audit. Requires OPENAI_API_KEY. Never runs on PR. BLOCKED until
-# the secret is provisioned (R12 PRECONDITION BLOCK as of 2026-08-19).
+# R12 — MANUAL, SECRET-GATED live OpenAI phases. Requires OPENAI_API_KEY. Never runs on PR.
 on:
   workflow_dispatch:
     inputs:
-      phase: {description: "smoke|band|r11|repo", required: true, default: "smoke"}
+      phase:
+        description: "smoke|band|r11|repo"
+        required: true
+        default: "smoke"
 jobs:
   live:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - name: Require OPENAI_API_KEY (PRECONDITION)
-        env: {OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}"}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Require OPENAI_API_KEY
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          test -n "$OPENAI_API_KEY" || { echo "PRECONDITION BLOCK: OPENAI_API_KEY absent"; exit 1; }
-          echo "key present — live phases would run here (provider wired; runner activation pending)"
+          if [ -z "$OPENAI_API_KEY" ]; then echo "PRECONDITION BLOCK - OPENAI_API_KEY absent"; exit 1; fi
+          echo "key present"
+      - run: pip install -q httpx
+      - name: R12-A1 provider smoke
+        if: github.event.inputs.phase == 'smoke'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python scripts/r12_openai_smoke.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r12-${{ github.event.inputs.phase }}
+          path: artifacts/openai_reader_r12/provider_smoke.json

@@ -1,0 +1,20 @@
+{
+  "instance_id": "sphinx-doc__sphinx-8595",
+  "repo": "sphinx-doc/sphinx",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-8595@sha256:d24f9894d781546578028592ad7630cb40973b69af4705582b5e274afc573628",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 8,
+  "edited_files": [
+    "sphinx/ext/autodoc/__init__.py"
+  ],
+  "patch_bytes": 1251,
+  "tokens": {
+    "prompt": 35735,
+    "completion": 374
+  },
+  "secs": 68.9
+}

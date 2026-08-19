@@ -1,0 +1,67 @@
+{
+  "experiment": "REALBENCH_SWEBENCH_VERIFIED_R14",
+  "reader": "gpt-4o-mini-2024-07-18",
+  "memory_form": "RAW worked-example (prior same-repo resolved issue: problem + real gold diff)",
+  "resolved_rate_by_arm": {
+    "M0": 0.0833,
+    "M1": 0.15,
+    "M2": 0.0833
+  },
+  "resolved_ids": {
+    "M0": [
+      "astropy__astropy-7671",
+      "django__django-11880",
+      "django__django-13820",
+      "django__django-15315",
+      "scikit-learn__scikit-learn-11578"
+    ],
+    "M1": [
+      "astropy__astropy-7671",
+      "django__django-11880",
+      "django__django-13809",
+      "django__django-14373",
+      "django__django-15315",
+      "pytest-dev__pytest-7982",
+      "scikit-learn__scikit-learn-11578",
+      "sphinx-doc__sphinx-8595",
+      "sympy__sympy-14711"
+    ],
+    "M2": [
+      "django__django-11880",
+      "django__django-14373",
+      "django__django-15315",
+      "pydata__xarray-3677",
+      "pytest-dev__pytest-7982"
+    ]
+  },
+  "contrasts": {
+    "H1_primary_M1_M2": {
+      "contrast": "M1-M2 (relevant vs shuffled worked-example)",
+      "n": 60,
+      "rateA": 0.15,
+      "rateB": 0.0833,
+      "diff": 0.0667,
+      "A_solves_B_fails": 5,
+      "A_fails_B_solves": 1,
+      "mcnemar_p": 0.2188,
+      "cluster_boot95ci": [
+        0.0,
+        0.1667
+      ]
+    },
+    "H2_M1_M0": {
+      "contrast": "M1-M0 (worked-example vs none)",
+      "n": 60,
+      "rateA": 0.15,
+      "rateB": 0.0833,
+      "diff": 0.0667,
+      "A_solves_B_fails": 5,
+      "A_fails_B_solves": 1,
+      "mcnemar_p": 0.2188,
+      "cluster_boot95ci": [
+        0.027,
+        0.1515
+      ]
+    }
+  }
+}

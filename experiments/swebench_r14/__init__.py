@@ -2,4 +2,4 @@
 issue: problem + real diff), NOT distilled. Reader gpt-4o-mini (cost; band-checked first). M0/M1(relevant)/
 M2(shuffled). H1=M1-M2, H2=M1-M0. Redesign after the user critiqued distilled abstractions as the likely null cause."""
 EXPERIMENT_ID = "REALBENCH_SWEBENCH_VERIFIED_R14"
-STATUS = "HARNESS_BUILT_BAND_PILOT_PENDING"
+STATUS = "MAIN_DONE_POSITIVE_UNDERPOWERED: M1(rel raw)=0.15 vs M0=M2=0.083; M1-M2=+0.067 p=0.22; relevance-specific; needs powered confirm"

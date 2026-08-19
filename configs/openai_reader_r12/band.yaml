@@ -1,0 +1,13 @@
+experiment: REALBENCH_OPENAI_READER_R12
+stage: B0_no_memory_band_audit
+frozen: true
+tasks_file: artifacts/openai_reader_r12/band_tasks.json
+tasks_sha256: 8d4ff626066c5da7
+n: 61
+candidates: [gpt-4o-mini-2024-07-18, gpt-5.6-luna, gpt-5.6-terra]
+efforts: {gpt-5.6-luna: medium, gpt-5.6-terra: medium}
+memory_used_in_selection: false
+eligibility: {E1_exec_ge: 0.98, E2_infra_fail_le: 0.02, E3_malformed_le: 0.02, E4_pass1_band: [0.20, 0.70], E5_leakage: 0}
+selection_rule: ["min|Pass@1-0.45|", "tie<=0.03 -> lower cost", "tie -> gpt-5.6-luna", "gpt-4o-mini only if no GPT-5.6 eligible"]
+output_budget: 4096
+status: BLOCKED_pending_OPENAI_API_KEY

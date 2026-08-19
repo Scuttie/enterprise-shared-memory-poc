@@ -1,0 +1,34 @@
+name: ci-r13-encode
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/ci-r13-encode.yml']
+jobs:
+  enc:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.10'}
+      - name: Install LCB loader
+        run: |
+          git clone --no-checkout https://github.com/LiveCodeBench/LiveCodeBench.git lcb
+          cd lcb && git checkout 28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24
+          pip install -q "datasets==2.21.0" pebble numpy pyext
+          pip install -q -e . --no-deps
+      - name: Encode F0-F4
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PYTHONPATH: ${{ github.workspace }}/lcb
+        run: |
+          test -n "$OPENAI_API_KEY" || { echo "no key"; exit 1; }
+          python scripts/r13_encoders.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r13-encodings
+          path: artifacts/repr_r13/memory_*.json

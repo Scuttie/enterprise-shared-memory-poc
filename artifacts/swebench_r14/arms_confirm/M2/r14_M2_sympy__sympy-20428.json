@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-20428",
+  "repo": "sympy/sympy",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-20428@sha256:5e4cde96a50b814adfab5f2dc786b2a865ee3b146c18f1f231c467d6f8aeac96",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 8,
+  "edited_files": [
+    "sympy/polys/densetools.py"
+  ],
+  "patch_bytes": 454,
+  "tokens": {
+    "prompt": 25581,
+    "completion": 253
+  },
+  "secs": 64.7
+}

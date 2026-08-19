@@ -1,0 +1,20 @@
+{
+  "instance_id": "django__django-14534",
+  "repo": "django/django",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-14534@sha256:a82af598c0a980d8dc6b6a81f6893074c4610d83d8cbf7cb97482c81d0c16913",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "edited_files": [
+    "django/forms/boundfield.py"
+  ],
+  "patch_bytes": 447,
+  "tokens": {
+    "prompt": 12828,
+    "completion": 229
+  },
+  "secs": 77.4
+}

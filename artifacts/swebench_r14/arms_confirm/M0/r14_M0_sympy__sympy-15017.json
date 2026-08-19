@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-15017",
+  "repo": "sympy/sympy",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-15017@sha256:6bf2b82cdba92ff0030985067ef0dc74880be2cde224ec10e6da443a21925cfb",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "sympy/tensor/array/ndim_array.py"
+  ],
+  "patch_bytes": 853,
+  "tokens": {
+    "prompt": 11018,
+    "completion": 312
+  },
+  "secs": 112.0
+}

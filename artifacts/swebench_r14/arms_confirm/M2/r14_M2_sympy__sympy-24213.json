@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-24213",
+  "repo": "sympy/sympy",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-24213@sha256:a458bae7d95f469fa8e438da0a39a2d168e93f70239155dbd833934948f2b296",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "edited_files": [
+    "sympy/physics/units/unitsystem.py"
+  ],
+  "patch_bytes": 1027,
+  "tokens": {
+    "prompt": 7340,
+    "completion": 202
+  },
+  "secs": 68.9
+}

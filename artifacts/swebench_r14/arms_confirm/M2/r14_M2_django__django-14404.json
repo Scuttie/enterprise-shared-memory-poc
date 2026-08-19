@@ -1,0 +1,20 @@
+{
+  "instance_id": "django__django-14404",
+  "repo": "django/django",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-14404@sha256:a05098fa255df9079ea81f63500076e5f777091aa71aa396596b56365d53767a",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "edited_files": [
+    "django/contrib/admin/sites.py"
+  ],
+  "patch_bytes": 569,
+  "tokens": {
+    "prompt": 7102,
+    "completion": 144
+  },
+  "secs": 97.6
+}

@@ -3,64 +3,101 @@
   "reader": "gpt-4o-mini-2024-07-18",
   "memory_form": "RAW worked-example (prior same-repo resolved issue: problem + real gold diff)",
   "resolved_rate_by_arm": {
-    "M0": 0.0833,
-    "M1": 0.15,
-    "M2": 0.0833
+    "M0": 0.0944,
+    "M1": 0.1111,
+    "M2": 0.1056
   },
   "resolved_ids": {
     "M0": [
       "astropy__astropy-7671",
+      "django__django-10914",
+      "django__django-11119",
+      "django__django-11163",
+      "django__django-11276",
       "django__django-11880",
       "django__django-13820",
+      "django__django-13821",
+      "django__django-15104",
       "django__django-15315",
-      "scikit-learn__scikit-learn-11578"
+      "django__django-15467",
+      "django__django-16527",
+      "matplotlib__matplotlib-25311",
+      "pydata__xarray-4075",
+      "pydata__xarray-4629",
+      "scikit-learn__scikit-learn-11578",
+      "sympy__sympy-13480"
     ],
     "M1": [
       "astropy__astropy-7671",
+      "django__django-10914",
+      "django__django-11119",
+      "django__django-11163",
+      "django__django-11276",
       "django__django-11880",
       "django__django-13809",
+      "django__django-13821",
       "django__django-14373",
+      "django__django-15104",
       "django__django-15315",
+      "django__django-15467",
+      "django__django-16527",
+      "django__django-16569",
+      "pydata__xarray-4629",
       "pytest-dev__pytest-7982",
       "scikit-learn__scikit-learn-11578",
       "sphinx-doc__sphinx-8595",
+      "sympy__sympy-13480",
       "sympy__sympy-14711"
     ],
     "M2": [
+      "astropy__astropy-7606",
+      "django__django-10880",
+      "django__django-10914",
+      "django__django-11119",
+      "django__django-11163",
       "django__django-11880",
+      "django__django-13821",
       "django__django-14373",
+      "django__django-15104",
+      "django__django-15128",
       "django__django-15315",
+      "django__django-15467",
+      "django__django-16527",
+      "django__django-16569",
       "pydata__xarray-3677",
-      "pytest-dev__pytest-7982"
+      "pydata__xarray-4629",
+      "pytest-dev__pytest-7982",
+      "sympy__sympy-13480",
+      "sympy__sympy-16886"
     ]
   },
   "contrasts": {
     "H1_primary_M1_M2": {
       "contrast": "M1-M2 (relevant vs shuffled worked-example)",
-      "n": 60,
-      "rateA": 0.15,
-      "rateB": 0.0833,
-      "diff": 0.0667,
-      "A_solves_B_fails": 5,
-      "A_fails_B_solves": 1,
-      "mcnemar_p": 0.2188,
+      "n": 180,
+      "rateA": 0.1111,
+      "rateB": 0.1056,
+      "diff": 0.0056,
+      "A_solves_B_fails": 6,
+      "A_fails_B_solves": 5,
+      "mcnemar_p": 1.0,
       "cluster_boot95ci": [
-        0.0,
-        0.1667
+        -0.0176,
+        0.0354
       ]
     },
     "H2_M1_M0": {
       "contrast": "M1-M0 (worked-example vs none)",
-      "n": 60,
-      "rateA": 0.15,
-      "rateB": 0.0833,
-      "diff": 0.0667,
-      "A_solves_B_fails": 5,
-      "A_fails_B_solves": 1,
-      "mcnemar_p": 0.2188,
+      "n": 180,
+      "rateA": 0.1111,
+      "rateB": 0.0944,
+      "diff": 0.0167,
+      "A_solves_B_fails": 6,
+      "A_fails_B_solves": 3,
+      "mcnemar_p": 0.5078,
       "cluster_boot95ci": [
-        0.027,
-        0.1515
+        -0.0238,
+        0.0417
       ]
     }
   }

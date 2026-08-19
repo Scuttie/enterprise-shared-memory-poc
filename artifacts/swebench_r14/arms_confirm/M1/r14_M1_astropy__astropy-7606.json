@@ -1,0 +1,20 @@
+{
+  "instance_id": "astropy__astropy-7606",
+  "repo": "astropy/astropy",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-7606@sha256:45c4f681fac75f6fe1a6e8d17220f60b4ae64d3d19e637501b0dd1f9ef61b6c7",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "edited_files": [
+    "astropy/units/core.py"
+  ],
+  "patch_bytes": 667,
+  "tokens": {
+    "prompt": 7608,
+    "completion": 186
+  },
+  "secs": 63.3
+}

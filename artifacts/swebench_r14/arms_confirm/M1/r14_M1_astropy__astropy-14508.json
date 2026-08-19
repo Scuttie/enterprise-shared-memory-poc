@@ -1,0 +1,20 @@
+{
+  "instance_id": "astropy__astropy-14508",
+  "repo": "astropy/astropy",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-14508@sha256:1cb2289905723e150cf6b4d0645a10062f27e1c79266d2574e25d7630fe3fe26",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "edited_files": [
+    "astropy/io/fits/card.py"
+  ],
+  "patch_bytes": 1224,
+  "tokens": {
+    "prompt": 11909,
+    "completion": 288
+  },
+  "secs": 100.5
+}

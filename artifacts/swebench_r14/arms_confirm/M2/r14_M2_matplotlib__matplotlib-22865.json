@@ -1,0 +1,20 @@
+{
+  "instance_id": "matplotlib__matplotlib-22865",
+  "repo": "matplotlib/matplotlib",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-22865@sha256:a57f77eb429bece1e7eef612143c5c1586cab2dd9da37f36faaccd9aec3062bd",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "lib/matplotlib/colorbar.py"
+  ],
+  "patch_bytes": 1328,
+  "tokens": {
+    "prompt": 31260,
+    "completion": 476
+  },
+  "secs": 195.4
+}

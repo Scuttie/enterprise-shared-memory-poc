@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-22080",
+  "repo": "sympy/sympy",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-22080@sha256:7d31053ec5586fbcc013e528671f6a1fa0060871be0d1ef31e61709e61a86018",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "sympy/utilities/lambdify.py"
+  ],
+  "patch_bytes": 7754,
+  "tokens": {
+    "prompt": 52116,
+    "completion": 2813
+  },
+  "secs": 105.0
+}

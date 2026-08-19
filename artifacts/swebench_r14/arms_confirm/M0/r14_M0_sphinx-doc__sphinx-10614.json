@@ -1,0 +1,20 @@
+{
+  "instance_id": "sphinx-doc__sphinx-10614",
+  "repo": "sphinx-doc/sphinx",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-10614@sha256:455d642453b0c1ace5e25dd27f661d22c52a1d5d698b8344de1b5ebe40c077f8",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "edited_files": [
+    "sphinx/ext/inheritance_diagram.py"
+  ],
+  "patch_bytes": 1226,
+  "tokens": {
+    "prompt": 16624,
+    "completion": 270
+  },
+  "secs": 78.7
+}

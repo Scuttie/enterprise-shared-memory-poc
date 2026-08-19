@@ -1,0 +1,26 @@
+{
+  "instance_id": "django__django-12273",
+  "repo": "django/django",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-12273@sha256:ceea46664eff0d02e627ee17f0f9230e5c20a1debf3eb1ca2b53c7ca476210aa",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 33,
+  "edited_files": [
+    "tests/aggregation_regress/models.py",
+    "tests/backends/models.py",
+    "tests/defer_regress/models.py",
+    "tests/delete_regress/models.py",
+    "tests/null_fk/models.py",
+    "tests/queries/models.py",
+    "tests/select_related_regress/models.py"
+  ],
+  "patch_bytes": 8141,
+  "tokens": {
+    "prompt": 63682,
+    "completion": 1744
+  },
+  "secs": 104.9
+}

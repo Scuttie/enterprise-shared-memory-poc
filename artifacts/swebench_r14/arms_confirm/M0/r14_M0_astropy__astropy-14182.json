@@ -1,0 +1,20 @@
+{
+  "instance_id": "astropy__astropy-14182",
+  "repo": "astropy/astropy",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-14182@sha256:d25559050ee0b046e072ed31d2a1c8943a928d9d842462a50234118156888a0c",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "astropy/io/ascii/rst.py"
+  ],
+  "patch_bytes": 601,
+  "tokens": {
+    "prompt": 15103,
+    "completion": 325
+  },
+  "secs": 124.5
+}

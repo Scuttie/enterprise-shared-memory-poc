@@ -1,0 +1,82 @@
+name: ci-r14-swebench
+# R14 — SWE-bench Verified repo agent (gpt-4o-mini) + swebench grader (Docker, secret-gated).
+on:
+  workflow_dispatch:
+    inputs:
+      taskset: {description: "band_pilot|main", required: false, default: "band_pilot"}
+      arm: {description: "M0/M1/M2", required: false, default: "M0"}
+      memory_file: {description: "memory json for M1/M2", required: false, default: ""}
+      single: {description: "one instance_id (smoke)", required: false, default: ""}
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/ci-r14-swebench.yml']
+concurrency:
+  group: ci-r14-${{ github.ref }}-${{ github.event.inputs.taskset }}-${{ github.event.inputs.arm }}
+  cancel-in-progress: false
+jobs:
+  setup:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.g.outputs.list }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: g
+        env:
+          SINGLE: "${{ github.event.inputs.single }}"
+          TASKSET: "${{ github.event.inputs.taskset }}"
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, os
+          ts = os.environ.get('TASKSET','band_pilot')
+          f = 'configs/swebench_r14/band_pilot.json' if ts=='band_pilot' else 'configs/swebench_r14/main_targets.json'
+          flat = json.load(open(f))['ids']
+          s=(os.environ.get('SINGLE') or '').strip()
+          if s: flat=[s]
+          print("list="+json.dumps(flat))
+          PY
+  agent:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        instance: ${{ fromJSON(needs.setup.outputs.list) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk (SWE-bench images are large)
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "/usr/local/share/powershell" /usr/share/swift /opt/hostedtoolcache/Ruby /opt/az || true
+          sudo docker image prune -af || true
+          df -h / | tail -1
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install swebench + deps
+        run: pip install -q "swebench==5.0.2" pandas pyarrow
+      - name: Build CSV from pinned parquet
+        run: |
+          curl -sL "https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Verified/parquet/default/test/0.parquet" -o swebv.parquet
+          python -c "import pandas as pd; pd.read_parquet('swebv.parquet').to_csv('swebench_verified.csv', index=False)"
+      - name: R14 agent (gpt-4o-mini)
+        env:
+          R14_INSTANCE_ID: ${{ matrix.instance }}
+          R14_CSV: ${{ github.workspace }}/swebench_verified.csv
+          R14_ARM: ${{ github.event.inputs.arm }}
+          R14_MEMORY_JSON: ${{ github.event.inputs.memory_file }}
+          R14_OUT: ${{ github.workspace }}/r14_${{ github.event.inputs.arm }}_${{ matrix.instance }}.json
+          R14_MODEL: gpt-4o-mini-2024-07-18
+          R14_MAX_TURNS: "40"
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          test -n "$OPENAI_API_KEY" || { echo "no key"; exit 1; }
+          python scripts/r14_swebench_agent.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r14-${{ github.event.inputs.taskset }}-${{ github.event.inputs.arm }}-${{ matrix.instance }}
+          path: |
+            r14_${{ github.event.inputs.arm }}_${{ matrix.instance }}.json
+            r14_${{ github.event.inputs.arm }}_${{ matrix.instance }}.json.patch

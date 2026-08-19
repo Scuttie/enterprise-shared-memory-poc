@@ -5,11 +5,15 @@ repository-cluster bootstrap 95% CI + positive/negative transfer. ITT. A null is
 import os, sys, io, json, glob
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 A = "artifacts/swebench_r14/arms"
+AC = "artifacts/swebench_r14/arms_confirm"
 
 
 def load(arm):
     d = {}
-    for f in glob.glob("%s/%s/*.json" % (A, arm)):
+    files = glob.glob("%s/%s/*.json" % (A, arm))
+    if os.path.isdir("%s/%s" % (AC, arm)):
+        files += glob.glob("%s/%s/*.json" % (AC, arm))
+    for f in files:
         if f.endswith(".patch"):
             continue
         r = json.load(open(f, encoding="utf-8"))

@@ -18,9 +18,26 @@ from lcb_runner.evaluation.compute_code_generation_metrics import codegen_metric
 from enterprise_memory.providers.openai_responses import OpenAIResponsesProvider
 from enterprise_memory.providers.base import ModelRequest, ProviderError
 
-# reuse R11's EXACT prompt builder (no per-model rewriting)
-sys.path.insert(0, "scripts")
-from r11_lcb_run import build_prompt  # noqa: E402
+
+def build_prompt(p, memory):
+    """EXACT copy of scripts/r11_lcb_run.py::build_prompt (verbatim; identical prompt across readers). Copied
+    rather than imported because r11_lcb_run reads UPSTAGE_API_KEY at module import (Solar writer)."""
+    has_starter = bool(getattr(p, "starter_code", "") and p.starter_code.strip())
+    parts = []
+    if memory:
+        parts.append("### Retrieved lesson from a PREVIOUS, DIFFERENT solved problem (read-only guidance; it does "
+                     "NOT contain this problem's solution or tests):\n" + memory + "\n")
+    parts.append("You will be given a competitive programming problem. Generate a correct, efficient Python 3 "
+                 "solution. Think briefly, then output the final solution in a single ```python code block.\n")
+    parts.append("### Problem\n" + p.question_content.strip())
+    if has_starter:
+        parts.append("\n### Starter code (complete this; keep the signature)\n```python\n"
+                     + p.starter_code.strip() + "\n```")
+        parts.append("\nReturn the completed solution in one ```python block.")
+    else:
+        parts.append("\nRead input from standard input and write the answer to standard output. "
+                     "Return the full program in one ```python block.")
+    return "\n".join(parts)
 
 RELEASE = os.environ.get("R12_RELEASE", "release_v6")
 MODEL = os.environ["R12_MODEL"]

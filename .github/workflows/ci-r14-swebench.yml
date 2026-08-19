@@ -57,7 +57,7 @@ jobs:
         run: pip install -q "swebench==5.0.2" pandas pyarrow
       - name: Build CSV from pinned parquet
         run: |
-          curl -sL "https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Verified/parquet/default/test/0.parquet" -o swebv.parquet
+          curl -sL "https://huggingface.co/api/datasets/SWE-bench/SWE-bench_Verified/parquet/default/test/0.parquet" -o swebv.parquet
           python -c "import pandas as pd; pd.read_parquet('swebv.parquet').to_csv('swebench_verified.csv', index=False)"
       - name: R14 agent (gpt-4o-mini)
         env:

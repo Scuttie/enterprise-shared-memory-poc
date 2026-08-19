@@ -25,7 +25,7 @@ OUT = os.environ.get("R14_OUT", f"agent_{INST}.json")
 ARM = os.environ.get("R14_ARM", "M0")
 API_KEY = os.environ["OPENAI_API_KEY"]
 BASE = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
-DATASET = "princeton-nlp/SWE-bench_Verified"
+DATASET = "SWE-bench/SWE-bench_Verified"
 MEM = {}
 if os.environ.get("R14_MEMORY_JSON") and os.path.isfile(os.environ["R14_MEMORY_JSON"]):
     MEM = json.load(open(os.environ["R14_MEMORY_JSON"], encoding="utf-8"))

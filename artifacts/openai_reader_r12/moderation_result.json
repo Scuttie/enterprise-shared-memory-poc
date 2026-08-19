@@ -1,0 +1,73 @@
+{
+  "experiment": "REALBENCH_OPENAI_READER_R12",
+  "selected_reader": "gpt-4o-mini-2024-07-18",
+  "claim_boundary": "reader-sensitivity DIAGNOSTIC; not independent confirmation; not contamination-free",
+  "pass_at_1_by_arm_all182": {
+    "M0": 0.3022,
+    "M1": 0.2692,
+    "M2": 0.2857,
+    "M3": 0.2912
+  },
+  "covered_n": 109,
+  "R12_contrasts": {
+    "M1_minus_M2": {
+      "n": 109,
+      "rateA": 0.3303,
+      "rateB": 0.3486,
+      "diff": -0.0183,
+      "discordant_Apass_Bfail": 2,
+      "discordant_Afail_Bpass": 4,
+      "mcnemar_p": 0.6875,
+      "boot95ci": [
+        -0.0642,
+        0.0275
+      ]
+    },
+    "M1_minus_M0": {
+      "n": 109,
+      "rateA": 0.3303,
+      "rateB": 0.367,
+      "diff": -0.0367,
+      "discordant_Apass_Bfail": 0,
+      "discordant_Afail_Bpass": 4,
+      "mcnemar_p": 0.125,
+      "boot95ci": [
+        -0.0734,
+        -0.0092
+      ]
+    },
+    "M3_minus_M1": {
+      "n": 109,
+      "rateA": 0.3578,
+      "rateB": 0.3303,
+      "diff": 0.0275,
+      "discordant_Apass_Bfail": 4,
+      "discordant_Afail_Bpass": 1,
+      "mcnemar_p": 0.375,
+      "boot95ci": [
+        -0.0092,
+        0.0642
+      ]
+    }
+  },
+  "reader_moderation": {
+    "relevant_M1_M2": {
+      "openai_diff": -0.0183,
+      "solar_diff": 0.0092,
+      "DiD_openai_minus_solar": -0.0275,
+      "boot95ci_DiD": [
+        -0.1101,
+        0.055
+      ]
+    },
+    "memory_M1_M0": {
+      "openai_diff": -0.0367,
+      "solar_diff": -0.0092,
+      "DiD_openai_minus_solar": -0.0275,
+      "boot95ci_DiD": [
+        -0.1101,
+        0.0459
+      ]
+    }
+  }
+}

@@ -1,0 +1,76 @@
+name: ci-r12-repo
+# R12-D0 — gpt-5.6-terra on the frozen R7 40-task SWE-PolyBench no-memory pilot (secret-gated, Docker).
+on:
+  workflow_dispatch:
+    inputs:
+      single: {description: "one instance_id (smoke); blank=all 40", required: false, default: ""}
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/ci-r12-repo.yml']
+concurrency:
+  group: ci-r12-repo-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  setup:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.g.outputs.list }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: g
+        env: {SINGLE: "${{ github.event.inputs.single }}"}
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, os
+          flat = json.load(open('configs/swe_polybench_r7/g1_targets.json'))['flat']
+          s = (os.environ.get('SINGLE') or '').strip()
+          if s: flat = [s]
+          print("list=" + json.dumps(flat))
+          PY
+  agent:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        instance: ${{ fromJSON(needs.setup.outputs.list) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL || true
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Clone + install SWE-PolyBench @ pinned
+        run: |
+          git clone --no-checkout https://github.com/amazon-science/SWE-PolyBench.git polybench
+          cd polybench && git checkout 9c836c5d7f3cb991934132b77d29e6941d912a07
+          pip install -r requirements.txt && pip install -e .
+      - name: Download pinned Verified test.csv
+        run: |
+          curl -sL "https://huggingface.co/datasets/AmazonScience/SWE-PolyBench_Verified/resolve/b3fca77b637379f0c01ad86d18753a7ac1998b53/test.csv" -o verified.csv
+          test "$(sha256sum verified.csv | cut -d' ' -f1)" = "0c8138e73c34fa29a5276b675b146b72d78ce001fcc4560d76302c908b4808a5"
+      - name: R12-D0 repo agent (gpt-5.6-terra, no memory)
+        env:
+          R12_INSTANCE_ID: ${{ matrix.instance }}
+          R12_CSV: ${{ github.workspace }}/verified.csv
+          R12_POLYBENCH: ${{ github.workspace }}/polybench
+          R12_OUT: ${{ github.workspace }}/r12repo_${{ matrix.instance }}.json
+          R12_MODEL: gpt-5.6-terra
+          R12_EFFORT: medium
+          R12_MAX_TURNS: "40"
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PYTHONPATH: ${{ github.workspace }}/polybench/src
+        run: |
+          test -n "$OPENAI_API_KEY" || { echo "no key"; exit 1; }
+          python scripts/r12_repo_agent.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r12repo-${{ matrix.instance }}
+          path: |
+            r12repo_${{ matrix.instance }}.json
+            r12repo_${{ matrix.instance }}.json.patch

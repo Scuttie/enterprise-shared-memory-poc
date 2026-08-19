@@ -6,8 +6,9 @@ budgets) by importing r7_repo_agent; only the model-call layer is the Responses 
 Env: R12_INSTANCE_ID, R12_CSV, R12_POLYBENCH, OPENAI_API_KEY, R12_MODEL(=gpt-5.6-terra), R12_EFFORT(=medium),
 R12_MAX_TURNS(=40), R12_OUT. No memory (D0 is a no-memory band audit). One trajectory, no result-conditioned repair.
 """
-import os, sys, io, json, time, urllib.request, urllib.error
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+import os, sys, json, time, urllib.request, urllib.error
+# NOTE: do NOT wrap sys.stdout here — importing r7_repo_agent already sets the utf-8 TextIOWrapper; wrapping twice
+# closes the underlying buffer ("I/O operation on closed file").
 
 # feed R7's module-level env from R12_* so we can import & reuse its machinery unchanged
 os.environ.setdefault("R7_INSTANCE_ID", os.environ["R12_INSTANCE_ID"])

@@ -1,0 +1,21 @@
+diff --git a/dubbo-common/src/main/java/org/apache/dubbo/common/io/Bytes.java b/dubbo-common/src/main/java/org/apache/dubbo/common/io/Bytes.java
+index 263e7b9f6..81262fea4 100644
+--- a/dubbo-common/src/main/java/org/apache/dubbo/common/io/Bytes.java
++++ b/dubbo-common/src/main/java/org/apache/dubbo/common/io/Bytes.java
+@@ -728,10 +728,14 @@ public class Bytes {
+             }
+ 
+             char pc = code[64];
+-            if (str.charAt(off + len - 2) == pc) {
++            if (len > 0 && str.charAt(off + len - 2) == pc) {
+                 size -= 2;
+-            } else if (str.charAt(off + len - 1) == pc) {
++                --num;
++                rem = 2;
++            } else if (len > 0 && str.charAt(off + len - 1) == pc) {
+                 size--;
++                --num;
++                rem = 3;
+             }
+         } else {
+             if (rem == 2) {

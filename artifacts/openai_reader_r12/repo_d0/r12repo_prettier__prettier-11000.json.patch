@@ -1,0 +1,25 @@
+diff --git a/src/cli/expand-patterns.js b/src/cli/expand-patterns.js
+index 8e2e4d729..80ee3960d 100644
+--- a/src/cli/expand-patterns.js
++++ b/src/cli/expand-patterns.js
+@@ -76,15 +76,18 @@ async function* expandPatternsInternal(context) {
+           input: pattern,
+         });
+       } else if (stat.isDirectory()) {
++      } else if (stat.isDirectory()) {
++        const glob = fixWindowsSlashes(pattern);
+         entries.push({
+           type: "dir",
+           glob:
+-            escapePathForGlob(fixWindowsSlashes(pattern)) +
+-            "/" +
++            escapePathForGlob(glob) +
++            (glob.endsWith("/") ? "" : "/") +
+             getSupportedFilesGlob(),
+           input: pattern,
+         });
+       }
++      }
+     } else if (pattern[0] === "!") {
+       // convert negative patterns to `ignore` entries
+       globOptions.ignore.push(fixWindowsSlashes(pattern.slice(1)));

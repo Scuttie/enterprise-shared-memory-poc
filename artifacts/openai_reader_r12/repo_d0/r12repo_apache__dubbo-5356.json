@@ -1,0 +1,41 @@
+{
+  "instance_id": "apache__dubbo-5356",
+  "language": "Java",
+  "repo": "apache/dubbo",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-5356@sha256:8129272e8fd9ae08d8211fc1359a6a34dab714f76b54a93f299d5f6cdffd72a7",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 18,
+  "edited_files": [
+    "dubbo-cluster/src/main/java/org/apache/dubbo/rpc/cluster/router/script/ScriptRouter.java",
+    "dubbo-common/src/main/java/org/apache/dubbo/common/json/GenericJSONConverter.java",
+    "dubbo-common/src/main/java/org/apache/dubbo/rpc/model/ApplicationModel.java",
+    "dubbo-config/dubbo-config-api/src/main/java/org/apache/dubbo/config/ServiceConfig.java",
+    "dubbo-container/dubbo-container-api/src/main/java/org/apache/dubbo/container/Main.java",
+    "dubbo-metadata/dubbo-metadata-api/src/main/java/org/apache/dubbo/metadata/report/support/AbstractMetadataReport.java",
+    "dubbo-metadata/dubbo-metadata-definition-protobuf/src/main/java/org/apache/dubbo/metadata/definition/protobuf/ProtobufTypeBuilder.java",
+    "dubbo-monitor/dubbo-monitor-api/src/main/java/org/apache/dubbo/monitor/support/AbstractMonitorFactory.java",
+    "dubbo-plugin/dubbo-qos/src/main/java/org/apache/dubbo/qos/server/DubboLogo.java",
+    "dubbo-plugin/dubbo-qos/src/main/java/org/apache/dubbo/qos/server/Server.java",
+    "dubbo-plugin/dubbo-qos/src/main/java/org/apache/dubbo/qos/server/handler/QosProcessHandler.java",
+    "dubbo-plugin/dubbo-qos/src/main/java/org/apache/dubbo/qos/server/handler/TelnetProcessHandler.java",
+    "dubbo-remoting/dubbo-remoting-http/src/main/java/org/apache/dubbo/remoting/http/servlet/DispatcherServlet.java",
+    "dubbo-remoting/dubbo-remoting-netty4/src/main/java/org/apache/dubbo/remoting/transport/netty4/NettyClient.java",
+    "dubbo-rpc/dubbo-rpc-api/src/main/java/org/apache/dubbo/rpc/filter/DeprecatedFilter.java",
+    "dubbo-rpc/dubbo-rpc-dubbo/src/main/java/org/apache/dubbo/rpc/protocol/dubbo/CallbackServiceCodec.java",
+    "dubbo-rpc/dubbo-rpc-dubbo/src/main/java/org/apache/dubbo/rpc/protocol/dubbo/filter/TraceFilter.java",
+    "dubbo-rpc/dubbo-rpc-native-thrift/src/main/java/org/apache/dubbo/rpc/protocol/nativethrift/ThriftProtocol.java",
+    "dubbo-serialization/dubbo-serialization-fst/src/main/java/org/apache/dubbo/common/serialize/fst/FstFactory.java"
+  ],
+  "patch_bytes": 69768,
+  "tokens": {
+    "input": 578928,
+    "output": 14385,
+    "reasoning": 3967
+  },
+  "secs": 326.5
+}

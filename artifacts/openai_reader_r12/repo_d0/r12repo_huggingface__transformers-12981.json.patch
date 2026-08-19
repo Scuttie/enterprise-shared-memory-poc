@@ -1,0 +1,15 @@
+diff --git a/src/transformers/trainer.py b/src/transformers/trainer.py
+index a2c56f8a..55b90bc4 100755
+--- a/src/transformers/trainer.py
++++ b/src/transformers/trainer.py
+@@ -1027,6 +1027,10 @@ class Trainer:
+             )
+         if len(kwargs) > 0:
+             raise TypeError(f"train() received got unexpected keyword arguments: {', '.join(list(kwargs.keys()))}.")
++
++        # ``False`` explicitly means not to resume (only ``True`` requests the latest checkpoint).
++        if isinstance(resume_from_checkpoint, bool) and not resume_from_checkpoint:
++            resume_from_checkpoint = None
+         # This might change the seed so needs to run first.
+         self._hp_search_setup(trial)
+ 

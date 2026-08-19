@@ -1,0 +1,27 @@
+diff --git a/src/transformers/hf_argparser.py b/src/transformers/hf_argparser.py
+index 719780015..c49dcd0fa 100644
+--- a/src/transformers/hf_argparser.py
++++ b/src/transformers/hf_argparser.py
+@@ -12,6 +12,7 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
++import argparse
+ import dataclasses
+ import json
+ import re
+@@ -110,7 +111,13 @@ class HfArgumentParser(ArgumentParser):
+                     kwargs["required"] = True
+             elif field.type is bool or field.type == Optional[bool]:
+                 if field.default is True:
+-                    parser.add_argument(f"--no_{field.name}", action="store_false", dest=field.name, **kwargs)
++                    parser.add_argument(
++                        f"--no_{field.name}",
++                        action="store_false",
++                        dest=field.name,
++                        default=argparse.SUPPRESS,
++                        **kwargs,
++                    )
+ 
+                 # Hack because type=bool in argparse does not behave as we want.
+                 kwargs["type"] = string_to_bool

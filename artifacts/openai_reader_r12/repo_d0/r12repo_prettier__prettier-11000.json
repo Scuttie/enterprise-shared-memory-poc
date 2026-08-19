@@ -1,0 +1,23 @@
+{
+  "instance_id": "prettier__prettier-11000",
+  "language": "JavaScript",
+  "repo": "prettier/prettier",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.prettier__prettier-11000@sha256:38327c3e145581e22c5c164cbd3b4526b4d6a693b6696ac8c33b5c242e50cf7d",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "edited_files": [
+    "src/cli/expand-patterns.js"
+  ],
+  "patch_bytes": 899,
+  "tokens": {
+    "input": 15281,
+    "output": 645,
+    "reasoning": 354
+  },
+  "secs": 97.5
+}

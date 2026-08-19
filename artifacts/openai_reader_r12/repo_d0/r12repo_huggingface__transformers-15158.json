@@ -1,0 +1,23 @@
+{
+  "instance_id": "huggingface__transformers-15158",
+  "language": "Python",
+  "repo": "huggingface/transformers",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-15158@sha256:650029f12c3074076b476e3b64a4c0b4fd92bdfa0520c289523f7f13e87b70ec",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "edited_files": [
+    "src/transformers/models/bert/tokenization_bert_fast.py"
+  ],
+  "patch_bytes": 1041,
+  "tokens": {
+    "input": 39388,
+    "output": 787,
+    "reasoning": 364
+  },
+  "secs": 119.0
+}

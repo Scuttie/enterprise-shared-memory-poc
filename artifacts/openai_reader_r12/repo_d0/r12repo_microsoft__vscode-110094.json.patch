@@ -1,0 +1,31 @@
+diff --git a/src/vs/editor/common/controller/cursorTypeOperations.ts b/src/vs/editor/common/controller/cursorTypeOperations.ts
+index cf538a8338..cd5d501a83 100644
+--- a/src/vs/editor/common/controller/cursorTypeOperations.ts
++++ b/src/vs/editor/common/controller/cursorTypeOperations.ts
+@@ -619,7 +619,25 @@ export class TypeOperations {
+ 		let commands: ICommand[] = [];
+ 		for (let i = 0, len = selections.length; i < len; i++) {
+ 			const selection = selections[i];
+-			commands[i] = new TypeWithAutoClosingCommand(selection, ch, insertOpenCharacter, autoClosingPair.close);
++			let range: Selection | Range = selection;
++			const position = selection.getPosition();
++			const characterAfter = model.getLineContent(position.lineNumber).charAt(position.column - 1);
++			const closingPairCandidates = config.autoClosingPairsClose2.get(characterAfter);
++
++			// A longer opening sequence can extend an already auto-closed shorter one.
++			// Replace the shorter close instead of leaving both closes in the document.
++			if (closingPairCandidates) {
++				for (const closingPairCandidate of closingPairCandidates) {
++					if (closingPairCandidate.open.length < autoClosingPair.open.length
++						&& autoClosingPair.open.indexOf(closingPairCandidate.open) === 0
++						&& autoClosingPair.close.length > closingPairCandidate.close.length
++						&& strings.endsWith(autoClosingPair.close, closingPairCandidate.close)) {
++						range = new Range(position.lineNumber, position.column, position.lineNumber, position.column + closingPairCandidate.close.length);
++						break;
++					}
++				}
++			}
++			commands[i] = new TypeWithAutoClosingCommand(range as Selection, ch, insertOpenCharacter, autoClosingPair.close);
+ 		}
+ 		return new EditOperationResult(EditOperationType.Typing, commands, {
+ 			shouldPushStackElementBefore: true,

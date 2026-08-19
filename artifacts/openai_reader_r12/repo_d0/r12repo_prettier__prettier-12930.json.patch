@@ -1,0 +1,17 @@
+diff --git a/src/language-js/print/typescript.js b/src/language-js/print/typescript.js
+index 32942f2d7..67d48f7aa 100644
+--- a/src/language-js/print/typescript.js
++++ b/src/language-js/print/typescript.js
+@@ -414,7 +414,11 @@ function printTypescript(path, options, print) {
+ 
+       return parts;
+     case "TSEnumMember":
+-      parts.push(print("id"));
++      if (node.computed) {
++        parts.push("[", print("id"), "]");
++      } else {
++        parts.push(print("id"));
++      }
+       if (node.initializer) {
+         parts.push(" = ", print("initializer"));
+       }

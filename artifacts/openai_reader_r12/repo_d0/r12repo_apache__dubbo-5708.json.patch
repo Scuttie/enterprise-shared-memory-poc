@@ -1,0 +1,27 @@
+diff --git a/dubbo-plugin/dubbo-qos/src/main/java/org/apache/dubbo/qos/legacy/SelectTelnetHandler.java b/dubbo-plugin/dubbo-qos/src/main/java/org/apache/dubbo/qos/legacy/SelectTelnetHandler.java
+index 700b6ae84..db385305f 100644
+--- a/dubbo-plugin/dubbo-qos/src/main/java/org/apache/dubbo/qos/legacy/SelectTelnetHandler.java
++++ b/dubbo-plugin/dubbo-qos/src/main/java/org/apache/dubbo/qos/legacy/SelectTelnetHandler.java
+@@ -48,10 +48,20 @@ public class SelectTelnetHandler implements TelnetHandler {
+         if (CollectionUtils.isEmpty(methodList)) {
+             return "Please use the invoke command first.";
+         }
+-        if (!StringUtils.isInteger(message) || Integer.parseInt(message) < 1 || Integer.parseInt(message) > methodList.size()) {
++        if (!StringUtils.isInteger(message)) {
+             return "Illegal index ,please input select 1~" + methodList.size();
+         }
+-        Method method = methodList.get(Integer.parseInt(message));
++        int index;
++        try {
++            index = Integer.parseInt(message);
++        } catch (NumberFormatException e) {
++            return "Illegal index ,please input select 1~" + methodList.size();
++        }
++        if (index < 1 || index > methodList.size()) {
++            return "Illegal index ,please input select 1~" + methodList.size();
++        }
++        // Telnet presents method indexes starting at 1, while List indexes start at 0.
++        Method method = methodList.get(index - 1);
+         channel.setAttribute(SELECT_METHOD_KEY, method);
+         channel.setAttribute(SELECT_KEY, Boolean.TRUE);
+         String invokeMessage = (String) channel.getAttribute(InvokeTelnetHandler.INVOKE_MESSAGE_KEY);

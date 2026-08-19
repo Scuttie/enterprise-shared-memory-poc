@@ -1,0 +1,26 @@
+{
+  "instance_id": "coder__code-server-6278",
+  "language": "TypeScript",
+  "repo": "coder/code-server",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.coder__code-server-6278@sha256:8fc2ddbbf51def940096c7a7433ca94fd088fb8e16df07d6a9306c833f2cae01",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 22,
+  "edited_files": [
+    "lib/vscode/src/vs/workbench/api/node/extHostExtensionService.ts",
+    "lib/vscode/src/vs/workbench/api/node/extensionHostProcess.ts",
+    "patches/store-socket.diff",
+    "src/node/vscodeSocket.ts"
+  ],
+  "patch_bytes": 0,
+  "tokens": {
+    "input": 226855,
+    "output": 3852,
+    "reasoning": 1920
+  },
+  "secs": 303.6
+}

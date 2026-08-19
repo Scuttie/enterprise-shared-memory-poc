@@ -1,0 +1,73 @@
+diff --git a/src/transformers/models/gpt_neo/modeling_gpt_neo.py b/src/transformers/models/gpt_neo/modeling_gpt_neo.py
+index 05e5b1ce..9d2b6d29 100755
+--- a/src/transformers/models/gpt_neo/modeling_gpt_neo.py
++++ b/src/transformers/models/gpt_neo/modeling_gpt_neo.py
+@@ -403,15 +403,21 @@ class GPTNeoLocalSelfAttention(nn.Module, GPTNeoAttentionMixin):
+         use_cache=False,
+         output_attentions=False,
+     ):
+-        query = self.q_proj(hidden_states)
+-
+         if layer_past is not None:
+             past = layer_past[0]
+             key_value_hidden_states = torch.cat([past, hidden_states], dim=1)
+-            past_length = past.size()[1]
++            past_length = past.size(1)
++
++            # Local attention groups queries into blocks based on the complete sequence.
++            # A cached call can contain more than one new token (and can cross a block
++            # boundary), so reshaping only the new queries as a single-token block is
++            # invalid. Compute queries for the complete sequence, then retain only the
++            # outputs corresponding to this call below.
++            query = self.q_proj(key_value_hidden_states)
+         else:
+             key_value_hidden_states = hidden_states
+             past_length = 0
++            query = self.q_proj(hidden_states)
+ 
+         key = self.k_proj(key_value_hidden_states)
+         value = self.v_proj(key_value_hidden_states)
+@@ -421,29 +427,17 @@ class GPTNeoLocalSelfAttention(nn.Module, GPTNeoAttentionMixin):
+         full_seq_length = seq_length + past_length
+         block_length, num_blocks = self._get_block_length_and_num_blocks(full_seq_length, self.window_size)
+ 
+-        # create buckets
+-        if layer_past is not None:
+-            # we just need 1 block with block_length 1 when caching is enabled
+-            query = self._split_seq_length_dim_to(query, 1, 1)
+-        else:
+-            query = self._split_seq_length_dim_to(query, num_blocks, block_length)
++        # create buckets for the complete sequence. This is also needed when using a
++        # cache, since the new tokens need not make up a complete final block.
++        query = self._split_seq_length_dim_to(query, num_blocks, block_length)
+ 
+         key = self._look_back(key, block_length, self.window_size)
+         value = self._look_back(value, block_length, self.window_size)
+ 
+-        # select key/value vectors only for the last block
+-        if layer_past is not None:
+-            key = key[:, -1:, ...]
+-            value = value[:, -1:, ...]
+-
+         query = self._split_heads(query, self.num_heads, self.head_dim)
+         key = self._split_heads(key, self.num_heads, self.head_dim)
+         value = self._split_heads(value, self.num_heads, self.head_dim)
+ 
+-        if layer_past is not None:
+-            # only take the mask for the last block
+-            attention_mask = attention_mask[:, -1:, :, -1:, :]
+-
+         # attn
+         attn_output, attn_weights = self._attn(
+             query,
+@@ -456,7 +450,9 @@ class GPTNeoLocalSelfAttention(nn.Module, GPTNeoAttentionMixin):
+         )
+ 
+         attn_output = self._merge_heads(attn_output, self.num_heads, self.head_dim)
+-        attn_output = attn_output.reshape(batch_size, seq_length, self.embed_dim)
++        attn_output = attn_output.reshape(batch_size, full_seq_length, self.embed_dim)
++        if layer_past is not None:
++            attn_output = attn_output[:, -seq_length:, :]
+ 
+         attn_output = self.out_proj(attn_output)
+         attn_output = self.resid_dropout(attn_output)

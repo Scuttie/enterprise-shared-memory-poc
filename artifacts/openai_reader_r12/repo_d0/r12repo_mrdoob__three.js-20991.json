@@ -1,0 +1,26 @@
+{
+  "instance_id": "mrdoob__three.js-20991",
+  "language": "JavaScript",
+  "repo": "mrdoob/three.js",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-20991@sha256:407b592eed04fb2d051a5ee3dc2afe918fdff03e05cf8c270ca79cce3b0534bc",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 31,
+  "edited_files": [
+    "src/math/Euler.d.ts",
+    "src/math/Euler.js",
+    "src/math/Quaternion.d.ts",
+    "src/math/Quaternion.js"
+  ],
+  "patch_bytes": 3194,
+  "tokens": {
+    "input": 341441,
+    "output": 5503,
+    "reasoning": 2721
+  },
+  "secs": 240.0
+}

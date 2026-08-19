@@ -1,0 +1,23 @@
+{
+  "instance_id": "microsoft__vscode-108964",
+  "language": "TypeScript",
+  "repo": "microsoft/vscode",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.microsoft__vscode-108964@sha256:736f9ebdd28a1fc778d148ef494c12ad6beed8513f267596761068c18c4e370f",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "edited_files": [
+    "src/vs/editor/contrib/snippet/snippetSession.ts"
+  ],
+  "patch_bytes": 833,
+  "tokens": {
+    "input": 45530,
+    "output": 947,
+    "reasoning": 522
+  },
+  "secs": 291.0
+}

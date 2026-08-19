@@ -1,0 +1,50 @@
+diff --git a/autogpt/commands/file_operations.py b/autogpt/commands/file_operations.py
+index 5d9649b..ab2c00f 100644
+--- a/autogpt/commands/file_operations.py
++++ b/autogpt/commands/file_operations.py
+@@ -341,23 +341,36 @@ def delete_file(filename: str, agent: Agent) -> str:
+ 
+ @command("list_files", "List Files in Directory", '"directory": "<directory>"')
+ def list_files(directory: str, agent: Agent) -> list[str]:
+-    """lists files in a directory recursively
++    """List files in a directory recursively without exceeding the LLM context.
+ 
+-    Args:
+-        directory (str): The directory to search in
+-
+-    Returns:
+-        list[str]: A list of files found in the directory
++    Hidden files and directories are skipped. The listing is deliberately bounded:
++    command results are added to the agent's message history and an unbounded file
++    list can otherwise make the next LLM request exceed its context window.
+     """
+-    found_files = []
++    max_listing_chars = 2_000
++    found_files: list[str] = []
+ 
+-    for root, _, files in os.walk(directory):
+-        for file in files:
++    for root, directories, files in os.walk(directory):
++        # Prune hidden directories (such as .git) rather than only filtering their
++        # files after os.walk has already descended into them.
++        directories[:] = sorted(d for d in directories if not d.startswith("."))
++
++        for file in sorted(files):
+             if file.startswith("."):
+                 continue
+             relative_path = os.path.relpath(
+                 os.path.join(root, file), agent.config.workspace_path
+             )
++
++            # Account for the list representation, since that is what is sent to
++            # the agent as the command result.
++            if len(str(found_files + [relative_path])) > max_listing_chars:
++                found_files.append(
++                    f"... File listing truncated after {len(found_files)} files. "
++                    "List a narrower directory to see more."
++                )
++                return found_files
++
+             found_files.append(relative_path)
+ 
+     return found_files

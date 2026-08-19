@@ -1,0 +1,23 @@
+{
+  "instance_id": "huggingface__transformers-15473",
+  "language": "Python",
+  "repo": "huggingface/transformers",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-15473@sha256:496ddaabb3b01674c68fcec166949b0d0fb86e815afa2b99491948dbe064d593",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "src/transformers/trainer.py"
+  ],
+  "patch_bytes": 1103,
+  "tokens": {
+    "input": 40940,
+    "output": 1698,
+    "reasoning": 1249
+  },
+  "secs": 147.8
+}

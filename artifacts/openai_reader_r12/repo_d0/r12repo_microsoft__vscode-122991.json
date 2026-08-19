@@ -1,0 +1,23 @@
+{
+  "instance_id": "microsoft__vscode-122991",
+  "language": "TypeScript",
+  "repo": "microsoft/vscode",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.microsoft__vscode-122991@sha256:ec35853c1c7c580082c33f8401efa66243af6148cfaa980354b55464bc78dfb4",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "edited_files": [
+    "src/vs/editor/common/controller/cursorDeleteOperations.ts"
+  ],
+  "patch_bytes": 843,
+  "tokens": {
+    "input": 87969,
+    "output": 1312,
+    "reasoning": 421
+  },
+  "secs": 260.2
+}

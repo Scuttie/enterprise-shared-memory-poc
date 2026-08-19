@@ -1,0 +1,23 @@
+{
+  "instance_id": "prettier__prettier-14400",
+  "language": "JavaScript",
+  "repo": "prettier/prettier",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.prettier__prettier-14400@sha256:e625c9b9776870e2cc87172e886bbc90cfc3d6ce1521492f113a46b3f6dfcf44",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "edited_files": [
+    "src/language-html/utils/index.js"
+  ],
+  "patch_bytes": 528,
+  "tokens": {
+    "input": 29428,
+    "output": 646,
+    "reasoning": 179
+  },
+  "secs": 95.7
+}

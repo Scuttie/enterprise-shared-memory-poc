@@ -1,0 +1,12 @@
+diff --git a/src/language-html/utils/index.js b/src/language-html/utils/index.js
+index 943ae6595..817a90683 100644
+--- a/src/language-html/utils/index.js
++++ b/src/language-html/utils/index.js
+@@ -108,6 +108,7 @@ function isScriptLikeTag(node) {
+     node.type === "element" &&
+     (node.fullName === "script" ||
+       node.fullName === "style" ||
++      node.fullName === "svg:script" ||
+       node.fullName === "svg:style" ||
+       (isUnknownNamespace(node) &&
+         (node.name === "script" || node.name === "style")))

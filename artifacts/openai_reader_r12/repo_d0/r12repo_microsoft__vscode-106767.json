@@ -1,0 +1,23 @@
+{
+  "instance_id": "microsoft__vscode-106767",
+  "language": "TypeScript",
+  "repo": "microsoft/vscode",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.microsoft__vscode-106767@sha256:dae40cd7c8143c9f200eaa0c040da7537a874f0e45b74978ff1af72c14412ce7",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "src/vs/editor/contrib/suggest/suggestModel.ts"
+  ],
+  "patch_bytes": 813,
+  "tokens": {
+    "input": 94239,
+    "output": 896,
+    "reasoning": 366
+  },
+  "secs": 297.7
+}

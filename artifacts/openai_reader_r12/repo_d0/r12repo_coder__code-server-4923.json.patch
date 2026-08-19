@@ -1,0 +1,96 @@
+diff --git a/src/node/app.ts b/src/node/app.ts
+index 13871355..e3526f02 100644
+--- a/src/node/app.ts
++++ b/src/node/app.ts
+@@ -11,7 +11,7 @@ import { disposer } from "./http"
+ import { isNodeJSErrnoException } from "./util"
+ import { handleUpgrade } from "./wsRouter"
+ 
+-type ListenOptions = Pick<DefaultedArgs, "socket" | "port" | "host">
++type ListenOptions = Pick<DefaultedArgs, "socket" | "socket-mode" | "port" | "host">
+ 
+ export interface App extends Disposable {
+   /** Handles regular HTTP requests. */
+@@ -22,16 +22,28 @@ export interface App extends Disposable {
+   server: http.Server
+ }
+ 
+-const listen = (server: http.Server, { host, port, socket }: ListenOptions) => {
++const listen = (server: http.Server, { host, port, socket, "socket-mode": socketMode }: ListenOptions) => {
++  if (socket && socketMode && !/^[0-7]{3,4}$/.test(socketMode)) {
++    return Promise.reject(new Error(`Invalid socket mode: ${socketMode}`))
++  }
++
++  const mode = socketMode ? parseInt(socketMode, 8) : undefined
+   return new Promise<void>(async (resolve, reject) => {
+     server.on("error", reject)
+ 
+-    const onListen = () => {
+-      // Promise resolved earlier so this is an unrelated error.
+-      server.off("error", reject)
+-      server.on("error", (err) => util.logError(logger, "http server error", err))
+-
+-      resolve()
++    const onListen = async () => {
++      try {
++        if (mode !== undefined) {
++          await fs.chmod(socket as string, mode)
++        }
++
++        // Promise resolved earlier so this is an unrelated error.
++        server.off("error", reject)
++        server.on("error", (err) => util.logError(logger, "http server error", err))
++        resolve()
++      } catch (error) {
++        reject(error)
++      }
+     }
+ 
+     if (socket) {
+@@ -66,10 +78,22 @@ export const createApp = async (args: DefaultedArgs): Promise<App> => {
+       )
+     : http.createServer(router)
+ 
+-  const dispose = disposer(server)
+-
++  const disposeServer = disposer(server)
+   await listen(server, args)
+ 
++  const dispose = async () => {
++    await disposeServer()
++    if (args.socket) {
++      try {
++        await fs.unlink(args.socket)
++      } catch (error: any) {
++        if (!isNodeJSErrnoException(error) || error.code !== "ENOENT") {
++          throw error
++        }
++      }
++    }
++  }
++
+   const wsRouter = express()
+   handleUpgrade(wsRouter, server)
+ 
+diff --git a/src/node/cli.ts b/src/node/cli.ts
+index 9928db1c..dbf36c0f 100644
+--- a/src/node/cli.ts
++++ b/src/node/cli.ts
+@@ -56,6 +56,7 @@ export interface UserProvidedArgs {
+   open?: boolean
+   "bind-addr"?: string
+   socket?: string
++  "socket-mode"?: string
+   version?: boolean
+   "proxy-domain"?: string[]
+   "reuse-window"?: boolean
+@@ -173,8 +174,8 @@ const options: Options<Required<UserProvidedArgs>> = {
+   // These two have been deprecated by bindAddr.
+   host: { type: "string", description: "" },
+   port: { type: "number", description: "" },
+-
+   socket: { type: "string", path: true, description: "Path to a socket (bind-addr will be ignored)." },
++  "socket-mode": { type: "string", description: "File permissions for the socket (e.g. 0700)." },
+   version: { type: "boolean", short: "v", description: "Display version information." },
+   _: { type: "string[]" },
+ 

@@ -1,0 +1,81 @@
+diff --git a/src/math/Euler.d.ts b/src/math/Euler.d.ts
+index da395c021..b33108a09 100644
+--- a/src/math/Euler.d.ts
++++ b/src/math/Euler.d.ts
+@@ -1,3 +1,4 @@
++import { Matrix3 } from './Matrix3';
+ import { Matrix4 } from './Matrix4';
+ import { Quaternion } from './Quaternion';
+ import { Vector3 } from './Vector3';
+@@ -31,8 +32,7 @@ export class Euler {
+ 
+ 	set( x: number, y: number, z: number, order?: string ): Euler;
+ 	clone(): Euler;
+-	copy( euler: Euler ): this;
+-	setFromRotationMatrix( m: Matrix4, order?: string ): Euler;
++	setFromRotationMatrix( m: Matrix3 | Matrix4, order?: string ): Euler;
+ 	setFromQuaternion( q: Quaternion, order?: string ): Euler;
+ 	setFromVector3( v: Vector3, order?: string ): Euler;
+ 	reorder( newOrder: string ): Euler;
+diff --git a/src/math/Euler.js b/src/math/Euler.js
+index 483f27154..09d5dd760 100644
+--- a/src/math/Euler.js
++++ b/src/math/Euler.js
+@@ -107,9 +107,10 @@ class Euler {
+ 		// assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+ 
+ 		const te = m.elements;
+-		const m11 = te[ 0 ], m12 = te[ 4 ], m13 = te[ 8 ];
+-		const m21 = te[ 1 ], m22 = te[ 5 ], m23 = te[ 9 ];
+-		const m31 = te[ 2 ], m32 = te[ 6 ], m33 = te[ 10 ];
++		const isMatrix3 = m.isMatrix3 === true;
++		const m11 = te[ 0 ], m12 = te[ isMatrix3 ? 3 : 4 ], m13 = te[ isMatrix3 ? 6 : 8 ];
++		const m21 = te[ 1 ], m22 = te[ 4 ], m23 = te[ isMatrix3 ? 7 : 9 ];
++		const m31 = te[ 2 ], m32 = te[ isMatrix3 ? 5 : 6 ], m33 = te[ isMatrix3 ? 8 : 10 ];
+ 
+ 		order = order || this._order;
+ 
+diff --git a/src/math/Quaternion.d.ts b/src/math/Quaternion.d.ts
+index 6ea08ae87..6b97add02 100644
+--- a/src/math/Quaternion.d.ts
++++ b/src/math/Quaternion.d.ts
+@@ -1,5 +1,6 @@
+ import { Euler } from './Euler';
+ import { Vector3 } from './Vector3';
++import { Matrix3 } from './Matrix3';
+ import { Matrix4 } from './Matrix4';
+ 
+ /**
+@@ -72,7 +73,7 @@ export class Quaternion {
+ 	/**
+ 	 * Sets this quaternion from rotation component of m. Adapted from http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm.
+ 	 */
+-	setFromRotationMatrix( m: Matrix4 ): Quaternion;
++	setFromRotationMatrix( m: Matrix3 | Matrix4 ): Quaternion;
+ 	setFromUnitVectors( vFrom: Vector3, vTo: Vector3 ): Quaternion;
+ 	angleTo( q: Quaternion ): number;
+ 	rotateTowards( q: Quaternion, step: number ): Quaternion;
+diff --git a/src/math/Quaternion.js b/src/math/Quaternion.js
+index bbf48af50..572713585 100644
+--- a/src/math/Quaternion.js
++++ b/src/math/Quaternion.js
+@@ -289,13 +289,14 @@ class Quaternion {
+ 
+ 		// assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+ 
+-		const te = m.elements,
++		const te = m.elements;
++		const isMatrix3 = m.isMatrix3 === true;
+ 
+-			m11 = te[ 0 ], m12 = te[ 4 ], m13 = te[ 8 ],
+-			m21 = te[ 1 ], m22 = te[ 5 ], m23 = te[ 9 ],
+-			m31 = te[ 2 ], m32 = te[ 6 ], m33 = te[ 10 ],
++		const m11 = te[ 0 ], m12 = te[ isMatrix3 ? 3 : 4 ], m13 = te[ isMatrix3 ? 6 : 8 ];
++		const m21 = te[ 1 ], m22 = te[ 4 ], m23 = te[ isMatrix3 ? 7 : 9 ];
++		const m31 = te[ 2 ], m32 = te[ isMatrix3 ? 5 : 6 ], m33 = te[ isMatrix3 ? 8 : 10 ];
+ 
+-			trace = m11 + m22 + m33;
++		const trace = m11 + m22 + m33;
+ 
+ 		if ( trace > 0 ) {
+ 

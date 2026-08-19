@@ -1,0 +1,16 @@
+diff --git a/src/transformers/trainer.py b/src/transformers/trainer.py
+index 6a68f7d6f..49902b2f7 100755
+--- a/src/transformers/trainer.py
++++ b/src/transformers/trainer.py
+@@ -2413,6 +2413,11 @@ class Trainer:
+                 losses = self._nested_gather(loss.repeat(batch_size))
+                 losses_host = losses if losses_host is None else torch.cat((losses_host, losses), dim=0)
+             if logits is not None:
++                # Reduce predictions before padding, gathering, and caching them. This allows metric
++                # functions that only need a reduced representation (for example, argmax
++                # token ids) to avoid retaining the full logits for the whole evaluation set.
++                if getattr(args, "preprocess_logits_for_metrics", None) is not None:
++                    logits = args.preprocess_logits_for_metrics(logits)
+                 logits = self._pad_across_processes(logits)
+                 logits = self._nested_gather(logits)
+                 preds_host = logits if preds_host is None else nested_concat(preds_host, logits, padding_index=-100)

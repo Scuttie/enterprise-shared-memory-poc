@@ -1,0 +1,23 @@
+{
+  "instance_id": "huggingface__transformers-13693",
+  "language": "Python",
+  "repo": "huggingface/transformers",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-13693@sha256:157b72a8d748f6bf07de62c03cce5c7821abffe7911545c40894e2ae37e3b0b3",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "edited_files": [
+    "src/transformers/models/wav2vec2/feature_extraction_wav2vec2.py"
+  ],
+  "patch_bytes": 1540,
+  "tokens": {
+    "input": 53623,
+    "output": 2844,
+    "reasoning": 2114
+  },
+  "secs": 151.6
+}

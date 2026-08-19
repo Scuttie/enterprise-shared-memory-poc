@@ -1,0 +1,13 @@
+diff --git a/dubbo-common/src/main/java/org/apache/dubbo/common/Version.java b/dubbo-common/src/main/java/org/apache/dubbo/common/Version.java
+index a015b44e9..e7b0d26dc 100644
+--- a/dubbo-common/src/main/java/org/apache/dubbo/common/Version.java
++++ b/dubbo-common/src/main/java/org/apache/dubbo/common/Version.java
+@@ -90,7 +90,7 @@ public final class Version {
+      * isSupportResponseAttachment to decide if it's v2.6.3.
+      */
+     public static boolean isRelease263OrHigher(String version) {
+-        return isSupportResponseAttachment(version);
++        return !StringUtils.isEmpty(version) && getIntVersion(version) >= 2060300;
+     }
+ 
+     public static boolean isSupportResponseAttachment(String version) {

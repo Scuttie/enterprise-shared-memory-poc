@@ -1,0 +1,46 @@
+diff --git a/dubbo-rpc/dubbo-rpc-api/src/main/java/org/apache/dubbo/rpc/support/RpcUtils.java b/dubbo-rpc/dubbo-rpc-api/src/main/java/org/apache/dubbo/rpc/support/RpcUtils.java
+index 5e9e74a9a..cdc9e8850 100644
+--- a/dubbo-rpc/dubbo-rpc-api/src/main/java/org/apache/dubbo/rpc/support/RpcUtils.java
++++ b/dubbo-rpc/dubbo-rpc-api/src/main/java/org/apache/dubbo/rpc/support/RpcUtils.java
+@@ -156,8 +156,6 @@ public class RpcUtils {
+     }
+ 
+     public static boolean isAsync(URL url, Invocation inv) {
+-        boolean isAsync;
+-
+         if (inv instanceof RpcInvocation) {
+             RpcInvocation rpcInvocation = (RpcInvocation) inv;
+             if (rpcInvocation.getInvokeMode() != null) {
+@@ -165,12 +163,9 @@ public class RpcUtils {
+             }
+         }
+ 
+-        if (Boolean.TRUE.toString().equals(inv.getAttachment(ASYNC_KEY))) {
+-            isAsync = true;
+-        } else {
+-            isAsync = url.getMethodParameter(getMethodName(inv), ASYNC_KEY, false);
+-        }
+-        return isAsync;
++        String async = inv.getAttachment(ASYNC_KEY);
++        return async != null ? Boolean.parseBoolean(async)
++                : url.getMethodParameter(getMethodName(inv), ASYNC_KEY, false);
+     }
+ 
+     public static boolean isReturnTypeFuture(Invocation inv) {
+@@ -215,13 +210,9 @@ public class RpcUtils {
+     }
+ 
+     public static boolean isOneway(URL url, Invocation inv) {
+-        boolean isOneway;
+-        if (Boolean.FALSE.toString().equals(inv.getAttachment(RETURN_KEY))) {
+-            isOneway = true;
+-        } else {
+-            isOneway = !url.getMethodParameter(getMethodName(inv), RETURN_KEY, true);
+-        }
+-        return isOneway;
++        String returnValue = inv.getAttachment(RETURN_KEY);
++        return returnValue != null ? !Boolean.parseBoolean(returnValue)
++                : !url.getMethodParameter(getMethodName(inv), RETURN_KEY, true);
+     }
+ 
+     private static Method getMethodByService(Invocation invocation, String service) throws NoSuchMethodException {

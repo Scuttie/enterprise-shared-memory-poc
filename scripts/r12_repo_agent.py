@@ -24,7 +24,11 @@ import pandas as pd  # noqa: E402
 INST = R7.INST
 MODEL = os.environ.get("R12_MODEL", "gpt-5.6-terra")
 EFFORT = os.environ.get("R12_EFFORT", "medium")
+ARM = os.environ.get("R12_ARM", "M0")
 OUT = os.environ.get("R12_OUT", f"agent_{INST}.json")
+MEM = {}
+if os.environ.get("R12_MEMORY_JSON") and os.path.isfile(os.environ["R12_MEMORY_JSON"]):
+    MEM = json.load(open(os.environ["R12_MEMORY_JSON"], encoding="utf-8"))
 API_KEY = os.environ["OPENAI_API_KEY"]
 BASE = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
 MAX_TURNS = R7.MAX_TURNS
@@ -99,6 +103,10 @@ def main():
             "2. As soon as located (~10 calls), FIX it — PREFER replace_lines(path,start,end,new_content) using "
             "read_file line numbers. Reading alone fixes nothing.\n3. After editing, call submit.\n"
             "You do NOT have the test suite; write a correct general fix. Do not edit test files.")
+        mem = (MEM.get(INST, "") or "") if ARM != "M0" else ""
+        if mem:
+            sys_prompt += ("\n\n[RETRIEVED MEMORY — read-only guidance from a previous, DIFFERENT resolved issue; "
+                           "it does NOT contain this issue's solution or tests]\n" + mem[:8000])
         tools = responses_tools()
         input_items = [{"role": "developer", "content": sys_prompt},
                        {"role": "user", "content": f"Repository issue to fix (instance {INST}, language {row['language']}):\n\n{row['problem_statement']}"}]
@@ -160,7 +168,7 @@ def main():
     except Exception as ex:
         terminal = "infra_error"; err = f"{type(ex).__name__}: {ex}"[:250]
 
-    result = {"instance_id": INST, "language": row.get("language"), "repo": row.get("repo"), "arm": "M0",
+    result = {"instance_id": INST, "language": row.get("language"), "repo": row.get("repo"), "arm": ARM,
               "model": MODEL, "effort": EFFORT, "image_digest": digest, "resolved": resolved,
               "terminal_state": terminal, "error": err, "turns": turns, "edited_files": sorted(R7.EDITED),
               "patch_bytes": len(patch), "tokens": tokens, "secs": round(time.time() - t0, 1)}

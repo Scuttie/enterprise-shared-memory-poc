@@ -64,6 +64,8 @@ class EnvSecrets:
 def taskset_ids():
     if TASKSET == "BAND":
         return json.load(open("artifacts/openai_reader_r12/band_tasks.json", encoding="utf-8"))["ids"]
+    if TASKSET == "R13COVERED":
+        return json.load(open("artifacts/repr_r13/r13_assignments.json", encoding="utf-8"))["covered_targets"]
     return json.load(open("artifacts/livecodebench_r11/task_partition.json", encoding="utf-8"))["main_target"]["ids"]
 
 

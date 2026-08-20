@@ -1,0 +1,22 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-13135",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "M1multi",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-13135@sha256:b705dbd922584148fc14794e27c7117bb29654791d8e0937dc28dea06788e2d3",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "decode": "",
+  "inject_len": 8258,
+  "edited_files": [
+    "sklearn/preprocessing/_discretization.py"
+  ],
+  "patch_bytes": 876,
+  "tokens": {
+    "prompt": 33068,
+    "completion": 391
+  },
+  "secs": 84.9
+}

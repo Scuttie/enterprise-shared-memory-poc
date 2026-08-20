@@ -1,0 +1,22 @@
+{
+  "instance_id": "mwaskom__seaborn-3187",
+  "repo": "mwaskom/seaborn",
+  "arm": "M1dec",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.mwaskom_1776_seaborn-3187@sha256:aea7e43b20703256f5cb807b54cd78a12601f21086d3a62a41de18c254771f4e",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "decode": "relevant",
+  "inject_len": 1203,
+  "edited_files": [
+    "seaborn/_core/plot.py"
+  ],
+  "patch_bytes": 1124,
+  "tokens": {
+    "prompt": 16549,
+    "completion": 517
+  },
+  "secs": 132.1
+}

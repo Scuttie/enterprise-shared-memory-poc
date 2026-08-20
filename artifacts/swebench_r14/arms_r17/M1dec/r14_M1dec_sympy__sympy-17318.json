@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-17318",
+  "repo": "sympy/sympy",
+  "arm": "M1dec",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-17318@sha256:dac5e27382a309b8dd1e6bc6aa4fe4dc3cb8c8384c6d5d516ea4c18e08fa06fd",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "decode": "relevant",
+  "inject_len": 1185,
+  "edited_files": [
+    "sympy/simplify/radsimp.py"
+  ],
+  "patch_bytes": 407,
+  "tokens": {
+    "prompt": 8692,
+    "completion": 158
+  },
+  "secs": 64.2
+}

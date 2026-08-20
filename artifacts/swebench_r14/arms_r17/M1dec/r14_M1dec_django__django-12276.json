@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-12276",
+  "repo": "django/django",
+  "arm": "M1dec",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-12276@sha256:903942f778dbcf0b61c62031697c4a5f3655569c11c84204bdfa307b844ec2ae",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "decode": "relevant",
+  "inject_len": 1323,
+  "edited_files": [
+    "django/forms/widgets.py"
+  ],
+  "patch_bytes": 570,
+  "tokens": {
+    "prompt": 6846,
+    "completion": 162
+  },
+  "secs": 78.5
+}

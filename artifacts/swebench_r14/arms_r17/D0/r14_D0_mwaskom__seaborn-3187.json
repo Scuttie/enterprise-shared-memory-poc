@@ -1,0 +1,22 @@
+{
+  "instance_id": "mwaskom__seaborn-3187",
+  "repo": "mwaskom/seaborn",
+  "arm": "D0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.mwaskom_1776_seaborn-3187@sha256:aea7e43b20703256f5cb807b54cd78a12601f21086d3a62a41de18c254771f4e",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "none",
+  "inject_len": 1430,
+  "edited_files": [
+    "seaborn/_core/scales.py"
+  ],
+  "patch_bytes": 446,
+  "tokens": {
+    "prompt": 19395,
+    "completion": 282
+  },
+  "secs": 73.5
+}

@@ -1,0 +1,22 @@
+{
+  "instance_id": "pydata__xarray-3677",
+  "repo": "pydata/xarray",
+  "arm": "D0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.pydata_1776_xarray-3677@sha256:4a68ac272a07b3b4762756ae9d24b5de1cce82aae696b6dc3deb9676a4b0c14e",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "none",
+  "inject_len": 1263,
+  "edited_files": [
+    "xarray/core/merge.py"
+  ],
+  "patch_bytes": 474,
+  "tokens": {
+    "prompt": 20817,
+    "completion": 273
+  },
+  "secs": 112.4
+}

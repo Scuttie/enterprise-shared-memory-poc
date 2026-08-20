@@ -1,0 +1,22 @@
+{
+  "instance_id": "matplotlib__matplotlib-14623",
+  "repo": "matplotlib/matplotlib",
+  "arm": "D0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-14623@sha256:5f6acd976c3bc2b2f293704f88b1188307d116baa87b87e5fa82a67976f157a9",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "decode": "none",
+  "inject_len": 1300,
+  "edited_files": [
+    "lib/matplotlib/axes/_base.py"
+  ],
+  "patch_bytes": 1568,
+  "tokens": {
+    "prompt": 13033,
+    "completion": 478
+  },
+  "secs": 95.4
+}

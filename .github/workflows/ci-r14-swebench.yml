@@ -7,6 +7,7 @@ on:
       arm: {description: "M0/M1/M2", required: false, default: "M0"}
       memory_file: {description: "memory json for M1/M2", required: false, default: ""}
       model: {description: "reader model id", required: false, default: "gpt-4o-mini-2024-07-18"}
+      decode: {description: "memory decode mode: relevant|none|'' (raw)", required: false, default: ""}
       single: {description: "one instance_id (smoke)", required: false, default: ""}
   push:
     branches: [codex/production-service-v0.2]
@@ -67,6 +68,7 @@ jobs:
           R14_INSTANCE_ID: ${{ matrix.instance }}
           R14_CSV: ${{ github.workspace }}/swebench_verified.csv
           R14_ARM: ${{ github.event.inputs.arm }}
+          R14_DECODE: ${{ github.event.inputs.decode }}
           R14_MEMORY_JSON: ${{ github.event.inputs.memory_file }}
           R14_OUT: ${{ github.workspace }}/r14_${{ github.event.inputs.arm }}_${{ matrix.instance }}.json
           R14_MODEL: ${{ github.event.inputs.model }}

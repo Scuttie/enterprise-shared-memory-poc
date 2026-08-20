@@ -23,6 +23,8 @@ INST = R7.INST
 MODEL = os.environ.get("R14_MODEL", "gpt-4o-mini-2024-07-18")
 OUT = os.environ.get("R14_OUT", f"agent_{INST}.json")
 ARM = os.environ.get("R14_ARM", "M0")
+DECODE = os.environ.get("R14_DECODE", "").strip()          # "relevant" | "none" | "" (raw)
+DECODER_MODEL = os.environ.get("R14_DECODER_MODEL", "gpt-4o-mini-2024-07-18")
 API_KEY = os.environ["OPENAI_API_KEY"]
 BASE = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
 DATASET = "SWE-bench/SWE-bench_Verified"
@@ -80,6 +82,53 @@ def call_openai_chat(messages, tools=None):
     raise RuntimeError(f"openai failed: {last}")
 
 
+def _decode_call(prompt):
+    """One plain gpt-4o-mini completion (no tools). Used to DECODE memory into target-adapted guidance. Sees only
+    the target ISSUE TEXT (+ the source example for 'relevant'); never the target gold patch/tests."""
+    body = json.dumps({"model": DECODER_MODEL, "messages": [{"role": "user", "content": prompt}],
+                       "temperature": 0}).encode()
+    last = None
+    for attempt in range(6):
+        try:
+            req = urllib.request.Request(BASE + "/chat/completions", data=body,
+                headers={"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=120) as r:
+                d = json.loads(r.read())
+            return d["choices"][0]["message"]["content"] or ""
+        except urllib.error.HTTPError as ex:
+            last = f"HTTP {ex.code}"
+            if ex.code in (429, 500, 502, 503, 504):
+                time.sleep(min(40, 4 * (2 ** attempt)) + random.uniform(0, 3)); continue
+            raise
+        except Exception as ex:
+            last = str(ex)[:100]; time.sleep(min(40, 4 * (2 ** attempt)) + random.uniform(0, 3))
+    raise RuntimeError(f"decode failed: {last}")
+
+
+def build_injection(issue, raw_mem):
+    """Returns (injected_text, header). DECODE='relevant' adapts a real prior fix to THIS issue; DECODE='none' is
+    the matched control (same decode compute, issue only, NO memory); '' passes the raw memory through."""
+    if DECODE == "relevant":
+        prompt = ("You are preparing ADAPTED guidance for an engineer about to fix THIS GitHub issue.\n\nISSUE:\n"
+                  + issue[:6000] + "\n\nA REAL prior resolved issue in the SAME repository and the actual fix that was "
+                  "applied:\n" + (raw_mem or "")[:6000] + "\n\nWrite concise (<=200 words) ADAPTED guidance: the "
+                  "transferable approach/pattern from the prior fix and where/how it likely maps to THIS issue "
+                  "(files, functions, conditions). Do NOT invent the exact final patch; give reusable direction.")
+        head = "[ADAPTED MEMORY — guidance decoded from a REAL prior fix in this repo, mapped to this issue; read-only]"
+    elif DECODE == "none":
+        prompt = ("You are preparing an approach plan for an engineer about to fix THIS GitHub issue.\n\nISSUE:\n"
+                  + issue[:6000] + "\n\nWrite a concise (<=200 words) plan: the likely root-cause area and concrete "
+                  "steps to fix. Use ONLY the issue; no external examples.")
+        head = "[APPROACH PLAN — decoded from the issue alone; NO external memory; read-only]"
+    else:
+        return (raw_mem or ""), ("[RETRIEVED MEMORY — a REAL prior resolved issue in THIS repository and the actual "
+                                 "fix that was applied; read-only worked example, not this issue's solution]")
+    try:
+        return _decode_call(prompt).strip(), head
+    except Exception:
+        return ("", head)
+
+
 def grade(model_patch):
     if not model_patch.strip():
         return False, "empty"
@@ -118,19 +167,23 @@ def main():
     df = pd.read_csv(R7.CSV)
     row = df[df["instance_id"] == INST].iloc[0].to_dict()
     t0 = time.time()
-    terminal = "ok"; resolved = None; err = None; turns = 0; patch = ""; digest = None
+    terminal = "ok"; resolved = None; err = None; turns = 0; patch = ""; digest = None; inject = ""
     tokens = {"prompt": 0, "completion": 0}
     try:
         img, digest = extract_repo(row)
-        mem = (MEM.get(INST, "") or "") if ARM != "M0" else ""
+        raw_mem = (MEM.get(INST, "") or "")
+        inject, inject_head = "", ""
+        if DECODE in ("relevant", "none"):
+            inject, inject_head = build_injection(str(row["problem_statement"]), raw_mem)
+        elif ARM != "M0":
+            inject, inject_head = build_injection(str(row["problem_statement"]), raw_mem)  # raw path
         sys_prompt = (
             "You are an expert software engineer fixing a real GitHub issue in a Python repository. STRICT budget "
             f"of {R7.MAX_TURNS} tool calls, ONE attempt.\nWORKFLOW: 1) locate the buggy code with search(); read "
             "generously. 2) as soon as located, FIX it with replace_lines (preferred) or edit_file. 3) call submit. "
             "You do NOT have the tests; write a correct general fix. Do not edit test files.")
-        if mem:
-            sys_prompt += ("\n\n[RETRIEVED MEMORY — a REAL prior resolved issue in THIS repository and the actual "
-                           "fix that was applied; read-only worked example, not this issue's solution]\n" + mem[:9000])
+        if inject:
+            sys_prompt += "\n\n" + inject_head + "\n" + inject[:9000]
         messages = [{"role": "system", "content": sys_prompt},
                     {"role": "user", "content": f"Issue to fix (instance {INST}, repo {row['repo']}):\n\n{row['problem_statement'][:9000]}"}]
         last_sig = None; rep = 0; explore = 0
@@ -190,6 +243,7 @@ def main():
 
     result = {"instance_id": INST, "repo": row.get("repo"), "arm": ARM, "model": MODEL, "image_digest": digest,
               "resolved": resolved, "terminal_state": terminal, "error": err, "turns": turns,
+              "decode": DECODE, "inject_len": len(inject),
               "edited_files": sorted(R7.EDITED), "patch_bytes": len(patch), "tokens": tokens,
               "secs": round(time.time() - t0, 1)}
     json.dump(result, open(OUT, "w", encoding="utf-8"), indent=2, ensure_ascii=False)

@@ -1,0 +1,20 @@
+{
+  "instance_id": "django__django-14373",
+  "repo": "django/django",
+  "arm": "M0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-14373@sha256:e1b9cfcbd4787f08c621a82fc43e495bc5c7a6dce31f987832cfe7745fe2b0cb",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "edited_files": [
+    "django/utils/dateformat.py"
+  ],
+  "patch_bytes": 418,
+  "tokens": {
+    "prompt": 6709,
+    "completion": 182
+  },
+  "secs": 78.7
+}

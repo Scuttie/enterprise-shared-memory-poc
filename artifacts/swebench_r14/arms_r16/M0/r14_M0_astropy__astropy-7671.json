@@ -1,0 +1,20 @@
+{
+  "instance_id": "astropy__astropy-7671",
+  "repo": "astropy/astropy",
+  "arm": "M0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-7671@sha256:ea67d17c5e1832979ba972feb18531110a4ae0bb86e8cbaf951d34aae99598e3",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "edited_files": [
+    "astropy/utils/introspection.py"
+  ],
+  "patch_bytes": 735,
+  "tokens": {
+    "prompt": 4945,
+    "completion": 223
+  },
+  "secs": 59.5
+}

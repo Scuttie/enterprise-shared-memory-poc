@@ -1,0 +1,20 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-13779",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "M1sem",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-13779@sha256:f7188477fd1e48e0e9bb1efa8a47068979127e1995fbab4c9eb3b04eaadf0618",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "sklearn/ensemble/voting.py"
+  ],
+  "patch_bytes": 549,
+  "tokens": {
+    "prompt": 29789,
+    "completion": 278
+  },
+  "secs": 77.3
+}

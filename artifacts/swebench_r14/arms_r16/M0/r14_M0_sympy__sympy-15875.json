@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-15875",
+  "repo": "sympy/sympy",
+  "arm": "M0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-15875@sha256:e2812656720310590f43b2773a81f896dafe9e36efa151494a6663bb26ec49f0",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 12,
+  "edited_files": [
+    "sympy/core/add.py"
+  ],
+  "patch_bytes": 561,
+  "tokens": {
+    "prompt": 17027,
+    "completion": 541
+  },
+  "secs": 80.8
+}

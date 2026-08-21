@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "purpose": "Machine-readable provenance + license status for external memory-system references (P6/R19 §3). ci-literature-audit enforces the 'no vendoring while unresolved' rules below.",
+  "generated_for_commit": "7fddfb959bef04a6de5f9d528ef9266a723f3740",
+  "references": [
+    {
+      "id": "memgovern",
+      "title": "MemGovern: Enhancing Code Agents through Learning from Governed Human Experiences",
+      "arxiv": "2601.06789",
+      "arxiv_version_seen": "v2",
+      "repo": "https://github.com/QuantaAlpha/MemGovern",
+      "default_branch": "main",
+      "repo_commit_pinned": "UNVERIFIED_PIN_IN_SECRET_GATED_REPRO_JOB",
+      "reported_result": "+4.65% resolution on SWE-bench Verified; 135K governed experience cards",
+      "architecture": "Experience Server (vector search + experience lookup) + SWE-agent + MemGovern config calling server tools",
+      "license_status": "UNRESOLVED",
+      "license_evidence": "README shows an MIT badge but the repository has NO LICENSE file; an MIT badge is not a legal conclusion (§3.1).",
+      "bundles_data": true,
+      "bundled_artifacts": ["data/agentic_exp_data_*/experience_data.json", "data/*/chroma_db_experience/", "trajectories/*.tar.gz"],
+      "reproduction_label": "REPRODUCTION_BLOCKED",
+      "allowed": ["paper/README behavior audit", "isolated research-only checkout (never in company package)", "clean-room BEHAVIORAL_REIMPLEMENTATION", "documented API/schema compatibility tests"],
+      "forbidden": ["copying implementation files into src/enterprise_memory", "bundling the experience DB / chroma store", "distributing trajectories", "calling the clean-room build an exact code reproduction", "reproducing the MIT badge as a legal conclusion"]
+    },
+    {
+      "id": "swe_exp",
+      "title": "SWE-Exp: Experience-Driven Software Issue Resolution",
+      "arxiv": "2507.23361",
+      "repo": "https://github.com/YerbaPage/SWE-Exp",
+      "default_branch": "main",
+      "repo_commit_pinned": "UNVERIFIED_PIN_IN_SECRET_GATED_REPRO_JOB",
+      "license_status": "APACHE_2_0",
+      "license_evidence": "Repository metadata reports Apache-2.0; built on the moatless framework (moatless/experience/*). Transitive dependency licenses must be audited before any file-level reuse.",
+      "bundles_data": false,
+      "relevant_modules": ["moatless/experience/exp_agent/exp_agent.py", "moatless/experience/exp_agent/select_agent.py", "moatless/experience/exp_agent/extract_verified_issue_types_batch.py", "moatless/search_tree.py"],
+      "reproduction_label": "BEHAVIORAL_REIMPLEMENTATION",
+      "reuse_precondition": ["file-level attribution audit", "preserve required NOTICE", "verify no incompatible transitive code copied", "document exact reused files"],
+      "reuse_decision_current": "NO_FILES_REUSED_YET (conceptual comparator only until file-level audit + NOTICE done)"
+    },
+    {
+      "id": "structural_subtask_memory",
+      "title": "Structurally aligned subtask memory (functional-subtask storage/retrieval alignment)",
+      "arxiv": "UNVERIFIED",
+      "repo": "UNVERIFIED",
+      "license_status": "UNVERIFIED",
+      "reproduction_label": "CONCEPTUAL_COMPARATOR",
+      "adopted_concept": "functional subtask taxonomy {comprehension, localization, modification, validation} used to align retrieval to the agent's current subtask (§7-8). Concept only; no implementation copied.",
+      "note": "Used as a conceptual comparator unless a usable licensed implementation is later pinned."
+    }
+  ],
+  "vendoring_policy": "No upstream implementation source or data is copied into src/enterprise_memory or shipped in the company package. NATIVE_CLEAN_ROOM is auditable and distributable under this repository's own license. Exact external reproduction runs only in an isolated, secret-gated job that is never part of the package."
+}

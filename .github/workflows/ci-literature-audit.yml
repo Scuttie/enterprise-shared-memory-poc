@@ -1,0 +1,21 @@
+name: ci-literature-audit
+# P6/R19 §3 — no unlicensed upstream code/data may be vendored into the product.
+on:
+  push:
+    branches: [codex/utility-router-v0.3]
+    paths: ['THIRD_PARTY_RESEARCH_REFERENCES.json', 'src/**', 'trajectories/**', 'data/**',
+            'scripts/check_literature_provenance.py', '.github/workflows/ci-literature-audit.yml']
+  pull_request:
+    paths: ['THIRD_PARTY_RESEARCH_REFERENCES.json', 'src/**', 'trajectories/**', 'data/**',
+            'scripts/check_literature_provenance.py']
+  workflow_dispatch: {}
+jobs:
+  provenance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {lfs: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Literature provenance / no-vendoring audit
+        run: python scripts/check_literature_provenance.py

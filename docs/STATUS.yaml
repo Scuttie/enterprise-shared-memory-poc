@@ -11,7 +11,7 @@ company_handoff_status: IN_PROGRESS    # v0.3 build; not yet COMPANY-HANDOFF-REA
 production_certification_status: NOT_CLAIMED
 
 migration_head: "0013"                 # alembic head; P6 experience tables begin at 0014
-workflow_count: 55                     # +ci-docs (this milestone)
+workflow_count: 56                     # +ci-docs +ci-literature-audit (this milestone)
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)
@@ -78,4 +78,4 @@ required_company_inputs:
 # --- MILESTONE RESEARCH RESULT (R19 utility router) ---
 utility_router_result: NOT_RUN         # -> POSITIVE | NULL | NEGATIVE | NOT_RUN
 
-workflow_table_note: "55 workflows at last_verified_commit; ci-docs regenerates the README workflow table."
+workflow_table_note: "56 workflows at last_verified_commit; ci-docs regenerates the README workflow table."

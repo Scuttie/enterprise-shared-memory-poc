@@ -1,0 +1,33 @@
+name: ci-utility-router
+# P6/R19 §8 — deterministic router: every reason code, leakage sentinel, coverage accounting, frozen policy.
+on:
+  push:
+    branches: [codex/utility-router-v0.3]
+    paths: ['src/enterprise_memory/router/**', 'tests/unit/test_rule_router_v1.py',
+            'artifacts/p6/router_policy.json', '.github/workflows/ci-utility-router.yml']
+  pull_request:
+    paths: ['src/enterprise_memory/router/**', 'tests/unit/test_rule_router_v1.py', 'artifacts/p6/router_policy.json']
+  workflow_dispatch: {}
+jobs:
+  router:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install (editable)
+        run: pip install -q -e . || pip install -q pytest
+      - name: Router unit tests (all reason codes + leakage + coverage)
+        run: python -m pytest -q tests/unit/test_rule_router_v1.py
+      - name: Frozen policy integrity (content_hash matches code)
+        run: |
+          python - <<'PY'
+          import json, hashlib
+          b = json.load(open("artifacts/p6/router_policy.json"))
+          stored = b.pop("content_hash")
+          calc = hashlib.sha256(json.dumps(b, sort_keys=True).encode()).hexdigest()
+          assert stored == calc, "router_policy.json content_hash mismatch"
+          from enterprise_memory.router.rule_router_v1 import WEIGHTS
+          assert b["weights"] == WEIGHTS, "policy weights drifted from code"
+          print("frozen policy OK", stored[:16])
+          PY

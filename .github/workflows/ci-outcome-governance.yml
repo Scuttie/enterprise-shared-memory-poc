@@ -1,0 +1,31 @@
+name: ci-outcome-governance
+# P6/R19 §9 — outcome credit (gain/loss/neutral, adoption not inferred from diff) + frozen governance state machine.
+on:
+  push:
+    branches: [codex/utility-router-v0.3]
+    paths: ['src/enterprise_memory/governance/**', 'tests/unit/test_outcome_governance.py',
+            'artifacts/p6/governance_thresholds.json', '.github/workflows/ci-outcome-governance.yml']
+  pull_request:
+    paths: ['src/enterprise_memory/governance/**', 'tests/unit/test_outcome_governance.py',
+            'artifacts/p6/governance_thresholds.json']
+  workflow_dispatch: {}
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install (editable)
+        run: pip install -q -e . || pip install -q pytest
+      - name: Outcome credit + governance tests
+        run: python -m pytest -q tests/unit/test_outcome_governance.py
+      - name: Frozen governance thresholds integrity
+        run: |
+          python - <<'PY'
+          import json, hashlib
+          b = json.load(open("artifacts/p6/governance_thresholds.json"))
+          stored = b.pop("content_hash")
+          assert stored == hashlib.sha256(json.dumps(b, sort_keys=True).encode()).hexdigest()
+          print("frozen governance thresholds OK", stored[:16])
+          PY

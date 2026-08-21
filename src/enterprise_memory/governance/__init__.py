@@ -1,0 +1,11 @@
+"""P6/R19 §9 outcome credit + governance (clean-room)."""
+from .outcome import (  # noqa: F401
+    OutcomeCreditAssigner, CreditRecord, classify_adoption,
+    MEMORY_GAIN, MEMORY_LOSS, MEMORY_NEUTRAL, COMPUTE_ONLY_GAIN, UNATTRIBUTED, INFRA_FAILURE,
+    EXACT_SOURCE_OPERATION_ADOPTION, PARTIAL_SOURCE_OPERATION_ADOPTION, SOURCE_API_ADOPTION,
+    SOURCE_CONTROL_FLOW_ADOPTION, NO_BEHAVIORAL_CHANGE, UNRELATED_ERROR, UNCLASSIFIED,
+)
+from .promotion import (  # noqa: F401
+    GovernanceMachine, CardStats, GovernanceError,
+    PROMOTE_MIN_GAINS, PROMOTE_MAX_LOSSES, QUARANTINE_MIN_LOSSES, CONFIDENCE_STEP,
+)

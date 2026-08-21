@@ -14,7 +14,7 @@ across tenants.
 | Utility router (held-out) | `NOT_RUN` |
 | Company handoff | `IN_PROGRESS` |
 | Production certification | `NOT_CLAIMED` |
-| Migration head | `0013` |
+| Migration head | `0014` |
 
 > **COMPANY HANDOFF IN PROGRESS — not yet COMPANY-HANDOFF-READY, not COMPANY-STAGING-CERTIFIED.** Service correctness, research efficacy, and staging certification are tracked separately; see [`docs/STATUS.yaml`](docs/STATUS.yaml) (single source of truth) and [`docs/EVIDENCE_AND_LIMITATIONS.md`](docs/EVIDENCE_AND_LIMITATIONS.md).
 <!-- STATUS:END -->

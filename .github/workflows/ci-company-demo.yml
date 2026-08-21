@@ -1,0 +1,23 @@
+name: ci-company-demo
+# P6/R19 §13/§23 — the offline company demo must produce DEMO_PASS: true from a clean checkout.
+on:
+  push:
+    branches: [codex/utility-router-v0.3]
+    paths: ['scripts/demo_company_handoff.py', 'src/enterprise_memory/**',
+            'tests/integration/test_company_demo.py', '.github/workflows/ci-company-demo.yml']
+  pull_request:
+    paths: ['scripts/demo_company_handoff.py', 'src/enterprise_memory/**', 'tests/integration/test_company_demo.py']
+  workflow_dispatch: {}
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install (editable)
+        run: pip install -q -e . || pip install -q pytest
+      - name: Offline company demo -> DEMO_PASS
+        run: python scripts/demo_company_handoff.py --offline
+      - name: Demo integration test
+        run: python -m pytest -q tests/integration/test_company_demo.py

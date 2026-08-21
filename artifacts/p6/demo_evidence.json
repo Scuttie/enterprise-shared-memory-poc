@@ -1,0 +1,57 @@
+{
+  "steps": [
+    {
+      "step": "compile_card",
+      "pass": true,
+      "card_key": "ec_e7422594beedd1e26b1a2806",
+      "content_hash": "5aaa1852f690a075"
+    },
+    {
+      "step": "promote_after_review",
+      "pass": true,
+      "state": "promoted"
+    },
+    {
+      "step": "search_returns_card",
+      "pass": true,
+      "n_results": 1
+    },
+    {
+      "step": "router_USE_and_inject",
+      "pass": true,
+      "reason_codes": [
+        "USE_DIRECT_SYMBOL_MATCH"
+      ]
+    },
+    {
+      "step": "credit_memory_gain",
+      "pass": true,
+      "outcome_class": "MEMORY_GAIN",
+      "evidence_class": "EXACT_SOURCE_OPERATION_ADOPTION"
+    },
+    {
+      "step": "router_ABSTAIN_incompatible",
+      "pass": true,
+      "reason_codes": [
+        "ABSTAIN_VERSION_MISMATCH"
+      ]
+    },
+    {
+      "step": "quarantine_on_repeated_loss",
+      "pass": true,
+      "losses": 2
+    },
+    {
+      "step": "private_not_leaked",
+      "pass": true
+    },
+    {
+      "step": "audit_chain_no_secret",
+      "pass": true,
+      "audit_events": 4
+    }
+  ],
+  "org": "org-demo",
+  "DEMO_PASS": true,
+  "evidence_hash": "24ec04f11a493eeaf66e7d337a21a8dcfa38c00b96d8ade01044ecaf056629b6"
+}

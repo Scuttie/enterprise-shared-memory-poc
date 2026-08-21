@@ -11,7 +11,7 @@ company_handoff_status: IN_PROGRESS    # v0.3 build; not yet COMPANY-HANDOFF-REA
 production_certification_status: NOT_CLAIMED
 
 migration_head: "0014"                 # experience layer (P6/R19); 13 tables
-workflow_count: 60                     # +docs +lit +schema +router +agentic +governance
+workflow_count: 61                     # +docs +lit +schema +router +agentic +governance +company-demo
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)
@@ -78,4 +78,4 @@ required_company_inputs:
 # --- MILESTONE RESEARCH RESULT (R19 utility router) ---
 utility_router_result: NOT_RUN         # -> POSITIVE | NULL | NEGATIVE | NOT_RUN
 
-workflow_table_note: "60 workflows at last_verified_commit; ci-docs regenerates the README workflow table."
+workflow_table_note: "61 workflows at last_verified_commit; ci-docs regenerates the README workflow table."

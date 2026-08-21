@@ -1,0 +1,81 @@
+# docs/STATUS.yaml — SINGLE MACHINE-READABLE SOURCE OF TRUTH
+# Generated/maintained under P6/R19 (codex/utility-router-v0.3). CI (ci-docs) fails if user-facing
+# docs contradict this file. Do NOT hand-edit README/ARCHITECTURE claims without updating this first.
+schema_version: 1
+last_verified_commit: "7fddfb959bef04a6de5f9d528ef9266a723f3740"
+
+project_version: "0.3.0.dev1"
+service_status: IMPLEMENTED            # core control-plane/execution-plane plumbing exists; CI-tested
+research_status: MEMORY_TRANSFER_EFFICACY_NULL
+company_handoff_status: IN_PROGRESS    # v0.3 build; not yet COMPANY-HANDOFF-READY
+production_certification_status: NOT_CLAIMED
+
+migration_head: "0013"                 # alembic head; P6 experience tables begin at 0014
+workflow_count: 55                     # +ci-docs (this milestone)
+
+implemented_backends:
+  - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)
+  - mem0_qdrant                        # Mem0 + Qdrant vector index, HF embedder multi-qa-MiniLM-L6-cos-v1 (384d)
+implemented_auth:
+  - oidc_jwks                          # OIDC issuer + JWKS verification
+  - bearer_scopes
+  - postgres_rls                       # ENABLE + FORCE row-level security, tenant context
+implemented_storage:
+  - postgresql_authoritative           # canonical source of truth
+  - qdrant_mem0_index_replaceable      # retrieval index ONLY, never canonical
+  - artifact_persistence
+implemented_retrieval:
+  - candidate_generation_vector
+  - governed_pipeline_gates            # permission/scope/version/validity/supersession/rerank/dedup/budget
+implemented_execution:
+  - controlled_sandbox
+  - durable_jobs
+  - separate_worker
+  - outbox
+implemented_governance:
+  - promotion_state_machine
+  - append_only_audit_ledger
+  - security_scanner
+
+# --- CLAIMS ---
+current_experimental_claims:
+  service_correctness: PASS_IN_CI      # plumbing/isolation/governance tested
+  research_efficacy: NULL              # see rejected_claims; R14-R18 memory transfer = no reliable benefit
+  company_staging_certification: PENDING
+  production_certification: NOT_CLAIMED
+
+rejected_claims:
+  - id: shared_memory_improves_coding
+    text: "One developer's verified experience helps another developer's task succeed."
+    status: REJECTED
+    evidence: "REALBENCH R14-R18: five levers (encoding/retrieval/reader/decoding/unit), all null on SWE-bench Verified. reports/MEMORY_TRANSFER_SYNTHESIS.md"
+  - id: sqlite_authoritative
+    text: "Canonical memory stored in SQLite."
+    status: REJECTED
+    evidence: "PostgreSQL is authoritative; Qdrant/Mem0 are replaceable indices. migrations/versions/*, alembic head 0013."
+  - id: production_ready
+    text: "production-ready"
+    status: REJECTED
+    evidence: "No company-controlled staging env or sign-off. production_certification_status=NOT_CLAIMED."
+  - id: demo_complete_gates
+    text: "DEMO-COMPLETE / 3/5 gates"
+    status: SUPERSEDED
+    evidence: "Old PoC status string; superseded by this file."
+
+known_limitations:
+  - "Memory-transfer efficacy is NULL on the tested public regime (SWE-bench Verified, readers <= gpt-4o)."
+  - "Utility router held-out product effect: NOT_RUN as of last_verified_commit."
+  - "Not company-staging-certified; no company sign-off."
+  - "MemGovern upstream license unresolved -> no upstream code/data vendored; clean-room only."
+
+required_company_inputs:
+  - "Model/harness manifest (model id, protocol: OpenAI-compatible | Anthropic-compatible | JSON-RPC | MCP)."
+  - "Company-controlled staging environment + acceptance sign-off."
+  - "OIDC issuer/JWKS endpoint + tenant/org identifiers."
+  - "PostgreSQL + Qdrant deployment targets (or use bundled compose for pilot)."
+  - "Repository access policy for source/target scoping."
+
+# --- MILESTONE RESEARCH RESULT (R19 utility router) ---
+utility_router_result: NOT_RUN         # -> POSITIVE | NULL | NEGATIVE | NOT_RUN
+
+workflow_table_note: "55 workflows at last_verified_commit; ci-docs regenerates the README workflow table."

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "enterprise-shared-memory-poc"
-version = "0.2.0.dev1"
+version = "0.3.0.dev1"
 description = "Governed private/shared memory PoC for coding agents: Mem0 retrieval, canonical contracts, validity gates, and compact literal execution views."
 requires-python = ">=3.10,<4.0"
 readme = "README.md"

@@ -1,21 +1,44 @@
-# Enterprise Shared Memory PoC
+# Enterprise Shared Memory
 
-**Status: DEMO-COMPLETE — NOT PRODUCTION-READY**
+Governed **private/shared memory for coding agents**: an auditable control plane that stores verified coding
+experience, retrieves candidates, and applies a **utility-aware router** deciding `USE` / `ABSTAIN` before any
+memory reaches a model — so redundant, out-of-scope, stale, or harmful experience is rejected and never leaks
+across tenants.
 
-Governed private/shared memory for coding agents. One developer's *verified* coding experience can help
-another developer's executable task succeed — **without** leaking private information or spreading stale,
-out-of-scope, or incorrect fixes.
+<!-- STATUS:BEGIN -->
+| Dimension | Status |
+| --- | --- |
+| Version | `0.3.0.dev1` |
+| Service plumbing | `IMPLEMENTED` |
+| Research efficacy | `MEMORY_TRANSFER_EFFICACY_NULL` |
+| Utility router (held-out) | `NOT_RUN` |
+| Company handoff | `IN_PROGRESS` |
+| Production certification | `NOT_CLAIMED` |
+| Migration head | `0013` |
 
-> **Design principle:** *Store contracts for governance; compile literal execution views for coding.*
+> **COMPANY HANDOFF IN PROGRESS — not yet COMPANY-HANDOFF-READY, not COMPANY-STAGING-CERTIFIED.** Service correctness, research efficacy, and staging certification are tracked separately; see [`docs/STATUS.yaml`](docs/STATUS.yaml) (single source of truth) and [`docs/EVIDENCE_AND_LIMITATIONS.md`](docs/EVIDENCE_AND_LIMITATIONS.md).
+<!-- STATUS:END -->
+
+> **Efficacy honesty (read this first).** Injecting another engineer's solved experience did **not** reliably
+> improve coding-task success in our controlled study (REALBENCH R14–R18: five levers — encoding, retrieval,
+> reader strength, decoding, aggregation — all null on SWE-bench Verified;
+> [`reports/MEMORY_TRANSFER_SYNTHESIS.md`](reports/MEMORY_TRANSFER_SYNTHESIS.md)). This project therefore ships as
+> a **governance and attribution platform** whose value is safety, auditability, and *utility-aware selection*,
+> not an assumed performance boost. Any performance claim is gated on the held-out utility-router result
+> (`utility_router_result` in [`docs/STATUS.yaml`](docs/STATUS.yaml)).
+
+> **Design principle:** *Store canonical experience for governance; compile neutral projections for retrieval and
+> literal execution views for coding; gate every injection with an auditable router.*
 
 ## What problem this solves
-Naive shared memory propagates stale/out-of-scope/wrong fixes and leaks private context. This PoC keeps an
-**authoritative canonical Memory Contract** (SQLite) governed by permission/scope/version/expiry/
-supersession gates, and hands the coding model a **compact literal execution view** compiled
-deterministically only after every gate passes.
+Naive shared memory propagates stale/out-of-scope/wrong fixes and leaks private context. The system keeps an
+**authoritative canonical experience record in PostgreSQL** (Qdrant/Mem0 are replaceable retrieval indices, never
+the source of truth) governed by permission/scope/version/expiry/supersession gates, and hands the coding model a
+**compact literal execution view** compiled deterministically only after every gate — and the utility router —
+approves it.
 
 ## What is implemented
-Canonical SQLite contract registry · Mem0 private/shared retrieval adapters (governed `infer=False` path +
+Canonical **PostgreSQL** experience/contract registry (authoritative; RLS-isolated) · Mem0/Qdrant private/shared retrieval adapters (governed `infer=False` path +
 `infer=True` baseline) · permission & tenant isolation · scope/version/expiry/supersession gates ·
 security scanner · promotion state machine · append-only audit ledger · FastAPI serving layer + OpenAPI ·
 controlled execution sandbox · compact-literal execution-view compiler with invalid-contract **refusal** ·

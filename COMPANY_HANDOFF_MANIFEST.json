@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "commit": "d2b28a9cc8d1273214b1a6fc27c8313a7c796649",
+  "commit": "c662d21a9349f73435fcf34b9a33d12cbdeba21c",
   "project_version": "0.3.0.dev1",
   "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) \u2014 NOT COMPANY-STAGING-CERTIFIED",
   "source_tree_sha256": "1463846d77745b4af3dfdc64ff10932ecd1d7d0fa6a059e4a2a3b36475e54045",
   "source_files": 103,
-  "docs_tree_sha256": "9b7fa8d98a45f38ce993de69629da6e483f95dc6b8a5f5f3870ddf321fb62ad1",
+  "docs_tree_sha256": "8f8b0b5e728b68421c498ca680f5976970ef31b80003a17c2fd122e135dfd743",
   "docs_files": 53,
   "examples_tree_sha256": "dc62d76eb3fa73cf1df33236bea8257306ef108d5d7d12fc3488597f05dfd922",
   "examples_files": 7,
@@ -19,7 +19,7 @@
     "artifacts/p6/governance_thresholds.json": "994487fbd0f3d64880668c14429096d103a5365475a9fbb9c9c43d6c8c45351e",
     "examples/company_harness/tool_schema.json": "52b94c50ceca84740192f6b4022df762d09c62cb0d5c0822b42a66a4101ce240",
     "README.md": "b5ae56ae1a060ac00def5806e6b0107d8357de9a641992d0cccf51cf12f0afac",
-    "docs/STATUS.yaml": "39a22758ab93f59fe752989e9f2b737e213c741bd1a6efaec016d890e926bc29",
+    "docs/STATUS.yaml": "88a3d1cb10a070086d667d3c1c8d62f099bea77d5cd0c0adf3b4a31ab6342b6a",
     "THIRD_PARTY_RESEARCH_REFERENCES.json": "42523b999b509f37605dd3460e4b117a8effff7b726a38b8766a6423b48220ec"
   },
   "excluded": [
@@ -33,5 +33,5 @@
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "7b196d93d8776ed6493d4e239985a0148f6d1e76caa0bef9d09ab359a8bd233f"
+  "manifest_hash": "f931cb8625a2318e95aa464ba863c0451d5494631f480629d4b8e222239dc154"
 }

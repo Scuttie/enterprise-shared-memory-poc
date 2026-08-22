@@ -66,11 +66,18 @@ def main() -> int:
     elif "(sqlite)" in low and "postgres" not in low.split("(sqlite)")[0][-120:]:
         fails.append("README still tags canonical store as (SQLite).")
 
-    # 2. efficacy claim gate
+    # 2. efficacy claim gate (negation-aware: we may DISCUSS the claim in order to reject it)
     eff_null = str(st.get("research_status", "")).endswith("NULL") or st.get("utility_router_result") != "POSITIVE"
-    claims_help = re.search(r"(shared memory|another developer'?s|collective).{0,80}(help|improv|boost|increase).{0,40}(success|performance|resolve|coding)", low)
-    if claims_help and eff_null:
-        fails.append("README claims shared memory improves coding performance, but STATUS efficacy is NULL / router not POSITIVE.")
+    if eff_null:
+        pat = re.compile(r"(shared memory|another developer'?s|collective)[^.\n]{0,90}(help|improv|boost|increase)"
+                         r"[^.\n]{0,50}(success|performance|resolve|coding)")
+        neg = ("not", "n't", "never", "no reliable", "not established", "does not", "gated on", "unless")
+        for m in pat.finditer(low):
+            window = low[max(0, m.start() - 70):m.end() + 30]
+            if any(t in window for t in neg):
+                continue   # negated / gated mention is fine
+            fails.append("README makes an un-negated shared-memory efficacy claim while STATUS efficacy is NULL / router not POSITIVE.")
+            break
 
     # 3. production-ready
     if re.search(r"production[\s-]?ready", low) and st.get("production_certification_status", "NOT_CLAIMED") == "NOT_CLAIMED":
@@ -91,6 +98,20 @@ def main() -> int:
     wf = len(glob.glob(os.path.join(ROOT, ".github", "workflows", "*.yml")))
     if str(st.get("workflow_count")) not in ("", "None") and int(st.get("workflow_count")) != wf:
         fails.append("STATUS.workflow_count=%s but actual=%d." % (st.get("workflow_count"), wf))
+
+    # 7. link existence for curated surfaces (§2: docs must not reference nonexistent files)
+    curated = [rp, os.path.join(ROOT, "docs", "README.md")]
+    linkpat = re.compile(r"\]\((?!https?://|#)([^)]+)\)")
+    for surface in curated:
+        if not os.path.isfile(surface):
+            continue
+        base = os.path.dirname(surface)
+        for link in linkpat.findall(open(surface, encoding="utf-8").read()):
+            target = link.split("#")[0]
+            if not target:
+                continue
+            if not os.path.exists(os.path.normpath(os.path.join(base, target))):
+                fails.append("%s links to nonexistent path: %s" % (os.path.relpath(surface, ROOT), target))
 
     if fails:
         print("DOC CONSISTENCY: FAIL")

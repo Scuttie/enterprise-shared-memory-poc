@@ -1,22 +1,28 @@
-# Evidence & limitations
+# Evidence & Limitations
 
-**Fresh domain-scoped renderer intervention; not confirmatory evidence for general coding-memory efficacy.**
+Three claim axes, tracked separately. Machine-readable source of truth: [`STATUS.yaml`](STATUS.yaml).
 
-## Evidence (M7 pilot, fresh bounded internal_api + cache tasks; 32 world tasks)
-- Compact literal execution view (P5): **29/32**; concise summary (P7): **31/32**.
-- P5 internal_api **16/16**; P5 cache **13/16**; natural-paraphrase cache (P6) **0/16** (do not paraphrase
-  predicates).
-- Safety: P5 governed compiler refuses invalid memory -> **8/8** pass, **0/8** old-fix adoption, **0/8**
-  invalid injection; directly attaching an invalid full contract -> **0/8** pass, **6/8** old-fix; invalid
-  summary -> **0/8** pass, **8/8** old-fix.
-- N1 decision accuracy was 32/32 for every renderer, so in this experiment DecisionExecutionConsistency
-  numerically **equals** N2 Pass@1 (P5 = 29/32); they are not independent evidence.
+## Service correctness — PASS in CI
+Schema/RLS/immutability (`ci-experience-schema`), router reason codes + leakage sentinel (`ci-utility-router`),
+metadata-only search + gated browse (`ci-agentic-search`), outcome credit + governance (`ci-outcome-governance`),
+offline company demo `DEMO_PASS` (`ci-company-demo`), MCP + adapters (`ci-mcp`), docs truth (`ci-docs`),
+literature provenance (`ci-literature-audit`).
 
-## What is NOT claimed
-- NOT "Memory Contracts solve coding memory."  NOT "shared memory improves coding generally."
-- NOT "M7 outperforms concise summaries" (P7 31 >= P5 29).  NOT "production safety established."
-- NOT total efficiency/cost (N1 call token/latency were not logged; see the token-coverage audit).
+## Research efficacy — NOT ESTABLISHED (null)
+Injecting another engineer's solved experience did not reliably improve coding-task success. Five preregistered
+levers (encoding R14, retrieval R15, reader R16, decoding R17, aggregation R18) are all null on SWE-bench Verified;
+see [`../reports/MEMORY_TRANSFER_SYNTHESIS.md`](../reports/MEMORY_TRANSFER_SYNTHESIS.md). The utility-router held-out
+product endpoint (`H1 = A5 − A0`) is reported honestly as `utility_router_result` in STATUS.
 
-## Interpretation
-Canonical contracts should govern **selection and validity** in the control plane, while a compact
-**literal** execution view should be supplied to the coding model.
+## Company staging certification — PENDING; production — NOT CLAIMED
+No company-controlled staging environment or sign-off exists. `COMPANY-HANDOFF-READY` means a fresh clone builds,
+tests pass, and the offline demo passes — **not** that the system is production-certified.
+
+## Known limitations
+- Memory efficacy null on the tested public regime; the value proposition is governance/attribution/safety plus
+  utility-aware selection, and — only if the router endpoint passes — selective benefit.
+- MemGovern upstream license unresolved → no upstream code/data vendored; clean-room only.
+- Readers tested ≤ gpt-4o; single benchmark family (SWE-bench Verified); single-shot injection.
+
+## Required company inputs
+Model/harness manifest; staging env + sign-off; OIDC issuer/JWKS; PostgreSQL+Qdrant targets; repository access policy.

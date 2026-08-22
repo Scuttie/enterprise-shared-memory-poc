@@ -1,0 +1,26 @@
+{
+  "instance_id": "django__django-11292",
+  "repo": "django/django",
+  "arm": "F00",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-11292@sha256:ed10ed40b40643a9ebf70b08e7e93f1edadf47fee5b453ae2412dbb6ed340b80",
+  "resolved": null,
+  "terminal_state": "infra_error",
+  "error": "HTTPError: HTTP Error 400: Bad Request",
+  "turns": 6,
+  "decode": "",
+  "inject_len": 4321,
+  "edited_files": [
+    "django/core/management/commands/makemessages.py",
+    "django/core/management/commands/makemigrations.py",
+    "django/core/management/commands/migrate.py",
+    "django/core/management/commands/runserver.py",
+    "django/core/management/commands/test.py"
+  ],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 12728,
+    "completion": 849
+  },
+  "secs": 46.6
+}

@@ -1,0 +1,22 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-10297",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "F10",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-10297@sha256:58b80e9100f9d107291b5ea37c76583ed4851d8e18ec07aef197f1803a290986",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "decode": "",
+  "inject_len": 875,
+  "edited_files": [
+    "sklearn/linear_model/ridge.py"
+  ],
+  "patch_bytes": 928,
+  "tokens": {
+    "prompt": 9346,
+    "completion": 247
+  },
+  "secs": 72.3
+}

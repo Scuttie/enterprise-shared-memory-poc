@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-16116",
+  "repo": "django/django",
+  "arm": "B1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-16116@sha256:402e3f794142610246be59481c9978f57a0a737182fd78ea86c80e8e253d30a0",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 8,
+  "decode": "",
+  "inject_len": 4529,
+  "edited_files": [
+    "django/core/management/commands/makemigrations.py"
+  ],
+  "patch_bytes": 734,
+  "tokens": {
+    "prompt": 24523,
+    "completion": 273
+  },
+  "secs": 144.4
+}

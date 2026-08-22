@@ -1,0 +1,22 @@
+{
+  "instance_id": "astropy__astropy-7336",
+  "repo": "astropy/astropy",
+  "arm": "B0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-7336@sha256:7cc2c89f47d69a8dae0b20eb543336b8f25917ca8d54c77c3e625543238cfcc6",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 8,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "astropy/units/decorators.py"
+  ],
+  "patch_bytes": 768,
+  "tokens": {
+    "prompt": 10233,
+    "completion": 256
+  },
+  "secs": 78.6
+}

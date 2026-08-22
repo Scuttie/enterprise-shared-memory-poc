@@ -1,0 +1,22 @@
+{
+  "instance_id": "pylint-dev__pylint-4604",
+  "repo": "pylint-dev/pylint",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.pylint-dev_1776_pylint-4604@sha256:df6eb48f445388d0e228108c635625a0cc9f0cf5ed87303e89f75ab6fc3c2b39",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "decode": "",
+  "inject_len": 1374,
+  "edited_files": [
+    "pylint/checkers/variables.py"
+  ],
+  "patch_bytes": 495,
+  "tokens": {
+    "prompt": 16518,
+    "completion": 273
+  },
+  "secs": 64.4
+}

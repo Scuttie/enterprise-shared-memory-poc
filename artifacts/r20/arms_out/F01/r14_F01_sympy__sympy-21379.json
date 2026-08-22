@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-21379",
+  "repo": "sympy/sympy",
+  "arm": "F01",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-21379@sha256:5a10d273b1b5ae6e4d70c0242dc9c9ecb2e111945e6aa8093b7d1e4160b4dc3b",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "sympy/core/expr.py"
+  ],
+  "patch_bytes": 401,
+  "tokens": {
+    "prompt": 27677,
+    "completion": 189
+  },
+  "secs": 61.7
+}

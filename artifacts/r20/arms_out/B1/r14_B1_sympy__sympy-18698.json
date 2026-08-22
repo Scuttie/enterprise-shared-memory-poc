@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-18698",
+  "repo": "sympy/sympy",
+  "arm": "B1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-18698@sha256:9b8ce19f9470ecbe3390699d06db56a5bf92b49cd41e687a468156fd5d3e947f",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 4529,
+  "edited_files": [
+    "sympy/polys/polytools.py"
+  ],
+  "patch_bytes": 587,
+  "tokens": {
+    "prompt": 36318,
+    "completion": 603
+  },
+  "secs": 76.5
+}

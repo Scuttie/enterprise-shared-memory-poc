@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-13852",
+  "repo": "sympy/sympy",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13852@sha256:88a5fc577b1ba9346dd74198c357fb917b58324e40bf7c8e19135e321a4cd31b",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 920,
+  "edited_files": [
+    "sympy/functions/special/zeta_functions.py"
+  ],
+  "patch_bytes": 607,
+  "tokens": {
+    "prompt": 32097,
+    "completion": 414
+  },
+  "secs": 67.4
+}

@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-15973",
+  "repo": "django/django",
+  "arm": "F00",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-15973@sha256:cc0c54149ac4626b70e827fe913a967c2621c0c970c529ef464142a282a0c355",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 24,
+  "decode": "",
+  "inject_len": 4505,
+  "edited_files": [
+    "django/core/serializers/__init__.py"
+  ],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 94625,
+    "completion": 588
+  },
+  "secs": 140.3
+}

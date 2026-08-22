@@ -1,0 +1,62 @@
+{
+ "B0": {
+  "n": 248,
+  "resolved": 19,
+  "mean_prompt": 18522,
+  "mean_compl": 375,
+  "mean_turns": 9.2,
+  "mean_inject": 0,
+  "in_k": 4593,
+  "out_k": 93
+ },
+ "B1": {
+  "n": 247,
+  "resolved": 19,
+  "mean_prompt": 35928,
+  "mean_compl": 958,
+  "mean_turns": 10.3,
+  "mean_inject": 4361,
+  "in_k": 8874,
+  "out_k": 236
+ },
+ "F00": {
+  "n": 248,
+  "resolved": 18,
+  "mean_prompt": 31987,
+  "mean_compl": 705,
+  "mean_turns": 10.2,
+  "mean_inject": 4506,
+  "in_k": 7932,
+  "out_k": 174
+ },
+ "F10": {
+  "n": 248,
+  "resolved": 23,
+  "mean_prompt": 26590,
+  "mean_compl": 585,
+  "mean_turns": 8.6,
+  "mean_inject": 4367,
+  "in_k": 6594,
+  "out_k": 145
+ },
+ "F01": {
+  "n": 248,
+  "resolved": 22,
+  "mean_prompt": 22957,
+  "mean_compl": 1119,
+  "mean_turns": 9.3,
+  "mean_inject": 0,
+  "in_k": 5693,
+  "out_k": 277
+ },
+ "F11": {
+  "n": 248,
+  "resolved": 23,
+  "mean_prompt": 25788,
+  "mean_compl": 1056,
+  "mean_turns": 8.3,
+  "mean_inject": 3074,
+  "in_k": 6395,
+  "out_k": 261
+ }
+}

@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-13551",
+  "repo": "sympy/sympy",
+  "arm": "B0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13551@sha256:42cf3d31011204d6220acf6b415046ea3caee46640f51137ad062cebc868240c",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "sympy/functions/elementary/exponential.py"
+  ],
+  "patch_bytes": 783,
+  "tokens": {
+    "prompt": 27101,
+    "completion": 332
+  },
+  "secs": 77.2
+}

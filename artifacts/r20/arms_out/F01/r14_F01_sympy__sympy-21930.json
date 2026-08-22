@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-21930",
+  "repo": "sympy/sympy",
+  "arm": "F01",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-21930@sha256:ac9b1c65d632e5a3d1af240db144ff27ed9a70b5507705d50480ede6899125d1",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "sympy/physics/secondquant.py"
+  ],
+  "patch_bytes": 646,
+  "tokens": {
+    "prompt": 14085,
+    "completion": 314
+  },
+  "secs": 81.0
+}

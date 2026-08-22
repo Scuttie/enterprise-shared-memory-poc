@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-18199",
+  "repo": "sympy/sympy",
+  "arm": "B0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-18199@sha256:3fbc4ff81609eecb1f26540433cbc24b8f6e5454472545e19180137e51883e3e",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "sympy/ntheory/residue_ntheory.py"
+  ],
+  "patch_bytes": 493,
+  "tokens": {
+    "prompt": 6345,
+    "completion": 222
+  },
+  "secs": 62.1
+}

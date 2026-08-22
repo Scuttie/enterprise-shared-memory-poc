@@ -1,0 +1,22 @@
+{
+  "instance_id": "astropy__astropy-14096",
+  "repo": "astropy/astropy",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-14096@sha256:29e2270fdba28472dd3aa4cc4a4d5fc80e39c5e10b6abcf1e17ce7358cd0cc9e",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "decode": "",
+  "inject_len": 3707,
+  "edited_files": [
+    "astropy/coordinates/sky_coordinate.py"
+  ],
+  "patch_bytes": 747,
+  "tokens": {
+    "prompt": 7952,
+    "completion": 142
+  },
+  "secs": 150.0
+}

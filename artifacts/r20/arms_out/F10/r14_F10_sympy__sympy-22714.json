@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-22714",
+  "repo": "sympy/sympy",
+  "arm": "F10",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-22714@sha256:85c5000278d19e07ccbfc130861bb3407d4e5494ecbe6ca4cfff0b5e58f25815",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "decode": "",
+  "inject_len": 4494,
+  "edited_files": [
+    "sympy/geometry/point.py"
+  ],
+  "patch_bytes": 657,
+  "tokens": {
+    "prompt": 20367,
+    "completion": 205
+  },
+  "secs": 61.6
+}

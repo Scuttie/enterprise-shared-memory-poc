@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-23413",
+  "repo": "sympy/sympy",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-23413@sha256:ff343113e7d03f91f325eb74e7a90247714fcac28af5c28cdb69ccb17c768eb0",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 1811,
+  "edited_files": [
+    "sympy/matrices/normalforms.py"
+  ],
+  "patch_bytes": 673,
+  "tokens": {
+    "prompt": 16510,
+    "completion": 321
+  },
+  "secs": 74.7
+}

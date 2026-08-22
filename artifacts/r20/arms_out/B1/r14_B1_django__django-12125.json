@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-12125",
+  "repo": "django/django",
+  "arm": "B1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-12125@sha256:4345ad65eec0da8a32063c2c9a32df380e10b4fb4ccebfcfed9c4be9a185e5ff",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 3925,
+  "edited_files": [
+    "django/db/migrations/operations/models.py"
+  ],
+  "patch_bytes": 730,
+  "tokens": {
+    "prompt": 35874,
+    "completion": 538
+  },
+  "secs": 73.5
+}

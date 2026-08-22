@@ -1,0 +1,22 @@
+{
+  "instance_id": "pytest-dev__pytest-10081",
+  "repo": "pytest-dev/pytest",
+  "arm": "F01",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-10081@sha256:58951c0d236ade36cd508d48e87819c488ed28c60abda963f8d4df99d89c030c",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 17,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "src/_pytest/unittest.py"
+  ],
+  "patch_bytes": 15209,
+  "tokens": {
+    "prompt": 26707,
+    "completion": 391
+  },
+  "secs": 68.3
+}

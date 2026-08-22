@@ -1,0 +1,22 @@
+{
+  "instance_id": "pytest-dev__pytest-7521",
+  "repo": "pytest-dev/pytest",
+  "arm": "F01",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-7521@sha256:570a5872f1a0250ef52d735285f64dff43ce02ba79f7750e7c4dd9de9c7ebcb5",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 11,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "testing/test_capfd.py"
+  ],
+  "patch_bytes": 350,
+  "tokens": {
+    "prompt": 25478,
+    "completion": 392
+  },
+  "secs": 77.6
+}

@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-24443",
+  "repo": "sympy/sympy",
+  "arm": "F01",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-24443@sha256:0d6610c1dd6f38eb68ee0923a74aebc6103fabc063f5cceec45a4cc0cb8a8cd4",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "sympy/combinatorics/homomorphisms.py"
+  ],
+  "patch_bytes": 1565,
+  "tokens": {
+    "prompt": 3197,
+    "completion": 297
+  },
+  "secs": 60.1
+}

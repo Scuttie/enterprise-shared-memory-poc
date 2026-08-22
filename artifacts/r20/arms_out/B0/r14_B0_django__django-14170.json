@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-14170",
+  "repo": "django/django",
+  "arm": "B0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-14170@sha256:c2c5eed6f8e103deca2391f740e52c120a59e3fb2086b0a092b837b8e1c8919f",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 16,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "django/db/models/lookups.py"
+  ],
+  "patch_bytes": 759,
+  "tokens": {
+    "prompt": 22645,
+    "completion": 636
+  },
+  "secs": 99.9
+}

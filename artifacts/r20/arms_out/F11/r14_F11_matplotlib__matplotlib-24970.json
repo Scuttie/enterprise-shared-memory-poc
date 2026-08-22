@@ -1,0 +1,22 @@
+{
+  "instance_id": "matplotlib__matplotlib-24970",
+  "repo": "matplotlib/matplotlib",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-24970@sha256:c5d99048ceeb6b0c3157dde39bb122174e494b557fb7dd3c6d4bd8dba70a1bfa",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "decode": "",
+  "inject_len": 3528,
+  "edited_files": [
+    "lib/matplotlib/colors.py"
+  ],
+  "patch_bytes": 672,
+  "tokens": {
+    "prompt": 7697,
+    "completion": 119
+  },
+  "secs": 173.1
+}

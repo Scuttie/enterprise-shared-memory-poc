@@ -1,0 +1,22 @@
+{
+  "instance_id": "astropy__astropy-13398",
+  "repo": "astropy/astropy",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-13398@sha256:49cfb8e47c492fac9570ee66f8d5e4a7aa2a2516e18cf5663aa73e5b352b670a",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 17,
+  "decode": "",
+  "inject_len": 2754,
+  "edited_files": [
+    "astropy/coordinates/builtin_frames/intermediate_rotation_transforms.py"
+  ],
+  "patch_bytes": 4404,
+  "tokens": {
+    "prompt": 105431,
+    "completion": 5931
+  },
+  "secs": 183.3
+}

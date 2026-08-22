@@ -1,0 +1,162 @@
+{
+  "rate": {
+    "B0": 0.0766,
+    "B1": 0.0769,
+    "F00": 0.0726,
+    "F10": 0.0927,
+    "F01": 0.0887,
+    "F11": 0.0927
+  },
+  "interaction": {
+    "I": -0.0161,
+    "ci95": [
+      -0.0758,
+      0.0131
+    ],
+    "ci90": [
+      -0.06,
+      0.0069
+    ],
+    "n": 248
+  },
+  "estimands": {
+    "R_off": 0.0202,
+    "R_on": 0.004,
+    "R_avg": 0.0121,
+    "G_shuffled": 0.0161,
+    "G_relevant": 0.0,
+    "G_avg": 0.008,
+    "P_bundle": 0.0161,
+    "O_orchestration": 0.0
+  },
+  "contrasts": {
+    "B1_B0": {
+      "contrast": "B1-B0",
+      "n": 247,
+      "rateA": 0.0769,
+      "rateB": 0.0769,
+      "diff": 0.0,
+      "gain": 8,
+      "loss": 8,
+      "tie": 231,
+      "mcnemar_p": 1.0,
+      "cluster95": [
+        -0.011,
+        0.0312
+      ]
+    },
+    "F10_F00": {
+      "contrast": "F10-F00",
+      "n": 248,
+      "rateA": 0.0927,
+      "rateB": 0.0726,
+      "diff": 0.0202,
+      "gain": 9,
+      "loss": 4,
+      "tie": 235,
+      "mcnemar_p": 0.2668,
+      "cluster95": [
+        -0.0085,
+        0.0363
+      ]
+    },
+    "F11_F01": {
+      "contrast": "F11-F01",
+      "n": 248,
+      "rateA": 0.0927,
+      "rateB": 0.0887,
+      "diff": 0.004,
+      "gain": 7,
+      "loss": 6,
+      "tie": 235,
+      "mcnemar_p": 1.0,
+      "cluster95": [
+        -0.0459,
+        0.0196
+      ]
+    },
+    "F01_F00": {
+      "contrast": "F01-F00",
+      "n": 248,
+      "rateA": 0.0887,
+      "rateB": 0.0726,
+      "diff": 0.0161,
+      "gain": 8,
+      "loss": 4,
+      "tie": 236,
+      "mcnemar_p": 0.3877,
+      "cluster95": [
+        0.0049,
+        0.0323
+      ]
+    },
+    "F11_F10": {
+      "contrast": "F11-F10",
+      "n": 248,
+      "rateA": 0.0927,
+      "rateB": 0.0927,
+      "diff": 0.0,
+      "gain": 4,
+      "loss": 4,
+      "tie": 240,
+      "mcnemar_p": 1.0,
+      "cluster95": [
+        -0.0459,
+        0.0196
+      ]
+    },
+    "F11_B0": {
+      "contrast": "F11-B0",
+      "n": 248,
+      "rateA": 0.0927,
+      "rateB": 0.0766,
+      "diff": 0.0161,
+      "gain": 8,
+      "loss": 4,
+      "tie": 236,
+      "mcnemar_p": 0.3877,
+      "cluster95": [
+        0.0,
+        0.0277
+      ]
+    },
+    "F00_B1": {
+      "contrast": "F00-B1",
+      "n": 247,
+      "rateA": 0.0729,
+      "rateB": 0.0769,
+      "diff": -0.004,
+      "gain": 6,
+      "loss": 7,
+      "tie": 234,
+      "mcnemar_p": 1.0,
+      "cluster95": [
+        -0.0145,
+        0.0159
+      ]
+    },
+    "F10_B1": {
+      "contrast": "F10-B1",
+      "n": 247,
+      "rateA": 0.0931,
+      "rateB": 0.0769,
+      "diff": 0.0162,
+      "gain": 10,
+      "loss": 6,
+      "tie": 231,
+      "mcnemar_p": 0.4545,
+      "cluster95": [
+        -0.013,
+        0.0417
+      ]
+    }
+  },
+  "labels": {
+    "SYSTEM_BUNDLE_EFFECT": "NULL_OR_INCONCLUSIVE",
+    "ORCHESTRATION_EFFECT": "NULL_OR_INCONCLUSIVE",
+    "RELEVANCE_EFFECT": "NULL_OR_INCONCLUSIVE",
+    "ROUTER_MAIN_EFFECT": "NULL_OR_INCONCLUSIVE",
+    "ROUTER_X_RELEVANCE_INTERACTION": "NULL_OR_INCONCLUSIVE",
+    "PRACTICAL_EQUIVALENCE_interaction": "FAIL_OR_NOT_ESTABLISHED"
+  }
+}

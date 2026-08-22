@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-24539",
+  "repo": "sympy/sympy",
+  "arm": "F10",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-24539@sha256:b6303273066473c21cbf7b97d26f6bb214a5a24ebe6c65b8f26234e3315f7a4b",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "decode": "",
+  "inject_len": 4881,
+  "edited_files": [
+    "sympy/polys/rings.py"
+  ],
+  "patch_bytes": 546,
+  "tokens": {
+    "prompt": 8447,
+    "completion": 113
+  },
+  "secs": 61.4
+}

@@ -1,0 +1,22 @@
+{
+  "instance_id": "sphinx-doc__sphinx-10323",
+  "repo": "sphinx-doc/sphinx",
+  "arm": "F00",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-10323@sha256:b27e055730cb8a826e4e2cf0503d03c6770d537ab29cb6df8caa93ef5db51e8f",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "decode": "",
+  "inject_len": 4755,
+  "edited_files": [
+    "doc/usage/restructuredtext/directives.rst"
+  ],
+  "patch_bytes": 1000,
+  "tokens": {
+    "prompt": 27288,
+    "completion": 253
+  },
+  "secs": 63.9
+}

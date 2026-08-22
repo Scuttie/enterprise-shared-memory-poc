@@ -1,0 +1,22 @@
+{
+  "instance_id": "matplotlib__matplotlib-26342",
+  "repo": "matplotlib/matplotlib",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-26342@sha256:c742fc04bfdd999276142c96a59adcf9c184b0b09d58fb02af391935ae107fa0",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 2236,
+  "edited_files": [
+    "lib/matplotlib/contour.py"
+  ],
+  "patch_bytes": 605,
+  "tokens": {
+    "prompt": 25566,
+    "completion": 280
+  },
+  "secs": 176.6
+}

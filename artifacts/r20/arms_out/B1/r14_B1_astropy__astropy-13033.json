@@ -1,0 +1,22 @@
+{
+  "instance_id": "astropy__astropy-13033",
+  "repo": "astropy/astropy",
+  "arm": "B1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-13033@sha256:22f4f193fbf69d61c59e285494be18041934f8b528190dfe8c6c0d8051d8d6de",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "decode": "",
+  "inject_len": 4529,
+  "edited_files": [
+    "astropy/timeseries/core.py"
+  ],
+  "patch_bytes": 892,
+  "tokens": {
+    "prompt": 18016,
+    "completion": 194
+  },
+  "secs": 109.6
+}

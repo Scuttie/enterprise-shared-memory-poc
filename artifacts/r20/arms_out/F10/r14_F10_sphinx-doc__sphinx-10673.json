@@ -1,0 +1,22 @@
+{
+  "instance_id": "sphinx-doc__sphinx-10673",
+  "repo": "sphinx-doc/sphinx",
+  "arm": "F10",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-10673@sha256:4654890cc32945f5021445040ad6f2efd3b651f1c9efe679021d3b3da5375eb0",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 4742,
+  "edited_files": [
+    "sphinx/environment/adapters/toctree.py"
+  ],
+  "patch_bytes": 895,
+  "tokens": {
+    "prompt": 53110,
+    "completion": 320
+  },
+  "secs": 67.4
+}

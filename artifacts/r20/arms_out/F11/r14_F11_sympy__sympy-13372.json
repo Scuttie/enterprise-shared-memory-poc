@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-13372",
+  "repo": "sympy/sympy",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13372@sha256:afc436645be2d3bc40184b51f04e9a0cecad3945746e9bcfeaf6733b1d7cf436",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "decode": "",
+  "inject_len": 860,
+  "edited_files": [
+    "sympy/core/evalf.py"
+  ],
+  "patch_bytes": 685,
+  "tokens": {
+    "prompt": 16171,
+    "completion": 269
+  },
+  "secs": 62.0
+}

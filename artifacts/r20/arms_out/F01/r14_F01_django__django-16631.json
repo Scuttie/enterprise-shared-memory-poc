@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-16631",
+  "repo": "django/django",
+  "arm": "F01",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-16631@sha256:89047cc950b66cc6a18c11d97f528877c313bc9e2a415931777140a8c0e2df20",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "django/core/signing.py"
+  ],
+  "patch_bytes": 625,
+  "tokens": {
+    "prompt": 12371,
+    "completion": 291
+  },
+  "secs": 117.8
+}

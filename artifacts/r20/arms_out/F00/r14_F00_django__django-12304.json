@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-12304",
+  "repo": "django/django",
+  "arm": "F00",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-12304@sha256:46ad662e0ab1ab9417a26ceae392395f255634a054c25faf0fcfcd43aa52702c",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 4466,
+  "edited_files": [
+    "django/db/models/enums.py"
+  ],
+  "patch_bytes": 438,
+  "tokens": {
+    "prompt": 41682,
+    "completion": 222
+  },
+  "secs": 82.0
+}

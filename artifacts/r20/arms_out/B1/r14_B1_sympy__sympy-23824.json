@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-23824",
+  "repo": "sympy/sympy",
+  "arm": "B1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-23824@sha256:678693d9a72aa779447ca2d9f0e85d4752e5b28e646edf083cd735aa6144f770",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 13,
+  "decode": "",
+  "inject_len": 4529,
+  "edited_files": [
+    "sympy/physics/hep/gamma_matrices.py"
+  ],
+  "patch_bytes": 1077,
+  "tokens": {
+    "prompt": 53841,
+    "completion": 469
+  },
+  "secs": 72.2
+}

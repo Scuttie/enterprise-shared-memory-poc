@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-20801",
+  "repo": "sympy/sympy",
+  "arm": "F00",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-20801@sha256:66efe47a12232b336ded7ef943a03dd42f5d6cbeeb609c46ce5646686b218eda",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 4611,
+  "edited_files": [
+    "sympy/core/numbers.py"
+  ],
+  "patch_bytes": 651,
+  "tokens": {
+    "prompt": 41084,
+    "completion": 484
+  },
+  "secs": 69.7
+}

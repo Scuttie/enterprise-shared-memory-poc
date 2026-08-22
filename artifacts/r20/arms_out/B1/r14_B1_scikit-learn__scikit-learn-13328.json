@@ -1,0 +1,22 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-13328",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "B1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-13328@sha256:4561ea7d239224b3ab1c7d645add8e86c0b435dd158c11c41ed4494d28d855e8",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "decode": "",
+  "inject_len": 4529,
+  "edited_files": [
+    "sklearn/linear_model/huber.py"
+  ],
+  "patch_bytes": 554,
+  "tokens": {
+    "prompt": 16841,
+    "completion": 143
+  },
+  "secs": 76.6
+}

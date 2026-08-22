@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-14248",
+  "repo": "sympy/sympy",
+  "arm": "F01",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-14248@sha256:eb3a63364062801d29fbdf423d80ac39157f00ec4f30a0ded10c332ecb1090fd",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "sympy/matrices/expressions/matadd.py"
+  ],
+  "patch_bytes": 460,
+  "tokens": {
+    "prompt": 29811,
+    "completion": 283
+  },
+  "secs": 80.1
+}

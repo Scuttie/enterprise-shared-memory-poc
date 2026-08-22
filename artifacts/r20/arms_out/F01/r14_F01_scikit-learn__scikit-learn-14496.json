@@ -1,0 +1,22 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-14496",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "F01",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-14496@sha256:9fb17db38a54b0ddc8663bea55f1dab894491ebc6d75e4899a1ba76662d0c51b",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "sklearn/cluster/optics_.py"
+  ],
+  "patch_bytes": 536,
+  "tokens": {
+    "prompt": 4850,
+    "completion": 119
+  },
+  "secs": 76.6
+}

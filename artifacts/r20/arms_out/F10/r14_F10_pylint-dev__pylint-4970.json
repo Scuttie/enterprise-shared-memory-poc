@@ -1,0 +1,22 @@
+{
+  "instance_id": "pylint-dev__pylint-4970",
+  "repo": "pylint-dev/pylint",
+  "arm": "F10",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.pylint-dev_1776_pylint-4970@sha256:5d331d487e49480c4098366cd094aae9dd2e8d365f0412174d5e1a2e9a3d5893",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "decode": "",
+  "inject_len": 3536,
+  "edited_files": [
+    "pylint/checkers/similar.py"
+  ],
+  "patch_bytes": 791,
+  "tokens": {
+    "prompt": 12846,
+    "completion": 196
+  },
+  "secs": 60.3
+}

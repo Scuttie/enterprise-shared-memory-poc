@@ -1,0 +1,22 @@
+{
+  "instance_id": "psf__requests-1921",
+  "repo": "psf/requests",
+  "arm": "F00",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.psf_1776_requests-1921@sha256:2ee0a4c706f04d2926a1622ec51b53d4ce6010b80d3ee10d414ea2a276c26cc9",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 17,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "requests/sessions.py"
+  ],
+  "patch_bytes": 20800,
+  "tokens": {
+    "prompt": 33012,
+    "completion": 421
+  },
+  "secs": 66.3
+}

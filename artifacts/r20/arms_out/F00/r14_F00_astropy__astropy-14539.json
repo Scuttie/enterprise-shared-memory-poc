@@ -1,0 +1,22 @@
+{
+  "instance_id": "astropy__astropy-14539",
+  "repo": "astropy/astropy",
+  "arm": "F00",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-14539@sha256:ed6b8fa262a734159bb7171934ad5d03dff520de439555bf3b6f41470a09bc4c",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 4689,
+  "edited_files": [
+    "astropy/io/fits/diff.py"
+  ],
+  "patch_bytes": 1932,
+  "tokens": {
+    "prompt": 41890,
+    "completion": 901
+  },
+  "secs": 108.9
+}

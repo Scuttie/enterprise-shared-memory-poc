@@ -1,0 +1,22 @@
+{
+  "instance_id": "sphinx-doc__sphinx-9258",
+  "repo": "sphinx-doc/sphinx",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-9258@sha256:cb12fe0f619c5d84e248afc0b89729a26cc46c7b51ebfd0444a77d9a7471fbb9",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "decode": "",
+  "inject_len": 2121,
+  "edited_files": [
+    "sphinx/ext/napoleon/docstring.py"
+  ],
+  "patch_bytes": 857,
+  "tokens": {
+    "prompt": 7878,
+    "completion": 307
+  },
+  "secs": 64.9
+}

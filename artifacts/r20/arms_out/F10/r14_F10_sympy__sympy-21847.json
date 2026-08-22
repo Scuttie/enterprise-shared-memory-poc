@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-21847",
+  "repo": "sympy/sympy",
+  "arm": "F10",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-21847@sha256:9a45ffe20cac4243930e8c5b2b065adbc08f476c880d7465ca0fbfb9f98c6456",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "decode": "",
+  "inject_len": 4630,
+  "edited_files": [
+    "sympy/polys/monomials.py"
+  ],
+  "patch_bytes": 605,
+  "tokens": {
+    "prompt": 32904,
+    "completion": 753
+  },
+  "secs": 68.1
+}

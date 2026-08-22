@@ -1,0 +1,22 @@
+{
+  "instance_id": "astropy__astropy-13579",
+  "repo": "astropy/astropy",
+  "arm": "F01",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-13579@sha256:f3dc11a37649430d6a7a3aac4858477db8f19d9a941f056f875e8e566066ffe3",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 7,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "astropy/wcs/wcsapi/wrappers/sliced_wcs.py"
+  ],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 18714,
+    "completion": 516
+  },
+  "secs": 55.2
+}

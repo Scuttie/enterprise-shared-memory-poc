@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-12419",
+  "repo": "sympy/sympy",
+  "arm": "B0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-12419@sha256:f78a02916b66645a5325eb515192081890cfc77a103202d5b611d3b2d4b77893",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "sympy/matrices/matrices.py"
+  ],
+  "patch_bytes": 325,
+  "tokens": {
+    "prompt": 64990,
+    "completion": 222
+  },
+  "secs": 101.5
+}

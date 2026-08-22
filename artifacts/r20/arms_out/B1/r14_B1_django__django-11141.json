@@ -1,0 +1,23 @@
+{
+  "instance_id": "django__django-11141",
+  "repo": "django/django",
+  "arm": "B1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-11141@sha256:f2decac6250608a5fa4edd0d388d34983a612c7d9951e6246591a7d3a61a8d66",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 3,
+  "decode": "",
+  "inject_len": 4831,
+  "edited_files": [
+    "django/db/migrations/loader.py",
+    "django/db/migrations/questioner.py"
+  ],
+  "patch_bytes": 1653,
+  "tokens": {
+    "prompt": 5645,
+    "completion": 188
+  },
+  "secs": 65.0
+}

@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-14349",
+  "repo": "django/django",
+  "arm": "B0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-14349@sha256:d02cca73e9b238ef6d3577073093b627369e72909667dc5483150be37f125754",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 8,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "django/core/validators.py"
+  ],
+  "patch_bytes": 701,
+  "tokens": {
+    "prompt": 11799,
+    "completion": 226
+  },
+  "secs": 68.2
+}

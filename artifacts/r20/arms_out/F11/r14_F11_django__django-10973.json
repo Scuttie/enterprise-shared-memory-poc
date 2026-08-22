@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-10973",
+  "repo": "django/django",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-10973@sha256:ed086eeedcb33feb3d298d97764c0413e078d1e6144f0a145c5defa34bb077c8",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "decode": "",
+  "inject_len": 2692,
+  "edited_files": [
+    "django/db/backends/postgresql/client.py"
+  ],
+  "patch_bytes": 1673,
+  "tokens": {
+    "prompt": 13466,
+    "completion": 281
+  },
+  "secs": 66.9
+}

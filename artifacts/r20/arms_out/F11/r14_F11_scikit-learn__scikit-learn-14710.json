@@ -1,0 +1,22 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-14710",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-14710@sha256:e68930db25c08aeb94b76ce37a4691db5db5cae8db8691ac914160f5c7c331fd",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "decode": "",
+  "inject_len": 3595,
+  "edited_files": [
+    "sklearn/ensemble/_hist_gradient_boosting/gradient_boosting.py"
+  ],
+  "patch_bytes": 1206,
+  "tokens": {
+    "prompt": 17432,
+    "completion": 285
+  },
+  "secs": 76.1
+}

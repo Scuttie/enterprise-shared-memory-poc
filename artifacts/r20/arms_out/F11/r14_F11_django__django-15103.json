@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-15103",
+  "repo": "django/django",
+  "arm": "F11",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-15103@sha256:4e1908be32bad8b1c12edad8ad657bc0b811c0de5104f4366dac1585f0c6110e",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 9,
+  "decode": "",
+  "inject_len": 2990,
+  "edited_files": [
+    "django/utils/html.py"
+  ],
+  "patch_bytes": 1157,
+  "tokens": {
+    "prompt": 13152,
+    "completion": 342
+  },
+  "secs": 73.9
+}

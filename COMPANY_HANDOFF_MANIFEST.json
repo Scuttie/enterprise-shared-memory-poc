@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "commit": "e1c57319f1404dcbae4986213e8618efd6c1e697",
+  "commit": "299bb66d904763821e5aba293beb2d1d5536591b",
   "project_version": "0.3.0.dev1",
   "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) \u2014 NOT COMPANY-STAGING-CERTIFIED",
   "source_tree_sha256": "03ee2a1a35e482db89c33ac0073b6de1e033de4727077828fc5bade98aa63e2c",
@@ -15,8 +15,8 @@
     "migrations/sql/0014_up.sha256": "e31246ced84ed483e33630858e5ad218a325c8fbb7ba9996096f538b04a07451",
     "openapi_v1.json": "607706c5f93d8a83582f5ecbdbe7593e5e27dfe47e6e2a3bdf079ea44f370db1",
     "pyproject.toml": "b8726f1f315d15d56e61cc7e44033ac6080cf3a32f3ae90b97bab2e32e45ee93",
-    "artifacts/p6/router_policy.json": "f2e039f7ea3b408cabe839e2e5070283cfa0a52035624b8bab1f5653f8c188d8",
-    "artifacts/p6/governance_thresholds.json": "dd194dcbe6d8d02e9eed67f05182ccd507c864eb991e43d7c00d5dca8c201147",
+    "artifacts/p6/router_policy.json": "f225a08a7aae642a90b3c7e99bf3cf816affbe20559e2b756adc602013a545be",
+    "artifacts/p6/governance_thresholds.json": "e0de8990a4819c93ac152146d22de7311309402c2f3feb85052a68549f3dbe10",
     "examples/company_harness/tool_schema.json": "4f00b31c626bcace65935bc16717e00511afb719a30ad42354dab86d7a21eee6",
     "README.md": "eb74875f82ef1c158a1320e8e556ed907038f33eeb8d85b1d96a188ef6eeed68",
     "docs/STATUS.yaml": "53b1a9c043f782569b21b2319efcc4eab4367b175df1c6f9e972d1f0287353a1",
@@ -33,5 +33,5 @@
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "1e5b965ba6f20420b4cd0b32ef91bc722b1c9359edb18ad1e98005496ed0c845"
+  "manifest_hash": "05cee40081c4d19ebd6922812cdd3fe375733f201c5eb4868226e1a3601478eb"
 }

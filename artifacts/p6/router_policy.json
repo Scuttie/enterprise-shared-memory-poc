@@ -1,62 +1,62 @@
 {
-  "policy_name": "rule_router_v1",
-  "version": "1",
-  "weights": {
-    "applicability": 1.0,
-    "actionability": 1.0,
-    "novelty": 0.8,
-    "evidence": 0.6,
-    "direct_grounding": 1.2,
-    "redundancy": 1.0,
-    "version_risk": 1.5,
-    "scope_risk": 1.5,
-    "mismatch": 1.0
-  },
-  "use_threshold": 1.0,
-  "min_margin": 0.25,
-  "coverage_floor_dev": 0.15,
-  "use_reason_codes": [
-    "USE_DIRECT_API_MATCH",
-    "USE_DIRECT_SYMBOL_MATCH",
-    "USE_FAILURE_SIGNATURE_MATCH",
-    "USE_NEW_VERIFIED_ACTION",
-    "USE_VERSION_COMPATIBLE_WORKAROUND"
-  ],
-  "abstain_reason_codes": [
-    "ABSTAIN_ALREADY_TRIED",
-    "ABSTAIN_HIGH_RISK",
-    "ABSTAIN_LOW_MARGIN",
-    "ABSTAIN_NO_ACTIONABLE_DELTA",
-    "ABSTAIN_REDUNDANT",
-    "ABSTAIN_SCOPE",
-    "ABSTAIN_THEME_ONLY",
-    "ABSTAIN_UNVERIFIED",
-    "ABSTAIN_VERSION_MISMATCH",
-    "ABSTAIN_WRONG_STAGE"
-  ],
-  "features_public_only": [
-    "applicability",
-    "actionability",
-    "novelty",
-    "evidence",
-    "direct_grounding",
-    "redundancy",
-    "version_risk",
-    "scope_risk",
-    "mismatch"
-  ],
-  "forbidden_features": [
-    "gold_patch",
-    "target_gold",
-    "hidden_tests",
-    "target_tests",
-    "final_verdict",
-    "verifier_verdict",
-    "future_outcome",
-    "experiment_arm",
-    "arm",
-    "resolved"
-  ],
-  "note": "Weights selected on development data only; frozen before any held-out evaluation. Deterministic, no model calls.",
-  "content_hash": "4daff133dba8a502719cc784dfd1c52040dc31cf9dbe2375d03f769c26aa810f"
+ "policy_name": "rule_router_v1",
+ "version": "1",
+ "weights": {
+  "applicability": 1.0,
+  "actionability": 1.0,
+  "novelty": 0.8,
+  "evidence": 0.6,
+  "direct_grounding": 1.2,
+  "redundancy": 1.0,
+  "version_risk": 1.5,
+  "scope_risk": 1.5,
+  "mismatch": 1.0
+ },
+ "use_threshold": 1.0,
+ "min_margin": 0.25,
+ "coverage_floor_dev": 0.15,
+ "use_reason_codes": [
+  "USE_DIRECT_API_MATCH",
+  "USE_DIRECT_SYMBOL_MATCH",
+  "USE_FAILURE_SIGNATURE_MATCH",
+  "USE_NEW_VERIFIED_ACTION",
+  "USE_VERSION_COMPATIBLE_WORKAROUND"
+ ],
+ "abstain_reason_codes": [
+  "ABSTAIN_ALREADY_TRIED",
+  "ABSTAIN_HIGH_RISK",
+  "ABSTAIN_LOW_MARGIN",
+  "ABSTAIN_NO_ACTIONABLE_DELTA",
+  "ABSTAIN_REDUNDANT",
+  "ABSTAIN_SCOPE",
+  "ABSTAIN_THEME_ONLY",
+  "ABSTAIN_UNVERIFIED",
+  "ABSTAIN_VERSION_MISMATCH",
+  "ABSTAIN_WRONG_STAGE"
+ ],
+ "features_public_only": [
+  "applicability",
+  "actionability",
+  "novelty",
+  "evidence",
+  "direct_grounding",
+  "redundancy",
+  "version_risk",
+  "scope_risk",
+  "mismatch"
+ ],
+ "forbidden_features": [
+  "gold_patch",
+  "target_gold",
+  "hidden_tests",
+  "target_tests",
+  "final_verdict",
+  "verifier_verdict",
+  "future_outcome",
+  "experiment_arm",
+  "arm",
+  "resolved"
+ ],
+ "note": "Weights selected on development data only; frozen before any held-out evaluation. Deterministic, no model calls.",
+ "content_hash": "4daff133dba8a502719cc784dfd1c52040dc31cf9dbe2375d03f769c26aa810f"
 }

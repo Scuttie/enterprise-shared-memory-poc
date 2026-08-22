@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "enterprise-memory": {
+      "command": "python",
+      "args": ["-m", "enterprise_memory.mcp.server"],
+      "env": {"EM_ORG_ID": "<your-org-id>", "EM_OIDC_ISSUER": "<issuer-url>"},
+      "note": "Local stdio MCP. Identity/org derived server-side from EM_* env + OIDC; NEVER pass tokens as tool args."
+    }
+  }
+}

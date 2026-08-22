@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "enterprise-memory": {
+      "transport": "streamable-http",
+      "url": "https://<internal-deployment>/mcp",
+      "headers": {"Authorization": "Bearer <from-secret-store-at-runtime>"},
+      "note": "Streamable HTTP MCP for internal deployment. Bearer token injected at runtime from the secret store, not committed."
+    }
+  }
+}

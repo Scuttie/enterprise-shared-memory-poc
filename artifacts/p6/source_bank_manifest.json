@@ -1,0 +1,8 @@
+{
+ "bank": "HISTORICAL_VERIFIED",
+ "built_from": "SWE-bench Verified earlier same-repo resolved issues (problem+gold patch as evidence; execution view compiled)",
+ "per_target_sources": "all earlier same-repo issues; retrieval selects top-k by neutral projection similarity",
+ "held_out_targets_with_sources": 308,
+ "leakage_rule": "target's own gold/tests NEVER enter memory; source created_at < target; source_user != target_user",
+ "content_hash": "b78ca267f92e3d6e52a40cfcaa40c6dad4a2b734279671e9b62037d2bbad4db1"
+}

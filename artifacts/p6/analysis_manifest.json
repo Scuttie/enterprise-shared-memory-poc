@@ -1,0 +1,23 @@
+{
+ "ITT": true,
+ "infra_failure_counts_as": "failure",
+ "test": "exact paired McNemar",
+ "ci": "repository-cluster bootstrap 95%",
+ "multiplicity": "Holm for secondary superiority",
+ "primary_sequence": [
+  "L1=A4-A0",
+  "L2=A4-A1",
+  "L3=A4-A2",
+  "H1=A5-A0",
+  "H4=A5-A4"
+ ],
+ "no_optional_stopping": true,
+ "no_post_result_N_expansion": true,
+ "result_label_domain": [
+  "UTILITY_ROUTER_POSITIVE",
+  "UTILITY_ROUTER_NULL",
+  "UTILITY_ROUTER_NEGATIVE",
+  "UTILITY_ROUTER_NOT_RUN"
+ ],
+ "content_hash": "84dcea63da473b4704eb659951db315336bf73b499684fb9d9f0c2fbb9b7be2d"
+}

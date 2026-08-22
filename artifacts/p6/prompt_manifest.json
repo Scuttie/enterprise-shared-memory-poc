@@ -1,0 +1,8 @@
+{
+ "reader": "gpt-4o-mini-2024-07-18",
+ "identical_across_arms": true,
+ "rule": "ONE prompt template; arms differ ONLY by injected memory/plan payload; no per-arm prompt rewrite; same tool turns; context not enlarged only for memory arms",
+ "max_turns": 40,
+ "temperature": 0,
+ "content_hash": "4054afa19eef4e8d045071097aa522260c84a83184804fb82be694a8c4a2f896"
+}

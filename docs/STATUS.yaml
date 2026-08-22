@@ -2,7 +2,7 @@
 # Generated/maintained under P6/R19 (codex/utility-router-v0.3). CI (ci-docs) fails if user-facing
 # docs contradict this file. Do NOT hand-edit README/ARCHITECTURE claims without updating this first.
 schema_version: 1
-last_verified_commit: "c662d21a9349f73435fcf34b9a33d12cbdeba21c"
+last_verified_commit: "1de38558636e8bf6ac49653776fdfb7bbc1e6bfe"
 
 project_version: "0.3.0.dev1"
 service_status: IMPLEMENTED            # core control-plane/execution-plane plumbing exists; CI-tested

@@ -11,12 +11,12 @@ tenants. Every decision is auditable and maps back to a canonical version in Pos
 | Version | `0.3.0.dev1` |
 | Service plumbing | `IMPLEMENTED` |
 | Research efficacy | `MEMORY_TRANSFER_EFFICACY_NULL` |
-| Utility router (held-out) | `None` |
-| Company handoff | `IN_PROGRESS` |
+| Utility router (held-out) | `NULL` |
+| Company handoff | `READY` |
 | Production certification | `NOT_CLAIMED` |
 | Migration head | `0014` |
 
-> **COMPANY HANDOFF IN PROGRESS — not yet COMPANY-HANDOFF-READY, not COMPANY-STAGING-CERTIFIED.** Service correctness, research efficacy, and staging certification are tracked separately; see [`docs/STATUS.yaml`](docs/STATUS.yaml) (single source of truth) and [`docs/EVIDENCE_AND_LIMITATIONS.md`](docs/EVIDENCE_AND_LIMITATIONS.md).
+> **COMPANY-HANDOFF-READY — NOT YET COMPANY-STAGING-CERTIFIED.** Service correctness, research efficacy, and staging certification are tracked separately; see [`docs/STATUS.yaml`](docs/STATUS.yaml) (single source of truth) and [`docs/EVIDENCE_AND_LIMITATIONS.md`](docs/EVIDENCE_AND_LIMITATIONS.md).
 <!-- STATUS:END -->
 
 ## What it does
@@ -114,6 +114,8 @@ logged; verifier & hidden tests never exposed. Full model: [`docs/SECURITY_AND_P
 Run `shadow` mode against a mirror of your repositories to collect router decisions and outcome credits with **zero
 injection risk**; review the audit; then enable `utility_gated` with reviewed, promoted cards. Acceptance criteria:
 [`docs/COMPANY_ACCEPTANCE_CHECKLIST.md`](docs/COMPANY_ACCEPTANCE_CHECKLIST.md).
+
+- [한국어 회사 도입·구현 안내서](docs/COMPANY_IMPLEMENTATION_GUIDE_KO.md) — clone → 설정 → 실행 → 검사 → 통합 (Korean onboarding guide)
 
 ## Repository layout
 `src/enterprise_memory/{experience,agentic,router,governance,mcp,adapters,service,serving,backends}` ·

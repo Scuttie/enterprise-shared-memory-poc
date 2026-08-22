@@ -14,3 +14,4 @@
 - [COMPANY_ACCEPTANCE_CHECKLIST.md](COMPANY_ACCEPTANCE_CHECKLIST.md) — acceptance gates
 - [PRODUCTION_READINESS_REPORT.md](PRODUCTION_READINESS_REPORT.md) — what remains for production
 - [DECISION_LOG.md](DECISION_LOG.md) — architecture / license / claim-boundary decisions
+- [COMPANY_IMPLEMENTATION_GUIDE_KO.md](COMPANY_IMPLEMENTATION_GUIDE_KO.md) — 한국어 회사 도입·구현 안내서

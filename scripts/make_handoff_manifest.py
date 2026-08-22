@@ -17,11 +17,11 @@ EXCLUDE_DIRS = {".git", "__pycache__", ".venv", "venv", "node_modules", ".pytest
 
 
 def _sha_file(p):
-    h = hashlib.sha256()
+    # newline-normalized hash so Windows (CRLF working tree) and Linux CI (LF) agree; repo-hashed trees are text
     with open(p, "rb") as fh:
-        for chunk in iter(lambda: fh.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
+        data = fh.read()
+    data = data.replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def _tree_hash(rel):

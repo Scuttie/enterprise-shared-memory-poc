@@ -3,7 +3,7 @@ name: ci-r14-swebench
 on:
   workflow_dispatch:
     inputs:
-      taskset: {description: "band_pilot|main|confirm", required: false, default: "band_pilot"}
+      taskset: {description: "band_pilot|main|confirm|r19small", required: false, default: "band_pilot"}
       arm: {description: "M0/M1/M2", required: false, default: "M0"}
       memory_file: {description: "memory json for M1/M2", required: false, default: ""}
       model: {description: "reader model id", required: false, default: "gpt-4o-mini-2024-07-18"}
@@ -33,7 +33,8 @@ jobs:
           ts = os.environ.get('TASKSET','band_pilot')
           f = {'band_pilot':'configs/swebench_r14/band_pilot.json',
                'main':'configs/swebench_r14/main_targets.json',
-               'confirm':'configs/swebench_r14/confirm_targets.json'}.get(ts, 'configs/swebench_r14/band_pilot.json')
+               'confirm':'configs/swebench_r14/confirm_targets.json',
+               'r19small':'configs/p6/r19_small_targets.json'}.get(ts, 'configs/swebench_r14/band_pilot.json')
           flat = json.load(open(f))['ids']
           s=(os.environ.get('SINGLE') or '').strip()
           if s: flat=[s]

@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
       - name: Install (editable)
-        run: pip install -q -e . || pip install -q pytest
+        run: pip install -q -e ".[dev]" pytest pyyaml || pip install -q -e . pytest pyyaml
       - name: Offline company demo -> DEMO_PASS
         run: python scripts/demo_company_handoff.py --offline
       - name: Demo integration test

@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
       - name: Install (editable)
-        run: pip install -q -e . || pip install -q pytest
+        run: pip install -q -e ".[dev]" pytest pyyaml || pip install -q -e . pytest pyyaml
       - name: Router unit tests (all reason codes + leakage + coverage)
         run: python -m pytest -q tests/unit/test_rule_router_v1.py
       - name: Frozen policy integrity (content_hash matches code)

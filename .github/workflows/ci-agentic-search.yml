@@ -16,6 +16,6 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
       - name: Install (editable)
-        run: pip install -q -e . || pip install -q pytest
+        run: pip install -q -e ".[dev]" pytest pyyaml || pip install -q -e . pytest pyyaml
       - name: Agentic search/browse tests
         run: python -m pytest -q tests/unit/test_agentic_search.py

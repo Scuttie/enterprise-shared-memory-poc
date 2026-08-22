@@ -1,0 +1,35 @@
+name: ci-company-package
+# P6/R19 §18-19 — fresh-clone install, build, demo, docs, manifest: the COMPANY-HANDOFF-READY gate.
+on:
+  push:
+    branches: [codex/utility-router-v0.3]
+  pull_request: {}
+  workflow_dispatch: {}
+jobs:
+  fresh-clone:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Fresh install (editable)
+        run: pip install -e ".[dev]" || pip install -e .
+      - name: V03 unit + integration tests
+        run: |
+          python -m pytest -q tests/unit/test_experience_compiler.py tests/unit/test_experience_schema_sql.py \
+            tests/unit/test_rule_router_v1.py tests/unit/test_agentic_search.py \
+            tests/unit/test_outcome_governance.py tests/unit/test_mcp_adapters.py \
+            tests/integration/test_company_demo.py
+      - name: Docs truth + provenance + status
+        run: |
+          python scripts/check_docs_consistency.py
+          python scripts/render_project_status.py --check
+          python scripts/check_literature_provenance.py
+      - name: Offline demo -> DEMO_PASS
+        run: python scripts/demo_company_handoff.py --offline
+      - name: Handoff manifest current
+        run: python scripts/make_handoff_manifest.py --check
+      - name: Build wheel + sdist
+        run: pip install -q build && python -m build
+      - name: SBOM (best-effort)
+        run: pip install -q cyclonedx-bom && cyclonedx-py environment -o sbom.json || echo "sbom optional"

@@ -1,0 +1,20 @@
+# P6/R19 §16 — example pilot topology (placeholders). Not production-hardened.
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: esm
+      POSTGRES_PASSWORD: <from-secret-store>
+      POSTGRES_DB: esm
+    ports: ["5432:5432"]
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports: ["6333:6333"]
+  api:
+    build: ..
+    environment:
+      DATABASE_URL: postgresql://esm:<from-secret-store>@postgres:5432/esm
+      QDRANT_URL: http://qdrant:6333
+      MEMORY_POLICY_MODE: shadow
+    depends_on: [postgres, qdrant]
+    ports: ["8080:8080"]

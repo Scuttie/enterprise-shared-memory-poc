@@ -1,0 +1,8 @@
+# P6/R19 §11 — company model/harness manifest (placeholders only). Do NOT embed secrets.
+protocol: openai          # openai | anthropic | jsonrpc | mcp
+model: <your-model-id>    # REQUIRED — the system never guesses your model identity
+endpoint: <https://your-endpoint>   # required for openai/anthropic/jsonrpc; omit for mcp
+repositories:
+  - name: <org/repo>
+    scope: shared
+policy_mode: shadow       # shadow -> utility_gated after review

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "commit": "c02e0f71dda2b12e87dc1368c2c2c295d636d156",
+  "project_version": "0.3.0.dev1",
+  "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) \u2014 NOT COMPANY-STAGING-CERTIFIED",
+  "source_tree_sha256": "03ee2a1a35e482db89c33ac0073b6de1e033de4727077828fc5bade98aa63e2c",
+  "source_files": 103,
+  "docs_tree_sha256": "87b01816a59fb3e21a95a31af848f27001e8de772382c02ac71e77886e478509",
+  "docs_files": 49,
+  "examples_tree_sha256": "be03095abf849ff261c85ff80ebed29939c34dcd8292f0d288ebc0652787dbc0",
+  "examples_files": 7,
+  "migration_head": "0014",
+  "key_hashes": {
+    "migrations/sql/0014_up.sql": "1f07170a9fd5452960a7570b6424a4b04c3331e99bffdb971f3280c4b693ad3b",
+    "migrations/sql/0014_up.sha256": "e31246ced84ed483e33630858e5ad218a325c8fbb7ba9996096f538b04a07451",
+    "openapi_v1.json": "607706c5f93d8a83582f5ecbdbe7593e5e27dfe47e6e2a3bdf079ea44f370db1",
+    "pyproject.toml": "b8726f1f315d15d56e61cc7e44033ac6080cf3a32f3ae90b97bab2e32e45ee93",
+    "artifacts/p6/router_policy.json": "f2e039f7ea3b408cabe839e2e5070283cfa0a52035624b8bab1f5653f8c188d8",
+    "artifacts/p6/governance_thresholds.json": "dd194dcbe6d8d02e9eed67f05182ccd507c864eb991e43d7c00d5dca8c201147",
+    "examples/company_harness/tool_schema.json": "4f00b31c626bcace65935bc16717e00511afb719a30ad42354dab86d7a21eee6",
+    "README.md": "eb74875f82ef1c158a1320e8e556ed907038f33eeb8d85b1d96a188ef6eeed68",
+    "docs/STATUS.yaml": "94503dc33d0b0e348178b8bfd2ab6a342d905d9736ed4a907099be01450f5585",
+    "THIRD_PARTY_RESEARCH_REFERENCES.json": "42523b999b509f37605dd3460e4b117a8effff7b726a38b8766a6423b48220ec"
+  },
+  "excluded": [
+    "credentials",
+    "private data",
+    "benchmark gold patches/tests",
+    "raw trajectories",
+    "upstream MemGovern code/data",
+    "local qdrant/postgres/s3 state",
+    "caches/venvs/logs"
+  ],
+  "clone": "git clone <repo> && git checkout <commit>",
+  "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
+  "manifest_hash": "1e358d58b2e6a8d224edd29cea7d43aa0ace1c108f4b7ad2a2c0456f03b47dd2"
+}

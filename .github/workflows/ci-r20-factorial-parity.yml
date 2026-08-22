@@ -1,0 +1,20 @@
+name: ci-r20-factorial-parity
+# R20 component-factorial gate.
+on:
+  push:
+    branches: [codex/r20-component-factorial]
+    paths: ['artifacts/r20/**','configs/r20/**','scripts/r20_*.py','tests/unit/test_r20_freeze.py','docs/R20_*','.github/workflows/ci-r20-factorial-parity.yml']
+  pull_request:
+    paths: ['artifacts/r20/**','scripts/r20_*.py','tests/unit/test_r20_freeze.py']
+  workflow_dispatch: {}
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: install
+        run: pip install -q -e ".[dev]" pytest pyyaml || pip install -q -e . pytest pyyaml
+      - name: source parity + B1 compute parity + arm files
+        run: python -m pytest -q tests/unit/test_r20_freeze.py -k 'source_pair or b1_length or all_six_arm'

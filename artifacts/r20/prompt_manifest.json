@@ -1,0 +1,9 @@
+{
+ "reader": "gpt-4o-mini-2024-07-18",
+ "identical_system_prompt": true,
+ "max_turns": 40,
+ "temperature": 0,
+ "arms_differ_only_by": "injected memory text (offline-precomputed); same r14 agent",
+ "B1_length_matched_to": "F10 (compute parity)",
+ "content_hash": "1f8dd56dd415d41bd4bd50d6d80c8ca7ad89e65d1f0ede0cdf91b99788f87bd2"
+}

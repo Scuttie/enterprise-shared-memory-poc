@@ -1,0 +1,13 @@
+{
+ "note": "arm injections precomputed & frozen before main; cards compiled to execution views (no raw diff)",
+ "arms_in_hashes": {
+  "memory_B0.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "memory_B1.json": "2b5003da77fc5ae446685c7c6a57d24b526b8b32ad60c37b2d122085383cae93",
+  "memory_F00.json": "b4a689d83752dbddf6658178890b4491e92ba82c711e1d035a0d9a9d2e03b0b7",
+  "memory_F01.json": "0ecf44fa83460d0bd7a8e7e87e905a12b23d33cae8cd7616956ca766d97019db",
+  "memory_F10.json": "4fc3dec76cb2c4f4ff70f9e0c15b4d605eb2561104a4eeadc31c63db59c09626",
+  "memory_F11.json": "37ac13df86c0a63b032038daeb0d84641c63573363970389c49078138336ee54"
+ },
+ "source_pair_hash": "4e4e76868209e1558946dd55d3d9349c9d95247c6b59d4051b53cc05807f46b3",
+ "content_hash": "6f1e8be26ff805842480838d886aabb1e472aa270b7e33663f1467bef07b7e9c"
+}

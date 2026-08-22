@@ -2,16 +2,16 @@
 # Generated/maintained under P6/R19 (codex/utility-router-v0.3). CI (ci-docs) fails if user-facing
 # docs contradict this file. Do NOT hand-edit README/ARCHITECTURE claims without updating this first.
 schema_version: 1
-last_verified_commit: "7fddfb959bef04a6de5f9d528ef9266a723f3740"
+last_verified_commit: "d2b28a9cc8d1273214b1a6fc27c8313a7c796649"
 
 project_version: "0.3.0.dev1"
 service_status: IMPLEMENTED            # core control-plane/execution-plane plumbing exists; CI-tested
 research_status: MEMORY_TRANSFER_EFFICACY_NULL
-company_handoff_status: IN_PROGRESS    # v0.3 build; not yet COMPANY-HANDOFF-READY
+company_handoff_status: READY          # fresh-clone + offline demo pass in CI; NOT staging-certified
 production_certification_status: NOT_CLAIMED
 
 migration_head: "0014"                 # experience layer (P6/R19); 13 tables
-workflow_count: 64                     # +9 P6/R19 gates incl experiment-seal
+workflow_count: 69                     # +5 R20 factorial gates
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)
@@ -78,4 +78,4 @@ required_company_inputs:
 # --- MILESTONE RESEARCH RESULT (R19 utility router) ---
 utility_router_result: NULL           # R19-SMALL held-out: A5-A0 sig but NOT beyond compute(A1)/shuffled(A2) -> compute not content; fails 10.7 gate
 
-workflow_table_note: "64 workflows at last_verified_commit; ci-docs regenerates the README workflow table."
+workflow_table_note: "69 workflows at last_verified_commit; ci-docs regenerates the README workflow table."

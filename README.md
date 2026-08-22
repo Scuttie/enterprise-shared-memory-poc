@@ -12,11 +12,11 @@ tenants. Every decision is auditable and maps back to a canonical version in Pos
 | Service plumbing | `IMPLEMENTED` |
 | Research efficacy | `MEMORY_TRANSFER_EFFICACY_NULL` |
 | Utility router (held-out) | `None` |
-| Company handoff | `IN_PROGRESS` |
+| Company handoff | `READY` |
 | Production certification | `NOT_CLAIMED` |
 | Migration head | `0014` |
 
-> **COMPANY HANDOFF IN PROGRESS — not yet COMPANY-HANDOFF-READY, not COMPANY-STAGING-CERTIFIED.** Service correctness, research efficacy, and staging certification are tracked separately; see [`docs/STATUS.yaml`](docs/STATUS.yaml) (single source of truth) and [`docs/EVIDENCE_AND_LIMITATIONS.md`](docs/EVIDENCE_AND_LIMITATIONS.md).
+> **COMPANY-HANDOFF-READY — NOT YET COMPANY-STAGING-CERTIFIED.** Service correctness, research efficacy, and staging certification are tracked separately; see [`docs/STATUS.yaml`](docs/STATUS.yaml) (single source of truth) and [`docs/EVIDENCE_AND_LIMITATIONS.md`](docs/EVIDENCE_AND_LIMITATIONS.md).
 <!-- STATUS:END -->
 
 ## What it does

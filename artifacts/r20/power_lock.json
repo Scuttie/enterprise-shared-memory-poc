@@ -1,0 +1,48 @@
+{
+ "method": "power planning from R19 60-task dev arms (NOT primary inference)",
+ "N_confirmatory": 248,
+ "discordant_pair_estimates": {
+  "F11-F10(A5-A4)": {
+   "A_only": 2,
+   "B_only": 1,
+   "n": 60,
+   "discordant_rate": 0.05
+  },
+  "F11-F01(A5-A0~)": {
+   "A_only": 6,
+   "B_only": 0,
+   "n": 60,
+   "discordant_rate": 0.1
+  },
+  "F10-F00(A4-A2)": {
+   "A_only": 1,
+   "B_only": 1,
+   "n": 60,
+   "discordant_rate": 0.033
+  },
+  "B1-B0(A1-A0)": {
+   "A_only": 4,
+   "B_only": 0,
+   "n": 60,
+   "discordant_rate": 0.067
+  }
+ },
+ "mean_discordant_rate": 0.062,
+ "est_discordant_pairs_at_N": 16,
+ "approx_min_detectable_paired_diff": 0.032,
+ "interaction_note": "interaction I is a difference of two paired diffs; its CI is wider (~sqrt2x). Expect ~0.045 min detectable.",
+ "repo_clusters_R19": {
+  "astropy/astropy": 3,
+  "django/django": 28,
+  "matplotlib/matplotlib": 4,
+  "psf/requests": 1,
+  "pydata/xarray": 3,
+  "pylint-dev/pylint": 1,
+  "pytest-dev/pytest": 2,
+  "scikit-learn/scikit-learn": 4,
+  "sphinx-doc/sphinx": 5,
+  "sympy/sympy": 9
+ },
+ "decision": "use ALL untouched (248); no N expansion; verdict may be POWER_LIMITED if interaction CI wider than +-0.05",
+ "content_hash": "e7793c9c1b3e550a2f17e6e19a86aee4110dbd3281e6be28b42647141c946608"
+}

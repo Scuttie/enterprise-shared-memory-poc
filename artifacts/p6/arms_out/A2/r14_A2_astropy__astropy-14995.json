@@ -1,0 +1,22 @@
+{
+  "instance_id": "astropy__astropy-14995",
+  "repo": "astropy/astropy",
+  "arm": "A2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-14995@sha256:e1c746371f8f7132c29768bea9cc1380871c87f6e4404a2282d8d3c582786874",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 4508,
+  "edited_files": [
+    "astropy/nddata/mixins/ndarithmetic.py"
+  ],
+  "patch_bytes": 720,
+  "tokens": {
+    "prompt": 27999,
+    "completion": 354
+  },
+  "secs": 100.0
+}

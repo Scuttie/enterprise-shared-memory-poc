@@ -11,7 +11,7 @@ tenants. Every decision is auditable and maps back to a canonical version in Pos
 | Version | `0.3.0.dev1` |
 | Service plumbing | `IMPLEMENTED` |
 | Research efficacy | `MEMORY_TRANSFER_EFFICACY_NULL` |
-| Utility router (held-out) | `NOT_RUN` |
+| Utility router (held-out) | `None` |
 | Company handoff | `IN_PROGRESS` |
 | Production certification | `NOT_CLAIMED` |
 | Migration head | `0014` |

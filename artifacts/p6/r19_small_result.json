@@ -1,0 +1,111 @@
+{
+  "rate": {
+    "A0": 0.0833,
+    "A1": 0.15,
+    "A2": 0.1667,
+    "A3": 0.1167,
+    "A4": 0.1667,
+    "A5": 0.1833
+  },
+  "contrasts": {
+    "L1_A4_A0": {
+      "contrast": "A4-A0",
+      "n": 60,
+      "rateA": 0.1667,
+      "rateB": 0.0833,
+      "diff": 0.0833,
+      "A_only": 5,
+      "B_only": 0,
+      "mcnemar_p": 0.0625,
+      "cluster_ci": [
+        0.0345,
+        0.1064
+      ]
+    },
+    "L2_A4_A1": {
+      "contrast": "A4-A1",
+      "n": 60,
+      "rateA": 0.1667,
+      "rateB": 0.15,
+      "diff": 0.0167,
+      "A_only": 3,
+      "B_only": 2,
+      "mcnemar_p": 1.0,
+      "cluster_ci": [
+        0.0,
+        0.0283
+      ]
+    },
+    "L3_A4_A2": {
+      "contrast": "A4-A2",
+      "n": 60,
+      "rateA": 0.1667,
+      "rateB": 0.1667,
+      "diff": 0.0,
+      "A_only": 1,
+      "B_only": 1,
+      "mcnemar_p": 1.0,
+      "cluster_ci": [
+        0.0,
+        0.0
+      ]
+    },
+    "H1_A5_A0": {
+      "contrast": "A5-A0",
+      "n": 60,
+      "rateA": 0.1833,
+      "rateB": 0.0833,
+      "diff": 0.1,
+      "A_only": 6,
+      "B_only": 0,
+      "mcnemar_p": 0.0312,
+      "cluster_ci": [
+        0.0417,
+        0.1395
+      ]
+    },
+    "H2_A5_A1": {
+      "contrast": "A5-A1",
+      "n": 60,
+      "rateA": 0.1833,
+      "rateB": 0.15,
+      "diff": 0.0333,
+      "A_only": 2,
+      "B_only": 0,
+      "mcnemar_p": 0.5,
+      "cluster_ci": [
+        0.0,
+        0.061
+      ]
+    },
+    "H3_A5_A2": {
+      "contrast": "A5-A2",
+      "n": 60,
+      "rateA": 0.1833,
+      "rateB": 0.1667,
+      "diff": 0.0167,
+      "A_only": 2,
+      "B_only": 1,
+      "mcnemar_p": 1.0,
+      "cluster_ci": [
+        0.0,
+        0.06
+      ]
+    },
+    "H4_A5_A4": {
+      "contrast": "A5-A4",
+      "n": 60,
+      "rateA": 0.1833,
+      "rateB": 0.1667,
+      "diff": 0.0167,
+      "A_only": 2,
+      "B_only": 1,
+      "mcnemar_p": 1.0,
+      "cluster_ci": [
+        0.0,
+        0.06
+      ]
+    }
+  },
+  "label": "UTILITY_ROUTER_NULL"
+}

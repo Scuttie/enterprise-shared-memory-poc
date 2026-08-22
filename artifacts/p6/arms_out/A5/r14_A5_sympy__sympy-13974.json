@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-13974",
+  "repo": "sympy/sympy",
+  "arm": "A5",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13974@sha256:26a1656436e6c2ff0bd6b4ab1cfc54f083e4cfa255cb0a839bf3ee15eea5ab6c",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 11,
+  "decode": "",
+  "inject_len": 904,
+  "edited_files": [
+    "sympy/physics/quantum/tensorproduct.py"
+  ],
+  "patch_bytes": 753,
+  "tokens": {
+    "prompt": 39665,
+    "completion": 370
+  },
+  "secs": 69.2
+}

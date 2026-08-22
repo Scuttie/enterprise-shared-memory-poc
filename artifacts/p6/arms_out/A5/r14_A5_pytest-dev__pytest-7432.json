@@ -1,0 +1,22 @@
+{
+  "instance_id": "pytest-dev__pytest-7432",
+  "repo": "pytest-dev/pytest",
+  "arm": "A5",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-7432@sha256:5ec7065f9477542610ea5137247539d8f1c9762112803b0690d5ccb2e64d2f07",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "decode": "",
+  "inject_len": 3888,
+  "edited_files": [
+    "src/_pytest/skipping.py"
+  ],
+  "patch_bytes": 628,
+  "tokens": {
+    "prompt": 7247,
+    "completion": 108
+  },
+  "secs": 59.3
+}

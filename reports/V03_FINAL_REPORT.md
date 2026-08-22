@@ -10,9 +10,11 @@ Branch `codex/utility-router-v0.3` (worktree), PR **#2** DRAFT → base `codex/p
 - **Endpoint E (company handoff):** software complete and gated — fresh-clone install + offline demo `DEMO_PASS`
   pass in CI (`ci-company-package`, `ci-company-demo`). Label: **COMPANY-HANDOFF-READY — NOT
   COMPANY-STAGING-CERTIFIED**, production **NOT CLAIMED**.
-- **Endpoints B/C/D (literature reproduction / causal attribution / router held-out):** harness + preregistration
-  scaffolding in place; the live A0–A5 run is preregistered to gpt-4o-mini and reported as
-  `utility_router_result` in `docs/STATUS.yaml` (currently **NOT_RUN** — see below).
+- **Endpoints B/C/D (literature reproduction / causal attribution / router held-out): RUN (R19-SMALL, reduced
+  power).** Held-out A0–A5 on gpt-4o-mini, 60 frozen tasks. **`utility_router_result: NULL`** — primary H1=A5−A0
+  is significant (+0.10, p=0.031) but does **not** survive the compute (A1) or shuffled (A2) controls, so the lift
+  is injected-compute, not memory content/routing (fails the §10.7 gate). Router is safe (0 losses). Full report:
+  `reports/R19_SMALL_RESULT.md`. The full-308 powered design remains preregistered.
 
 ## Commits (no squash)
 H0 git-safety + truth audit + STATUS.yaml + ci-docs · L0 literature/license audit + ci-literature-audit ·

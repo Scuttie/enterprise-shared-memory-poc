@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-11532",
+  "repo": "django/django",
+  "arm": "A2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-11532@sha256:8abdd4a9c5f66b458599cb3b1418861dd16c1ac7cc29a226f6e0148f1ecb966c",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "decode": "",
+  "inject_len": 4763,
+  "edited_files": [
+    "django/core/mail/message.py"
+  ],
+  "patch_bytes": 694,
+  "tokens": {
+    "prompt": 15911,
+    "completion": 168
+  },
+  "secs": 63.8
+}

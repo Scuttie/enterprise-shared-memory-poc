@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-18189",
+  "repo": "sympy/sympy",
+  "arm": "A3",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-18189@sha256:7f3118533e22d47a19b9784ab86c7b0251cd6fec0acc71f7fe8805809f052724",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 916,
+  "edited_files": [
+    "sympy/solvers/diophantine.py"
+  ],
+  "patch_bytes": 496,
+  "tokens": {
+    "prompt": 26372,
+    "completion": 334
+  },
+  "secs": 82.6
+}

@@ -76,6 +76,6 @@ required_company_inputs:
   - "Repository access policy for source/target scoping."
 
 # --- MILESTONE RESEARCH RESULT (R19 utility router) ---
-utility_router_result: NOT_RUN         # -> POSITIVE | NULL | NEGATIVE | NOT_RUN
+utility_router_result: NULL           # R19-SMALL held-out: A5-A0 sig but NOT beyond compute(A1)/shuffled(A2) -> compute not content; fails 10.7 gate
 
 workflow_table_note: "64 workflows at last_verified_commit; ci-docs regenerates the README workflow table."

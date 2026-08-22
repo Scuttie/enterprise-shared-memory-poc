@@ -79,14 +79,26 @@ def main():
             print("\n%s:" % nm)
             for k, val in C[nm].items():
                 print("   %s: %s" % (k, val))
-    # decision label (§10.7): POSITIVE iff H1 (A5-A0) > 0 & significant & not explained by A1/A2
+    # decision label — FULL §10.7 gate: A5>A0 (H1) AND gain NOT explained by A1 compute (H2) AND NOT reproduced by
+    # A2 shuffled (H3). A significant A5>A0 that fails H2/H3 is compute/injection, not memory content -> NULL.
     label = "UTILITY_ROUTER_NOT_RUN"
+    note = ""
     if "H1_A5_A0" in C:
-        h1 = C["H1_A5_A0"]
-        pos = h1["diff"] > 0 and h1["mcnemar_p"] < 0.05 and h1["cluster_ci"][0] > 0
-        neg = h1["diff"] < 0 and h1["mcnemar_p"] < 0.05
-        label = "UTILITY_ROUTER_POSITIVE" if pos else ("UTILITY_ROUTER_NEGATIVE" if neg else "UTILITY_ROUTER_NULL")
+        h1, h2, h3 = C["H1_A5_A0"], C.get("H2_A5_A1", {}), C.get("H3_A5_A2", {})
+        def sig_pos(c):
+            return bool(c) and c["diff"] > 0 and c["mcnemar_p"] < 0.05 and c["cluster_ci"][0] > 0
+        if h1["diff"] < 0 and h1["mcnemar_p"] < 0.05:
+            label = "UTILITY_ROUTER_NEGATIVE"
+        elif sig_pos(h1) and sig_pos(h2) and sig_pos(h3):
+            label = "UTILITY_ROUTER_POSITIVE"
+        else:
+            label = "UTILITY_ROUTER_NULL"
+            if sig_pos(h1):
+                note = ("A5>A0 is significant but NOT beyond A1 (compute) or A2 (shuffled): the lift is injected-"
+                        "compute, not memory content or routing. Fails the §10.7 method claim gate.")
     print("\nDECISION LABEL:", label, "(reduced-power R19-SMALL; see amendment)")
+    if note:
+        print("NOTE:", note)
     json.dump({"rate": rate, "contrasts": C, "label": label},
               open("artifacts/p6/r19_small_result.json", "w", encoding="utf-8"), indent=2)
 

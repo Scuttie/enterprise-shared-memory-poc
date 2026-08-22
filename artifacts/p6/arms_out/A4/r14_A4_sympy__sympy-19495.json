@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-19495",
+  "repo": "sympy/sympy",
+  "arm": "A4",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-19495@sha256:d8a5b9f1f21ae86a2141b234c99b960680c67c4088fa44830b43f8ef845ab731",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 4030,
+  "edited_files": [
+    "sympy/sets/conditionset.py"
+  ],
+  "patch_bytes": 2312,
+  "tokens": {
+    "prompt": 51461,
+    "completion": 550
+  },
+  "secs": 62.9
+}

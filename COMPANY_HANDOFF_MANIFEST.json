@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "commit": "299bb66d904763821e5aba293beb2d1d5536591b",
+  "commit": "b65c83ca57e77fe78e423e8364035ac3ac04b1e9",
   "project_version": "0.3.0.dev1",
   "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) \u2014 NOT COMPANY-STAGING-CERTIFIED",
   "source_tree_sha256": "03ee2a1a35e482db89c33ac0073b6de1e033de4727077828fc5bade98aa63e2c",
   "source_files": 103,
-  "docs_tree_sha256": "dc0454b1df415cb34eb5a19c7d703be22b07ff294d29405a59b523bf848e4de9",
-  "docs_files": 51,
+  "docs_tree_sha256": "ef9c778e42d8dc21edcbd39a6954b7fb4b2ae1aa3f734fb201a7f0f96f41204e",
+  "docs_files": 52,
   "examples_tree_sha256": "be03095abf849ff261c85ff80ebed29939c34dcd8292f0d288ebc0652787dbc0",
   "examples_files": 7,
   "migration_head": "0014",
@@ -18,8 +18,8 @@
     "artifacts/p6/router_policy.json": "f225a08a7aae642a90b3c7e99bf3cf816affbe20559e2b756adc602013a545be",
     "artifacts/p6/governance_thresholds.json": "e0de8990a4819c93ac152146d22de7311309402c2f3feb85052a68549f3dbe10",
     "examples/company_harness/tool_schema.json": "4f00b31c626bcace65935bc16717e00511afb719a30ad42354dab86d7a21eee6",
-    "README.md": "eb74875f82ef1c158a1320e8e556ed907038f33eeb8d85b1d96a188ef6eeed68",
-    "docs/STATUS.yaml": "53b1a9c043f782569b21b2319efcc4eab4367b175df1c6f9e972d1f0287353a1",
+    "README.md": "32acada93df51a7a8dc9b1d53a17386ef870fa6b82860dc2f333e9af9df729a4",
+    "docs/STATUS.yaml": "af581bc34da976f56f131f4032199f0d2e0187cd8dc0981ab52b31e2afded715",
     "THIRD_PARTY_RESEARCH_REFERENCES.json": "42523b999b509f37605dd3460e4b117a8effff7b726a38b8766a6423b48220ec"
   },
   "excluded": [
@@ -33,5 +33,5 @@
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "05cee40081c4d19ebd6922812cdd3fe375733f201c5eb4868226e1a3601478eb"
+  "manifest_hash": "8526bbd315d1807d6214fd22d386cca03b26579ebd52d11a04d1d68782bd97f3"
 }

@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-13363",
+  "repo": "django/django",
+  "arm": "A2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-13363@sha256:d2d3a8ca05dac86be07180d39c31caa12d268924dc56743262ac92a175aed3f6",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "decode": "",
+  "inject_len": 4732,
+  "edited_files": [
+    "django/db/models/functions/datetime.py"
+  ],
+  "patch_bytes": 1231,
+  "tokens": {
+    "prompt": 16377,
+    "completion": 247
+  },
+  "secs": 67.3
+}

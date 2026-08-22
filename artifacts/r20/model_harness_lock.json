@@ -1,0 +1,11 @@
+{
+ "reader": "gpt-4o-mini-2024-07-18",
+ "harness": "scripts/r14_swebench_agent.py",
+ "grader": "swebench==5.0.2 official",
+ "tool_turn_ceiling": 40,
+ "wall_clock_ceiling_s": 1700,
+ "candidate_gen": "InMemoryExperienceStore top-K token search",
+ "K": 5,
+ "identical_across_arms": true,
+ "content_hash": "74ff7643b53307bb09097acc132c62c6210f975946c497674f51a71272b81c66"
+}

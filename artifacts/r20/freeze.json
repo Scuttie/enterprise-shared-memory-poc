@@ -1,0 +1,29 @@
+{
+ "experiment": "R20_COMPONENT_FACTORIAL",
+ "reader": "gpt-4o-mini-2024-07-18",
+ "n_untouched": 248,
+ "task_hash": "bb401907db08c0a7",
+ "arms": [
+  "B0",
+  "B1",
+  "F00",
+  "F10",
+  "F01",
+  "F11"
+ ],
+ "invariants": [
+  "F10.src==F11.src",
+  "F00.src==F01.src"
+ ],
+ "locks": {
+  "task_manifest": "bb401907db08c0a7",
+  "source_pair_manifest": "028d14525d702f20",
+  "prompt_manifest": "1f8dd56dd415d41b",
+  "model_harness_lock": "74ff7643b53307bb",
+  "analysis_manifest": "4a8d298f1aaab953",
+  "power_lock": "e7793c9c1b3e550a",
+  "card_snapshot": "6f1e8be26ff80584",
+  "index_snapshot": "94e81cccd912da86"
+ },
+ "content_hash": "dc399a1401f09ec4fd9fa1f0045d1d27c33a8c49337e38ebae9ea116ebdd8805"
+}

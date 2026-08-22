@@ -1,0 +1,20 @@
+{
+ "ITT": true,
+ "infra_failure": "failure",
+ "test": "exact McNemar",
+ "ci": "repository-cluster bootstrap",
+ "primary": "interaction I=(F11-F10)-(F01-F00) task-level DID",
+ "equivalence_margin": 0.05,
+ "equivalence_ci": "cluster 90%",
+ "multiplicity_order": [
+  "I",
+  "R_avg",
+  "G_avg",
+  "P",
+  "O"
+ ],
+ "holm_secondary": true,
+ "no_optional_stopping": true,
+ "no_N_expansion": true,
+ "content_hash": "4a8d298f1aaab953ee1dc4353e0399abba4dbcb38f9b55041f5dc0366beb94b1"
+}

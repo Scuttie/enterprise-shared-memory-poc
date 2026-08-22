@@ -1,0 +1,12 @@
+# R20 — component-factorial (FROZEN). gpt-4o-mini fixed across arms.
+experiment: R20_COMPONENT_FACTORIAL
+reader: gpt-4o-mini-2024-07-18
+benchmark: SWE-bench/SWE-bench_Verified
+tasks: artifacts/r20/task_manifest.json        # 248 untouched = held_out_memory_eligible - R19_small_60
+arms: [B0, B1, F00, F10, F01, F11]             # F01 = router ON + shuffled (NEW cell)
+invariants: ["F10.src==F11.src", "F00.src==F01.src"]
+router_policy: artifacts/r20/router_policy.json
+tool_budget: {max_turns: 40}
+primary_estimand: "I = (F11-F10) - (F01-F00)  # router x relevance interaction, DID"
+equivalence_margin: 0.05
+stopping: {optional_stopping: false, N_expansion: false}

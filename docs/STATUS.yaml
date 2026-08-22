@@ -11,7 +11,7 @@ company_handoff_status: READY          # fresh-clone + offline demo pass in CI; 
 production_certification_status: NOT_CLAIMED
 
 migration_head: "0014"                 # experience layer (P6/R19); 13 tables
-workflow_count: 64                     # +9 P6/R19 gates incl experiment-seal
+workflow_count: 69                     # +5 R20 factorial gates
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)
@@ -78,4 +78,4 @@ required_company_inputs:
 # --- MILESTONE RESEARCH RESULT (R19 utility router) ---
 utility_router_result: NULL           # R19-SMALL held-out: A5-A0 sig but NOT beyond compute(A1)/shuffled(A2) -> compute not content; fails 10.7 gate
 
-workflow_table_note: "64 workflows at last_verified_commit; ci-docs regenerates the README workflow table."
+workflow_table_note: "69 workflows at last_verified_commit; ci-docs regenerates the README workflow table."

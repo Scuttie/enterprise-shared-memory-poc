@@ -1,0 +1,15 @@
+{
+ "artifacts": {
+  "artifacts/r21\\author_artifact_results.json": "32cfaa1f1fac27ca",
+  "artifacts/r21\\experience_bank_lock.json": "3cee4658df9ba07e",
+  "artifacts/r21\\model_harness_lock.json": "e2294c800407fc3b",
+  "artifacts/r21\\r21_regrade_gpt4o_agentic.json": "3a148307b85f54ad",
+  "artifacts/r21\\r21_regrade_gpt4o_default.json": "c651c6435b9ea348",
+  "artifacts/r21\\r21_regrade_gpt4o_mini_agentic.json": "737f8a27d380f01b",
+  "artifacts/r21\\r21_regrade_gpt4o_mini_default.json": "d89ea4f5616bf638",
+  "artifacts/r21\\stage_a_artifact_manifest.json": "c59cb14b0fcdb1f7",
+  "artifacts/r21\\stage_b_recovered_configuration.json": "f8ddf00d42cb156f",
+  "artifacts/r21\\task_manifest.json": "b2b4afd00b2a128d",
+  "artifacts/r21\\upstream_lock.json": "8b2a5f8c556a47ff"
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "condition": "gpt4o_mini_default",
+ "n_predictions": 10,
+ "n_resolved": 1,
+ "resolved_ids": [
+  "django__django-15104"
+ ],
+ "all_instance_ids": [
+  "django__django-15037",
+  "django__django-15098",
+  "django__django-15103",
+  "django__django-15104",
+  "django__django-15127",
+  "django__django-15128",
+  "django__django-15161",
+  "django__django-15252",
+  "django__django-15268",
+  "django__django-15277"
+ ]
+}

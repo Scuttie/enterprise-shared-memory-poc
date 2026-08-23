@@ -1,0 +1,56 @@
+{
+ "experiment": "R21_STAGE_A_AUTHOR_ARTIFACT_RECOMPUTATION",
+ "model_api_cost_usd": 0,
+ "benchmark": "SWE-bench/SWE-bench_Verified (official grader, swebench==5.0.2)",
+ "published_denominator": 500,
+ "conditions": {
+  "gpt4o_default": {
+   "released_predictions": 99,
+   "regraded_resolved": 32,
+   "regraded_rate_on_released": 0.3232,
+   "published_successes": 116,
+   "published_rate": 0.232,
+   "recomputable_vs_published": false,
+   "author_label_available": false
+  },
+  "gpt4o_agentic": {
+   "released_predictions": 99,
+   "regraded_resolved": 33,
+   "regraded_rate_on_released": 0.3333,
+   "published_successes": 163,
+   "published_rate": 0.326,
+   "recomputable_vs_published": false,
+   "author_label_available": false
+  },
+  "gpt4o_mini_default": {
+   "released_predictions": 10,
+   "regraded_resolved": 1,
+   "regraded_rate_on_released": 0.1,
+   "published_successes": 70,
+   "published_rate": 0.14,
+   "recomputable_vs_published": false,
+   "author_label_available": false
+  },
+  "gpt4o_mini_agentic": {
+   "released_predictions": 128,
+   "regraded_resolved": 17,
+   "regraded_rate_on_released": 0.1328,
+   "published_successes": 86,
+   "published_rate": 0.172,
+   "recomputable_vs_published": true,
+   "author_label_available": false
+  }
+ },
+ "gpt4o_released_paired": {
+  "n_overlap": 98,
+  "baseline_resolved": 32,
+  "memgovern_resolved": 33,
+  "released_subset_lift": 1,
+  "released_subset_lift_pp": 1.02,
+  "published_lift_pp": 9.4
+ },
+ "mini_overlap": 0,
+ "verdict": "AUTHOR_ARTIFACT_UNAVAILABLE",
+ "verdict_reason": "Released trajectory artifacts are a partial, non-representative subset. Published successes exceed released predictions in 3/4 conditions (cannot recompute 116/163/70/86 of 500). Where a paired comparison is possible (GPT-4o, 98 overlapping instances) the released-artifact lift is +1.0pp, not the published +9.4pp; released baseline 32.3% != published 23.2%. Author per-task grade labels are not included in the release, so author-vs-recomputed agreement is not computable.",
+ "content_hash": "168e1234ad99691f069a8fbfaa365843aa7b6e2f6a0471c5e0e3744d6d169120"
+}

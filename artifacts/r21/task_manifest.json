@@ -1,0 +1,6 @@
+{
+ "benchmark": "SWE-bench/SWE-bench_Verified",
+ "split": "test",
+ "note": "exact per-run instance subset lives inside each trajectory tarball; not separately pinned in repo. Full Verified = 500.",
+ "content_hash": "275e1296400b406a315711edc0346e9ba9fc215f60c97393a0b973ea74566dd2"
+}

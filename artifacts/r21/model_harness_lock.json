@@ -1,0 +1,32 @@
+{
+ "benchmark": "SWE-bench Verified (test split)",
+ "committed_model_configs": [
+  "claude-3-7-sonnet-latest",
+  "claude-3-7-sonnet-20250219",
+  "claude-sonnet-4-20250514",
+  "deepseek(dsv31t)"
+ ],
+ "primary_result_reader": "GPT-4o (per README table; +9.4pp)",
+ "GPT-4o_config_pinned_in_repo": false,
+ "model_snapshot_gap": "The exact GPT-4o config/snapshot/temperature for the +9.4 table row is NOT committed as a config (only Claude/DeepSeek configs shipped); GPT-4o was run via CLI model override. Snapshot recoverable only from inside the trajectory tarball metadata.",
+ "author_trajectories_committed": {
+  "gpt4o_default_trajectory.tar.gz": {
+   "oid": "823bcc5b49e5",
+   "mb": 119.6
+  },
+  "gpt4o_agentic_trajectory.tar.gz": {
+   "oid": "c9e7b2a315cf",
+   "mb": 138.9
+  },
+  "gpt4o_mini_default_trajectory.tar.gz": {
+   "oid": "fd38e95bf49e",
+   "mb": 37.0
+  },
+  "gpt4o_mini_agentic_trajectory.tar.gz": {
+   "oid": "69005add0f82",
+   "mb": 487.6
+  }
+ },
+ "temperature_context_examples": "one committed .rar shows t-1.00 c-20.00 (cost cap $20) for gpt-5 dsv31t run",
+ "content_hash": "b2b072efb234fd54c8560befc3a50905032990df25b25185724a154d81637a62"
+}

@@ -1,0 +1,30 @@
+{
+ "gpt4o_default": {
+  "requested_model": "openai/gpt-4o",
+  "temperature": 1.0,
+  "top_p": "None",
+  "cost_cap_usd": 20.0,
+  "source": "trajectory dir name (RECOVERED_EXACT)"
+ },
+ "gpt4o_agentic": {
+  "requested_model": "openai/gpt-4o",
+  "temperature": 1.0,
+  "top_p": "None",
+  "cost_cap_usd": 20.0,
+  "source": "trajectory dir name (RECOVERED_EXACT)"
+ },
+ "gpt4o_mini_default": {
+  "requested_model": "openai/gpt-4o-mini",
+  "temperature": 1.0,
+  "top_p": "None",
+  "cost_cap_usd": 20.0,
+  "source": "trajectory dir name (RECOVERED_EXACT)"
+ },
+ "gpt4o_mini_agentic": {
+  "requested_model": "openai/gpt-4o-mini",
+  "temperature": 1.0,
+  "top_p": "None",
+  "cost_cap_usd": 20.0,
+  "source": "trajectory dir name (RECOVERED_EXACT)"
+ }
+}

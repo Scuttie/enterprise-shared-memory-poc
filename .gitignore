@@ -25,3 +25,6 @@ model_cache/
 *.log
 data/
 artifacts/bigcode_r2/results/*_raw.*.json
+
+# generated OSS release acceptance artifacts (SBOM / license report)
+reports/oss_release/

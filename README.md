@@ -115,6 +115,7 @@ Run `shadow` mode against a mirror of your repositories to collect router decisi
 injection risk**; review the audit; then enable `utility_gated` with reviewed, promoted cards. Acceptance criteria:
 [`docs/COMPANY_ACCEPTANCE_CHECKLIST.md`](docs/COMPANY_ACCEPTANCE_CHECKLIST.md).
 
+- [한국어 Quick Start](docs/COMPANY_QUICKSTART_KO.md) — 10분 이해 · 15분 오프라인 인수검사 (Korean quick start)
 - [한국어 회사 도입·구현 안내서](docs/COMPANY_IMPLEMENTATION_GUIDE_KO.md) — clone → 설정 → 실행 → 검사 → 통합 (Korean onboarding guide)
 
 ## Repository layout
@@ -135,3 +136,9 @@ private data are required or included.
 [`docs/EVIDENCE_AND_LIMITATIONS.md`](docs/EVIDENCE_AND_LIMITATIONS.md) ·
 [`docs/PRODUCTION_READINESS_REPORT.md`](docs/PRODUCTION_READINESS_REPORT.md). Company inputs still required:
 model/harness manifest, staging environment + sign-off, OIDC issuer, deployment targets, repository access policy.
+
+## License
+Apache License 2.0 (SPDX: `Apache-2.0`). See [`LICENSE`](LICENSE), [`NOTICE.md`](NOTICE.md), and
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). The Apache-2.0 grant applies to this project's own source
+code; dependencies and referenced benchmarks/datasets retain their own licenses — see
+[`docs/OSS_SCOPE_AND_DATA_POLICY.md`](docs/OSS_SCOPE_AND_DATA_POLICY.md).

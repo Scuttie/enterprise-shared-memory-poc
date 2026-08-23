@@ -11,7 +11,7 @@ company_handoff_status: READY          # fresh-clone + offline demo pass; NOT st
 production_certification_status: NOT_CLAIMED
 
 migration_head: "0014"                 # experience layer (P6/R19); 13 tables
-workflow_count: 64                     # +9 P6/R19 gates incl experiment-seal
+workflow_count: 66                     # +ci-oss-release, codeql (OSS v0.3 release acceptance)
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)

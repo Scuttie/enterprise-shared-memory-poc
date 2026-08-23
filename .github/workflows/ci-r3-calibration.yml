@@ -154,7 +154,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.10"}
       - run: python -m pip install --quiet tiktoken sqlalchemy
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with: {pattern: ci-r3-calibration-raw-*, path: dl, merge-multiple: true}
       - name: Combine + select policy
         env:

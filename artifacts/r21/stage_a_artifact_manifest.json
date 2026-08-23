@@ -1,0 +1,64 @@
+{
+ "benchmark": "SWE-bench Verified (500)",
+ "finding": "RELEASED ARTIFACTS INCOMPLETE",
+ "conditions": {
+  "gpt4o_default": {
+   "label": "GPT-4o baseline",
+   "released_preds": 99,
+   "non_empty_patches": 96,
+   "published_successes": 116,
+   "published_denominator": 500,
+   "recomputable": false,
+   "model_name_or_path": "default__openai--gpt-4o__t-1.00__p-None__c-20.00___swe_bench_verified_test",
+   "instance_ids_sample": [
+    "astropy__astropy-12907",
+    "astropy__astropy-13033",
+    "astropy__astropy-13236"
+   ]
+  },
+  "gpt4o_agentic": {
+   "label": "GPT-4o MemGovern",
+   "released_preds": 99,
+   "non_empty_patches": 97,
+   "published_successes": 163,
+   "published_denominator": 500,
+   "recomputable": false,
+   "model_name_or_path": "dsv31t_agenticMemSearch_1220_13w__openai--gpt-4o__t-1.00__p-None__c-20.00___swe_bench_verified_test",
+   "instance_ids_sample": [
+    "astropy__astropy-12907",
+    "astropy__astropy-13033",
+    "astropy__astropy-13236"
+   ]
+  },
+  "gpt4o_mini_default": {
+   "label": "GPT-4o-mini baseline",
+   "released_preds": 10,
+   "non_empty_patches": 10,
+   "published_successes": 70,
+   "published_denominator": 500,
+   "recomputable": false,
+   "model_name_or_path": "default__openai--gpt-4o-mini__t-1.00__p-None__c-20.00___swe_bench_verified_test",
+   "instance_ids_sample": [
+    "django__django-15037",
+    "django__django-15098",
+    "django__django-15103"
+   ]
+  },
+  "gpt4o_mini_agentic": {
+   "label": "GPT-4o-mini MemGovern",
+   "released_preds": 128,
+   "non_empty_patches": 119,
+   "published_successes": 86,
+   "published_denominator": 500,
+   "recomputable": true,
+   "model_name_or_path": "dsv31t_agenticMemSearch_1220_13w__openai--gpt-4o-mini__t-1.00__p-None__c-20.00___swe_bench_verified_test",
+   "instance_ids_sample": [
+    "astropy__astropy-12907",
+    "astropy__astropy-13033",
+    "astropy__astropy-13236"
+   ]
+  }
+ },
+ "verdict_preliminary": "AUTHOR_ARTIFACT_UNAVAILABLE (released preds < published successes in 3/4 conditions; full 500-run artifacts not released)",
+ "content_hash": "979537a56e0f0d4b6ce4d481b6154c3c18cc8ec85a9ecadf7f859ed90868ee7a"
+}

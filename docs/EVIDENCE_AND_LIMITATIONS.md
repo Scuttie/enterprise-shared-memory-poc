@@ -14,6 +14,13 @@ levers (encoding R14, retrieval R15, reader R16, decoding R17, aggregation R18) 
 see [`../reports/MEMORY_TRANSFER_SYNTHESIS.md`](../reports/MEMORY_TRANSFER_SYNTHESIS.md). The utility-router held-out
 product endpoint (`H1 = A5 − A0`) is reported honestly as `utility_router_result` in STATUS.
 
+**R19 → R20 (important):** a small-sample R19 run showed A5 (router) > A0 (no memory), but that lift did **not**
+survive its compute (A1) and shuffled (A2) controls, and it **did not replicate** in the powered R20 component
+factorial (248 untouched tasks): every component effect — bundle, orchestration, relevance, router main, and the
+router×relevance interaction — was NULL/INCONCLUSIVE, and even the apparent compute lift vanished (B1−B0 = 0.000).
+So the R19 positive was small-sample noise. The router's confirmed property is **safety** (it abstains on 100% of
+irrelevant cross-repo memory and adds no net loss), **not** a performance gain. (R20 component-factorial confirmation is tracked in PR #3.)
+
 ## Company staging certification — PENDING; production — NOT CLAIMED
 No company-controlled staging environment or sign-off exists. `COMPANY-HANDOFF-READY` means a fresh clone builds,
 tests pass, and the offline demo passes — **not** that the system is production-certified.

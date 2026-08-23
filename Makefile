@@ -4,7 +4,10 @@ PY ?= python
 COMPOSE ?= docker compose -f deploy/docker-compose.company.example.yml
 
 .PHONY: help bootstrap test test-unit test-integration demo up down smoke docs-check openapi-check mcp-check \
-        package release-check evaluate-reference evaluate-router
+        package release-check evaluate-reference evaluate-router company-acceptance
+
+company-acceptance:
+	bash scripts/company_acceptance_check.sh
 
 help:
 	@echo "targets: bootstrap test test-unit test-integration demo up down smoke docs-check openapi-check \

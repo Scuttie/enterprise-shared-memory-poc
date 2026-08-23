@@ -92,7 +92,7 @@ jobs:
           PY
           docker exec esm python scripts/postgres_bootstrap.py
           docker exec esm alembic upgrade head
-          docker exec esm bash -lc 'alembic current | grep -E "0013.*\(head\)"'
+          docker exec esm bash -lc 'python scripts/check_migration_head.py'
       - name: Warm embedder + dataset (local artifact store, no MinIO)
         run: |
           docker exec esm bash -lc 'mkdir -p /tmp/esm-artifacts'

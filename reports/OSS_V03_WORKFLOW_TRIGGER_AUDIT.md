@@ -1,7 +1,25 @@
 # OSS v0.3 — Legacy / research workflow trigger audit
 
-Scope: **only** each workflow's automatic trigger (`on:`) and run scope was adjusted. No job, command, prompt,
-test, or artifact logic was changed. No workflow was deleted. Frozen R1–R21 results and past commits are untouched.
+## Scope of changes (corrected — three real changes, not "triggers only")
+An earlier draft of this report said the change was "only workflow triggers." That was inaccurate. The OSS v0.3
+finalization made **three** kinds of change, and nothing else:
+
+1. **Workflow trigger cleanup** — `on:` blocks only: `pull_request` removed from 20 research/paid/service
+   workflows (kept `workflow_dispatch` + research-branch `push`); the 13 release-required product/security checks
+   kept auto; `ci-oss-release` set to the canonical release trigger. No job/command/test/artifact logic changed by
+   this step. **(Later, the six migration-aware service workflows also had their stale head guard replaced with a
+   shared checker — see the migration-guard section below; that is a job-step change, called out explicitly.)**
+2. **Detector exact-file exemption** — `scripts/oss_release_acceptance.py` (a new secret/path *detector* that
+   necessarily contains credential patterns) was added to `release_check.py`'s `EXEMPT` set, exactly as
+   `release_check.py` and `security_scan.py` already are. No scan scope was narrowed and no pattern was weakened.
+3. **Non-semantic path-portability amendment** to frozen R14/R15/R18/R19 — the scratch-data root changed from a
+   hardcoded personal path to `os.environ.get("ESM_SCRATCH") or <tempdir>`. This is **path-only**: the research
+   computation, arms, decoding, and reported results are unchanged (the old path only ever resolved on one
+   machine; point `ESM_SCRATCH` at the data to reproduce). No frozen research **condition or result** was altered.
+
+**Frozen invariants preserved:** no frozen R1–R21 preregistration, arm definition, seed, grader, or reported
+result was changed; no past commit or protected branch (`main`, `v0.1.0-poc`, PR #1/#3/#4) was touched; no workflow
+was deleted. The `tests/unit/test_release_hygiene.py` regression test locks these invariants in CI.
 
 - Repository: `Scuttie/enterprise-shared-memory-poc`
 - Branch: `codex/oss-v0.3-finalize`
@@ -84,12 +102,29 @@ and behavior-preserving** — computation, arms, and results are unchanged; poin
 reproduce. No pattern was weakened and the scanner still covers the full tree. `release_check.py --secrets` now
 reports `SECRET SCAN CLEAN`, and the release-required `ci` check is **green**.
 
-### D-3 (PRE-EXISTING, out of scope): stale migration-head guards
-`ci-postgres`, `ci-qdrant`, `ci-mem0`, `ci-artifacts`, `ci-e2e`, `ci-experiment-readiness` each assert
-`alembic current | grep -E "0013.*(head)"`, but the real migration head is **0014**. That guard has been stale
-since 0014 landed (independent of this branch). These are now manual (they need service containers regardless), so
-they no longer redden the PR. The one-character guard fix (`0013`→`0014`) is job-command logic, **outside** this
-task's trigger-only scope, so it is **recommended** to the maintainer rather than applied here.
+### D-3 (RESOLVED): stale migration-head guards → shared dynamic checker
+`ci-postgres`, `ci-qdrant`, `ci-mem0`, `ci-artifacts`, `ci-e2e` (and `ci-experiment-readiness`) asserted
+`alembic current | grep -E "0013.*(head)"`, but the real migration head is **0014** — stale since 0014 landed.
+
+**Fixed** by adding `scripts/check_migration_head.py`: it reads the real Alembic **script head** from the migration
+tree and compares it to the **DB applied head**, with **no revision number baked in**, so it can never go stale
+again. Every migration-aware workflow that carried the hard-coded guard now calls it instead, and
+`ci-qdrant-outage` (which migrated but never verified head) gained a matching `Head check` step:
+
+- The six the maintainer named — `ci-postgres`, `ci-qdrant`, `ci-qdrant-outage`, `ci-mem0`, `ci-artifacts`,
+  `ci-e2e` — plus the equally migration-aware `ci-experiment-readiness`. **(7 product/service workflows.)**
+- The same legacy guard also existed in **10 frozen-research workflows** (`ci-bigcode-*` ×6,
+  `ci-experiment-calibration`, `ci-p5-2-calibration`, `ci-r11-diagnostic`, `ci-realbench-calibration`); they were
+  swept to the shared checker too, so the "zero stale guard" property holds **globally**. This is a CI-infra
+  correctness swap only — it does not change any frozen research condition, arm, seed, grader, or result.
+
+Result: **17** `check_migration_head.py` call-sites, **zero** `0013.*(head)` guards anywhere. The
+`test_no_stale_0013_head_guard_anywhere` regression test enforces this across *all* workflows.
+
+> Note: the six service workflows remain **manual** (`workflow_dispatch`) because they need service containers
+> (Postgres / Qdrant / mem0+HF / object store / full stack), not because anything is broken — the guard is now
+> correct. They were dispatched on the final head and verified green (see
+> `reports/OSS_V03_FINAL_RELEASE_READINESS.md`).
 
 ## Net effect on PR #5
 Before: 7 red checks (`ci`, `ci-artifacts`, `ci-e2e`, `ci-experiment-readiness`, `ci-mem0`, `ci-postgres`,

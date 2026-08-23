@@ -41,9 +41,25 @@ Company staging: PENDING
 Production: NOT CLAIMED
 ```
 
-> Note: because the default branch (`main`) is off-limits before merge, a brand-new `workflow_dispatch` workflow
-> cannot register there. `ci-oss-release` and `codeql` are therefore driven by `push` on the release branch and by
-> `pull_request`, both of which run from the PR head. The README does **not** claim "all CI green".
+> Note: `ci-oss-release` runs on the canonical release trigger — `pull_request: [main]` + `push: [main]` +
+> `workflow_dispatch`. On PR #5 the `pull_request` event runs it from the PR head (`workflow_dispatch` registers
+> once the file lands on the default branch after merge). The README does **not** claim "all CI green".
+
+## Migration-head guard (shared, dynamic)
+`scripts/check_migration_head.py` replaced every hard-coded `alembic current | grep -E "0013.*(head)"` guard: it
+compares the real Alembic **script head** to the **DB applied head** with no revision baked in, so it cannot go
+stale on the next migration. **17** call-sites across all migration-aware workflows; **zero** `0013.*(head)` guards
+remain. Enforced by `tests/unit/test_release_hygiene.py` (runs inside `ci`).
+
+## Three real changes this finalization made (not "triggers only")
+1. **Workflow trigger cleanup** (`on:` only) — 20 research/paid/service workflows moved off auto-PR; 13
+   release-required kept auto; `ci-oss-release` canonicalized.
+2. **Detector exact-file exemption** — `scripts/oss_release_acceptance.py` added to `release_check.py`'s `EXEMPT`
+   (a detector, like `release_check.py`/`security_scan.py`); no scan scope narrowed, no pattern weakened.
+3. **Non-semantic path-portability amendment** to frozen R14/R15/R18/R19 — scratch root now
+   `os.environ.get("ESM_SCRATCH")`-driven; research condition/arms/results unchanged.
+Plus the migration-head guard swap above (a CI-infra correctness change, called out explicitly). No frozen R1–R21
+condition or result was altered; no protected branch or past commit was touched; no workflow deleted.
 
 ## GitHub settings applied (§9)
 

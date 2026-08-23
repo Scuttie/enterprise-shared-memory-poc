@@ -70,7 +70,7 @@ jobs:
       - name: Alembic upgrade
         run: alembic upgrade head
       - name: Head check
-        run: alembic current | grep -E "0013.*\(head\)"
+        run: python scripts/check_migration_head.py
       - name: Seed JWKS stub (build_container identity needs the file to exist; unused by these tests)
         run: |
           python - <<'PY'

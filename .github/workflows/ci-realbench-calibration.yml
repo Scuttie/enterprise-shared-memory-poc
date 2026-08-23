@@ -80,7 +80,7 @@ jobs:
           w("http://localhost:6333/readyz"); w("http://localhost:9000/minio/health/live")
           PY
       - name: Migrate + head check
-        run: python scripts/postgres_bootstrap.py && alembic upgrade head && alembic current | grep -E "0013.*\(head\)"
+        run: python scripts/postgres_bootstrap.py && alembic upgrade head && python scripts/check_migration_head.py
       - name: MinIO bucket
         run: |
           python - <<'PY'

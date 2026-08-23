@@ -5,14 +5,14 @@ frozen main-60 targets, embed the target's problem_statement (ISSUE TEXT ONLY â€
 rank all EARLIER same-repo issues; take top-1 as the relevant M1 source. Emit memory_M1_sem.json (raw worked-
 example: source problem + real gold diff, identical format to R14) and an audit of the relevance gain. M0 and M2
 from R14 are reused unchanged (target set and those arms are independent of how M1's source is chosen)."""
-import os, sys, io, json, re
+import os, sys, io, json, re, tempfile
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 import numpy as np
 
-SP = os.path.expanduser("C:/Users/jewon/AppData/Local/Temp/claude/g-----------PC----2026-1-------/"
-                        "3ac33feb-5c89-4bf4-84af-fb1563bea476/scratchpad")
+# scratch data root; override with ESM_SCRATCH (was a hardcoded local path â€” see reports/OSS_V03_WORKFLOW_TRIGGER_AUDIT.md D-2)
+SP = os.environ.get("ESM_SCRATCH") or os.path.join(tempfile.gettempdir(), "claude_scratchpad")
 df = pd.read_parquet(SP + "/swebv2.parquet")
 df["ts"] = pd.to_datetime(df["created_at"]).astype("int64")
 INFO = {r["instance_id"]: r for _, r in df.iterrows()}

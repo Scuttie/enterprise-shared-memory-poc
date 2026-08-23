@@ -9,7 +9,7 @@ Cards are compiled deterministically (no LLM) from earlier same-repo issues (pro
 execution views (no raw diff — this is what the product actually injects). Freezes 60 repo-stratified held-out
 targets BEFORE running. Reduced-power confirmatory design; precision limit is stated in the prereg amendment.
 """
-import os, sys, re, json, hashlib
+import os, sys, re, json, hashlib, tempfile
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 import pandas as pd
 
@@ -18,8 +18,8 @@ from enterprise_memory.experience.compiler import execution_view
 from enterprise_memory.agentic import InMemoryExperienceStore, MemorySearchService, SearchSession
 from enterprise_memory.router import TaskContext, TrajectoryState
 
-SP = os.path.expanduser("C:/Users/jewon/AppData/Local/Temp/claude/g-----------PC----2026-1-------/"
-                        "3ac33feb-5c89-4bf4-84af-fb1563bea476/scratchpad")
+# scratch data root; override with ESM_SCRATCH (was a hardcoded local path — see reports/OSS_V03_WORKFLOW_TRIGGER_AUDIT.md D-2)
+SP = os.environ.get("ESM_SCRATCH") or os.path.join(tempfile.gettempdir(), "claude_scratchpad")
 TOKBUDGET_CHARS = 5000
 K = 5
 SCAFFOLD = ("[GENERIC PLANNING SCAFFOLD — no historical content] Approach: 1) reproduce and localize the failing "

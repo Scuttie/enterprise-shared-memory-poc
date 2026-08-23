@@ -3,14 +3,14 @@
 same-repo prior fixes together (M1multi), vs K matched cross-repo prior fixes (M2multi control). Tests whether a
 DISTRIBUTION of related experience (not a single anecdote) transfers. Product embedder (multi-qa-MiniLM-L6-cos-v1),
 target ISSUE TEXT only (no gold leakage). Compact per-source (problem<=900, diff<=700) so K=5 fits the inject cap."""
-import os, sys, io, json, re
+import os, sys, io, json, re, tempfile
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 import pandas as pd
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-SP = os.path.expanduser("C:/Users/jewon/AppData/Local/Temp/claude/g-----------PC----2026-1-------/"
-                        "3ac33feb-5c89-4bf4-84af-fb1563bea476/scratchpad")
+# scratch data root; override with ESM_SCRATCH (was a hardcoded local path — see reports/OSS_V03_WORKFLOW_TRIGGER_AUDIT.md D-2)
+SP = os.environ.get("ESM_SCRATCH") or os.path.join(tempfile.gettempdir(), "claude_scratchpad")
 df = pd.read_parquet(SP + "/swebv2.parquet")
 df["ts"] = pd.to_datetime(df["created_at"]).astype("int64")
 INFO = {r["instance_id"]: r for _, r in df.iterrows()}

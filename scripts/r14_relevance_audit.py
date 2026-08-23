@@ -4,12 +4,12 @@ issue") actually TOPICALLY relevant to its target, or only same-repo? Measures s
 files (Jaccard), shared top-dir, problem-statement token Jaccard, patch token Jaccard. Compares M1 vs M2, and
 stratifies M1-M0 / M1-M2 lift by whether M1 shared >=1 patched file with the target's gold. Uses ONLY frozen data
 already produced (the target gold patch is used for AUDIT ONLY, never entered any agent context)."""
-import os, sys, io, json, glob, re
+import os, sys, io, json, glob, re, tempfile
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 import pandas as pd
 
-SP = os.path.expanduser("C:/Users/jewon/AppData/Local/Temp/claude/g-----------PC----2026-1-------/"
-                        "3ac33feb-5c89-4bf4-84af-fb1563bea476/scratchpad")
+# scratch data root; override with ESM_SCRATCH (was a hardcoded local path — see reports/OSS_V03_WORKFLOW_TRIGGER_AUDIT.md D-2)
+SP = os.environ.get("ESM_SCRATCH") or os.path.join(tempfile.gettempdir(), "claude_scratchpad")
 df = pd.read_parquet(SP + "/swebv2.parquet")
 INFO = {r["instance_id"]: r for _, r in df.iterrows()}
 

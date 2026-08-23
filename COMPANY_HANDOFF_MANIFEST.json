@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "commit": "fd3d79239386880ab2737da9a1ba425550334f66",
+  "commit": "ea4bd4a1998831540d6acf9f50c171608cec82bd",
   "project_version": "0.3.0.dev1",
   "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) \u2014 NOT COMPANY-STAGING-CERTIFIED",
   "source_tree_sha256": "1463846d77745b4af3dfdc64ff10932ecd1d7d0fa6a059e4a2a3b36475e54045",
@@ -33,5 +33,5 @@
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "78848f03dac311bb18c7735c914439b5a72e8916642842c87d1e702a9c34c601"
+  "manifest_hash": "c5cf98eb366c7f23fdb5db0edd6ed4c868babb7229479ea4c0f0ca3722d636b6"
 }

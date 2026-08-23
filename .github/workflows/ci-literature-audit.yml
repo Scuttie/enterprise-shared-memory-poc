@@ -4,7 +4,7 @@ on:
   push:
     branches: [codex/utility-router-v0.3]
     paths: ['THIRD_PARTY_RESEARCH_REFERENCES.json', 'src/**', 'trajectories/**', 'data/**',
-            'scripts/check_literature_provenance.py', '.github/workflows/ci-literature-audit.yml']
+            'scripts/check_literature_provenance.py', '.github/workflows/ci-literature-audit.yml', 'reports/CI_TRIGGER_MARKER.txt']
   pull_request:
     paths: ['THIRD_PARTY_RESEARCH_REFERENCES.json', 'src/**', 'trajectories/**', 'data/**',
             'scripts/check_literature_provenance.py']

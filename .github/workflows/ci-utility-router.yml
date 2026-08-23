@@ -4,7 +4,7 @@ on:
   push:
     branches: [codex/utility-router-v0.3]
     paths: ['src/enterprise_memory/router/**', 'tests/unit/test_rule_router_v1.py',
-            'artifacts/p6/router_policy.json', '.github/workflows/ci-utility-router.yml']
+            'artifacts/p6/router_policy.json', '.github/workflows/ci-utility-router.yml', 'reports/CI_TRIGGER_MARKER.txt']
   pull_request:
     paths: ['src/enterprise_memory/router/**', 'tests/unit/test_rule_router_v1.py', 'artifacts/p6/router_policy.json']
   workflow_dispatch: {}

@@ -4,7 +4,7 @@ on:
   push:
     branches: [codex/utility-router-v0.3]
     paths: ['scripts/demo_company_handoff.py', 'src/enterprise_memory/**',
-            'tests/integration/test_company_demo.py', '.github/workflows/ci-company-demo.yml']
+            'tests/integration/test_company_demo.py', '.github/workflows/ci-company-demo.yml', 'reports/CI_TRIGGER_MARKER.txt']
   pull_request:
     paths: ['scripts/demo_company_handoff.py', 'src/enterprise_memory/**', 'tests/integration/test_company_demo.py']
   workflow_dispatch: {}

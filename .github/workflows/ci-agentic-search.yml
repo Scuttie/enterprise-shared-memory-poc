@@ -4,7 +4,7 @@ on:
   push:
     branches: [codex/utility-router-v0.3]
     paths: ['src/enterprise_memory/agentic/**', 'tests/unit/test_agentic_search.py',
-            '.github/workflows/ci-agentic-search.yml']
+            '.github/workflows/ci-agentic-search.yml', 'reports/CI_TRIGGER_MARKER.txt']
   pull_request:
     paths: ['src/enterprise_memory/agentic/**', 'tests/unit/test_agentic_search.py']
   workflow_dispatch: {}

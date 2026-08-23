@@ -3,7 +3,7 @@ name: ci-experiment-seal
 on:
   push:
     branches: [codex/utility-router-v0.3]
-    paths: ['artifacts/p6/**', 'configs/p6/**', 'docs/P6_*_PREREG.md', '.github/workflows/ci-experiment-seal.yml']
+    paths: ['artifacts/p6/**', 'configs/p6/**', 'docs/P6_*_PREREG.md', '.github/workflows/ci-experiment-seal.yml', 'reports/CI_TRIGGER_MARKER.txt']
   pull_request:
     paths: ['artifacts/p6/**', 'configs/p6/**', 'docs/P6_*_PREREG.md']
   workflow_dispatch: {}

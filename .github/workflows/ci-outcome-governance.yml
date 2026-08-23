@@ -4,7 +4,7 @@ on:
   push:
     branches: [codex/utility-router-v0.3]
     paths: ['src/enterprise_memory/governance/**', 'tests/unit/test_outcome_governance.py',
-            'artifacts/p6/governance_thresholds.json', '.github/workflows/ci-outcome-governance.yml']
+            'artifacts/p6/governance_thresholds.json', '.github/workflows/ci-outcome-governance.yml', 'reports/CI_TRIGGER_MARKER.txt']
   pull_request:
     paths: ['src/enterprise_memory/governance/**', 'tests/unit/test_outcome_governance.py',
             'artifacts/p6/governance_thresholds.json']

@@ -4,7 +4,7 @@ on:
   push:
     branches: [codex/utility-router-v0.3]
     paths: ['src/enterprise_memory/mcp/**', 'src/enterprise_memory/adapters/**',
-            'examples/company_harness/**', 'tests/unit/test_mcp_adapters.py', '.github/workflows/ci-mcp.yml']
+            'examples/company_harness/**', 'tests/unit/test_mcp_adapters.py', '.github/workflows/ci-mcp.yml', 'reports/CI_TRIGGER_MARKER.txt']
   pull_request:
     paths: ['src/enterprise_memory/mcp/**', 'src/enterprise_memory/adapters/**', 'examples/company_harness/**',
             'tests/unit/test_mcp_adapters.py']

@@ -51,7 +51,7 @@ def tracked_files():
 def scan_secrets(files):
     hits = []
     for rel in files:
-        # tests/ deliberately embeds synthetic secret shapes (e.g. "-----BEGIN RSA PRIVATE KEY-----\nMIIB") to
+        # tests/ deliberately embeds synthetic secret shapes (a fake PEM private-key header, a dummy token) to
         # verify the scanner detects them; those are fixtures, not credentials, and never ship in the wheel.
         if rel.startswith("tests/"):
             continue

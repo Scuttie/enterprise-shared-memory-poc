@@ -1,8 +1,8 @@
 {
-  "commit_sha": "ea4bd4a1998831540d6acf9f50c171608cec82bd",
-  "branch": "HEAD",
+  "commit_sha": "095f4ca53aed248ef3d3e263a3d0ee5c1da02c37",
+  "branch": "codex/oss-v0.3-finalize",
   "package_version": "0.3.0.dev1",
-  "timestamp_utc": "2026-08-23T06:58:06.331181Z",
+  "timestamp_utc": "2026-08-23T13:35:09.066686Z",
   "python_version": "3.11.9",
   "os": "Windows 10",
   "test_passed": true,
@@ -14,9 +14,9 @@
   "manifest_current": true,
   "secret_scan_clean": true,
   "wheel_filename": "enterprise_shared_memory_poc-0.3.0.dev1-py3-none-any.whl",
-  "wheel_sha256": "3d29daee291cec7732c5fc512f710fbda3fddb395e261ff43cb2e403b7e3e60b",
+  "wheel_sha256": "70c79d439ffad987037a298c41ff7d5841de61650c15fe7d292a740b53744c16",
   "sdist_filename": "enterprise_shared_memory_poc-0.3.0.dev1.tar.gz",
-  "sdist_sha256": "85cba1f7a5d6f080e3a9af82ae89a247882b0d2be27928263ab618905197f23b",
+  "sdist_sha256": "fc55ae0b1682087f94909ebe5174d8ebc7c0906d23710314576e5ea464288259",
   "known_limitations": [
     "General memory coding-performance lift NOT ESTABLISHED (R14-R20 null).",
     "Utility-router incremental efficacy NULL / NOT ESTABLISHED (R19 small-sample positive did not replicate in R20).",

@@ -1,11 +1,13 @@
-# Enterprise Shared Memory v0.3.0-rc1 (DRAFT — not tagged)
+# Enterprise Shared Memory v0.3.0-rc1 (version applied on main — tag pending approval)
 
 > Company-handoff-ready OSS release candidate.
 > Not company-staging-certified, not production-certified,
 > and no general coding-performance-lift claim is made.
 
-**Status: PREPARED, not applied.** The PR keeps version `0.3.0.dev1`. On explicit maintainer approval to merge,
-a separate small commit bumps the version to `0.3.0rc1` and the tag `v0.3.0-rc1` is proposed. No tag or release is
+**Status: version applied on `main`, tag NOT yet created.** PR #5 merged the OSS v0.3 finalization into `main`
+(merge commit `71e264d`), and this commit bumps the version `0.3.0.dev1` → `0.3.0rc1`. The annotated tag
+`v0.3.0-rc1` and the GitHub release are **proposed only** and will be created **after explicit maintainer
+approval**. No tag or release is
 created before that approval.
 
 ## Highlights

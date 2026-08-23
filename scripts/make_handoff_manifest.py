@@ -51,7 +51,7 @@ def build():
     man = {
         "schema_version": 1,
         "commit": _commit(),
-        "project_version": "0.3.0.dev1",
+        "project_version": "0.3.0rc1",
         "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) — NOT COMPANY-STAGING-CERTIFIED",
         "source_tree_sha256": src_hash, "source_files": src_n,
         "docs_tree_sha256": docs_hash, "docs_files": docs_n,

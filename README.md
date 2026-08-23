@@ -8,7 +8,7 @@ tenants. Every decision is auditable and maps back to a canonical version in Pos
 <!-- STATUS:BEGIN -->
 | Dimension | Status |
 | --- | --- |
-| Version | `0.3.0.dev1` |
+| Version | `0.3.0rc1` |
 | Service plumbing | `IMPLEMENTED` |
 | Research efficacy | `MEMORY_TRANSFER_EFFICACY_NULL` |
 | Utility router (held-out) | `NULL` |

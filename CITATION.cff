@@ -3,7 +3,7 @@ message: "If you use this software, please cite it as below."
 title: "Enterprise Shared Memory: a governed shared-memory control plane for coding agents"
 authors:
   - family-names: "Enterprise Shared Memory contributors"
-version: 0.3.0.dev1
+version: 0.3.0rc1
 license: Apache-2.0
 repository-code: "https://github.com/Scuttie/enterprise-shared-memory-poc"
 keywords: [coding-agents, memory, governance, retrieval, mcp, swe-bench]

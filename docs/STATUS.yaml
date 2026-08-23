@@ -4,7 +4,7 @@
 schema_version: 1
 last_verified_commit: "1de38558636e8bf6ac49653776fdfb7bbc1e6bfe"
 
-project_version: "0.3.0.dev1"
+project_version: "0.3.0rc1"
 service_status: IMPLEMENTED            # core control-plane/execution-plane plumbing exists; CI-tested
 research_status: MEMORY_TRANSFER_EFFICACY_NULL
 company_handoff_status: READY          # fresh-clone + offline demo pass; NOT staging-certified

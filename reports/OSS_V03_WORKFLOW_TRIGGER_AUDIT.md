@@ -70,21 +70,19 @@ on:
 the scanner's `EXEMPT` set — the exact pattern already used for `release_check.py` and `security_scan.py`, which
 are detectors too. No pattern text was weakened.
 
-### D-2 (PRE-EXISTING, unresolved — needs a decision): `ci` red from frozen research scripts
+### D-2 (RESOLVED with maintainer approval): `ci` red from frozen research scripts
 `ci` was **already failing on the base `c4cdacc`** (before this branch). Root cause: **frozen R14/R15/R18/R19**
-scripts hardcode a personal local path —
+scripts hardcoded a personal local path —
 `os.path.expanduser("C:/Users/jewon/AppData/Local/Temp/claude/…")` — in
 `scripts/r14_relevance_audit.py`, `r15_semantic_retrieval.py`, `r18_multi_memory.py`, `r19_build_arms.py`.
-The product path scanner (`FORBIDDEN_PATH`) rejects local-machine paths in released text, so `ci` stays red.
+The product path scanner (`FORBIDDEN_PATH`) rejects local-machine paths in released text, so `ci` stayed red, and
+the personal username leaked into a **public** OSS repo (the path was also dead on any non-Windows machine).
 
-This is a genuine product-hygiene issue (a maintainer username leaks into a **public** OSS repo, and the path is
-dead on any non-Windows machine), **but** the fix requires editing frozen R14–R19 files, which is outside the
-"trigger-only" scope of this task and conflicts with the standing "do not modify frozen R1–R21" rule. It is
-therefore **left for a maintainer decision**, not silently changed and not hidden by making `ci` manual (`ci` is
-release-required and stays auto). Recommended options:
-1. Approve a path-only, behavior-preserving edit to those four frozen scripts
-   (`os.environ.get("ESM_SCRATCH", <repo-relative tmp>)`), which also improves reproducibility; or
-2. Narrow the product path scan to the shipped surface (it already excludes `reports/`, `dist/`, `build/`).
+**Fix applied (maintainer-approved, option 1):** the scratch root is now
+`os.environ.get("ESM_SCRATCH") or os.path.join(tempfile.gettempdir(), "claude_scratchpad")`. This is **path-only
+and behavior-preserving** — computation, arms, and results are unchanged; point `ESM_SCRATCH` at the data to
+reproduce. No pattern was weakened and the scanner still covers the full tree. `release_check.py --secrets` now
+reports `SECRET SCAN CLEAN`, and the release-required `ci` check is **green**.
 
 ### D-3 (PRE-EXISTING, out of scope): stale migration-head guards
 `ci-postgres`, `ci-qdrant`, `ci-mem0`, `ci-artifacts`, `ci-e2e`, `ci-experiment-readiness` each assert
@@ -96,5 +94,6 @@ task's trigger-only scope, so it is **recommended** to the maintainer rather tha
 ## Net effect on PR #5
 Before: 7 red checks (`ci`, `ci-artifacts`, `ci-e2e`, `ci-experiment-readiness`, `ci-mem0`, `ci-postgres`,
 `ci-qdrant`) plus ~13 passing-but-irrelevant research/paid runs consuming Actions minutes.
-After: 13 release-required checks run; 12 are green and `ci` is red **only** from the pre-existing frozen-script
-path leak (D-2). The 20 research/paid/service workflows no longer auto-run.
+After (head `e9a1172`): only the **13 release-required checks run and all are green** (including `ci`, once D-2 was
+fixed). The 20 research/paid/service workflows no longer auto-run on the PR. D-3 (stale `0013` head guards) remains
+a recommended out-of-scope follow-up in the six now-manual service workflows.

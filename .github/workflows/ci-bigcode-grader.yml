@@ -15,7 +15,7 @@ jobs:
     env:
       EVAL_IMAGE: bigcodebench/bigcodebench-evaluate:v0.2.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Free disk space (~30GB) for the CUDA eval image
         run: |
           set -x

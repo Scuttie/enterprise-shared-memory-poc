@@ -31,7 +31,7 @@ jobs:
     outputs:
       list: ${{ steps.gen.outputs.list }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: gen
         run: |
           python - <<'PY' >> "$GITHUB_OUTPUT"
@@ -59,7 +59,7 @@ jobs:
       matrix:
         instance: ${{ fromJSON(needs.setup.outputs.list) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Free disk
         run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "/usr/local/share/powershell" /usr/share/swift || true
       - uses: actions/setup-python@v5

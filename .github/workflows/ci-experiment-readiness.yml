@@ -41,7 +41,7 @@ jobs:
       OIDC_JWKS_FILE: /tmp/er_jwks.json
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: Install

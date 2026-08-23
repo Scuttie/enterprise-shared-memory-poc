@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: {python-version: '3.10'}
       - run: pip install -q pandas numpy "sentence-transformers==3.0.1"
       - name: Download pinned Verified test.csv

@@ -41,7 +41,7 @@ jobs:
       API_PORT: "8000"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: Start Qdrant + MinIO (digest-pinned qdrant; MinIO by tag, resolve-to-pin later)

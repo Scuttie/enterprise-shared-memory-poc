@@ -1,18 +1,20 @@
 name: ci-r21-author-regrade
 # R21 Stage A — regrade RELEASED MemGovern trajectories with the official SWE-bench Verified grader.
 # No model calls. Pulls MemGovern LFS in an EPHEMERAL runner (never committed); uploads only per-instance
-# resolved labels (task_id, resolved) — never the upstream patches/data. Secret-gated / manual only.
+# resolved labels (task_id, resolved) — never the upstream patches/data. Push-triggered matrix (all 4 conditions).
 on:
-  workflow_dispatch:
-    inputs:
-      condition:
-        description: "gpt4o_default | gpt4o_agentic | gpt4o_mini_default | gpt4o_mini_agentic"
-        required: true
-        default: "gpt4o_mini_default"
+  push:
+    branches: [codex/memgovern-exact-reproduction]
+    paths: ['.github/workflows/ci-r21-author-regrade.yml', 'artifacts/r21/regrade_trigger.txt']
 jobs:
   regrade:
     runs-on: ubuntu-latest
-    timeout-minutes: 320
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        condition: [gpt4o_default, gpt4o_agentic, gpt4o_mini_default, gpt4o_mini_agentic]
     steps:
       - name: Free disk (SWE-bench images are large)
         run: |
@@ -28,17 +30,17 @@ jobs:
           sudo apt-get update -q && sudo apt-get install -y git-lfs
       - name: Clone MemGovern (isolated) + LFS pull ONE trajectory
         env:
-          COND: ${{ github.event.inputs.condition }}
+          COND: ${{ matrix.condition }}
         run: |
           GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 https://github.com/QuantaAlpha/MemGovern.git mg
-          cd mg && git checkout a8456580a4a6ea8de04755e958875cd549f43845 || true
+          cd mg
           f="trajectories/${COND}_trajectory.tar.gz"
           GIT_LFS_SKIP_SMUDGE=1 git checkout HEAD -- "$f"
           git lfs pull --include="$f"
           echo "pulled bytes: $(stat -c%s "$f")"
       - name: Extract preds.json -> predictions.jsonl (patches stay in runner)
         env:
-          COND: ${{ github.event.inputs.condition }}
+          COND: ${{ matrix.condition }}
         run: |
           python - <<'PY'
           import json, tarfile, os, hashlib
@@ -46,19 +48,19 @@ jobs:
           t=tarfile.open(tf,"r:gz")
           member=[m for m in t.getmembers() if m.name.endswith("/preds.json")][0]
           preds=json.load(t.extractfile(member))
-          rows=[]
-          for iid,v in preds.items():
-              patch=(v.get("model_patch") or "") if isinstance(v,dict) else ""
-              rows.append({"instance_id":iid,"model_name_or_path":"r21_%s"%cond,"model_patch":patch})
+          rows=[{"instance_id":iid,"model_name_or_path":"r21_%s"%cond,
+                 "model_patch":((v.get("model_patch") or "") if isinstance(v,dict) else "")}
+                for iid,v in preds.items()]
           open("predictions.jsonl","w",encoding="utf-8").write("\n".join(json.dumps(r) for r in rows))
-          # commit-safe summary: instance ids + patch hash (NOT the patch text)
-          summ=[{"instance_id":r["instance_id"],"patch_sha256":hashlib.sha256(r["model_patch"].encode()).hexdigest(),"empty":not r["model_patch"].strip()} for r in rows]
+          summ=[{"instance_id":r["instance_id"],
+                 "patch_sha256":hashlib.sha256(r["model_patch"].encode()).hexdigest(),
+                 "empty":not r["model_patch"].strip()} for r in rows]
           json.dump({"condition":cond,"n":len(rows),"instances":summ},open("patch_summary.json","w"),indent=1)
           print("extracted %d predictions for %s"%(len(rows),cond))
           PY
       - name: Official SWE-bench Verified grader
         env:
-          COND: ${{ github.event.inputs.condition }}
+          COND: ${{ matrix.condition }}
         run: |
           python -m swebench.harness.run_evaluation \
             --dataset_name SWE-bench/SWE-bench_Verified \
@@ -66,7 +68,7 @@ jobs:
             --run_id "r21_${COND}" --max_workers 4 --timeout 1800 || true
       - name: Collect resolved labels (labels only, no patches)
         env:
-          COND: ${{ github.event.inputs.condition }}
+          COND: ${{ matrix.condition }}
         run: |
           python - <<'PY'
           import json, glob, os
@@ -78,16 +80,17 @@ jobs:
               if isinstance(d,dict) and isinstance(d.get("resolved_ids"),list):
                   resolved|=set(d["resolved_ids"])
           preds=[json.loads(l) for l in open("predictions.jsonl",encoding="utf-8") if l.strip()]
+          ids=[p["instance_id"] for p in preds]
           out={"condition":cond,"n_predictions":len(preds),
-               "n_resolved":sum(1 for p in preds if p["instance_id"] in resolved),
-               "resolved_ids":sorted(i for i in (p["instance_id"] for p in preds) if i in resolved),
-               "all_instance_ids":sorted(p["instance_id"] for p in preds)}
+               "n_resolved":sum(1 for i in ids if i in resolved),
+               "resolved_ids":sorted(i for i in ids if i in resolved),
+               "all_instance_ids":sorted(ids)}
           json.dump(out,open("r21_regrade_%s.json"%cond,"w"),indent=1)
           print("condition=%s resolved=%d/%d"%(cond,out["n_resolved"],out["n_predictions"]))
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: r21-regrade-${{ github.event.inputs.condition }}
+          name: r21-regrade-${{ matrix.condition }}
           path: |
-            r21_regrade_${{ github.event.inputs.condition }}.json
+            r21_regrade_${{ matrix.condition }}.json
             patch_summary.json

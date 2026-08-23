@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Free disk
         run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL || true
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: {python-version: '3.11'}
       - name: Clone + install SWE-PolyBench @ pinned
         run: |

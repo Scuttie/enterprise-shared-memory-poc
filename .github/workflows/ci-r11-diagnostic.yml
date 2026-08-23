@@ -51,7 +51,7 @@ jobs:
       HF_HUB_DISABLE_TELEMETRY: "1"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: {python-version: "3.11"}
       - name: Guard secret
         run: if [ -z "$UPSTAGE_API_KEY" ]; then echo "no UPSTAGE_API_KEY"; exit 1; fi

@@ -1,0 +1,32 @@
+{
+ "repo": "https://github.com/QuantaAlpha/MemGovern",
+ "commit": "a8456580a4a6ea8de04755e958875cd549f43845",
+ "license": "NONE (no LICENSE file; README MIT badge only) -> REPRODUCTION_BLOCKED for vendoring/redistribution",
+ "swe_agent": "princeton-nlp/SWE-agent (upstream git+); config dir sweagent_0_7 (v0.7)",
+ "deps": {
+  "chromadb": ">=0.5.0",
+  "openai": ">=1.0.0",
+  "sentence-transformers": ">=2.2.0",
+  "sweagent": "git+princeton-nlp/SWE-agent"
+ },
+ "experience_server": "tools/experience_server.py + tools/agentic_rag_server.py",
+ "search_tools": [
+  "tools/exp_search",
+  "tools/exp_read",
+  "tools/exp_read_filtered"
+ ],
+ "card_compiler": "scripts/experience_process.py",
+ "published_result_table": {
+  "GPT-4o": {
+   "baseline": 23.2,
+   "memgovern": 32.6,
+   "delta": 9.4
+  },
+  "GPT-4o-Mini": {
+   "baseline": 14.0,
+   "memgovern": 17.2,
+   "delta": 3.2
+  }
+ },
+ "content_hash": "f310aeb981e02641c0be250b52700914641e68b95fe24641304e42452be7246d"
+}

@@ -1,0 +1,13 @@
+{
+ "experience_data_json": {
+  "oid": "sha256:c5bcc6e290f91ab4385b43545ee4bd9f72229a232162e826efb397753fb6f4ea",
+  "size": 158201317
+ },
+ "chroma_sqlite3": {
+  "oid": "sha256:1450b7a03e7bb79708ab13dc99a547ffb54f9018ef49b490a02d8a9020cd652a",
+  "size": 220352512
+ },
+ "lfs_status": "REAL_OBJECTS_NOT_PULLED (GIT_LFS_SKIP_SMUDGE=1; respecting UPSTREAM_RESEARCH_USE_APPROVED unset)",
+ "bank_name": "agentic_exp_data_1220_13w_DSnewPrompt (built with DeepSeek prompt)",
+ "content_hash": "4cc3fe1554b4eab1d46adea1f50fd0a1f6eafaf825b0ef5aaa740e0d4526eddd"
+}

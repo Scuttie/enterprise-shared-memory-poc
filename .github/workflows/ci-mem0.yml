@@ -38,7 +38,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Cache HF embedder
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ github.workspace }}/.hf_cache
           key: hf-multi-qa-MiniLM-L6-cos-v1

@@ -63,7 +63,7 @@ jobs:
           git clone --no-checkout https://github.com/xlang-ai/DS-1000.git DS-1000
           cd DS-1000 && git checkout b39aab71da6d23ef8d3cac59a7c5f834516ab334
       - name: Official DS-1000 conda env
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v3
         with: {environment-file: DS-1000/environment.yml, cache-environment: true, init-shell: bash}
       - name: Install ESM into the env (pinned constraints)
         run: micromamba run -n ds1000-3.10 python -m pip install --no-input -c configs/actionable_memory_r3/ds1000_pip_constraints.txt -e ".[dev,postgres,qdrant,artifacts,oidc,embed]" pyjwt cryptography datasets tqdm tiktoken

@@ -43,7 +43,7 @@ jobs:
           cd DS-1000 && git checkout b39aab71da6d23ef8d3cac59a7c5f834516ab334
           test "$(git rev-parse HEAD)" = "b39aab71da6d23ef8d3cac59a7c5f834516ab334"
       - name: Official DS-1000 conda env
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v3
         with:
           environment-file: DS-1000/environment.yml
           cache-environment: true

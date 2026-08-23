@@ -41,7 +41,7 @@ jobs:
           ls -la data/ds1000.jsonl.gz
 
       - name: Set up official conda env (environment.yml)
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v3
         with:
           environment-file: DS-1000/environment.yml
           cache-environment: true

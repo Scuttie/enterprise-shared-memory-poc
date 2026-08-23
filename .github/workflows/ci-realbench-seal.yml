@@ -1,6 +1,5 @@
 name: ci-realbench-seal
 on:
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: read

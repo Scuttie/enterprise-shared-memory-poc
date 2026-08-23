@@ -1,32 +1,13 @@
 name: ci-oss-release
 # PUBLIC OSS v0.3 §8 — release acceptance for a first-time OSS visitor AND a company reviewer.
-# Real checks only: no continue-on-error, no faked green. A new workflow_dispatch cannot register while the
-# default branch (main) is off-limits, so this is driven by push on the release branch + pull_request.
+# Real checks only: no continue-on-error, no faked green. This is a RELEASE-REQUIRED gate: it runs on every PR
+# targeting main and on pushes to main (workflow_dispatch registers once this lands on the default branch).
 on:
-  push:
-    branches: [codex/oss-v0.3-finalize]
-    paths:
-      - 'src/enterprise_memory/**'
-      - 'pyproject.toml'
-      - 'Makefile'
-      - 'scripts/oss_release_acceptance.py'
-      - 'scripts/check_wheel_scope.py'
-      - 'scripts/company_acceptance_check.sh'
-      - 'LICENSE'
-      - 'NOTICE.md'
-      - 'THIRD_PARTY_NOTICES.md'
-      - 'README.md'
-      - 'docs/**'
-      - '.github/workflows/ci-oss-release.yml'
   pull_request:
-    paths:
-      - 'src/enterprise_memory/**'
-      - 'pyproject.toml'
-      - 'LICENSE'
-      - 'NOTICE.md'
-      - 'scripts/oss_release_acceptance.py'
-      - 'scripts/check_wheel_scope.py'
-      - '.github/workflows/ci-oss-release.yml'
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch: {}
 
 jobs:
   # Per-Python fresh-clone acceptance: install, one-command company acceptance, package, clean-install the wheel.

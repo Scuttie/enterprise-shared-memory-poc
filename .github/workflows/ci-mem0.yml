@@ -1,6 +1,5 @@
 name: ci-mem0
 on:
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: read

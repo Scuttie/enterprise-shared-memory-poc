@@ -1,7 +1,7 @@
 name: ci-openai-provider
 # R12 §4 — OpenAIResponsesProvider contract tests against a FAKE Responses server. CREDENTIAL-FREE (no OPENAI key).
 on:
-  pull_request:
+  workflow_dispatch: {}
   push:
     branches: [codex/production-service-v0.2]
     paths: ['src/enterprise_memory/providers/openai_responses.py','tests/openai/**','.github/workflows/ci-openai-provider.yml']

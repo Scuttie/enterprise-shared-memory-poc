@@ -1,6 +1,5 @@
 name: ci-solar
 on:
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: read

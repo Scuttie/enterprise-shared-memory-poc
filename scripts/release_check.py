@@ -21,7 +21,9 @@ EXEMPT = {"src/enterprise_memory/promotion/security_scan.py", "tests/security/te
           "tests/unit/test_promotion.py", "scripts/release_check.py", "tests/service/test_service.py",
           "src/enterprise_memory/persistence/postgres/repos.py", "tests/postgres/test_p2_0.py",
           "tests/postgres/test_p2_start.py", "src/enterprise_memory/providers/redaction.py",
-          "tests/solar/test_solar_provider.py"}
+          "tests/solar/test_solar_provider.py",
+          # OSS release secret/path detector — legitimately defines credential patterns, like this file itself
+          "scripts/oss_release_acceptance.py"}
 SKIP_DIR = ("__pycache__", ".git", ".venv", "venv", "dist", "build", "reports", "data")
 
 

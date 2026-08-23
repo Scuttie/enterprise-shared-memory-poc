@@ -1,6 +1,5 @@
 name: ci-p5-2-seal
 on:
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: read

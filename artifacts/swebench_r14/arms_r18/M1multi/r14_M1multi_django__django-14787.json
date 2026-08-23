@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-14787",
+  "repo": "django/django",
+  "arm": "M1multi",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-14787@sha256:036744f84b6f7323ef6c4cd39aac71778ef8d0ac44ce961cbe19277e529e6626",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "decode": "",
+  "inject_len": 7630,
+  "edited_files": [
+    "django/utils/decorators.py"
+  ],
+  "patch_bytes": 534,
+  "tokens": {
+    "prompt": 17866,
+    "completion": 328
+  },
+  "secs": 83.7
+}

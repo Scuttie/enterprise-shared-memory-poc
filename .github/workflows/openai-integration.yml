@@ -1,0 +1,40 @@
+name: openai-integration
+# R12 — MANUAL, SECRET-GATED live OpenAI phases. Requires OPENAI_API_KEY. Never runs on PR.
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: "smoke|band|r11|repo"
+        required: true
+        default: "smoke"
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/openai-integration.yml']
+jobs:
+  live:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Require OPENAI_API_KEY
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then echo "PRECONDITION BLOCK - OPENAI_API_KEY absent"; exit 1; fi
+          echo "key present"
+      - run: pip install -q httpx
+      - name: R12-A1 provider smoke
+        if: github.event.inputs.phase == 'smoke'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python scripts/r12_openai_smoke.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r12-${{ github.event.inputs.phase }}
+          path: artifacts/openai_reader_r12/provider_smoke.json

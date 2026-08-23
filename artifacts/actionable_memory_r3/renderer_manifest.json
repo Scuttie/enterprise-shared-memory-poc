@@ -1,0 +1,50 @@
+{
+  "assemble_hash": "263a142a8da00db8",
+  "bundle_order": [
+    "B0",
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8",
+    "B9"
+  ],
+  "max_tokens": 220,
+  "redact_hash": "c90e1ba636393344",
+  "renderers": {
+    "B0": {
+      "code_hash": "a38f13454dcc1e3a"
+    },
+    "B1": {
+      "code_hash": "9a7b590b5c32ab31"
+    },
+    "B2": {
+      "code_hash": "72983422a0c41ac3"
+    },
+    "B3": {
+      "code_hash": "138da00237855187"
+    },
+    "B4": {
+      "code_hash": "7d9c44a8693ffff2"
+    },
+    "B5": {
+      "code_hash": "05a28adbd6fc09c4"
+    },
+    "B6": {
+      "code_hash": "d95e70b8ca0cec16"
+    },
+    "B7": {
+      "code_hash": "da12d73968edea73"
+    },
+    "B8": {
+      "code_hash": "e05b9a137a24d29f"
+    },
+    "B9": {
+      "code_hash": "a95ca6db3d3f5325"
+    }
+  },
+  "tokenizer": "cl100k_base"
+}

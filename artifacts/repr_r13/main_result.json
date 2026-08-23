@@ -1,0 +1,160 @@
+{
+  "experiment": "REALBENCH_REPRESENTATION_R13",
+  "reader": "gpt-4o-mini-2024-07-18",
+  "M0_pass_at_1": 0.367,
+  "formats": {
+    "F0": {
+      "name": "PLAIN",
+      "RelevantLift": {
+        "n": 109,
+        "rateA": 0.3486,
+        "rateB": 0.3303,
+        "diff": 0.0183,
+        "pos_transfer": 4,
+        "neg_transfer": 2,
+        "mcnemar_p": 0.6875,
+        "boot95ci": [
+          -0.0275,
+          0.0642
+        ]
+      },
+      "relevant_vs_M0": {
+        "n": 109,
+        "rateA": 0.3486,
+        "rateB": 0.367,
+        "diff": -0.0183,
+        "pos_transfer": 2,
+        "neg_transfer": 4,
+        "mcnemar_p": 0.6875,
+        "boot95ci": [
+          -0.0642,
+          0.0275
+        ]
+      },
+      "inject_len": 600
+    },
+    "F1": {
+      "name": "API_CARD",
+      "RelevantLift": {
+        "n": 109,
+        "rateA": 0.3119,
+        "rateB": 0.3394,
+        "diff": -0.0275,
+        "pos_transfer": 0,
+        "neg_transfer": 3,
+        "mcnemar_p": 0.25,
+        "boot95ci": [
+          -0.0642,
+          0.0
+        ]
+      },
+      "relevant_vs_M0": {
+        "n": 109,
+        "rateA": 0.3119,
+        "rateB": 0.367,
+        "diff": -0.055,
+        "pos_transfer": 0,
+        "neg_transfer": 6,
+        "mcnemar_p": 0.0312,
+        "boot95ci": [
+          -0.1009,
+          -0.0183
+        ]
+      },
+      "inject_len": 1176
+    },
+    "F2": {
+      "name": "EXECUTABLE",
+      "RelevantLift": {
+        "n": 109,
+        "rateA": 0.3394,
+        "rateB": 0.3303,
+        "diff": 0.0092,
+        "pos_transfer": 2,
+        "neg_transfer": 1,
+        "mcnemar_p": 1.0,
+        "boot95ci": [
+          -0.0183,
+          0.0367
+        ]
+      },
+      "relevant_vs_M0": {
+        "n": 109,
+        "rateA": 0.3394,
+        "rateB": 0.367,
+        "diff": -0.0275,
+        "pos_transfer": 0,
+        "neg_transfer": 3,
+        "mcnemar_p": 0.25,
+        "boot95ci": [
+          -0.0642,
+          0.0
+        ]
+      },
+      "inject_len": 1277
+    },
+    "F3": {
+      "name": "POS_NEG",
+      "RelevantLift": {
+        "n": 109,
+        "rateA": 0.3394,
+        "rateB": 0.3486,
+        "diff": -0.0092,
+        "pos_transfer": 2,
+        "neg_transfer": 3,
+        "mcnemar_p": 1.0,
+        "boot95ci": [
+          -0.0459,
+          0.0275
+        ]
+      },
+      "relevant_vs_M0": {
+        "n": 109,
+        "rateA": 0.3394,
+        "rateB": 0.367,
+        "diff": -0.0275,
+        "pos_transfer": 2,
+        "neg_transfer": 5,
+        "mcnemar_p": 0.4531,
+        "boot95ci": [
+          -0.0734,
+          0.0183
+        ]
+      },
+      "inject_len": 1273
+    },
+    "F4": {
+      "name": "SKELETON",
+      "RelevantLift": {
+        "n": 109,
+        "rateA": 0.3211,
+        "rateB": 0.3486,
+        "diff": -0.0275,
+        "pos_transfer": 0,
+        "neg_transfer": 3,
+        "mcnemar_p": 0.25,
+        "boot95ci": [
+          -0.0642,
+          0.0
+        ]
+      },
+      "relevant_vs_M0": {
+        "n": 109,
+        "rateA": 0.3211,
+        "rateB": 0.367,
+        "diff": -0.0459,
+        "pos_transfer": 0,
+        "neg_transfer": 5,
+        "mcnemar_p": 0.0625,
+        "boot95ci": [
+          -0.0917,
+          -0.0092
+        ]
+      },
+      "inject_len": 696
+    }
+  },
+  "selected_encoding": "F0",
+  "selected_name": "PLAIN",
+  "selection_note": "selected by max RelevantLift (not p-value)"
+}

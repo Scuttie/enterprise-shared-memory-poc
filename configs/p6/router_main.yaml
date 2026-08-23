@@ -1,0 +1,13 @@
+# P6/R19 §20 — held-out utility-router main (FROZEN before live calls).
+experiment: R19_UTILITY_ROUTER_HELDOUT
+reader: gpt-4o-mini-2024-07-18        # fixed across ALL arms (no per-arm swap, no reader selection)
+benchmark: SWE-bench/SWE-bench_Verified
+tasks: artifacts/p6/task_manifest.json:held_out_memory_eligible   # every untouched eligible task; no cherry-pick
+arms: [A0, A1, A2, A3, A4, A5]
+router_policy: artifacts/p6/router_policy.json         # content_hash 4daff133...
+governance: artifacts/p6/governance_thresholds.json   # content_hash f4370407...
+coverage_floor_dev: 0.15
+tool_budget: {max_turns: 40, max_search_rounds: 4, max_browse: 4, max_injected_tokens: 1200}
+parity: identical model/harness/tool budget across A0-A5; A1 compute == A4 compute; A2 browse/tokens == A4
+endpoints: {primary: [H1=A5-A0], secondary: [H2=A5-A1, H3=A5-A2, H4=A5-A4]}
+stopping: {optional_stopping: false, post_result_N_expansion: false}

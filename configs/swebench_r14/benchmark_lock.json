@@ -1,0 +1,15 @@
+{
+  "experiment_id": "REALBENCH_SWEBENCH_VERIFIED_R14",
+  "audit_date": "2026-08-19",
+  "dataset": "princeton-nlp/SWE-bench_Verified",
+  "dataset_revision": "c104f840cc67f8b6eec6f759ebc8b2693d585d4a",
+  "rows": 500, "repos": 12, "all_python": true,
+  "top_repos": {"django/django":231,"sympy/sympy":75,"sphinx-doc/sphinx":44,"matplotlib/matplotlib":34,"scikit-learn/scikit-learn":32,"astropy/astropy":22,"pydata/xarray":22,"pytest-dev/pytest":19,"pylint-dev/pylint":10,"psf/requests":8},
+  "harness": "swebench==5.0.2 (MIT); python -m swebench.harness.run_evaluation --dataset_name princeton-nlp/SWE-bench_Verified --predictions_path preds.jsonl --run_id <id> --instance_ids <inst>",
+  "docker_image": "swebench/sweb.eval.x86_64.<instance_id with __ -> _1776_>:latest (auto-pulled)",
+  "grading": "apply model_patch + test_patch; resolved = FAIL_TO_PASS all pass AND PASS_TO_PASS all pass",
+  "license": "harness MIT; underlying repos permissive OSS (Django BSD etc.) baked into images; dataset card unmarked (soft spot, widely-used research benchmark) -> RESOLVABLE for research use (not a technical stop)",
+  "reader": "gpt-4o-mini-2024-07-18 (cost); FLOOR RISK on free-form agent -> 30-task no-memory band check first",
+  "design": "memory = RAW prior same-repo resolved issue (source problem + source gold diff) as worked-example (NOT distilled); M0 none / M1 relevant same-repo / M2 shuffled cross-repo; H1=M1-M2, H2=M1-M0",
+  "created_at_field": true, "repo_field": true
+}

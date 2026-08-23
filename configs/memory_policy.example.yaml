@@ -1,0 +1,10 @@
+# P6/R19 §12 — memory policy (placeholders). Server-enforced; clients cannot override.
+mode: shadow              # off | static_relevant | agentic_reference | utility_gated | shadow
+router_policy: rule_router_v1
+budgets:
+  max_search_rounds: 4
+  max_browse: 4
+  max_cards: 4
+  max_injected_tokens: 1200
+review:
+  require_manual_promotion: true

@@ -1,0 +1,20 @@
+name: ci-p5-2-forensics
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  forensics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+      - name: P5.1 immutability lock + P5.2 offline forensics (no Solar)
+        run: python -m pytest -q tests/unit/test_p5_1_immutable.py tests/unit/test_p5_2_forensics.py --timeout=60

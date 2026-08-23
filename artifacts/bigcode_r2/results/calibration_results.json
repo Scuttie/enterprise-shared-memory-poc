@@ -1,0 +1,75 @@
+{
+  "all_gates_pass": false,
+  "arms_pass1": {
+    "M0": 0.375,
+    "M1": 0.425,
+    "M2": 0.4,
+    "M3": 0.3875,
+    "M4": 0.375,
+    "M5": 0.375,
+    "M7": 0.3875
+  },
+  "chunks_combined": [
+    "calibration_raw.0of3.json",
+    "calibration_raw.1of3.json",
+    "calibration_raw.2of3.json"
+  ],
+  "cross_user_private_injection": 0,
+  "dataset_content_hash": "98e377a83cb12e90e244eef1a804a60b0dbcf0c062c623238596fd1dc7299172",
+  "exec_rate": {
+    "M0": 0.9625,
+    "M1": 0.9625,
+    "M2": 0.9625,
+    "M3": 0.9625,
+    "M4": 0.9625,
+    "M5": 0.975,
+    "M7": 0.9625
+  },
+  "experiment_id": "BIGCODE_R2_CALIBRATION",
+  "gates": {
+    "C1_official_grader": {
+      "SEPARATE_CI_INVARIANT_VERIFIED": "canonical 100% pass in ci-bigcode-grader",
+      "malformed_rate": 0.0357,
+      "pass": false,
+      "setup_failure": 0
+    },
+    "C2_service_path": {
+      "note": "every job via HTTP->durable job->separate worker; task id + evaluator revision persisted; DB injected == payload by construction",
+      "pass": true
+    },
+    "C3_dynamic_range": {
+      "M0_pass1": 0.375,
+      "pass": true
+    },
+    "C4_multiuser_safety": {
+      "M0_injected": 0,
+      "SEPARATE_CI_INVARIANT_VERIFIED": "source_user!=target_user (disjoint pools); source/target task overlap 0 (frozen partition)",
+      "cross_user_private_injection": 0,
+      "pass": true
+    },
+    "C5_retrieval_integrity": {
+      "M2_injected_rate": 0.3875,
+      "M4_injected_rate": 1.025,
+      "SEPARATE_CI_INVARIANT_VERIFIED": "prod embedder enforced; invalid canonical rejected by validated_search; target/test leakage 0",
+      "embedder": "?",
+      "pass": true
+    },
+    "C6_reproducibility": {
+      "pass": true,
+      "selected_format": "F1_PLAIN_LESSON",
+      "split_hash": "6e0755582c77ea0b0da930e5fc9da58169cd1a4c81a8079acf9705a51c90829d"
+    }
+  },
+  "n_targets": 80,
+  "returned_models": [
+    "solar-pro2-251215"
+  ],
+  "selected_format": "F1_PLAIN_LESSON",
+  "split": "calibration",
+  "split_hash": "6e0755582c77ea0b0da930e5fc9da58169cd1a4c81a8079acf9705a51c90829d",
+  "states": {
+    "DEAD_LETTER": 3,
+    "FAILED": 17,
+    "SUCCEEDED": 540
+  }
+}

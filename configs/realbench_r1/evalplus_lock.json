@@ -1,0 +1,16 @@
+{
+  "benchmark": "MBPP+ (EvalPlus)",
+  "package": "evalplus",
+  "package_version": "0.3.1",
+  "mbpp_plus_version": "v0.2.0",
+  "dataset_release": "https://github.com/evalplus/mbppplus_release/releases/download/v0.2.0/MbppPlus.jsonl.gz",
+  "dataset_hash": "92743def42b30b354a30898e4fa33fb0",
+  "n_tasks": 378,
+  "python": "3.11",
+  "evaluator": "evalplus.eval.untrusted_check (+ evalplus.gen.util.trusted_exec for ground-truth)",
+  "grader_platform_note": "official grader is Linux-only (unsafe_execute imports the Unix `resource` module); all grading runs in CI",
+  "license": "Apache-2.0 (EvalPlus) + MIT (MBPP)",
+  "install": "pip install evalplus==0.3.1",
+  "dataset_content_hash": "bbaa3bec889558881f14ad8e2cc9ea9d7b9bed2c283484e823cebf5ce86a777c",
+  "dataset_file_hash_note": "get_mbpp_plus_hash() is line-ending sensitive (Windows 92743def... / Linux ee43ecab...); use dataset_content_hash as the stable anchor"
+}

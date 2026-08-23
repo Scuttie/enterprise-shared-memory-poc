@@ -1,0 +1,20 @@
+{
+  "instance_id": "django__django-13410",
+  "repo": "django/django",
+  "arm": "M0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-13410@sha256:65d44eeb4199046b129e607153c42d099fed0251574e027f7bede556dbbb692f",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "edited_files": [
+    "django/core/files/locks.py"
+  ],
+  "patch_bytes": 745,
+  "tokens": {
+    "prompt": 3931,
+    "completion": 177
+  },
+  "secs": 71.6
+}

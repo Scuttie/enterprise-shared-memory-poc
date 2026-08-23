@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-11740",
+  "repo": "django/django",
+  "arm": "M1dec",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-11740@sha256:6a057a8a78fefed32c70c306c4843a12a9a83147a75e20a523d2fa7bdca392f4",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 33,
+  "decode": "relevant",
+  "inject_len": 1521,
+  "edited_files": [
+    "django/db/migrations/state.py"
+  ],
+  "patch_bytes": 585,
+  "tokens": {
+    "prompt": 70492,
+    "completion": 820
+  },
+  "secs": 91.2
+}

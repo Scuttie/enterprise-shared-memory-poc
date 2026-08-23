@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-16255",
+  "repo": "django/django",
+  "arm": "A3",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-16255@sha256:32b922f258d8a318319caee863c0c6cbe6122dd8efe5642ad9ab7359975ed45b",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "decode": "",
+  "inject_len": 917,
+  "edited_files": [
+    "django/contrib/sitemaps/__init__.py"
+  ],
+  "patch_bytes": 641,
+  "tokens": {
+    "prompt": 5262,
+    "completion": 235
+  },
+  "secs": 71.0
+}

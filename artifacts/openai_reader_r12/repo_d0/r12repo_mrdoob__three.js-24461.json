@@ -1,0 +1,23 @@
+{
+  "instance_id": "mrdoob__three.js-24461",
+  "language": "JavaScript",
+  "repo": "mrdoob/three.js",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-24461@sha256:471c97480b9ca2880b65cc450a439a44a12cd18fc0ce7d5efec815f2100549fe",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "edited_files": [
+    "src/math/Color.js"
+  ],
+  "patch_bytes": 891,
+  "tokens": {
+    "input": 5579,
+    "output": 388,
+    "reasoning": 89
+  },
+  "secs": 116.2
+}

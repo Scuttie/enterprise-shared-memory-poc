@@ -1,0 +1,112 @@
+{
+  "experiment_id": "REALBENCH_SWE_POLYBENCH_R7",
+  "audit_date": "2026-08-17",
+  "audit_method": "live HTTP (github/HF/leaderboard/arxiv), not cached memory",
+  "instrument": {
+    "name": "SWE-PolyBench",
+    "publisher": "Amazon Science",
+    "code_repo": "https://github.com/amazon-science/SWE-PolyBench",
+    "dataset": "https://huggingface.co/datasets/AmazonScience/SWE-PolyBench",
+    "verified_dataset": "https://huggingface.co/datasets/AmazonScience/SWE-PolyBench_Verified",
+    "leaderboard": "https://amazon-science.github.io/SWE-PolyBench/",
+    "paper": "arXiv:2504.08703",
+    "code_license": "MIT",
+    "dataset_license": "MIT"
+  },
+  "counts": {
+    "full": 2110,
+    "pb500": 500,
+    "verified_live_viewer": 382,
+    "verified_card_text": 394,
+    "verified_per_language_live": {
+      "Java": 69,
+      "JavaScript": 100,
+      "Python": 113,
+      "TypeScript": 100
+    },
+    "RESOLVE_N_PROGRAMMATICALLY_BEFORE_GATE": "DONE: 382 confirmed at revision b3fca77"
+  },
+  "task_structure": {
+    "execution_based": true,
+    "fields": [
+      "instance_id",
+      "repo",
+      "base_commit",
+      "patch",
+      "test_patch",
+      "problem_statement",
+      "F2P",
+      "P2P",
+      "language",
+      "Dockerfile",
+      "test_command",
+      "is_func_only",
+      "num_func_changes"
+    ],
+    "eval": "run_evaluation.py applies model patch, runs tests, checks F2P->pass",
+    "harness": "Docker + pre-built frozen instance images on GHCR",
+    "verifier_exposure_to_agent": "NONE (F2P/P2P + gold patch withheld)"
+  },
+  "dynamic_range": {
+    "band": [
+      0.1,
+      0.7
+    ],
+    "verified_leaderboard_sample": {
+      "HMigBot_Opus4.8": 0.5131,
+      "Rovo_Dev": 0.4895,
+      "Prometheus_GPT5": 0.3377,
+      "Amazon_Q": 0.288,
+      "Kodah_gpt5mini": 0.2827,
+      "Aider_Sonnet35": 0.1623,
+      "SWE_agent": 0.144,
+      "Agentless": 0.1335,
+      "Aider_Haiku": 0.1309
+    },
+    "assessment": "in-band, no saturation (ceiling ~0.51); accessible mid-band readers exist",
+    "OUR_READER_CAVEAT": "leaderboard in-band readers are Sonnet/GPT-5/Amazon Q, NOT Solar; R7 G1 no-memory pilot must confirm the available reader is in [0.10,0.70]"
+  },
+  "reproducibility_caveats": [
+    "smoke-test GHCR image pull+eval end-to-end",
+    "resolve Verified N 382 vs 394",
+    "JS/TS toolchain flakiness (mitigated by frozen images)"
+  ],
+  "audit_verdict": "PASS (reproducible execution-based MIT instrument with in-band profile); confirmatory arms gated on G1 pilot, not on this audit",
+  "no_paid_runs_executed_in_audit": true,
+  "G0_freeze": {
+    "frozen_at": "2026-08-17",
+    "official_repo_commit": "9c836c5d7f3cb991934132b77d29e6941d912a07",
+    "hf_dataset_revision": "b3fca77b637379f0c01ad86d18753a7ac1998b53",
+    "test_csv_sha256": "0c8138e73c34fa29a5276b675b146b72d78ce001fcc4560d76302c908b4808a5",
+    "verified_rows": 382,
+    "per_language": {
+      "Java": 69,
+      "JavaScript": 100,
+      "Python": 113,
+      "TypeScript": 100
+    },
+    "task_category": {
+      "Bug Fix": 299,
+      "Feature": 70,
+      "Refactoring": 13
+    },
+    "created_at_present": 382,
+    "asserts": "len==382, per-lang exact, ids unique, base_commit len40, patch/test_patch/F2P/P2P present -> ALL PASS",
+    "manifest": "artifacts/swe_polybench_r7/official_manifest.json (382 ids + per-instance content sha256)",
+    "note_394": "HF card text 394 is stale; pinned test.csv authoritative at 382 (documentation-only discrepancy)",
+    "license_detail": {
+      "top_level_LICENSE": "MIT (Copyright 2025 Amazon Science)",
+      "github_detected_spdx": "MIT",
+      "hf_dataset_card": "mit",
+      "per_file_headers": "src/poly_bench_evaluation/*.py carry SPDX-License-Identifier: CC-BY-NC-4.0 (non-commercial)",
+      "discrepancy": "Repo LICENSE/GitHub/dataset = MIT, but source-file SPDX headers = CC-BY-NC-4.0. Research reproduction OK under either; FLAG for commercial/company use."
+    }
+  },
+  "license": {
+    "top_level_LICENSE": "MIT (Copyright 2025 Amazon Science)",
+    "github_detected_spdx": "MIT",
+    "hf_dataset_card": "mit",
+    "per_file_headers": "src/poly_bench_evaluation/*.py carry SPDX-License-Identifier: CC-BY-NC-4.0 (non-commercial)",
+    "discrepancy": "Repo LICENSE/GitHub/dataset = MIT, but source-file SPDX headers = CC-BY-NC-4.0. Research reproduction OK under either; FLAG for commercial/company use."
+  }
+}

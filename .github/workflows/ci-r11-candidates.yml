@@ -1,0 +1,39 @@
+name: ci-r11-candidates
+
+# REALBENCH-R11 relevance candidates (no Solar): pinned embedder ranks source_pool per target.
+on:
+  workflow_dispatch:
+    inputs:
+      topk: {description: "top-K sources per target", required: false, default: "10"}
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/ci-r11-candidates.yml']
+
+jobs:
+  candidates:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.10'}
+      - name: Install (LCB loader + embedder)
+        run: |
+          git clone --no-checkout https://github.com/LiveCodeBench/LiveCodeBench.git lcb
+          cd lcb && git checkout 28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24
+          pip install -q "datasets==2.21.0" pebble numpy pyext
+          pip install -q "sentence-transformers==3.0.1"
+          pip install -q -e . --no-deps
+      - name: Build candidates
+        env:
+          R11_RELEASE: release_v6
+          R11_TOPK: ${{ github.event.inputs.topk }}
+          PYTHONPATH: ${{ github.workspace }}/lcb
+        run: python scripts/r11_candidates.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r11-candidates
+          path: artifacts/livecodebench_r11/target_source_candidates.json

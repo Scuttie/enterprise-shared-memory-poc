@@ -1,0 +1,22 @@
+{
+  "experiment_id": "REALBENCH_LIVECODEBENCH_R11",
+  "audit_date": "2026-08-18",
+  "audit_method": "live HTTP (GitHub REST+raw, HuggingFace API, pyproject/loader source)",
+  "official_repo": "https://github.com/LiveCodeBench/LiveCodeBench",
+  "repo_commit": "28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24",
+  "repo_commit_date": "2025-07-16",
+  "license": "MIT (GitHub spdx=MIT + raw LICENSE 'Copyright (c) 2024 LiveCodeBench')",
+  "dataset_full": {"id": "livecodebench/code_generation", "revision": "bb83f1c3c643a772b7a2a8f07bd62c2aab76be8f", "note": "FULL setting for MAIN; stale since 2024-06-13 (capped ~release_v3)"},
+  "dataset_lite": {"id": "livecodebench/code_generation_lite", "revision": "0fe84c3912ea0c4d4a78037083943e8f0c4dd505", "note": "lite ONLY for technical smoke; release_v6=1055 problems May2023-Apr2025"},
+  "release_versions": ["release_v1(400)","release_v2(511)","release_v3(612)","release_v4(713)","release_v5(880)","release_v6(1055)"],
+  "id_field": "question_id",
+  "date_field": "contest_date",
+  "task_fields": ["question_title","question_content","platform(LEETCODE/CODEFORCES/ATCODER)","question_id","contest_id","contest_date","starter_code","difficulty(EASY/MEDIUM/HARD)","public_test_cases","private_test_cases(base64->zlib->pickle->json)","metadata"],
+  "test_type": "STDIN (full program stdin/stdout) | FUNCTIONAL (starter_code + fn_name)",
+  "evaluator": {"extract": "lcb_runner/utils/extraction_utils.py::extract_code (last ``` fenced block)",
+                "grade": "lcb_runner/evaluation/compute_code_generation_metrics.py::codegen_metrics -> check_correctness (multiprocessing.Process, timeout=6) -> testing_util.run_test",
+                "metric": "Pass@1", "docker_required": false},
+  "env": {"python": ">=3.10 (3.11 rec)", "eval_only_deps": ["datasets>=3.2.0","pebble>=5.1.0","numpy"], "install": "pip install -e . (package lcb_runner)"},
+  "provenance_note": "Per milestone: record official benchmark provenance for research evaluation; do NOT audit each contest-site/problem license as a separate experimental gate (redistribution/product use is a separate legal question).",
+  "reader": {"requested_model": "solar-pro3-260323", "returned_model": "TO_RECORD", "temperature": 0, "generations": 1, "repair": false, "token_budget": "fixed (to freeze)"}
+}

@@ -1,0 +1,25 @@
+{
+  "C0_no_memory_pass1": 0.98,
+  "arms_pass1": {
+    "C0": 0.98,
+    "C1": 0.97,
+    "C2": 0.99,
+    "C3": 0.99,
+    "C4": 0.99,
+    "C5": 0.99
+  },
+  "cross_user_private_injection": 0,
+  "decision": "CALIBRATION_STOP",
+  "experiment": "R3_CALIBRATION",
+  "gates": {
+    "G1_malformed_le_0.02": true,
+    "G3_dynamic_range_C0_in_[0.10,0.90]": false,
+    "G4_C0_no_injection": true,
+    "G4_cross_user_private_injection_0": true,
+    "G6_production_embedder": true
+  },
+  "malformed_rate": 0.0017,
+  "n_rows": 600,
+  "note": "technical gates only; a null/negative memory effect does not block the main (\u00a716)",
+  "selected_bundle": "B5"
+}

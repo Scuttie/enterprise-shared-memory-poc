@@ -1,0 +1,24 @@
+name: ci-docs
+# P6/R19 §2 — fail the build when user-facing docs contradict docs/STATUS.yaml (single source of truth).
+on:
+  push:
+    branches: [codex/utility-router-v0.3, codex/production-service-v0.2]
+    paths: ['README.md', 'docs/**', 'scripts/render_project_status.py', 'scripts/check_docs_consistency.py',
+            'migrations/**', '.github/workflows/**', 'pyproject.toml']
+  pull_request:
+    paths: ['README.md', 'docs/**', 'scripts/render_project_status.py', 'scripts/check_docs_consistency.py',
+            'migrations/**', '.github/workflows/**', 'pyproject.toml']
+  workflow_dispatch: {}
+jobs:
+  docs-truth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install PyYAML (optional; scripts fall back to stdlib)
+        run: pip install -q pyyaml || true
+      - name: Docs consistency (README vs STATUS.yaml)
+        run: python scripts/check_docs_consistency.py
+      - name: README status block is up to date
+        run: python scripts/render_project_status.py --check

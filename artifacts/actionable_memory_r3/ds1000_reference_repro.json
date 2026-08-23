@@ -1,0 +1,50 @@
+{
+  "content_hash": "3fd0b7aef93ea709880524eeeaa0269957bd8785aedac48069b4450078db54c4",
+  "data_sha256": "e8c6daa9d7223976bce0296644f3933f78d7f47830669ff05cd61da62c6ba9b3",
+  "evaluated_count": 1000,
+  "expected_count": 1000,
+  "gate": "ds1000_reference_reproduction",
+  "per_library": {
+    "Matplotlib": {
+      "n": 155,
+      "pass": 155,
+      "rate": 1.0
+    },
+    "Numpy": {
+      "n": 220,
+      "pass": 220,
+      "rate": 1.0
+    },
+    "Pandas": {
+      "n": 291,
+      "pass": 291,
+      "rate": 1.0
+    },
+    "Pytorch": {
+      "n": 68,
+      "pass": 68,
+      "rate": 1.0
+    },
+    "Scipy": {
+      "n": 106,
+      "pass": 106,
+      "rate": 1.0
+    },
+    "Sklearn": {
+      "n": 115,
+      "pass": 115,
+      "rate": 1.0
+    },
+    "Tensorflow": {
+      "n": 45,
+      "pass": 45,
+      "rate": 1.0
+    }
+  },
+  "ref_pass_min": 0.99,
+  "reference_pass": 1000,
+  "reference_pass_rate": 1.0,
+  "reproduced": true,
+  "sample_failures": [],
+  "subset": "full"
+}

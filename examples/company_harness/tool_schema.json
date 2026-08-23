@@ -1,0 +1,113 @@
+{
+  "tools": [
+    {
+      "name": "search_experiences",
+      "description": "Search governed experience cards for the current subtask. Returns METADATA ONLY (no execution view, patch, identity, or verdict).",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "subtask": {
+            "type": "string",
+            "enum": [
+              "comprehension",
+              "localization",
+              "modification",
+              "validation"
+            ]
+          },
+          "repository": {
+            "type": "string"
+          },
+          "top_k": {
+            "type": "integer",
+            "default": 10,
+            "maximum": 25
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "returns": [
+        "card_id",
+        "version_id",
+        "title",
+        "scope",
+        "repository",
+        "framework",
+        "source_age",
+        "verification_state",
+        "similarity",
+        "reason_tags"
+      ]
+    },
+    {
+      "name": "browse_experience",
+      "description": "Retrieve the execution view of one card. Allowed only after tenant permission, repository/path scope, version/validity, governance state, and the utility router (or explicit policy) approve.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "card_id": {
+            "type": "string"
+          },
+          "version_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version_id"
+        ]
+      },
+      "returns": [
+        "execution_view_or_null"
+      ]
+    },
+    {
+      "name": "report_memory_outcome",
+      "description": "Report the target task's outcome so credit can be assigned to browsed cards. Never affects the current target's own grading; only future targets.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string"
+          },
+          "target_outcome": {
+            "type": "string",
+            "enum": [
+              "resolved",
+              "unresolved",
+              "infra_failure",
+              "unknown"
+            ]
+          },
+          "adoption_evidence": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id",
+          "target_outcome"
+        ]
+      }
+    },
+    {
+      "name": "memory_explain_decision",
+      "description": "Return the router's USE/ABSTAIN decisions and reason codes for a session (audit/inspection).",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id"
+        ]
+      }
+    }
+  ],
+  "note": "Server derives identity; no credentials in payloads; verifier/hidden-tests never exposed."
+}

@@ -1,0 +1,20 @@
+{
+  "instance_id": "django__django-14608",
+  "repo": "django/django",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-14608@sha256:a8978401269f0ef58e8ddc42dae1ad21547a74d94551241c1754627dbc0d79b9",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "django/forms/formsets.py"
+  ],
+  "patch_bytes": 968,
+  "tokens": {
+    "prompt": 19601,
+    "completion": 405
+  },
+  "secs": 108.4
+}

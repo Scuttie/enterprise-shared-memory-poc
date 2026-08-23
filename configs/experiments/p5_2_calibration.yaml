@@ -1,0 +1,8 @@
+experiment_id: "EXP_P5_2_CAL"
+split: "calibration"
+n_per_domain: 4
+n_users: 8
+arms: ["M0", "M1", "M2", "M3", "M4", "S1", "S2", "S3", "S4"]
+plan_hash: "93ce321a7984a164698b82497dc7bb2c6e1188d452a4f9a852e7fa7a358e9490"
+tau_abs: 0.8
+tau_margin: 0.5

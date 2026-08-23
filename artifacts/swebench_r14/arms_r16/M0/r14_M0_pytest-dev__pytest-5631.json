@@ -1,0 +1,20 @@
+{
+  "instance_id": "pytest-dev__pytest-5631",
+  "repo": "pytest-dev/pytest",
+  "arm": "M0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-5631@sha256:c76510e12a1765211e064f6e8de09e51ac0f7839f60d72305b374e004308b6a1",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "edited_files": [
+    "src/_pytest/compat.py"
+  ],
+  "patch_bytes": 729,
+  "tokens": {
+    "prompt": 7776,
+    "completion": 342
+  },
+  "secs": 61.2
+}

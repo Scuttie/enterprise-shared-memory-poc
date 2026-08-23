@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-13480",
+  "repo": "sympy/sympy",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13480@sha256:98270682f9052def68c8c42f78fb6ce6573f2dc7b8cb7fe741139a0543b30e21",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "edited_files": [
+    "sympy/functions/elementary/hyperbolic.py"
+  ],
+  "patch_bytes": 590,
+  "tokens": {
+    "prompt": 2754,
+    "completion": 125
+  },
+  "secs": 65.0
+}

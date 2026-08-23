@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-19783",
+  "repo": "sympy/sympy",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-19783@sha256:f479dc5ad70891339f836122f10dcbf3e2fb24c7ffc7cf0eb0a682595e7c1db3",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 17,
+  "edited_files": [
+    "sympy/physics/quantum/dagger.py"
+  ],
+  "patch_bytes": 2697,
+  "tokens": {
+    "prompt": 22987,
+    "completion": 510
+  },
+  "secs": 76.0
+}

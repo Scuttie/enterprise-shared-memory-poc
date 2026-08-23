@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Enterprise Shared Memory: a governed shared-memory control plane for coding agents"
+authors:
+  - family-names: "Enterprise Shared Memory contributors"
+version: 0.3.0.dev1
+license: Apache-2.0
+repository-code: "https://github.com/Scuttie/enterprise-shared-memory-poc"
+keywords: [coding-agents, memory, governance, retrieval, mcp, swe-bench]
+abstract: >
+  A governed shared-memory control plane for coding agents (PostgreSQL-authoritative experience cards, a
+  replaceable vector index, a utility-aware USE/ABSTAIN router, and auditable governance). The project makes no
+  general coding-performance-lift claim; see reports/ for the controlled evaluations (R14-R21).

@@ -1,0 +1,80 @@
+name: ci-qdrant
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qdrant:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: esm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm"
+          --health-interval 5s --health-timeout 5s --health-retries 30
+      qdrant:
+        # digest-pinned (resolved on the ubuntu-latest runner). No credentials, no company Qdrant — a
+        # stock public image in local CI.
+        image: qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
+        ports:
+          - 6333:6333
+          - 6334:6334
+    env:
+      DATABASE_URL: postgresql://localhost:5432/esm
+      MIGRATION_USER: postgres
+      MIGRATION_PASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: esm
+      QDRANT_URL: http://localhost:6333
+      INDEX_DIM: "64"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,postgres,qdrant]"
+      - name: Resolve image digests
+        run: |
+          echo "PG_DIGEST=$(docker image inspect postgres:16.4 --format '{{index .RepoDigests 0}}' 2>/dev/null || true)"
+          echo "QDRANT_DIGEST=$(docker image inspect qdrant/qdrant --format '{{index .RepoDigests 0}}' 2>/dev/null || true)"
+      - name: Wait for Qdrant
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          for i in range(60):
+              for ep in ("/readyz", "/healthz", "/"):
+                  try:
+                      with urllib.request.urlopen("http://localhost:6333" + ep, timeout=2) as r:
+                          if r.status < 500:
+                              print("qdrant ready via", ep); raise SystemExit(0)
+                  except SystemExit:
+                      raise
+                  except Exception:
+                      pass
+              time.sleep(2)
+          raise SystemExit("qdrant not ready")
+          PY
+      - name: Bootstrap roles
+        run: python scripts/postgres_bootstrap.py
+      - name: Alembic upgrade
+        run: alembic upgrade head
+      - name: Head check
+        run: python scripts/check_migration_head.py
+      - name: Schema validate
+        run: python scripts/postgres_validate.py
+      - name: Package import smoke (no qdrant/mem0 needed to import)
+        run: python -c "import enterprise_memory.indexing as ix; print('indexing ok')"
+      - name: Qdrant + indexing integration tests
+        run: python -m pytest -q tests/qdrant --timeout=120 --timeout-method=thread

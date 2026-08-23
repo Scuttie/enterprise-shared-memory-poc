@@ -1,0 +1,1205 @@
+{
+  "model": "gpt-5.6-terra",
+  "family": "gpt5.6",
+  "effort": "medium",
+  "arm": "M0",
+  "taskset": "BAND",
+  "n": 61,
+  "n_pass": 45,
+  "pass_at_1": 0.7377,
+  "exec_rate": 0.918,
+  "malformed": 1,
+  "returned_models": [
+    "gpt-5.6-terra"
+  ],
+  "input_tokens": 29098,
+  "output_tokens": 50656,
+  "est_cost_usd": null,
+  "results": [
+    {
+      "question_id": "3562",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 531,
+        "output_tokens": 1719,
+        "total_tokens": 2250,
+        "reasoning_tokens": 1261,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 25.566787675999876,
+      "code_len": 1974,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3677",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 605,
+        "output_tokens": 553,
+        "total_tokens": 1158,
+        "reasoning_tokens": 232,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.352994178000017,
+      "code_len": 1273,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3684",
+      "contest_date": "2025-01-04 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 308,
+        "output_tokens": 268,
+        "total_tokens": 576,
+        "reasoning_tokens": 185,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.799449327000048,
+      "code_len": 294,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3687",
+      "contest_date": "2025-01-18 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 537,
+        "output_tokens": 950,
+        "total_tokens": 1487,
+        "reasoning_tokens": 370,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 15.438442381999948,
+      "code_len": 2735,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3692",
+      "contest_date": "2025-02-15 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 356,
+        "output_tokens": 1542,
+        "total_tokens": 1898,
+        "reasoning_tokens": 1034,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 19.546294149000005,
+      "code_len": 2018,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3696",
+      "contest_date": "2025-02-08 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 365,
+        "output_tokens": 477,
+        "total_tokens": 842,
+        "reasoning_tokens": 273,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.180909275999966,
+      "code_len": 770,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3701",
+      "contest_date": "2025-02-01 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 551,
+        "output_tokens": 2623,
+        "total_tokens": 3174,
+        "reasoning_tokens": 1809,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 35.03189492899992,
+      "code_len": 3325,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3714",
+      "contest_date": "2025-01-18 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 448,
+        "output_tokens": 797,
+        "total_tokens": 1245,
+        "reasoning_tokens": 451,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.412711685999966,
+      "code_len": 959,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3715",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 387,
+        "output_tokens": 886,
+        "total_tokens": 1273,
+        "reasoning_tokens": 516,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 12.406733984999846,
+      "code_len": 1389,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3720",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 649,
+        "output_tokens": 857,
+        "total_tokens": 1506,
+        "reasoning_tokens": 516,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 11.206759226000031,
+      "code_len": 1487,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3722",
+      "contest_date": "2025-03-01 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 358,
+        "output_tokens": 488,
+        "total_tokens": 846,
+        "reasoning_tokens": 205,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.97655822899992,
+      "code_len": 1017,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3723",
+      "contest_date": "2025-02-15 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 321,
+        "output_tokens": 100,
+        "total_tokens": 421,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.4031482779998896,
+      "code_len": 347,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3736",
+      "contest_date": "2025-02-01 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 326,
+        "output_tokens": 108,
+        "total_tokens": 434,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.461914557,
+      "code_len": 339,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3760",
+      "contest_date": "2025-02-08 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 521,
+        "output_tokens": 369,
+        "total_tokens": 890,
+        "reasoning_tokens": 215,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.9982930549999764,
+      "code_len": 678,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3773",
+      "contest_date": "2025-04-05 19:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 315,
+        "output_tokens": 226,
+        "total_tokens": 541,
+        "reasoning_tokens": 65,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.66884802200002,
+      "code_len": 618,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3776",
+      "contest_date": "2025-03-01 06:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 507,
+        "output_tokens": 949,
+        "total_tokens": 1456,
+        "reasoning_tokens": 516,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 11.908397854999976,
+      "code_len": 1724,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3779",
+      "contest_date": "2025-02-15 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 542,
+        "output_tokens": 686,
+        "total_tokens": 1228,
+        "reasoning_tokens": 516,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.760110342999951,
+      "code_len": 655,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3781",
+      "contest_date": "2025-02-22 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 543,
+        "output_tokens": 3096,
+        "total_tokens": 3639,
+        "reasoning_tokens": 2588,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 44.222358013000076,
+      "code_len": 2120,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3788",
+      "contest_date": "2025-03-15 19:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 377,
+        "output_tokens": 160,
+        "total_tokens": 537,
+        "reasoning_tokens": 96,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.9439915430000383,
+      "code_len": 207,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3789",
+      "contest_date": "2025-03-08 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 517,
+        "output_tokens": 1034,
+        "total_tokens": 1551,
+        "reasoning_tokens": 765,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 14.025261075000117,
+      "code_len": 1159,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3791",
+      "contest_date": "2025-03-08 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 486,
+        "output_tokens": 309,
+        "total_tokens": 795,
+        "reasoning_tokens": 55,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.3185456850001174,
+      "code_len": 912,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3793",
+      "contest_date": "2025-03-29 19:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 360,
+        "output_tokens": 429,
+        "total_tokens": 789,
+        "reasoning_tokens": 266,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.019404855000175,
+      "code_len": 564,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3799",
+      "contest_date": "2025-03-15 07:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 376,
+        "output_tokens": 135,
+        "total_tokens": 511,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.6357396969999627,
+      "code_len": 567,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc387_b",
+      "contest_date": "2025-01-04 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 352,
+        "output_tokens": 62,
+        "total_tokens": 414,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.5457188759999099,
+      "code_len": 169,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc388_b",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 429,
+        "output_tokens": 92,
+        "total_tokens": 521,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.6484257019999404,
+      "code_len": 278,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc388_c",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 570,
+        "output_tokens": 228,
+        "total_tokens": 798,
+        "reasoning_tokens": 126,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.3277657570001793,
+      "code_len": 303,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc388_f",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 531,
+        "output_tokens": 2575,
+        "total_tokens": 3106,
+        "reasoning_tokens": 2070,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 40.233877755000094,
+      "code_len": 1822,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc389_a",
+      "contest_date": "2025-01-18 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 248,
+        "output_tokens": 31,
+        "total_tokens": 279,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.0561002599999938,
+      "code_len": 73,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc389_b",
+      "contest_date": "2025-01-18 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 245,
+        "output_tokens": 93,
+        "total_tokens": 338,
+        "reasoning_tokens": 44,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.1762544949999665,
+      "code_len": 108,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc390_d",
+      "contest_date": "2025-01-25 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 732,
+        "output_tokens": 714,
+        "total_tokens": 1446,
+        "reasoning_tokens": 516,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 11.039923421999902,
+      "code_len": 721,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc391_f",
+      "contest_date": "2025-02-01 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 930,
+        "output_tokens": 1548,
+        "total_tokens": 2478,
+        "reasoning_tokens": 1153,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 22.477294117999918,
+      "code_len": 1245,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc392_b",
+      "contest_date": "2025-02-08 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 443,
+        "output_tokens": 103,
+        "total_tokens": 546,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.4676171380001506,
+      "code_len": 305,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc392_c",
+      "contest_date": "2025-02-08 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 455,
+        "output_tokens": 157,
+        "total_tokens": 612,
+        "reasoning_tokens": 49,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.420696424000198,
+      "code_len": 323,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc392_f",
+      "contest_date": "2025-02-08 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 469,
+        "output_tokens": 491,
+        "total_tokens": 960,
+        "reasoning_tokens": 213,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.252350449000005,
+      "code_len": 896,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc393_a",
+      "contest_date": "2025-02-15 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 398,
+        "output_tokens": 77,
+        "total_tokens": 475,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.1855565359996945,
+      "code_len": 176,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc393_f",
+      "contest_date": "2025-02-15 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 644,
+        "output_tokens": 785,
+        "total_tokens": 1429,
+        "reasoning_tokens": 463,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 10.484709597999881,
+      "code_len": 1054,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc394_d",
+      "contest_date": "2025-02-22 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 546,
+        "output_tokens": 93,
+        "total_tokens": 639,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.327902561999963,
+      "code_len": 316,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc394_e",
+      "contest_date": "2025-02-22 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 771,
+        "output_tokens": 2061,
+        "total_tokens": 2832,
+        "reasoning_tokens": 1552,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 29.86190227499992,
+      "code_len": 1786,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc395_a",
+      "contest_date": "2025-03-01 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 395,
+        "output_tokens": 87,
+        "total_tokens": 482,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.1782294899999215,
+      "code_len": 230,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc396_b",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 636,
+        "output_tokens": 105,
+        "total_tokens": 741,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.69409203000032,
+      "code_len": 364,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc396_d",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 760,
+        "output_tokens": 297,
+        "total_tokens": 1057,
+        "reasoning_tokens": 90,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.152660826000101,
+      "code_len": 644,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc396_e",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 790,
+        "output_tokens": 706,
+        "total_tokens": 1496,
+        "reasoning_tokens": 335,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.208057182000175,
+      "code_len": 1422,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc397_b",
+      "contest_date": "2025-03-15 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 377,
+        "output_tokens": 106,
+        "total_tokens": 483,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.9178864190002969,
+      "code_len": 315,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc397_d",
+      "contest_date": "2025-03-15 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 329,
+        "output_tokens": 554,
+        "total_tokens": 883,
+        "reasoning_tokens": 398,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.11277931900031,
+      "code_len": 442,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc398_c",
+      "contest_date": "2025-03-22 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 393,
+        "output_tokens": 115,
+        "total_tokens": 508,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.8005196579997573,
+      "code_len": 416,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc398_g",
+      "contest_date": "2025-03-22 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "infra_error",
+      "returned_model": null,
+      "usage": {},
+      "error": "empty/incomplete response",
+      "final_status": "parser",
+      "passed": false
+    },
+    {
+      "question_id": "abc399_a",
+      "contest_date": "2025-03-29 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 327,
+        "output_tokens": 67,
+        "total_tokens": 394,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.5339139109996722,
+      "code_len": 215,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc400_d",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 1235,
+        "output_tokens": 1919,
+        "total_tokens": 3154,
+        "reasoning_tokens": 1124,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 22.242992031000085,
+      "code_len": 2812,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc400_e",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 426,
+        "output_tokens": 510,
+        "total_tokens": 936,
+        "reasoning_tokens": 330,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.635333045000152,
+      "code_len": 534,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "arc190_a",
+      "contest_date": "2025-01-12 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "infra_error",
+      "returned_model": null,
+      "usage": {},
+      "error": "empty/incomplete response",
+      "final_status": "parser",
+      "passed": false
+    },
+    {
+      "question_id": "arc190_d",
+      "contest_date": "2025-01-12 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 833,
+        "output_tokens": 3538,
+        "total_tokens": 4371,
+        "reasoning_tokens": 2890,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 50.54305230099999,
+      "code_len": 2174,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc191_c",
+      "contest_date": "2025-01-26 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 506,
+        "output_tokens": 344,
+        "total_tokens": 850,
+        "reasoning_tokens": 254,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.213932070000283,
+      "code_len": 268,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc191_d",
+      "contest_date": "2025-01-26 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "infra_error",
+      "returned_model": null,
+      "usage": {},
+      "error": "empty/incomplete response",
+      "final_status": "parser",
+      "passed": false
+    },
+    {
+      "question_id": "arc193_b",
+      "contest_date": "2025-02-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 791,
+        "output_tokens": 2247,
+        "total_tokens": 3038,
+        "reasoning_tokens": 2070,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 33.71943133299965,
+      "code_len": 384,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "arc194_a",
+      "contest_date": "2025-03-09 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 1716,
+        "total_tokens": 2303,
+        "reasoning_tokens": 1552,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 28.36669513700008,
+      "code_len": 520,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "arc194_b",
+      "contest_date": "2025-03-09 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 471,
+        "output_tokens": 2048,
+        "total_tokens": 2519,
+        "reasoning_tokens": 1823,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 30.890122146000067,
+      "code_len": 704,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "arc194_e",
+      "contest_date": "2025-03-09 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "infra_error",
+      "returned_model": null,
+      "usage": {},
+      "error": "empty/incomplete response",
+      "final_status": "parser",
+      "passed": false
+    },
+    {
+      "question_id": "arc195_c",
+      "contest_date": "2025-03-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 845,
+        "output_tokens": 4096,
+        "total_tokens": 4941,
+        "reasoning_tokens": 3688,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 57.608277302999795,
+      "code_len": 0,
+      "malformed": true,
+      "passed": false
+    },
+    {
+      "question_id": "arc196_a",
+      "contest_date": "2025-04-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 397,
+        "output_tokens": 1286,
+        "total_tokens": 1683,
+        "reasoning_tokens": 1198,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 18.98720876299967,
+      "code_len": 256,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc196_b",
+      "contest_date": "2025-04-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "gpt-5.6-terra",
+      "usage": {
+        "input_tokens": 951,
+        "output_tokens": 3044,
+        "total_tokens": 3995,
+        "reasoning_tokens": 2588,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 44.544302659000095,
+      "code_len": 1947,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "arc196_d",
+      "contest_date": "2025-04-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "infra_error",
+      "returned_model": null,
+      "usage": {},
+      "error": "empty/incomplete response",
+      "final_status": "parser",
+      "passed": false
+    }
+  ]
+}

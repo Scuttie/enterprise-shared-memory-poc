@@ -1,0 +1,21 @@
+{
+  "instance_id": "apache__dubbo-4567",
+  "language": "Java",
+  "repo": "apache/dubbo",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-4567:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-4567@sha256:f76b9daa685181691ab708e3bf2c9939fbacee90eea98fa50f04e79667340917",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 40,
+  "edited_files": [],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 159532,
+    "completion": 1722
+  },
+  "grader_rc": 0,
+  "secs": 216.5
+}

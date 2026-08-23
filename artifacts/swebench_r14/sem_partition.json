@@ -1,0 +1,366 @@
+{
+ "n": 60,
+ "embedder": "multi-qa-MiniLM-L6-cos-v1",
+ "assignments": {
+  "astropy__astropy-13453": {
+   "m1_source_semantic": "astropy__astropy-8707",
+   "m1_source_recency_old": "astropy__astropy-13398",
+   "sem_cos": 0.5557,
+   "repo": "astropy/astropy"
+  },
+  "astropy__astropy-7671": {
+   "m1_source_semantic": "astropy__astropy-7606",
+   "m1_source_recency_old": "astropy__astropy-7606",
+   "sem_cos": 0.5724,
+   "repo": "astropy/astropy"
+  },
+  "astropy__astropy-8707": {
+   "m1_source_semantic": "astropy__astropy-7606",
+   "m1_source_recency_old": "astropy__astropy-7606",
+   "sem_cos": 0.4408,
+   "repo": "astropy/astropy"
+  },
+  "django__django-11555": {
+   "m1_source_semantic": "django__django-11400",
+   "m1_source_recency_old": "django__django-11551",
+   "sem_cos": 0.5812,
+   "repo": "django/django"
+  },
+  "django__django-11740": {
+   "m1_source_semantic": "django__django-11299",
+   "m1_source_recency_old": "django__django-11734",
+   "sem_cos": 0.5115,
+   "repo": "django/django"
+  },
+  "django__django-11790": {
+   "m1_source_semantic": "django__django-11206",
+   "m1_source_recency_old": "django__django-11749",
+   "sem_cos": 0.4361,
+   "repo": "django/django"
+  },
+  "django__django-11880": {
+   "m1_source_semantic": "django__django-11433",
+   "m1_source_recency_old": "django__django-11848",
+   "sem_cos": 0.4997,
+   "repo": "django/django"
+  },
+  "django__django-11885": {
+   "m1_source_semantic": "django__django-11179",
+   "m1_source_recency_old": "django__django-11848",
+   "sem_cos": 0.4654,
+   "repo": "django/django"
+  },
+  "django__django-11964": {
+   "m1_source_semantic": "django__django-11815",
+   "m1_source_recency_old": "django__django-11951",
+   "sem_cos": 0.5584,
+   "repo": "django/django"
+  },
+  "django__django-12276": {
+   "m1_source_semantic": "django__django-11433",
+   "m1_source_recency_old": "django__django-12273",
+   "sem_cos": 0.4544,
+   "repo": "django/django"
+  },
+  "django__django-12663": {
+   "m1_source_semantic": "django__django-11265",
+   "m1_source_recency_old": "django__django-12419",
+   "sem_cos": 0.7226,
+   "repo": "django/django"
+  },
+  "django__django-12754": {
+   "m1_source_semantic": "django__django-12125",
+   "m1_source_recency_old": "django__django-12741",
+   "sem_cos": 0.747,
+   "repo": "django/django"
+  },
+  "django__django-12774": {
+   "m1_source_semantic": "django__django-10880",
+   "m1_source_recency_old": "django__django-12741",
+   "sem_cos": 0.5026,
+   "repo": "django/django"
+  },
+  "django__django-13121": {
+   "m1_source_semantic": "django__django-10999",
+   "m1_source_recency_old": "django__django-13112",
+   "sem_cos": 0.5765,
+   "repo": "django/django"
+  },
+  "django__django-13279": {
+   "m1_source_semantic": "django__django-13112",
+   "m1_source_recency_old": "django__django-13212",
+   "sem_cos": 0.4547,
+   "repo": "django/django"
+  },
+  "django__django-13410": {
+   "m1_source_semantic": "django__django-13023",
+   "m1_source_recency_old": "django__django-13406",
+   "sem_cos": 0.3996,
+   "repo": "django/django"
+  },
+  "django__django-13512": {
+   "m1_source_semantic": "django__django-12308",
+   "m1_source_recency_old": "django__django-13449",
+   "sem_cos": 0.6754,
+   "repo": "django/django"
+  },
+  "django__django-13809": {
+   "m1_source_semantic": "django__django-11292",
+   "m1_source_recency_old": "django__django-13807",
+   "sem_cos": 0.603,
+   "repo": "django/django"
+  },
+  "django__django-13820": {
+   "m1_source_semantic": "django__django-11141",
+   "m1_source_recency_old": "django__django-13810",
+   "sem_cos": 0.8053,
+   "repo": "django/django"
+  },
+  "django__django-14122": {
+   "m1_source_semantic": "django__django-13417",
+   "m1_source_recency_old": "django__django-14089",
+   "sem_cos": 0.6184,
+   "repo": "django/django"
+  },
+  "django__django-14373": {
+   "m1_source_semantic": "django__django-13670",
+   "m1_source_recency_old": "django__django-14351",
+   "sem_cos": 0.7393,
+   "repo": "django/django"
+  },
+  "django__django-14787": {
+   "m1_source_semantic": "django__django-14155",
+   "m1_source_recency_old": "django__django-14771",
+   "sem_cos": 0.4645,
+   "repo": "django/django"
+  },
+  "django__django-15280": {
+   "m1_source_semantic": "django__django-15128",
+   "m1_source_recency_old": "django__django-15278",
+   "sem_cos": 0.6677,
+   "repo": "django/django"
+  },
+  "django__django-15315": {
+   "m1_source_semantic": "django__django-13023",
+   "m1_source_recency_old": "django__django-15278",
+   "sem_cos": 0.6717,
+   "repo": "django/django"
+  },
+  "django__django-15563": {
+   "m1_source_semantic": "django__django-15128",
+   "m1_source_recency_old": "django__django-15561",
+   "sem_cos": 0.637,
+   "repo": "django/django"
+  },
+  "django__django-15695": {
+   "m1_source_semantic": "django__django-12708",
+   "m1_source_recency_old": "django__django-15629",
+   "sem_cos": 0.6338,
+   "repo": "django/django"
+  },
+  "django__django-15731": {
+   "m1_source_semantic": "django__django-15315",
+   "m1_source_recency_old": "django__django-15629",
+   "sem_cos": 0.5137,
+   "repo": "django/django"
+  },
+  "django__django-15957": {
+   "m1_source_semantic": "django__django-11211",
+   "m1_source_recency_old": "django__django-15930",
+   "sem_cos": 0.569,
+   "repo": "django/django"
+  },
+  "django__django-16100": {
+   "m1_source_semantic": "django__django-11551",
+   "m1_source_recency_old": "django__django-16082",
+   "sem_cos": 0.5297,
+   "repo": "django/django"
+  },
+  "django__django-16454": {
+   "m1_source_semantic": "django__django-11749",
+   "m1_source_recency_old": "django__django-16429",
+   "sem_cos": 0.6667,
+   "repo": "django/django"
+  },
+  "django__django-16502": {
+   "m1_source_semantic": "django__django-13344",
+   "m1_source_recency_old": "django__django-16493",
+   "sem_cos": 0.5351,
+   "repo": "django/django"
+  },
+  "matplotlib__matplotlib-14623": {
+   "m1_source_semantic": "matplotlib__matplotlib-13989",
+   "m1_source_recency_old": "matplotlib__matplotlib-13989",
+   "sem_cos": 0.447,
+   "repo": "matplotlib/matplotlib"
+  },
+  "matplotlib__matplotlib-24026": {
+   "m1_source_semantic": "matplotlib__matplotlib-20826",
+   "m1_source_recency_old": "matplotlib__matplotlib-23476",
+   "sem_cos": 0.5569,
+   "repo": "matplotlib/matplotlib"
+  },
+  "matplotlib__matplotlib-24570": {
+   "m1_source_semantic": "matplotlib__matplotlib-13989",
+   "m1_source_recency_old": "matplotlib__matplotlib-24177",
+   "sem_cos": 0.5618,
+   "repo": "matplotlib/matplotlib"
+  },
+  "matplotlib__matplotlib-25332": {
+   "m1_source_semantic": "matplotlib__matplotlib-25311",
+   "m1_source_recency_old": "matplotlib__matplotlib-25311",
+   "sem_cos": 0.6379,
+   "repo": "matplotlib/matplotlib"
+  },
+  "mwaskom__seaborn-3187": {
+   "m1_source_semantic": "mwaskom__seaborn-3069",
+   "m1_source_recency_old": "mwaskom__seaborn-3069",
+   "sem_cos": 0.3387,
+   "repo": "mwaskom/seaborn"
+  },
+  "psf__requests-2931": {
+   "m1_source_semantic": "psf__requests-1724",
+   "m1_source_recency_old": "psf__requests-2317",
+   "sem_cos": 0.5247,
+   "repo": "psf/requests"
+  },
+  "pydata__xarray-3095": {
+   "m1_source_semantic": "pydata__xarray-2905",
+   "m1_source_recency_old": "pydata__xarray-2905",
+   "sem_cos": 0.5258,
+   "repo": "pydata/xarray"
+  },
+  "pydata__xarray-3677": {
+   "m1_source_semantic": "pydata__xarray-3151",
+   "m1_source_recency_old": "pydata__xarray-3305",
+   "sem_cos": 0.5719,
+   "repo": "pydata/xarray"
+  },
+  "pydata__xarray-4356": {
+   "m1_source_semantic": "pydata__xarray-4094",
+   "m1_source_recency_old": "pydata__xarray-4094",
+   "sem_cos": 0.511,
+   "repo": "pydata/xarray"
+  },
+  "pylint-dev__pylint-7080": {
+   "m1_source_semantic": "pylint-dev__pylint-6528",
+   "m1_source_recency_old": "pylint-dev__pylint-6903",
+   "sem_cos": 0.7803,
+   "repo": "pylint-dev/pylint"
+  },
+  "pytest-dev__pytest-5631": {
+   "m1_source_semantic": "pytest-dev__pytest-5262",
+   "m1_source_recency_old": "pytest-dev__pytest-5262",
+   "sem_cos": 0.4718,
+   "repo": "pytest-dev/pytest"
+  },
+  "pytest-dev__pytest-7982": {
+   "m1_source_semantic": "pytest-dev__pytest-7432",
+   "m1_source_recency_old": "pytest-dev__pytest-7571",
+   "sem_cos": 0.5706,
+   "repo": "pytest-dev/pytest"
+  },
+  "scikit-learn__scikit-learn-11578": {
+   "m1_source_semantic": "scikit-learn__scikit-learn-10297",
+   "m1_source_recency_old": "scikit-learn__scikit-learn-11310",
+   "sem_cos": 0.4613,
+   "repo": "scikit-learn/scikit-learn"
+  },
+  "scikit-learn__scikit-learn-13135": {
+   "m1_source_semantic": "scikit-learn__scikit-learn-9288",
+   "m1_source_recency_old": "scikit-learn__scikit-learn-13124",
+   "sem_cos": 0.6116,
+   "repo": "scikit-learn/scikit-learn"
+  },
+  "scikit-learn__scikit-learn-13779": {
+   "m1_source_semantic": "scikit-learn__scikit-learn-13328",
+   "m1_source_recency_old": "scikit-learn__scikit-learn-13496",
+   "sem_cos": 0.412,
+   "repo": "scikit-learn/scikit-learn"
+  },
+  "scikit-learn__scikit-learn-25747": {
+   "m1_source_semantic": "scikit-learn__scikit-learn-25102",
+   "m1_source_recency_old": "scikit-learn__scikit-learn-25232",
+   "sem_cos": 0.5527,
+   "repo": "scikit-learn/scikit-learn"
+  },
+  "sphinx-doc__sphinx-8056": {
+   "m1_source_semantic": "sphinx-doc__sphinx-7454",
+   "m1_source_recency_old": "sphinx-doc__sphinx-8035",
+   "sem_cos": 0.509,
+   "repo": "sphinx-doc/sphinx"
+  },
+  "sphinx-doc__sphinx-8595": {
+   "m1_source_semantic": "sphinx-doc__sphinx-8593",
+   "m1_source_recency_old": "sphinx-doc__sphinx-8593",
+   "sem_cos": 0.8732,
+   "repo": "sphinx-doc/sphinx"
+  },
+  "sphinx-doc__sphinx-9230": {
+   "m1_source_semantic": "sphinx-doc__sphinx-8459",
+   "m1_source_recency_old": "sphinx-doc__sphinx-9229",
+   "sem_cos": 0.6587,
+   "repo": "sphinx-doc/sphinx"
+  },
+  "sphinx-doc__sphinx-9673": {
+   "m1_source_semantic": "sphinx-doc__sphinx-7454",
+   "m1_source_recency_old": "sphinx-doc__sphinx-9658",
+   "sem_cos": 0.6472,
+   "repo": "sphinx-doc/sphinx"
+  },
+  "sphinx-doc__sphinx-9711": {
+   "m1_source_semantic": "sphinx-doc__sphinx-8120",
+   "m1_source_recency_old": "sphinx-doc__sphinx-9698",
+   "sem_cos": 0.5757,
+   "repo": "sphinx-doc/sphinx"
+  },
+  "sympy__sympy-13031": {
+   "m1_source_semantic": "sympy__sympy-12419",
+   "m1_source_recency_old": "sympy__sympy-12489",
+   "sem_cos": 0.2583,
+   "repo": "sympy/sympy"
+  },
+  "sympy__sympy-13798": {
+   "m1_source_semantic": "sympy__sympy-13091",
+   "m1_source_recency_old": "sympy__sympy-13757",
+   "sem_cos": 0.3202,
+   "repo": "sympy/sympy"
+  },
+  "sympy__sympy-13877": {
+   "m1_source_semantic": "sympy__sympy-13031",
+   "m1_source_recency_old": "sympy__sympy-13852",
+   "sem_cos": 0.4601,
+   "repo": "sympy/sympy"
+  },
+  "sympy__sympy-14711": {
+   "m1_source_semantic": "sympy__sympy-13974",
+   "m1_source_recency_old": "sympy__sympy-14531",
+   "sem_cos": 0.4854,
+   "repo": "sympy/sympy"
+  },
+  "sympy__sympy-15875": {
+   "m1_source_semantic": "sympy__sympy-15017",
+   "m1_source_recency_old": "sympy__sympy-15809",
+   "sem_cos": 0.4752,
+   "repo": "sympy/sympy"
+  },
+  "sympy__sympy-16792": {
+   "m1_source_semantic": "sympy__sympy-13877",
+   "m1_source_recency_old": "sympy__sympy-16766",
+   "sem_cos": 0.4813,
+   "repo": "sympy/sympy"
+  },
+  "sympy__sympy-17318": {
+   "m1_source_semantic": "sympy__sympy-17139",
+   "m1_source_recency_old": "sympy__sympy-17139",
+   "sem_cos": 0.5703,
+   "repo": "sympy/sympy"
+  },
+  "sympy__sympy-18211": {
+   "m1_source_semantic": "sympy__sympy-13091",
+   "m1_source_recency_old": "sympy__sympy-18199",
+   "sem_cos": 0.4751,
+   "repo": "sympy/sympy"
+  }
+ }
+}

@@ -1,0 +1,120 @@
+name: ci-bigcode-source-bank
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/production-service-v0.2]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[run-bcb-sourcebank]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    services:
+      postgres:
+        image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env: {POSTGRES_PASSWORD: postgres, POSTGRES_DB: esm}
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm" --health-interval 5s --health-timeout 5s --health-retries 30
+    env:
+      EVAL_IMAGE: bigcodebench/bigcodebench-evaluate:v0.2.4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk (~30GB)
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL \
+                      /usr/local/share/boost "/usr/local/share/powershell" /usr/share/swift || true
+          sudo docker image prune -af || true; df -h /
+      - name: Start Qdrant (host)
+        run: |
+          docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
+      - name: Pull eval image
+        run: docker pull "$EVAL_IMAGE"
+      - name: Write env file
+        run: |
+          cat > /tmp/esm.env <<ENV
+          DATABASE_URL=postgresql://localhost:5432/esm
+          MIGRATION_USER=postgres
+          MIGRATION_PASSWORD=postgres
+          PGHOST=localhost
+          PGPORT=5432
+          PGUSER=postgres
+          PGPASSWORD=postgres
+          PGDATABASE=esm
+          QDRANT_URL=http://localhost:6333
+          ARTIFACT_DIR=/tmp/esm-artifacts
+          INDEX_DIM=384
+          EMBEDDER=st
+          ENVIRONMENT=ci
+          REPO_PROVIDER=bigcode
+          EXECUTION_BACKEND=bigcode_instruct
+          BIGCODE_SUBSET=full
+          SOLAR_MODEL=solar-pro2-251215
+          SOLAR_BASE_URL=https://api.upstage.ai/v1/solar
+          SOLAR_MAX_TOKENS=2048
+          UPSTAGE_API_KEY=${{ secrets.UPSTAGE_API_KEY }}
+          OIDC_ISSUER=https://idp.e2e.local/
+          OIDC_AUDIENCE=esm-api
+          OIDC_JWKS_FILE=/tmp/jwks.json
+          E2E_API_URL=http://127.0.0.1:8000
+          API_PORT=8000
+                    RUN_DEADLINE=15000
+          HF_HUB_DISABLE_TELEMETRY=1
+          PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+          TRANSFORMERS_NO_ADVISORY_WARNINGS=1
+          PYTHONUNBUFFERED=1
+          PYTHONPATH=/w:/w/src
+          ENV
+          test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no secret"; exit 1; }
+      - name: Start eval container (service host inside the image)
+        run: |
+          docker run -d --name esm --network host --env-file /tmp/esm.env -u 0 \
+            -v "$PWD:/w" -w /w --entrypoint sleep "$EVAL_IMAGE" infinity
+          echo '{"keys":[]}' > /tmp/jwks.json
+      - name: Install ESM into the eval image (Python 3.10)
+        run: docker exec esm pip install -e ".[dev,postgres,qdrant,artifacts,oidc,embed]" pyjwt cryptography
+      - name: Wait services + migrate + head
+        run: |
+          docker exec esm python - <<'PY'
+          import time, urllib.request
+          def w(u):
+              for _ in range(60):
+                  try:
+                      if urllib.request.urlopen(u,timeout=2).status<500: return
+                  except Exception: pass
+                  time.sleep(2)
+              raise SystemExit("not ready "+u)
+          w("http://localhost:6333/readyz")
+          PY
+          docker exec esm python scripts/postgres_bootstrap.py
+          docker exec esm alembic upgrade head
+          docker exec esm bash -lc 'python scripts/check_migration_head.py'
+      - name: Warm embedder + dataset (local artifact store, no MinIO)
+        run: |
+          docker exec esm bash -lc 'mkdir -p /tmp/esm-artifacts'
+          docker exec esm python -c "from experiments.bigcode_r2 import grader as G; print('bcb tasks', G.task_count())"
+          docker exec esm python -c "from enterprise_memory.indexing.embeddings import SentenceTransformerEmbedder as E; e=E(); e.embed(['warm']); print('embedder', e.provenance()['model_id'], e.dim)"
+      - name: Start API + workers + run smoke (single exec session)
+        run: |
+          docker exec esm bash -lc '
+            cd /w
+            python -m enterprise_memory.service.appcli > /w/api.log 2>&1 &
+            python scripts/_wait_http.py http://127.0.0.1:8000/health/live 120
+            for i in 1 2 3; do WORKER_ID=bcb-worker-$i python -m enterprise_memory.service.solve_worker > /w/worker-$i.log 2>&1 & done
+            sleep 2
+            python scripts/bigcode_r2_sourcebank.py
+          '
+      - name: Logs on failure
+        if: failure()
+        run: docker exec esm bash -lc 'for f in /w/api.log /w/worker-1.log /w/worker-2.log; do echo "==== $f ===="; tail -n 60 "$f" 2>/dev/null || true; done'
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bigcode-source-bank
+          path: |
+            artifacts/bigcode_r2/source_bank.json
+            artifacts/bigcode_r2/gold_bank.json

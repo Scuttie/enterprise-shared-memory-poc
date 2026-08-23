@@ -1,0 +1,50 @@
+{
+  "run_id": "32010457972",
+  "n": 8,
+  "all_pass": true,
+  "image_pull": 8,
+  "baseline_bug_present": 8,
+  "gold_resolved": 8,
+  "per_instance": {
+    "Significant-Gravitas__AutoGPT-4652": {
+      "lang": "Python",
+      "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.significant-gravitas__autogpt-4652@sha256:690d760e5d6703107850dac89f37e59d0e7e2a011aa4b4ad1f8c1ade262371fa",
+      "pass": true
+    },
+    "angular__angular-37561": {
+      "lang": "TypeScript",
+      "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.angular__angular-37561@sha256:63e2e9154cdd1ccbe59567c9b674bb369347feed8dee90747914cdf7f9e1a37d",
+      "pass": true
+    },
+    "apache__dubbo-3093": {
+      "lang": "Java",
+      "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-3093@sha256:73eb26f5a9236aa21c6bd5c19fc7c03cc692cf40265e35947dba9d65405a98a5",
+      "pass": true
+    },
+    "apache__dubbo-3317": {
+      "lang": "Java",
+      "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-3317@sha256:feadae809e42ef2b0879e90616b17afe3f24031b7e9a90840e0a74457a6ebea8",
+      "pass": true
+    },
+    "coder__code-server-3277": {
+      "lang": "TypeScript",
+      "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.coder__code-server-3277@sha256:16f512cbbc875646673e2317f71ce41c5f84b38a14b8492462a38a52bd2ff9d7",
+      "pass": true
+    },
+    "huggingface__transformers-12981": {
+      "lang": "Python",
+      "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-12981@sha256:a7bb9d03db363ab9e858597e4be687fa7cd30aad2166cce0daa6eb7f72041dbb",
+      "pass": true
+    },
+    "mrdoob__three.js-14836": {
+      "lang": "JavaScript",
+      "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-14836@sha256:2fa7c4f933a614a8c1dfc0a739e31c2937347a0890779150224c0c07f2eca856",
+      "pass": true
+    },
+    "mrdoob__three.js-18648": {
+      "lang": "JavaScript",
+      "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-18648@sha256:77f4a711250885fc5f92ac6e8190ecddc8cf401360e39f41e948a8d8ed5e30ab",
+      "pass": true
+    }
+  }
+}

@@ -1,0 +1,54 @@
+name: ci-r12-lcb
+# R12 — LiveCodeBench runner with the OpenAI reader (secret-gated). Reuses R11 prompt/extraction/grader exactly.
+on:
+  workflow_dispatch:
+    inputs:
+      model: {description: "openai model id", required: true, default: "gpt-5.6-terra"}
+      family: {description: "gpt5.6|gpt4o", required: true, default: "gpt5.6"}
+      effort: {description: "reasoning effort (gpt5.6)", required: false, default: "medium"}
+      arm: {description: "M0/M1/M2/M3", required: false, default: "M0"}
+      taskset: {description: "BAND|TARGETS", required: false, default: "BAND"}
+      memory_file: {description: "memory json for M1/M2/M3", required: false, default: ""}
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/ci-r12-lcb.yml']
+concurrency:
+  group: ci-r12-${{ github.ref }}-${{ github.event.inputs.model }}-${{ github.event.inputs.arm }}-${{ github.event.inputs.taskset }}
+  cancel-in-progress: false
+jobs:
+  run:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL || true
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.10'}
+      - name: Install LiveCodeBench + provider deps
+        run: |
+          git clone --no-checkout https://github.com/LiveCodeBench/LiveCodeBench.git lcb
+          cd lcb && git checkout 28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24
+          pip install -q "datasets==2.21.0" pebble numpy pyext httpx
+          pip install -q -e . --no-deps
+      - name: R12 run (OpenAI reader)
+        env:
+          R12_MODEL: ${{ github.event.inputs.model }}
+          R12_FAMILY: ${{ github.event.inputs.family }}
+          R12_EFFORT: ${{ github.event.inputs.effort }}
+          R12_ARM: ${{ github.event.inputs.arm }}
+          R12_TASKSET: ${{ github.event.inputs.taskset }}
+          R12_MEMORY_JSON: ${{ github.event.inputs.memory_file }}
+          R12_OUT: ${{ github.workspace }}/r12_${{ github.event.inputs.model }}_${{ github.event.inputs.arm }}_${{ github.event.inputs.taskset }}.json
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PYTHONPATH: ${{ github.workspace }}/lcb:${{ github.workspace }}/src:${{ github.workspace }}/scripts
+        run: |
+          test -n "$OPENAI_API_KEY" || { echo "no key"; exit 1; }
+          python scripts/r12_lcb_run.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r12-${{ github.event.inputs.model }}-${{ github.event.inputs.arm }}-${{ github.event.inputs.taskset }}
+          path: r12_*.json

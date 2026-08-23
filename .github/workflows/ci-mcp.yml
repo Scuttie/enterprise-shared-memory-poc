@@ -1,0 +1,26 @@
+name: ci-mcp
+# P6/R19 §11 — MCP dispatcher (tools/list+call), server-side identity, company adapters, offline examples.
+on:
+  push:
+    branches: [codex/utility-router-v0.3]
+    paths: ['src/enterprise_memory/mcp/**', 'src/enterprise_memory/adapters/**',
+            'examples/company_harness/**', 'tests/unit/test_mcp_adapters.py', '.github/workflows/ci-mcp.yml', 'reports/CI_TRIGGER_MARKER.txt']
+  pull_request:
+    paths: ['src/enterprise_memory/mcp/**', 'src/enterprise_memory/adapters/**', 'examples/company_harness/**',
+            'tests/unit/test_mcp_adapters.py']
+  workflow_dispatch: {}
+jobs:
+  mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install (editable)
+        run: pip install -q -e ".[dev]" pytest pyyaml || pip install -q -e . pytest pyyaml
+      - name: MCP + adapter tests
+        run: python -m pytest -q tests/unit/test_mcp_adapters.py
+      - name: Offline examples run with zero infra
+        run: |
+          python examples/company_harness/http_adapter.py
+          python examples/company_harness/mock_local_model_server.py

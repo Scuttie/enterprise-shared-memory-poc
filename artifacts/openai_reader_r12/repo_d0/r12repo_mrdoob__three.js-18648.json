@@ -1,0 +1,31 @@
+{
+  "instance_id": "mrdoob__three.js-18648",
+  "language": "JavaScript",
+  "repo": "mrdoob/three.js",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-18648@sha256:77f4a711250885fc5f92ac6e8190ecddc8cf401360e39f41e948a8d8ed5e30ab",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 20,
+  "edited_files": [
+    "build/three.js",
+    "build/three.min.js",
+    "build/three.module.js",
+    "docs/api/en/core/Raycaster.html",
+    "docs/api/zh/core/Raycaster.html",
+    "examples/webgl_interactive_lines.html",
+    "src/core/Raycaster.d.ts",
+    "src/core/Raycaster.js",
+    "src/objects/Line.js"
+  ],
+  "patch_bytes": 23958,
+  "tokens": {
+    "input": 273273,
+    "output": 5736,
+    "reasoning": 1602
+  },
+  "secs": 167.6
+}

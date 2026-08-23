@@ -1,0 +1,110 @@
+{
+  "candidate_pool": {
+    "relevant_absent_S1": "0 relevant + 4 near-miss + 4 irrelevant",
+    "relevant_present": "1 relevant + 3 same-domain near-miss + 4 cross-domain irrelevant"
+  },
+  "expired_window": [
+    "2000-01-01",
+    "2000-02-01"
+  ],
+  "forms": {
+    "M0": "none",
+    "M1": "private",
+    "M2": "shared_ungoverned",
+    "M3": "shared_governed",
+    "M4": "shared_governed",
+    "S1": "relevant_absent",
+    "S2": "governed_expired",
+    "S3": "governed_out_of_scope",
+    "S4": "governed_wrong"
+  },
+  "retrieval_policies": {
+    "M0": {
+      "max_injected": 0,
+      "scopes": []
+    },
+    "M1": {
+      "max_injected": 1,
+      "scopes": [
+        "private"
+      ],
+      "search_limit": 8
+    },
+    "M2": {
+      "abstain": {
+        "tau_abs": 0.8,
+        "tau_margin": 0.5
+      },
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 8
+    },
+    "M3": {
+      "abstain": {
+        "tau_abs": 0.8,
+        "tau_margin": 0.5
+      },
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 8
+    },
+    "M4": {
+      "max_injected": 1,
+      "oracle": true,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 8
+    },
+    "S1": {
+      "abstain": {
+        "tau_abs": 0.8,
+        "tau_margin": 0.5
+      },
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 8
+    },
+    "S2": {
+      "abstain": {
+        "tau_abs": 0.8,
+        "tau_margin": 0.5
+      },
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 8
+    },
+    "S3": {
+      "abstain": {
+        "tau_abs": 0.8,
+        "tau_margin": 0.5
+      },
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 8
+    },
+    "S4": {
+      "abstain": {
+        "tau_abs": 0.8,
+        "tau_margin": 0.5
+      },
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 8
+    }
+  },
+  "tau_abs": 0.8,
+  "tau_margin": 0.5
+}

@@ -1,0 +1,18 @@
+diff --git a/dubbo-config/dubbo-config-api/src/main/java/org/apache/dubbo/config/AbstractConfig.java b/dubbo-config/dubbo-config-api/src/main/java/org/apache/dubbo/config/AbstractConfig.java
+index d557624a6..8a7fa1202 100644
+--- a/dubbo-config/dubbo-config-api/src/main/java/org/apache/dubbo/config/AbstractConfig.java
++++ b/dubbo-config/dubbo-config-api/src/main/java/org/apache/dubbo/config/AbstractConfig.java
+@@ -501,9 +501,10 @@ public abstract class AbstractConfig implements Serializable {
+                     } else {
+                         key = prop;
+                     }
+-                    // treat url and configuration differently, the value should always present in configuration though it may not need to present in url.
+-                    //if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) {
+-                    if (method.getReturnType() == Object.class) {
++                    // Excluded properties must not be added to metadata. Otherwise a boolean
++                    // convenience getter (for example isGeneric) can overwrite the value
++                    // produced by its corresponding get* getter depending on reflection order.
++                    if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) {
+                         metaData.put(key, null);
+                         continue;
+                     }

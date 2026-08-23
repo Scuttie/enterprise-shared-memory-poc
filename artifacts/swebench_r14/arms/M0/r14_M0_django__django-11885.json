@@ -1,0 +1,20 @@
+{
+  "instance_id": "django__django-11885",
+  "repo": "django/django",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-11885@sha256:dcc7a94bc42733bb59e7ce45a83e7df1f203ae55ad570a1a1f098c438c5f5ca2",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "edited_files": [
+    "django/db/models/deletion.py"
+  ],
+  "patch_bytes": 1600,
+  "tokens": {
+    "prompt": 8340,
+    "completion": 321
+  },
+  "secs": 72.7
+}

@@ -1,0 +1,21 @@
+diff --git a/src/printer.js b/src/printer.js
+index fe7b38c0..9665cbe3 100644
+--- a/src/printer.js
++++ b/src/printer.js
+@@ -215,6 +215,16 @@ function genericPrint(path, options, printPath, args) {
+   parts.push(linesWithoutParens);
+ 
+   if (needsParens) {
++    // A broken union/intersection needs its closing parenthesis on its own
++    // line. Otherwise the parenthesis is appended to the final member.
++    if (
++      node.type === "TSUnionType" ||
++      node.type === "UnionTypeAnnotation" ||
++      node.type === "TSIntersectionType" ||
++      node.type === "IntersectionTypeAnnotation"
++    ) {
++      parts.push(ifBreak(line));
++    }
+     parts.push(")");
+   }
+ 

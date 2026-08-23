@@ -1,0 +1,31 @@
+{
+  "instance_id": "coder__code-server-3277",
+  "language": "TypeScript",
+  "repo": "coder/code-server",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.coder__code-server-3277:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.coder__code-server-3277@sha256:16f512cbbc875646673e2317f71ce41c5f84b38a14b8492462a38a52bd2ff9d7",
+  "baseline": {
+    "resolved": false,
+    "f2p_all_passed": false,
+    "p2p_all_passed": false,
+    "p2p_any_failed": false,
+    "n_passed": 48,
+    "n_failed": 0,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.coder__code-server-3277@sha256:16f512cbbc875646673e2317f71ce41c5f84b38a14b8492462a38a52bd2ff9d7"
+  },
+  "gold": {
+    "resolved": true,
+    "f2p_all_passed": true,
+    "p2p_all_passed": false,
+    "p2p_any_failed": false,
+    "n_passed": 94,
+    "n_failed": 0,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.coder__code-server-3277@sha256:16f512cbbc875646673e2317f71ce41c5f84b38a14b8492462a38a52bd2ff9d7"
+  },
+  "checks": {
+    "image_pulled": true,
+    "baseline_bug_present": true,
+    "gold_resolved": true
+  },
+  "smoke_pass": true
+}

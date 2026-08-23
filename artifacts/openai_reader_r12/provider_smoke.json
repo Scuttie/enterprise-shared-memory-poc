@@ -1,0 +1,187 @@
+{
+  "base_url": "https://api.openai.com/v1",
+  "model_list_status": 200,
+  "model_list_has": {
+    "gpt-4o-mini-2024-07-18": true,
+    "gpt-5.6-luna": true,
+    "gpt-5.6-terra": true
+  },
+  "results": [
+    {
+      "requested_model": "gpt-4o-mini-2024-07-18",
+      "family": "gpt4o",
+      "reasoning_effort": null,
+      "calls": [
+        {
+          "i": 0,
+          "ok": true,
+          "returned_model": "gpt-4o-mini-2024-07-18",
+          "response_id": "resp_0ec2983d67ad2818006a8512219ad8819ab1fbcb76c1495843",
+          "finish": "completed",
+          "extraction": true,
+          "input_tokens": 33,
+          "output_tokens": 17,
+          "total_tokens": 50,
+          "reasoning_tokens": 0,
+          "cached_input_tokens": 0,
+          "latency_s": 2.66,
+          "retries": -1,
+          "redaction": "clean"
+        },
+        {
+          "i": 1,
+          "ok": true,
+          "returned_model": "gpt-4o-mini-2024-07-18",
+          "response_id": "resp_05e6d8f863b693c8006a851223804887d0ba8b05c6ea07d888",
+          "finish": "completed",
+          "extraction": true,
+          "input_tokens": 31,
+          "output_tokens": 70,
+          "total_tokens": 101,
+          "reasoning_tokens": 0,
+          "cached_input_tokens": 0,
+          "latency_s": 3.68,
+          "retries": -1,
+          "redaction": "clean"
+        },
+        {
+          "i": 2,
+          "ok": true,
+          "returned_model": "gpt-4o-mini-2024-07-18",
+          "response_id": "resp_06202cba562da00c006a851227132087d08974afe7179f830e",
+          "finish": "completed",
+          "extraction": true,
+          "input_tokens": 40,
+          "output_tokens": 94,
+          "total_tokens": 134,
+          "reasoning_tokens": 0,
+          "cached_input_tokens": 0,
+          "latency_s": 1.53,
+          "retries": -1,
+          "redaction": "clean"
+        }
+      ],
+      "available": true,
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "in_model_list": true
+    },
+    {
+      "requested_model": "gpt-5.6-luna",
+      "family": "gpt5.6",
+      "reasoning_effort": "medium",
+      "calls": [
+        {
+          "i": 0,
+          "ok": true,
+          "returned_model": "gpt-5.6-luna",
+          "response_id": "resp_03c1f67f7ec0ce74006a851228b1c08198bc55ea2ddb51cc03",
+          "finish": "completed",
+          "extraction": true,
+          "input_tokens": 32,
+          "output_tokens": 20,
+          "total_tokens": 52,
+          "reasoning_tokens": 0,
+          "cached_input_tokens": 0,
+          "latency_s": 1.29,
+          "retries": -1,
+          "redaction": "clean"
+        },
+        {
+          "i": 1,
+          "ok": true,
+          "returned_model": "gpt-5.6-luna",
+          "response_id": "resp_0007084f24d17239006a851229e830819a828c98399b5b1f5b",
+          "finish": "completed",
+          "extraction": true,
+          "input_tokens": 30,
+          "output_tokens": 22,
+          "total_tokens": 52,
+          "reasoning_tokens": 0,
+          "cached_input_tokens": 0,
+          "latency_s": 1.05,
+          "retries": -1,
+          "redaction": "clean"
+        },
+        {
+          "i": 2,
+          "ok": true,
+          "returned_model": "gpt-5.6-luna",
+          "response_id": "resp_0b81c39870aa02f8006a85122af5c8819a8dd46adef9f11db7",
+          "finish": "completed",
+          "extraction": true,
+          "input_tokens": 39,
+          "output_tokens": 116,
+          "total_tokens": 155,
+          "reasoning_tokens": 67,
+          "cached_input_tokens": 0,
+          "latency_s": 2.14,
+          "retries": -1,
+          "redaction": "clean"
+        }
+      ],
+      "available": true,
+      "returned_model": "gpt-5.6-luna",
+      "in_model_list": true
+    },
+    {
+      "requested_model": "gpt-5.6-terra",
+      "family": "gpt5.6",
+      "reasoning_effort": "medium",
+      "calls": [
+        {
+          "i": 0,
+          "ok": true,
+          "returned_model": "gpt-5.6-terra",
+          "response_id": "resp_0e1dbf84c1393a5a006a85122d262887d0935f0209ebcc5b4c",
+          "finish": "completed",
+          "extraction": true,
+          "input_tokens": 32,
+          "output_tokens": 20,
+          "total_tokens": 52,
+          "reasoning_tokens": 0,
+          "cached_input_tokens": 0,
+          "latency_s": 0.98,
+          "retries": -1,
+          "redaction": "clean"
+        },
+        {
+          "i": 1,
+          "ok": true,
+          "returned_model": "gpt-5.6-terra",
+          "response_id": "resp_00c307873c143847006a85122e3200819b85bd4efc0f150db1",
+          "finish": "completed",
+          "extraction": true,
+          "input_tokens": 30,
+          "output_tokens": 22,
+          "total_tokens": 52,
+          "reasoning_tokens": 0,
+          "cached_input_tokens": 0,
+          "latency_s": 1.42,
+          "retries": -1,
+          "redaction": "clean"
+        },
+        {
+          "i": 2,
+          "ok": true,
+          "returned_model": "gpt-5.6-terra",
+          "response_id": "resp_0b4e0f6d867ecc40006a85122f8db081998d11fb4e5d61aa2a",
+          "finish": "completed",
+          "extraction": true,
+          "input_tokens": 39,
+          "output_tokens": 65,
+          "total_tokens": 104,
+          "reasoning_tokens": 0,
+          "cached_input_tokens": 0,
+          "latency_s": 1.44,
+          "retries": -1,
+          "redaction": "clean"
+        }
+      ],
+      "available": true,
+      "returned_model": "gpt-5.6-terra",
+      "in_model_list": true
+    }
+  ],
+  "at_least_one_gpt56_available": true,
+  "decision": "proceed"
+}

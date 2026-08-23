@@ -1,0 +1,20 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-12973",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-12973@sha256:0ded1c3401a3e88cc39a5bc976b572d4f08c570bcbf599bf822814440aa45767",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 12,
+  "edited_files": [
+    "sklearn/linear_model/least_angle.py"
+  ],
+  "patch_bytes": 872,
+  "tokens": {
+    "prompt": 34709,
+    "completion": 421
+  },
+  "secs": 83.5
+}

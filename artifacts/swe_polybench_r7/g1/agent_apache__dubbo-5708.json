@@ -1,0 +1,23 @@
+{
+  "instance_id": "apache__dubbo-5708",
+  "language": "Java",
+  "repo": "apache/dubbo",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-5708:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-5708@sha256:a557549837e96d2f2dc2e94487b57b9d8ae918fa6e937dc929f1b1a867865e66",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "dubbo-plugin/dubbo-qos/src/main/java/org/apache/dubbo/qos/legacy/SelectTelnetHandler.java"
+  ],
+  "patch_bytes": 1366,
+  "tokens": {
+    "prompt": 50709,
+    "completion": 792
+  },
+  "grader_rc": 0,
+  "secs": 372.7
+}

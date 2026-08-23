@@ -1,0 +1,2844 @@
+{
+  "release": "release_v6",
+  "arm": "M0",
+  "n": 105,
+  "n_pass": 12,
+  "pass_at_1": 0.1143,
+  "results": [
+    {
+      "question_id": "1873_A",
+      "contest_date": "2023-08-21 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.CODEFORCES",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 486,
+        "completion_tokens": 1195,
+        "total_tokens": 1681,
+        "prompt_tokens_details": {
+          "cached_tokens": 48,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "1873_B",
+      "contest_date": "2023-08-21 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.CODEFORCES",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 419,
+        "completion_tokens": 2847,
+        "total_tokens": 3266,
+        "prompt_tokens_details": {
+          "cached_tokens": 48,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 737,
+      "code": "\nWe'll produce final answer with code.\n\nBut we should also consider performance: t up to 10^4, each test case we do O(n^2) = 81 operations, total ~ 810k, fine.\n\nWe can also precompute product of all digits and then for each i compute product_without_i by dividing if a[i]!=0, else compute product of others by iterating. But not needed.\n\nWe'll write code with loop.\n\nEdge case: n=0? Not possible, n>=1.\n\nNow, final code.\n\nBut we need to ensure we handle reading correctly: The sample input shows blank lines? Actually sample input:\n\n4\n\n4\n\n2 2 1 2\n\n3\n\n0 1 2\n\n5\n\n4 3 2 3 4\n\n9\n\n9 9 9 9 9 9 9 9 9\n\nThere are blank lines. But using split() will ignore whitespace, so it's fine.\n\nWe'll output each answer on separate line.\n\nNow, final answer.\n",
+      "passed": false
+    },
+    {
+      "question_id": "1873_D",
+      "contest_date": "2023-08-21 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.CODEFORCES",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 585,
+        "completion_tokens": 4096,
+        "total_tokens": 4681,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "1883_B",
+      "contest_date": "2023-09-22 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.CODEFORCES",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 811,
+        "completion_tokens": 4096,
+        "total_tokens": 4907,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "1883_C",
+      "contest_date": "2023-09-22 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.CODEFORCES",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 804,
+        "completion_tokens": 4096,
+        "total_tokens": 4900,
+        "prompt_tokens_details": {
+          "cached_tokens": 48,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "1899_A",
+      "contest_date": "2023-10-17 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.CODEFORCES",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 363,
+        "completion_tokens": 4096,
+        "total_tokens": 4459,
+        "prompt_tokens_details": {
+          "cached_tokens": 48,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "1899_B",
+      "contest_date": "2023-10-17 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.CODEFORCES",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 929,
+        "completion_tokens": 4096,
+        "total_tokens": 5025,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "1899_C",
+      "contest_date": "2023-10-17 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.CODEFORCES",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 577,
+        "completion_tokens": 4096,
+        "total_tokens": 4673,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "1899_D",
+      "contest_date": "2023-10-17 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.CODEFORCES",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 814,
+        "completion_tokens": 3825,
+        "total_tokens": 4639,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2727",
+      "contest_date": "2023-05-13 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 493,
+        "completion_tokens": 318,
+        "total_tokens": 811,
+        "prompt_tokens_details": {
+          "cached_tokens": 48,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2728",
+      "contest_date": "2023-05-13 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 464,
+        "completion_tokens": 1920,
+        "total_tokens": 2384,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 708,
+      "code": "\nBut we can optimize: we can precompute the maximum per step by scanning rows each step. That's fine.\n\nAlternatively, we could use a heap to simulate, but sorting is simpler.\n\nCheck constraints: values up to 1000, so max_val can be initialized to 0, but if all numbers are 0, it's fine. However, if there are negative numbers? Constraint says 0 <= nums[i][j] <= 10^3, so non-negative. So 0 is safe.\n\nBut what if there is a row with length 0? Not possible.\n\nThus solution is correct.\n\nBut we need to think about potential pitfalls: The problem says \"From each row in the matrix, select the largest number and remove it.\" In case of tie, it doesn't matter. So sorting descending and picking the first is fine.\n",
+      "passed": false
+    },
+    {
+      "question_id": "2730",
+      "contest_date": "2023-05-13 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 433,
+        "completion_tokens": 4096,
+        "total_tokens": 4529,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2754",
+      "contest_date": "2023-05-27 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 427,
+        "completion_tokens": 1516,
+        "total_tokens": 1943,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 2092,
+      "code": "\nBut we can also use math.prod? Python 3.8+ has math.prod, but we can just multiply.\n\nAlternatively, we can use recursion: but bitmask is fine.\n\nWe should also consider that product might be negative and we want maximum, so -inf works.\n\nBut we need to ensure we don't use float('inf') because product is integer, but comparing int with float is okay, but we can use -10**18 as lower bound because max absolute product is 9^13 ≈ 2.5e12, so -10**18 is safe.\n\nBetter to use -float('inf') for clarity.\n\nBut some judges might not like float? It's fine.\n\nWe'll use -float('inf').\n\nBut we need to import math? Not needed.\n\nWe'll just use -10**18.\n\nBut to be safe, we can set max_prod = nums[0] and then loop from 1 to (1<<n)-1, but that would miss subsets that don't include index 0? Actually if we set max_prod = nums[0], then we consider all subsets including those that don't include index 0? The loop includes all masks, so we will compare all products, including those that might be less than nums[0] but we already have nums[0] as initial max. That's fine. But if nums[0] is not the maximum, we will update. However, if nums[0] is the maximum, we keep it. But if nums[0] is negative and there is a positive product from other subset, we will update. So it's fine. But we need to ensure we consider all subsets, including those that don't include index 0. Our loop includes all masks, so it's fine. So we can initialize max_prod = -float('inf') to be safe.\n\nBut we can also use a simple approach: sort and then consider picking from ends, but that's more complex.\n\nGiven constraints, brute force is acceptable.\n\nBut we must note that the problem might be from LeetCode? Actually it's similar to \"Maximum Product Subset\" but with small n. There is a known solution: sort and then consider product of all positives, and if there are negatives, consider product of all negatives if even count, etc. But with zeros, we need to handle. However, brute force is simpler.\n\nBut we should ensure efficiency: 2^13 = 8192, each product up to 13 multiplications, so trivial.\n\nThus final answer: code block.\n",
+      "passed": false
+    },
+    {
+      "question_id": "2755",
+      "contest_date": "2023-05-27 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 456,
+        "completion_tokens": 4096,
+        "total_tokens": 4552,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2756",
+      "contest_date": "2023-05-27 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 422,
+        "completion_tokens": 900,
+        "total_tokens": 1322,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 183,
+      "code": "\nBut we need to consider if there are exactly two chocolates? The length is at least 2, so fine.\n\nEdge cases: if there are multiple same smallest values, sorting works.\n\nThus answer.\n",
+      "passed": false
+    },
+    {
+      "question_id": "2757",
+      "contest_date": "2023-06-04 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 472,
+        "completion_tokens": 4096,
+        "total_tokens": 4568,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2777",
+      "contest_date": "2023-05-07 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 779,
+        "completion_tokens": 597,
+        "total_tokens": 1376,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2784",
+      "contest_date": "2023-05-13 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 612,
+        "completion_tokens": 4096,
+        "total_tokens": 4708,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2785",
+      "contest_date": "2023-06-04 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 569,
+        "completion_tokens": 4096,
+        "total_tokens": 4665,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2808",
+      "contest_date": "2023-06-18 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 530,
+        "completion_tokens": 4096,
+        "total_tokens": 4626,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2811",
+      "contest_date": "2023-08-20 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 351,
+        "completion_tokens": 4096,
+        "total_tokens": 4447,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2812",
+      "contest_date": "2023-07-09 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 446,
+        "completion_tokens": 3149,
+        "total_tokens": 3595,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 77,
+      "code": "\nSo we fill that.\n\nThus final answer: a single code block with the solution.\n",
+      "passed": false
+    },
+    {
+      "question_id": "2827",
+      "contest_date": "2023-05-27 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 680,
+        "completion_tokens": 4096,
+        "total_tokens": 4776,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2832",
+      "contest_date": "2023-08-20 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 473,
+        "completion_tokens": 4096,
+        "total_tokens": 4569,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2849",
+      "contest_date": "2023-07-02 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 626,
+        "completion_tokens": 4096,
+        "total_tokens": 4722,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2879",
+      "contest_date": "2023-10-22 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 633,
+        "completion_tokens": 4096,
+        "total_tokens": 4729,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2884",
+      "contest_date": "2023-07-16 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 492,
+        "completion_tokens": 4096,
+        "total_tokens": 4588,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2919",
+      "contest_date": "2023-07-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 622,
+        "completion_tokens": 4096,
+        "total_tokens": 4718,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "2921",
+      "contest_date": "2023-07-30 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 479,
+        "completion_tokens": 4096,
+        "total_tokens": 4575,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3031",
+      "contest_date": "2023-10-15 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 734,
+        "completion_tokens": 4096,
+        "total_tokens": 4830,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3033",
+      "contest_date": "2023-10-08 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 590,
+        "completion_tokens": 4096,
+        "total_tokens": 4686,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3106",
+      "contest_date": "2023-10-28 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 516,
+        "completion_tokens": 4096,
+        "total_tokens": 4612,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3141",
+      "contest_date": "2023-10-01 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 548,
+        "completion_tokens": 4096,
+        "total_tokens": 4644,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3154",
+      "contest_date": "2023-10-01 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 507,
+        "completion_tokens": 4096,
+        "total_tokens": 4603,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3163",
+      "contest_date": "2023-10-28 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 512,
+        "completion_tokens": 733,
+        "total_tokens": 1245,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 473,
+      "code": "from typing import List\n\nclass Solution:\n    def sumCounts(self, nums: List[int]) -> int:\n        n = len(nums)\n        total = 0\n        for i in range(n):\n            seen = [False] * 101  # since nums[i] <= 100\n            distinct = 0\n            for j in range(i, n):\n                val = nums[j]\n                if not seen[val]:\n                    seen[val] = True\n                    distinct += 1\n                total += distinct * distinct\n        return total",
+      "passed": true
+    },
+    {
+      "question_id": "3164",
+      "contest_date": "2023-10-14 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 640,
+        "completion_tokens": 3918,
+        "total_tokens": 4558,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3228",
+      "contest_date": "2024-01-06 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 675,
+        "completion_tokens": 4096,
+        "total_tokens": 4771,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3233",
+      "contest_date": "2024-01-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 865,
+        "completion_tokens": 4096,
+        "total_tokens": 4961,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3236",
+      "contest_date": "2024-01-06 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 449,
+        "completion_tokens": 3806,
+        "total_tokens": 4255,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 469,
+      "code": "from typing import List\n\nclass Solution:\n    def missingInteger(self, nums: List[int]) -> int:\n        # Find the length of the longest sequential prefix starting at index 0\n        L = 1\n        for i in range(1, len(nums)):\n            if nums[i] == nums[i-1] + 1:\n                L += 1\n            else:\n                break\n        total = sum(nums[:L])\n        num_set = set(nums)\n        x = total\n        while x in num_set:\n            x += 1\n        return x",
+      "passed": true
+    },
+    {
+      "question_id": "3239",
+      "contest_date": "2024-01-06 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 553,
+        "completion_tokens": 4096,
+        "total_tokens": 4649,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3240",
+      "contest_date": "2024-01-13 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 692,
+        "completion_tokens": 4096,
+        "total_tokens": 4788,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3242",
+      "contest_date": "2024-01-13 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 352,
+        "completion_tokens": 452,
+        "total_tokens": 804,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 273,
+      "code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def maxFrequencyElements(self, nums: List[int]) -> int:\n        freq = Counter(nums)\n        max_freq = max(freq.values())\n        return sum(count for count in freq.values() if count == max_freq)",
+      "passed": true
+    },
+    {
+      "question_id": "3243",
+      "contest_date": "2024-01-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 712,
+        "completion_tokens": 4096,
+        "total_tokens": 4808,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3244",
+      "contest_date": "2024-01-20 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 953,
+        "completion_tokens": 4096,
+        "total_tokens": 5049,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3251",
+      "contest_date": "2024-01-06 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 475,
+        "completion_tokens": 545,
+        "total_tokens": 1020,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 476,
+      "code": "from typing import List\n\nclass Solution:\n    def areaOfMaxDiagonal(self, dimensions: List[List[int]]) -> int:\n        best_diag_sq = -1\n        best_area = 0\n        for l, w in dimensions:\n            diag_sq = l*l + w*w\n            area = l*w\n            if diag_sq > best_diag_sq:\n                best_diag_sq = diag_sq\n                best_area = area\n            elif diag_sq == best_diag_sq and area > best_area:\n                best_area = area\n        return best_area",
+      "passed": true
+    },
+    {
+      "question_id": "3261",
+      "contest_date": "2024-01-27 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 771,
+        "completion_tokens": 4096,
+        "total_tokens": 4867,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3263",
+      "contest_date": "2024-01-20 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 562,
+        "completion_tokens": 4096,
+        "total_tokens": 4658,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3264",
+      "contest_date": "2024-07-06 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 703,
+        "completion_tokens": 4096,
+        "total_tokens": 4799,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3298",
+      "contest_date": "2024-02-17 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 439,
+        "completion_tokens": 4096,
+        "total_tokens": 4535,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3346",
+      "contest_date": "2024-04-06 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 496,
+        "completion_tokens": 4096,
+        "total_tokens": 4592,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3361",
+      "contest_date": "2024-04-13 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 455,
+        "completion_tokens": 4096,
+        "total_tokens": 4551,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3362",
+      "contest_date": "2024-04-27 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 618,
+        "completion_tokens": 4096,
+        "total_tokens": 4714,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3364",
+      "contest_date": "2024-04-13 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 753,
+        "completion_tokens": 4096,
+        "total_tokens": 4849,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3372",
+      "contest_date": "2024-04-06 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 456,
+        "completion_tokens": 1175,
+        "total_tokens": 1631,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3373",
+      "contest_date": "2024-04-13 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 346,
+        "completion_tokens": 1842,
+        "total_tokens": 2188,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 704,
+      "code": "from typing import List\n\nclass Solution:\n    def maximumPrimeDifference(self, nums: List[int]) -> int:\n        # Precompute primes up to 100 using sieve\n        is_prime = [True] * 101\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, 101):\n            if is_prime[i]:\n                for j in range(i*i, 101, i):\n                    is_prime[j] = False\n        # Find first and last prime indices\n        first = None\n        last = None\n        for i, num in enumerate(nums):\n            if is_prime[num]:\n                if first is None:\n                    first = i\n                last = i\n        # According to constraints, at least one prime exists\n        return last - first",
+      "passed": true
+    },
+    {
+      "question_id": "3375",
+      "contest_date": "2024-04-13 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 540,
+        "completion_tokens": 4096,
+        "total_tokens": 4636,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3379",
+      "contest_date": "2024-04-13 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 431,
+        "completion_tokens": 228,
+        "total_tokens": 659,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 182,
+      "code": "class Solution:\n    def scoreOfString(self, s: str) -> int:\n        total = 0\n        for i in range(len(s)-1):\n            total += abs(ord(s[i]) - ord(s[i+1]))\n        return total",
+      "passed": true
+    },
+    {
+      "question_id": "3382",
+      "contest_date": "2024-04-13 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 785,
+        "completion_tokens": 4096,
+        "total_tokens": 4881,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3383",
+      "contest_date": "2024-05-11 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 456,
+        "completion_tokens": 4096,
+        "total_tokens": 4552,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3384",
+      "contest_date": "2024-05-04 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 487,
+        "completion_tokens": 4096,
+        "total_tokens": 4583,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3396",
+      "contest_date": "2024-05-04 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 380,
+        "completion_tokens": 1863,
+        "total_tokens": 2243,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 436,
+      "code": "class Solution:\n    def isValid(self, word: str) -> bool:\n        if len(word) < 3:\n            return False\n        vowels = set('aeiouAEIOU')\n        for ch in word:\n            if not (ch.isdigit() or ch.isalpha()):\n                return False\n        if not any(ch in vowels for ch in word):\n            return False\n        if not any(ch.isalpha() and ch not in vowels for ch in word):\n            return False\n        return True",
+      "passed": true
+    },
+    {
+      "question_id": "3453",
+      "contest_date": "2024-07-06 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 315,
+        "completion_tokens": 1232,
+        "total_tokens": 1547,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 414,
+      "code": "from typing import List\n\nclass Solution:\n    def validStrings(self, n: int) -> List[str]:\n        result = []\n        def backtrack(current: str):\n            if len(current) == n:\n                result.append(current)\n                return\n            if not current or current[-1] != '0':\n                backtrack(current + '0')\n            backtrack(current + '1')\n        backtrack('')\n        return result",
+      "passed": true
+    },
+    {
+      "question_id": "3454",
+      "contest_date": "2024-07-20 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 496,
+        "completion_tokens": 4096,
+        "total_tokens": 4592,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3455",
+      "contest_date": "2024-07-20 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 408,
+        "completion_tokens": 4096,
+        "total_tokens": 4504,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3462",
+      "contest_date": "2024-07-20 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 481,
+        "completion_tokens": 4096,
+        "total_tokens": 4577,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3463",
+      "contest_date": "2024-07-06 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 353,
+        "completion_tokens": 4096,
+        "total_tokens": 4449,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3466",
+      "contest_date": "2024-07-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 368,
+        "completion_tokens": 4096,
+        "total_tokens": 4464,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3468",
+      "contest_date": "2024-07-06 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 388,
+        "completion_tokens": 1081,
+        "total_tokens": 1469,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 885,
+      "code": "\nBut is there any possibility that they want to treat k as the number of steps, but maybe they consider \"k-th character after c\" meaning counting from the next character as 1st? That's what we did: (i + k) mod n. For k=1, it's the next character. That matches example? Example 2: k=1, output \"aaa\". If we used (i+1)%n, we get next character, which is 'a' because all same. So fine.\n\nThus solution is correct.\n\nBut wait: The problem statement: \"For each character c in s, replace c with the k^th character after c in the string (in a cyclic manner).\" Could it be that we need to consider the string as a circular list and for each character, we look at the character that is k positions ahead, but we replace the character in the original string? That is exactly what we did.\n\nThus final answer.\n\nBut maybe they want to handle large k efficiently by using modulo. We did.\n\nThus output.\n",
+      "passed": false
+    },
+    {
+      "question_id": "3478",
+      "contest_date": "2024-07-27 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 564,
+        "completion_tokens": 4096,
+        "total_tokens": 4660,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3482",
+      "contest_date": "2024-07-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 556,
+        "completion_tokens": 4096,
+        "total_tokens": 4652,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3484",
+      "contest_date": "2024-07-13 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 349,
+        "completion_tokens": 2006,
+        "total_tokens": 2355,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 329,
+      "code": "class Solution:\n    def getSmallestString(self, s: str) -> str:\n        n = len(s)\n        best = s\n        for i in range(n-1):\n            if (int(s[i]) % 2) == (int(s[i+1]) % 2):\n                swapped = s[:i] + s[i+1] + s[i] + s[i+2:]\n                if swapped < best:\n                    best = swapped\n        return best",
+      "passed": true
+    },
+    {
+      "question_id": "3487",
+      "contest_date": "2024-10-12 07:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 617,
+        "completion_tokens": 4096,
+        "total_tokens": 4713,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3502",
+      "contest_date": "2024-10-19 19:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 339,
+        "completion_tokens": 4096,
+        "total_tokens": 4435,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 655,
+      "code": "class Solution:\n    def numberOfSubstrings(self, s: str, k: int) -> int:\n        n = len(s)\n        total_substrings = n * (n + 1) // 2\n        count = [0] * 26\n        left = 0\n        total_non = 0\n        for right in range(n):\n            idx = ord(s[right]) - ord('a')\n            count[idx] += 1\n            # compute current max frequency\n            max_count = max(count)\n            while max_count >= k:\n                left_idx = ord(s[left]) - ord('a')\n                count[left_idx] -= 1\n                left += 1\n                max_count = max(count)\n            total_non += (right - left + 1)\n        return total_substrings - total_non",
+      "passed": true
+    },
+    {
+      "question_id": "3508",
+      "contest_date": "2024-07-20 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 384,
+        "completion_tokens": 4096,
+        "total_tokens": 4480,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3562",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 603,
+        "completion_tokens": 4096,
+        "total_tokens": 4699,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3566",
+      "contest_date": "2024-10-19 19:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 479,
+        "completion_tokens": 4096,
+        "total_tokens": 4575,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3579",
+      "contest_date": "2024-10-05 19:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 360,
+        "completion_tokens": 1714,
+        "total_tokens": 2074,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 221,
+      "code": "from typing import List\nfrom itertools import permutations\n\nclass Solution:\n    def maxGoodNumber(self, nums: List[int]) -> int:\n        return max(int(''.join(bin(x)[2:] for x in perm), 2) for perm in permutations(nums))",
+      "passed": true
+    },
+    {
+      "question_id": "3583",
+      "contest_date": "2024-10-05 19:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 587,
+        "completion_tokens": 4096,
+        "total_tokens": 4683,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3588",
+      "contest_date": "2024-10-12 19:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 698,
+        "completion_tokens": 4096,
+        "total_tokens": 4794,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3603",
+      "contest_date": "2024-10-19 19:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 676,
+        "completion_tokens": 4096,
+        "total_tokens": 4772,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3604",
+      "contest_date": "2024-10-12 07:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 471,
+        "completion_tokens": 4096,
+        "total_tokens": 4567,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3605",
+      "contest_date": "2024-10-12 07:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 721,
+        "completion_tokens": 4096,
+        "total_tokens": 4817,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3610",
+      "contest_date": "2024-10-12 19:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 660,
+        "completion_tokens": 550,
+        "total_tokens": 1210,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3612",
+      "contest_date": "2024-11-09 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 449,
+        "completion_tokens": 1501,
+        "total_tokens": 1950,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 156,
+      "code": "inc = [True] * (n - k + 1)\nfor i in range(n - k):\n    for j in range(k-1):\n        if nums[i+j] >= nums[i+j+1]:\n            inc[i] = False\n            break",
+      "passed": false
+    },
+    {
+      "question_id": "3616",
+      "contest_date": "2024-11-16 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 886,
+        "completion_tokens": 4096,
+        "total_tokens": 4982,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3634",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 550,
+        "completion_tokens": 4096,
+        "total_tokens": 4646,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3674",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 592,
+        "completion_tokens": 4096,
+        "total_tokens": 4688,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3677",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 705,
+        "completion_tokens": 4096,
+        "total_tokens": 4801,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3684",
+      "contest_date": "2025-01-04 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 380,
+        "completion_tokens": 4064,
+        "total_tokens": 4444,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 1488,
+      "code": "\nBut we should also consider that the substring must be exactly the pattern after replacement, meaning that the part between prefix and suffix is exactly the replacement. Since we are not checking that the replacement is consistent with the pattern? Actually we are not checking that the replacement is exactly the substring between prefix and suffix; but that's automatically true because we are using the substring itself. So it's fine.\n\nBut is there any scenario where the substring starts with prefix and ends with suffix, but the prefix and suffix overlap in a way that the substring length is less than len(prefix)+len(suffix)? We already skip those. So it's fine.\n\nThus solution is correct.\n\nBut we might also need to consider that the pattern may have '*' and the substring must be exactly the pattern after replacement, meaning that the substring must have the prefix at the beginning and suffix at the end, but the replacement can be any sequence, so the substring can have extra characters before prefix? No, because startswith ensures prefix is at the beginning. So it's fine.\n\nThus final answer.\n\nBut wait: The problem says \"p can be made a substring of s\". That means we can replace '*' with any sequence, and then the resulting string must be a substring of s. That's exactly what we are checking: existence of substring of s that equals the pattern after replacement. So our approach is correct.\n\nNow, we need to output the solution in a single code block. We'll do that.\n",
+      "passed": false
+    },
+    {
+      "question_id": "3687",
+      "contest_date": "2025-01-18 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 620,
+        "completion_tokens": 4096,
+        "total_tokens": 4716,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3688",
+      "contest_date": "2025-01-04 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 594,
+        "completion_tokens": 4096,
+        "total_tokens": 4690,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3702",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 492,
+        "completion_tokens": 4096,
+        "total_tokens": 4588,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3704",
+      "contest_date": "2025-01-25 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 521,
+        "completion_tokens": 1563,
+        "total_tokens": 2084,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 12,
+      "code": "\nThat's it.\n",
+      "passed": false
+    },
+    {
+      "question_id": "3705",
+      "contest_date": "2025-03-01 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 731,
+        "completion_tokens": 1813,
+        "total_tokens": 2544,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3714",
+      "contest_date": "2025-01-18 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 528,
+        "completion_tokens": 4096,
+        "total_tokens": 4624,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3715",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 475,
+        "completion_tokens": 4096,
+        "total_tokens": 4571,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3773",
+      "contest_date": "2025-04-05 19:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 387,
+        "completion_tokens": 3547,
+        "total_tokens": 3934,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "3777",
+      "contest_date": "2025-04-05 19:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 683,
+        "completion_tokens": 4096,
+        "total_tokens": 4779,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "abc400_a",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 318,
+        "completion_tokens": 804,
+        "total_tokens": 1122,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 169,
+      "code": "import sys\n\ndef main():\n    A = int(sys.stdin.readline())\n    if 400 % A == 0:\n        print(400 // A)\n    else:\n        print(-1)\n\nif __name__ == \"__main__\":\n    main()",
+      "passed": true
+    },
+    {
+      "question_id": "abc400_b",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 422,
+        "completion_tokens": 4096,
+        "total_tokens": 4518,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 152,
+      "code": "i = 0\ntotal = 0\nterm = 1\nwhile i <= M:\n    total += term\n    if total > LIMIT:\n        print(\"inf\")\n        return\n    term *= N\n    i += 1\nprint(total)",
+      "passed": false
+    },
+    {
+      "question_id": "abc400_c",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 390,
+        "completion_tokens": 4096,
+        "total_tokens": 4486,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "abc400_d",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 1229,
+        "completion_tokens": 4096,
+        "total_tokens": 5325,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "abc400_e",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 545,
+        "completion_tokens": 4096,
+        "total_tokens": 4641,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "abc400_g",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 1025,
+        "completion_tokens": 4096,
+        "total_tokens": 5121,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    },
+    {
+      "question_id": "arc196_a",
+      "contest_date": "2025-04-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M0",
+      "terminal": "ok",
+      "returned_model": "solar-pro3-260323",
+      "usage": {
+        "prompt_tokens": 461,
+        "completion_tokens": 4096,
+        "total_tokens": 4557,
+        "prompt_tokens_details": {
+          "cached_tokens": 96,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "code_len": 0,
+      "code": "",
+      "passed": false
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "instance_id": "django__django-10999",
+  "repo": "django/django",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-10999@sha256:22a35ae325dc5abdd397b1d474d66aad62da6d23c4e9c8763478e82bcf63af7b",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "edited_files": [
+    "django/utils/dateparse.py"
+  ],
+  "patch_bytes": 498,
+  "tokens": {
+    "prompt": 7181,
+    "completion": 151
+  },
+  "secs": 65.9
+}

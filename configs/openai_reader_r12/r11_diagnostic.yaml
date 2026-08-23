@@ -1,0 +1,14 @@
+experiment: REALBENCH_OPENAI_READER_R12
+stage: C0_r11_reader_swap_diagnostic
+frozen_reuse:
+  target_ids: "artifacts/livecodebench_r11/task_partition.json main_target (182)"
+  memories: [artifacts/livecodebench_r11/memory_M1.json, artifacts/livecodebench_r11/memory_M2.json, artifacts/livecodebench_r11/memory_M3.json]
+  assignments: artifacts/livecodebench_r11/memory_assignments.json
+  grader: "official LiveCodeBench codegen_metrics (repo 28fef95)"
+arms: [M0, M1, M2, M3]
+writer: "solar (fixed)"
+reader: "selected OpenAI (from B0)"
+memory: "NOT regenerated (reused frozen R11)"
+claim: "reader-sensitivity DIAGNOSTIC; not independent confirmation; not contamination-free"
+output_budget: 4096
+status: BLOCKED_pending_OPENAI_API_KEY

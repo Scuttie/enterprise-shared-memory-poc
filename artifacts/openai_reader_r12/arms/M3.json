@@ -1,0 +1,3660 @@
+{
+  "model": "gpt-4o-mini-2024-07-18",
+  "family": "gpt4o",
+  "effort": "medium",
+  "arm": "M3",
+  "taskset": "TARGETS",
+  "n": 182,
+  "n_pass": 53,
+  "pass_at_1": 0.2912,
+  "exec_rate": 1.0,
+  "malformed": 0,
+  "returned_models": [
+    "gpt-4o-mini-2024-07-18"
+  ],
+  "input_tokens": 132190,
+  "output_tokens": 82947,
+  "est_cost_usd": null,
+  "results": [
+    {
+      "question_id": "3562",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 532,
+        "output_tokens": 256,
+        "total_tokens": 788,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.411313600000085,
+      "code_len": 1307,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3634",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 703,
+        "output_tokens": 165,
+        "total_tokens": 868,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.315591476000009,
+      "code_len": 701,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3674",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 873,
+        "output_tokens": 188,
+        "total_tokens": 1061,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.2534038200001305,
+      "code_len": 762,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3677",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 912,
+        "output_tokens": 802,
+        "total_tokens": 1714,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 11.615784408999843,
+      "code_len": 1788,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3684",
+      "contest_date": "2025-01-04 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 663,
+        "output_tokens": 170,
+        "total_tokens": 833,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.076661571000159,
+      "code_len": 721,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3687",
+      "contest_date": "2025-01-18 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 538,
+        "output_tokens": 576,
+        "total_tokens": 1114,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.871562853999876,
+      "code_len": 1574,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3688",
+      "contest_date": "2025-01-04 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 523,
+        "output_tokens": 213,
+        "total_tokens": 736,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.0699916120001944,
+      "code_len": 960,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3692",
+      "contest_date": "2025-02-15 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 711,
+        "output_tokens": 332,
+        "total_tokens": 1043,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.112035655999989,
+      "code_len": 1575,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3696",
+      "contest_date": "2025-02-08 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 747,
+        "output_tokens": 153,
+        "total_tokens": 900,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.1030385359999855,
+      "code_len": 707,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3697",
+      "contest_date": "2025-02-01 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 665,
+        "output_tokens": 246,
+        "total_tokens": 911,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.46506783000018,
+      "code_len": 1199,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3701",
+      "contest_date": "2025-02-01 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 552,
+        "output_tokens": 332,
+        "total_tokens": 884,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.680192544999954,
+      "code_len": 1485,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3702",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 779,
+        "output_tokens": 430,
+        "total_tokens": 1209,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.7410211119999985,
+      "code_len": 1038,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3704",
+      "contest_date": "2025-01-25 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 821,
+        "output_tokens": 102,
+        "total_tokens": 923,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.5057060679998813,
+      "code_len": 407,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3705",
+      "contest_date": "2025-03-01 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1014,
+        "output_tokens": 165,
+        "total_tokens": 1179,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.6470104360000732,
+      "code_len": 722,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3708",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 682,
+        "output_tokens": 150,
+        "total_tokens": 832,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.2842028919999393,
+      "code_len": 569,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3709",
+      "contest_date": "2025-02-15 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 693,
+        "output_tokens": 187,
+        "total_tokens": 880,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.3331665939999766,
+      "code_len": 815,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3714",
+      "contest_date": "2025-01-18 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 793,
+        "output_tokens": 543,
+        "total_tokens": 1336,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.983401149999963,
+      "code_len": 1428,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3715",
+      "contest_date": "2025-01-04 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 732,
+        "output_tokens": 557,
+        "total_tokens": 1289,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.71256742100013,
+      "code_len": 1145,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3716",
+      "contest_date": "2025-01-04 06:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 424,
+        "output_tokens": 238,
+        "total_tokens": 662,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.7072464079999463,
+      "code_len": 1056,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3717",
+      "contest_date": "2025-03-29 19:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 571,
+        "output_tokens": 329,
+        "total_tokens": 900,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.102313761000005,
+      "code_len": 1262,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3720",
+      "contest_date": "2025-01-11 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 650,
+        "output_tokens": 541,
+        "total_tokens": 1191,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.802605262000043,
+      "code_len": 1337,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3721",
+      "contest_date": "2025-01-25 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1091,
+        "output_tokens": 471,
+        "total_tokens": 1562,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.377108644000145,
+      "code_len": 1604,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3722",
+      "contest_date": "2025-03-01 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 703,
+        "output_tokens": 480,
+        "total_tokens": 1183,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.558109772999842,
+      "code_len": 1631,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3723",
+      "contest_date": "2025-02-15 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 586,
+        "output_tokens": 139,
+        "total_tokens": 725,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.3483224929998414,
+      "code_len": 587,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3725",
+      "contest_date": "2025-01-18 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 739,
+        "output_tokens": 559,
+        "total_tokens": 1298,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.805184358999895,
+      "code_len": 1231,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3731",
+      "contest_date": "2025-01-18 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 737,
+        "output_tokens": 82,
+        "total_tokens": 819,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.6538301430000502,
+      "code_len": 308,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3733",
+      "contest_date": "2025-02-15 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1140,
+        "output_tokens": 736,
+        "total_tokens": 1876,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.427584958999887,
+      "code_len": 1889,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3736",
+      "contest_date": "2025-02-01 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 599,
+        "output_tokens": 143,
+        "total_tokens": 742,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.0428689909999775,
+      "code_len": 685,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3737",
+      "contest_date": "2025-01-18 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1285,
+        "output_tokens": 700,
+        "total_tokens": 1985,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.18181484899992,
+      "code_len": 1489,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3739",
+      "contest_date": "2025-01-18 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 908,
+        "output_tokens": 566,
+        "total_tokens": 1474,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.1765685049999774,
+      "code_len": 1568,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3743",
+      "contest_date": "2025-02-01 06:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 917,
+        "output_tokens": 687,
+        "total_tokens": 1604,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.599042224999948,
+      "code_len": 1890,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3744",
+      "contest_date": "2025-03-22 19:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 608,
+        "output_tokens": 442,
+        "total_tokens": 1050,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.824300645999983,
+      "code_len": 1159,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3747",
+      "contest_date": "2025-01-18 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 560,
+        "output_tokens": 112,
+        "total_tokens": 672,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.619066863999933,
+      "code_len": 453,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3748",
+      "contest_date": "2025-02-08 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 744,
+        "output_tokens": 324,
+        "total_tokens": 1068,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.543837929000119,
+      "code_len": 1422,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3750",
+      "contest_date": "2025-03-15 19:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 476,
+        "output_tokens": 241,
+        "total_tokens": 717,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.9349230239999997,
+      "code_len": 1207,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3751",
+      "contest_date": "2025-01-25 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 708,
+        "output_tokens": 610,
+        "total_tokens": 1318,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.864771430000019,
+      "code_len": 812,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3753",
+      "contest_date": "2025-02-01 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 322,
+        "output_tokens": 138,
+        "total_tokens": 460,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.454159464999975,
+      "code_len": 616,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3754",
+      "contest_date": "2025-02-01 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 863,
+        "output_tokens": 339,
+        "total_tokens": 1202,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.7596277869999994,
+      "code_len": 789,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3759",
+      "contest_date": "2025-03-08 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 929,
+        "output_tokens": 619,
+        "total_tokens": 1548,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 14.046613246999868,
+      "code_len": 1670,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3760",
+      "contest_date": "2025-02-08 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 522,
+        "output_tokens": 94,
+        "total_tokens": 616,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.9033140340000045,
+      "code_len": 447,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3762",
+      "contest_date": "2025-02-08 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 918,
+        "output_tokens": 457,
+        "total_tokens": 1375,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.879098972000065,
+      "code_len": 959,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3763",
+      "contest_date": "2025-02-15 06:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 924,
+        "output_tokens": 718,
+        "total_tokens": 1642,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.138699574999919,
+      "code_len": 1280,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3764",
+      "contest_date": "2025-02-22 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 768,
+        "output_tokens": 186,
+        "total_tokens": 954,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.9953291689998878,
+      "code_len": 791,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3765",
+      "contest_date": "2025-03-29 07:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 932,
+        "output_tokens": 599,
+        "total_tokens": 1531,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.330948226999908,
+      "code_len": 1267,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3768",
+      "contest_date": "2025-02-22 18:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 728,
+        "output_tokens": 97,
+        "total_tokens": 825,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.847781423000015,
+      "code_len": 323,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3770",
+      "contest_date": "2025-03-01 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 496,
+        "output_tokens": 283,
+        "total_tokens": 779,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.741651346000026,
+      "code_len": 1229,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3771",
+      "contest_date": "2025-02-15 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 734,
+        "output_tokens": 203,
+        "total_tokens": 937,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.2066864139999325,
+      "code_len": 917,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3773",
+      "contest_date": "2025-04-05 19:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 626,
+        "output_tokens": 445,
+        "total_tokens": 1071,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.892802339000127,
+      "code_len": 882,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3776",
+      "contest_date": "2025-03-01 06:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 772,
+        "output_tokens": 371,
+        "total_tokens": 1143,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.725696040999992,
+      "code_len": 893,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3777",
+      "contest_date": "2025-04-05 19:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 601,
+        "output_tokens": 494,
+        "total_tokens": 1095,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.071028139999953,
+      "code_len": 1238,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3778",
+      "contest_date": "2025-03-01 06:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 374,
+        "output_tokens": 81,
+        "total_tokens": 455,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.5717113650000556,
+      "code_len": 322,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3779",
+      "contest_date": "2025-02-15 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 543,
+        "output_tokens": 142,
+        "total_tokens": 685,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.882643010000038,
+      "code_len": 548,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3781",
+      "contest_date": "2025-02-22 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 984,
+        "output_tokens": 542,
+        "total_tokens": 1526,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.998593761999928,
+      "code_len": 1086,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3783",
+      "contest_date": "2025-03-01 06:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 851,
+        "output_tokens": 712,
+        "total_tokens": 1563,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.107413879999967,
+      "code_len": 2131,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3784",
+      "contest_date": "2025-03-15 07:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 834,
+        "output_tokens": 533,
+        "total_tokens": 1367,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.3833453629999894,
+      "code_len": 1596,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3785",
+      "contest_date": "2025-03-01 06:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 798,
+        "output_tokens": 515,
+        "total_tokens": 1313,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.21209534400009,
+      "code_len": 1319,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3786",
+      "contest_date": "2025-03-01 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 420,
+        "output_tokens": 291,
+        "total_tokens": 711,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.3728977380001197,
+      "code_len": 979,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3788",
+      "contest_date": "2025-03-15 19:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 378,
+        "output_tokens": 155,
+        "total_tokens": 533,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.919404744999838,
+      "code_len": 706,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3789",
+      "contest_date": "2025-03-08 18:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 518,
+        "output_tokens": 220,
+        "total_tokens": 738,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.1672842779998973,
+      "code_len": 959,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3791",
+      "contest_date": "2025-03-08 18:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 487,
+        "output_tokens": 164,
+        "total_tokens": 651,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.441224490999957,
+      "code_len": 720,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3793",
+      "contest_date": "2025-03-29 19:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 361,
+        "output_tokens": 235,
+        "total_tokens": 596,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.7609710219999215,
+      "code_len": 952,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3794",
+      "contest_date": "2025-03-22 19:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 618,
+        "output_tokens": 209,
+        "total_tokens": 827,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.4240187770001285,
+      "code_len": 944,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3795",
+      "contest_date": "2025-03-15 19:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1196,
+        "output_tokens": 218,
+        "total_tokens": 1414,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.541699769000161,
+      "code_len": 922,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3799",
+      "contest_date": "2025-03-15 07:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 377,
+        "output_tokens": 198,
+        "total_tokens": 575,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.614722176000214,
+      "code_len": 960,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3801",
+      "contest_date": "2025-03-15 19:30:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 741,
+        "output_tokens": 122,
+        "total_tokens": 863,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.9587871809999342,
+      "code_len": 490,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3805",
+      "contest_date": "2025-03-29 07:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 929,
+        "output_tokens": 503,
+        "total_tokens": 1432,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.879732809000188,
+      "code_len": 1343,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "3809",
+      "contest_date": "2025-03-22 19:30:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 685,
+        "output_tokens": 484,
+        "total_tokens": 1169,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.3145102149999275,
+      "code_len": 1172,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3811",
+      "contest_date": "2025-03-29 07:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 561,
+        "output_tokens": 106,
+        "total_tokens": 667,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.8581726919999255,
+      "code_len": 457,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3817",
+      "contest_date": "2025-03-22 19:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 325,
+        "output_tokens": 101,
+        "total_tokens": 426,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.7038310590000947,
+      "code_len": 452,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "3832",
+      "contest_date": "2025-03-29 19:30:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.LEETCODE",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 778,
+        "output_tokens": 215,
+        "total_tokens": 993,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.7691504230001556,
+      "code_len": 851,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc387_a",
+      "contest_date": "2025-01-04 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 685,
+        "output_tokens": 54,
+        "total_tokens": 739,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.5001086730001134,
+      "code_len": 167,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc387_b",
+      "contest_date": "2025-01-04 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 689,
+        "output_tokens": 353,
+        "total_tokens": 1042,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.780505630000107,
+      "code_len": 549,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc387_c",
+      "contest_date": "2025-01-04 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 584,
+        "output_tokens": 594,
+        "total_tokens": 1178,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.747909539000148,
+      "code_len": 518,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc387_f",
+      "contest_date": "2025-01-04 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 391,
+        "output_tokens": 375,
+        "total_tokens": 766,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.55742281799985,
+      "code_len": 625,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc388_a",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 425,
+        "output_tokens": 51,
+        "total_tokens": 476,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.2947016559999156,
+      "code_len": 190,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc388_b",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 688,
+        "output_tokens": 367,
+        "total_tokens": 1055,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.683892782999919,
+      "code_len": 607,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc388_c",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 916,
+        "output_tokens": 658,
+        "total_tokens": 1574,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.661335033999876,
+      "code_len": 552,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc388_d",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 587,
+        "output_tokens": 423,
+        "total_tokens": 1010,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.248396564999894,
+      "code_len": 1032,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc388_e",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 522,
+        "output_tokens": 473,
+        "total_tokens": 995,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.257068323000112,
+      "code_len": 736,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc388_f",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 971,
+        "output_tokens": 707,
+        "total_tokens": 1678,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.9670772330000545,
+      "code_len": 1366,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc388_g",
+      "contest_date": "2025-01-11 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1337,
+        "output_tokens": 623,
+        "total_tokens": 1960,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 12.251396339999928,
+      "code_len": 1219,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc389_a",
+      "contest_date": "2025-01-18 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 543,
+        "output_tokens": 67,
+        "total_tokens": 610,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.7398962030001712,
+      "code_len": 257,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc389_b",
+      "contest_date": "2025-01-18 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 540,
+        "output_tokens": 479,
+        "total_tokens": 1019,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.871981301999995,
+      "code_len": 357,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc389_d",
+      "contest_date": "2025-01-18 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 757,
+        "output_tokens": 779,
+        "total_tokens": 1536,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.442847577000066,
+      "code_len": 437,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc389_e",
+      "contest_date": "2025-01-18 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 372,
+        "output_tokens": 539,
+        "total_tokens": 911,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.572397271,
+      "code_len": 1366,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc389_f",
+      "contest_date": "2025-01-18 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1209,
+        "output_tokens": 472,
+        "total_tokens": 1681,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.9714088489999995,
+      "code_len": 705,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc389_g",
+      "contest_date": "2025-01-18 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 890,
+        "output_tokens": 732,
+        "total_tokens": 1622,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.9784769189998315,
+      "code_len": 724,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc390_a",
+      "contest_date": "2025-01-25 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 656,
+        "output_tokens": 383,
+        "total_tokens": 1039,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.712238682999896,
+      "code_len": 615,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc390_b",
+      "contest_date": "2025-01-25 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 618,
+        "output_tokens": 189,
+        "total_tokens": 807,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.9757223149999845,
+      "code_len": 626,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc390_c",
+      "contest_date": "2025-01-25 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 663,
+        "output_tokens": 540,
+        "total_tokens": 1203,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.7890137159999995,
+      "code_len": 1247,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc390_d",
+      "contest_date": "2025-01-25 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 733,
+        "output_tokens": 471,
+        "total_tokens": 1204,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.486519979999912,
+      "code_len": 1021,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc390_e",
+      "contest_date": "2025-01-25 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 600,
+        "output_tokens": 662,
+        "total_tokens": 1262,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.168642321999869,
+      "code_len": 1565,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc390_f",
+      "contest_date": "2025-01-25 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 580,
+        "output_tokens": 702,
+        "total_tokens": 1282,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.355958375,
+      "code_len": 873,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc390_g",
+      "contest_date": "2025-01-25 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 447,
+        "output_tokens": 678,
+        "total_tokens": 1125,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.218506647999902,
+      "code_len": 786,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc391_a",
+      "contest_date": "2025-02-01 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 264,
+        "output_tokens": 110,
+        "total_tokens": 374,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.0543491770001765,
+      "code_len": 354,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc391_b",
+      "contest_date": "2025-02-01 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 574,
+        "output_tokens": 444,
+        "total_tokens": 1018,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.609722981999994,
+      "code_len": 727,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc391_d",
+      "contest_date": "2025-02-01 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 744,
+        "output_tokens": 556,
+        "total_tokens": 1300,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.93903976599995,
+      "code_len": 1394,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc391_e",
+      "contest_date": "2025-02-01 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1075,
+        "output_tokens": 827,
+        "total_tokens": 1902,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 12.075574566999876,
+      "code_len": 1455,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc391_f",
+      "contest_date": "2025-02-01 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 931,
+        "output_tokens": 676,
+        "total_tokens": 1607,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.097796121000101,
+      "code_len": 1071,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc391_g",
+      "contest_date": "2025-02-01 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 732,
+        "output_tokens": 819,
+        "total_tokens": 1551,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.645819567999979,
+      "code_len": 1166,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc392_a",
+      "contest_date": "2025-02-08 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 607,
+        "output_tokens": 88,
+        "total_tokens": 695,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.5364187239999865,
+      "code_len": 310,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc392_b",
+      "contest_date": "2025-02-08 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 702,
+        "output_tokens": 129,
+        "total_tokens": 831,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.7477898709998954,
+      "code_len": 439,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc392_c",
+      "contest_date": "2025-02-08 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 785,
+        "output_tokens": 462,
+        "total_tokens": 1247,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.4736452429999645,
+      "code_len": 656,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc392_d",
+      "contest_date": "2025-02-08 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 535,
+        "output_tokens": 457,
+        "total_tokens": 992,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.715093539000009,
+      "code_len": 1128,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc392_f",
+      "contest_date": "2025-02-08 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 728,
+        "output_tokens": 352,
+        "total_tokens": 1080,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.763837607999903,
+      "code_len": 358,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc392_g",
+      "contest_date": "2025-02-08 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 747,
+        "output_tokens": 571,
+        "total_tokens": 1318,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.831867786999965,
+      "code_len": 563,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc393_a",
+      "contest_date": "2025-02-15 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 662,
+        "output_tokens": 217,
+        "total_tokens": 879,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.229854135000096,
+      "code_len": 603,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc393_b",
+      "contest_date": "2025-02-15 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 608,
+        "output_tokens": 349,
+        "total_tokens": 957,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.6988038240001515,
+      "code_len": 545,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc393_d",
+      "contest_date": "2025-02-15 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 479,
+        "output_tokens": 457,
+        "total_tokens": 936,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.262725713000009,
+      "code_len": 1045,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc393_e",
+      "contest_date": "2025-02-15 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 856,
+        "output_tokens": 596,
+        "total_tokens": 1452,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.653522907000024,
+      "code_len": 1121,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc393_f",
+      "contest_date": "2025-02-15 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1015,
+        "output_tokens": 663,
+        "total_tokens": 1678,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.957119618999968,
+      "code_len": 1038,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc394_a",
+      "contest_date": "2025-02-22 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 540,
+        "output_tokens": 196,
+        "total_tokens": 736,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.7604878069998904,
+      "code_len": 298,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc394_b",
+      "contest_date": "2025-02-22 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 613,
+        "output_tokens": 259,
+        "total_tokens": 872,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.281150815000046,
+      "code_len": 444,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc394_c",
+      "contest_date": "2025-02-22 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 858,
+        "output_tokens": 402,
+        "total_tokens": 1260,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.280586050000011,
+      "code_len": 730,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc394_d",
+      "contest_date": "2025-02-22 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 798,
+        "output_tokens": 563,
+        "total_tokens": 1361,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.550862553000115,
+      "code_len": 861,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc394_e",
+      "contest_date": "2025-02-22 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1059,
+        "output_tokens": 704,
+        "total_tokens": 1763,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.57501873199999,
+      "code_len": 1234,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc394_f",
+      "contest_date": "2025-02-22 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 871,
+        "output_tokens": 773,
+        "total_tokens": 1644,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.985859120999976,
+      "code_len": 1726,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc394_g",
+      "contest_date": "2025-02-22 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1343,
+        "output_tokens": 893,
+        "total_tokens": 2236,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 12.468178356999942,
+      "code_len": 2396,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc395_a",
+      "contest_date": "2025-03-01 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 654,
+        "output_tokens": 143,
+        "total_tokens": 797,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.5064937879999434,
+      "code_len": 528,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc395_b",
+      "contest_date": "2025-03-01 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 695,
+        "output_tokens": 366,
+        "total_tokens": 1061,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.0833627409999735,
+      "code_len": 619,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc395_c",
+      "contest_date": "2025-03-01 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 394,
+        "output_tokens": 369,
+        "total_tokens": 763,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.8455355300000065,
+      "code_len": 651,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc395_e",
+      "contest_date": "2025-03-01 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 888,
+        "output_tokens": 573,
+        "total_tokens": 1461,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.173413321999988,
+      "code_len": 1294,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc395_f",
+      "contest_date": "2025-03-01 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 735,
+        "output_tokens": 757,
+        "total_tokens": 1492,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.189096368000037,
+      "code_len": 2071,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc396_a",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 725,
+        "output_tokens": 113,
+        "total_tokens": 838,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.209517678000111,
+      "code_len": 355,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc396_b",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 982,
+        "output_tokens": 390,
+        "total_tokens": 1372,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.164011394999989,
+      "code_len": 871,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc396_c",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 464,
+        "output_tokens": 543,
+        "total_tokens": 1007,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.07137426700001,
+      "code_len": 1127,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc396_d",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 761,
+        "output_tokens": 544,
+        "total_tokens": 1305,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.127442541000164,
+      "code_len": 1194,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc396_e",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 791,
+        "output_tokens": 618,
+        "total_tokens": 1409,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.597704136999937,
+      "code_len": 1635,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc396_f",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 498,
+        "output_tokens": 521,
+        "total_tokens": 1019,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.728647021000143,
+      "code_len": 1065,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc396_g",
+      "contest_date": "2025-03-08 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1070,
+        "output_tokens": 630,
+        "total_tokens": 1700,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.975963987999876,
+      "code_len": 686,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc397_a",
+      "contest_date": "2025-03-15 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 694,
+        "output_tokens": 75,
+        "total_tokens": 769,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.1129673660000208,
+      "code_len": 230,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc397_b",
+      "contest_date": "2025-03-15 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 707,
+        "output_tokens": 580,
+        "total_tokens": 1287,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.409562392999987,
+      "code_len": 812,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc397_c",
+      "contest_date": "2025-03-15 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 827,
+        "output_tokens": 683,
+        "total_tokens": 1510,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.961533336000002,
+      "code_len": 1172,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc397_d",
+      "contest_date": "2025-03-15 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 330,
+        "output_tokens": 894,
+        "total_tokens": 1224,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 10.885619183000017,
+      "code_len": 1893,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc397_e",
+      "contest_date": "2025-03-15 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 795,
+        "output_tokens": 773,
+        "total_tokens": 1568,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.513528551000036,
+      "code_len": 1186,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc397_f",
+      "contest_date": "2025-03-15 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 812,
+        "output_tokens": 746,
+        "total_tokens": 1558,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.613915715000076,
+      "code_len": 1133,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc397_g",
+      "contest_date": "2025-03-15 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 489,
+        "output_tokens": 573,
+        "total_tokens": 1062,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.279073260000132,
+      "code_len": 1456,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc398_a",
+      "contest_date": "2025-03-22 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 196,
+        "output_tokens": 151,
+        "total_tokens": 347,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 2.1715607399999044,
+      "code_len": 503,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc398_b",
+      "contest_date": "2025-03-22 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 731,
+        "output_tokens": 363,
+        "total_tokens": 1094,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.000223722999863,
+      "code_len": 536,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc398_c",
+      "contest_date": "2025-03-22 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 688,
+        "output_tokens": 412,
+        "total_tokens": 1100,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.119235004999837,
+      "code_len": 849,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc398_d",
+      "contest_date": "2025-03-22 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 755,
+        "output_tokens": 492,
+        "total_tokens": 1247,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.074295800000073,
+      "code_len": 1220,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc398_f",
+      "contest_date": "2025-03-22 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 579,
+        "output_tokens": 691,
+        "total_tokens": 1270,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.16212735299996,
+      "code_len": 925,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc398_g",
+      "contest_date": "2025-03-22 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 628,
+        "output_tokens": 545,
+        "total_tokens": 1173,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.126306569000008,
+      "code_len": 1447,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc399_a",
+      "contest_date": "2025-03-29 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 630,
+        "output_tokens": 286,
+        "total_tokens": 916,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 3.1796555889998217,
+      "code_len": 426,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc399_b",
+      "contest_date": "2025-03-29 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 680,
+        "output_tokens": 477,
+        "total_tokens": 1157,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.071775903999878,
+      "code_len": 1128,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc399_c",
+      "contest_date": "2025-03-29 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 409,
+        "output_tokens": 515,
+        "total_tokens": 924,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.582742010999937,
+      "code_len": 369,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc399_d",
+      "contest_date": "2025-03-29 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1058,
+        "output_tokens": 763,
+        "total_tokens": 1821,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.768859549000126,
+      "code_len": 1480,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc399_e",
+      "contest_date": "2025-03-29 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 771,
+        "output_tokens": 767,
+        "total_tokens": 1538,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.512927755999954,
+      "code_len": 1373,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc399_f",
+      "contest_date": "2025-03-29 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 845,
+        "output_tokens": 665,
+        "total_tokens": 1510,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 10.271363498000028,
+      "code_len": 753,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc400_a",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 241,
+        "output_tokens": 80,
+        "total_tokens": 321,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 1.7285967660000097,
+      "code_len": 270,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc400_b",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.EASY",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 611,
+        "output_tokens": 367,
+        "total_tokens": 978,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.8646663859999535,
+      "code_len": 461,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "abc400_c",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 746,
+        "output_tokens": 696,
+        "total_tokens": 1442,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.628894201000094,
+      "code_len": 595,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc400_d",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1546,
+        "output_tokens": 1070,
+        "total_tokens": 2616,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 19.970705954000096,
+      "code_len": 2401,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc400_e",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 427,
+        "output_tokens": 888,
+        "total_tokens": 1315,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 10.142551051000282,
+      "code_len": 1766,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "abc400_g",
+      "contest_date": "2025-04-05 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 962,
+        "output_tokens": 544,
+        "total_tokens": 1506,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.164414883000063,
+      "code_len": 1158,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc190_a",
+      "contest_date": "2025-01-12 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 844,
+        "output_tokens": 610,
+        "total_tokens": 1454,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.657158609999897,
+      "code_len": 1394,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc190_c",
+      "contest_date": "2025-01-12 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1420,
+        "output_tokens": 734,
+        "total_tokens": 2154,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.007266578999861,
+      "code_len": 1817,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc190_d",
+      "contest_date": "2025-01-12 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1092,
+        "output_tokens": 710,
+        "total_tokens": 1802,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.657822389000103,
+      "code_len": 1484,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc191_a",
+      "contest_date": "2025-01-26 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 719,
+        "output_tokens": 446,
+        "total_tokens": 1165,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.192063039999994,
+      "code_len": 828,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc191_c",
+      "contest_date": "2025-01-26 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 801,
+        "output_tokens": 403,
+        "total_tokens": 1204,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.811506628999723,
+      "code_len": 465,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc191_d",
+      "contest_date": "2025-01-26 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 651,
+        "output_tokens": 580,
+        "total_tokens": 1231,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.273913150000226,
+      "code_len": 1328,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc192_a",
+      "contest_date": "2025-02-09 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 847,
+        "output_tokens": 369,
+        "total_tokens": 1216,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.168102820000058,
+      "code_len": 653,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc192_b",
+      "contest_date": "2025-02-09 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 700,
+        "output_tokens": 369,
+        "total_tokens": 1069,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 4.780190484999821,
+      "code_len": 613,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc192_d",
+      "contest_date": "2025-02-09 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 596,
+        "output_tokens": 585,
+        "total_tokens": 1181,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.541549603000021,
+      "code_len": 1153,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc192_e",
+      "contest_date": "2025-02-09 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 528,
+        "output_tokens": 984,
+        "total_tokens": 1512,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 12.338511804000063,
+      "code_len": 1712,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc193_a",
+      "contest_date": "2025-02-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1010,
+        "output_tokens": 662,
+        "total_tokens": 1672,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.305009784999584,
+      "code_len": 1938,
+      "malformed": false,
+      "passed": true
+    },
+    {
+      "question_id": "arc193_b",
+      "contest_date": "2025-02-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1105,
+        "output_tokens": 803,
+        "total_tokens": 1908,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.502208537000115,
+      "code_len": 835,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc193_d",
+      "contest_date": "2025-02-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 895,
+        "output_tokens": 486,
+        "total_tokens": 1381,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.013484002000041,
+      "code_len": 1182,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc194_a",
+      "contest_date": "2025-03-09 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 846,
+        "output_tokens": 472,
+        "total_tokens": 1318,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.338528574000065,
+      "code_len": 860,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc194_b",
+      "contest_date": "2025-03-09 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 472,
+        "output_tokens": 502,
+        "total_tokens": 974,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.613029476000065,
+      "code_len": 1331,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc194_c",
+      "contest_date": "2025-03-09 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1173,
+        "output_tokens": 656,
+        "total_tokens": 1829,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.753199576000043,
+      "code_len": 1053,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc194_d",
+      "contest_date": "2025-03-09 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 809,
+        "output_tokens": 757,
+        "total_tokens": 1566,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.066067120999833,
+      "code_len": 1003,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc194_e",
+      "contest_date": "2025-03-09 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1036,
+        "output_tokens": 814,
+        "total_tokens": 1850,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 6.812166524000077,
+      "code_len": 1629,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc195_a",
+      "contest_date": "2025-03-23 00:00:00",
+      "difficulty": "Difficulty.MEDIUM",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 434,
+        "output_tokens": 530,
+        "total_tokens": 964,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.549345149000146,
+      "code_len": 1359,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc195_b",
+      "contest_date": "2025-03-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 592,
+        "output_tokens": 599,
+        "total_tokens": 1191,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.414118618999964,
+      "code_len": 1400,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc195_c",
+      "contest_date": "2025-03-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 846,
+        "output_tokens": 524,
+        "total_tokens": 1370,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.343822816999818,
+      "code_len": 1184,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc195_d",
+      "contest_date": "2025-03-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 594,
+        "output_tokens": 447,
+        "total_tokens": 1041,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.838043746000039,
+      "code_len": 1092,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc195_e",
+      "contest_date": "2025-03-23 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 765,
+        "output_tokens": 715,
+        "total_tokens": 1480,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 8.665535254000133,
+      "code_len": 1372,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc196_a",
+      "contest_date": "2025-04-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 696,
+        "output_tokens": 457,
+        "total_tokens": 1153,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 5.555495195000276,
+      "code_len": 427,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc196_b",
+      "contest_date": "2025-04-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 952,
+        "output_tokens": 669,
+        "total_tokens": 1621,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 7.6564015229996585,
+      "code_len": 1496,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc196_c",
+      "contest_date": "2025-04-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 945,
+        "output_tokens": 778,
+        "total_tokens": 1723,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 9.961515684999995,
+      "code_len": 1055,
+      "malformed": false,
+      "passed": false
+    },
+    {
+      "question_id": "arc196_d",
+      "contest_date": "2025-04-06 00:00:00",
+      "difficulty": "Difficulty.HARD",
+      "platform": "Platform.ATCODER",
+      "arm": "M3",
+      "terminal": "ok",
+      "returned_model": "gpt-4o-mini-2024-07-18",
+      "usage": {
+        "input_tokens": 1207,
+        "output_tokens": 933,
+        "total_tokens": 2140,
+        "reasoning_tokens": 0,
+        "cached_input_tokens": 0
+      },
+      "latency_s": 11.574615898000047,
+      "code_len": 1653,
+      "malformed": false,
+      "passed": false
+    }
+  ]
+}

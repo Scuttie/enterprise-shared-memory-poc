@@ -1,0 +1,34 @@
+diff --git a/src/transformers/models/wav2vec2/feature_extraction_wav2vec2.py b/src/transformers/models/wav2vec2/feature_extraction_wav2vec2.py
+index 6aa60df5..41fd80ab 100644
+--- a/src/transformers/models/wav2vec2/feature_extraction_wav2vec2.py
++++ b/src/transformers/models/wav2vec2/feature_extraction_wav2vec2.py
+@@ -78,6 +78,29 @@ class Wav2Vec2FeatureExtractor(SequenceFeatureExtractor):
+         self.return_attention_mask = return_attention_mask
+         self.do_normalize = do_normalize
+ 
++    def _pad(
++        self,
++        processed_features,
++        max_length=None,
++        padding_strategy=PaddingStrategy.DO_NOT_PAD,
++        pad_to_multiple_of=None,
++        return_attention_mask=None,
++    ):
++        """Pad a single example and keep Wav2Vec2 input values in float32."""
++        processed_features = super()._pad(
++            processed_features=processed_features,
++            max_length=max_length,
++            padding_strategy=padding_strategy,
++            pad_to_multiple_of=pad_to_multiple_of,
++            return_attention_mask=return_attention_mask,
++        )
++
++        input_values = processed_features[self.model_input_names[0]]
++        if isinstance(input_values, np.ndarray) and input_values.dtype == np.float64:
++            processed_features[self.model_input_names[0]] = input_values.astype(np.float32)
++
++        return processed_features
++
+     @staticmethod
+     def zero_mean_unit_var_norm(
+         input_values: List[np.ndarray], attention_mask: List[np.ndarray], padding_value: float = 0.0

@@ -1,0 +1,73 @@
+name: ci-r5-solar-probe
+
+# Cheap definitive probe: does Upstage Solar's OpenAI-compatible /chat/completions support the `tools`
+# (function-calling) parameter, or does it 500? This isolates whether the R5 repository-agent failure is a
+# Solar reader-capability limitation (no tool use) vs a transient outage. 2 tiny API calls, no benchmark.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/production-service-v0.2]
+
+jobs:
+  probe:
+    if: contains(github.event.head_commit.message, '[run-solar-probe]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Probe Solar (no tools vs with tools)
+        env:
+          KEY: ${{ secrets.UPSTAGE_API_KEY }}
+        run: |
+          set -uo pipefail
+          test -n "$KEY" || { echo "no key"; exit 1; }
+          echo "===== 1) PLAIN completion (no tools) ====="
+          code=$(curl -s -o /tmp/plain.json -w "%{http_code}" https://api.upstage.ai/v1/chat/completions \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+            -d '{"model":"solar-pro2-251215","messages":[{"role":"user","content":"Say OK."}],"max_tokens":16}')
+          echo "HTTP $code"; head -c 800 /tmp/plain.json; echo
+          echo "===== 2) WITH tools (function-calling) ====="
+          code=$(curl -s -o /tmp/tools.json -w "%{http_code}" https://api.upstage.ai/v1/chat/completions \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+            -d '{"model":"solar-pro2-251215","messages":[{"role":"user","content":"List the files in the current directory using the tool."}],"max_tokens":128,"tools":[{"type":"function","function":{"name":"run_shell","description":"Run a shell command","parameters":{"type":"object","properties":{"cmd":{"type":"string"}},"required":["cmd"]}}}],"tool_choice":"auto"}')
+          echo "HTTP $code"; head -c 1200 /tmp/tools.json; echo
+          echo "===== 3) WITH tools + tool_choice required ====="
+          code=$(curl -s -o /tmp/tools2.json -w "%{http_code}" https://api.upstage.ai/v1/chat/completions \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+            -d '{"model":"solar-pro2-251215","messages":[{"role":"user","content":"Run ls."}],"max_tokens":128,"tools":[{"type":"function","function":{"name":"run_shell","description":"Run a shell command","parameters":{"type":"object","properties":{"cmd":{"type":"string"}},"required":["cmd"]}}}],"tool_choice":"required"}')
+          echo "HTTP $code"; head -c 1200 /tmp/tools2.json; echo
+          echo "===== 4) stream:true + tools (deepagents likely streams) ====="
+          code=$(curl -s -o /tmp/s4.txt -w "%{http_code}" https://api.upstage.ai/v1/chat/completions \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+            -d '{"model":"solar-pro2-251215","messages":[{"role":"user","content":"Run ls."}],"max_tokens":64,"stream":true,"tools":[{"type":"function","function":{"name":"run_shell","description":"x","parameters":{"type":"object","properties":{"cmd":{"type":"string"}}}}}]}')
+          echo "HTTP $code"; head -c 300 /tmp/s4.txt; echo
+          echo "===== 5) parallel_tool_calls:true + tools ====="
+          code=$(curl -s -o /tmp/s5.json -w "%{http_code}" https://api.upstage.ai/v1/chat/completions \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+            -d '{"model":"solar-pro2-251215","messages":[{"role":"user","content":"Run ls."}],"max_tokens":64,"parallel_tool_calls":true,"tools":[{"type":"function","function":{"name":"run_shell","description":"x","parameters":{"type":"object","properties":{"cmd":{"type":"string"}}}}}]}')
+          echo "HTTP $code"; head -c 500 /tmp/s5.json; echo
+          echo "===== 6) system msg + 6 tools + LARGE prompt (~12k tokens) ====="
+          python3 -c "
+          import json
+          big='You are a coding agent working in a repository.\n'+('This is repository context line with some code and files. '*2500)
+          body={'model':'solar-pro2-251215','messages':[{'role':'system','content':big},{'role':'user','content':'Implement the parser.'}],'max_tokens':64,'tools':[{'type':'function','function':{'name':'t%d'%i,'description':'a shell/file tool number %d'%i,'parameters':{'type':'object','properties':{'a':{'type':'string'}}}}} for i in range(6)]}
+          open('/tmp/body6.json','w').write(json.dumps(body))
+          print('body bytes:',len(json.dumps(body)))
+          "
+          code=$(curl -s -o /tmp/s6.json -w "%{http_code}" https://api.upstage.ai/v1/chat/completions \
+            -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" --data @/tmp/body6.json)
+          echo "HTTP $code"; head -c 600 /tmp/s6.json; echo
+          echo "===== verdict ====="
+          python3 - <<'PY'
+          import json
+          def load(p):
+              try: return json.load(open(p))
+              except Exception as e: return {"_parse_error":str(e)}
+          plain=load('/tmp/plain.json'); tools=load('/tmp/tools.json'); toolsreq=load('/tmp/tools2.json')
+          print("plain has choices:", "choices" in plain)
+          def has_toolcall(d):
+              try: return bool(d["choices"][0]["message"].get("tool_calls"))
+              except Exception: return False
+          print("tools(auto) returned tool_calls:", has_toolcall(tools), "| keys:", list(tools.keys())[:6])
+          print("tools(required) returned tool_calls:", has_toolcall(toolsreq), "| keys:", list(toolsreq.keys())[:6])
+          PY

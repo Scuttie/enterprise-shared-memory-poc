@@ -1,0 +1,22 @@
+# GitHub auto-generated release notes configuration.
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+      - duplicate
+      - invalid
+  categories:
+    - title: Breaking changes
+      labels: ["breaking"]
+    - title: Features
+      labels: ["enhancement"]
+    - title: Bug fixes
+      labels: ["bug"]
+    - title: Service / governance / security
+      labels: ["service", "security", "governance"]
+    - title: Documentation & handoff
+      labels: ["docs"]
+    - title: Research reproduction (separate scope)
+      labels: ["research"]
+    - title: Other changes
+      labels: ["*"]

@@ -14,5 +14,29 @@
   "revision": "PIN FROM COMMITTED PROVENANCE (record exact revision before enabling live retrieval)",
   "license": "Apache-2.0 (verify from the model card before redistribution)"
  },
- "note": "Base offline demo + core unit tests require none of the mem0-group deps."
+ "note": "Base offline demo + core unit tests require none of the mem0-group deps.",
+ "postgres_group": {
+  "SQLAlchemy": ">=2.0.30,<2.1 (MIT)",
+  "asyncpg": ">=0.29,<0.31 (Apache-2.0)",
+  "alembic": ">=1.13,<1.14 (MIT)",
+  "psycopg2-binary": ">=2.9,<3.0 (LGPL-3.0-with-exceptions; migrations only)",
+  "postgres_image": "postgres:16.4 (pin by digest recommended)"
+ },
+ "postgres_image_pinned": {
+  "image": "postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412",
+  "digest": "sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412",
+  "architecture": "amd64",
+  "source": "docker.io official postgres, resolved on the GitHub ubuntu-latest runner",
+  "resolved": "2026-08 (ci-postgres run)"
+ },
+ "qdrant_group": {
+  "qdrant-client": ">=1.12,<1.13 (Apache-2.0), server-compatible minor with qdrant v1.12.4; version check stays ON (no check_compatibility=False); vector CANDIDATE index only — never authoritative memory",
+  "note": "ci-qdrant installs only qdrant-client (no torch, no mem0, no model download, no network). The DeterministicTestEmbedder makes the index/search/drift/reindex machinery reproducible without credentials. Mem0 governance (infer=False, hidden-LLM-calls=0) is proven with a stub; the real mem0 path stays behind the mem0 extra."
+ },
+ "qdrant_image_pinned": {
+  "image": "qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636",
+  "digest": "sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636",
+  "source": "docker.io qdrant/qdrant, resolved on the GitHub ubuntu-latest runner",
+  "resolved": "2026-08 (ci-qdrant run 31574181758)"
+ }
 }

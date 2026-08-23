@@ -1,0 +1,72 @@
+{
+  "expired_window": [
+    "2000-01-01",
+    "2000-02-01"
+  ],
+  "forms": {
+    "M0": "none",
+    "M1": "private",
+    "M2": "shared_ungoverned",
+    "M3": "shared_governed",
+    "M4": "shared_governed",
+    "S1": "negative_irrelevant",
+    "S2": "negative_expired",
+    "S3": "negative_out_of_scope",
+    "S4": "negative_wrong_pattern"
+  },
+  "retrieval_policies": {
+    "M0": {
+      "max_injected": 0,
+      "scopes": []
+    },
+    "M1": {
+      "max_injected": 1,
+      "scopes": [
+        "private"
+      ]
+    },
+    "M2": {
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ]
+    },
+    "M3": {
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ]
+    },
+    "M4": {
+      "max_injected": 1,
+      "oracle": true,
+      "scopes": [
+        "shared"
+      ]
+    },
+    "S1": {
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ]
+    },
+    "S2": {
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ]
+    },
+    "S3": {
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ]
+    },
+    "S4": {
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ]
+    }
+  }
+}

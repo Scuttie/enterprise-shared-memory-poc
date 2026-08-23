@@ -1,0 +1,17 @@
+{
+ "policy": "governance_v1",
+ "PROMOTE_MIN_GAINS": 2,
+ "PROMOTE_MAX_LOSSES": 0,
+ "QUARANTINE_MIN_LOSSES": 2,
+ "CONFIDENCE_STEP": 0.1,
+ "rules": [
+  "candidate->probation on source verified",
+  "probation->promoted on gains>=PROMOTE_MIN_GAINS & losses<=PROMOTE_MAX_LOSSES & manual review",
+  "repeated MEMORY_LOSS (>=QUARANTINE_MIN_LOSSES) -> quarantine",
+  "version invalidation -> deprecate",
+  "manual review overrides; no force-promote",
+  "outcome stats affect FUTURE targets only; never update a card before its own target is graded"
+ ],
+ "note": "Frozen before live evaluation; not tuned on held-out outcomes.",
+ "content_hash": "f4370407db303ca3b8587c19bf5d6c95573f7792b229761a540437e7ee3e5b3f"
+}

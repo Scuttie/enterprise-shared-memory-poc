@@ -1,0 +1,18 @@
+diff --git a/src/language-css/printer-postcss.js b/src/language-css/printer-postcss.js
+index 0c326d6d2..6d1f51995 100644
+--- a/src/language-css/printer-postcss.js
++++ b/src/language-css/printer-postcss.js
+@@ -261,9 +261,12 @@ function genericPrint(path, options, print) {
+                   ? hardline
+                   : " "
+                 : " ",
+-              print("params"),
++              // Keep Sass's `with (` clause together when its configuration
++              // map has to break across lines.
++              node.name === "use" ? group(print("params")) : print("params"),
+             ]
+           : "",
++          : "",
+         node.selector ? indent([" ", print("selector")]) : "",
+         node.value
+           ? group([

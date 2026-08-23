@@ -1,0 +1,13 @@
+{
+  "provider": "enterprise_memory.providers.openai_responses.OpenAIResponsesProvider",
+  "api": "OpenAI Responses API (POST {base}/responses)",
+  "interface": "CodingModelProvider (same as SolarProvider): generate(ModelRequest, logical_request_id, org_id)->(ModelResponse, ModelCallRecord)",
+  "family_rules": {"gpt5.6": "reasoning.effort set; NO temperature; one response; no continuation; no repair; max_output_tokens=frozen R11 budget",
+                   "gpt4o": "temperature=0; NO reasoning; one response; no repair; same budget"},
+  "retry_policy": "retry 429/5xx/transport (bounded); NO retry on ordinary 4xx; AuthError/InvalidRequest terminal",
+  "accounting": "ModelCallRecord per outcome: input/cached_input/output/reasoning/total tokens, latency, retries, finish_reason, redaction, final_status",
+  "credential": "key only via secret provider (OPENAI_API_KEY); never in exceptions/logs/headers persisted; redaction.sanitize on output",
+  "sdk_reference": "official openai Python SDK contract (Responses API); exact installed version + wheel hashes to be pinned in CI at first live run",
+  "fake_server_ci": "ci-openai-provider.yml (credential-free) — 8 contract tests PASS locally",
+  "prompt_rule": "identical system+task+memory+extraction+grader+budget across readers; provider-specific prompt rewriting PROHIBITED"
+}

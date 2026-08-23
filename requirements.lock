@@ -9,3 +9,14 @@ build==1.2.1
 mem0ai==2.0.17
 sentence-transformers==3.0.1
 qdrant-client==1.9.0
+
+# postgres group (P1)
+SQLAlchemy==2.0.51
+asyncpg==0.30.0
+alembic==1.13.3
+psycopg2-binary==2.9.9
+
+# qdrant group (P2; governed vector CANDIDATE index — never authoritative). Installed alone in ci-qdrant:
+# no torch, no mem0, no model download, no network. Pinned to a server-compatible minor (server v1.12.4)
+# so the client version check stays ON (no check_compatibility=False).
+qdrant-client==1.12.2

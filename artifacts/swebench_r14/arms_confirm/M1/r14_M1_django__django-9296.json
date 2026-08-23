@@ -1,0 +1,20 @@
+{
+  "instance_id": "django__django-9296",
+  "repo": "django/django",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-9296@sha256:c63adb629b6dafbb12aa506778e27b02f06387c64df3f2cebaba47f9b5f26150",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "edited_files": [
+    "django/core/paginator.py"
+  ],
+  "patch_bytes": 457,
+  "tokens": {
+    "prompt": 6159,
+    "completion": 167
+  },
+  "secs": 68.0
+}

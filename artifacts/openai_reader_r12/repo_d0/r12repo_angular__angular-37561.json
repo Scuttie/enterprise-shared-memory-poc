@@ -1,0 +1,23 @@
+{
+  "instance_id": "angular__angular-37561",
+  "language": "TypeScript",
+  "repo": "angular/angular",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.angular__angular-37561@sha256:63e2e9154cdd1ccbe59567c9b674bb369347feed8dee90747914cdf7f9e1a37d",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "packages/core/src/render3/di.ts"
+  ],
+  "patch_bytes": 972,
+  "tokens": {
+    "input": 106202,
+    "output": 2911,
+    "reasoning": 2013
+  },
+  "secs": 267.1
+}

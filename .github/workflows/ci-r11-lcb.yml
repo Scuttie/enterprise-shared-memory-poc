@@ -1,0 +1,92 @@
+name: ci-r11-lcb
+
+# REALBENCH-R11 — LiveCodeBench code-generation runner (PAID: Solar generation). Official artifacts pinned:
+# repo @ 28fef95, dataset livecodebench/code_generation_lite (lite = smoke; full = main). Smoke validates
+# extraction + official grader on 20 tasks. Reader solar-pro3, temp 0, one generation, no repair.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "release_v1..release_v6"
+        required: false
+        default: "release_v6"
+      arm:
+        description: "M0/M1/M2/M3"
+        required: false
+        default: "M0"
+      limit:
+        description: "N tasks when no explicit qids (smoke)"
+        required: false
+        default: "20"
+      qids:
+        description: "comma question_ids (blank = first <limit> deterministic)"
+        required: false
+        default: ""
+      max_tokens:
+        description: "fixed generation token budget"
+        required: false
+        default: "4096"
+      wrong:
+        description: "1 = inject deliberately wrong body (grader discrimination check)"
+        required: false
+        default: "0"
+      dump:
+        description: "1 = dump dataset (qid/date/platform/difficulty), no Solar"
+        required: false
+        default: "0"
+      memory_file:
+        description: "path to memory JSON (qid->text) for M1/M2/M3 arms; blank for M0"
+        required: false
+        default: ""
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/ci-r11-lcb.yml']
+
+concurrency:
+  group: ci-r11-${{ github.ref }}-${{ github.event.inputs.arm }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "/usr/local/share/powershell" /usr/share/swift || true
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.10'}
+      - name: Clone + install LiveCodeBench @ pinned (eval deps only)
+        run: |
+          git clone --no-checkout https://github.com/LiveCodeBench/LiveCodeBench.git lcb
+          cd lcb && git checkout 28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24
+          test "$(git rev-parse HEAD)" = "28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24"
+          # datasets<3 keeps dataset-script support (LCB lite loads via code_generation_lite.py); py3.10 lets pyext build
+          pip install -q "datasets==2.21.0" "pebble>=5.1.0" numpy tqdm pyext
+          python -c "import datasets, pebble, numpy, pyext; print('deps OK', datasets.__version__)"
+          pip install -q -e . --no-deps
+      - name: Run (generation + official grade)
+        env:
+          R11_RELEASE: ${{ github.event.inputs.release }}
+          R11_ARM: ${{ github.event.inputs.arm }}
+          R11_LIMIT: ${{ github.event.inputs.limit }}
+          R11_QIDS: ${{ github.event.inputs.qids }}
+          R11_MAX_TOKENS: ${{ github.event.inputs.max_tokens }}
+          R11_OUT: ${{ github.workspace }}/lcb_${{ github.event.inputs.arm }}.json
+          R11_MODEL: solar-pro3-260323
+          R11_WRONG: ${{ github.event.inputs.wrong }}
+          R11_DUMP: ${{ github.event.inputs.dump }}
+          R11_MEMORY_JSON: ${{ github.event.inputs.memory_file }}
+          UPSTAGE_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
+          PYTHONPATH: ${{ github.workspace }}/lcb
+        run: |
+          test -n "$UPSTAGE_API_KEY" || { echo "no UPSTAGE_API_KEY"; exit 1; }
+          python scripts/r11_lcb_run.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r11-lcb-${{ github.event.inputs.arm }}-${{ github.event.inputs.release }}
+          path: lcb_${{ github.event.inputs.arm }}.json

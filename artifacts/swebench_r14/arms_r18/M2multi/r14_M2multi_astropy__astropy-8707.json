@@ -1,0 +1,23 @@
+{
+  "instance_id": "astropy__astropy-8707",
+  "repo": "astropy/astropy",
+  "arm": "M2multi",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-8707@sha256:9415ee47831f190ea4ee7971dec718e386d064e7c495feca6ba0fef7b0ede715",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "decode": "",
+  "inject_len": 7943,
+  "edited_files": [
+    "astropy/io/fits/card.py",
+    "astropy/io/fits/header.py"
+  ],
+  "patch_bytes": 5842,
+  "tokens": {
+    "prompt": 25131,
+    "completion": 1056
+  },
+  "secs": 88.5
+}

@@ -1,0 +1,16 @@
+diff --git a/src/transformers/generation_logits_process.py b/src/transformers/generation_logits_process.py
+index 1a1e7db5e..03aeadfa1 100644
+--- a/src/transformers/generation_logits_process.py
++++ b/src/transformers/generation_logits_process.py
+@@ -138,8 +138,9 @@ class TemperatureLogitsWarper(LogitsWarper):
+         self.temperature = temperature
+ 
+     def __call__(self, input_ids: torch.Tensor, scores: torch.Tensor) -> torch.FloatTensor:
+-        scores = scores / self.temperature
+-        return scores
++        # Sampling temperatures can be very small.  Dividing fp16 logits directly
++        # can overflow to ``inf`` and make the subsequent softmax invalid.
++        return scores.float() / self.temperature
+ 
+ 
+ class RepetitionPenaltyLogitsProcessor(LogitsProcessor):

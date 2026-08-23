@@ -1,0 +1,21 @@
+{
+  "instance_id": "microsoft__vscode-109750",
+  "language": "TypeScript",
+  "repo": "microsoft/vscode",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.microsoft__vscode-109750:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.microsoft__vscode-109750@sha256:35d4b9582df785bafbe9c2feaa6cdcf3003bcae1d58f6945d9f8f3acc52b22ac",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 40,
+  "edited_files": [],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 83002,
+    "completion": 1405
+  },
+  "grader_rc": 0,
+  "secs": 452.8
+}

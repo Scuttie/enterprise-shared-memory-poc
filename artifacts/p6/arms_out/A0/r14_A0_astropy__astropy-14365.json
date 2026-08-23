@@ -1,0 +1,22 @@
+{
+  "instance_id": "astropy__astropy-14365",
+  "repo": "astropy/astropy",
+  "arm": "A0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.astropy_1776_astropy-14365@sha256:70da5c0d4fcbbc2cbc46bbccf8d9ac2dfd4453cf7a19f9fa150b30bb7346f2f4",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "astropy/io/ascii/qdp.py"
+  ],
+  "patch_bytes": 835,
+  "tokens": {
+    "prompt": 17299,
+    "completion": 317
+  },
+  "secs": 113.2
+}

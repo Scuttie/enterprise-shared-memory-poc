@@ -1,0 +1,20 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-26194",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-26194@sha256:8c34e4480d53f2c125463b8bfd0293e2fa24fde72edc07e46e9b9f97e6fce3b6",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "sklearn/metrics/_ranking.py"
+  ],
+  "patch_bytes": 485,
+  "tokens": {
+    "prompt": 21423,
+    "completion": 316
+  },
+  "secs": 92.5
+}

@@ -1,0 +1,20 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-25931",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-25931@sha256:ec4f5c634599ba3c73bf945583d28efe04bb59c58a205932f66c420351e59602",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "edited_files": [
+    "sklearn/ensemble/_iforest.py"
+  ],
+  "patch_bytes": 505,
+  "tokens": {
+    "prompt": 10258,
+    "completion": 165
+  },
+  "secs": 92.2
+}

@@ -1,0 +1,74 @@
+name: ci-r5-skillsbench-calibration
+
+# REALBENCH-R5 A0 NO_SKILL calibration (PAID — approved as the dynamic-range/ceiling gate). Runs the pinned
+# Solar-pro2 repository-agent (BenchFlow claude-agent-acp + LiteLLM openai/ route to Upstage Solar) with
+# --skill-mode no-skill on the reproducible SkillsBench pool, graded by each task's official verifier. Measures
+# no-skill Pass@1 -> if near-ceiling, INSTRUMENT STOP (do not run paid A1-A3). Dispatch or marker [run-r5-calib].
+
+on:
+  workflow_dispatch:
+    inputs:
+      tasks:
+        description: "comma-separated task ids"
+        required: false
+        default: "dialogue-parser"
+      agent:
+        description: "BenchFlow agent (generic openai-completions; mini-swe/deepagents)"
+        required: false
+        default: "mini-swe"
+  push:
+    branches: [codex/production-service-v0.2]
+
+concurrency:
+  group: ci-r5-calib-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  a0-calibration:
+    if: contains(github.event.head_commit.message, '[run-r5-calib]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL \
+                      /usr/local/share/boost "/usr/local/share/powershell" /usr/share/swift || true
+      - name: Clone SkillsBench @ pinned v1.1 commit
+        run: |
+          git clone --no-checkout https://github.com/benchflow-ai/skillsbench.git skillsbench
+          cd skillsbench && git checkout b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af
+          test "$(git rev-parse HEAD)" = "b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af"
+      - uses: astral-sh/setup-uv@v5
+      - name: Install BenchFlow (v1.1-contemporaneous)
+        run: |
+          uv tool install "benchflow==0.6.3" || uv tool install "benchflow<0.7"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Sync task deps (best effort)
+        working-directory: skillsbench
+        run: uv sync --locked 2>&1 | tail -3 || uv sync 2>&1 | tail -3 || true
+      - name: List available agents (diagnostic — find one that speaks openai-completions)
+        run: bench agent list 2>&1 | head -60 || bench agents list 2>&1 | head -60 || true
+      - name: A0 NO_SKILL calibration (Solar repository-agent, PAID)
+        env:
+          SKILLSBENCH_DIR: ${{ github.workspace }}/skillsbench
+          R5_TASKS: ${{ github.event.inputs.tasks || 'dialogue-parser' }}
+          AGENT: ${{ github.event.inputs.agent || 'mini-swe' }}
+          # user-endpoint provider prefix (vllm) so BenchFlow honors BENCHFLOW_PROVIDER_BASE_URL (its `openai`
+          # provider is hardcoded to api.openai.com and ignores OPENAI_BASE_URL).
+          MODEL: vllm/solar-pro2-251215
+          SKILL_MODE: no-skill
+          ARM_LABEL: A0
+          R5_TASK_TIMEOUT: "3000"
+          AGENT_ENV: "BENCHFLOW_PROVIDER_BASE_URL=https://api.upstage.ai/v1;BENCHFLOW_PROVIDER_API_KEY=${{ secrets.UPSTAGE_API_KEY }};BENCHFLOW_PROVIDER_MODEL=solar-pro2-251215"
+          BENCHFLOW_PROVIDER_BASE_URL: https://api.upstage.ai/v1
+          BENCHFLOW_PROVIDER_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
+        run: |
+          test -n "${{ secrets.UPSTAGE_API_KEY }}" || { echo "no UPSTAGE_API_KEY"; exit 1; }
+          python scripts/r5_bench_run.py
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r5-a0-calibration
+          path: artifacts/swe_skills_r5/bench_run_A0.json

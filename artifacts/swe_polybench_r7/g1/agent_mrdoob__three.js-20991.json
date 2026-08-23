@@ -1,0 +1,21 @@
+{
+  "instance_id": "mrdoob__three.js-20991",
+  "language": "JavaScript",
+  "repo": "mrdoob/three.js",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-20991:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.mrdoob__three.js-20991@sha256:407b592eed04fb2d051a5ee3dc2afe918fdff03e05cf8c270ca79cce3b0534bc",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 40,
+  "edited_files": [],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 418969,
+    "completion": 1923
+  },
+  "grader_rc": 0,
+  "secs": 932.7
+}

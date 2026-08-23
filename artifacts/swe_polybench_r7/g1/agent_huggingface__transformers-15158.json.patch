@@ -1,0 +1,22 @@
+diff --git a/src/transformers/models/bert/tokenization_bert_fast.py b/src/transformers/models/bert/tokenization_bert_fast.py
+index 4fd53be98..99e667c29 100644
+--- a/src/transformers/models/bert/tokenization_bert_fast.py
++++ b/src/transformers/models/bert/tokenization_bert_fast.py
+@@ -144,7 +144,7 @@ class BertTokenizerFast(PreTrainedTokenizerFast):
+         clean_text (`bool`, *optional*, defaults to `True`):
+             Whether or not to clean the text before tokenization by removing any control characters and replacing all
+             whitespaces by the classic one.
+-        tokenize_chinese_chars (`bool`, *optional*, defaults to `True`):
++        tokenize_chinese_chars (`bool`, *optional*, defaults to `False`):
+             Whether or not to tokenize Chinese characters. This should likely be deactivated for Japanese (see [this
+             issue](https://github.com/huggingface/transformers/issues/328)).
+         strip_accents: (`bool`, *optional*):
+@@ -170,7 +170,7 @@ class BertTokenizerFast(PreTrainedTokenizerFast):
+         pad_token="[PAD]",
+         cls_token="[CLS]",
+         mask_token="[MASK]",
+-        tokenize_chinese_chars=True,
++        tokenize_chinese_chars=False,
+         strip_accents=None,
+         **kwargs
+     ):

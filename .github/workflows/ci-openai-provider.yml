@@ -1,0 +1,20 @@
+name: ci-openai-provider
+# R12 §4 — OpenAIResponsesProvider contract tests against a FAKE Responses server. CREDENTIAL-FREE (no OPENAI key).
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['src/enterprise_memory/providers/openai_responses.py','tests/openai/**','.github/workflows/ci-openai-provider.yml']
+jobs:
+  provider:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q pytest
+      - name: Fake-server provider contract tests (no credentials)
+        run: PYTHONPATH=src python -m pytest tests/openai/test_openai_provider.py -q
+      - name: Assert no OPENAI key referenced in test env
+        run: |
+          test -z "${OPENAI_API_KEY:-}" && echo "credential-free OK"

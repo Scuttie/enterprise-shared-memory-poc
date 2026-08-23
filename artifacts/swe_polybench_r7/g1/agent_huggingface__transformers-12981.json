@@ -1,0 +1,21 @@
+{
+  "instance_id": "huggingface__transformers-12981",
+  "language": "Python",
+  "repo": "huggingface/transformers",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-12981:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-12981@sha256:a7bb9d03db363ab9e858597e4be687fa7cd30aad2166cce0daa6eb7f72041dbb",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 40,
+  "edited_files": [],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 347730,
+    "completion": 1897
+  },
+  "grader_rc": 0,
+  "secs": 775.0
+}

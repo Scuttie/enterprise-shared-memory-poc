@@ -1,0 +1,20 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-14894",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-14894@sha256:3b94dd629c4719b4983860c1e488c2fe8b6550f5e825c23d08c8888862810d2b",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "edited_files": [
+    "sklearn/svm/base.py"
+  ],
+  "patch_bytes": 800,
+  "tokens": {
+    "prompt": 12252,
+    "completion": 168
+  },
+  "secs": 89.3
+}

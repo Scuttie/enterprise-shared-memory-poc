@@ -1,0 +1,21 @@
+{
+  "instance_id": "coder__code-server-3277",
+  "language": "TypeScript",
+  "repo": "coder/code-server",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.coder__code-server-3277:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.coder__code-server-3277@sha256:16f512cbbc875646673e2317f71ce41c5f84b38a14b8492462a38a52bd2ff9d7",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 40,
+  "edited_files": [],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 243368,
+    "completion": 2191
+  },
+  "grader_rc": 0,
+  "secs": 570.9
+}

@@ -1,0 +1,23 @@
+{
+  "instance_id": "apache__dubbo-4567",
+  "language": "Java",
+  "repo": "apache/dubbo",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.apache__dubbo-4567@sha256:f76b9daa685181691ab708e3bf2c9939fbacee90eea98fa50f04e79667340917",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "dubbo-common/src/main/java/org/apache/dubbo/common/Version.java"
+  ],
+  "patch_bytes": 721,
+  "tokens": {
+    "input": 67208,
+    "output": 1089,
+    "reasoning": 752
+  },
+  "secs": 207.1
+}

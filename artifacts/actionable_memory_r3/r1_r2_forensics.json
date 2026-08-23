@@ -1,0 +1,132 @@
+{
+  "a_to_candidate_bundle": {
+    "A10_PARSER_OR_EVALUATOR": "(engineering: applier/evaluator, not representation)",
+    "A11_UNCLASSIFIED": "(insufficient evidence)",
+    "A1_MISSING_API_DETAIL": "B1 API_OPERATION_CARD",
+    "A2_MISSING_PRECONDITION": "B1/B6 preconditions + property spec",
+    "A3_WRONG_APPLICABILITY_DECISION": "B2 CONDITION_ACTION_TABLE / B7 contrast",
+    "A4_PROCEDURE_NOT_REALISED": "B3 PROCEDURAL_PSEUDOCODE",
+    "A5_TARGET_INTERFACE_MISMATCH": "B4 AST_EDIT_SCHEMA / B5 diff template",
+    "A6_SOURCE_NAMES_OR_CONSTANTS_COPIED": "B4/B5 placeholder edit (forbid identifier copy)",
+    "A7_PROPERTY_NOT_VERIFIED": "B6 EXECUTABLE_PROPERTY_SPEC",
+    "A8_COUNTEREXAMPLE_IGNORED": "B7 POSITIVE_NEGATIVE_CONTRAST",
+    "A9_UNRELATED_MODEL_ERROR": "(not representation-addressable)"
+  },
+  "adoption_present_but_failed": {
+    "M1": 41,
+    "M2": 52,
+    "M3": 6,
+    "M7": 59
+  },
+  "changed_patch_same_outcome": {
+    "M1": 405,
+    "M2": 373,
+    "M3": 374,
+    "M5": 397,
+    "M7": 373
+  },
+  "experiment": "R3_ACTIONABILITY_FORENSICS",
+  "gains": {
+    "M1": 29,
+    "M2": 30,
+    "M3": 29,
+    "M5": 35,
+    "M7": 35
+  },
+  "gap_offline_determinable": {
+    "A10_PARSER_OR_EVALUATOR": true,
+    "A11_UNCLASSIFIED": true,
+    "A1_MISSING_API_DETAIL": true,
+    "A2_MISSING_PRECONDITION": false,
+    "A3_WRONG_APPLICABILITY_DECISION": false,
+    "A4_PROCEDURE_NOT_REALISED": true,
+    "A5_TARGET_INTERFACE_MISMATCH": true,
+    "A6_SOURCE_NAMES_OR_CONSTANTS_COPIED": true,
+    "A7_PROPERTY_NOT_VERIFIED": false,
+    "A8_COUNTEREXAMPLE_IGNORED": false,
+    "A9_UNRELATED_MODEL_ERROR": true
+  },
+  "gap_taxonomy_offline": {
+    "M1": {
+      "A10_PARSER_OR_EVALUATOR": 7,
+      "A11_UNCLASSIFIED": 0,
+      "A1_MISSING_API_DETAIL": 98,
+      "A2_MISSING_PRECONDITION": 0,
+      "A3_WRONG_APPLICABILITY_DECISION": 0,
+      "A4_PROCEDURE_NOT_REALISED": 0,
+      "A5_TARGET_INTERFACE_MISMATCH": 0,
+      "A6_SOURCE_NAMES_OR_CONSTANTS_COPIED": 41,
+      "A7_PROPERTY_NOT_VERIFIED": 0,
+      "A8_COUNTEREXAMPLE_IGNORED": 0,
+      "A9_UNRELATED_MODEL_ERROR": 131
+    },
+    "M2": {
+      "A10_PARSER_OR_EVALUATOR": 9,
+      "A11_UNCLASSIFIED": 0,
+      "A1_MISSING_API_DETAIL": 0,
+      "A2_MISSING_PRECONDITION": 0,
+      "A3_WRONG_APPLICABILITY_DECISION": 0,
+      "A4_PROCEDURE_NOT_REALISED": 0,
+      "A5_TARGET_INTERFACE_MISMATCH": 0,
+      "A6_SOURCE_NAMES_OR_CONSTANTS_COPIED": 52,
+      "A7_PROPERTY_NOT_VERIFIED": 0,
+      "A8_COUNTEREXAMPLE_IGNORED": 0,
+      "A9_UNRELATED_MODEL_ERROR": 229
+    },
+    "M3": {
+      "A10_PARSER_OR_EVALUATOR": 11,
+      "A11_UNCLASSIFIED": 0,
+      "A1_MISSING_API_DETAIL": 99,
+      "A2_MISSING_PRECONDITION": 0,
+      "A3_WRONG_APPLICABILITY_DECISION": 0,
+      "A4_PROCEDURE_NOT_REALISED": 0,
+      "A5_TARGET_INTERFACE_MISMATCH": 0,
+      "A6_SOURCE_NAMES_OR_CONSTANTS_COPIED": 6,
+      "A7_PROPERTY_NOT_VERIFIED": 0,
+      "A8_COUNTEREXAMPLE_IGNORED": 0,
+      "A9_UNRELATED_MODEL_ERROR": 164
+    },
+    "M5": {
+      "A10_PARSER_OR_EVALUATOR": 9,
+      "A11_UNCLASSIFIED": 275,
+      "A1_MISSING_API_DETAIL": 0,
+      "A2_MISSING_PRECONDITION": 0,
+      "A3_WRONG_APPLICABILITY_DECISION": 0,
+      "A4_PROCEDURE_NOT_REALISED": 0,
+      "A5_TARGET_INTERFACE_MISMATCH": 0,
+      "A6_SOURCE_NAMES_OR_CONSTANTS_COPIED": 0,
+      "A7_PROPERTY_NOT_VERIFIED": 0,
+      "A8_COUNTEREXAMPLE_IGNORED": 0,
+      "A9_UNRELATED_MODEL_ERROR": 0
+    },
+    "M7": {
+      "A10_PARSER_OR_EVALUATOR": 10,
+      "A11_UNCLASSIFIED": 0,
+      "A1_MISSING_API_DETAIL": 0,
+      "A2_MISSING_PRECONDITION": 0,
+      "A3_WRONG_APPLICABILITY_DECISION": 0,
+      "A4_PROCEDURE_NOT_REALISED": 0,
+      "A5_TARGET_INTERFACE_MISMATCH": 1,
+      "A6_SOURCE_NAMES_OR_CONSTANTS_COPIED": 59,
+      "A7_PROPERTY_NOT_VERIFIED": 0,
+      "A8_COUNTEREXAMPLE_IGNORED": 0,
+      "A9_UNRELATED_MODEL_ERROR": 217
+    }
+  },
+  "losses": {
+    "M1": 18,
+    "M2": 32,
+    "M3": 21,
+    "M5": 31,
+    "M7": 34
+  },
+  "n_targets": 475,
+  "plain_vs_governed_same_source": {
+    "both_fail": 262,
+    "both_pass": 160,
+    "governed_only": 28,
+    "n": 475,
+    "plain_only": 25
+  },
+  "source": "REALBENCH-R2 persisted main raw (offline, no model calls)"
+}

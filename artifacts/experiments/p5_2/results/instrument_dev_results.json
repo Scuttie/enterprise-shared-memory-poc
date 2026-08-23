@@ -1,0 +1,1558 @@
+{
+  "adoption": {
+    "S1": [
+      "EXACT_STORED_RULE_ADOPTION",
+      "NO_RULE_USE",
+      "EXACT_STORED_RULE_ADOPTION",
+      "NO_RULE_USE",
+      "EXACT_STORED_RULE_ADOPTION",
+      "NO_RULE_USE",
+      "EXACT_STORED_RULE_ADOPTION",
+      "NO_RULE_USE"
+    ],
+    "S4": [
+      "EXACT_WRONG_DEFAULT_ADOPTION",
+      "EXACT_WRONG_DEFAULT_ADOPTION",
+      "EXACT_WRONG_DEFAULT_ADOPTION",
+      "EXACT_WRONG_DEFAULT_ADOPTION",
+      "EXACT_WRONG_DEFAULT_ADOPTION",
+      "EXACT_WRONG_DEFAULT_ADOPTION",
+      "EXACT_WRONG_DEFAULT_ADOPTION",
+      "EXACT_WRONG_DEFAULT_ADOPTION"
+    ]
+  },
+  "all_gates_pass": false,
+  "arms": {
+    "M0": {
+      "exec1": 1.0,
+      "n": 8,
+      "pass1": 0.5
+    },
+    "M1": {
+      "exec1": 1.0,
+      "n": 8,
+      "pass1": 0.5
+    },
+    "M2": {
+      "exec1": 1.0,
+      "n": 8,
+      "pass1": 0.75
+    },
+    "M3": {
+      "exec1": 1.0,
+      "n": 8,
+      "pass1": 0.875
+    },
+    "M4": {
+      "exec1": 1.0,
+      "n": 8,
+      "pass1": 1.0
+    },
+    "S1": {
+      "exec1": 1.0,
+      "n": 8,
+      "pass1": 0.5
+    },
+    "S2": {
+      "exec1": 1.0,
+      "n": 8,
+      "pass1": 0.5
+    },
+    "S3": {
+      "exec1": 1.0,
+      "n": 8,
+      "pass1": 0.5
+    },
+    "S4": {
+      "exec1": 1.0,
+      "n": 8,
+      "pass1": 0.0
+    }
+  },
+  "experiment_id": "EXP_P5_2_INSTRUMENT_DEV",
+  "gates": {
+    "G1": {
+      "exec_M0": 1.0,
+      "exec_M4": 1.0,
+      "malformed_rate": 0.0,
+      "pass": true
+    },
+    "G2": {
+      "domains": [
+        {
+          "domain": "cache",
+          "m0": 0.5,
+          "m4": 1.0,
+          "ok": true
+        },
+        {
+          "domain": "config",
+          "m0": 0.5,
+          "m4": 1.0,
+          "ok": true
+        },
+        {
+          "domain": "internal_api",
+          "m0": 0.5,
+          "m4": 1.0,
+          "ok": true
+        },
+        {
+          "domain": "schema",
+          "m0": 0.5,
+          "m4": 1.0,
+          "ok": true
+        }
+      ],
+      "domains_ok": 4,
+      "pass": true
+    },
+    "G3": {
+      "families_differ": 4,
+      "m4_minus_m0": 0.5,
+      "pass": false
+    },
+    "G4": {
+      "no_match_specificity": 1.0,
+      "pass": true,
+      "relevant_missing": 0.0,
+      "relevant_precision": 1.0,
+      "relevant_recall": 1.0,
+      "s1_false_injection": 0.0
+    },
+    "G5": {
+      "cross_user_private_injection": 0,
+      "expired_injected": 0,
+      "injected_payload_consistency": 1.0,
+      "no_memory_injected": 0,
+      "out_of_scope_injected": 0,
+      "pass": true,
+      "target_hidden_leak": 0
+    },
+    "G6": {
+      "cross_arm_source_ne_target": true,
+      "pass": true
+    },
+    "G7": {
+      "adoption_classifier_coverage": 1.0,
+      "pass": true
+    }
+  },
+  "n_cells": 72,
+  "per_arm_domain": {
+    "M0": {
+      "cache": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "config": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "internal_api": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "schema": {
+        "n": 2,
+        "pass1": 0.5
+      }
+    },
+    "M1": {
+      "cache": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "config": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "internal_api": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "schema": {
+        "n": 2,
+        "pass1": 0.5
+      }
+    },
+    "M2": {
+      "cache": {
+        "n": 2,
+        "pass1": 1.0
+      },
+      "config": {
+        "n": 2,
+        "pass1": 1.0
+      },
+      "internal_api": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "schema": {
+        "n": 2,
+        "pass1": 0.5
+      }
+    },
+    "M3": {
+      "cache": {
+        "n": 2,
+        "pass1": 1.0
+      },
+      "config": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "internal_api": {
+        "n": 2,
+        "pass1": 1.0
+      },
+      "schema": {
+        "n": 2,
+        "pass1": 1.0
+      }
+    },
+    "M4": {
+      "cache": {
+        "n": 2,
+        "pass1": 1.0
+      },
+      "config": {
+        "n": 2,
+        "pass1": 1.0
+      },
+      "internal_api": {
+        "n": 2,
+        "pass1": 1.0
+      },
+      "schema": {
+        "n": 2,
+        "pass1": 1.0
+      }
+    },
+    "S1": {
+      "cache": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "config": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "internal_api": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "schema": {
+        "n": 2,
+        "pass1": 0.5
+      }
+    },
+    "S2": {
+      "cache": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "config": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "internal_api": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "schema": {
+        "n": 2,
+        "pass1": 0.5
+      }
+    },
+    "S3": {
+      "cache": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "config": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "internal_api": {
+        "n": 2,
+        "pass1": 0.5
+      },
+      "schema": {
+        "n": 2,
+        "pass1": 0.5
+      }
+    },
+    "S4": {
+      "cache": {
+        "n": 2,
+        "pass1": 0.0
+      },
+      "config": {
+        "n": 2,
+        "pass1": 0.0
+      },
+      "internal_api": {
+        "n": 2,
+        "pass1": 0.0
+      },
+      "schema": {
+        "n": 2,
+        "pass1": 0.0
+      }
+    }
+  },
+  "plan_hash": "14221637faddafaf9d485aab08a3aff73cd9521e40be84a1392fd02b250a752e",
+  "primary_cross_user_lift": {
+    "ci": {
+      "hi": 0.875,
+      "lo": -0.125,
+      "mean": 0.375
+    },
+    "mcnemar": {
+      "b": 4,
+      "c": 1,
+      "p_value": 0.375
+    },
+    "pairs": 8
+  },
+  "results": [
+    {
+      "arm": "M0",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_0|M0",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_0|M1",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_0|M2",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_0|M3",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_0|M4",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "adoption": "EXACT_STORED_RULE_ADOPTION",
+      "arm": "S1",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_0|S1",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_0",
+      "has_patch": 1,
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_0|S2",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_0|S3",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "adoption": "EXACT_WRONG_DEFAULT_ADOPTION",
+      "arm": "S4",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_0|S4",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_0",
+      "has_patch": 1,
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_1|M0",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_1|M1",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_1|M2",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_1|M3",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_1|M4",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "adoption": "NO_RULE_USE",
+      "arm": "S1",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_1|S1",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_1",
+      "has_patch": 1,
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_1|S2",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_1|S3",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "adoption": "EXACT_WRONG_DEFAULT_ADOPTION",
+      "arm": "S4",
+      "cell_id": "instrument_dev|fam_instrument_dev_internal_api_1|S4",
+      "cross_user": 0,
+      "domain": "internal_api",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_internal_api_1",
+      "has_patch": 1,
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_0|M0",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_0|M1",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_0|M2",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_0|M3",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_0|M4",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "adoption": "EXACT_STORED_RULE_ADOPTION",
+      "arm": "S1",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_0|S1",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_0",
+      "has_patch": 1,
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_0|S2",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_0|S3",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "adoption": "EXACT_WRONG_DEFAULT_ADOPTION",
+      "arm": "S4",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_0|S4",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_0",
+      "has_patch": 1,
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_1|M0",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_1|M1",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_1|M2",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_1|M3",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_1|M4",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "adoption": "NO_RULE_USE",
+      "arm": "S1",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_1|S1",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_1",
+      "has_patch": 1,
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_1|S2",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_1|S3",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "adoption": "EXACT_WRONG_DEFAULT_ADOPTION",
+      "arm": "S4",
+      "cell_id": "instrument_dev|fam_instrument_dev_cache_1|S4",
+      "cross_user": 0,
+      "domain": "cache",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_cache_1",
+      "has_patch": 1,
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_0|M0",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_0|M1",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_0|M2",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_0|M3",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_0|M4",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "adoption": "EXACT_STORED_RULE_ADOPTION",
+      "arm": "S1",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_0|S1",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_0",
+      "has_patch": 1,
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_0|S2",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_0|S3",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "adoption": "EXACT_WRONG_DEFAULT_ADOPTION",
+      "arm": "S4",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_0|S4",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_0",
+      "has_patch": 1,
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_1|M0",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_1|M1",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_1|M2",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_1|M3",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_1|M4",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "adoption": "NO_RULE_USE",
+      "arm": "S1",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_1|S1",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_1",
+      "has_patch": 1,
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_1|S2",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_1|S3",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "adoption": "EXACT_WRONG_DEFAULT_ADOPTION",
+      "arm": "S4",
+      "cell_id": "instrument_dev|fam_instrument_dev_config_1|S4",
+      "cross_user": 0,
+      "domain": "config",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_config_1",
+      "has_patch": 1,
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_0|M0",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_0|M1",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_0|M2",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_0|M3",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_0|M4",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_0",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "adoption": "EXACT_STORED_RULE_ADOPTION",
+      "arm": "S1",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_0|S1",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_0",
+      "has_patch": 1,
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_0|S2",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_0|S3",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_0",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "adoption": "EXACT_WRONG_DEFAULT_ADOPTION",
+      "arm": "S4",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_0|S4",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_0",
+      "has_patch": 1,
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_aligned"
+    },
+    {
+      "arm": "M0",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_1|M0",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M1",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_1|M1",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M2",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_1|M2",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M3",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_1|M3",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "M4",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_1|M4",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_1",
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 1,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "adoption": "NO_RULE_USE",
+      "arm": "S1",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_1|S1",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_1",
+      "has_patch": 1,
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "S2",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_1|S2",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "arm": "S3",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_1|S3",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_1",
+      "injected": 0,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 0,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    },
+    {
+      "adoption": "EXACT_WRONG_DEFAULT_ADOPTION",
+      "arm": "S4",
+      "cell_id": "instrument_dev|fam_instrument_dev_schema_1|S4",
+      "cross_user": 0,
+      "domain": "schema",
+      "exec1": 1,
+      "family_id": "fam_instrument_dev_schema_1",
+      "has_patch": 1,
+      "injected": 1,
+      "injected_matches_payload": 1,
+      "leak": 0,
+      "pass1": 0,
+      "relevant_injected": 1,
+      "source_ne_target": true,
+      "state": "SUCCEEDED",
+      "stratum": "prior_conflict"
+    }
+  ],
+  "retrieval": {
+    "no_match_specificity": 1.0,
+    "relevant_missing": 0.0,
+    "relevant_precision": 1.0,
+    "relevant_recall": 1.0,
+    "s1_false_injection": 0.0
+  },
+  "returned_models": [],
+  "secondary": {
+    "M1_minus_M0": {
+      "a": "M1",
+      "b": "M0",
+      "diff": 0.0,
+      "pass1_a": 0.5,
+      "pass1_b": 0.5
+    },
+    "M3_minus_M2": {
+      "a": "M3",
+      "b": "M2",
+      "diff": 0.125,
+      "pass1_a": 0.875,
+      "pass1_b": 0.75
+    },
+    "M4_minus_M3": {
+      "a": "M4",
+      "b": "M3",
+      "diff": 0.125,
+      "pass1_a": 1.0,
+      "pass1_b": 0.875
+    }
+  },
+  "split": "instrument_dev",
+  "strata_M0": {
+    "prior_aligned": {
+      "n": 4,
+      "pass1": 1.0
+    },
+    "prior_conflict": {
+      "n": 4,
+      "pass1": 0.0
+    }
+  },
+  "strata_M3": {
+    "prior_aligned": {
+      "n": 4,
+      "pass1": 0.75
+    },
+    "prior_conflict": {
+      "n": 4,
+      "pass1": 1.0
+    }
+  }
+}

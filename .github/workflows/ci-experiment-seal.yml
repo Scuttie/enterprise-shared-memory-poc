@@ -1,0 +1,31 @@
+name: ci-experiment-seal
+# P6/R19 §20 — the frozen preregistration artifacts must not be silently mutated.
+on:
+  push:
+    branches: [codex/utility-router-v0.3]
+    paths: ['artifacts/p6/**', 'configs/p6/**', 'docs/P6_*_PREREG.md', '.github/workflows/ci-experiment-seal.yml', 'reports/CI_TRIGGER_MARKER.txt']
+  workflow_dispatch: {}
+jobs:
+  seal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Frozen manifest content-hash integrity
+        run: |
+          python - <<'PY'
+          import json, glob, hashlib, sys
+          bad = []
+          for p in glob.glob("artifacts/p6/*.json"):
+              b = json.load(open(p))
+              if "content_hash" not in b:
+                  continue
+              stored = b.pop("content_hash")
+              calc = hashlib.sha256(json.dumps(b, sort_keys=True).encode()).hexdigest()
+              if stored != calc:
+                  bad.append(p)
+          if bad:
+              print("SEAL BROKEN:", bad); sys.exit(1)
+          print("experiment seal intact:", sorted(glob.glob("artifacts/p6/*.json")))
+          PY

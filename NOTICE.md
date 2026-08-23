@@ -1,11 +1,14 @@
 # NOTICE
 
-This repository is a **private, internal proof-of-concept** for evaluation and collaborative development.
+Enterprise Shared Memory
+Copyright 2026 Enterprise Shared Memory contributors
 
-- Not for public redistribution.
-- Production / commercial licensing terms are handled separately by the repository owner.
-- Third-party dependencies retain their respective licenses (see THIRD_PARTY_NOTICES.md).
-- The project's own original code has **no open-source license granted** by this snapshot; do not infer one.
+This product is licensed under the Apache License, Version 2.0 (see `LICENSE`).
 
-This notice is informational and is **not** formal legal advice. A licensing decision must be made by the
-owner before any public release.
+- Third-party dependencies retain their own respective licenses; see `THIRD_PARTY_NOTICES.md`.
+- Research papers, benchmarks, and external datasets referenced by this project retain their own
+  copyright and licenses and are NOT redistributed under this project's license. See
+  `docs/OSS_SCOPE_AND_DATA_POLICY.md` and `docs/RESEARCH_REPRODUCTION.md`.
+- This License does not grant trademark rights (Apache-2.0 §6).
+- The Apache-2.0 grant applies to this project's own original source code. It does not relicense any
+  third-party dependency, benchmark data, or externally-authored artifact.

@@ -1,0 +1,80 @@
+name: ci-oss-release
+# PUBLIC OSS v0.3 §8 — release acceptance for a first-time OSS visitor AND a company reviewer.
+# Real checks only: no continue-on-error, no faked green. This is a RELEASE-REQUIRED gate: it runs on every PR
+# targeting main and on pushes to main (workflow_dispatch registers once this lands on the default branch).
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  # Per-Python fresh-clone acceptance: install, one-command company acceptance, package, clean-install the wheel.
+  acceptance:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - name: Fresh clone
+        uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Editable install
+        run: pip install -q -e ".[dev]" pytest pyyaml
+      - name: One-command company acceptance
+        run: make company-acceptance
+      - name: Build wheel + sdist
+        run: |
+          pip install -q "setuptools>=77" build
+          python -m build
+          ls -l dist/
+      - name: Wheel scope (enterprise_memory only + LICENSE/NOTICE/THIRD_PARTY, no research code)
+        run: python scripts/check_wheel_scope.py
+      - name: Clean-install the wheel in an isolated venv and import
+        run: |
+          python -m venv /tmp/wheeltest
+          /tmp/wheeltest/bin/python -m pip install -q dist/*.whl
+          /tmp/wheeltest/bin/python -c "import enterprise_memory; from enterprise_memory.mcp import MemoryMCPServer; print('wheel clean-install import OK', enterprise_memory.__name__)"
+      - name: Assert LICENSE/NOTICE present in sdist
+        run: |
+          python - <<'PY'
+          import glob, tarfile, sys
+          sd = sorted(glob.glob("dist/*.tar.gz"))[-1]
+          names = tarfile.open(sd).getnames()
+          need = ["LICENSE", "NOTICE.md", "THIRD_PARTY_NOTICES.md"]
+          missing = [n for n in need if not any(m.endswith("/" + n) or m.endswith(n) for m in names)]
+          print("sdist:", sd, "->", "OK" if not missing else "MISSING %s" % missing)
+          sys.exit(1 if missing else 0)
+          PY
+
+  # Single-run smokes + secret/path/docs/SBOM acceptance + required status block.
+  release-acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Editable install
+        run: pip install -q -e ".[dev]" pytest pyyaml
+      - name: MCP smoke (adapters)
+        run: make mcp-check
+      - name: HTTP smoke (offline harness -> in-process dispatcher)
+        run: python examples/company_harness/http_adapter.py
+      - name: Offline demo -> DEMO_PASS
+        run: python scripts/demo_company_handoff.py --offline
+      - name: Docs consistency
+        run: python scripts/check_docs_consistency.py
+      - name: Release acceptance (secret/path scan, docs links, SBOM/license report, source tree clean)
+        run: python scripts/oss_release_acceptance.py
+      - name: Upload SBOM + dependency license report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oss-release-sbom
+          path: reports/oss_release/
+          if-no-files-found: warn

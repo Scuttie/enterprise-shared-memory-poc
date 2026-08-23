@@ -1,0 +1,46 @@
+name: Bug report
+description: Something in the service, router, governance, or docs behaves incorrectly.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do **not** include secrets, real endpoints, private data, or company model names.
+        This project makes no general coding-performance-lift claim; efficacy issues belong in Discussions.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Expected vs. actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Minimal steps. Prefer the offline path (`python scripts/demo_company_handoff.py --offline`).
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: "0.3.0.dev1 or a commit SHA"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - experience / compile
+        - agentic search / browse
+        - utility router
+        - outcome / governance
+        - service / migrations
+        - mcp / adapters
+        - docs
+        - other
+    validations:
+      required: true

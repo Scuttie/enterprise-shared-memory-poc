@@ -1,0 +1,20 @@
+{
+  "instance_id": "pytest-dev__pytest-7982",
+  "repo": "pytest-dev/pytest",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-7982@sha256:1b6cd660102de29c36d28954eb2f6158b93d11b855a9bbfc577a55eb67a8f375",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 25,
+  "edited_files": [
+    "src/_pytest/config/findpaths.py"
+  ],
+  "patch_bytes": 1203,
+  "tokens": {
+    "prompt": 37553,
+    "completion": 793
+  },
+  "secs": 77.9
+}

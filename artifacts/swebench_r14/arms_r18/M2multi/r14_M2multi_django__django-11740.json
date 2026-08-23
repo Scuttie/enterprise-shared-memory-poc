@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-11740",
+  "repo": "django/django",
+  "arm": "M2multi",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-11740@sha256:6a057a8a78fefed32c70c306c4843a12a9a83147a75e20a523d2fa7bdca392f4",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 7000,
+  "edited_files": [
+    "django/db/migrations/autodetector.py"
+  ],
+  "patch_bytes": 649,
+  "tokens": {
+    "prompt": 41237,
+    "completion": 320
+  },
+  "secs": 78.1
+}

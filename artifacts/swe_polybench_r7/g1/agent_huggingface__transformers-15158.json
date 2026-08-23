@@ -1,0 +1,23 @@
+{
+  "instance_id": "huggingface__transformers-15158",
+  "language": "Python",
+  "repo": "huggingface/transformers",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-15158:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.huggingface__transformers-15158@sha256:650029f12c3074076b476e3b64a4c0b4fd92bdfa0520c289523f7f13e87b70ec",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 40,
+  "edited_files": [
+    "src/transformers/models/bert/tokenization_bert_fast.py"
+  ],
+  "patch_bytes": 1256,
+  "tokens": {
+    "prompt": 442152,
+    "completion": 4358
+  },
+  "grader_rc": 0,
+  "secs": 632.2
+}

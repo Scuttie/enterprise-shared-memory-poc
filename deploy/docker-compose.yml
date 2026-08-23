@@ -1,0 +1,7 @@
+# Local development stack skeleton (NOT validated in this environment; requires Docker).
+services:
+  postgres: { image: postgres:16, environment: { POSTGRES_PASSWORD: devonly }, ports: ["5432:5432"] }
+  qdrant: { image: qdrant/qdrant:v1.9.0, ports: ["6333:6333"] }
+  minio: { image: minio/minio, command: server /data, ports: ["9000:9000"] }
+  api: { build: { context: .., dockerfile: deploy/Dockerfile.api }, environment: { ENVIRONMENT: local }, depends_on: [postgres, qdrant, minio] }
+  worker: { build: { context: .., dockerfile: deploy/Dockerfile.worker }, environment: { ENVIRONMENT: local }, depends_on: [postgres, qdrant, minio] }

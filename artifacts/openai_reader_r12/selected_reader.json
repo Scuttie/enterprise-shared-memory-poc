@@ -1,0 +1,12 @@
+{
+  "selected_reader": "gpt-4o-mini-2024-07-18",
+  "family": "gpt4o",
+  "temperature": 0,
+  "reasoning": null,
+  "rule_applied": "only eligible reader (E1-E5); GPT-5.6 candidates ineligible (luna exec 0.885<0.98 & malformed 6.6%; terra Pass@1 0.738>0.70 ceiling & exec 0.918<0.98 from reasoning-budget exhaustion at frozen 4096); gpt-4o-mini selectable when no GPT-5.6 eligible",
+  "selected_pass_at_1": 0.2459,
+  "NOT_selected_by": "memory lift / p-value / preference (forbidden)",
+  "band_headline": "OpenAI readers >> Solar-pro3 (11.5%): gpt-4o-mini 24.6%, luna 65.6%, terra 73.8% -> reader capability was a major bottleneck",
+  "output_budget": 4096,
+  "frozen": true
+}

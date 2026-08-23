@@ -1,0 +1,19 @@
+diff --git a/src/vs/editor/contrib/suggest/completionModel.ts b/src/vs/editor/contrib/suggest/completionModel.ts
+index 43dd9e1b95..df5accec25 100644
+--- a/src/vs/editor/contrib/suggest/completionModel.ts
++++ b/src/vs/editor/contrib/suggest/completionModel.ts
+@@ -219,9 +219,11 @@ export class CompletionModel {
+ 						// filterText and label are actually the same -> use good highlights
+ 						item.score = match;
+ 					} else {
+-						// re-run the scorer on the label in the hope of a result BUT use the rank
+-						// of the filterText-match
+-						item.score = anyScore(word, wordLow, wordPos, textLabel, item.labelLow, 0);
++						// Re-run the scorer on the label in the hope of a result, but use the rank
++						// of the filterText match. Starting at the beginning of the label is
++						// important: anyScore can prefer a later, duplicate occurrence and thus
++						// highlight a different part of the completion label.
++						item.score = scoreFn(word, wordLow, wordPos, textLabel, item.labelLow, 0, false);
+ 						item.score[0] = match[0]; // use score from filterText
+ 					}
+ 

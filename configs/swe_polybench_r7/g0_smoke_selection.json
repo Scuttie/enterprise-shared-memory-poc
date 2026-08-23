@@ -1,0 +1,31 @@
+{
+  "rule": "sorted instance_id, first 2 per language (deterministic, pre-execution)",
+  "tasks": {
+    "Java": [
+      "apache__dubbo-3093",
+      "apache__dubbo-3317"
+    ],
+    "Python": [
+      "Significant-Gravitas__AutoGPT-4652",
+      "huggingface__transformers-12981"
+    ],
+    "JavaScript": [
+      "mrdoob__three.js-14836",
+      "mrdoob__three.js-18648"
+    ],
+    "TypeScript": [
+      "angular__angular-37561",
+      "coder__code-server-3277"
+    ]
+  },
+  "flat": [
+    "apache__dubbo-3093",
+    "apache__dubbo-3317",
+    "Significant-Gravitas__AutoGPT-4652",
+    "huggingface__transformers-12981",
+    "mrdoob__three.js-14836",
+    "mrdoob__three.js-18648",
+    "angular__angular-37561",
+    "coder__code-server-3277"
+  ]
+}

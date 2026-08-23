@@ -1,0 +1,22 @@
+{
+  "instance_id": "pytest-dev__pytest-7982",
+  "repo": "pytest-dev/pytest",
+  "arm": "M1multi",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-7982@sha256:1b6cd660102de29c36d28954eb2f6158b93d11b855a9bbfc577a55eb67a8f375",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 4,
+  "decode": "",
+  "inject_len": 7631,
+  "edited_files": [
+    "src/_pytest/pathlib.py"
+  ],
+  "patch_bytes": 495,
+  "tokens": {
+    "prompt": 10927,
+    "completion": 110
+  },
+  "secs": 63.8
+}

@@ -1,0 +1,29 @@
+{
+  "gpt-4o-mini-2024-07-18": {
+    "pass_at_1": 0.2459,
+    "exec_rate": 1.0,
+    "malformed_rate": 0.0,
+    "n": 61,
+    "returned_models": [
+      "gpt-4o-mini-2024-07-18"
+    ]
+  },
+  "gpt-5.6-luna": {
+    "pass_at_1": 0.6557,
+    "exec_rate": 0.8852,
+    "malformed_rate": 0.0656,
+    "n": 61,
+    "returned_models": [
+      "gpt-5.6-luna"
+    ]
+  },
+  "gpt-5.6-terra": {
+    "pass_at_1": 0.7377,
+    "exec_rate": 0.918,
+    "malformed_rate": 0.0164,
+    "n": 61,
+    "returned_models": [
+      "gpt-5.6-terra"
+    ]
+  }
+}

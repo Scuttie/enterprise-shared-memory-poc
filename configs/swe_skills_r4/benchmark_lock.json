@@ -1,0 +1,36 @@
+{
+  "benchmark": "SWE-Skills-Bench",
+  "paper": "arXiv:2603.15401 \u2014 SWE-Skills-Bench: Do Agent Skills Actually Help in Real-World Software Engineering?",
+  "authors": "Han, Zhang, Song, Fang, Chen, Sun, Hu (2026)",
+  "official_github": "github.com/GeniusHTX/SWE-Skills-Bench",
+  "official_github_status": "HTTP 404 (repo AND GeniusHTX account both 404 \u2014 do not exist)",
+  "hf_dataset": "GeniusHTX/SWE-Skills-Bench",
+  "hf_license": "MIT",
+  "public_dataset_rows": 49,
+  "public_dataset_sha256": "616373200363f5faf1cda6699f8952ee47f6b3a506bfdd8026f3655bf5dc6fe6",
+  "paper_claimed_instances": "~565 (49 skills x ~11)",
+  "public_instances_per_skill": "1 (max==min==1)",
+  "repo_commit_pinned": "1/49",
+  "docker_images": {
+    "zhangyiiiiii/swe-skills-bench-python": 32,
+    "zhangyiiiiii/swe-skills-bench-golang": 8,
+    "zhangyiiiiii/swe-skills-bench-jvm": 2,
+    "zhangyiiiiii/swe-skills-bench-clojure": 2,
+    "zhangyiiiiii/swe-skills-bench-ruby": 2,
+    "zhangyiiiiii/swe-skills-bench-pytorch:latest": 1,
+    "zhangyiiiiii/swe-skills-bench-bazel": 1,
+    "zhangyiiiiii/swe-skills-bench-rust": 1
+  },
+  "docker_images_note": "8 shared language base images (python x32, golang x8, ...) \u2014 NOT per-task pinned repo state",
+  "task_types": {
+    "repair": 1,
+    "fix": 2,
+    "feature": 42,
+    "refactor": 1,
+    "test": 3
+  },
+  "official_harness": "NOT PUBLIC (official repo 404)",
+  "reproducibility_verdict": "EXISTS-BUT-NOT-REPRODUCIBLE",
+  "endpoint": "\u00a70-A TECHNICAL STOP",
+  "verified_on": "2026-08-16"
+}

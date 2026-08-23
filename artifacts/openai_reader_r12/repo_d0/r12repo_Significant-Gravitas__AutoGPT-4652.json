@@ -1,0 +1,23 @@
+{
+  "instance_id": "Significant-Gravitas__AutoGPT-4652",
+  "language": "Python",
+  "repo": "Significant-Gravitas/AutoGPT",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.significant-gravitas__autogpt-4652@sha256:690d760e5d6703107850dac89f37e59d0e7e2a011aa4b4ad1f8c1ade262371fa",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "edited_files": [
+    "autogpt/commands/file_operations.py"
+  ],
+  "patch_bytes": 2148,
+  "tokens": {
+    "input": 49177,
+    "output": 1993,
+    "reasoning": 1137
+  },
+  "secs": 57.1
+}

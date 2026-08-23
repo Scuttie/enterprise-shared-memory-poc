@@ -1,0 +1,22 @@
+name: ci-experience-schema
+# P6/R19 §5 — experience-card schema invariants (static) + compiler/projection guarantees.
+on:
+  push:
+    branches: [codex/utility-router-v0.3]
+    paths: ['migrations/sql/0014_up.sql', 'migrations/versions/0014_experience_memory.py',
+            'src/enterprise_memory/experience/**', 'tests/unit/test_experience_*.py',
+            '.github/workflows/ci-experience-schema.yml', 'reports/CI_TRIGGER_MARKER.txt']
+  pull_request:
+    paths: ['migrations/**', 'src/enterprise_memory/experience/**', 'tests/unit/test_experience_*.py']
+  workflow_dispatch: {}
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install (editable, minimal)
+        run: pip install -q -e ".[dev]" pytest pyyaml || pip install -q -e . pytest pyyaml
+      - name: Experience schema + compiler invariants
+        run: python -m pytest -q tests/unit/test_experience_compiler.py tests/unit/test_experience_schema_sql.py

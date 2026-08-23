@@ -16,9 +16,15 @@ build/
 *.sqlite*
 qdrant/
 .qdrant/
+!tests/qdrant/
+!tests/qdrant/*.py
 hf_cache/
 model_cache/
 # raw experiment artifacts (never released)
 *.jsonl
 *.log
 data/
+artifacts/bigcode_r2/results/*_raw.*.json
+
+# generated OSS release acceptance artifacts (SBOM / license report)
+reports/oss_release/

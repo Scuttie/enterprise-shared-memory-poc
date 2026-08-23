@@ -1,0 +1,39 @@
+{
+  "stage": "D0_repo_band_audit",
+  "model": "gpt-5.6-terra",
+  "n": 40,
+  "graded": 40,
+  "resolved": 15,
+  "failures": 0,
+  "resolved_rate": 0.375,
+  "gate": {
+    "R1": true,
+    "R2": true,
+    "R3": true,
+    "R4": true,
+    "pass": true
+  },
+  "contrast": "Solar R7 1/40=0.025 (floor) -> gpt-5.6-terra 15/40=0.375 (in-band) -> repo-agent floor was reader-bound",
+  "tokens": {
+    "input": 3100217,
+    "output": 78498,
+    "reasoning": 36916
+  },
+  "resolved_ids": [
+    "apache__dubbo-4026",
+    "apache__dubbo-4515",
+    "apache__dubbo-4567",
+    "apache__dubbo-5708",
+    "huggingface__transformers-12981",
+    "huggingface__transformers-13693",
+    "huggingface__transformers-15158",
+    "huggingface__transformers-15795",
+    "microsoft__vscode-108964",
+    "mrdoob__three.js-14836",
+    "mrdoob__three.js-18648",
+    "mrdoob__three.js-24461",
+    "prettier__prettier-12930",
+    "prettier__prettier-14400",
+    "prettier__prettier-3436"
+  ]
+}

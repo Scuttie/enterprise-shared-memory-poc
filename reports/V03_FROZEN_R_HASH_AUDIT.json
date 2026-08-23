@@ -1,0 +1,6 @@
+{
+  "base": "7fddfb9",
+  "frozen_paths_modified": [],
+  "all_frozen_unchanged": true,
+  "method": "git diff --name-only (autocrlf-aware); byte-CRLF differences are not content changes"
+}

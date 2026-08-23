@@ -1,0 +1,13 @@
+diff --git a/src/math/Box3.js b/src/math/Box3.js
+index 8784d7b2a..4734c8b22 100644
+--- a/src/math/Box3.js
++++ b/src/math/Box3.js
+@@ -384,7 +384,7 @@ Object.assign( Box3.prototype, {
+ 
+ 		}
+ 
+-		return ( min <= plane.constant && max >= plane.constant );
++			return ( min <= - plane.constant && max >= - plane.constant );
+ 
+ 	},
+ 

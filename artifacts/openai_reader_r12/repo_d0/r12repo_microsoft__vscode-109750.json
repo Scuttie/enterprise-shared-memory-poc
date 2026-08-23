@@ -1,0 +1,23 @@
+{
+  "instance_id": "microsoft__vscode-109750",
+  "language": "TypeScript",
+  "repo": "microsoft/vscode",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.microsoft__vscode-109750@sha256:35d4b9582df785bafbe9c2feaa6cdcf3003bcae1d58f6945d9f8f3acc52b22ac",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "src/vs/workbench/api/common/configurationExtensionPoint.ts"
+  ],
+  "patch_bytes": 971,
+  "tokens": {
+    "input": 82095,
+    "output": 2504,
+    "reasoning": 1927
+  },
+  "secs": 318.5
+}

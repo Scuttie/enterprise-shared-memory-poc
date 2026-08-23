@@ -1,0 +1,69 @@
+diff --git a/src/cli-util.js b/src/cli-util.js
+index 27c0494d..8b1e169f 100644
+--- a/src/cli-util.js
++++ b/src/cli-util.js
+@@ -305,7 +305,9 @@ function eachFilename(argv, patterns, callback) {
+ 
+ function formatFiles(argv) {
+   eachFilename(argv, argv.__filePatterns, (filename, options) => {
+-    if (argv["write"] && process.stdout.isTTY) {
++    const shouldPrintProgress = argv["loglevel"] !== "silent";
++
++    if (argv["write"] && shouldPrintProgress && process.stdout.isTTY) {
+       // Don't use `console.log` here since we need to replace this line.
+       process.stdout.write(filename);
+     }
+@@ -315,7 +317,9 @@ function formatFiles(argv) {
+       input = fs.readFileSync(filename, "utf8");
+     } catch (error) {
+       // Add newline to split errors from filename line.
+-      process.stdout.write("\n");
++      if (shouldPrintProgress && process.stdout.isTTY) {
++        process.stdout.write("\n");
++      }
+ 
+       logger.error(`Unable to read file: ${filename}\n${error.message}`);
+       // Don't exit the process if one file failed
+@@ -339,14 +343,16 @@ function formatFiles(argv) {
+       output = result.formatted;
+     } catch (error) {
+       // Add newline to split errors from filename line.
+-      process.stdout.write("\n");
++      if (shouldPrintProgress && process.stdout.isTTY) {
++        process.stdout.write("\n");
++      }
+ 
+       handleError(filename, error);
+       return;
+     }
+ 
+     if (argv["write"]) {
+-      if (process.stdout.isTTY) {
++      if (shouldPrintProgress && process.stdout.isTTY) {
+         // Remove previously printed filename to log it with duration.
+         readline.clearLine(process.stdout, 0);
+         readline.cursorTo(process.stdout, 0, null);
+@@ -355,13 +361,13 @@ function formatFiles(argv) {
+       // Don't write the file if it won't change in order not to invalidate
+       // mtime based caches.
+       if (output === input) {
+-        if (!argv["list-different"]) {
++        if (!argv["list-different"] && shouldPrintProgress) {
+           console.log(`${chalk.grey(filename)} ${Date.now() - start}ms`);
+         }
+       } else {
+         if (argv["list-different"]) {
+           console.log(filename);
+-        } else {
++        } else if (shouldPrintProgress) {
+           console.log(`${filename} ${Date.now() - start}ms`);
+         }
+ 
+@@ -384,6 +390,7 @@ function formatFiles(argv) {
+     }
+   });
+ }
++}
+ 
+ function getOptionsWithOpposites(options) {
+   // Add --no-foo after --foo.

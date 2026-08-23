@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-11790",
+  "repo": "django/django",
+  "arm": "D0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-11790@sha256:061b5e37b0dfc15512b9604c843618b47aece8e603d08d0926c3990e0e9b3ac4",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "decode": "none",
+  "inject_len": 1510,
+  "edited_files": [
+    "django/contrib/auth/forms.py"
+  ],
+  "patch_bytes": 700,
+  "tokens": {
+    "prompt": 8550,
+    "completion": 320
+  },
+  "secs": 87.0
+}

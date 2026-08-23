@@ -1,0 +1,20 @@
+{
+  "instance_id": "matplotlib__matplotlib-26291",
+  "repo": "matplotlib/matplotlib",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-26291@sha256:1b5b3c1164c4f2a4210bec437b5416fb6346560c09b49e17ede58d045e8b8231",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 11,
+  "edited_files": [
+    "lib/matplotlib/offsetbox.py"
+  ],
+  "patch_bytes": 652,
+  "tokens": {
+    "prompt": 43192,
+    "completion": 341
+  },
+  "secs": 179.6
+}

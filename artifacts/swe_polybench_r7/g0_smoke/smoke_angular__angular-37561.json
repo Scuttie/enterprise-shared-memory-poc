@@ -1,0 +1,31 @@
+{
+  "instance_id": "angular__angular-37561",
+  "language": "TypeScript",
+  "repo": "angular/angular",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.angular__angular-37561:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.angular__angular-37561@sha256:63e2e9154cdd1ccbe59567c9b674bb369347feed8dee90747914cdf7f9e1a37d",
+  "baseline": {
+    "resolved": false,
+    "f2p_all_passed": false,
+    "p2p_all_passed": false,
+    "p2p_any_failed": false,
+    "n_passed": 0,
+    "n_failed": 1,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.angular__angular-37561@sha256:63e2e9154cdd1ccbe59567c9b674bb369347feed8dee90747914cdf7f9e1a37d"
+  },
+  "gold": {
+    "resolved": true,
+    "f2p_all_passed": true,
+    "p2p_all_passed": false,
+    "p2p_any_failed": false,
+    "n_passed": 1,
+    "n_failed": 0,
+    "digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.angular__angular-37561@sha256:63e2e9154cdd1ccbe59567c9b674bb369347feed8dee90747914cdf7f9e1a37d"
+  },
+  "checks": {
+    "image_pulled": true,
+    "baseline_bug_present": true,
+    "gold_resolved": true
+  },
+  "smoke_pass": true
+}

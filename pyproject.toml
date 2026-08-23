@@ -1,22 +1,43 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "enterprise-shared-memory-poc"
-version = "0.1.0"
-description = "Governed private/shared memory PoC for coding agents: Mem0 retrieval, canonical contracts, validity gates, and compact literal execution views."
+version = "0.3.0.dev1"
+description = "A governed shared-memory control plane for coding agents: PostgreSQL-authoritative experience cards, a replaceable vector index, a utility-aware USE/ABSTAIN router, and auditable governance. No general coding-performance-lift claim."
 requires-python = ">=3.10,<4.0"
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE.md", "THIRD_PARTY_NOTICES.md"]
 dependencies = ["fastapi>=0.110", "uvicorn>=0.29", "httpx>=0.27"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "build>=1.2"]
+dev = ["pytest>=8.0", "build>=1.2", "pytest-timeout>=2.3", "alembic>=1.13,<1.14"]
+realbench = ["evalplus==0.3.1"]
+embed = ["sentence-transformers>=3.0,<4", "huggingface-hub>=0.24"]  # pinned production retrieval embedder (§6.2)
 mem0 = ["mem0ai==2.0.17", "sentence-transformers>=3.0", "qdrant-client>=1.9"]
+qdrant = ["qdrant-client>=1.12,<1.13"]  # pinned to a minor compatible with the server image (v1.12.4)
+oidc = ["PyJWT>=2.8,<3", "cryptography>=42,<44"]
+artifacts = ["boto3>=1.34,<2"]
+postgres = ["SQLAlchemy[asyncio]>=2.0.30,<2.1", "asyncpg>=0.29,<0.31", "alembic>=1.13,<1.14", "psycopg2-binary>=2.9,<3.0"]
 
+[project.scripts]
+enterprise-memory-api = "enterprise_memory.service.appcli:main"
+enterprise-memory-worker = "enterprise_memory.service.solve_worker:main"
+enterprise-memory-index-worker = "enterprise_memory.service.index_worker_cli:main"
+
+# Product wheel ships ONLY the enterprise_memory package. Research code (benchmarks*/experiments*) and research
+# artifacts stay in the repository for reproducibility but are NOT packaged (see docs/OSS_SCOPE_AND_DATA_POLICY.md).
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["enterprise_memory*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+markers = ["postgres: requires a PostgreSQL service (ci-postgres)",
+           "qdrant: requires PostgreSQL + a vector index (ci-qdrant)",
+           "mem0: requires real mem0ai + a HF embedder + PostgreSQL (ci-mem0)",
+           "artifacts: requires PostgreSQL + an object store (ci-artifacts)",
+           "solar: requires a fake OpenAI-compatible server (ci-solar)"]

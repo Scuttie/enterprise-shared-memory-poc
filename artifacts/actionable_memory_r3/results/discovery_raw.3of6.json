@@ -1,0 +1,2267 @@
+{
+ "chunk": "3/6",
+ "labels": {
+  "ds1000_219": {
+   "irrelevant": "ds1000_546",
+   "relevant": "ds1000_54",
+   "shuffled": "ds1000_150"
+  },
+  "ds1000_231": {
+   "irrelevant": "ds1000_889",
+   "relevant": "ds1000_159",
+   "shuffled": "ds1000_54"
+  },
+  "ds1000_256": {
+   "irrelevant": "ds1000_841",
+   "relevant": "ds1000_37",
+   "shuffled": "ds1000_115"
+  },
+  "ds1000_271": {
+   "irrelevant": "ds1000_795",
+   "relevant": "ds1000_55",
+   "shuffled": "ds1000_37"
+  },
+  "ds1000_329": {
+   "irrelevant": "ds1000_170",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_392": {
+   "irrelevant": "ds1000_789",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_447": {
+   "irrelevant": "ds1000_28",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_47": {
+   "irrelevant": "ds1000_321",
+   "relevant": "ds1000_150",
+   "shuffled": "ds1000_159"
+  },
+  "ds1000_476": {
+   "irrelevant": "ds1000_543",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_540": {
+   "irrelevant": "ds1000_868",
+   "relevant": "ds1000_552",
+   "shuffled": "ds1000_522"
+  },
+  "ds1000_581": {
+   "irrelevant": "ds1000_881",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_623": {
+   "irrelevant": "ds1000_343",
+   "relevant": "ds1000_522",
+   "shuffled": "ds1000_552"
+  },
+  "ds1000_686": {
+   "irrelevant": "ds1000_333",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_722": {
+   "irrelevant": "ds1000_915",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_762": {
+   "irrelevant": "ds1000_882",
+   "relevant": null,
+   "shuffled": null
+  },
+  "ds1000_829": {
+   "irrelevant": "ds1000_14",
+   "relevant": "ds1000_928",
+   "shuffled": "ds1000_917"
+  },
+  "ds1000_891": {
+   "irrelevant": "ds1000_284",
+   "relevant": "ds1000_917",
+   "shuffled": "ds1000_881"
+  },
+  "ds1000_931": {
+   "irrelevant": "ds1000_433",
+   "relevant": "ds1000_881",
+   "shuffled": "ds1000_928"
+  },
+  "ds1000_96": {
+   "irrelevant": "ds1000_320",
+   "relevant": "ds1000_115",
+   "shuffled": "ds1000_55"
+  },
+  "ds1000_990": {
+   "irrelevant": "ds1000_537",
+   "relevant": null,
+   "shuffled": null
+  }
+ },
+ "rows": [
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Identify rows to aggregate\nmask = df['value'] < thresh\n# Sum the values of rows to aggregate\nsum_aggregated = df.loc[mask, 'value'].sum()\n# Create a new DataFrame with rows not aggregated\ndf_filtered = df.loc[~mask].copy()\n# If there are rows to aggregate, add the aggregated row\nif not df_filtered.empty and mask.any():\n    df_filtered.loc['X'] = sum_aggregated\nresult = df_filtered\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Create a mask for values below threshold\nmask = df['value'] < thresh\n# Calculate sum of values below threshold\nsum_below = df.loc[mask, 'value'].sum()\n# Create new dataframe excluding values below threshold\ndf_above = df.loc[~mask].copy()\n# If there are values below threshold, add the aggregated row\nif not df_above.empty and not mask.all():\n    df_above.loc['X'] = sum_below\n# Handle case where all values are below threshold\nelif mask.all():\n    df_above = pd.DataFrame({'value': [sum_below]}, index=['X'])\n# Assign to result\nresult = df_above\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "# Create a boolean mask for values below threshold\nmask = df['value'] < thresh\n\n# Calculate sum of values to be aggregated\nsum_below = df.loc[mask, 'value'].sum()\n\n# Create new DataFrame with rows above or equal to threshold\nresult = df[~mask].copy()\n\n# If there are values below threshold, add aggregated row\nif not result.empty and sum_below > 0:\n    result.loc['X', 'value'] = sum_below\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Create a mask for values below threshold\nmask = df['value'] < thresh\n# Create a new grouping column\ndf['group'] = np.where(mask, 'X', df.index)\n# Group by the new column and sum\ngrouped = df.groupby('group')['value'].sum().reset_index()\n# Set index back to 'lab' for original groups, handle 'X' separately\nresult = pd.DataFrame({'value': grouped['value']}, index=grouped['group'])\n# Ensure proper index type\nresult.index.name = 'lab'\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Create a mask for values below threshold\nmask = df['value'] < thresh\n\n# Calculate sum of values below threshold\nsum_below = df.loc[mask, 'value'].sum()\n\n# Create new DataFrame excluding values below threshold\ndf_above = df.loc[~mask].copy()\n\n# If there are values below threshold, add the aggregated row\nif not df_above.empty and not mask.all():\n    df_above.loc['X'] = sum_below\nelif mask.all():\n    df_above = pd.DataFrame({'value': [sum_below]}, index=['X'])\n\nresult = df_above\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "def custom_agg(group):\n    if group['value'].isnull().any():\n        return pd.Series({'value': float('nan')})\n    return pd.Series({'value': group['value'].sum()})\n\n# Create a mask for values below threshold\nmask = df['value'] < thresh\n# Get the sum of values below threshold\nsum_below = df.loc[mask, 'value'].sum()\n# Create new dataframe with values above or equal to threshold\ndf_above = df.loc[~mask].copy()\n# If there are values below threshold, add a new row with the sum\nif not df_above.empty and not mask.all():\n    df_above.loc['X', 'value'] = sum_below\nelif mask.all():\n    df_above = pd.DataFrame(index=['X'], data={'value': [sum_below]})\nresult = df_above\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "result = (\n    df.reset_index()\n    .assign(group=lambda x: x['value'].ge(thresh).cummax().where(lambda s: s, 'X'))\n    .groupby('group', sort=False)['value']\n    .sum()\n    .to_frame()\n    .rename_axis(index='lab')\n    .reset_index()\n    .set_index('lab')\n)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "mask = df['value'] < thresh\nsummed = df.loc[mask].sum()\nresult = df.loc[~mask].copy()\nresult.loc['X', 'value'] = summed['value']\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Create a mask for values below threshold\nmask = df['value'] < thresh\n\n# Calculate sum of values below threshold\nsum_below = df.loc[mask, 'value'].sum()\n\n# Create new DataFrame with values above or equal to threshold\nresult = df[~mask].copy()\n\n# If there are values below threshold, add a new row with their sum\nif not mask.empty and not np.isnan(sum_below):\n    result.loc['X'] = sum_below\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "# Create a boolean mask for values below threshold\nmask = df['value'] < thresh\n\n# Calculate sum of values below threshold\nsum_below = df.loc[mask, 'value'].sum()\n\n# Create new DataFrame with values above or equal to threshold\nresult = df.loc[~mask].copy()\n\n# If there are values below threshold, add the aggregated row\nif not sum_below.isna() and not mask.sum() == 0:\n    result.loc['X'] = sum_below\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "import pandas as pd\n\ndf = pd.DataFrame({'lab':['A', 'B', 'C', 'D', 'E', 'F'], 'value':[50, 35, 8, 5, 1, 1]})\ndf = df.set_index('lab')\nthresh = 6\n\n# Create a mask for values below threshold\nmask = df['value'] < thresh\n\n# Calculate sum of values below threshold\nsum_below = df.loc[mask, 'value'].sum()\n\n# Create new dataframe with values above or equal to threshold\nresult = df.loc[~mask].copy()\n\n# If there are values below threshold, add a new row with the sum\nif not sum_below == 0:\n    result.loc['X', 'value'] = sum_below\n\nresult\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "result = df.copy()\nbelow_threshold = result[result['value'] < thresh]\nif not below_threshold.empty:\n    sum_below = below_threshold['value'].sum()\n    result = result[result['value'] >= thresh].copy()\n    result.loc['X'] = sum_below\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_47"
+  },
+  {
+   "applied_patch": "df = df.melt(\n    id_vars=['Country', 'Variable'],\n    var_name='year',\n    value_name='value'\n).pivot(\n    index=['Country', 'year'],\n    columns='Variable',\n    values='value'\n).reset_index().sort_values(\n    by=['Country', 'year'], \n    ascending=[True, False],\n    ignore_index=True\n)\nresult = df.rename(columns={'var1': 'var1', 'var2': 'var2'})\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "df = df.melt(\n    id_vars=['Country', 'Variable'],\n    var_name='year',\n    value_name='value'\n).pivot_table(\n    index=['Country', 'year'],\n    columns='Variable',\n    values='value'\n).reset_index().sort_values(\n    by=['Country', 'year'],\n    ascending=[True, False],\n    ignore_index=True\n)\ndf.columns.name = None\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "# Reshape the data to long format\ndf_long = pd.melt(df, id_vars=['Country', 'Variable'], var_name='year', value_name='value')\n\n# Pivot the data to have var1 and var2 as separate columns\ndf_pivot = df_long.pivot_table(index=['Country', 'year'], columns='Variable', values='value').reset_index()\n\n# Sort the years in descending order\ndf_pivot = df_pivot.sort_values(by=['Country', 'year'], ascending=[True, False])\n\n# Reorder columns to match the desired output\ndf_pivot = df_pivot[['Variable', 'Country', 'year', 'var1', 'var2']]\n\n# Assign the result to df\ndf = df_pivot\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "df = df.melt(\n    id_vars=['Country', 'Variable'],\n    value_name='value',\n    var_name='year'\n).pivot(\n    index=['Country', 'year'],\n    columns='Variable',\n    values='value'\n).reset_index().sort_values(\n    by=['Country', 'year'], \n    ascending=[True, False],\n    ignore_index=True\n)\ndf.columns.name = None\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "df = df.melt(\n    id_vars=['Country', 'Variable'],\n    value_name='value',\n    var_name='year'\n).pivot(\n    index=['Country', 'year'],\n    columns='Variable',\n    values='value'\n).reset_index().rename(columns={'var1': 'var1', 'var2': 'var2'})[['Variable', 'Country', 'year', 'var1', 'var2']]\ndf['year'] = df['year'].astype(int)\ndf = df.sort_values(by=['Country', 'year'], ascending=[True, False]).reset_index(drop=True)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "df = df.melt(\n    id_vars=['Country', 'Variable'],\n    value_name='value',\n    var_name='year'\n).pivot(\n    index=['Country', 'year'],\n    columns='Variable',\n    values='value'\n).reset_index().sort_values(\n    by=['Country', 'year'], \n    ascending=[True, False],\n    key=lambda x: x.astype(int)\n)[['Country', 'year', 'var1', 'var2']]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "df = df.melt(\n    id_vars=['Country', 'Variable'],\n    value_name='value',\n    var_name='year'\n).pivot(\n    index=['Country', 'year'],\n    columns='Variable',\n    values='value'\n).reset_index().rename(columns={'var1': 'var1', 'var2': 'var2'})[['Variable', 'Country', 'year', 'var1', 'var2']]\ndf['year'] = df['year'].astype(int)\ndf = df.sort_values(by=['Country', 'year'], ascending=[True, False])\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "df = df.melt(\n    id_vars=['Country', 'Variable'],\n    value_name='value',\n    var_name='year'\n).pivot(\n    index=['Country', 'year'],\n    columns='Variable',\n    values='value'\n).reset_index().sort_values(\n    by=['Country', 'year'], \n    ascending=[True, False],\n    ignore_index=True\n)\nresult = df.rename(columns={'var1': 'var1', 'var2': 'var2'})\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "df = pd.melt(df, id_vars=['Country', 'Variable'], value_name='value', var_name='year') \\\n      .pivot(index=['Country', 'year'], columns='Variable', values='value') \\\n      .rename(columns=lambda x: x.lower()) \\\n      .reset_index() \\\n      .sort_values(by=['Country', 'year'], ascending=[True, False])\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "df = df.melt(\n    id_vars=['Country', 'Variable'],\n    value_name='value',\n    var_name='year'\n).pivot(\n    index=['Country', 'year'],\n    columns='Variable',\n    values='value'\n).reset_index().sort_values(\n    by=['Country', 'year'], \n    key=lambda x: x.str.extract('(\\d+)').astype(int),\n    ascending=[True, False]\n)\ndf.columns.name = None\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "df = df.melt(\n    id_vars=['Country', 'Variable'],\n    value_name='value',\n    var_name='year'\n).pivot(\n    index=['Country', 'year'],\n    columns='Variable',\n    values='value'\n).reset_index().sort_values(\n    by=['Country', 'year'], \n    ascending=[True, False],\n    ignore_index=True\n)\ndf.columns.name = None\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "# Melt the DataFrame to long format\ndf = pd.melt(df, id_vars=['Country', 'Variable'], var_name='year', value_name='value')\n\n# Pivot the DataFrame to have var1 and var2 as separate columns\ndf = df.pivot(index=['Country', 'year'], columns='Variable', values='value').reset_index()\n\n# Sort the DataFrame by Country and year (descending)\ndf = df.sort_values(by=['Country', 'year'], ascending=[True, False]).reset_index(drop=True)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_96"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby('item')['diff'].idxmin()]\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby(\"item\")[\"diff\"].idxmin()]\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby(\"item\")[\"diff\"].idxmin()]\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby('item')['diff'].idxmin()]\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby('item')['diff'].idxmin()]\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby(\"item\")[\"diff\"].idxmin()]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby(\"item\")[\"diff\"].idxmin()]\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby(\"item\")[\"diff\"].idxmin()]\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby('item')['diff'].idxmin()]\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby('item')['diff'].idxmin()]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "# Find the index of the minimum 'diff' for each 'item' group\nmin_indices = df.loc[df.groupby('item')['diff'].idxmin()].index\n\n# Use these indices to filter the original DataFrame\nresult = df.loc[min_indices].reset_index(drop=True)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.loc[df.groupby('item')['diff'].idxmin()]\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_219"
+  },
+  {
+   "applied_patch": "result = df.groupby('username')[['views']].apply(lambda x: pd.cut(x['views'], bins=bins).value_counts().unstack(fill_value=0))\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = pd.crosstab(index=df['username'], columns=pd.cut(df['views'], bins=bins))\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = pd.crosstab(index=df['username'], columns=pd.cut(df['views'], bins=bins))\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = df.groupby('username')['views'].apply(lambda x: pd.cut(x, bins=bins).value_counts()).unstack(fill_value=0).reindex(columns=pd.IntervalIndex.from_breaks(bins), fill_value=0)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = pd.crosstab(index=df['username'], columns=pd.cut(df['views'], bins=bins))\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = df.groupby('username').views.apply(lambda x: pd.cut(x, bins=bins).value_counts()).unstack(fill_value=0).reindex(columns=pd.IntervalIndex.from_breaks(bins), fill_value=0).astype(int)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = df.groupby('username')['views'].apply(lambda x: pd.cut(x, bins=bins).value_counts()).unstack(fill_value=0).reindex(columns=pd.IntervalIndex.from_tuples([(1, 10), (10, 25), (25, 50), (50, 100)], name='views'), fill_value=0)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = df.groupby('username')[['views']].apply(lambda x: pd.cut(x['views'], bins=bins).value_counts().unstack(fill_value=0)).T\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = df.groupby('username')['views'].apply(lambda x: pd.cut(x, bins=bins).value_counts()).unstack(fill_value=0).T\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = df.groupby('username')[['views']].apply(lambda x: pd.cut(x['views'], bins=bins).value_counts()).unstack(fill_value=0).T\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = df.assign(bin=pd.cut(df.views, bins)).groupby(['username', 'bin']).size().unstack(fill_value=0).reindex(columns=pd.IntervalIndex.from_arrays(bins[:-1], bins[1:], closed='right'))\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = df.groupby(['username', pd.cut(df.views, bins=bins)])['views'].count().unstack(fill_value=0)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_231"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df.loc[0:1, 'col1'].explode().tolist())\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df['col1'].explode().tolist())\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df['col1'].explode().dropna().tolist())\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df.loc[0:1, 'col1'].explode().tolist())\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df['col1'].explode().tolist())\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df['col1'].explode().dropna())\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df['col1'].explode().tolist())\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df.loc[0:index, 'User IDs'].explode().groupby(level=0).apply(list))\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df['col1'].explode().tolist())\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df['col1'].explode().tolist())\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "result = ','.join(','.join(map(str, sublist)) for sublist in df['col1'].explode().tolist())\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport ast\n\ndf = pd.DataFrame(dict(col1=[['1', '2', '3']] * 2))\nresult = ','.join([item for sublist in df['col1'].apply(ast.literal_eval).sum() for item in sublist])\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_256"
+  },
+  {
+   "applied_patch": "df = df.fillna(0).round({'dogs': 2}).where(df.isna(), pd.NA)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df = df.fillna(0).round(2).where(df.notna(), pd.NA)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df = df.fillna(0).round(2).where(df.notna(), pd.NA)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df['dogs'] = df['dogs'].fillna(0).round(2).where(df['dogs'].isna(), pd.NA)\ndf['cats'] = df['cats'].fillna(0).round(2).where(df['cats'].isna(), pd.NA)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df = df.fillna(0).round({'dogs': 2}).where(df.notna(), pd.NA)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df = df.fillna(0).round(2).where(df.isna(), pd.NA)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df['dogs'] = df['dogs'].fillna(0).round(2).where(df['dogs'].isna(), pd.NA)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df = df.fillna(0).round(2).where(df.notna(), pd.NA)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df = df.fillna(0).round(2).where(df.notna(), pd.NA)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df = df.fillna(0).round(2).where(df.isna(), pd.NA)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "df = df.fillna(0).round({'dogs': 2}).where(df.isna(), pd.NA)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame([(.21, .3212), (.01, .61237), (.66123, .03), (.21, .18),(pd.NA, .18)],\n                  columns=['dogs', 'cats'])\n\n# Solution: Replace pd.NA with np.nan, round, then restore pd.NA\ndf['dogs'] = df['dogs'].fillna(np.nan).round(2).replace(np.nan, pd.NA)\ndf['cats'] = df['cats'].fillna(np.nan).round(2).replace(np.nan, pd.NA)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_271"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "a = np.power(a, power)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_329"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": null,
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 0,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "result = a[low:high]\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_392"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank + 1 - ranks\n    return result.astype(int)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "import numpy as np\nfrom scipy.stats import rankdata\n\ndef f(a=example_a):\n    ranks = rankdata(a, method='dense')\n    max_rank = ranks.max()\n    result = max_rank - ranks + 1\n    return result.astype(int)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_447"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by=['D', 'Q'])\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by=['D', 'Q'])\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "df = pd.DataFrame(data).sort_values(by='D')\ndf[name] = df.groupby('D')['Q'].cumsum()\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_476"
+  },
+  {
+   "applied_patch": "result = plt.title('\\n'.join(myTitle.split(' - ')))\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "plt.title('\\n'.join(myTitle[i:i+20] for i in range(0, len(myTitle), 20)))\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "AX = plt.gca()\nAX.set_title(myTitle)\nAX.title.set_wrap(True)\nAX.title.set_size(10)\nAX.set_xticklabels([])\nAX.set_yticklabels([])\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "plt.gca().set_title(\"\\n\".join(myTitle.split()), wrap=True)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "plt.title(myTitle, wrap=True)\nresult = plt.gca().title\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "ax = plt.gca()\nax.set_title(myTitle, wrap=True)\nax.xaxis.set_ticklabels([])\nax.yaxis.set_ticklabels([])\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "plt.gca().set_title(myTitle, wrap=True)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "result = plt.gca().set_title(myTitle, wrap=True)\nplt.gca().yaxis.labelpad = 20  # Adjust padding if needed for better appearance\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "result = plt.title(myTitle, wrap=True)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "result = plt.gcf().suptitle(myTitle, fontsize=10, ha='center')\nplt.gca().set_xticklabels([])\nplt.gca().set_yticklabels([])\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "plt.gca().set_title(myTitle, wrap=True)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "ax = plt.gca()\nax.set_title(myTitle, wrap=True)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_540"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.hist(x, edgecolor='black', linewidth=1.2)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_581"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, marker='o', markersize=6, markerfacecolor='tab:blue', markeredgecolor='tab:blue', markeredgewidth=1.5, alpha=0.5)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "fig, ax = plt.subplots()\nline, = ax.plot(x, y, marker='o', markerfacecolor='none', markeredgecolor='blue', markeredgewidth=1)\nax.set_xticklabels([])\nax.set_yticklabels([])\nplt.close()\nresult = fig\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, 'o-', markerfacecolor='none', markeredgecolor='black', alpha=0.5)[0]\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, marker='o', markerfacecolor='none', markeredgecolor='blue', linestyle='-', alpha=0.0)[0]\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, marker='o', markersize=4, markerfacecolor='none', markeredgecolor='blue', markeredgewidth=1, linestyle='-', color='blue', alpha=0.0)[0]\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, marker='o', markersize=6, markerfacecolor='none', markeredgecolor='blue', linestyle='-', alpha=0.0)[0]\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, marker='o', markerfacecolor='none', markeredgecolor='black', alpha=0.5)[0]\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, 'o-', markerfacecolor='none', markeredgecolor='auto', markeredgewidth=1.0)[0]\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, marker='o', markerfacecolor='none', markeredgecolor='black', alpha=0.0, linestyle='-', linewidth=1.0)[0]\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = plt.plot([x[0], x[-1]], [y[0], y[-1]], 'o', markerfacecolor='none', markeredgecolor='blue', linestyle='')[0]\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = plt.plot(x, y, marker='o', markerfacecolor='none', markeredgecolor='black', alpha=0.0)[0]\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "plt.plot(x, y, marker='o', markerfacecolor='none', markeredgecolor='blue', alpha=0.7)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_623"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = tf.reduce_prod(A, axis=1)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_686"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "result = sa.multiply(sb.repeat(sa.shape[1], axis=0))\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_722"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "kurtosis_result = scipy.stats.kurtosis(a, fisher=True, bias=False)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_762"
+  },
+  {
+   "applied_patch": "df = pd.concat([df_origin.reset_index(drop=True), pd.DataFrame.sparse.from_spmatrix(transform_output).to_dense().reset_index(drop=True)], axis=1)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Concatenate with the original DataFrame\ndf = pd.concat([df_origin, sparse_df], axis=1)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "df = pd.concat([df_origin.reset_index(drop=True), pd.DataFrame.sparse.from_spmatrix(transform_output, index=df_origin.index)], axis=1)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "# Convert csr_matrix to DataFrame\nsparse_df = pd.DataFrame(transform_output.toarray(), columns=transform_output.columns)\n\n# Concatenate with original DataFrame\ndf = pd.concat([df_origin, sparse_df], axis=1)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "# Convert csr_matrix to DataFrame\nsparse_df = pd.DataFrame(transform_output.toarray())\n\n# Concatenate with original DataFrame\ndf = pd.concat([df_origin, sparse_df], axis=1)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "# Convert the csr_matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Merge the sparse DataFrame with the original DataFrame\ndf = pd.concat([df_origin, sparse_df], axis=1)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "df = pd.concat([df_origin, pd.DataFrame.sparse.from_spmatrix(transform_output)], axis=1)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "df = pd.concat([df_origin.reset_index(drop=True), pd.DataFrame.sparse.from_spmatrix(transform_output, index=df_origin.index)], axis=1)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "import pandas as pd\nfrom scipy.sparse import csr_matrix\n\n# Convert the csr_matrix to a DataFrame\nsparse_df = pd.DataFrame(transform_output.toarray())\n\n# Concatenate with the original DataFrame\n# First, ensure both DataFrames have the same index\ndf = pd.concat([df_origin.reset_index(drop=True), sparse_df.reset_index(drop=True)], axis=1)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "# Convert csr_matrix to DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Concatenate with original DataFrame\ndf = pd.concat([df_origin, sparse_df], axis=1)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame(transform_output.toarray())\n\n# Concatenate with the original DataFrame\ndf = pd.concat([df_origin, sparse_df], axis=1)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "# Convert the sparse matrix to a DataFrame\nsparse_df = pd.DataFrame.sparse.from_spmatrix(transform_output)\n\n# Concatenate the original DataFrame with the sparse DataFrame\ndf = pd.concat([df_origin, sparse_df], axis=1)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_829"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\ntransformer = PowerTransformer(method='yeo-johnson')\nyeo_johnson_data = transformer.fit_transform(data)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\npower_transformer = PowerTransformer(method='yeo-johnson')\nyeo_johnson_data = power_transformer.fit_transform(data)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nyeo_johnson_data = PowerTransformer(method='yeo-johnson', standardize=True).fit_transform(data)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\ntransformer = PowerTransformer(method='yeo-johnson')\nyeo_johnson_data = transformer.fit_transform(data.reshape(-1, 1)).ravel()\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nyeo_johnson_data = PowerTransformer(method='yeo-johnson', standardize=True).fit_transform(data)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\npt = PowerTransformer(method='yeo-johnson')\nyeo_johnson_data = pt.fit_transform(data)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nimport numpy as np\n\n# Initialize the PowerTransformer with Yeo-Johnson method\npt = PowerTransformer(method='yeo-johnson', standardize=True)\n# Fit and transform the data\nyeo_johnson_data = pt.fit_transform(data)\n# Ensure the output is a numpy array with numeric dtype\nyeo_johnson_data = np.asarray(yeo_johnson_data, dtype=np.float64)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\ntransformer = PowerTransformer(method='yeo-johnson')\nyeo_johnson_data = transformer.fit_transform(data)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\npower_transformer = PowerTransformer(method='yeo-johnson')\nyeo_johnson_data = power_transformer.fit_transform(data)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\ntransformer = PowerTransformer(method='yeo-johnson')\nyeo_johnson_data = transformer.fit_transform(data)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nyeo_johnson_data = PowerTransformer(method='yeo-johnson', standardize=True).fit_transform(data)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.preprocessing import PowerTransformer\nyeo_johnson_data = PowerTransformer(method='yeo-johnson', standardize=True).fit_transform(data)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_891"
+  },
+  {
+   "applied_patch": "from sklearn.metrics.pairwise import cosine_similarity\n\ntfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_similarity_matrix = 1 - cosine_similarity(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = pd.DataFrame(cosine_similarity_matrix, index=df['items'], columns=df['items'])\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "from sklearn.metrics.pairwise import cosine_similarity\n\ntfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_similarity_matrix = 1 - cosine_similarity(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = pd.DataFrame(cosine_similarity_matrix, index=df['items'], columns=df['items'])\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "from sklearn.metrics.pairwise import cosine_similarity\n\ntfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_similarity_matrix = cosine_similarity(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = pd.DataFrame(cosine_similarity_matrix, index=df['items'], columns=df['items'])\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "from sklearn.metrics.pairwise import cosine_similarity\n\ntfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_similarity_matrix = 1 - cosine_similarity(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = pd.DataFrame(cosine_similarity_matrix, index=df['items'], columns=df['items'])\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "from sklearn.metrics.pairwise import cosine_similarity\n\ntfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = pd.DataFrame(cosine_sim, index=df['items'], columns=df['items'])\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "from sklearn.metrics.pairwise import cosine_similarity\n\ntfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = pd.DataFrame(cosine_sim, index=df['items'], columns=df['items'])\ncosine_similarity_matrix = cosine_similarity_matrix.fillna(0.0).astype(float)  # Ensure diagonal is 1.0 and handle any NaNs\nnp.fill_diagonal(cosine_similarity_matrix.values, 1.0)  # Explicitly set diagonal to 1.0\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "tfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_similarity_matrix = 1 - sklearn.metrics.pairwise_distances(tfidf_matrix, metric='cosine')\ncosine_similarity_matrix = np.maximum(cosine_similarity_matrix, 0)  # Ensure non-negative values\nnp.fill_diagonal(cosine_similarity_matrix, 1)  # Set diagonal to 1 (self-similarity)\ncosine_similarity_matrix = pd.DataFrame(cosine_similarity_matrix, index=df['items'], columns=df['items'])\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "tfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_similarity_matrix = 1 - sklearn.metrics.pairwise.cosine_distances(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = np.around(cosine_similarity_matrix, 1)\ncosine_similarity_matrix = pd.DataFrame(cosine_similarity_matrix, index=df['items'], columns=df['items'])\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "from sklearn.metrics.pairwise import cosine_similarity\n\ntfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = pd.DataFrame(cosine_sim, index=df['items'], columns=df['items'])\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "tfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_similarities = 1 - sklearn.metrics.pairwise_distances(tfidf_matrix, metric='cosine')\ncosine_similarity_matrix = pd.DataFrame(cosine_similarities, index=df['items'], columns=df['items'])\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "from sklearn.metrics.pairwise import cosine_similarity\n\ntfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = pd.DataFrame(cosine_sim, index=df['items'], columns=df['items'])\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "tfidf_matrix = tfidf.fit_transform(df['description'])\ncosine_similarity_matrix = 1 - sklearn.metrics.pairwise.cosine_distances(tfidf_matrix, tfidf_matrix)\ncosine_similarity_matrix = pd.DataFrame(cosine_similarity_matrix, index=df['items'], columns=df['items'])\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 1,
+   "pass1": 1,
+   "tid": "ds1000_931"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D0",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D1",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D2",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D3",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D4",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D5",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D6",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D7",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D8",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D9",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D10",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  },
+  {
+   "applied_patch": "sign_x = torch.sign(x)\nsign_y = torch.sign(y)\nabs_x = torch.abs(x)\nabs_y = torch.abs(y)\nmin_abs = torch.min(abs_x, abs_y)\n# Create a mask where abs_x is the minimum\nmask = (abs_x <= abs_y)\n# Use the mask to select the appropriate sign and multiply with min_abs\nsigned_min = torch.where(mask, sign_x * min_abs, sign_y * min_abs)\n",
+   "arm": "D11",
+   "cross_user": 0,
+   "exec1": 1,
+   "injected": 0,
+   "pass1": 0,
+   "tid": "ds1000_990"
+  }
+ ]
+}

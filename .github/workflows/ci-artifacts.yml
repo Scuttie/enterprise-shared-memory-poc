@@ -1,0 +1,75 @@
+name: ci-artifacts
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: esm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm"
+          --health-interval 5s --health-timeout 5s --health-retries 30
+    env:
+      DATABASE_URL: postgresql://localhost:5432/esm
+      MIGRATION_USER: postgres
+      MIGRATION_PASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: esm
+      MINIO_ENDPOINT: http://localhost:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: esm-artifacts-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Start MinIO (private, controllable container)
+        run: |
+          docker run -d --name minio -p 9000:9000 \
+            -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin \
+            minio/minio:latest server /data
+      - name: Resolve MinIO digest (to pin in a follow-up)
+        run: echo "MINIO_DIGEST=$(docker image inspect minio/minio:latest --format '{{index .RepoDigests 0}}' 2>/dev/null || true)"
+      - name: Wait for MinIO
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          for i in range(60):
+              try:
+                  with urllib.request.urlopen("http://localhost:9000/minio/health/live", timeout=2) as r:
+                      if r.status < 500:
+                          print("minio ready"); raise SystemExit(0)
+              except SystemExit:
+                  raise
+              except Exception:
+                  pass
+              time.sleep(2)
+          raise SystemExit("minio not ready")
+          PY
+      - name: Install (dev + postgres + artifacts)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,postgres,artifacts]"
+      - name: Bootstrap roles
+        run: python scripts/postgres_bootstrap.py
+      - name: Alembic upgrade
+        run: alembic upgrade head
+      - name: Head check
+        run: python scripts/check_migration_head.py
+      - name: Schema validate
+        run: python scripts/postgres_validate.py
+      - name: Artifact lifecycle tests (local store + S3/MinIO)
+        run: python -m pytest -q tests/artifacts --timeout=180 --timeout-method=thread

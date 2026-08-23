@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-15349",
+  "repo": "sympy/sympy",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-15349@sha256:a21f1ef8cc0ba65bb8bd3d01f92aeb92b3169c6b859db8d22cc60fe2f28c3fad",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "edited_files": [
+    "sympy/algebras/quaternion.py"
+  ],
+  "patch_bytes": 1138,
+  "tokens": {
+    "prompt": 12050,
+    "completion": 376
+  },
+  "secs": 70.5
+}

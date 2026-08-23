@@ -1,0 +1,23 @@
+{
+  "instance_id": "coder__code-server-3277",
+  "language": "TypeScript",
+  "repo": "coder/code-server",
+  "arm": "M0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.coder__code-server-3277@sha256:16f512cbbc875646673e2317f71ce41c5f84b38a14b8492462a38a52bd2ff9d7",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 8,
+  "edited_files": [
+    "lib/vscode/src/vs/workbench/browser/parts/titlebar/menubarControl.ts"
+  ],
+  "patch_bytes": 1535,
+  "tokens": {
+    "input": 39284,
+    "output": 1112,
+    "reasoning": 318
+  },
+  "secs": 168.5
+}

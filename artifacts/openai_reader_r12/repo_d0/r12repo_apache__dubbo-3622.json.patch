@@ -1,0 +1,43 @@
+diff --git a/dubbo-compatible/src/main/java/com/alibaba/dubbo/rpc/Invoker.java b/dubbo-compatible/src/main/java/com/alibaba/dubbo/rpc/Invoker.java
+index 55a948083..006a70a72 100644
+--- a/dubbo-compatible/src/main/java/com/alibaba/dubbo/rpc/Invoker.java
++++ b/dubbo-compatible/src/main/java/com/alibaba/dubbo/rpc/Invoker.java
+@@ -19,9 +19,21 @@ package com.alibaba.dubbo.rpc;
+ 
+ import org.apache.dubbo.common.URL;
+ 
++@Deprecated
+ @Deprecated
+ public interface Invoker<T> extends org.apache.dubbo.rpc.Invoker<T> {
+ 
++    /**
++     * Invokes using the relocated invocation type.
++     *
++     * <p>This overload is required for binary compatibility with extensions
++     * compiled against Dubbo 2.6.x.  Such extensions have an invocation of
++     * {@code invoke} whose descriptor contains
++     * {@code com.alibaba.dubbo.rpc.Invocation}, rather than the relocated
++     * type inherited from the new interface.</p>
++     */
++    Result invoke(Invocation invocation) throws RpcException;
++
+     @Override
+     Result invoke(org.apache.dubbo.rpc.Invocation invocation) throws RpcException;
+ 
+@@ -42,6 +54,11 @@ public interface Invoker<T> extends org.apache.dubbo.rpc.Invoker<T> {
+             return invoker.getInterface();
+         }
+ 
++        @Override
++        public Result invoke(Invocation invocation) throws RpcException {
++            return new Result.CompatibleResult(invoker.invoke(invocation.getOriginal()));
++        }
++
+         @Override
+         public Result invoke(org.apache.dubbo.rpc.Invocation invocation) throws RpcException {
+             return new Result.CompatibleResult(invoker.invoke(((Invocation) invocation).getOriginal()));
+@@ -68,3 +85,4 @@ public interface Invoker<T> extends org.apache.dubbo.rpc.Invoker<T> {
+         }
+     }
+ }
++}

@@ -1,0 +1,22 @@
+{
+  "instance_id": "pydata__xarray-3095",
+  "repo": "pydata/xarray",
+  "arm": "D0",
+  "model": "gpt-4o-2024-08-06",
+  "image_digest": "swebench/sweb.eval.x86_64.pydata_1776_xarray-3095@sha256:ad5af107b0b590bb5002ed8b66226a625d34741b6e7fa008c04c481745a2d2eb",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "none",
+  "inject_len": 1431,
+  "edited_files": [
+    "xarray/core/variable.py"
+  ],
+  "patch_bytes": 669,
+  "tokens": {
+    "prompt": 32917,
+    "completion": 608
+  },
+  "secs": 113.3
+}

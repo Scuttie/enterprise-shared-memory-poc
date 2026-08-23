@@ -1,0 +1,60 @@
+{
+  "forms": {
+    "R0": "none",
+    "R1": "private",
+    "R2": "shared_ungoverned",
+    "R3": "shared_governed",
+    "R4": "shared_governed"
+  },
+  "retrieval_policies": {
+    "R0": {
+      "max_injected": 0,
+      "scopes": []
+    },
+    "R1": {
+      "max_injected": 1,
+      "scopes": [
+        "private"
+      ],
+      "search_limit": 1
+    },
+    "R2": {
+      "abstain": {
+        "tau_abs": 0.43,
+        "tau_margin": 0.0
+      },
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 1
+    },
+    "R3": {
+      "abstain": {
+        "tau_abs": 0.43,
+        "tau_margin": 0.0
+      },
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 1
+    },
+    "R4": {
+      "abstain": {
+        "tau_abs": 0.0,
+        "tau_margin": 0.0
+      },
+      "max_injected": 1,
+      "scopes": [
+        "shared"
+      ],
+      "search_limit": 1
+    }
+  },
+  "source_facts_sample": {
+    "Mbpp/87": "Write a function to merge three dictionaries into a single dictionary.",
+    "Mbpp/88": "Write a function to get the frequency of all the elements in a list, returned as a dictionary.",
+    "Mbpp/89": "Write a function to find the closest smaller number than n."
+  }
+}

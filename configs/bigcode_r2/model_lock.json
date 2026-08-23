@@ -1,0 +1,11 @@
+{
+  "backend": "bigcode_instruct",
+  "base_url": "https://api.upstage.ai/v1/solar",
+  "embedder": "sentence-transformers/all-MiniLM-L6-v2",
+  "generations": 1,
+  "index_dim": 384,
+  "max_output_tokens": 2048,
+  "model": "solar-pro2-251215",
+  "repair": false,
+  "temperature": 0
+}

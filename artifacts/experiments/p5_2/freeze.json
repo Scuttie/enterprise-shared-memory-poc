@@ -1,0 +1,114 @@
+{
+  "analysis_code_hash": "c6997c6970bc7c6995a3f6bfad6e325c9f4498bd729be22f1d906b97e7574773",
+  "calibration": {
+    "cells": 144,
+    "experiment_id": "EXP_P5_2_CAL",
+    "families": [
+      "fam_calibration_cache_0",
+      "fam_calibration_cache_1",
+      "fam_calibration_cache_2",
+      "fam_calibration_cache_3",
+      "fam_calibration_config_0",
+      "fam_calibration_config_1",
+      "fam_calibration_config_2",
+      "fam_calibration_config_3",
+      "fam_calibration_internal_api_0",
+      "fam_calibration_internal_api_1",
+      "fam_calibration_internal_api_2",
+      "fam_calibration_internal_api_3",
+      "fam_calibration_schema_0",
+      "fam_calibration_schema_1",
+      "fam_calibration_schema_2",
+      "fam_calibration_schema_3"
+    ],
+    "plan_hash": "93ce321a7984a164698b82497dc7bb2c6e1188d452a4f9a852e7fa7a358e9490",
+    "users": 8
+  },
+  "call_budget": {
+    "calibration": 144,
+    "instrument_dev": 72,
+    "main": 288
+  },
+  "experiment": "P5.2 static multi-user coding (dynamic-range + retrieval-abstention)",
+  "generator_version": "p5.2-static/1.0.0",
+  "main": {
+    "cells": 288,
+    "experiment_id": "EXP_P5_2_MAIN",
+    "families": [
+      "fam_main_cache_0",
+      "fam_main_cache_1",
+      "fam_main_cache_2",
+      "fam_main_cache_3",
+      "fam_main_cache_4",
+      "fam_main_cache_5",
+      "fam_main_cache_6",
+      "fam_main_cache_7",
+      "fam_main_config_0",
+      "fam_main_config_1",
+      "fam_main_config_2",
+      "fam_main_config_3",
+      "fam_main_config_4",
+      "fam_main_config_5",
+      "fam_main_config_6",
+      "fam_main_config_7",
+      "fam_main_internal_api_0",
+      "fam_main_internal_api_1",
+      "fam_main_internal_api_2",
+      "fam_main_internal_api_3",
+      "fam_main_internal_api_4",
+      "fam_main_internal_api_5",
+      "fam_main_internal_api_6",
+      "fam_main_internal_api_7",
+      "fam_main_schema_0",
+      "fam_main_schema_1",
+      "fam_main_schema_2",
+      "fam_main_schema_3",
+      "fam_main_schema_4",
+      "fam_main_schema_5",
+      "fam_main_schema_6",
+      "fam_main_schema_7"
+    ],
+    "plan_hash": "ca833519bd278fb9b166b61d420f89dd337e2be461d7942ee9da89755471c23f",
+    "users": 12
+  },
+  "manifest_hashes": {
+    "memory_bank_manifest": "9b61b8ad680c126a8568e664482118df95ee3c0036d22253f7b5d23ee267a24d",
+    "prompt_manifest": "1ec076ed16cd5e47019160c741825b31d389d45ce251cae0a887acd39b7f2c7d",
+    "retrieval_thresholds": "b30e1c23c24d2e72c83785208ab02efb2b963c22d874c1954635790f1dfa370b",
+    "source_target_pairs": "cfef4742572834e506edce71f1a290cb912f636e4ba5721abe6e48a904fe9de6",
+    "task_manifest": "ff9014dd42e7d259cf9db7fb1a12eb01d15319903d48f294e89a40c5fcd42861",
+    "user_assignment": "36853b599c07c7e4d7961dc4c03c2accf2eb0a6b50549f5682799a0ac9cb2c69"
+  },
+  "model_lock": {
+    "attempts": 1,
+    "backend": "solar_p52",
+    "base_url": "https://api.upstage.ai/v1/solar",
+    "max_output_tokens": 1200,
+    "model": "solar-pro2-251215",
+    "repair_in_primary": false,
+    "sandbox": {
+      "grading": "hidden_test",
+      "kind": "controlled_local",
+      "timeout_s": 20
+    },
+    "temperature": 0,
+    "top_p": 1.0
+  },
+  "stop_rules": {
+    "gates": [
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G6",
+      "G7"
+    ],
+    "no_edit_after_results": true,
+    "note": "M3-M0 is not evidence for the contract format when M3-M2 is null",
+    "primary": "CrossUserLift = Pass@1(M3) - Pass@1(M0), paired by family",
+    "primary_success": "mean paired lift >= +0.05 AND family-cluster bootstrap 95% CI lower bound > 0"
+  },
+  "tau_abs": 0.8,
+  "tau_margin": 0.5
+}

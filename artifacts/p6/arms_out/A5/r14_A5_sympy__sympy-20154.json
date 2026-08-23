@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-20154",
+  "repo": "sympy/sympy",
+  "arm": "A5",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-20154@sha256:d05bbd76c08f2d5b444f6f304ed6d4621f7e5a20db97f9fd0c602210068b0f80",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 8,
+  "decode": "",
+  "inject_len": 1011,
+  "edited_files": [
+    "sympy/utilities/iterables.py"
+  ],
+  "patch_bytes": 482,
+  "tokens": {
+    "prompt": 14399,
+    "completion": 335
+  },
+  "secs": 64.8
+}

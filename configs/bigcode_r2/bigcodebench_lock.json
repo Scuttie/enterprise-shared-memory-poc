@@ -1,0 +1,30 @@
+{
+  "benchmark": "BigCodeBench",
+  "confirmed_task_count": 1140,
+  "dataset_content_hash": "98e377a83cb12e90e244eef1a804a60b0dbcf0c062c623238596fd1dc7299172",
+  "dataset_hf": "bigcode/bigcodebench",
+  "dataset_version": "v0.1.4",
+  "eval_image": "bigcodebench/bigcodebench-evaluate:v0.2.4",
+  "eval_python_version": "3.10.16",
+  "eval_requirements": "Requirements/requirements-eval.txt (73 pinned deps incl. numpy==1.21.2, tensorflow==2.11.0, scikit-learn==1.3.1, pandas==2.0.3 -> Python 3.10 only)",
+  "execution": "local (inside the official eval image); e2b/gradio remote backends NOT used",
+  "grader": "bigcodebench.evaluate.check_correctness -> bigcodebench.eval.untrusted_check (self-contained unittest per task; Linux resource guards)",
+  "grading_marker": "BIGCODE:",
+  "license": "Apache-2.0",
+  "note": "content_hash is a platform-independent sha256 over sorted official task fields (newline-normalised); official_dataset_hash is bigcodebench.get_bigcodebench_hash. No benchmark test or reference solution is modified.",
+  "official_dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+  "official_task_count": 1140,
+  "package": "bigcodebench",
+  "package_version": "0.2.4",
+  "prompt_field": "instruct_prompt",
+  "resource_limits": {
+    "gt_time_limit": 2.0,
+    "max_as_limit": 30720,
+    "max_data_limit": 30720,
+    "max_stack_limit": 10,
+    "min_time_limit": 1.0
+  },
+  "shared_harness_entry_point": "task_func (single shared name across all 1140 tasks; distinct_entry_points=1)",
+  "subset": "full",
+  "variant": "BigCodeBench-Instruct"
+}

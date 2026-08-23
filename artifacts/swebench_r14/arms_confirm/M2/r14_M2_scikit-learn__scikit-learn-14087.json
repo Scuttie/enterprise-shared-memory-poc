@@ -1,0 +1,20 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-14087",
+  "repo": "scikit-learn/scikit-learn",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-14087@sha256:b0e9f68baa5df7a97e08f89cfc3c185597b640fff66b9b7dce4664ea884251ea",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "sklearn/linear_model/logistic.py"
+  ],
+  "patch_bytes": 761,
+  "tokens": {
+    "prompt": 48710,
+    "completion": 326
+  },
+  "secs": 92.9
+}

@@ -1,0 +1,22 @@
+{
+  "instance_id": "django__django-13551",
+  "repo": "django/django",
+  "arm": "A0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.django_1776_django-13551@sha256:6a26656fa15981ec1e6ab64a2a2f6cb7378d957b3e63385507c1728a01b619f8",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 6,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "django/contrib/auth/tokens.py"
+  ],
+  "patch_bytes": 1236,
+  "tokens": {
+    "prompt": 6314,
+    "completion": 393
+  },
+  "secs": 70.7
+}

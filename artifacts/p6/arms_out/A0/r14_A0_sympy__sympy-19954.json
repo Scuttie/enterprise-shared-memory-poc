@@ -1,0 +1,22 @@
+{
+  "instance_id": "sympy__sympy-19954",
+  "repo": "sympy/sympy",
+  "arm": "A0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-19954@sha256:0d006959685a7c6bcec46662f21da69da4f9cb27674efc193afa3ec46c7cfd3e",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "decode": "",
+  "inject_len": 0,
+  "edited_files": [
+    "sympy/combinatorics/perm_groups.py"
+  ],
+  "patch_bytes": 933,
+  "tokens": {
+    "prompt": 16818,
+    "completion": 519
+  },
+  "secs": 69.8
+}

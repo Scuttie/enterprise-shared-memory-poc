@@ -1,0 +1,113 @@
+diff --git a/src/transformers/models/auto/auto_factory.py b/src/transformers/models/auto/auto_factory.py
+index 516aec52b..db749c25e 100644
+--- a/src/transformers/models/auto/auto_factory.py
++++ b/src/transformers/models/auto/auto_factory.py
+@@ -507,15 +507,24 @@ class _LazyAutoMapping(OrderedDict):
+         self._config_mapping = config_mapping
+         self._reverse_config_mapping = {v: k for k, v in config_mapping.items()}
+         self._model_mapping = model_mapping
++        # Entries added by users contain concrete config/model classes, unlike the
++        # built-in name mappings which are resolved lazily.
++        self._extra_content = {}
+         self._modules = {}
+ 
+     def __getitem__(self, key):
++        if key in self._extra_content:
++            return self._extra_content[key]
+         model_type = self._reverse_config_mapping[key.__name__]
+         if model_type not in self._model_mapping:
+             raise KeyError(key)
+         model_name = self._model_mapping[model_type]
+         return self._load_attr_from_module(model_type, model_name)
+ 
++    def __setitem__(self, key, value):
++        """Add a user-defined config class to model-class mapping entry."""
++        self._extra_content[key] = value
++
+     def _load_attr_from_module(self, model_type, attr):
+         module_name = model_type_to_module_name(model_type)
+         if module_name not in self._modules:
+@@ -527,7 +536,7 @@ class _LazyAutoMapping(OrderedDict):
+             self._load_attr_from_module(key, name)
+             for key, name in self._config_mapping.items()
+             if key in self._model_mapping.keys()
+-        ]
++        ] + list(self._extra_content.keys())
+ 
+     def get(self, key, default):
+         try:
+@@ -543,7 +552,7 @@ class _LazyAutoMapping(OrderedDict):
+             self._load_attr_from_module(key, name)
+             for key, name in self._model_mapping.items()
+             if key in self._config_mapping.keys()
+-        ]
++        ] + list(self._extra_content.values())
+ 
+     def items(self):
+         return [
+@@ -553,12 +562,14 @@ class _LazyAutoMapping(OrderedDict):
+             )
+             for key in self._model_mapping.keys()
+             if key in self._config_mapping.keys()
+-        ]
++        ] + list(self._extra_content.items())
+ 
+     def __iter__(self):
+-        return iter(self._model_mapping.keys())
++        return iter(self.keys())
+ 
+     def __contains__(self, item):
++        if item in self._extra_content:
++            return True
+         if not hasattr(item, "__name__") or item.__name__ not in self._reverse_config_mapping:
+             return False
+         model_type = self._reverse_config_mapping[item.__name__]
+diff --git a/src/transformers/models/auto/configuration_auto.py b/src/transformers/models/auto/configuration_auto.py
+index 78a33659a..1f8f314cc 100644
+--- a/src/transformers/models/auto/configuration_auto.py
++++ b/src/transformers/models/auto/configuration_auto.py
+@@ -275,9 +275,14 @@ class _LazyConfigMapping(OrderedDict):
+ 
+     def __init__(self, mapping):
+         self._mapping = mapping
++        # Keep user supplied entries separate from the lazy built-in mapping: values
++        # in this dictionary are already classes and must not be imported by name.
++        self._extra_content = {}
+         self._modules = {}
+ 
+     def __getitem__(self, key):
++        if key in self._extra_content:
++            return self._extra_content[key]
+         if key not in self._mapping:
+             raise KeyError(key)
+         value = self._mapping[key]
+@@ -286,20 +291,24 @@ class _LazyConfigMapping(OrderedDict):
+             self._modules[module_name] = importlib.import_module(f".{module_name}", "transformers.models")
+         return getattr(self._modules[module_name], value)
+ 
++    def __setitem__(self, key, value):
++        """Add a user-defined configuration class to this mapping."""
++        self._extra_content[key] = value
++
+     def keys(self):
+-        return self._mapping.keys()
++        return list(self._mapping.keys()) + list(self._extra_content.keys())
+ 
+     def values(self):
+-        return [self[k] for k in self._mapping.keys()]
++        return [self[k] for k in self.keys()]
+ 
+     def items(self):
+-        return [(k, self[k]) for k in self._mapping.keys()]
++        return [(k, self[k]) for k in self.keys()]
+ 
+     def __iter__(self):
+-        return iter(self._mapping.keys())
++        return iter(self.keys())
+ 
+     def __contains__(self, item):
+-        return item in self._mapping
++        return item in self._mapping or item in self._extra_content
+ 
+ 
+ CONFIG_MAPPING = _LazyConfigMapping(CONFIG_MAPPING_NAMES)

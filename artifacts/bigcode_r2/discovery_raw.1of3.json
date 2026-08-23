@@ -1,0 +1,6005 @@
+{
+  "chunk": "1/3",
+  "results": [
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 799,
+      "pass1": 1,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/129",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 516,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/642",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 336,
+      "pass1": 0,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 242,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/987",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 264,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/581",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 491,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 466,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 240,
+      "pass1": 1,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/1000",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 274,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 474,
+      "pass1": 1,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 241,
+      "pass1": 1,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 288,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 412,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/298",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 436,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/414",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 399,
+      "pass1": 1,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 385,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/910",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 2,
+      "out_tok": 288,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 311,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/887",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 2,
+      "out_tok": 239,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 293,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 261,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 519,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/508",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 456,
+      "pass1": 1,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/393",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 266,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 422,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/247",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 555,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 236,
+      "pass1": 1,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 391,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 298,
+      "pass1": 1,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 421,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 256,
+      "pass1": 1,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/721",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 272,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 237,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 247,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 2048,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 388,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/896",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 189,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 367,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 334,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F0_MINIMAL_HINT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 437,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 298,
+      "pass1": 1,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/129",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 596,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/642",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 418,
+      "pass1": 0,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 264,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/987",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 410,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/581",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 420,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 361,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 164,
+      "pass1": 1,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/1000",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 261,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 342,
+      "pass1": 1,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 118,
+      "pass1": 1,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 601,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 848,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/298",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 458,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/414",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 451,
+      "pass1": 1,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 396,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/910",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 293,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 341,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/887",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 237,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 292,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 217,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 478,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/508",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 419,
+      "pass1": 1,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/393",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 326,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 307,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/247",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 335,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 287,
+      "pass1": 1,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 391,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 234,
+      "pass1": 0,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 407,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 169,
+      "pass1": 1,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/721",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 235,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 211,
+      "pass1": 1,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 272,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 338,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 415,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/896",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 240,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 414,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 424,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F1_PLAIN_LESSON@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 427,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 1692,
+      "pass1": 1,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/129",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 634,
+      "pass1": 1,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/642",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 364,
+      "pass1": 1,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 213,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/987",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 473,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/581",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 528,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 424,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 286,
+      "pass1": 1,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/1000",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 401,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 322,
+      "pass1": 1,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 242,
+      "pass1": 0,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 240,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 226,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/298",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 1542,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/414",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 317,
+      "pass1": 1,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 332,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/910",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 280,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 309,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/887",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 267,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 295,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 271,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 495,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/508",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 522,
+      "pass1": 1,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/393",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 275,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 334,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/247",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 471,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 269,
+      "pass1": 1,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 409,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 192,
+      "pass1": 0,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 401,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 168,
+      "pass1": 1,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/721",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 355,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 98,
+      "pass1": 1,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 233,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 309,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 347,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/896",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 174,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 369,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 297,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F2_API_CARD@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 470,
+      "pass1": 1,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 306,
+      "pass1": 1,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/129",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 376,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/642",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 354,
+      "pass1": 1,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 127,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/987",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 333,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/581",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 432,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 354,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 164,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/1000",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 311,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 405,
+      "pass1": 0,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 243,
+      "pass1": 0,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 270,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 422,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/298",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 406,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/414",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 307,
+      "pass1": 1,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 255,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/910",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 298,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 404,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/887",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 264,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 295,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 237,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 434,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/508",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 421,
+      "pass1": 1,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/393",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 272,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 305,
+      "pass1": 0,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/247",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 529,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 335,
+      "pass1": 1,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 384,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 309,
+      "pass1": 1,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 343,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 127,
+      "pass1": 1,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/721",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 229,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 214,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 250,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 331,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 387,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/896",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 264,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 359,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 415,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F3_GOVERNED_COMPACT@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 452,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 272,
+      "pass1": 1,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/129",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 453,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/642",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 371,
+      "pass1": 1,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 173,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/987",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 400,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/581",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 573,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 336,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 262,
+      "pass1": 1,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/1000",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 246,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 334,
+      "pass1": 1,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 110,
+      "pass1": 1,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 282,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 554,
+      "pass1": 1,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/298",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 2048,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/414",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 324,
+      "pass1": 1,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 433,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/910",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 404,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 341,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/887",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 220,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 276,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 297,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 433,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/508",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 501,
+      "pass1": 1,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/393",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 331,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 318,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/247",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 341,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 256,
+      "pass1": 0,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 357,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/622",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 304,
+      "pass1": 1,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 365,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 130,
+      "pass1": 1,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/721",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 301,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 226,
+      "pass1": 1,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/932",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 267,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 310,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 404,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/896",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 264,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/243",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 281,
+      "pass1": 1,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 430,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F4_RAW_VERIFIED_TRACE@P0",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 422,
+      "pass1": 1,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": "BigCodeBench/891",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 997,
+      "pass1": 0,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/138",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 432,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/1101",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 338,
+      "pass1": 0,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 236,
+      "pass1": 1,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 272,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 389,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/694",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 500,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 247,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 407,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 386,
+      "pass1": 1,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 219,
+      "pass1": 1,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 255,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 353,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 2048,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 201,
+      "pass1": 0,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 335,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/796",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 288,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 455,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 244,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 313,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 216,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 509,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 486,
+      "pass1": 1,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/487",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 290,
+      "pass1": 0,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 390,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/1072",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 409,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1062",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 306,
+      "pass1": 1,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/453",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 351,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/650",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 314,
+      "pass1": 1,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/659",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 335,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 171,
+      "pass1": 1,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/208",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 267,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/549",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 243,
+      "pass1": 1,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 297,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 316,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 360,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/805",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 231,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 385,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 450,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F0_MINIMAL_HINT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 450,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": "BigCodeBench/891",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 301,
+      "pass1": 0,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/138",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 529,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/1101",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 321,
+      "pass1": 1,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 267,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 397,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 386,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/694",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 489,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 278,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 288,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 305,
+      "pass1": 0,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 113,
+      "pass1": 0,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 316,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 218,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 396,
+      "pass1": 1,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 312,
+      "pass1": 0,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 267,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/796",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 296,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 399,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 2,
+      "out_tok": 258,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 292,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 216,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 411,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 539,
+      "pass1": 0,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/487",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 284,
+      "pass1": 0,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 436,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/1072",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 429,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1062",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 291,
+      "pass1": 0,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/453",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 390,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/650",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 288,
+      "pass1": 1,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/659",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 311,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 130,
+      "pass1": 0,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/208",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 215,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/549",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 198,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 256,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 352,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 403,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/805",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 194,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 245,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 312,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F1_PLAIN_LESSON@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 475,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": "BigCodeBench/891",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 361,
+      "pass1": 1,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/138",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 527,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/1101",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 349,
+      "pass1": 0,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 127,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 333,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 347,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/694",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 353,
+      "pass1": 0,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 266,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 272,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 356,
+      "pass1": 0,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 218,
+      "pass1": 0,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 281,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 218,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 466,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 328,
+      "pass1": 1,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 362,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/796",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 394,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 386,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 278,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 273,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 311,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 617,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 402,
+      "pass1": 1,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/487",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 319,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 448,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/1072",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 342,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1062",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 354,
+      "pass1": 0,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/453",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 366,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/650",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 376,
+      "pass1": 1,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/659",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 372,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 168,
+      "pass1": 1,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/208",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 376,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/549",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 225,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 223,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 2048,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 365,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/805",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 254,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 421,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 429,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F2_API_CARD@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 476,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": "BigCodeBench/891",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 279,
+      "pass1": 0,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/138",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 491,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/1101",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 427,
+      "pass1": 0,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 217,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 280,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 476,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/694",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 265,
+      "pass1": 0,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 351,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 246,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 375,
+      "pass1": 0,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 220,
+      "pass1": 0,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 318,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 252,
+      "pass1": 1,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 428,
+      "pass1": 1,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 331,
+      "pass1": 0,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 232,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/796",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 298,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 324,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 211,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 358,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 290,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 513,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 489,
+      "pass1": 0,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/487",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 279,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 294,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/1072",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 346,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1062",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 225,
+      "pass1": 0,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/453",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 362,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/650",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 361,
+      "pass1": 0,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/659",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 346,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 169,
+      "pass1": 0,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/208",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 340,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/549",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 99,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 287,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 2048,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 415,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/805",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 215,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 368,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 456,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F3_GOVERNED_COMPACT@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 429,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": "BigCodeBench/891",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 296,
+      "pass1": 0,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": "BigCodeBench/138",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 496,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": "BigCodeBench/1101",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 339,
+      "pass1": 1,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": "BigCodeBench/167",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 172,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 556,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": "BigCodeBench/48",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 432,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": "BigCodeBench/694",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 351,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": "BigCodeBench/376",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 279,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": "BigCodeBench/283",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 274,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": "BigCodeBench/1076",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 2048,
+      "pass1": 0,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 122,
+      "pass1": 1,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 280,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": "BigCodeBench/906",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 497,
+      "pass1": 1,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": "BigCodeBench/212",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 568,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 323,
+      "pass1": 1,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": "BigCodeBench/118",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 343,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": "BigCodeBench/796",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 285,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": "BigCodeBench/345",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 318,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 239,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": "BigCodeBench/976",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 296,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": "BigCodeBench/819",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 360,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 501,
+      "pass1": 0,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 458,
+      "pass1": 1,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": "BigCodeBench/487",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 272,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": "BigCodeBench/143",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 318,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": "BigCodeBench/1072",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 346,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": "BigCodeBench/1062",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 204,
+      "pass1": 0,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": "BigCodeBench/453",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 403,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": "BigCodeBench/650",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 299,
+      "pass1": 0,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": "BigCodeBench/659",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 334,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 130,
+      "pass1": 0,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": "BigCodeBench/208",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 990,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": "BigCodeBench/549",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 227,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": "BigCodeBench/822",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 257,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 428,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": "BigCodeBench/930",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 315,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": "BigCodeBench/805",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 228,
+      "pass1": 0,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": "BigCodeBench/275",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 121,
+      "pass1": 1,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": "BigCodeBench/693",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 305,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": "BigCodeBench/299",
+      "cell": "F4_RAW_VERIFIED_TRACE@P4",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 475,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 762,
+      "pass1": 1,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 485,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 350,
+      "pass1": 1,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 244,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 423,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 2048,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 545,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 392,
+      "pass1": 1,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 297,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 508,
+      "pass1": 1,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 237,
+      "pass1": 1,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 289,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 374,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 450,
+      "pass1": 1,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 319,
+      "pass1": 1,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 431,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 390,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 362,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 258,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 335,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 288,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 475,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 470,
+      "pass1": 1,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 298,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 408,
+      "pass1": 0,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 462,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 298,
+      "pass1": 1,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 367,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 307,
+      "pass1": 1,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 356,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 249,
+      "pass1": 1,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 233,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 219,
+      "pass1": 1,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 481,
+      "pass1": 1,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 1814,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 358,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 266,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 443,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 435,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F1_PLAIN_LESSON@P1",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 1,
+      "out_tok": 359,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 337,
+      "pass1": 0,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 603,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 355,
+      "pass1": 0,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 217,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 504,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 413,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 357,
+      "pass1": 0,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 375,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 284,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 361,
+      "pass1": 0,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 258,
+      "pass1": 0,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 289,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 1931,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 1283,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 330,
+      "pass1": 0,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 396,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 411,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 363,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 285,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 332,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 261,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 455,
+      "pass1": 0,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 476,
+      "pass1": 0,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 230,
+      "pass1": 0,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 410,
+      "pass1": 0,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 499,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 256,
+      "pass1": 0,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 377,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 375,
+      "pass1": 0,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 362,
+      "pass1": 0,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 128,
+      "pass1": 0,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 1864,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 233,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 264,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 304,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 415,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 202,
+      "pass1": 0,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 401,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 305,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 399,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 337,
+      "pass1": 0,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 622,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 350,
+      "pass1": 0,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 217,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 424,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 1405,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 358,
+      "pass1": 0,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 277,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 258,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 361,
+      "pass1": 0,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 258,
+      "pass1": 0,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 289,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 1693,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 558,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 325,
+      "pass1": 0,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 396,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 411,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 363,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 285,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 332,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 261,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 455,
+      "pass1": 0,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 476,
+      "pass1": 0,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 230,
+      "pass1": 0,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 410,
+      "pass1": 0,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 499,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 285,
+      "pass1": 0,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 377,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 375,
+      "pass1": 0,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 372,
+      "pass1": 0,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 128,
+      "pass1": 0,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 2048,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 233,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 264,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 310,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 361,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 202,
+      "pass1": 0,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 447,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 305,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F3_GOVERNED_COMPACT@P1",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 399,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 337,
+      "pass1": 0,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 622,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 362,
+      "pass1": 0,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 217,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 424,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 1405,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 358,
+      "pass1": 0,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 364,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 575,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 361,
+      "pass1": 0,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 258,
+      "pass1": 0,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 3,
+      "out_tok": 289,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 1693,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 558,
+      "pass1": 0,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 325,
+      "pass1": 0,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 396,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 411,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 363,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 285,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 332,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 261,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 455,
+      "pass1": 0,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 476,
+      "pass1": 0,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 230,
+      "pass1": 0,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 410,
+      "pass1": 0,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 500,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 256,
+      "pass1": 0,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 377,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 376,
+      "pass1": 0,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 356,
+      "pass1": 0,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 128,
+      "pass1": 0,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 2048,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 233,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 264,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 304,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 415,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 202,
+      "pass1": 0,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 390,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 305,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": null,
+      "cell": "F2_API_CARD@P2",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 1,
+      "out_tok": 399,
+      "pass1": 0,
+      "tid": "BigCodeBench/157"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 305,
+      "pass1": 1,
+      "tid": "BigCodeBench/841"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 502,
+      "pass1": 0,
+      "tid": "BigCodeBench/1015"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 345,
+      "pass1": 1,
+      "tid": "BigCodeBench/504"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 0,
+      "out_tok": 127,
+      "pass1": 0,
+      "tid": "BigCodeBench/702"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 390,
+      "pass1": 0,
+      "tid": "BigCodeBench/986"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 491,
+      "pass1": 0,
+      "tid": "BigCodeBench/246"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 405,
+      "pass1": 1,
+      "tid": "BigCodeBench/807"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 0,
+      "out_tok": 164,
+      "pass1": 0,
+      "tid": "BigCodeBench/974"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 141,
+      "pass1": 0,
+      "tid": "BigCodeBench/681"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 401,
+      "pass1": 1,
+      "tid": "BigCodeBench/596"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 0,
+      "out_tok": 113,
+      "pass1": 0,
+      "tid": "BigCodeBench/852"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 0,
+      "out_tok": 336,
+      "pass1": 0,
+      "tid": "BigCodeBench/699"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 216,
+      "pass1": 0,
+      "tid": "BigCodeBench/309"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 338,
+      "pass1": 1,
+      "tid": "BigCodeBench/300"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 483,
+      "pass1": 1,
+      "tid": "BigCodeBench/551"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 381,
+      "pass1": 0,
+      "tid": "BigCodeBench/582"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 0,
+      "out_tok": 295,
+      "pass1": 0,
+      "tid": "BigCodeBench/107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 405,
+      "pass1": 0,
+      "tid": "BigCodeBench/322"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 275,
+      "pass1": 0,
+      "tid": "BigCodeBench/1030"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 263,
+      "pass1": 0,
+      "tid": "BigCodeBench/518"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 253,
+      "pass1": 0,
+      "tid": "BigCodeBench/1098"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 355,
+      "pass1": 1,
+      "tid": "BigCodeBench/421"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 460,
+      "pass1": 0,
+      "tid": "BigCodeBench/403"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 273,
+      "pass1": 1,
+      "tid": "BigCodeBench/194"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 417,
+      "pass1": 1,
+      "tid": "BigCodeBench/384"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 429,
+      "pass1": 0,
+      "tid": "BigCodeBench/218"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 293,
+      "pass1": 1,
+      "tid": "BigCodeBench/1107"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 225,
+      "pass1": 0,
+      "tid": "BigCodeBench/399"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 294,
+      "pass1": 1,
+      "tid": "BigCodeBench/621"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 374,
+      "pass1": 1,
+      "tid": "BigCodeBench/605"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 166,
+      "pass1": 0,
+      "tid": "BigCodeBench/174"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 289,
+      "pass1": 0,
+      "tid": "BigCodeBench/1113"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 0,
+      "injected": 0,
+      "out_tok": 226,
+      "pass1": 0,
+      "tid": "BigCodeBench/820"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 302,
+      "pass1": 0,
+      "tid": "BigCodeBench/938"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 375,
+      "pass1": 0,
+      "tid": "BigCodeBench/222"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 411,
+      "pass1": 0,
+      "tid": "BigCodeBench/762"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 216,
+      "pass1": 1,
+      "tid": "BigCodeBench/912"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 328,
+      "pass1": 0,
+      "tid": "BigCodeBench/881"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 306,
+      "pass1": 0,
+      "tid": "BigCodeBench/1129"
+    },
+    {
+      "assigned_source": null,
+      "cell": "NO_MEMORY",
+      "cross_user": 0,
+      "exec1": 1,
+      "injected": 0,
+      "out_tok": 471,
+      "pass1": 1,
+      "tid": "BigCodeBench/157"
+    }
+  ]
+}

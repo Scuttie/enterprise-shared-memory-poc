@@ -1,0 +1,1389 @@
+{
+ "n_targets_with_memory": 109,
+ "n_verified_sources": 62,
+ "n_lessons_generated": 61,
+ "assignments": {
+  "3562": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3634": {
+   "relevant_source": "3379",
+   "rel_sim": 0.7135,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3347",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 330,
+   "m2_len": 415,
+   "m3_len": 769
+  },
+  "3674": {
+   "relevant_source": "3213",
+   "rel_sim": 0.7636,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "2979",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 621,
+   "m3_len": 1136
+  },
+  "3677": {
+   "relevant_source": "3511",
+   "rel_sim": 0.5724,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc343_b",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 350,
+   "m2_len": 383,
+   "m3_len": 967
+  },
+  "3684": {
+   "relevant_source": "3353",
+   "rel_sim": 0.6951,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc359_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 409,
+   "m2_len": 396,
+   "m3_len": 1294
+  },
+  "3687": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3688": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3692": {
+   "relevant_source": "3353",
+   "rel_sim": 0.7228,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc356_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 409,
+   "m2_len": 338,
+   "m3_len": 1294
+  },
+  "3696": {
+   "relevant_source": "3543",
+   "rel_sim": 0.5927,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3381",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 342,
+   "m2_len": 333,
+   "m3_len": 1182
+  },
+  "3697": {
+   "relevant_source": "3606",
+   "rel_sim": 0.7676,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc361_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 372,
+   "m2_len": 404,
+   "m3_len": 1177
+  },
+  "3701": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3702": {
+   "relevant_source": "3593",
+   "rel_sim": 0.6554,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "abc322_c",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 211,
+   "m2_len": 431,
+   "m3_len": 1277
+  },
+  "3704": {
+   "relevant_source": "2777",
+   "rel_sim": 0.6845,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc362_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 295,
+   "m2_len": 362,
+   "m3_len": 1263
+  },
+  "3705": {
+   "relevant_source": "3213",
+   "rel_sim": 0.7499,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3540",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 448,
+   "m3_len": 1136
+  },
+  "3708": {
+   "relevant_source": "3533",
+   "rel_sim": 0.5885,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc355_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 311,
+   "m2_len": 347,
+   "m3_len": 1157
+  },
+  "3709": {
+   "relevant_source": "3353",
+   "rel_sim": 0.7513,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc303_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 409,
+   "m2_len": 412,
+   "m3_len": 1294
+  },
+  "3714": {
+   "relevant_source": "3213",
+   "rel_sim": 0.7718,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3540",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 448,
+   "m3_len": 1136
+  },
+  "3715": {
+   "relevant_source": "3213",
+   "rel_sim": 0.5855,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "abc342_d",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 387,
+   "m3_len": 1136
+  },
+  "3716": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3717": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3720": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3721": {
+   "relevant_source": "3541",
+   "rel_sim": 0.3677,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "2979",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 383,
+   "m2_len": 621,
+   "m3_len": 1147
+  },
+  "3722": {
+   "relevant_source": "3213",
+   "rel_sim": 0.7332,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "2953",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 553,
+   "m3_len": 1136
+  },
+  "3723": {
+   "relevant_source": "3446",
+   "rel_sim": 0.7711,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3251",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 322,
+   "m2_len": 321,
+   "m3_len": 962
+  },
+  "3725": {
+   "relevant_source": "3213",
+   "rel_sim": 0.7898,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3522",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 386,
+   "m3_len": 1136
+  },
+  "3731": {
+   "relevant_source": "3213",
+   "rel_sim": 0.6938,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "abc322_c",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 431,
+   "m3_len": 1136
+  },
+  "3733": {
+   "relevant_source": "3461",
+   "rel_sim": 0.6189,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3522",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 408,
+   "m2_len": 386,
+   "m3_len": 1394
+  },
+  "3736": {
+   "relevant_source": "3484",
+   "rel_sim": 0.7318,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3446",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 427,
+   "m2_len": 322,
+   "m3_len": 998
+  },
+  "3737": {
+   "relevant_source": "2979",
+   "rel_sim": 0.5992,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3593",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 621,
+   "m2_len": 211,
+   "m3_len": 1972
+  },
+  "3739": {
+   "relevant_source": "2953",
+   "rel_sim": 0.666,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "abc371_d",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 553,
+   "m2_len": 428,
+   "m3_len": 1446
+  },
+  "3743": {
+   "relevant_source": "abc322_c",
+   "rel_sim": 0.5249,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "abc306_c",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 431,
+   "m2_len": 415,
+   "m3_len": 1034
+  },
+  "3744": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3747": {
+   "relevant_source": "3651",
+   "rel_sim": 0.6393,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2917",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 383,
+   "m2_len": 372,
+   "m3_len": 1054
+  },
+  "3748": {
+   "relevant_source": "3533",
+   "rel_sim": 0.5504,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc384_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 311,
+   "m2_len": 438,
+   "m3_len": 1157
+  },
+  "3750": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3751": {
+   "relevant_source": "3213",
+   "rel_sim": 0.7678,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3540",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 448,
+   "m3_len": 1136
+  },
+  "3753": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3754": {
+   "relevant_source": "3533",
+   "rel_sim": 0.563,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc365_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 311,
+   "m2_len": 410,
+   "m3_len": 1157
+  },
+  "3759": {
+   "relevant_source": "3213",
+   "rel_sim": 0.6892,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3363",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 360,
+   "m3_len": 1136
+  },
+  "3760": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3762": {
+   "relevant_source": "2855",
+   "rel_sim": 0.6582,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "abc322_c",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 488,
+   "m2_len": 431,
+   "m3_len": 1126
+  },
+  "3763": {
+   "relevant_source": "3461",
+   "rel_sim": 0.6682,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3363",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 408,
+   "m2_len": 360,
+   "m3_len": 1394
+  },
+  "3764": {
+   "relevant_source": "3213",
+   "rel_sim": 0.6584,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "2979",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 308,
+   "m2_len": 621,
+   "m3_len": 1136
+  },
+  "3765": {
+   "relevant_source": "3263",
+   "rel_sim": 0.8109,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc347_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 543,
+   "m2_len": 219,
+   "m3_len": 939
+  },
+  "3768": {
+   "relevant_source": "3484",
+   "rel_sim": 0.5909,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc356_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 427,
+   "m2_len": 338,
+   "m3_len": 998
+  },
+  "3770": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3771": {
+   "relevant_source": "3353",
+   "rel_sim": 0.648,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3511",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 409,
+   "m2_len": 350,
+   "m3_len": 1294
+  },
+  "3773": {
+   "relevant_source": "3606",
+   "rel_sim": 0.7771,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc347_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 372,
+   "m2_len": 219,
+   "m3_len": 1177
+  },
+  "3776": {
+   "relevant_source": "3263",
+   "rel_sim": 0.7701,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2800",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 543,
+   "m2_len": 512,
+   "m3_len": 939
+  },
+  "3777": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3778": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3779": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3781": {
+   "relevant_source": "2953",
+   "rel_sim": 0.7305,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "abc322_c",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 553,
+   "m2_len": 431,
+   "m3_len": 1446
+  },
+  "3783": {
+   "relevant_source": "3522",
+   "rel_sim": 0.5295,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3507",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 386,
+   "m2_len": 554,
+   "m3_len": 1106
+  },
+  "3784": {
+   "relevant_source": "3600",
+   "rel_sim": 0.625,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3353",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 305,
+   "m2_len": 409,
+   "m3_len": 826
+  },
+  "3785": {
+   "relevant_source": "3347",
+   "rel_sim": 0.6424,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3367",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 415,
+   "m2_len": 434,
+   "m3_len": 1144
+  },
+  "3786": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3788": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3789": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3791": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3793": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3794": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3795": {
+   "relevant_source": "3381",
+   "rel_sim": 0.6621,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc343_b",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 333,
+   "m2_len": 383,
+   "m3_len": 1125
+  },
+  "3799": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3801": {
+   "relevant_source": "3507",
+   "rel_sim": 0.6618,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3522",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 554,
+   "m2_len": 386,
+   "m3_len": 1546
+  },
+  "3805": {
+   "relevant_source": "3543",
+   "rel_sim": 0.586,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2917",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 342,
+   "m2_len": 372,
+   "m3_len": 1182
+  },
+  "3809": {
+   "relevant_source": "3446",
+   "rel_sim": 0.5339,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3381",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 322,
+   "m2_len": 333,
+   "m3_len": 962
+  },
+  "3811": {
+   "relevant_source": "3379",
+   "rel_sim": 0.6575,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc303_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 330,
+   "m2_len": 412,
+   "m3_len": 769
+  },
+  "3817": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "3832": {
+   "relevant_source": "3263",
+   "rel_sim": 0.6382,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2777",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 543,
+   "m2_len": 295,
+   "m3_len": 939
+  },
+  "abc387_a": {
+   "relevant_source": "abc365_a",
+   "rel_sim": 0.6215,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3543",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 410,
+   "m2_len": 342,
+   "m3_len": 1230
+  },
+  "abc387_b": {
+   "relevant_source": "3367",
+   "rel_sim": 0.6387,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc363_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 434,
+   "m2_len": 401,
+   "m3_len": 1350
+  },
+  "abc387_c": {
+   "relevant_source": "abc321_a",
+   "rel_sim": 0.6186,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc368_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 381,
+   "m2_len": 422,
+   "m3_len": 1005
+  },
+  "abc387_f": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc388_a": {
+   "relevant_source": "abc372_a",
+   "rel_sim": 0.7313,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3379",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 316,
+   "m2_len": 330,
+   "m3_len": 763
+  },
+  "abc388_b": {
+   "relevant_source": "abc344_b",
+   "rel_sim": 0.6,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2917",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 343,
+   "m2_len": 372,
+   "m3_len": 985
+  },
+  "abc388_c": {
+   "relevant_source": "abc368_a",
+   "rel_sim": 0.5799,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc339_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 422,
+   "m2_len": 315,
+   "m3_len": 1231
+  },
+  "abc388_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc388_e": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc388_f": {
+   "relevant_source": "abc342_d",
+   "rel_sim": 0.6539,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3593",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 387,
+   "m2_len": 211,
+   "m3_len": 1469
+  },
+  "abc388_g": {
+   "relevant_source": "abc368_a",
+   "rel_sim": 0.5326,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3606",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 422,
+   "m2_len": 372,
+   "m3_len": 1231
+  },
+  "abc389_a": {
+   "relevant_source": "abc321_a",
+   "rel_sim": 0.6451,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc346_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 381,
+   "m2_len": 361,
+   "m3_len": 1005
+  },
+  "abc389_b": {
+   "relevant_source": "abc321_a",
+   "rel_sim": 0.5423,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc355_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 381,
+   "m2_len": 347,
+   "m3_len": 1005
+  },
+  "abc389_d": {
+   "relevant_source": "abc342_d",
+   "rel_sim": 0.6775,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3363",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 387,
+   "m2_len": 360,
+   "m3_len": 1469
+  },
+  "abc389_e": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc389_f": {
+   "relevant_source": "abc363_a",
+   "rel_sim": 0.7011,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2727",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 401,
+   "m2_len": 245,
+   "m3_len": 1080
+  },
+  "abc389_g": {
+   "relevant_source": "abc307_e",
+   "rel_sim": 0.5649,
+   "rel_difficulty": "Difficulty.HARD",
+   "m2_source": "abc361_e",
+   "m2_difficulty": "Difficulty.HARD",
+   "m1_len": 490,
+   "m2_len": 439,
+   "m3_len": 917
+  },
+  "abc390_a": {
+   "relevant_source": "abc365_b",
+   "rel_sim": 0.7078,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3381",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 347,
+   "m2_len": 333,
+   "m3_len": 1148
+  },
+  "abc390_b": {
+   "relevant_source": "abc344_b",
+   "rel_sim": 0.6076,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3353",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 343,
+   "m2_len": 409,
+   "m3_len": 985
+  },
+  "abc390_c": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc390_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc390_e": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc390_f": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc390_g": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc391_a": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc391_b": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc391_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc391_e": {
+   "relevant_source": "abc306_c",
+   "rel_sim": 0.5494,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3587",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 415,
+   "m2_len": 773,
+   "m3_len": 1479
+  },
+  "abc391_f": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc391_g": {
+   "relevant_source": "abc347_b",
+   "rel_sim": 0.7108,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc356_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 368,
+   "m2_len": 338,
+   "m3_len": 919
+  },
+  "abc392_a": {
+   "relevant_source": "abc346_a",
+   "rel_sim": 0.7068,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc343_b",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 361,
+   "m2_len": 383,
+   "m3_len": 958
+  },
+  "abc392_b": {
+   "relevant_source": "abc344_b",
+   "rel_sim": 0.7484,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3367",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 343,
+   "m2_len": 434,
+   "m3_len": 985
+  },
+  "abc392_c": {
+   "relevant_source": "abc359_a",
+   "rel_sim": 0.6464,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3543",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 396,
+   "m2_len": 342,
+   "m3_len": 1173
+  },
+  "abc392_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc392_f": {
+   "relevant_source": "abc344_b",
+   "rel_sim": 0.7502,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2727",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 343,
+   "m2_len": 245,
+   "m3_len": 985
+  },
+  "abc392_g": {
+   "relevant_source": "abc385_a",
+   "rel_sim": 0.6522,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3533",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 272,
+   "m2_len": 311,
+   "m3_len": 1238
+  },
+  "abc393_a": {
+   "relevant_source": "abc355_a",
+   "rel_sim": 0.5238,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3251",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 347,
+   "m2_len": 321,
+   "m3_len": 986
+  },
+  "abc393_b": {
+   "relevant_source": "abc384_a",
+   "rel_sim": 0.6872,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc361_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 438,
+   "m2_len": 404,
+   "m3_len": 1098
+  },
+  "abc393_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc393_e": {
+   "relevant_source": "abc347_a",
+   "rel_sim": 0.6724,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc346_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 219,
+   "m2_len": 361,
+   "m3_len": 1135
+  },
+  "abc393_f": {
+   "relevant_source": "abc371_d",
+   "rel_sim": 0.6814,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "abc322_c",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 428,
+   "m2_len": 431,
+   "m3_len": 1154
+  },
+  "abc394_a": {
+   "relevant_source": "abc344_a",
+   "rel_sim": 0.7236,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc362_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 425,
+   "m2_len": 362,
+   "m3_len": 1222
+  },
+  "abc394_b": {
+   "relevant_source": "abc384_a",
+   "rel_sim": 0.7519,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3511",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 438,
+   "m2_len": 350,
+   "m3_len": 1098
+  },
+  "abc394_c": {
+   "relevant_source": "abc384_a",
+   "rel_sim": 0.7411,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc341_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 438,
+   "m2_len": 600,
+   "m3_len": 1098
+  },
+  "abc394_d": {
+   "relevant_source": "abc347_b",
+   "rel_sim": 0.6419,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2917",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 368,
+   "m2_len": 372,
+   "m3_len": 919
+  },
+  "abc394_e": {
+   "relevant_source": "abc361_e",
+   "rel_sim": 0.5294,
+   "rel_difficulty": "Difficulty.HARD",
+   "m2_source": "abc307_e",
+   "m2_difficulty": "Difficulty.HARD",
+   "m1_len": 439,
+   "m2_len": 490,
+   "m3_len": 1003
+  },
+  "abc394_f": {
+   "relevant_source": "abc343_b",
+   "rel_sim": 0.6001,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3353",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 383,
+   "m2_len": 409,
+   "m3_len": 1040
+  },
+  "abc394_g": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc395_a": {
+   "relevant_source": "abc344_b",
+   "rel_sim": 0.6563,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc355_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 343,
+   "m2_len": 347,
+   "m3_len": 985
+  },
+  "abc395_b": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc395_c": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc395_e": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc395_f": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc396_a": {
+   "relevant_source": "abc344_b",
+   "rel_sim": 0.7583,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3600",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 343,
+   "m2_len": 305,
+   "m3_len": 985
+  },
+  "abc396_b": {
+   "relevant_source": "abc368_a",
+   "rel_sim": 0.6777,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3543",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 422,
+   "m2_len": 342,
+   "m3_len": 1231
+  },
+  "abc396_c": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc396_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc396_e": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc396_f": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc396_g": {
+   "relevant_source": "3461",
+   "rel_sim": 0.6112,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "3522",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 408,
+   "m2_len": 386,
+   "m3_len": 1394
+  },
+  "abc397_a": {
+   "relevant_source": "abc363_a",
+   "rel_sim": 0.4464,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc343_b",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 401,
+   "m2_len": 383,
+   "m3_len": 1080
+  },
+  "abc397_b": {
+   "relevant_source": "abc359_a",
+   "rel_sim": 0.6043,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3381",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 396,
+   "m2_len": 333,
+   "m3_len": 1173
+  },
+  "abc397_c": {
+   "relevant_source": "abc365_b",
+   "rel_sim": 0.7283,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc385_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 347,
+   "m2_len": 272,
+   "m3_len": 1148
+  },
+  "abc397_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc397_e": {
+   "relevant_source": "abc343_b",
+   "rel_sim": 0.5837,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc368_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 383,
+   "m2_len": 422,
+   "m3_len": 1040
+  },
+  "abc397_f": {
+   "relevant_source": "abc365_b",
+   "rel_sim": 0.6906,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2800",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 347,
+   "m2_len": 512,
+   "m3_len": 1148
+  },
+  "abc397_g": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc398_a": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc398_b": {
+   "relevant_source": "abc368_a",
+   "rel_sim": 0.6989,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3367",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 422,
+   "m2_len": 434,
+   "m3_len": 1231
+  },
+  "abc398_c": {
+   "relevant_source": "abc321_a",
+   "rel_sim": 0.6887,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3353",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 381,
+   "m2_len": 409,
+   "m3_len": 1005
+  },
+  "abc398_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc398_f": {
+   "relevant_source": "3353",
+   "rel_sim": 0.626,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc365_b",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 409,
+   "m2_len": 347,
+   "m3_len": 1294
+  },
+  "abc398_g": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc399_a": {
+   "relevant_source": "abc384_a",
+   "rel_sim": 0.7522,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc356_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 438,
+   "m2_len": 338,
+   "m3_len": 1098
+  },
+  "abc399_b": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc399_c": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc399_d": {
+   "relevant_source": "abc307_e",
+   "rel_sim": 0.5656,
+   "rel_difficulty": "Difficulty.HARD",
+   "m2_source": "abc361_e",
+   "m2_difficulty": "Difficulty.HARD",
+   "m1_len": 490,
+   "m2_len": 439,
+   "m3_len": 917
+  },
+  "abc399_e": {
+   "relevant_source": "abc384_a",
+   "rel_sim": 0.7299,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc359_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 438,
+   "m2_len": 396,
+   "m3_len": 1098
+  },
+  "abc399_f": {
+   "relevant_source": "abc342_d",
+   "rel_sim": 0.6516,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "2953",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 387,
+   "m2_len": 553,
+   "m3_len": 1469
+  },
+  "abc400_a": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc400_b": {
+   "relevant_source": "abc321_a",
+   "rel_sim": 0.6174,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc344_b",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 381,
+   "m2_len": 343,
+   "m3_len": 1005
+  },
+  "abc400_c": {
+   "relevant_source": "abc342_d",
+   "rel_sim": 0.6037,
+   "rel_difficulty": "Difficulty.MEDIUM",
+   "m2_source": "2855",
+   "m2_difficulty": "Difficulty.MEDIUM",
+   "m1_len": 387,
+   "m2_len": 488,
+   "m3_len": 1469
+  },
+  "abc400_d": {
+   "relevant_source": "3533",
+   "rel_sim": 0.5999,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc321_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 311,
+   "m2_len": 381,
+   "m3_len": 1157
+  },
+  "abc400_e": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "abc400_g": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc190_a": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc190_c": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc190_d": {
+   "relevant_source": "abc344_b",
+   "rel_sim": 0.5768,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc355_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 343,
+   "m2_len": 347,
+   "m3_len": 985
+  },
+  "arc191_a": {
+   "relevant_source": "abc321_a",
+   "rel_sim": 0.7095,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3421",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 381,
+   "m2_len": 325,
+   "m3_len": 1005
+  },
+  "arc191_c": {
+   "relevant_source": "abc321_a",
+   "rel_sim": 0.6244,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc362_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 381,
+   "m2_len": 362,
+   "m3_len": 1005
+  },
+  "arc191_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc192_a": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc192_b": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc192_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc192_e": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc193_a": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc193_b": {
+   "relevant_source": "abc343_b",
+   "rel_sim": 0.5761,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc363_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 383,
+   "m2_len": 401,
+   "m3_len": 1040
+  },
+  "arc193_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc194_a": {
+   "relevant_source": "abc344_b",
+   "rel_sim": 0.7763,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "3543",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 343,
+   "m2_len": 342,
+   "m3_len": 985
+  },
+  "arc194_b": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc194_c": {
+   "relevant_source": "abc362_a",
+   "rel_sim": 0.6543,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc359_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 362,
+   "m2_len": 396,
+   "m3_len": 1133
+  },
+  "arc194_d": {
+   "relevant_source": "3353",
+   "rel_sim": 0.6281,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc347_b",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 409,
+   "m2_len": 368,
+   "m3_len": 1294
+  },
+  "arc194_e": {
+   "relevant_source": "abc359_a",
+   "rel_sim": 0.587,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "2917",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 396,
+   "m2_len": 372,
+   "m3_len": 1173
+  },
+  "arc195_a": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc195_b": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc195_c": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc195_d": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc195_e": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc196_a": {
+   "relevant_source": "abc365_b",
+   "rel_sim": 0.6972,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc356_a",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 347,
+   "m2_len": 338,
+   "m3_len": 1148
+  },
+  "arc196_b": {
+   "relevant_source": null,
+   "reason": "no verified source in top-K"
+  },
+  "arc196_c": {
+   "relevant_source": "abc343_b",
+   "rel_sim": 0.5167,
+   "rel_difficulty": "Difficulty.EASY",
+   "m2_source": "abc329_b",
+   "m2_difficulty": "Difficulty.EASY",
+   "m1_len": 383,
+   "m2_len": 319,
+   "m3_len": 1040
+  },
+  "arc196_d": {
+   "relevant_source": "abc361_e",
+   "rel_sim": 0.5434,
+   "rel_difficulty": "Difficulty.HARD",
+   "m2_source": "abc307_e",
+   "m2_difficulty": "Difficulty.HARD",
+   "m1_len": 439,
+   "m2_len": 490,
+   "m3_len": 1003
+  }
+ }
+}

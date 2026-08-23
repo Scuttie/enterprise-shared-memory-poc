@@ -1,0 +1,61 @@
+{
+  "calibration": {
+    "families": [
+      "fam_calibration_cache_0",
+      "fam_calibration_cache_1",
+      "fam_calibration_cache_2",
+      "fam_calibration_cache_3",
+      "fam_calibration_config_0",
+      "fam_calibration_config_1",
+      "fam_calibration_config_2",
+      "fam_calibration_config_3",
+      "fam_calibration_internal_api_0",
+      "fam_calibration_internal_api_1",
+      "fam_calibration_internal_api_2",
+      "fam_calibration_internal_api_3",
+      "fam_calibration_schema_0",
+      "fam_calibration_schema_1",
+      "fam_calibration_schema_2",
+      "fam_calibration_schema_3"
+    ],
+    "generation_hash": "26070151dae9a34c235e2ce46b1cf7e7cb8fedc255aff580e8f04e6a829f903d"
+  },
+  "generator_version": "p5.1-static/2.0.0",
+  "main": {
+    "families": [
+      "fam_main_cache_0",
+      "fam_main_cache_1",
+      "fam_main_cache_2",
+      "fam_main_cache_3",
+      "fam_main_cache_4",
+      "fam_main_cache_5",
+      "fam_main_cache_6",
+      "fam_main_cache_7",
+      "fam_main_config_0",
+      "fam_main_config_1",
+      "fam_main_config_2",
+      "fam_main_config_3",
+      "fam_main_config_4",
+      "fam_main_config_5",
+      "fam_main_config_6",
+      "fam_main_config_7",
+      "fam_main_internal_api_0",
+      "fam_main_internal_api_1",
+      "fam_main_internal_api_2",
+      "fam_main_internal_api_3",
+      "fam_main_internal_api_4",
+      "fam_main_internal_api_5",
+      "fam_main_internal_api_6",
+      "fam_main_internal_api_7",
+      "fam_main_schema_0",
+      "fam_main_schema_1",
+      "fam_main_schema_2",
+      "fam_main_schema_3",
+      "fam_main_schema_4",
+      "fam_main_schema_5",
+      "fam_main_schema_6",
+      "fam_main_schema_7"
+    ],
+    "generation_hash": "e50046ef29ed1b02e6a926252a537c28bc1dad70b3c15ca7d0170f62e2530783"
+  }
+}

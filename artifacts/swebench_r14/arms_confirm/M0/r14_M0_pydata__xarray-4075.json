@@ -1,0 +1,20 @@
+{
+  "instance_id": "pydata__xarray-4075",
+  "repo": "pydata/xarray",
+  "arm": "M0",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.pydata_1776_xarray-4075@sha256:3d56429d0a07d2b74c0342c12e19f4d7b1510023f87edb6a11cadbfd993de56d",
+  "resolved": true,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "edited_files": [
+    "xarray/core/weighted.py"
+  ],
+  "patch_bytes": 616,
+  "tokens": {
+    "prompt": 10574,
+    "completion": 120
+  },
+  "secs": 106.9
+}

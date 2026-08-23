@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-12489",
+  "repo": "sympy/sympy",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-12489@sha256:da745b29eda94f68cb55a6648fb5767ea6709c242d7cc1c93caee41256ca02c6",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "sympy/combinatorics/permutations.py"
+  ],
+  "patch_bytes": 1243,
+  "tokens": {
+    "prompt": 26067,
+    "completion": 1875
+  },
+  "secs": 89.1
+}

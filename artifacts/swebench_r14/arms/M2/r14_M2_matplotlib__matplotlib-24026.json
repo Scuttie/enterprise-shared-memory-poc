@@ -1,0 +1,18 @@
+{
+  "instance_id": "matplotlib__matplotlib-24026",
+  "repo": "matplotlib/matplotlib",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-24026@sha256:17553d6f09cbc0b9e5b3d7a8c527f609caced536a09056d72d97917eb5f877eb",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 40,
+  "edited_files": [],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 74452,
+    "completion": 1201
+  },
+  "secs": 137.5
+}

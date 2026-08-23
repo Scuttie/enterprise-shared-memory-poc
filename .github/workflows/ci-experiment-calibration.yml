@@ -1,0 +1,153 @@
+name: ci-experiment-calibration
+on:
+  workflow_dispatch:
+    inputs:
+      split:
+        description: "calibration or main"
+        default: "calibration"
+        required: true
+  push:
+    branches: [codex/production-service-v0.2]   # gated below by a [run-cal]/[run-main] commit marker
+permissions:
+  contents: read
+jobs:
+  calibration:
+    # only runs on an explicit marker (avoids a Solar run on every push); dispatch always runs.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[run-cal]') ||
+      contains(github.event.head_commit.message, '[run-main]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    services:
+      postgres:
+        image: postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: esm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d esm"
+          --health-interval 5s --health-timeout 5s --health-retries 30
+    env:
+      DATABASE_URL: postgresql://localhost:5432/esm
+      MIGRATION_USER: postgres
+      MIGRATION_PASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: esm
+      QDRANT_URL: http://localhost:6333
+      MINIO_ENDPOINT: http://localhost:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: esm-artifacts-cal
+      INDEX_DIM: "64"
+      ENVIRONMENT: ci
+      REPO_PROVIDER: benchmark
+      EXECUTION_BACKEND: solar
+      SOLAR_MODEL: solar-pro2-251215
+      SOLAR_BASE_URL: https://api.upstage.ai/v1/solar
+      UPSTAGE_API_KEY: ${{ secrets.UPSTAGE_API_KEY }}
+      OIDC_ISSUER: https://idp.e2e.local/
+      OIDC_AUDIENCE: esm-api
+      OIDC_JWKS_FILE: /tmp/cal_jwks.json
+      E2E_API_URL: http://127.0.0.1:8000
+      API_PORT: "8000"
+      RUN_DEADLINE: "3600"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Guard — require the Solar secret
+        run: |
+          if [ -z "$UPSTAGE_API_KEY" ]; then
+            echo "UPSTAGE_API_KEY secret is not set; cannot run a real Solar calibration."; exit 1
+          fi
+      - name: Start Qdrant + MinIO (digest-pinned)
+        run: |
+          docker run -d --name qdrant -p 6333:6333 \
+            qdrant/qdrant:v1.12.4@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
+          docker run -d --name minio -p 9000:9000 \
+            -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin \
+            minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e server /data
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,postgres,qdrant,artifacts,oidc]" pyjwt cryptography
+      - name: Wait for Qdrant + MinIO
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          def wait(url):
+              for _ in range(60):
+                  try:
+                      with urllib.request.urlopen(url, timeout=2) as r:
+                          if r.status < 500: return
+                  except Exception: pass
+                  time.sleep(2)
+              raise SystemExit("not ready: " + url)
+          wait("http://localhost:6333/readyz"); wait("http://localhost:9000/minio/health/live")
+          print("ready")
+          PY
+      - name: Bootstrap + migrate + head check
+        run: |
+          python scripts/postgres_bootstrap.py
+          alembic upgrade head
+          python scripts/check_migration_head.py
+      - name: Create MinIO bucket
+        run: |
+          python - <<'PY'
+          import boto3, os
+          c = boto3.client("s3", endpoint_url=os.environ["MINIO_ENDPOINT"],
+                           aws_access_key_id=os.environ["MINIO_ACCESS_KEY"],
+                           aws_secret_access_key=os.environ["MINIO_SECRET_KEY"], use_ssl=False,
+                           region_name="us-east-1")
+          try: c.create_bucket(Bucket=os.environ["MINIO_BUCKET"])
+          except Exception as e: print("bucket:", e)
+          PY
+      - name: Seed JWKS stub
+        run: echo '{"keys":[]}' > "$OIDC_JWKS_FILE"
+      - name: Start API (solar backend + benchmark adapter)
+        run: nohup python -m enterprise_memory.service.appcli > api.log 2>&1 & echo "api $!"
+      - name: Start 3 solve workers (separate processes)
+        run: |
+          for i in 1 2 3; do
+            nohup env WORKER_ID=cal-worker-$i python -m enterprise_memory.service.solve_worker > worker-$i.log 2>&1 &
+          done
+          echo "workers started"
+      - name: Wait for API readiness
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          for _ in range(60):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8000/health/live", timeout=2) as r:
+                      if r.status == 200: raise SystemExit(0)
+              except SystemExit: raise
+              except Exception: pass
+              time.sleep(1)
+          raise SystemExit("api not live")
+          PY
+      - name: Determine split
+        id: split
+        run: |
+          S="${{ github.event.inputs.split }}"
+          if [ -z "$S" ]; then
+            if echo "${{ github.event.head_commit.message }}" | grep -q '\[run-main\]'; then S=main; else S=calibration; fi
+          fi
+          echo "split=$S" >> "$GITHUB_OUTPUT"; echo "split=$S"
+      - name: Run through the service path (Solar)
+        run: python scripts/p5_1_run.py "${{ steps.split.outputs.split }}"
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p5_1-${{ steps.split.outputs.split }}-results
+          path: |
+            artifacts/experiments/p5_1/results/
+            api.log
+            worker-*.log

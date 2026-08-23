@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-16886",
+  "repo": "sympy/sympy",
+  "arm": "M1",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-16886@sha256:8e68941a90d2b34aaedf409876a2353e3ffc7cb8b70c90bb543bea626c5da085",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "sympy/crypto/crypto.py"
+  ],
+  "patch_bytes": 552,
+  "tokens": {
+    "prompt": 28032,
+    "completion": 287
+  },
+  "secs": 61.1
+}

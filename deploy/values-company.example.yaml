@@ -1,0 +1,9 @@
+# Company-provided values (example; NO real endpoint/credential committed)
+environment: production
+oidc: { issuer: "", audience: "", jwks_uri: "" }
+git_provider: { kind: github_app, app_id: "" }
+postgres: { dsn_ref: "" }
+qdrant: { url: "", api_key_ref: "" }
+object_store: { endpoint: "", bucket: "" }
+kubernetes: { namespace: "", sandbox_runtime: "" }
+retention: { artifacts_days: 30 }

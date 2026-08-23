@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-17318",
+  "repo": "sympy/sympy",
+  "arm": "M1sem",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.sympy_1776_sympy-17318@sha256:dac5e27382a309b8dd1e6bc6aa4fe4dc3cb8c8384c6d5d516ea4c18e08fa06fd",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 5,
+  "edited_files": [
+    "sympy/simplify/sqrtdenest.py"
+  ],
+  "patch_bytes": 504,
+  "tokens": {
+    "prompt": 12668,
+    "completion": 187
+  },
+  "secs": 65.9
+}

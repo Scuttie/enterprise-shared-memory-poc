@@ -1,0 +1,21 @@
+{
+  "instance_id": "Significant-Gravitas__AutoGPT-4652",
+  "language": "Python",
+  "repo": "Significant-Gravitas/AutoGPT",
+  "arm": "M0",
+  "model": "solar-pro3-260323",
+  "image": "ghcr.io/timesler/swe-polybench.eval.x86_64.significant-gravitas__autogpt-4652:latest",
+  "image_digest": "ghcr.io/timesler/swe-polybench.eval.x86_64.significant-gravitas__autogpt-4652@sha256:690d760e5d6703107850dac89f37e59d0e7e2a011aa4b4ad1f8c1ade262371fa",
+  "resolved": false,
+  "terminal_state": "empty_patch",
+  "error": null,
+  "turns": 40,
+  "edited_files": [],
+  "patch_bytes": 0,
+  "tokens": {
+    "prompt": 238249,
+    "completion": 1945
+  },
+  "grader_rc": 0,
+  "secs": 312.6
+}

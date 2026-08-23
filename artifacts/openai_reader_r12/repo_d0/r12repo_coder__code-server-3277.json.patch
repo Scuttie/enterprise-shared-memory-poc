@@ -1,0 +1,38 @@
+diff --git a/lib/vscode/src/vs/workbench/browser/parts/titlebar/menubarControl.ts b/lib/vscode/src/vs/workbench/browser/parts/titlebar/menubarControl.ts
+index 397211f0..57abfe07 100644
+--- a/lib/vscode/src/vs/workbench/browser/parts/titlebar/menubarControl.ts
++++ b/lib/vscode/src/vs/workbench/browser/parts/titlebar/menubarControl.ts
+@@ -721,14 +721,14 @@ export class CustomMenubarControl extends MenubarControl {
+ 			webNavigationActions.pop();
+ 		}
+ 
+-		webNavigationActions.push(new Action('logout', localize('logout', "Log out"), undefined, true,
+-		async (event?: MouseEvent) => {
+-			const COOKIE_KEY = Cookie.Key;
+-			const loginCookie = getCookieValue(COOKIE_KEY);
++		const loginCookie = getCookieValue(Cookie.Key);
++		if (loginCookie) {
++			webNavigationActions.push(new Action('logout', localize('logout', "Log out"), undefined, true,
++			async (event?: MouseEvent) => {
++				const COOKIE_KEY = Cookie.Key;
+ 
+-			this.logService.info('Logging out of code-server');
++				this.logService.info('Logging out of code-server');
+ 
+-			if(loginCookie) {
+ 				this.logService.info(`Removing cookie under ${COOKIE_KEY}`);
+ 
+ 				if (document && document.cookie) {
+@@ -738,10 +738,8 @@ export class CustomMenubarControl extends MenubarControl {
+ 				} else {
+ 					this.logService.warn('Could not delete cookie because document and/or document.cookie is undefined');
+ 				}
+-			} else {
+-				this.logService.warn('Could not log out because we could not find cookie');
+-			}
+-		}));
++			}));
++		}
+ 
+ 		return webNavigationActions;
+ 	}

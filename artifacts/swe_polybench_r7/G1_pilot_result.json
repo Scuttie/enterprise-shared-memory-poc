@@ -1,0 +1,334 @@
+{
+  "experiment": "REALBENCH_SWE_POLYBENCH_R7",
+  "stage": "G1_no_memory_pilot",
+  "n": 40,
+  "graded": 40,
+  "failures": 0,
+  "resolved": 1,
+  "per_language": {
+    "Python": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 10
+    },
+    "TypeScript": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 10
+    },
+    "Java": {
+      "n": 10,
+      "resolved": 0,
+      "graded": 10
+    },
+    "JavaScript": {
+      "n": 10,
+      "resolved": 1,
+      "graded": 10
+    }
+  },
+  "gates": {
+    "G1a_graded_ge38": true,
+    "G1b_failures_le2": true,
+    "G1c_leakage_zero": true,
+    "G1d_resolved_in_4_28": false,
+    "gate_pass": false
+  },
+  "resolved_ids": [
+    "prettier__prettier-3515"
+  ],
+  "failure_ids": [],
+  "per_task": {
+    "Significant-Gravitas__AutoGPT-4652": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 312.6,
+      "lang": "Python"
+    },
+    "angular__angular-37561": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1007.7,
+      "lang": "TypeScript"
+    },
+    "apache__dubbo-3093": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 664.5,
+      "lang": "Java"
+    },
+    "apache__dubbo-3317": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 511.5,
+      "lang": "Java"
+    },
+    "apache__dubbo-3622": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 482.5,
+      "lang": "Java"
+    },
+    "apache__dubbo-3855": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 503.5,
+      "lang": "Java"
+    },
+    "apache__dubbo-4026": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 233.7,
+      "lang": "Java"
+    },
+    "apache__dubbo-4515": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 181.5,
+      "lang": "Java"
+    },
+    "apache__dubbo-4567": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 216.5,
+      "lang": "Java"
+    },
+    "apache__dubbo-4678": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 525.5,
+      "lang": "Java"
+    },
+    "apache__dubbo-5356": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 746.6,
+      "lang": "Java"
+    },
+    "apache__dubbo-5708": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 10,
+      "secs": 372.7,
+      "lang": "Java"
+    },
+    "coder__code-server-3277": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 570.9,
+      "lang": "TypeScript"
+    },
+    "coder__code-server-4923": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1227.5,
+      "lang": "TypeScript"
+    },
+    "coder__code-server-6278": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 724.2,
+      "lang": "TypeScript"
+    },
+    "huggingface__transformers-12981": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 775.0,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13491": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1134.8,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13693": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 785.6,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13865": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 366.7,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13919": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 271.9,
+      "lang": "Python"
+    },
+    "huggingface__transformers-13989": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 10,
+      "secs": 811.5,
+      "lang": "Python"
+    },
+    "huggingface__transformers-15158": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 40,
+      "secs": 632.2,
+      "lang": "Python"
+    },
+    "huggingface__transformers-15473": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1176.4,
+      "lang": "Python"
+    },
+    "huggingface__transformers-15795": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 874.4,
+      "lang": "Python"
+    },
+    "microsoft__vscode-106767": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 427.0,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-108964": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 397.1,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-109750": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 452.8,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-110094": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 968.0,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-113837": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 671.0,
+      "lang": "TypeScript"
+    },
+    "microsoft__vscode-122991": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 663.1,
+      "lang": "TypeScript"
+    },
+    "mrdoob__three.js-14836": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 416.5,
+      "lang": "JavaScript"
+    },
+    "mrdoob__three.js-18648": {
+      "resolved": false,
+      "terminal": "ok",
+      "turns": 10,
+      "secs": 131.0,
+      "lang": "JavaScript"
+    },
+    "mrdoob__three.js-20991": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 932.7,
+      "lang": "JavaScript"
+    },
+    "mrdoob__three.js-24461": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 556.7,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-11000": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 200.1,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-11637": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 490.3,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-12930": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1033.3,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-14400": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 1094.5,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-3436": {
+      "resolved": false,
+      "terminal": "empty_patch",
+      "turns": 40,
+      "secs": 382.6,
+      "lang": "JavaScript"
+    },
+    "prettier__prettier-3515": {
+      "resolved": true,
+      "terminal": "ok",
+      "turns": 17,
+      "secs": 238.0,
+      "lang": "JavaScript"
+    }
+  },
+  "definitive_run_id": "32046661844",
+  "clean_run": true,
+  "valid_patch_count": 5,
+  "no_memory_resolved_rate": 0.025,
+  "band": [
+    0.1,
+    0.7
+  ],
+  "gate_decision": "R7-G1 INSTRUMENT STOP (floor): resolved 1/40=0.025 < 0.10",
+  "failure_mechanism": "solar-pro3 falls into degenerate identical-tool-call repetition loops (intrinsic, begins before guards engage); only 5/40 produced a valid patch, 1 resolved. Pipeline validated (G0 8/8, prettier-3515 resolved=True end-to-end).",
+  "harness_iterations": "v1-v8; all fixes were harness bugs (inverted patch-check, image tag, path guard, tool-restriction enforcement, exact-string->line edit, rate-limit, early-submit); final run clean (40/40 graded, 0 failures, 0 leakage)"
+}

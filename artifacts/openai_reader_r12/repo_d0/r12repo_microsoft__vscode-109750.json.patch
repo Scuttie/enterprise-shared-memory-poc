@@ -1,0 +1,20 @@
+diff --git a/src/vs/workbench/api/common/configurationExtensionPoint.ts b/src/vs/workbench/api/common/configurationExtensionPoint.ts
+index 83c0ab29ec..6e2a208f8d 100644
+--- a/src/vs/workbench/api/common/configurationExtensionPoint.ts
++++ b/src/vs/workbench/api/common/configurationExtensionPoint.ts
+@@ -93,11 +93,10 @@ const defaultConfigurationExtPoint = ExtensionsRegistry.registerExtensionPoint<I
+ 		description: nls.localize('vscode.extension.contributes.defaultConfiguration', 'Contributes default editor configuration settings by language.'),
+ 		type: 'object',
+ 		patternProperties: {
+-			'^\\[.*\\]$': {
+-				type: 'object',
+-				default: {},
+-				$ref: resourceLanguageSettingsSchemaId,
+-			}
++				'^\\[.*\\]$': {
++					type: 'object',
++					$ref: resourceLanguageSettingsSchemaId,
++				}
+ 		},
+ 		errorMessage: nls.localize('config.property.defaultConfiguration.languageExpected', "Language selector expected (e.g. [\"java\"])"),
+ 		additionalProperties: false

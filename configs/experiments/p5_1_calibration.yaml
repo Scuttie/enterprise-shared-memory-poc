@@ -1,0 +1,7 @@
+experiment_id: "EXP_P5_1_CAL"
+split: "calibration"
+n_per_domain: 4
+n_users: 8
+include_safety: true
+arms: ["M0", "M1", "M2", "M3", "M4", "S1", "S2", "S3", "S4"]
+plan_hash: "4eb030a9f6f18f6d196a113e4bba4999c8697bf41343cf897ce058561bbda44f"

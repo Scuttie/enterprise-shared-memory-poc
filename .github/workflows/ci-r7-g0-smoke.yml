@@ -1,0 +1,66 @@
+name: ci-r7-g0-smoke
+
+# REALBENCH-R7 §2 — G0 multi-language GHCR image + grader smoke. 8 instances (2 each Java/Python/JS/TS).
+# Per instance: pull official GHCR image, resolve digest, reproduce clean baseline (F2P fail), apply gold patch
+# evaluator-side (all tests pass). No agent runs. Frozen pins: SWE-PolyBench @ 9c836c5, Verified @ b3fca77.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/production-service-v0.2]
+    paths: ['.github/workflows/ci-r7-g0-smoke.yml']
+
+concurrency:
+  group: ci-r7-g0-smoke-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        instance:
+          - apache__dubbo-3093
+          - apache__dubbo-3317
+          - Significant-Gravitas__AutoGPT-4652
+          - huggingface__transformers-12981
+          - mrdoob__three.js-14836
+          - mrdoob__three.js-18648
+          - angular__angular-37561
+          - coder__code-server-3277
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "/usr/local/share/powershell" /usr/share/swift || true
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Clone SWE-PolyBench @ pinned commit
+        run: |
+          git clone --no-checkout https://github.com/amazon-science/SWE-PolyBench.git polybench
+          cd polybench && git checkout 9c836c5d7f3cb991934132b77d29e6941d912a07
+          test "$(git rev-parse HEAD)" = "9c836c5d7f3cb991934132b77d29e6941d912a07"
+      - name: Install harness (exact requirements + editable)
+        working-directory: polybench
+        run: |
+          pip install -r requirements.txt
+          pip install -e .
+      - name: Download pinned Verified test.csv
+        run: |
+          curl -sL "https://huggingface.co/datasets/AmazonScience/SWE-PolyBench_Verified/resolve/b3fca77b637379f0c01ad86d18753a7ac1998b53/test.csv" -o verified.csv
+          test "$(sha256sum verified.csv | cut -d' ' -f1)" = "0c8138e73c34fa29a5276b675b146b72d78ce001fcc4560d76302c908b4808a5"
+      - name: G0 smoke (pull + baseline + gold)
+        env:
+          R7_INSTANCE_ID: ${{ matrix.instance }}
+          R7_CSV: ${{ github.workspace }}/verified.csv
+          R7_OUT: ${{ github.workspace }}/smoke_${{ matrix.instance }}.json
+          PYTHONPATH: ${{ github.workspace }}/polybench/src
+        run: python scripts/r7_g0_smoke.py
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r7-g0-smoke-${{ matrix.instance }}
+          path: smoke_${{ matrix.instance }}.json

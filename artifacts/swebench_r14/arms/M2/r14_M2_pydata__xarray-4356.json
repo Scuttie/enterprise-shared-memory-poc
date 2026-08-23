@@ -1,0 +1,20 @@
+{
+  "instance_id": "pydata__xarray-4356",
+  "repo": "pydata/xarray",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.pydata_1776_xarray-4356@sha256:6783a6b3a574ea663b66d11da371b6fe00a18c6501e361e1384c8daeb978bf5c",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 10,
+  "edited_files": [
+    "xarray/core/nanops.py"
+  ],
+  "patch_bytes": 586,
+  "tokens": {
+    "prompt": 18435,
+    "completion": 268
+  },
+  "secs": 112.7
+}

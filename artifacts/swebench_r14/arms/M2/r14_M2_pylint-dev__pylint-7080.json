@@ -1,0 +1,20 @@
+{
+  "instance_id": "pylint-dev__pylint-7080",
+  "repo": "pylint-dev/pylint",
+  "arm": "M2",
+  "model": "gpt-4o-mini-2024-07-18",
+  "image_digest": "swebench/sweb.eval.x86_64.pylint-dev_1776_pylint-7080@sha256:3389f0d1319ca611d04a209fc30990c131e0bae9acfeb2163938c75ad23479fe",
+  "resolved": false,
+  "terminal_state": "ok",
+  "error": null,
+  "turns": 7,
+  "edited_files": [
+    "pylintrc"
+  ],
+  "patch_bytes": 437,
+  "tokens": {
+    "prompt": 32035,
+    "completion": 142
+  },
+  "secs": 84.7
+}

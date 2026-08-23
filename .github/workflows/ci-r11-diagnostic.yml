@@ -50,7 +50,7 @@ jobs:
       RUN_DEADLINE: "6000"
       HF_HUB_DISABLE_TELEMETRY: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with: {python-version: "3.11"}
       - name: Guard secret

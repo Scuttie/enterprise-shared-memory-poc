@@ -32,7 +32,7 @@ jobs:
           - angular__angular-37561
           - coder__code-server-3277
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Free disk
         run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "/usr/local/share/powershell" /usr/share/swift || true
       - uses: actions/setup-python@v5

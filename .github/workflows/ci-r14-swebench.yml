@@ -22,7 +22,7 @@ jobs:
     outputs:
       list: ${{ steps.g.outputs.list }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: g
         env:
           SINGLE: "${{ github.event.inputs.single }}"
@@ -50,7 +50,7 @@ jobs:
       matrix:
         instance: ${{ fromJSON(needs.setup.outputs.list) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Free disk (SWE-bench images are large)
         run: |
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "/usr/local/share/powershell" /usr/share/swift /opt/hostedtoolcache/Ruby /opt/az || true

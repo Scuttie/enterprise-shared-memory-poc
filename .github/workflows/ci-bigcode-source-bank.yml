@@ -22,7 +22,7 @@ jobs:
     env:
       EVAL_IMAGE: bigcodebench/bigcodebench-evaluate:v0.2.4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Free disk (~30GB)
         run: |
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL \

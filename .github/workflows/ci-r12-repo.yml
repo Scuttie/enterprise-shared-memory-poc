@@ -20,7 +20,7 @@ jobs:
     outputs:
       list: ${{ steps.g.outputs.list }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: g
         env:
           SINGLE: "${{ github.event.inputs.single }}"
@@ -47,7 +47,7 @@ jobs:
       matrix:
         instance: ${{ fromJSON(needs.setup.outputs.list) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Free disk
         run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL || true
       - uses: actions/setup-python@v5

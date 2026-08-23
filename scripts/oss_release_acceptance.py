@@ -65,7 +65,9 @@ def scan_secrets(files):
             continue
         for pat, label in SECRET_PATTERNS:
             for m in pat.finditer(text):
-                hits.append("%s: %s (%s)" % (rel, label, m.group(0)[:12] + "..."))
+                # Report location + rule only — never echo any bytes of the matched secret (even truncated),
+                # so the scanner's own output can't clear-text-log sensitive data.
+                hits.append("%s:%d: %s (match redacted)" % (rel, text.count("\n", 0, m.start()) + 1, label))
     return hits
 
 

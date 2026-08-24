@@ -72,36 +72,43 @@ def _resolved_ids(report_path):
     return set(r.get("resolved_ids", r.get("resolved", [])))
 
 
-def verify(gold_report, nopatch_report):
-    if not (os.path.isfile(gold_report) and os.path.isfile(nopatch_report)):
-        print("R22_GRADER_TECHNICAL_BLOCK: the official SWE-bench harness produced no report for the 12 tasks in "
-              "this runner. SWE-ContextBench mixes SWE-bench Lite/Multilingual/Verified; the stock single-"
-              "--dataset_name invocation cannot grade the mixed set, and per-instance Docker image provisioning is "
-              "unavailable here. Not a fundamental block: on a Docker-capable runner with per-subset routing the "
-              "smoke runs as written. See reports/R22_GRADER_REPRODUCTION.md.")
-        return 1
+def verify_sharded():
+    """Aggregate per-(instance,condition) results written by scripts/r22_grader_run.py."""
+    import glob
     manifest = json.load(open(os.path.join(OUT, "grader_smoke_manifest.json")))
     ids = [t["instance_id"] for t in manifest["tasks"]]
-    gold_res = _resolved_ids(gold_report)
-    nop_res = _resolved_ids(nopatch_report)
-    gold_ok = sum(1 for i in ids if i in gold_res)
-    nop_bad = sum(1 for i in ids if i in nop_res)
+    res = {}
+    for p in glob.glob(os.path.join(OUT, "grader_results", "*_result.json")):
+        r = json.load(open(p, encoding="utf-8"))
+        res[(r["instance_id"], r["condition"])] = r
+    gold_ok = sum(1 for i in ids if res.get((i, "gold"), {}).get("resolved"))
+    nop_bad = sum(1 for i in ids if res.get((i, "nopatch"), {}).get("resolved"))
+    completeness = sum(1 for i in ids for c in ("gold", "nopatch") if (i, c) in res)
+    infra_fail = sum(1 for i in ids for c in ("gold", "nopatch")
+                     if (i, c) in res and not res[(i, c)]["infra_ok"])
+    per_task = {i: {c: (res.get((i, c), {}).get("resolved"),
+                        res.get((i, c), {}).get("infra_ok")) for c in ("gold", "nopatch")} for i in ids}
     result = {"schema": "r22/grader_smoke/1.0.0", "run_id": RUN_ID, "tasks": len(ids),
               "gold_resolved": gold_ok, "gold_resolved_expected": len(ids),
               "nopatch_resolved": nop_bad, "nopatch_resolved_expected": 0,
+              "result_completeness": completeness, "result_completeness_expected": 2 * len(ids),
+              "infrastructure_failures": infra_fail, "official_tests_modified": 0,
               "gold_resolved_all": gold_ok == len(ids), "nopatch_all_unresolved": nop_bad == 0,
-              "official_tests_modified": 0}
-    result["PASS"] = result["gold_resolved_all"] and result["nopatch_all_unresolved"]
-    json.dump(result, open(os.path.join(OUT, "grader_smoke.json"), "w", encoding="utf-8"), indent=2)
-    print(json.dumps(result, indent=2))
+              "per_task": per_task}
+    result["PASS"] = (result["gold_resolved_all"] and result["nopatch_all_unresolved"]
+                      and completeness == 2 * len(ids) and infra_fail == 0)
+    json.dump(result, open(os.path.join(OUT, "grader_smoke.json"), "w", encoding="utf-8"), indent=2, default=str)
+    print(json.dumps({k: result[k] for k in ("tasks", "gold_resolved", "nopatch_resolved",
+          "result_completeness", "infrastructure_failures", "PASS")}, indent=2))
+    if not result["PASS"]:
+        print("R22_MIXED_GRADER_TECHNICAL_BLOCK — see per_task in artifacts/r22/grader_smoke.json")
     return 0 if result["PASS"] else 1
 
 
 if __name__ == "__main__":
     if "--prepare" in sys.argv:
         raise SystemExit(prepare())
-    if "--verify" in sys.argv:
-        i = sys.argv.index("--verify")
-        raise SystemExit(verify(sys.argv[i + 1], sys.argv[i + 2]))
+    if "--verify-sharded" in sys.argv:
+        raise SystemExit(verify_sharded())
     print(__doc__)
     raise SystemExit(2)

@@ -73,6 +73,13 @@ def _resolved_ids(report_path):
 
 
 def verify(gold_report, nopatch_report):
+    if not (os.path.isfile(gold_report) and os.path.isfile(nopatch_report)):
+        print("R22_GRADER_TECHNICAL_BLOCK: the official SWE-bench harness produced no report for the 12 tasks in "
+              "this runner. SWE-ContextBench mixes SWE-bench Lite/Multilingual/Verified; the stock single-"
+              "--dataset_name invocation cannot grade the mixed set, and per-instance Docker image provisioning is "
+              "unavailable here. Not a fundamental block: on a Docker-capable runner with per-subset routing the "
+              "smoke runs as written. See reports/R22_GRADER_REPRODUCTION.md.")
+        return 1
     manifest = json.load(open(os.path.join(OUT, "grader_smoke_manifest.json")))
     ids = [t["instance_id"] for t in manifest["tasks"]]
     gold_res = _resolved_ids(gold_report)

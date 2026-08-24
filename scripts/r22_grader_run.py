@@ -51,7 +51,7 @@ def main():
     cmd = [sys.executable, "-m", "swebench.harness.run_evaluation",
            "--dataset_name", subset, "--instance_ids", iid,
            "--predictions_path", preds_path, "--run_id", run_id,
-           "--max_workers", "1", "--cache_level", "env", "--timeout", "1800"]
+           "--max_workers", "1", "--timeout", "1800"]
     print("ROUTED %s (%s) cond=%s -> %s" % (iid, route["subset"], cond, subset))
     proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
     sys.stdout.write(proc.stdout[-4000:]); sys.stderr.write(proc.stderr[-2000:])

@@ -1,0 +1,65 @@
+{
+  "schema": "r22/upstream_lock/1.0.0",
+  "system": "SWE-Exp",
+  "repository": "cslsolow/SWE-Exp",
+  "pinned_commit": "6b5c92ed0a6fc14de972c5d499673e2c4f03ce33",
+  "remote_head_at_audit": "6b5c92ed0a6fc14de972c5d499673e2c4f03ce33",
+  "license": "Apache-2.0",
+  "paper": "arXiv:2507.23361",
+  "framework": "moatless (SWE-Search / moatless-tree-search 0.0.4) + moatless-testbeds grader",
+  "verified_from_code": {
+    "policy_model": "deepseek/deepseek-chat",
+    "policy_temperature": 0.7,
+    "value_model_temperature": 0.2,
+    "discriminator_temperature": 1.0,
+    "response_format": "REACT",
+    "max_iterations": 20,
+    "max_expansions": 1,
+    "max_finish_nodes_param": "workflow.main(max_finish_nodes=...) — paper claims 2",
+    "embedding_model": "intfloat/multilingual-e5-large-instruct",
+    "selection": "e5 cosine similarity (embeddings[:1] @ embeddings[1:].T) + LLM select_perspective(k)",
+    "experience_agents": ["Instructor", "ExpAgent (encode_perspective/encode_modify)", "SelectAgent"],
+    "search_actions": ["FindClass", "FindFunction", "FindCodeSnippet", "SemanticSearch", "ViewCode"],
+    "run_commands": {
+      "baseline_SWE_Search": "python workflow.py --instance_ids instance_id.txt --max_iterations 20",
+      "SWE_Exp_memory": "python workflow.py --instance_ids instance_id.txt --experience --max_iterations 20"
+    }
+  },
+  "paper_claimed_values": {
+    "model": "DeepSeek-V3-0324",
+    "temperature": 0.7,
+    "max_iterations": 20,
+    "max_finished_nodes": 2,
+    "embedding": "multilingual-e5-large-instruct",
+    "top_n": 10,
+    "rerank_k": 1,
+    "baseline_SWE_Search_resolved": 0.354,
+    "SWE_Exp_resolved": 0.416,
+    "benchmark": "SWE-bench Verified"
+  },
+  "code_vs_paper": {
+    "temperature": "CONFIRMED (0.7 in workflow.py:74)",
+    "max_iterations": "CONFIRMED (20 in evaluation_config + README)",
+    "embedding": "CONFIRMED (intfloat/multilingual-e5-large-instruct in select_agent.py:125)",
+    "model": "PARTIAL — code uses provider alias deepseek/deepseek-chat; paper pins snapshot DeepSeek-V3-0324 (alias resolves provider-side; exact snapshot not pinned in code)",
+    "dual_agent": "CONFIRMED (Instructor + ExpAgent + SelectAgent)",
+    "top_n_rerank": "top_n=10 / rerank_k=1 are paper values; selection code does e5 cosine + LLM select with k (values passed at call time)"
+  },
+  "key_file_sha256": {
+    "workflow.py": "16ae9634494872151c72221d5aacc56c38b12c0dd5eea16b7d8d04bb3fe29bb8",
+    "moatless/benchmark/evaluation_config.py": "64882a7b8d0ffee0c4e23e1edbed8870db5975d8b9510efaeb71aa45a853972b",
+    "moatless/experience/exp_agent/select_agent.py": "68e65164fd154e61f79b7962ffef960bf772424fce97918698fa819608e52da6",
+    "requirements.txt": "650421b9c19ce17fd3599506fb16788358e754475cea9184d5df33989914ef49",
+    "LICENSE": "c6bc7016be95ed3585ebf1f57aa6f76bb1307f6c0eefa218dab5fcac991bdecc"
+  },
+  "author_artifacts": {
+    "shipped": false,
+    "contents": "assets/ contains method PNG figures only; no predictions.jsonl, trajectories, or patches in the repo",
+    "verdict": "AUTHOR_ARTIFACT_UNAVAILABLE"
+  },
+  "reproduction_dependencies": {
+    "model_api": "DeepSeek (deepseek/deepseek-chat via litellm==1.72.9) — credential REQUIRED",
+    "grader": "moatless-testbeds (git+https://github.com/aorwall/moatless-testbeds.git) — Docker-based SWE-bench grading",
+    "embedder": "intfloat/multilingual-e5-large-instruct (HF download)"
+  }
+}

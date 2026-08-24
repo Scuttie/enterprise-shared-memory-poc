@@ -1,0 +1,504 @@
+{
+  "schema": "r22/main_manifest_v2/1.0.0",
+  "repositories": [
+    "PHPOffice/PhpSpreadsheet",
+    "briannesbitt/Carbon",
+    "django/django",
+    "fluent/fluentd",
+    "gin-gonic/gin",
+    "gohugoio/hugo",
+    "jqlang/jq",
+    "matplotlib/matplotlib",
+    "preactjs/preact",
+    "projectlombok/lombok",
+    "psf/requests",
+    "pylint-dev/pylint",
+    "pytest-dev/pytest",
+    "redis/redis",
+    "scikit-learn/scikit-learn",
+    "sharkdp/bat",
+    "sphinx-doc/sphinx",
+    "uutils/coreutils"
+  ],
+  "pairs": [
+    {
+      "source_id": "django__django-12453",
+      "target_id": "django__django-31051",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-12589",
+      "target_id": "django__django-34176",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-16910",
+      "target_id": "django__django-35356",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-22711",
+      "target_id": "matplotlib__matplotlib-22686",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-24149",
+      "target_id": "matplotlib__matplotlib-18294",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-24149",
+      "target_id": "matplotlib__matplotlib-24818",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-25332",
+      "target_id": "matplotlib__matplotlib-25352",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-25332",
+      "target_id": "matplotlib__matplotlib-22482",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-26020",
+      "target_id": "matplotlib__matplotlib-26331",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "psf__requests-3362",
+      "target_id": "psf__requests-3359",
+      "source_repo": "psf/requests",
+      "target_repo": "psf/requests",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "psf__requests-3362",
+      "target_id": "psf__requests-3481",
+      "source_repo": "psf/requests",
+      "target_repo": "psf/requests",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "scikit-learn__scikit-learn-10949",
+      "target_id": "scikit-learn__scikit-learn-12622",
+      "source_repo": "scikit-learn/scikit-learn",
+      "target_repo": "scikit-learn/scikit-learn",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "scikit-learn__scikit-learn-10949",
+      "target_id": "scikit-learn__scikit-learn-15093",
+      "source_repo": "scikit-learn/scikit-learn",
+      "target_repo": "scikit-learn/scikit-learn",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "scikit-learn__scikit-learn-13779",
+      "target_id": "scikit-learn__scikit-learn-13771",
+      "source_repo": "scikit-learn/scikit-learn",
+      "target_repo": "scikit-learn/scikit-learn",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "scikit-learn__scikit-learn-25638",
+      "target_id": "scikit-learn__scikit-learn-25637",
+      "source_repo": "scikit-learn/scikit-learn",
+      "target_repo": "scikit-learn/scikit-learn",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sphinx-doc__sphinx-8282",
+      "target_id": "sphinx-doc__sphinx-8127",
+      "source_repo": "sphinx-doc/sphinx",
+      "target_repo": "sphinx-doc/sphinx",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sphinx-doc__sphinx-8627",
+      "target_id": "sphinx-doc__sphinx-8588",
+      "source_repo": "sphinx-doc/sphinx",
+      "target_repo": "sphinx-doc/sphinx",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "briannesbitt__carbon-2665",
+      "target_id": "briannesbitt__carbon-2658",
+      "source_repo": "briannesbitt/Carbon",
+      "target_repo": "briannesbitt/Carbon",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "fluent__fluentd-3640",
+      "target_id": "fluent__fluentd-3609",
+      "source_repo": "fluent/fluentd",
+      "target_repo": "fluent/fluentd",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "gin-gonic__gin-2755",
+      "target_id": "gin-gonic__gin-2778",
+      "source_repo": "gin-gonic/gin",
+      "target_repo": "gin-gonic/gin",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "gin-gonic__gin-2755",
+      "target_id": "gin-gonic__gin-2833",
+      "source_repo": "gin-gonic/gin",
+      "target_repo": "gin-gonic/gin",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "gin-gonic__gin-2755",
+      "target_id": "gin-gonic__gin-2690",
+      "source_repo": "gin-gonic/gin",
+      "target_repo": "gin-gonic/gin",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "gin-gonic__gin-3227",
+      "target_id": "gin-gonic__gin-4535",
+      "source_repo": "gin-gonic/gin",
+      "target_repo": "gin-gonic/gin",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "gohugoio__hugo-12448",
+      "target_id": "gohugoio__hugo-12449",
+      "source_repo": "gohugoio/hugo",
+      "target_repo": "gohugoio/hugo",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "jqlang__jq-2839",
+      "target_id": "jqlang__jq-2849",
+      "source_repo": "jqlang/jq",
+      "target_repo": "jqlang/jq",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "phpoffice__phpspreadsheet-3659",
+      "target_id": "phpoffice__phpspreadsheet-3679",
+      "source_repo": "PHPOffice/PhpSpreadsheet",
+      "target_repo": "PHPOffice/PhpSpreadsheet",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "phpoffice__phpspreadsheet-3659",
+      "target_id": "phpoffice__phpspreadsheet-388",
+      "source_repo": "PHPOffice/PhpSpreadsheet",
+      "target_repo": "PHPOffice/PhpSpreadsheet",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "phpoffice__phpspreadsheet-3659",
+      "target_id": "phpoffice__phpspreadsheet-3962",
+      "source_repo": "PHPOffice/PhpSpreadsheet",
+      "target_repo": "PHPOffice/PhpSpreadsheet",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "preactjs__preact-3567",
+      "target_id": "preactjs__preact-4422",
+      "source_repo": "preactjs/preact",
+      "target_repo": "preactjs/preact",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "projectlombok__lombok-2792",
+      "target_id": "projectlombok__lombok-2624",
+      "source_repo": "projectlombok/lombok",
+      "target_repo": "projectlombok/lombok",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "redis__redis-13338",
+      "target_id": "redis__redis-13473",
+      "source_repo": "redis/redis",
+      "target_repo": "redis/redis",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "redis__redis-13338",
+      "target_id": "redis__redis-13957",
+      "source_repo": "redis/redis",
+      "target_repo": "redis/redis",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "redis__redis-9733",
+      "target_id": "redis__redis-9744",
+      "source_repo": "redis/redis",
+      "target_repo": "redis/redis",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sharkdp__bat-2201",
+      "target_id": "sharkdp__bat-2128",
+      "source_repo": "sharkdp/bat",
+      "target_repo": "sharkdp/bat",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "uutils__coreutils-6377",
+      "target_id": "uutils__coreutils-6381",
+      "source_repo": "uutils/coreutils",
+      "target_repo": "uutils/coreutils",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-10554",
+      "target_id": "django__django-29692",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-11276",
+      "target_id": "django__django-30399",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-11555",
+      "target_id": "django__django-30557",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-12209",
+      "target_id": "django__django-29129",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-12209",
+      "target_id": "django__django-31297",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-12209",
+      "target_id": "django__django-18305",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-13195",
+      "target_id": "django__django-31790",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-13363",
+      "target_id": "django__django-31640",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-14792",
+      "target_id": "django__django-33037",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-15161",
+      "target_id": "django__django-33216",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-15382",
+      "target_id": "django__django-33482",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-15382",
+      "target_id": "django__django-15407",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-15629",
+      "target_id": "django__django-33671",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-15695",
+      "target_id": "django__django-27064",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-15930",
+      "target_id": "django__django-16266",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-16560",
+      "target_id": "django__django-34355",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "django__django-16560",
+      "target_id": "django__django-33829",
+      "source_repo": "django/django",
+      "target_repo": "django/django",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-20859",
+      "target_id": "matplotlib__matplotlib-20736",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-22865",
+      "target_id": "matplotlib__matplotlib-22864",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-24149",
+      "target_id": "matplotlib__matplotlib-18294",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-24149",
+      "target_id": "matplotlib__matplotlib-24818",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "matplotlib__matplotlib-25332",
+      "target_id": "matplotlib__matplotlib-25352",
+      "source_repo": "matplotlib/matplotlib",
+      "target_repo": "matplotlib/matplotlib",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "pylint-dev__pylint-4551",
+      "target_id": "pylint-dev__pylint-4744",
+      "source_repo": "pylint-dev/pylint",
+      "target_repo": "pylint-dev/pylint",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "pylint-dev__pylint-6528",
+      "target_id": "pylint-dev__pylint-6964",
+      "source_repo": "pylint-dev/pylint",
+      "target_repo": "pylint-dev/pylint",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "pytest-dev__pytest-7236",
+      "target_id": "pytest-dev__pytest-10060",
+      "source_repo": "pytest-dev/pytest",
+      "target_repo": "pytest-dev/pytest",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "pytest-dev__pytest-7571",
+      "target_id": "pytest-dev__pytest-7672",
+      "source_repo": "pytest-dev/pytest",
+      "target_repo": "pytest-dev/pytest",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "scikit-learn__scikit-learn-25102",
+      "target_id": "scikit-learn__scikit-learn-26300",
+      "source_repo": "scikit-learn/scikit-learn",
+      "target_repo": "scikit-learn/scikit-learn",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sphinx-doc__sphinx-10614",
+      "target_id": "sphinx-doc__sphinx-11634",
+      "source_repo": "sphinx-doc/sphinx",
+      "target_repo": "sphinx-doc/sphinx",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sphinx-doc__sphinx-11510",
+      "target_id": "sphinx-doc__sphinx-11620",
+      "source_repo": "sphinx-doc/sphinx",
+      "target_repo": "sphinx-doc/sphinx",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sphinx-doc__sphinx-11510",
+      "target_id": "sphinx-doc__sphinx-11643",
+      "source_repo": "sphinx-doc/sphinx",
+      "target_repo": "sphinx-doc/sphinx",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sphinx-doc__sphinx-11510",
+      "target_id": "sphinx-doc__sphinx-11648",
+      "source_repo": "sphinx-doc/sphinx",
+      "target_repo": "sphinx-doc/sphinx",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sphinx-doc__sphinx-7440",
+      "target_id": "sphinx-doc__sphinx-7418",
+      "source_repo": "sphinx-doc/sphinx",
+      "target_repo": "sphinx-doc/sphinx",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sphinx-doc__sphinx-8265",
+      "target_id": "sphinx-doc__sphinx-9364",
+      "source_repo": "sphinx-doc/sphinx",
+      "target_repo": "sphinx-doc/sphinx",
+      "class": "CLEAN_RELATED"
+    }
+  ],
+  "pair_count": 68,
+  "supersedes_v1": "kept; v1 seal not deleted (pre-run amendment)",
+  "seal_sha256": "dd79f3d2af349bc7e4461222206150611bc046b121d8e2d39b18c65669152ddc"
+}

@@ -1,0 +1,45 @@
+name: ci-r22-grader-smoke
+# §2 — official SWE-bench grader discrimination on 12 fixed tasks (gold => resolved, no-patch => unresolved).
+# Needs a Docker-capable runner + per-instance images. No model calls, no benchmark-test modification.
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths: ['scripts/r22_grader_smoke.py', '.github/workflows/ci-r22-grader-smoke.yml']
+permissions:
+  contents: read
+jobs:
+  grader-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e . pandas pyarrow "swebench==5.0.2"
+      - name: Download public MIT dataset (no token)
+        run: |
+          mkdir -p scb/data
+          for f in Experience Related Relationship; do
+            curl -sfL "https://huggingface.co/datasets/jiayuanz3/SWEContextBench/resolve/main/data/SWEContextBench_${f}.parquet" -o "scb/data/SWEContextBench_${f}.parquet"
+          done
+      - name: Prepare 12-task gold / no-patch predictions
+        env: {R22_SCB_DATA: scb/data}
+        run: |
+          python experiments/r22/benchmark_adapter.py >/dev/null
+          python experiments/r22/data_orientation.py >/dev/null
+          python scripts/r22_grader_smoke.py --prepare
+      - name: Grade GOLD predictions (official harness)
+        run: |
+          python -m swebench.harness.run_evaluation \
+            --dataset_name SWE-bench/SWE-bench_Verified \
+            --predictions_path artifacts/r22/gold_predictions.jsonl \
+            --run_id r22-grader-smoke-gold --max_workers 2 --cache_level env || true
+      - name: Grade NO-PATCH predictions (official harness)
+        run: |
+          python -m swebench.harness.run_evaluation \
+            --dataset_name SWE-bench/SWE-bench_Verified \
+            --predictions_path artifacts/r22/nopatch_predictions.jsonl \
+            --run_id r22-grader-smoke-nopatch --max_workers 2 --cache_level env || true
+      - name: Verify discrimination
+        run: |
+          python scripts/r22_grader_smoke.py --verify \
+            gold.r22-grader-smoke-gold.json nopatch.r22-grader-smoke-nopatch.json

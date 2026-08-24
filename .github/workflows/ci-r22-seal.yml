@@ -1,0 +1,27 @@
+name: ci-r22-seal
+on:
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['artifacts/r22/**', 'scripts/r22_freeze.py', '.github/workflows/ci-r22-seal.yml']
+  pull_request:
+    paths: ['artifacts/r22/**', 'scripts/r22_freeze.py', '.github/workflows/ci-r22-seal.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  seal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Committed R22 artifacts match the freeze seal (integrity)
+        run: python scripts/r22_freeze.py --check
+      - name: main manifest v2 seal present
+        run: |
+          python - <<'PY'
+          import json
+          m = json.load(open("artifacts/r22/main_manifest_v2.json"))
+          assert m.get("seal_sha256"), "main v2 not sealed"
+          print("R22 seal: PASS", m["seal_sha256"][:16])
+          PY

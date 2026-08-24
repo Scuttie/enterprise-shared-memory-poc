@@ -1,0 +1,23 @@
+{
+  "schema": "r22/freeze/1.0.0",
+  "hashes": {
+    "benchmark_lock.json": "b83860e74105e359072d8591c40e9d1fe1c30f14b73e961b9da0f63117fcfc33",
+    "leakage_audit.json": "e71d3227fc7e42cb1719bd4fe32d35db2e08d366027edc287e1da2507bacd0c3",
+    "duplicate_audit.json": "e976aff11a8b548b5cc0fa60dba4e67a7df61af83c68b5ac381bf243ab86f771",
+    "repository_alias_map.json": "f77d85a9d3c3416ac9bfc3d5d463b5ed81d4e001c9514b7b8f2633ff954b3616",
+    "temporal_reaudit.json": "7300c89d308b1b3dbd5ebef649c6288cfcc31b3681932a14278d4c508827cf14",
+    "dev_manifest.json": "2996a77336552e271f42b5796a30e71f0b4d9d302f4f978309102ac8b5627557",
+    "main_manifest.json": "dec66cb73700029dafc829ce7246d45c81953156972f2e7c35ccff1de9d1c5ec",
+    "partition_log.json": "ce4de2315da698da8ac3916addaaeb61b7466e3d4bc4dfc1d8cdab1eba301ce2",
+    "dev_manifest_v2.json": "a4f600ac891e0c4cdc52b6ac0fc71115bd900e9c465a9ab932703cd31adddc96",
+    "main_manifest_v2.json": "515cd118379e5fb12a0c88c486c401a2d4a3f595b4f1ac119ef3ed526921e938",
+    "power_grid.json": "af9ea5b49f4fdc8a4a2a26b040ea51ea28a77384bab558d1dc8d50c12c3a8b74",
+    "gold_precedent_manifest.json": "4c40e9fb6941c17f4798f932ba0ed83ba8d31bc016dd54790e9836332d8d2fa2",
+    "oracle_smoke_manifest.json": "895bcdd26c137f7be883e0f3c1c3b7452b723ce268947fa5ed2dae2ad5f08c2c",
+    "oracle_dev_manifest.json": "cc1661e7e934bae261141697ee05d21a62285c8837c941198e8f03b4171bb964",
+    "oracle_arm_manifest.json": "b0b202c27540c18347f95317fa19cc98a9e3c262e72836b7f4d0d423ccc0d474",
+    "grader_smoke_manifest.json": "e56984493f98ac1fe926fe8034647d2c41a3f6a18d9f4f8e8918f62d8bfda6c8",
+    "upstream/swe_exp_lock.json": "b8e51b6c802cbc5f13e732c2781c37a23d73c8148254f0cce623486ba33f63ca"
+  },
+  "freeze_sha256": "100d7caaddb55b2da9037187e3f1b1c53c9db5290838d87f06592c6c385b3c45"
+}

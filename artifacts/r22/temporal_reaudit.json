@@ -1,0 +1,2393 @@
+{
+  "note": "chronology proxy = instance created_at (PR/issue creation). Precise merge/first-commit reorientation via GitHub API is a follow-up; direction is flipped only when the reoriented source is itself a runnable graded task and no target answer leaks into it.",
+  "classes": {
+    "CLEAN_RELATED": 126,
+    "NEAR_DUPLICATE": 75,
+    "TEMPORAL_REORIENTED_VALID": 123,
+    "TEMPORAL_INVALID": 15,
+    "TARGET_PATCH_MATCH": 37
+  },
+  "pairs": [
+    {
+      "target_id": "astropy__astropy-15082",
+      "source_id": "astropy__astropy-14995",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.1
+    },
+    {
+      "target_id": "astropy__astropy-4973",
+      "source_id": "astropy__astropy-7746",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.6667
+    },
+    {
+      "target_id": "django__django-30153",
+      "source_id": "django__django-11019",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.5
+    },
+    {
+      "target_id": "django__django-20098",
+      "source_id": "django__django-11630",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.2667
+    },
+    {
+      "target_id": "django__django-27910",
+      "source_id": "django__django-11742",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.006
+    },
+    {
+      "target_id": "django__django-30254",
+      "source_id": "django__django-11999",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-30931",
+      "source_id": "django__django-12284",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.1
+    },
+    {
+      "target_id": "django__django-31051",
+      "source_id": "django__django-12453",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-34176",
+      "source_id": "django__django-12589",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.1159
+    },
+    {
+      "target_id": "django__django-28862",
+      "source_id": "django__django-12708",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-29123",
+      "source_id": "django__django-12708",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-28916",
+      "source_id": "django__django-12708",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-29124",
+      "source_id": "django__django-12708",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-27995",
+      "source_id": "django__django-12908",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-30651",
+      "source_id": "django__django-13220",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0256
+    },
+    {
+      "target_id": "django__django-29838",
+      "source_id": "django__django-13220",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0333
+    },
+    {
+      "target_id": "django__django-1891",
+      "source_id": "django__django-13315",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "django__django-31864",
+      "source_id": "django__django-13321",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-28147",
+      "source_id": "django__django-13964",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.05
+    },
+    {
+      "target_id": "django__django-28211",
+      "source_id": "django__django-14016",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.4286
+    },
+    {
+      "target_id": "django__django-32450",
+      "source_id": "django__django-14017",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-11776",
+      "source_id": "django__django-14608",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-32260",
+      "source_id": "django__django-14787",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-31181",
+      "source_id": "django__django-14855",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.087
+    },
+    {
+      "target_id": "django__django-27858",
+      "source_id": "django__django-15252",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.125
+    },
+    {
+      "target_id": "django__django-32012",
+      "source_id": "django__django-15252",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-31504",
+      "source_id": "django__django-15252",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-33461",
+      "source_id": "django__django-15388",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-18166",
+      "source_id": "django__django-16041",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-21501",
+      "source_id": "django__django-16041",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-33871",
+      "source_id": "django__django-16229",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "django__django-25916",
+      "source_id": "django__django-16255",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0081
+    },
+    {
+      "target_id": "django__django-34481",
+      "source_id": "django__django-16816",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.2727
+    },
+    {
+      "target_id": "django__django-34525",
+      "source_id": "django__django-16820",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.8444
+    },
+    {
+      "target_id": "django__django-26486",
+      "source_id": "django__django-16910",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-21204",
+      "source_id": "django__django-16910",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0116
+    },
+    {
+      "target_id": "django__django-35356",
+      "source_id": "django__django-16910",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0714
+    },
+    {
+      "target_id": "django__django-34570",
+      "source_id": "django__django-16910",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-22706",
+      "source_id": "matplotlib__matplotlib-22711",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-22686",
+      "source_id": "matplotlib__matplotlib-22711",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0952
+    },
+    {
+      "target_id": "matplotlib__matplotlib-23098",
+      "source_id": "matplotlib__matplotlib-22835",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-23172",
+      "source_id": "matplotlib__matplotlib-23299",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.4444
+    },
+    {
+      "target_id": "matplotlib__matplotlib-27361",
+      "source_id": "matplotlib__matplotlib-23562",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.6
+    },
+    {
+      "target_id": "matplotlib__matplotlib-10050",
+      "source_id": "matplotlib__matplotlib-23913",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-23687",
+      "source_id": "matplotlib__matplotlib-24149",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-18294",
+      "source_id": "matplotlib__matplotlib-24149",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.3333
+    },
+    {
+      "target_id": "matplotlib__matplotlib-24818",
+      "source_id": "matplotlib__matplotlib-24149",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.3333
+    },
+    {
+      "target_id": "matplotlib__matplotlib-25352",
+      "source_id": "matplotlib__matplotlib-25332",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0714
+    },
+    {
+      "target_id": "matplotlib__matplotlib-22482",
+      "source_id": "matplotlib__matplotlib-25332",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-26331",
+      "source_id": "matplotlib__matplotlib-26020",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.25
+    },
+    {
+      "target_id": "mwaskom__seaborn-3091",
+      "source_id": "mwaskom__seaborn-3010",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.625
+    },
+    {
+      "target_id": "mwaskom__seaborn-3203",
+      "source_id": "mwaskom__seaborn-3190",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "pallets__flask-4039",
+      "source_id": "pallets__flask-4045",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.8
+    },
+    {
+      "target_id": "psf__requests-2344",
+      "source_id": "psf__requests-2674",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "psf__requests-3359",
+      "source_id": "psf__requests-3362",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.2
+    },
+    {
+      "target_id": "psf__requests-3481",
+      "source_id": "psf__requests-3362",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.2
+    },
+    {
+      "target_id": "pydata__xarray-508",
+      "source_id": "pydata__xarray-3364",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0299
+    },
+    {
+      "target_id": "pydata__xarray-4529",
+      "source_id": "pydata__xarray-4493",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.6667
+    },
+    {
+      "target_id": "pylint-dev__pylint-6471",
+      "source_id": "pylint-dev__pylint-7080",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "pytest-dev__pytest-10341",
+      "source_id": "pytest-dev__pytest-11148",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "pytest-dev__pytest-9358",
+      "source_id": "pytest-dev__pytest-8365",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-12622",
+      "source_id": "scikit-learn__scikit-learn-10949",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.1429
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-15093",
+      "source_id": "scikit-learn__scikit-learn-10949",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-5970",
+      "source_id": "scikit-learn__scikit-learn-13241",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.4444
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-13771",
+      "source_id": "scikit-learn__scikit-learn-13779",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0465
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-25763",
+      "source_id": "scikit-learn__scikit-learn-25500",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.5116
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-25365",
+      "source_id": "scikit-learn__scikit-learn-25500",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-25635",
+      "source_id": "scikit-learn__scikit-learn-25638",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.8889
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-25634",
+      "source_id": "scikit-learn__scikit-learn-25638",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.8889
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-25578",
+      "source_id": "scikit-learn__scikit-learn-25638",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.8889
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-25637",
+      "source_id": "scikit-learn__scikit-learn-25638",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-8127",
+      "source_id": "sphinx-doc__sphinx-8282",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-8588",
+      "source_id": "sphinx-doc__sphinx-8627",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-11286",
+      "source_id": "sympy__sympy-11400",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.25
+    },
+    {
+      "target_id": "sympy__sympy-11275",
+      "source_id": "sympy__sympy-11897",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-9123",
+      "source_id": "sympy__sympy-12236",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-12426",
+      "source_id": "sympy__sympy-12419",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.2
+    },
+    {
+      "target_id": "sympy__sympy-12427",
+      "source_id": "sympy__sympy-12419",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0309
+    },
+    {
+      "target_id": "sympy__sympy-12950",
+      "source_id": "sympy__sympy-13031",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.4375
+    },
+    {
+      "target_id": "sympy__sympy-8772",
+      "source_id": "sympy__sympy-13437",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-13039",
+      "source_id": "sympy__sympy-14308",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-19235",
+      "source_id": "sympy__sympy-14774",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.1429
+    },
+    {
+      "target_id": "sympy__sympy-15059",
+      "source_id": "sympy__sympy-15609",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-16689",
+      "source_id": "sympy__sympy-16792",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-16953",
+      "source_id": "sympy__sympy-16988",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-16342",
+      "source_id": "sympy__sympy-16988",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-16946",
+      "source_id": "sympy__sympy-16988",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-19006",
+      "source_id": "sympy__sympy-18057",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-17377",
+      "source_id": "sympy__sympy-18199",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-18212",
+      "source_id": "sympy__sympy-18199",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-19558",
+      "source_id": "sympy__sympy-19487",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-19484",
+      "source_id": "sympy__sympy-19487",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-21203",
+      "source_id": "sympy__sympy-21055",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0222
+    },
+    {
+      "target_id": "sympy__sympy-21309",
+      "source_id": "sympy__sympy-21055",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0171
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "source_id": "sympy__sympy-21055",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0171
+    },
+    {
+      "target_id": "sympy__sympy-18715",
+      "source_id": "sympy__sympy-23117",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-23852",
+      "source_id": "sympy__sympy-23117",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-27868",
+      "source_id": "sympy__sympy-24102",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0009
+    },
+    {
+      "target_id": "sympy__sympy-26642",
+      "source_id": "sympy__sympy-24102",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.6667
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "source_id": "apache__lucene-11760",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.08
+    },
+    {
+      "target_id": "astral-sh__ruff-15202",
+      "source_id": "astral-sh__ruff-15356",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "astral-sh__ruff-13699",
+      "source_id": "astral-sh__ruff-15356",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0083
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "source_id": "astral-sh__ruff-15394",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.3333
+    },
+    {
+      "target_id": "astral-sh__ruff-16445",
+      "source_id": "astral-sh__ruff-15543",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "astral-sh__ruff-15725",
+      "source_id": "astral-sh__ruff-15543",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0083
+    },
+    {
+      "target_id": "axios__axios-3580",
+      "source_id": "axios__axios-4738",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.625
+    },
+    {
+      "target_id": "axios__axios-5028",
+      "source_id": "axios__axios-5085",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "axios__axios-4610",
+      "source_id": "axios__axios-5316",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "axios__axios-5275",
+      "source_id": "axios__axios-5316",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "axios__axios-4955",
+      "source_id": "axios__axios-5316",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "axios__axios-5498",
+      "source_id": "axios__axios-5316",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "babel__babel-14907",
+      "source_id": "babel__babel-15445",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0039
+    },
+    {
+      "target_id": "babel__babel-14635",
+      "source_id": "babel__babel-15445",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0039
+    },
+    {
+      "target_id": "babel__babel-5408",
+      "source_id": "babel__babel-15445",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0039
+    },
+    {
+      "target_id": "briannesbitt__carbon-2658",
+      "source_id": "briannesbitt__carbon-2665",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.3636
+    },
+    {
+      "target_id": "burntsushi__ripgrep-2095",
+      "source_id": "burntsushi__ripgrep-2209",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "burntsushi__ripgrep-2473",
+      "source_id": "burntsushi__ripgrep-2209",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "burntsushi__ripgrep-2438",
+      "source_id": "burntsushi__ripgrep-2209",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "burntsushi__ripgrep-2020",
+      "source_id": "burntsushi__ripgrep-2209",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "burntsushi__ripgrep-2303",
+      "source_id": "burntsushi__ripgrep-2209",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "caddyserver__caddy-5357",
+      "source_id": "caddyserver__caddy-5404",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0343
+    },
+    {
+      "target_id": "caddyserver__caddy-4914",
+      "source_id": "caddyserver__caddy-5626",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "source_id": "caddyserver__caddy-5761",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.3333
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "source_id": "caddyserver__caddy-6051",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0667
+    },
+    {
+      "target_id": "caddyserver__caddy-6363",
+      "source_id": "caddyserver__caddy-6370",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.303
+    },
+    {
+      "target_id": "fluent__fluentd-3638",
+      "source_id": "fluent__fluentd-3466",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "fluent__fluentd-3609",
+      "source_id": "fluent__fluentd-3640",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0435
+    },
+    {
+      "target_id": "gin-gonic__gin-2778",
+      "source_id": "gin-gonic__gin-2755",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "gin-gonic__gin-2833",
+      "source_id": "gin-gonic__gin-2755",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "gin-gonic__gin-2690",
+      "source_id": "gin-gonic__gin-2755",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.25
+    },
+    {
+      "target_id": "gin-gonic__gin-2959",
+      "source_id": "gin-gonic__gin-3227",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "gin-gonic__gin-2211",
+      "source_id": "gin-gonic__gin-3227",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "gin-gonic__gin-4535",
+      "source_id": "gin-gonic__gin-3227",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0333
+    },
+    {
+      "target_id": "gohugoio__hugo-4926",
+      "source_id": "gohugoio__hugo-12343",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "gohugoio__hugo-8232",
+      "source_id": "gohugoio__hugo-12343",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "gohugoio__hugo-12449",
+      "source_id": "gohugoio__hugo-12448",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0833
+    },
+    {
+      "target_id": "google__gson-904",
+      "source_id": "google__gson-2311",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "google__gson-1290",
+      "source_id": "google__gson-2311",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "google__gson-2787",
+      "source_id": "google__gson-2479",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.1875
+    },
+    {
+      "target_id": "hashicorp__terraform-34894",
+      "source_id": "hashicorp__terraform-34900",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "hashicorp__terraform-35573",
+      "source_id": "hashicorp__terraform-35611",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-1699",
+      "source_id": "jqlang__jq-2650",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-526",
+      "source_id": "jqlang__jq-2681",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-1859",
+      "source_id": "jqlang__jq-2750",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-1885",
+      "source_id": "jqlang__jq-2750",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-2140",
+      "source_id": "jqlang__jq-2750",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-2220",
+      "source_id": "jqlang__jq-2750",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-2073",
+      "source_id": "jqlang__jq-2750",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-2230",
+      "source_id": "jqlang__jq-2750",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-2011",
+      "source_id": "jqlang__jq-2750",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-1858",
+      "source_id": "jqlang__jq-2750",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "jqlang__jq-2849",
+      "source_id": "jqlang__jq-2839",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.25
+    },
+    {
+      "target_id": "laravel__framework-52660",
+      "source_id": "laravel__framework-52680",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "laravel__framework-53180",
+      "source_id": "laravel__framework-53206",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.5
+    },
+    {
+      "target_id": "laravel__framework-53260",
+      "source_id": "laravel__framework-53206",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "nushell__nushell-11495",
+      "source_id": "nushell__nushell-12901",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "nushell__nushell-7937",
+      "source_id": "nushell__nushell-12901",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "nushell__nushell-6593",
+      "source_id": "nushell__nushell-12901",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "php-cs-fixer__php-cs-fixer-6509",
+      "source_id": "php-cs-fixer__php-cs-fixer-7875",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "php-cs-fixer__php-cs-fixer-8027",
+      "source_id": "php-cs-fixer__php-cs-fixer-7875",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.5
+    },
+    {
+      "target_id": "php-cs-fixer__php-cs-fixer-8058",
+      "source_id": "php-cs-fixer__php-cs-fixer-7998",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "php-cs-fixer__php-cs-fixer-8398",
+      "source_id": "php-cs-fixer__php-cs-fixer-7998",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "php-cs-fixer__php-cs-fixer-8157",
+      "source_id": "php-cs-fixer__php-cs-fixer-8075",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "phpoffice__phpspreadsheet-3679",
+      "source_id": "phpoffice__phpspreadsheet-3659",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0328
+    },
+    {
+      "target_id": "phpoffice__phpspreadsheet-388",
+      "source_id": "phpoffice__phpspreadsheet-3659",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0328
+    },
+    {
+      "target_id": "phpoffice__phpspreadsheet-3962",
+      "source_id": "phpoffice__phpspreadsheet-3659",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0036
+    },
+    {
+      "target_id": "phpoffice__phpspreadsheet-2535",
+      "source_id": "phpoffice__phpspreadsheet-3940",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.4444
+    },
+    {
+      "target_id": "preactjs__preact-4422",
+      "source_id": "preactjs__preact-3567",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.4667
+    },
+    {
+      "target_id": "preactjs__preact-2715",
+      "source_id": "preactjs__preact-3739",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "preactjs__preact-3761",
+      "source_id": "preactjs__preact-3763",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "projectlombok__lombok-2624",
+      "source_id": "projectlombok__lombok-2792",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "projectlombok__lombok-3003",
+      "source_id": "projectlombok__lombok-3042",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "projectlombok__lombok-3097",
+      "source_id": "projectlombok__lombok-3326",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.4286
+    },
+    {
+      "target_id": "projectlombok__lombok-3176",
+      "source_id": "projectlombok__lombok-3326",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.4286
+    },
+    {
+      "target_id": "projectlombok__lombok-3497",
+      "source_id": "projectlombok__lombok-3571",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "prometheus__prometheus-11219",
+      "source_id": "prometheus__prometheus-12874",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0153
+    },
+    {
+      "target_id": "prometheus__prometheus-12009",
+      "source_id": "prometheus__prometheus-12874",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0153
+    },
+    {
+      "target_id": "prometheus__prometheus-15177",
+      "source_id": "prometheus__prometheus-15142",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0374
+    },
+    {
+      "target_id": "prometheus__prometheus-9233",
+      "source_id": "prometheus__prometheus-9248",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0085
+    },
+    {
+      "target_id": "prometheus__prometheus-9485",
+      "source_id": "prometheus__prometheus-9248",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.5
+    },
+    {
+      "target_id": "redis__redis-9680",
+      "source_id": "redis__redis-10095",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "redis__redis-9261",
+      "source_id": "redis__redis-10095",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "redis__redis-13207",
+      "source_id": "redis__redis-12272",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "redis__redis-13473",
+      "source_id": "redis__redis-13338",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "redis__redis-13957",
+      "source_id": "redis__redis-13338",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.2
+    },
+    {
+      "target_id": "redis__redis-9744",
+      "source_id": "redis__redis-9733",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.038
+    },
+    {
+      "target_id": "rubocop__rubocop-13299",
+      "source_id": "rubocop__rubocop-13396",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0179
+    },
+    {
+      "target_id": "rubocop__rubocop-13096",
+      "source_id": "rubocop__rubocop-13396",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0222
+    },
+    {
+      "target_id": "rubocop__rubocop-13421",
+      "source_id": "rubocop__rubocop-13424",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.3
+    },
+    {
+      "target_id": "rubocop__rubocop-13623",
+      "source_id": "rubocop__rubocop-13627",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0323
+    },
+    {
+      "target_id": "sharkdp__bat-2128",
+      "source_id": "sharkdp__bat-2201",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sharkdp__bat-915",
+      "source_id": "sharkdp__bat-2650",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sharkdp__bat-1980",
+      "source_id": "sharkdp__bat-2650",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sharkdp__bat-951",
+      "source_id": "sharkdp__bat-2650",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sharkdp__bat-1630",
+      "source_id": "sharkdp__bat-2650",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sharkdp__bat-1846",
+      "source_id": "sharkdp__bat-2650",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sharkdp__bat-1854",
+      "source_id": "sharkdp__bat-2650",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sharkdp__bat-2731",
+      "source_id": "sharkdp__bat-3108",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sharkdp__bat-2037",
+      "source_id": "sharkdp__bat-3108",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "tokio-rs__axum-1120",
+      "source_id": "tokio-rs__axum-1119",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.1389
+    },
+    {
+      "target_id": "tokio-rs__tokio-2425",
+      "source_id": "tokio-rs__tokio-4867",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.2429
+    },
+    {
+      "target_id": "tokio-rs__tokio-6594",
+      "source_id": "tokio-rs__tokio-6603",
+      "class": "TARGET_PATCH_MATCH",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "source_id": "tokio-rs__tokio-6724",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0165
+    },
+    {
+      "target_id": "uutils__coreutils-6381",
+      "source_id": "uutils__coreutils-6377",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.25
+    },
+    {
+      "target_id": "uutils__coreutils-6713",
+      "source_id": "uutils__coreutils-6731",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.8667
+    },
+    {
+      "target_id": "valkey-io__valkey-1906",
+      "source_id": "valkey-io__valkey-1842",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "valkey-io__valkey-784",
+      "source_id": "valkey-io__valkey-790",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.8421
+    },
+    {
+      "target_id": "valkey-io__valkey-879",
+      "source_id": "valkey-io__valkey-928",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0455
+    },
+    {
+      "target_id": "vuejs__core-7576",
+      "source_id": "vuejs__core-11589",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.1111
+    },
+    {
+      "target_id": "vuejs__core-10501",
+      "source_id": "vuejs__core-11589",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0294
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "source_id": "astropy__astropy-13977",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.5
+    },
+    {
+      "target_id": "astropy__astropy-14274",
+      "source_id": "astropy__astropy-14309",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0714
+    },
+    {
+      "target_id": "astropy__astropy-5449",
+      "source_id": "astropy__astropy-14508",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9167
+    },
+    {
+      "target_id": "astropy__astropy-12954",
+      "source_id": "astropy__astropy-14508",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9167
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "source_id": "astropy__astropy-14995",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.1
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "source_id": "astropy__astropy-7166",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "source_id": "astropy__astropy-8707",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.037
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "source_id": "astropy__astropy-8872",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "source_id": "astropy__astropy-8872",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-29692",
+      "source_id": "django__django-10554",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-29091",
+      "source_id": "django__django-11141",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-28322",
+      "source_id": "django__django-11239",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-30399",
+      "source_id": "django__django-11276",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-30703",
+      "source_id": "django__django-11400",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.8333
+    },
+    {
+      "target_id": "django__django-30545",
+      "source_id": "django__django-11551",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "django__django-30557",
+      "source_id": "django__django-11555",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-28658",
+      "source_id": "django__django-11603",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0189
+    },
+    {
+      "target_id": "django__django-30903",
+      "source_id": "django__django-12039",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.3077
+    },
+    {
+      "target_id": "django__django-11858",
+      "source_id": "django__django-12125",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-27914",
+      "source_id": "django__django-12125",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-27910",
+      "source_id": "django__django-12125",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-29260",
+      "source_id": "django__django-12209",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-29129",
+      "source_id": "django__django-12209",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-31297",
+      "source_id": "django__django-12209",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-18305",
+      "source_id": "django__django-12209",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-28862",
+      "source_id": "django__django-12708",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-28916",
+      "source_id": "django__django-12708",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-29124",
+      "source_id": "django__django-12708",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-29123",
+      "source_id": "django__django-12708",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-26180",
+      "source_id": "django__django-12708",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-31790",
+      "source_id": "django__django-13195",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.4167
+    },
+    {
+      "target_id": "django__django-11707",
+      "source_id": "django__django-13315",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "django__django-31640",
+      "source_id": "django__django-13363",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-13658",
+      "source_id": "django__django-13820",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-32177",
+      "source_id": "django__django-13837",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-11587",
+      "source_id": "django__django-13964",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-28147",
+      "source_id": "django__django-13964",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.05
+    },
+    {
+      "target_id": "django__django-29896",
+      "source_id": "django__django-13964",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-20238",
+      "source_id": "django__django-14011",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-28604",
+      "source_id": "django__django-14053",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-14357",
+      "source_id": "django__django-14122",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-26193",
+      "source_id": "django__django-14539",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-11776",
+      "source_id": "django__django-14608",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-32260",
+      "source_id": "django__django-14787",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-33037",
+      "source_id": "django__django-14792",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-21241",
+      "source_id": "django__django-15022",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.1212
+    },
+    {
+      "target_id": "django__django-33469",
+      "source_id": "django__django-15103",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.6818
+    },
+    {
+      "target_id": "django__django-33216",
+      "source_id": "django__django-15161",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-27858",
+      "source_id": "django__django-15252",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.125
+    },
+    {
+      "target_id": "django__django-33482",
+      "source_id": "django__django-15382",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.25
+    },
+    {
+      "target_id": "django__django-15407",
+      "source_id": "django__django-15382",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.2
+    },
+    {
+      "target_id": "django__django-33018",
+      "source_id": "django__django-15382",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0638
+    },
+    {
+      "target_id": "django__django-33671",
+      "source_id": "django__django-15629",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-15677",
+      "source_id": "django__django-15695",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0065
+    },
+    {
+      "target_id": "django__django-15651",
+      "source_id": "django__django-15695",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-27064",
+      "source_id": "django__django-15695",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-16266",
+      "source_id": "django__django-15930",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0595
+    },
+    {
+      "target_id": "django__django-33374",
+      "source_id": "django__django-15930",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.125
+    },
+    {
+      "target_id": "django__django-26517",
+      "source_id": "django__django-15930",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-26433",
+      "source_id": "django__django-15930",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-26430",
+      "source_id": "django__django-15930",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-33397",
+      "source_id": "django__django-16082",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.009
+    },
+    {
+      "target_id": "django__django-31941",
+      "source_id": "django__django-16493",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "django__django-29343",
+      "source_id": "django__django-16502",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "django__django-34355",
+      "source_id": "django__django-16560",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.125
+    },
+    {
+      "target_id": "django__django-33829",
+      "source_id": "django__django-16560",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.5
+    },
+    {
+      "target_id": "matplotlib__matplotlib-14620",
+      "source_id": "matplotlib__matplotlib-14623",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.6429
+    },
+    {
+      "target_id": "matplotlib__matplotlib-20219",
+      "source_id": "matplotlib__matplotlib-20826",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-20791",
+      "source_id": "matplotlib__matplotlib-20826",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-20736",
+      "source_id": "matplotlib__matplotlib-20859",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-22864",
+      "source_id": "matplotlib__matplotlib-22865",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.1852
+    },
+    {
+      "target_id": "matplotlib__matplotlib-23172",
+      "source_id": "matplotlib__matplotlib-23299",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.4444
+    },
+    {
+      "target_id": "matplotlib__matplotlib-18294",
+      "source_id": "matplotlib__matplotlib-24149",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.3333
+    },
+    {
+      "target_id": "matplotlib__matplotlib-24818",
+      "source_id": "matplotlib__matplotlib-24149",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.3333
+    },
+    {
+      "target_id": "matplotlib__matplotlib-24462",
+      "source_id": "matplotlib__matplotlib-24570",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-15087",
+      "source_id": "matplotlib__matplotlib-24637",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0345
+    },
+    {
+      "target_id": "matplotlib__matplotlib-25352",
+      "source_id": "matplotlib__matplotlib-25332",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0714
+    },
+    {
+      "target_id": "matplotlib__matplotlib-21381",
+      "source_id": "matplotlib__matplotlib-26113",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-20877",
+      "source_id": "matplotlib__matplotlib-26113",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-26468",
+      "source_id": "matplotlib__matplotlib-26291",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "matplotlib__matplotlib-26319",
+      "source_id": "matplotlib__matplotlib-26291",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "mwaskom__seaborn-3022",
+      "source_id": "mwaskom__seaborn-3069",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.6667
+    },
+    {
+      "target_id": "psf__requests-1144",
+      "source_id": "psf__requests-1142",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.6667
+    },
+    {
+      "target_id": "psf__requests-2938",
+      "source_id": "psf__requests-2931",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "psf__requests-2933",
+      "source_id": "psf__requests-2931",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "psf__requests-5474",
+      "source_id": "psf__requests-5414",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "psf__requests-6030",
+      "source_id": "psf__requests-6028",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "psf__requests-6031",
+      "source_id": "psf__requests-6028",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "pydata__xarray-3891",
+      "source_id": "pydata__xarray-3305",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.05
+    },
+    {
+      "target_id": "pydata__xarray-4349",
+      "source_id": "pydata__xarray-4356",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.1667
+    },
+    {
+      "target_id": "pydata__xarray-4141",
+      "source_id": "pydata__xarray-4687",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.8462
+    },
+    {
+      "target_id": "pydata__xarray-6596",
+      "source_id": "pydata__xarray-6461",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.5
+    },
+    {
+      "target_id": "pydata__xarray-7220",
+      "source_id": "pydata__xarray-6461",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.04
+    },
+    {
+      "target_id": "pydata__xarray-7068",
+      "source_id": "pydata__xarray-6461",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.04
+    },
+    {
+      "target_id": "pydata__xarray-6946",
+      "source_id": "pydata__xarray-6992",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9703
+    },
+    {
+      "target_id": "pydata__xarray-6989",
+      "source_id": "pydata__xarray-6992",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9703
+    },
+    {
+      "target_id": "pydata__xarray-6959",
+      "source_id": "pydata__xarray-6992",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9703
+    },
+    {
+      "target_id": "pydata__xarray-6969",
+      "source_id": "pydata__xarray-6992",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9703
+    },
+    {
+      "target_id": "pylint-dev__pylint-4744",
+      "source_id": "pylint-dev__pylint-4551",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.375
+    },
+    {
+      "target_id": "pylint-dev__pylint-1364",
+      "source_id": "pylint-dev__pylint-4661",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.625
+    },
+    {
+      "target_id": "pylint-dev__pylint-2943",
+      "source_id": "pylint-dev__pylint-6386",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "pylint-dev__pylint-6964",
+      "source_id": "pylint-dev__pylint-6528",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "pytest-dev__pytest-7215",
+      "source_id": "pytest-dev__pytest-10081",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "pytest-dev__pytest-5857",
+      "source_id": "pytest-dev__pytest-5840",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "pytest-dev__pytest-5837",
+      "source_id": "pytest-dev__pytest-5840",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "pytest-dev__pytest-6195",
+      "source_id": "pytest-dev__pytest-6197",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "pytest-dev__pytest-10060",
+      "source_id": "pytest-dev__pytest-7236",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "pytest-dev__pytest-7672",
+      "source_id": "pytest-dev__pytest-7571",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-9772",
+      "source_id": "scikit-learn__scikit-learn-10844",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-26300",
+      "source_id": "scikit-learn__scikit-learn-25102",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.3333
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-24846",
+      "source_id": "scikit-learn__scikit-learn-25931",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-25365",
+      "source_id": "scikit-learn__scikit-learn-26323",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-25763",
+      "source_id": "scikit-learn__scikit-learn-26323",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "scikit-learn__scikit-learn-9287",
+      "source_id": "scikit-learn__scikit-learn-9288",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.5556
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-3176",
+      "source_id": "sphinx-doc__sphinx-10614",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.7692
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-865",
+      "source_id": "sphinx-doc__sphinx-10614",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.7692
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-11634",
+      "source_id": "sphinx-doc__sphinx-10614",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-2849",
+      "source_id": "sphinx-doc__sphinx-10673",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9259
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-11620",
+      "source_id": "sphinx-doc__sphinx-11510",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.2143
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-11643",
+      "source_id": "sphinx-doc__sphinx-11510",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.2143
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-11648",
+      "source_id": "sphinx-doc__sphinx-11510",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.2143
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-7418",
+      "source_id": "sphinx-doc__sphinx-7440",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-7498",
+      "source_id": "sphinx-doc__sphinx-8265",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9375
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-8052",
+      "source_id": "sphinx-doc__sphinx-8265",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9375
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-9364",
+      "source_id": "sphinx-doc__sphinx-8265",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.25
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-6415",
+      "source_id": "sphinx-doc__sphinx-8548",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9394
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-1048",
+      "source_id": "sphinx-doc__sphinx-8548",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9394
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-8902",
+      "source_id": "sphinx-doc__sphinx-8638",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.5
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-2549",
+      "source_id": "sphinx-doc__sphinx-8638",
+      "class": "TEMPORAL_INVALID",
+      "normalized_hunk_overlap": 0.5
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-8061",
+      "source_id": "sphinx-doc__sphinx-9229",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 0.9333
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-4422",
+      "source_id": "sphinx-doc__sphinx-9229",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0323
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-14215",
+      "source_id": "sphinx-doc__sphinx-9320",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-7964",
+      "source_id": "sphinx-doc__sphinx-9367",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.125
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-7499",
+      "source_id": "sphinx-doc__sphinx-9367",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.125
+    },
+    {
+      "target_id": "sphinx-doc__sphinx-8053",
+      "source_id": "sphinx-doc__sphinx-9367",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.125
+    },
+    {
+      "target_id": "sympy__sympy-12427",
+      "source_id": "sympy__sympy-12419",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0309
+    },
+    {
+      "target_id": "sympy__sympy-12426",
+      "source_id": "sympy__sympy-12419",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.2
+    },
+    {
+      "target_id": "sympy__sympy-13853",
+      "source_id": "sympy__sympy-13852",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-14822",
+      "source_id": "sympy__sympy-14976",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-7229",
+      "source_id": "sympy__sympy-14976",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-14973",
+      "source_id": "sympy__sympy-14976",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-14975",
+      "source_id": "sympy__sympy-14976",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-12592",
+      "source_id": "sympy__sympy-15599",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-15974",
+      "source_id": "sympy__sympy-15976",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.1
+    },
+    {
+      "target_id": "sympy__sympy-22908",
+      "source_id": "sympy__sympy-16766",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-18196",
+      "source_id": "sympy__sympy-18189",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-18115",
+      "source_id": "sympy__sympy-18189",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-17373",
+      "source_id": "sympy__sympy-18199",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-17377",
+      "source_id": "sympy__sympy-18199",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-5786",
+      "source_id": "sympy__sympy-19040",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-20567",
+      "source_id": "sympy__sympy-20590",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-20795",
+      "source_id": "sympy__sympy-20801",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-16924",
+      "source_id": "sympy__sympy-20801",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0116
+    },
+    {
+      "target_id": "sympy__sympy-19915",
+      "source_id": "sympy__sympy-20801",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0116
+    },
+    {
+      "target_id": "sympy__sympy-19976",
+      "source_id": "sympy__sympy-20801",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0116
+    },
+    {
+      "target_id": "sympy__sympy-11707",
+      "source_id": "sympy__sympy-20801",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0116
+    },
+    {
+      "target_id": "sympy__sympy-19513",
+      "source_id": "sympy__sympy-21596",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.55
+    },
+    {
+      "target_id": "sympy__sympy-21001",
+      "source_id": "sympy__sympy-21930",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-18781",
+      "source_id": "sympy__sympy-21930",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-20959",
+      "source_id": "sympy__sympy-21930",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-21758",
+      "source_id": "sympy__sympy-21930",
+      "class": "CLEAN_RELATED",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-16669",
+      "source_id": "sympy__sympy-22914",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.0
+    },
+    {
+      "target_id": "sympy__sympy-24297",
+      "source_id": "sympy__sympy-24661",
+      "class": "NEAR_DUPLICATE",
+      "normalized_hunk_overlap": 1.0
+    },
+    {
+      "target_id": "sympy__sympy-11441",
+      "source_id": "sympy__sympy-24661",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.1111
+    },
+    {
+      "target_id": "sympy__sympy-20571",
+      "source_id": "sympy__sympy-24661",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.1111
+    },
+    {
+      "target_id": "sympy__sympy-21149",
+      "source_id": "sympy__sympy-24661",
+      "reoriented": true,
+      "class": "TEMPORAL_REORIENTED_VALID",
+      "normalized_hunk_overlap": 0.1111
+    }
+  ],
+  "primary_pool_clean_related": 126,
+  "reoriented_sensitivity_only": 123
+}

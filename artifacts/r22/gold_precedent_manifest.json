@@ -1,0 +1,20 @@
+{
+  "schema": "r22/gold_precedent_manifest/1.0.0",
+  "sources": 88,
+  "sources_with_records": 88,
+  "stage_records": 440,
+  "by_stage": {
+    "COMPREHEND": 88,
+    "REPRODUCE": 88,
+    "LOCALIZE": 88,
+    "EDIT": 88,
+    "VERIFY": 88
+  },
+  "symbol_extraction_coverage": 0.35,
+  "api_extraction_coverage": 0.025,
+  "operation_extraction_coverage": 0.2,
+  "verification_coverage": 0.4,
+  "unknown_field_fraction": 0.4,
+  "leakage_sentinel": "PASS (compiler asserts no target keys per record)",
+  "bank_sha256": "4bf44a6d2cfeaaff0b3ad372af3df599221e505fd36772e6b705f75c3e99e9ca"
+}

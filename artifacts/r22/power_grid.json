@@ -1,0 +1,106 @@
+{
+  "alpha_primary_holm": 0.016666666666666666,
+  "main_N": 68,
+  "main_repository_clusters": 18,
+  "avg_cluster_size": 3.78,
+  "design_effect_rho0.05": 1.139,
+  "effective_N": 59.7,
+  "grid": [
+    {
+      "discordant_rate": 0.1,
+      "effect_pp": 0.03,
+      "required_N": 1161,
+      "power_at_mainN": 0.053
+    },
+    {
+      "discordant_rate": 0.1,
+      "effect_pp": 0.05,
+      "required_N": 416,
+      "power_at_mainN": 0.135
+    },
+    {
+      "discordant_rate": 0.1,
+      "effect_pp": 0.07,
+      "required_N": 211,
+      "power_at_mainN": 0.28
+    },
+    {
+      "discordant_rate": 0.1,
+      "effect_pp": 0.1,
+      "required_N": 102,
+      "power_at_mainN": 0.589
+    },
+    {
+      "discordant_rate": 0.15,
+      "effect_pp": 0.03,
+      "required_N": 1742,
+      "power_at_mainN": 0.039
+    },
+    {
+      "discordant_rate": 0.15,
+      "effect_pp": 0.05,
+      "required_N": 625,
+      "power_at_mainN": 0.09
+    },
+    {
+      "discordant_rate": 0.15,
+      "effect_pp": 0.07,
+      "required_N": 318,
+      "power_at_mainN": 0.179
+    },
+    {
+      "discordant_rate": 0.15,
+      "effect_pp": 0.1,
+      "required_N": 154,
+      "power_at_mainN": 0.392
+    },
+    {
+      "discordant_rate": 0.2,
+      "effect_pp": 0.03,
+      "required_N": 2324,
+      "power_at_mainN": 0.033
+    },
+    {
+      "discordant_rate": 0.2,
+      "effect_pp": 0.05,
+      "required_N": 835,
+      "power_at_mainN": 0.069
+    },
+    {
+      "discordant_rate": 0.2,
+      "effect_pp": 0.07,
+      "required_N": 425,
+      "power_at_mainN": 0.132
+    },
+    {
+      "discordant_rate": 0.2,
+      "effect_pp": 0.1,
+      "required_N": 207,
+      "power_at_mainN": 0.286
+    },
+    {
+      "discordant_rate": 0.3,
+      "effect_pp": 0.03,
+      "required_N": 3487,
+      "power_at_mainN": 0.026
+    },
+    {
+      "discordant_rate": 0.3,
+      "effect_pp": 0.05,
+      "required_N": 1254,
+      "power_at_mainN": 0.05
+    },
+    {
+      "discordant_rate": 0.3,
+      "effect_pp": 0.07,
+      "required_N": 638,
+      "power_at_mainN": 0.088
+    },
+    {
+      "discordant_rate": 0.3,
+      "effect_pp": 0.1,
+      "required_N": 311,
+      "power_at_mainN": 0.183
+    }
+  ]
+}

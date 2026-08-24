@@ -1,0 +1,42 @@
+{
+  "schema": "r22/oracle_dryrun/1.0.0",
+  "reader": "FAKE_DETERMINISTIC (no model; not efficacy)",
+  "smoke_manifest": {
+    "schema": "r22/oracle_smoke_manifest/1.0.0",
+    "pairs": 12,
+    "arms": [
+      "O0",
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6"
+    ],
+    "tasks": 84,
+    "manifest_sha256": "9e2d24a8a04a22b8bbab70f794fad1b8d4191ffc49aba4b4f6f296aa5dbb9fd0"
+  },
+  "dev_manifest": {
+    "schema": "r22/oracle_dev_manifest/1.0.0",
+    "pairs": 40,
+    "arms": [
+      "O0",
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6"
+    ],
+    "tasks": 280,
+    "manifest_sha256": "33a6f9deeb4e018a477b04d96d49bd267c6c8885dcebfc05d41e7847866e63da"
+  },
+  "tasks_executed": 280,
+  "idempotent": true,
+  "source_user_ne_target_user": true,
+  "o2_derangement_fixed_points": 0,
+  "target_gold_test_leakage": 0,
+  "injected_eq_payload": true,
+  "content_arm_budgets_matched": true,
+  "paid_api_calls": 0
+}

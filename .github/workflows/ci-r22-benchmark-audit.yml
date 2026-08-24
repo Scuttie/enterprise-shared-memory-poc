@@ -1,0 +1,42 @@
+name: ci-r22-benchmark-audit
+on:
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['experiments/r22/benchmark_adapter.py', 'experiments/r22/data_orientation.py',
+            '.github/workflows/ci-r22-benchmark-audit.yml']
+  pull_request:
+    paths: ['experiments/r22/benchmark_adapter.py', 'experiments/r22/data_orientation.py',
+            '.github/workflows/ci-r22-benchmark-audit.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  benchmark-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e . pandas pyarrow
+      - name: Download public MIT dataset (no token)
+        run: |
+          mkdir -p scb/data
+          for f in Experience Related Relationship; do
+            curl -sfL "https://huggingface.co/datasets/jiayuanz3/SWEContextBench/resolve/main/data/SWEContextBench_${f}.parquet" -o "scb/data/SWEContextBench_${f}.parquet"
+          done
+      - name: Re-run audit + orientation and assert invariants
+        env: {R22_SCB_DATA: scb/data}
+        run: |
+          python experiments/r22/benchmark_adapter.py
+          python experiments/r22/data_orientation.py
+          python - <<'PY'
+          import json
+          lk = json.load(open("artifacts/r22/benchmark_lock.json"))
+          assert lk["rows"] == {"experience_base": 1100, "related_target": 376, "relationship": 376}, lk["rows"]
+          assert lk["dataset_license"] == "MIT"
+          s = json.load(open("artifacts/r22/_orientation_summary.json"))
+          assert s["duplicate_classes"].get("EXACT_DUPLICATE_ROW") == 93
+          assert s["temporal_classes"]["TARGET_PATCH_MATCH"] == 37
+          assert s["split_v2"]["overlap"] == []
+          print("R22 benchmark audit: PASS", s["power"]["verdict"])
+          PY

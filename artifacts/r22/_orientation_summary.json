@@ -1,0 +1,31 @@
+{
+  "duplicate_classes": {
+    "EXACT_DUPLICATE_ROW": 93
+  },
+  "exact_dup_rows_to_drop": 93,
+  "repo_raw": 57,
+  "repo_canonical": 53,
+  "repo_card_claim": 51,
+  "temporal_classes": {
+    "CLEAN_RELATED": 126,
+    "NEAR_DUPLICATE": 75,
+    "TEMPORAL_REORIENTED_VALID": 123,
+    "TEMPORAL_INVALID": 15,
+    "TARGET_PATCH_MATCH": 37
+  },
+  "clean_after_reorient": 126,
+  "split_v2": {
+    "dev_repos": 14,
+    "dev_pairs": 58,
+    "main_repos": 18,
+    "main_pairs": 68,
+    "overlap": [],
+    "main_seal": "dd79f3d2af349bc7e4461222206150611bc046b121d8e2d39b18c65669152ddc"
+  },
+  "power": {
+    "main_N": 68,
+    "effective_N": 59.7,
+    "median_power_+5pp": 0.09,
+    "verdict": "POWER_LIMITED_BUT_ORACLE_FEASIBLE"
+  }
+}

@@ -35,9 +35,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
-      - name: Docker + disk preflight
+      - name: Docker + disk preflight (free ~25GB for python image builds)
         run: |
           docker info >/dev/null && echo "docker OK"
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+                      /opt/hostedtoolcache/CodeQL /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" || true
+          docker image prune -af >/dev/null 2>&1 || true
           df -h /
       - run: pip install -q -e . pandas pyarrow "datasets>=2.19,<3" "swebench==5.0.2"
       - name: Reconstruct routing (public datasets, no token)
@@ -52,9 +55,10 @@ jobs:
           python experiments/r22/grader_routing.py
       - name: Grade gold + no-patch for this instance (official harness, routed)
         run: |
+          # keep the built/pulled instance image so no-patch reuses it (don't prune between conditions)
           python scripts/r22_grader_run.py --instance "${{ matrix.instance }}" --condition gold || true
-          docker system prune -af >/dev/null 2>&1 || true
           python scripts/r22_grader_run.py --instance "${{ matrix.instance }}" --condition nopatch || true
+          df -h /
       - uses: actions/upload-artifact@v4
         if: always()
         with:

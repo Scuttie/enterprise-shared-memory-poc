@@ -1,0 +1,233 @@
+{
+  "schema": "r22/partition_log/1.0.0",
+  "method": "CLEAN_RELATED only; repo-relation union-find components; SHA-256 component ordering; ~25% pairs to dev by whole-component assignment; graph never crosses split",
+  "clean_pairs": 111,
+  "dev_pairs": 53,
+  "main_pairs": 58,
+  "crossing_pairs_excluded": 0,
+  "dev_repository_count": 16,
+  "main_repository_count": 18,
+  "repository_overlap": [],
+  "components": [
+    {
+      "component_repos": [
+        "rubocop/rubocop"
+      ],
+      "pairs": 1,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "prometheus/prometheus"
+      ],
+      "pairs": 2,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "tokio-rs/axum"
+      ],
+      "pairs": 1,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "astral-sh/ruff"
+      ],
+      "pairs": 3,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "laravel/framework"
+      ],
+      "pairs": 1,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "astropy/astropy"
+      ],
+      "pairs": 6,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "apache/lucene"
+      ],
+      "pairs": 1,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "google/gson"
+      ],
+      "pairs": 1,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "PHPOffice/PhpSpreadsheet",
+        "phpoffice/phpspreadsheet"
+      ],
+      "pairs": 3,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "mwaskom/seaborn"
+      ],
+      "pairs": 1,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "briannesbitt/Carbon",
+        "briannesbitt/carbon"
+      ],
+      "pairs": 1,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "pydata/xarray"
+      ],
+      "pairs": 3,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "caddyserver/caddy"
+      ],
+      "pairs": 2,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "sympy/sympy"
+      ],
+      "pairs": 27,
+      "assigned": "dev"
+    },
+    {
+      "component_repos": [
+        "matplotlib/matplotlib"
+      ],
+      "pairs": 10,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "django/django"
+      ],
+      "pairs": 13,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "gin-gonic/gin"
+      ],
+      "pairs": 4,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "uutils/coreutils"
+      ],
+      "pairs": 1,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "projectlombok/lombok"
+      ],
+      "pairs": 1,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "gohugoio/hugo"
+      ],
+      "pairs": 1,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "psf/requests"
+      ],
+      "pairs": 2,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "fluent/fluentd"
+      ],
+      "pairs": 1,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "redis/redis"
+      ],
+      "pairs": 3,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "jqlang/jq"
+      ],
+      "pairs": 1,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "scikit-learn/scikit-learn"
+      ],
+      "pairs": 4,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "pytest-dev/pytest"
+      ],
+      "pairs": 2,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "sphinx-doc/sphinx"
+      ],
+      "pairs": 8,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "preactjs/preact"
+      ],
+      "pairs": 1,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "sharkdp/bat"
+      ],
+      "pairs": 1,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "pylint-dev/pylint"
+      ],
+      "pairs": 2,
+      "assigned": "main"
+    },
+    {
+      "component_repos": [
+        "PHP-CS-Fixer/PHP-CS-Fixer",
+        "php-cs-fixer/php-cs-fixer"
+      ],
+      "pairs": 3,
+      "assigned": "main"
+    }
+  ]
+}

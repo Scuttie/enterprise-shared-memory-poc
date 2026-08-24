@@ -1,0 +1,55 @@
+{
+  "schema": "r22/paid_run_plan/1.0.0",
+  "note": "Estimates only. No model was called to produce these. Actual cost is re-estimated and re-approved before each stage.",
+  "reader_candidate_order_frozen": [
+    {"rank": 1, "provider": "deepseek", "model_id": "deepseek-chat", "revision_pinnable": false,
+     "context": 64000, "max_output": 8000, "tool_support": true,
+     "price_per_mtok_input_usd": 0.27, "price_per_mtok_output_usd": 1.10,
+     "required_secret": "DEEPSEEK_API_KEY",
+     "reason": "faithful to SWE-Exp positive reference (paper uses DeepSeek-V3); alias not snapshot-pinned"},
+    {"rank": 2, "provider": "openai", "model_id": "gpt-4o-mini", "revision_pinnable": true,
+     "context": 128000, "max_output": 16000, "tool_support": true,
+     "price_per_mtok_input_usd": 0.15, "price_per_mtok_output_usd": 0.60,
+     "required_secret": "OPENAI_API_KEY", "reason": "cheap in-band candidate (R14-R18 reader lineage)"},
+    {"rank": 3, "provider": "openai", "model_id": "gpt-4o", "revision_pinnable": true,
+     "context": 128000, "max_output": 16000, "tool_support": true,
+     "price_per_mtok_input_usd": 2.50, "price_per_mtok_output_usd": 10.00,
+     "required_secret": "OPENAI_API_KEY", "reason": "stronger reader if gpt-4o-mini out of [0.10,0.70] band"}
+  ],
+  "per_task_agentic_estimate": {
+    "model_calls": 20, "input_tokens": 500000, "output_tokens": 50000,
+    "basis": "MCTS/agentic solve ~20 iterations with growing context; conservative upper bound"
+  },
+  "stages": {
+    "P1_integration_smoke": {
+      "tasks": 12, "arms": ["baseline", "memory"], "runs": 24,
+      "input_tokens": 12000000, "output_tokens": 1200000,
+      "upper_bound_usd": {"deepseek-chat": 4.6, "gpt-4o-mini": 2.5, "gpt-4o": 42.0},
+      "runner_minutes_est": 240, "docker_storage_gb_est": 40, "artifact_size_mb_est": 300
+    },
+    "P2_reader_pilot_plus_oracle": {
+      "pilot_tasks_no_memory": 40, "oracle_arms": ["O0","O1","O2","O3","O4","O5","O6"],
+      "oracle_tasks_dev": 53, "runs": 411,
+      "input_tokens": 205500000, "output_tokens": 20550000,
+      "upper_bound_usd": {"deepseek-chat": 78.0, "gpt-4o-mini": 43.0, "gpt-4o": 720.0},
+      "runner_minutes_est": 4100, "docker_storage_gb_est": 60, "artifact_size_mb_est": 4000
+    },
+    "P3_retrieval_dev_plus_main": {
+      "retrieval_dev_arms": ["R0","R1","R2","R3","R4","R5"], "retrieval_dev_tasks": 53,
+      "main_arms": ["S0","S1","S2","S3","S4","S5","S6"], "main_tasks_held_out": 58,
+      "runs": 724, "input_tokens": 362000000, "output_tokens": 36200000,
+      "upper_bound_usd": {"deepseek-chat": 138.0, "gpt-4o-mini": 76.0, "gpt-4o": 1267.0},
+      "runner_minutes_est": 7200, "docker_storage_gb_est": 80, "artifact_size_mb_est": 8000
+    }
+  },
+  "approval_variables_required_before_any_paid_run": [
+    "R22_READER_PROVIDER", "R22_READER_MODEL", "R22_READER_API_SECRET_NAME",
+    "R22_SMOKE_BUDGET_USD", "R22_ORACLE_BUDGET_USD", "R22_MAIN_BUDGET_USD", "RUN_APPROVED"
+  ],
+  "optional": {"HF_TOKEN": "NOT required — SWEContextBench is public; request only if a future gated dataset needs it"},
+  "separation": {
+    "upstream_full_reproduction_budget": "HOLD (DeepSeek exact -0324 snapshot unavailable; separate line)",
+    "clean_room_oracle_budget": "REQUEST FIRST (P1 smoke + P2 oracle)"
+  },
+  "recommended_default": "Approve P1 + P2 (clean-room oracle) only. Gate P3 on the oracle passing G1-G6."
+}

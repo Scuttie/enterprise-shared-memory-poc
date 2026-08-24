@@ -1,0 +1,92 @@
+{
+  "schema": "r22/grader_smoke/1.0.0",
+  "run": "32754432915",
+  "tasks": 12,
+  "gold_resolved": 9,
+  "nopatch_resolved": 0,
+  "completeness": 24,
+  "infrastructure_failures": 3,
+  "PASS": false,
+  "verdict": "R22_MIXED_GRADER_TECHNICAL_BLOCK",
+  "multilingual_gold_resolved": 9,
+  "python_gold_infra_failures": [
+    "astropy__astropy-8707",
+    "mwaskom__seaborn-3190",
+    "sympy__sympy-14774"
+  ],
+  "python_failure_cause": "swebench 5.0.2 internal KeyError: 'image' (python x86 image-spec path); NOT disk (110GB free)",
+  "per_task": {
+    "apache__lucene-11760": {
+      "gold": true,
+      "nopatch": false,
+      "subset": "SWE-bench Multilingual",
+      "gold_infra_ok": true
+    },
+    "astral-sh__ruff-15543": {
+      "gold": true,
+      "nopatch": false,
+      "subset": "SWE-bench Multilingual",
+      "gold_infra_ok": true
+    },
+    "astropy__astropy-8707": {
+      "gold": false,
+      "nopatch": false,
+      "subset": "SWE-bench Verified",
+      "gold_infra_ok": false
+    },
+    "caddyserver__caddy-5761": {
+      "gold": true,
+      "nopatch": false,
+      "subset": "SWE-bench Multilingual",
+      "gold_infra_ok": true
+    },
+    "google__gson-2311": {
+      "gold": true,
+      "nopatch": false,
+      "subset": "SWE-bench Multilingual",
+      "gold_infra_ok": true
+    },
+    "mwaskom__seaborn-3190": {
+      "gold": false,
+      "nopatch": false,
+      "subset": "SWE-bench Lite",
+      "gold_infra_ok": false
+    },
+    "php-cs-fixer__php-cs-fixer-7875": {
+      "gold": true,
+      "nopatch": false,
+      "subset": "SWE-bench Multilingual",
+      "gold_infra_ok": true
+    },
+    "prometheus__prometheus-9248": {
+      "gold": true,
+      "nopatch": false,
+      "subset": "SWE-bench Multilingual",
+      "gold_infra_ok": true
+    },
+    "rubocop__rubocop-13396": {
+      "gold": true,
+      "nopatch": false,
+      "subset": "SWE-bench Multilingual",
+      "gold_infra_ok": true
+    },
+    "sympy__sympy-14774": {
+      "gold": false,
+      "nopatch": false,
+      "subset": "SWE-bench Lite",
+      "gold_infra_ok": false
+    },
+    "tokio-rs__axum-1119": {
+      "gold": true,
+      "nopatch": false,
+      "subset": "SWE-bench Multilingual",
+      "gold_infra_ok": true
+    },
+    "tokio-rs__tokio-6724": {
+      "gold": true,
+      "nopatch": false,
+      "subset": "SWE-bench Multilingual",
+      "gold_infra_ok": true
+    }
+  }
+}

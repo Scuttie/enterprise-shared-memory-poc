@@ -1,26 +1,40 @@
-# R22 §2 — official grader smoke (design + status)
+# R22 §3 (G0) — mixed official-grader reproduction (executed)
 
-Goal: prove the official SWE-bench grader **discriminates** — 12 fixed tasks resolve with the gold patch and stay
-unresolved with no patch — with **no model calls** and **no benchmark-test modification**.
+Goal: the official SWE-bench grader must **discriminate** on the frozen 12-task mixed smoke — gold patch → resolved,
+no patch → unresolved — with no model calls and no test modification. Per-instance subset routing
+(`reports/R22_MIXED_GRADER_ROUTING.md`): 1 Verified, 2 Lite, 9 Multilingual.
 
-## Prepared (deterministic, credential-free)
-- 12 tasks across **12 distinct repositories** (dev-only sources), `artifacts/r22/grader_smoke_manifest.json`.
-- `artifacts/r22/gold_predictions.jsonl` (each task's official gold patch → expected **resolved**).
-- `artifacts/r22/nopatch_predictions.jsonl` (empty patch → expected **unresolved**).
-- Verifier: `scripts/r22_grader_smoke.py --verify` checks `gold_resolved == 12/12` and `nopatch_resolved == 0/12`.
+## Execution (ci-r22-grader-smoke.yml, run 32754432915)
+Sharded matrix (1 instance/job × {gold, no-patch} = 24 evals), Docker-capable ubuntu-24.04 runner, ~25GB disk freed
+(110GB free confirmed), official `swebench==5.0.2` `run_evaluation --dataset_name <subset> --instance_ids <iid>`.
 
-## Execution (`.github/workflows/ci-r22-grader-smoke.yml`)
-Runs `swebench==5.0.2` `run_evaluation` on both prediction files on a Docker-capable GitHub Actions runner, then
-verifies discrimination. This is the **official** harness (clean-room: the SWE-ContextBench eval code, which has no
-license, is NOT vendored).
+## Result — completeness 24/24, no-patch 0/12 resolved (correct), gold 9/12
+| Instance | Subset | gold | no-patch | note |
+| --- | --- | --- | --- | --- |
+| caddyserver__caddy-5761 | Multilingual (go) | ✅ resolved | unresolved | correct |
+| prometheus__prometheus-9248 | Multilingual (go) | ✅ resolved | unresolved | correct |
+| apache__lucene-11760 | Multilingual (java) | ✅ resolved | unresolved | correct |
+| google__gson-2311 | Multilingual (java) | ✅ resolved | unresolved | correct |
+| rubocop__rubocop-13396 | Multilingual (ruby) | ✅ resolved | unresolved | correct |
+| tokio-rs__tokio-6724 | Multilingual (rust) | ✅ resolved | unresolved | correct |
+| tokio-rs__axum-1119 | Multilingual (rust) | ✅ resolved | unresolved | correct |
+| astral-sh__ruff-15543 | Multilingual (rust) | ✅ resolved | unresolved | correct |
+| php-cs-fixer__php-cs-fixer-7875 | Multilingual (php) | ✅ resolved | unresolved | correct |
+| astropy__astropy-8707 | Lite (py) | ❌ infra | unresolved | swebench KeyError:'image' |
+| sympy__sympy-14774 | Verified/Lite (py) | ❌ infra | unresolved | swebench KeyError:'image' |
+| mwaskom__seaborn-3190 | Lite (py) | ❌ infra | unresolved | swebench KeyError:'image' |
 
-## Status: PREPARED — execution pending a Docker-capable runner
-- The 12 tasks are curated from SWE-ContextBench, which mixes SWE-bench **Lite / Multilingual / Verified**. The
-  stock harness invocation grades against one `--dataset_name`; instances from other subsets (or without a prebuilt
-  image) will not grade under a single Verified pass, and full Docker image provisioning across subsets exceeds the
-  available CI budget here.
-- This is a **resource/infra limitation, not a fundamental technical block**: with per-subset dataset routing +
-  Docker images, the smoke runs as written. It is therefore **not** declared `R22_GRADER_TECHNICAL_BLOCK`.
-- Consequence: grader-smoke **green is not yet demonstrated**; every other credential-free gate is green (see the
-  final return). Recommended: run `ci-r22-grader-smoke` on a Docker runner with per-instance images, or narrow the
-  12 tasks to the SWE-bench_Verified subset only.
+## Precise blocker (exact task-level)
+- **All 9 SWE-bench Multilingual instances grade correctly** — per-subset routing + official images + harness work.
+- **The 3 SWE-bench Lite/Verified (python) instances fail** the gold condition with a **swebench 5.0.2 internal
+  `KeyError: 'image'`** at `image=instance["image"]` in the python x86 image-spec path. This is **not disk**
+  (110GB free after cleanup) and **not routing** — it is a harness-version defect/incompatibility in the python
+  build path for these instances under 5.0.2.
+- Therefore the mixed **12/12 gold** gate is **not met** (gold 9/12). The frozen mixed smoke is **not** narrowed to
+  Verified-only (that would not satisfy the gate).
+
+## Verdict: `R22_MIXED_GRADER_TECHNICAL_BLOCK`
+Documented with exact per-task failures. Materially more than the prior total block: routing is proven and the
+official harness discriminates **9/12** (all multilingual). To clear it: a swebench version/patch that fixes the
+python `KeyError:'image'` build path (or a self-hosted runner with prebuilt python instance images). No model calls
+were made.

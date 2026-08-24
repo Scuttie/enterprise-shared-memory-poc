@@ -22,8 +22,7 @@ import sys
 import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DATA = os.environ.get("R22_SCB_DATA",
-                      "C:/Users/jewon/third_party_r22/swe-contextbench/data")
+DATA = os.environ.get("R22_SCB_DATA", os.path.join(ROOT, "artifacts", "r22", "_scb_data"))
 OUT = os.path.join(ROOT, "artifacts", "r22")
 GH_COMMIT = "31bb04155f52b184bf31b220e3cff0607ac9c953"
 DATASET = "jiayuanz3/SWEContextBench"

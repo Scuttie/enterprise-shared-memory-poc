@@ -15,7 +15,7 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA = os.environ.get("R22_SCB_DATA", "C:/Users/jewon/third_party_r22/swe-contextbench/data")
+DATA = os.environ.get("R22_SCB_DATA", os.path.join(ROOT, "artifacts", "r22", "_scb_data"))
 OUT = os.path.join(ROOT, "artifacts", "r22")
 RUN_ID = "r22-grader-smoke"
 

@@ -164,12 +164,10 @@ def test_missing_cluster_fails_analysis(tmp_path):
     assert r.returncode == 1 and "cluster" in r.stdout.lower()
 
 
-# ---- 12 P1/P2 provider wiring valid -----------------------------------------
+# ---- 12 P1/P2 provider wiring valid (string checks; no yaml dep) -------------
 def test_p1_p2_provider_wiring():
-    import yaml
-    for wf, prov_input in [("r22-reader-smoke.yml", True), ("r22-oracle-dev.yml", True)]:
-        y = yaml.safe_load(open(os.path.join(ROOT, ".github", "workflows", wf), encoding="utf-8"))
-        inputs = y[True]["workflow_dispatch"]["inputs"]
-        assert "reader_provider" in inputs, "%s missing reader_provider input" % wf
+    for wf in ("r22-reader-smoke.yml", "r22-oracle-dev.yml"):
         src = open(os.path.join(ROOT, ".github", "workflows", wf), encoding="utf-8").read()
-        assert "--provider \"${{ inputs.reader_provider }}\"" in src, "%s passes wrong --provider" % wf
+        assert "reader_provider: {description:" in src, "%s missing reader_provider input" % wf
+        assert '--provider "${{ inputs.reader_provider }}"' in src, "%s passes wrong --provider" % wf
+        assert '--provider "${{ inputs.reader_model }}"' not in src, "%s still passes model as provider" % wf

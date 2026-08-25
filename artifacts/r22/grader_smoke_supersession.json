@@ -14,5 +14,5 @@
     "astral-sh__ruff-15725",
     "astral-sh__ruff-16445"
   ],
-  "gate_fail_reason": "official gold patch does not resolve under the official evaluator (FAIL_TO_PASS 0/N, 0 tests collected); harness validated: noop 0/12, digest 12/12, infra 0"
+  "gate_fail_reason": "CANDIDATE_UPSTREAM_INCONSISTENCY: official gold patch does not resolve under the official evaluator (FAIL_TO_PASS 0/N, 0 tests collected); exact cause under forensic investigation (reports/R22_P09_RUFF_ROOT_CAUSE.md); adapter invocation EXCLUDED. Harness validated: noop 0/12, digest 12/12, infra 0"
 }

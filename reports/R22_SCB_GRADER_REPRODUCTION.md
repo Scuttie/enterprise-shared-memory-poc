@@ -43,11 +43,18 @@ that run was cancelled, not counted.
 
 **Gate FAIL — 2 targets:** gold resolved **10/12**. The two failures are **`astral-sh__ruff-15725`** and
 **`astral-sh__ruff-16445`**: with the **official gold patch** applied on the **official image**, the official
-evaluator reports **`FAIL_TO_PASS 0/98` ("Collected 0 test(s)")** while `PASS_TO_PASS` passes — i.e. the gold patch
-does not resolve those two instances under the benchmark's own evaluator. This is an **upstream benchmark/evaluator
-inconsistency for those 2 instances**, not a harness defect (the 3rd ruff `ruff-15997` and all Java/Go/Python
-targets resolve 10/10 gold + 10/10 F2P-complete). Per §5 the run is preserved and **not** re-run. The frozen 12
-set (§0) was not altered.
+evaluator reports **`FAIL_TO_PASS 0/N` ("Collected 0 test results")** — the gold patch does not resolve those two
+instances under the benchmark's own evaluator. The 3rd ruff (`ruff-15997`) and all Java/Go/Python targets resolve
+10/10 gold + 10/10 F2P-complete. Per §5 the run is preserved and **not** re-run; the frozen 12 set (§0) was not
+altered.
+
+> **P0.9 claim boundary correction:** the earlier phrasing "upstream benchmark/evaluator inconsistency" (as settled
+> fact) is replaced by **`CANDIDATE_UPSTREAM_INCONSISTENCY`**: the pinned official gold patch does not resolve under
+> the pinned official case/image/evaluator; the exact cause — case selector, test patch, image drift, parser,
+> invocation, or gold validity — is under forensic investigation (`reports/R22_P09_RUFF_ROOT_CAUSE.md`). Established
+> facts: noop resolved 0/12, image-digest equality 12/12, infra failures 0, gold resolved 10/12, positive Ruff
+> control (`ruff-15997`) resolved; our adapter invocation is EXCLUDED as a cause (byte-identical official `cargo
+> test`). **No memory condition has been executed — this is not a memory result.**
 
 <!-- SCB_RESULTS_START -->
 ## Results (aggregated from shard artifacts)

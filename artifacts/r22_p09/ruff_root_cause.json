@@ -1,0 +1,63 @@
+{
+  "experiment": "R22_P09_RUFF_ROOT_CAUSE",
+  "source_campaign_run": "32863011986",
+  "diagnostic_execution_run": false,
+  "questions": {
+    "q3_1_patch_apply": {
+      "class": "PATCH_APPLY_OK",
+      "test_patch_applied": true,
+      "gold_patch_applied": true,
+      "ensure_patch": false,
+      "gold_patch_sanitized": false,
+      "evidence": "run_instance.log + test_output.txt per cell; applied gold sha == frozen case gold sha"
+    },
+    "q3_2_selectors_exist": {
+      "class": "PENDING_EXEC",
+      "f2p_count": {"astral-sh__ruff-15725": 1, "astral-sh__ruff-16445": 98, "astral-sh__ruff-15997": 1},
+      "selector_format": "rules::<module>::tests::<name>",
+      "note": "existence/collection of selectors requires in-container inspection (raw cargo output)"
+    },
+    "q3_3_test_command": {
+      "command": "source $HOME/.cargo/env && cargo test",
+      "filter": "none",
+      "identical_across_all_three": true,
+      "eval_sh_frozen": true
+    },
+    "q3_4_zero_collection_source": {
+      "class": "PENDING_EXEC",
+      "ruled_out": ["FILTER_MISMATCH (no filter)", "TEST_PATCH_MISSING (test patch applied)"],
+      "candidates": ["TRUE_ZERO_COLLECTION", "PARSER_ZERO_ONLY", "PRE_COLLECTION_FAILURE"],
+      "collected_before_patch": 0,
+      "collected_after_patch": 0,
+      "base_image_fixfirst_fallback_collected": 0,
+      "note": "raw cargo test stdout + return code not in captured evidence"
+    },
+    "q3_5_gold_validity": {
+      "class": "PENDING_EXEC",
+      "requires": "diagnostic unfiltered collection on unmodified official image/case (forensic only, not a score)"
+    }
+  },
+  "root_cause": {
+    "astral-sh__ruff-15725": {
+      "primary_class": "R8_UNKNOWN",
+      "excluded": {"R1_ADAPTER_INVOCATION_BUG": "our invocation is the pinned official eval.sh cargo test, byte-identical to the passing control"},
+      "live_candidates": ["R3_TEST_PATCH_BUG", "R4_IMAGE_CASE_DRIFT", "R5_UPSTREAM_PARSER_BUG", "R6_UPSTREAM_GOLD_INVALID", "R7_TOOLCHAIN_INCOMPATIBILITY"],
+      "discriminating_diagnostic": "raw cargo test stdout + return code + unfiltered collection (EXEC_APPROVED_R22_P09)"
+    },
+    "astral-sh__ruff-16445": {
+      "primary_class": "R8_UNKNOWN",
+      "excluded": {"R1_ADAPTER_INVOCATION_BUG": "our invocation is the pinned official eval.sh cargo test, byte-identical to the passing control"},
+      "live_candidates": ["R3_TEST_PATCH_BUG", "R4_IMAGE_CASE_DRIFT", "R5_UPSTREAM_PARSER_BUG", "R6_UPSTREAM_GOLD_INVALID", "R7_TOOLCHAIN_INCOMPATIBILITY"],
+      "discriminating_diagnostic": "raw cargo test stdout + return code + unfiltered collection (EXEC_APPROVED_R22_P09)"
+    }
+  },
+  "established_facts": {
+    "noop_resolved": "0/12",
+    "image_digest_equality": "12/12",
+    "infra_failures": 0,
+    "gold_resolved": "10/12",
+    "positive_ruff_control_resolved": true,
+    "failure_independent_of_selector_count": true,
+    "failure_present_on_pristine_base_image": true
+  }
+}

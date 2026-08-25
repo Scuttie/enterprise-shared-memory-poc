@@ -1,0 +1,44 @@
+{
+  "experiment": "R22_P09_UPSTREAM_REPRODUCER",
+  "status": "DRAFT_NOT_POSTED",
+  "posting_requires_user_approval": true,
+  "candidate_only": true,
+  "diagnostic_confirmation_pending": "EXEC_APPROVED_R22_P09",
+  "upstream_repo": "github.com/jiayuanz3/SWEContextBench",
+  "pinned_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+  "image_repository": "jiayuanz3/swecontextbench",
+  "instances": [
+    {
+      "instance_id": "astral-sh__ruff-15725",
+      "case_path": "cases/SWEContextBench Multilingual/astral-sh__ruff-15725.json",
+      "case_sha256": "724af16e168b0b0e",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15725",
+      "image_digest": "sha256:6045d9611a478df9",
+      "fail_to_pass": 1, "pass_to_pass": 35, "collected": 0, "resolved": false
+    },
+    {
+      "instance_id": "astral-sh__ruff-16445",
+      "case_path": "cases/SWEContextBench Multilingual/astral-sh__ruff-16445.json",
+      "case_sha256": "b159f1a2fd336861",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-16445",
+      "image_digest": "sha256:f05058578e9bbd8a",
+      "fail_to_pass": 98, "pass_to_pass": 2, "collected": 0, "resolved": false
+    }
+  ],
+  "positive_control": {
+    "instance_id": "astral-sh__ruff-15997",
+    "case_path": "cases/SWEContextBench Multilingual/astral-sh__ruff-15997.json",
+    "case_sha256": "29eb0637bfe0cc77",
+    "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15997",
+    "image_digest": "sha256:4ff6fbb327893411",
+    "fail_to_pass": 1, "pass_to_pass": 8, "collected": 9, "resolved": true
+  },
+  "exact_command": "cd /testbed && git apply /test.patch && git apply /patch.diff && source $HOME/.cargo/env && cargo test",
+  "command_filter": "none",
+  "observed": "Collected 0 test results (both before/after model patch, and on base image with no patches) -> FAIL_TO_PASS 0/N -> Resolved: False",
+  "expected": "with official gold applied, intended FAIL_TO_PASS tests collect and pass (as for the positive control)",
+  "gold_noop_distinction": "gold = official case patch; noop = deterministic .r22_noop add (no source/test change). Both yield Collected 0 for the two affected instances.",
+  "no_secret": true,
+  "no_model_output": true,
+  "no_upstream_source_vendored": true
+}

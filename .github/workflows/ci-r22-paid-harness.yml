@@ -26,10 +26,10 @@ jobs:
       - name: Reader-band (fake) -> P1 (fake) -> P2 (fake) -> fail-closed analysis
         run: |
           set -e
-          python experiments/r22/reader_band.py --mode fake --model fake-reader --hard-cap 100 --out _e2e/rb --n 6
-          python experiments/r22/p1_runner.py --mode fake --model fake-reader --hard-cap 100 --out _e2e/p1 --n 3
+          python experiments/r22/reader_band.py --task-source fake --reader-provider fake --model fake-reader --hard-cap 100 --out _e2e/rb --n 6
+          python experiments/r22/p1_runner.py --task-source fake --reader-provider fake --model fake-reader --hard-cap 100 --out _e2e/p1 --n 3
           python scripts/r22_verify_p1_pass.py _e2e/p1/integrity_result.json
-          python experiments/r22/p2_runner.py --mode fake --model fake-reader --hard-cap 100 --out _e2e/p2 --n 6 \
+          python experiments/r22/p2_runner.py --task-source fake --reader-provider fake --model fake-reader --hard-cap 100 --out _e2e/p2 --n 6 \
             --reuse-o0-from _e2e/rb/results.jsonl
           python scripts/r22_paid_analyze.py --input _e2e/p2/results.jsonl --expected-cells 42 --out _e2e/p2/analysis.json
           echo "LOCAL_FIXTURE_HARNESS_PASS (fake provider + local fixtures; NOT the real benchmark path)"

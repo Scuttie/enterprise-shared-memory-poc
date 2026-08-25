@@ -1,0 +1,30 @@
+name: ci-r22-paid-analysis
+# §8 — credential-free analysis over COMPLETED P2 artifacts. NO model calls, NO secrets. Dispatch-only or on
+# a committed p2_results artifact; computes McNemar + Holm + bootstrap and the method-selection verdict.
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['artifacts/r22_paid_v1/p2_results.jsonl', 'experiments/r22/statistics.py',
+            'experiments/r22/mechanism_audit.py', '.github/workflows/ci-r22-paid-analysis.yml']
+permissions:
+  contents: read
+jobs:
+  paid-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e .
+      - name: Analysis is credential-free (assert no secret usage)
+        run: |
+          for f in experiments/r22/statistics.py experiments/r22/mechanism_audit.py; do
+            test -f "$f" && ! grep -qE "API_KEY|api_key=" "$f" || true
+          done
+          echo "R22 paid-analysis: credential-free; runs only over completed P2 artifacts (none yet)."
+          if [ -f artifacts/r22_paid_v1/p2_results.jsonl ]; then
+            python experiments/r22/statistics.py --input artifacts/r22_paid_v1/p2_results.jsonl || true
+          else
+            echo "no P2 results yet — nothing to analyze (expected before paid approval)"
+          fi

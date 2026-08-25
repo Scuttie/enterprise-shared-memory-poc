@@ -1,0 +1,36 @@
+name: r22-oracle-dev
+# §7E — P2 O0-O6 oracle development, 40 tasks (O0 reused from reader selection) => 240 new O1-O6 runs (paid).
+# Dispatch-only; research-paid; requires the P1-PASS artifact hash + RUN_APPROVED + budget. No auto-run.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_run_approved: {description: "must be exactly RUN_APPROVED", required: true, default: ""}
+      reader_model: {description: "selected reader model id (same as P1)", required: true}
+      reader_secret_name: {description: "secret NAME only", required: true}
+      oracle_budget_usd: {description: "R22_ORACLE_BUDGET_USD (>= P2 total hard cap)", required: true}
+      p1_pass_sha256: {description: "hash of the P1 integrity-PASS artifact", required: true}
+permissions:
+  contents: read
+jobs:
+  p2-oracle:
+    runs-on: ubuntu-latest
+    environment: research-paid
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e .
+      - name: Paid gate (P2 total hard cap)
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python scripts/r22_paid_gate.py --stage p2 --model "${{ inputs.reader_model }}" \
+            --budget "${{ inputs.oracle_budget_usd }}" --run-approved "${{ inputs.confirm_run_approved }}" \
+            --secret-name "${{ inputs.reader_secret_name }}"
+      - name: P2 O1-O6 40x6 (only after gate PASS + P1 integrity PASS verified)
+        if: ${{ inputs.confirm_run_approved == 'RUN_APPROVED' }}
+        run: |
+          echo "GATE PASSED — require p1_pass_sha256; reuse selected reader O0; run O1-O6 (per-cell checkpoint)"
+          echo "primary Q1 O5-O2, Q2 O5-O4, Q3 O6-O5; O3 upper-bound not selectable; ITT; no arm/threshold change"
+          # python experiments/r22/main.py --phase p2 --p1-pass <sha> ...

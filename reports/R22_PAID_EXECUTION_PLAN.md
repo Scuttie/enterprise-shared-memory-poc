@@ -1,3 +1,5 @@
+> **SUPERSEDED FOR PAID EXECUTION BY R22 PAID V2. PRESERVED FOR PROVENANCE; DO NOT USE FOR BUDGET OR ANALYSIS.**
+
 # R22 §10/§11 — paid execution cost plan + approval request format
 
 No model was called to produce this. Machine-readable: `configs/r22/paid_run_plan.json`. Estimates are conservative

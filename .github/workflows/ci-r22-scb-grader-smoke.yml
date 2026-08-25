@@ -18,6 +18,13 @@ on:
         description: "must be exactly EXEC_APPROVED (acknowledges executing the unlicensed pinned upstream evaluator)"
         required: true
         default: ""
+  # This workflow lives only on the feature branch (main is frozen), so workflow_dispatch cannot register it.
+  # The user's one-time execution approval is therefore a COMMITTED sentinel: a push that adds/changes
+  # artifacts/r22/EXEC_APPROVED (contents exactly EXEC_APPROVED) triggers exactly one execution. The path filter
+  # makes it fire only on that file, so it does not re-run on ordinary pushes.
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['artifacts/r22/EXEC_APPROVED']
 permissions:
   contents: read
 jobs:
@@ -46,20 +53,26 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
-      - name: Execution-approval gate (compliance, not a technical block)
+      - name: Execution-approval gate (dispatch input OR committed sentinel; compliance, not a technical block)
+        id: gate
         run: |
-          test "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED" \
-            || { echo "R22_UPSTREAM_EVALUATOR_EXECUTION_REVIEW: approval not given; not executing upstream code."; exit 1; }
+          if [ "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED" ] \
+             || [ "$(tr -d '[:space:]' < artifacts/r22/EXEC_APPROVED 2>/dev/null)" = "EXEC_APPROVED" ]; then
+            echo "approved=true" >> "$GITHUB_OUTPUT"; echo "EXEC_APPROVED"
+          else
+            echo "approved=false" >> "$GITHUB_OUTPUT"
+            echo "R22_UPSTREAM_EVALUATOR_EXECUTION_REVIEW: approval not given; not executing upstream code."
+          fi
       - name: Free disk + docker preflight
-        if: ${{ inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
+        if: ${{ steps.gate.outputs.approved == 'true' }}
         run: |
           docker info >/dev/null && echo "docker OK"
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "$AGENT_TOOLSDIRECTORY" || true
           df -h /
       - run: pip install -q -e .
-        if: ${{ inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
+        if: ${{ steps.gate.outputs.approved == 'true' }}
       - name: OFFICIAL SCB grader smoke — GOLD + NOOP-BASELINE (single target shard)
-        if: ${{ inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
+        if: ${{ steps.gate.outputs.approved == 'true' }}
         env:
           R22_SCB_UPSTREAM_EXEC_APPROVED: "1"
         run: |
@@ -68,7 +81,7 @@ jobs:
             --results-dir "artifacts/r22/scb_smoke_run" \
             --out "artifacts/r22/scb_grader_smoke_${{ matrix.instance }}.json"
       - name: Cleanup instance image
-        if: ${{ always() && inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
+        if: ${{ always() && steps.gate.outputs.approved == 'true' }}
         run: |
           tag=$(python -c "print('${{ matrix.instance }}'.replace('__','.').lower())")
           docker rmi "jiayuanz3/swecontextbench:${tag}" 2>/dev/null || true

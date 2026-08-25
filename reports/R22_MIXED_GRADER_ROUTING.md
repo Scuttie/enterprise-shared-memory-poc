@@ -30,3 +30,15 @@ per-language images + harness support and substantial disk/time on the runner. T
 GitHub-hosted runner; if it cannot complete there, the exact per-task status is recorded and the endpoint is
 `R22_MIXED_GRADER_TECHNICAL_BLOCK` — **not** narrowed to Verified-only (a Verified-only diagnostic, if run, uses a
 different artifact name and does not satisfy the mixed gate).
+
+## G0.1 amendment — enriched official datasets (schema fix)
+The router now uses the **enriched `SWE-bench/*`** datasets with pinned revisions and takes the Docker `image`
+directly from the row (never reconstructed):
+- `SWE-bench/SWE-bench_Verified@78f471bf655a3137b2e8a75af1501690ec009ec3`
+- `SWE-bench/SWE-bench_Lite@b0dde1093fe417d83b7184254edf8199c1f0dff5`
+- `SWE-bench/SWE-bench_Multilingual@846e647b9f33c0b51b739d005d13d85493c9af09`
+
+Legacy `princeton-nlp/*` IDs are no longer used (they lack the `image`/`eval_script`/`log_parser`/`eval_type`
+fields, which caused the python `KeyError:'image'`). Row equivalence: 12/12 EXACT_CORE_MATCH_ENRICHED
+(`reports/R22_DATASET_ROW_EQUIVALENCE.md`). Pre-Docker assertions in `scripts/r22_grader_run.py` fail with
+`R22_OFFICIAL_IMAGE_UNAVAILABLE` (not `KeyError`) if a row-declared image is ever missing.

@@ -52,7 +52,7 @@ jobs:
           R22_SCB_DATA=scb/data python experiments/r22/benchmark_adapter.py >/dev/null
           R22_SCB_DATA=scb/data python experiments/r22/data_orientation.py >/dev/null
           R22_SCB_DATA=scb/data python scripts/r22_grader_smoke.py --prepare
-          python experiments/r22/grader_routing.py
+          python experiments/r22/dataset_schema_audit.py   # enriched SWE-bench/* routing (image from row)
       - name: Grade gold + no-patch for this instance (official harness, routed)
         run: |
           # keep the built/pulled instance image so no-patch reuses it (don't prune between conditions)

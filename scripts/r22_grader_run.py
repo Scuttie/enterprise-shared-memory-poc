@@ -26,13 +26,17 @@ def _route(iid):
     raise SystemExit("instance %s not in routes" % iid)
 
 
-def _gold_patch(iid, subset_dataset):
+REQUIRED = ["instance_id", "repo", "base_commit", "patch", "test_patch", "FAIL_TO_PASS", "PASS_TO_PASS",
+            "image", "eval_script", "log_parser", "eval_type"]
+
+
+def _enriched_row(iid, dataset_name, revision):
     from datasets import load_dataset
-    ds = load_dataset(subset_dataset, split="test")
+    ds = load_dataset(dataset_name, split="test", revision=revision)
     for r in ds:
         if r["instance_id"] == iid:
-            return r["patch"]
-    raise SystemExit("gold patch not found for %s" % iid)
+            return r
+    raise SystemExit("instance %s not in %s@%s" % (iid, dataset_name, revision))
 
 
 def main():
@@ -41,10 +45,25 @@ def main():
     cond = a[a.index("--condition") + 1]
     route = _route(iid)
     subset = route["dataset_name"]
+    revision = route.get("dataset_revision")
     os.makedirs(RESULTS, exist_ok=True)
     run_id = "r22-%s-%s" % (iid.replace("__", "_"), cond)
     preds_path = os.path.join(RESULTS, "%s_preds.jsonl" % run_id)
-    patch = _gold_patch(iid, subset) if cond == "gold" else ""
+
+    # §5 pre-Docker assertions: pinned enriched row, required fields present, image non-empty, patch hash matches
+    row = _enriched_row(iid, subset, revision)
+    missing = [f for f in REQUIRED if row.get(f) in (None,) or (row.get(f) == "" and f in ("image", "eval_script"))]
+    if missing:
+        r = {"instance_id": iid, "subset": route["subset"], "dataset": subset, "condition": cond,
+             "resolved": False, "harness_report_found": False, "returncode": 40, "infra_ok": False,
+             "block": "R22_OFFICIAL_IMAGE_UNAVAILABLE" if "image" in missing else "SCHEMA_INCOMPLETE",
+             "missing_fields": missing}
+        json.dump(r, open(os.path.join(RESULTS, "%s_result.json" % run_id), "w", encoding="utf-8"), indent=2)
+        print(json.dumps(r)); return 0
+    import hashlib as _h
+    assert _h.sha256(str(row.get("patch")).encode()).hexdigest() == route["gold_patch_sha256"], "patch hash drift"
+    patch = row["patch"] if cond == "gold" else ""
+    print("PREFLIGHT %s: image=%s eval_type=%s (row-declared)" % (iid, row.get("image"), row.get("eval_type")))
     with open(preds_path, "w", encoding="utf-8") as fh:
         fh.write(json.dumps({"instance_id": iid, "model_name_or_path": cond, "model_patch": patch}) + "\n")
 

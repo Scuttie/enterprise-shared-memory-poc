@@ -1,0 +1,142 @@
+{
+  "schema": "r22/legacy_enriched_row_comparison/1.0.0",
+  "counts": {
+    "EXACT_CORE_MATCH_ENRICHED": 12
+  },
+  "rows": [
+    {
+      "instance_id": "astropy__astropy-8707",
+      "subset": "SWE-bench Verified",
+      "enriched_dataset": "SWE-bench/SWE-bench_Verified",
+      "enriched_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "image": "swebench/sweb.eval.x86_64.astropy_1776_astropy-8707:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "sympy__sympy-14774",
+      "subset": "SWE-bench Lite",
+      "enriched_dataset": "SWE-bench/SWE-bench_Lite",
+      "enriched_revision": "b0dde1093fe417d83b7184254edf8199c1f0dff5",
+      "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-14774:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "caddyserver__caddy-5761",
+      "subset": "SWE-bench Multilingual",
+      "enriched_dataset": "SWE-bench/SWE-bench_Multilingual",
+      "enriched_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "image": "swebench/sweb.eval.x86_64.caddyserver_1776_caddy-5761:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [
+        "PASS_TO_PASS"
+      ],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "apache__lucene-11760",
+      "subset": "SWE-bench Multilingual",
+      "enriched_dataset": "SWE-bench/SWE-bench_Multilingual",
+      "enriched_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "image": "swebench/sweb.eval.x86_64.apache_1776_lucene-11760:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "rubocop__rubocop-13396",
+      "subset": "SWE-bench Multilingual",
+      "enriched_dataset": "SWE-bench/SWE-bench_Multilingual",
+      "enriched_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "image": "swebench/sweb.eval.x86_64.rubocop_1776_rubocop-13396:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "tokio-rs__tokio-6724",
+      "subset": "SWE-bench Multilingual",
+      "enriched_dataset": "SWE-bench/SWE-bench_Multilingual",
+      "enriched_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "image": "swebench/sweb.eval.x86_64.tokio-rs_1776_tokio-6724:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "mwaskom__seaborn-3190",
+      "subset": "SWE-bench Lite",
+      "enriched_dataset": "SWE-bench/SWE-bench_Lite",
+      "enriched_revision": "b0dde1093fe417d83b7184254edf8199c1f0dff5",
+      "image": "swebench/sweb.eval.x86_64.mwaskom_1776_seaborn-3190:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "php-cs-fixer__php-cs-fixer-7875",
+      "subset": "SWE-bench Multilingual",
+      "enriched_dataset": "SWE-bench/SWE-bench_Multilingual",
+      "enriched_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "image": "swebench/sweb.eval.x86_64.php-cs-fixer_1776_php-cs-fixer-7875:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "google__gson-2311",
+      "subset": "SWE-bench Multilingual",
+      "enriched_dataset": "SWE-bench/SWE-bench_Multilingual",
+      "enriched_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "image": "swebench/sweb.eval.x86_64.google_1776_gson-2311:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "prometheus__prometheus-9248",
+      "subset": "SWE-bench Multilingual",
+      "enriched_dataset": "SWE-bench/SWE-bench_Multilingual",
+      "enriched_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "image": "swebench/sweb.eval.x86_64.prometheus_1776_prometheus-9248:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "astral-sh__ruff-15543",
+      "subset": "SWE-bench Multilingual",
+      "enriched_dataset": "SWE-bench/SWE-bench_Multilingual",
+      "enriched_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "image": "swebench/sweb.eval.x86_64.astral-sh_1776_ruff-15543:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    },
+    {
+      "instance_id": "tokio-rs__axum-1119",
+      "subset": "SWE-bench Multilingual",
+      "enriched_dataset": "SWE-bench/SWE-bench_Multilingual",
+      "enriched_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "image": "swebench/sweb.eval.x86_64.tokio-rs_1776_axum-1119:latest",
+      "eval_type": "pass_and_fail",
+      "required_missing": [],
+      "core_diffs": [],
+      "class": "EXACT_CORE_MATCH_ENRICHED"
+    }
+  ]
+}

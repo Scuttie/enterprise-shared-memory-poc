@@ -1,0 +1,149 @@
+{
+  "targets": 12,
+  "evidence_present": {
+    "apache__lucene-13388": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "astral-sh__ruff-15725": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "astral-sh__ruff-15997": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "astral-sh__ruff-16445": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "astropy__astropy-14500": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "astropy__astropy-15082": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "astropy__astropy-6389": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "astropy__astropy-7167": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "astropy__astropy-8614": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "astropy__astropy-8711": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "caddyserver__caddy-5770": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    },
+    "caddyserver__caddy-5930": {
+      "gold": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      },
+      "noop": {
+        "run_instance.log": true,
+        "test_output.txt": true,
+        "stdout": true
+      }
+    }
+  }
+}

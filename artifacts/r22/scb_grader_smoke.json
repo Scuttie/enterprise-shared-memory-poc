@@ -1,0 +1,546 @@
+{
+  "schema": "r22/scb_grader_smoke/1.0.0",
+  "targets": 12,
+  "baseline": "noop-baseline",
+  "counts": {
+    "summary_files": 12,
+    "gold_cells": 12,
+    "noop_cells": 12,
+    "gold_resolved": 10,
+    "gold_patch_applied": 12,
+    "gold_tests_executed": 12,
+    "gold_f2p_complete": 10,
+    "gold_p2p_regressions": 0,
+    "noop_resolved": 0,
+    "noop_patch_applied": 12,
+    "noop_tests_executed": 12,
+    "noop_shortcircuit": 0,
+    "infra_failures": 0,
+    "digest_match": 12,
+    "missing_raw_evidence": 0
+  },
+  "duplicate_cells": 0,
+  "target_ids": [
+    "apache__lucene-13388",
+    "astral-sh__ruff-15725",
+    "astral-sh__ruff-15997",
+    "astral-sh__ruff-16445",
+    "astropy__astropy-14500",
+    "astropy__astropy-15082",
+    "astropy__astropy-6389",
+    "astropy__astropy-7167",
+    "astropy__astropy-8614",
+    "astropy__astropy-8711",
+    "caddyserver__caddy-5770",
+    "caddyserver__caddy-5930"
+  ],
+  "gates": {
+    "unique_target_ids": true,
+    "target_set_equals_frozen": true,
+    "summary_files": true,
+    "gold_cells": true,
+    "noop_cells": true,
+    "total_cells": true,
+    "no_duplicate_cells": true,
+    "gold_resolved": false,
+    "gold_patch_applied": true,
+    "gold_tests_executed": true,
+    "gold_f2p_complete": false,
+    "gold_p2p_regressions_zero": true,
+    "noop_resolved_zero": true,
+    "noop_patch_applied": true,
+    "noop_tests_executed": true,
+    "noop_no_shortcircuit": true,
+    "infra_failures_zero": true,
+    "digest_match": true,
+    "no_missing_raw_evidence": true
+  },
+  "verdict_pass": false,
+  "endpoint": "R22_SCB_GRADER_GATE_FAIL",
+  "failed_gates": [
+    "gold_resolved",
+    "gold_f2p_complete"
+  ],
+  "per_target": {
+    "apache__lucene-13388": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "cefffac3009ed4acf95dd9589e8f50da5937438cc4f07ed2cc5dc75c0b392c2b",
+        "evidence": {
+          "run_instance.log": "apache__lucene-13388/gold/run_instance.log",
+          "test_output.txt": "apache__lucene-13388/gold/test_output.txt",
+          "report.json": "apache__lucene-13388/gold/report.json",
+          "summary_report.json": "apache__lucene-13388/gold/summary_report.json",
+          "stdout_path": "apache__lucene-13388/gold/r22scb-77cede2753_stdout.log",
+          "stderr_path": "apache__lucene-13388/gold/r22scb-77cede2753_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "apache__lucene-13388/noop/run_instance.log",
+          "test_output.txt": "apache__lucene-13388/noop/test_output.txt",
+          "report.json": "apache__lucene-13388/noop/report.json",
+          "summary_report.json": "apache__lucene-13388/noop/summary_report.json",
+          "stdout_path": "apache__lucene-13388/noop/r22scb-ece9d5e177_stdout.log",
+          "stderr_path": "apache__lucene-13388/noop/r22scb-ece9d5e177_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:e0e7f0b130132e8c115291396a2d974d9ace062fe90157f7d9614230a1f5b1c0",
+      "image_observed_digest": "sha256:e0e7f0b130132e8c115291396a2d974d9ace062fe90157f7d9614230a1f5b1c0",
+      "case_sha256": "ba92b30c6536c9d94173cf44a5a3de7445f30e13ad4932f74abd9434c6e4893d",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "astral-sh__ruff-15725": {
+      "present": true,
+      "gold": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": false,
+        "p2p_regression": 0,
+        "patch_sha256": "a80ddbb0c6d2bb7bf67646bacf07d413b9f3ee7feabb1654be8621609483f16f",
+        "evidence": {
+          "run_instance.log": "astral-sh__ruff-15725/gold/run_instance.log",
+          "test_output.txt": "astral-sh__ruff-15725/gold/test_output.txt",
+          "report.json": "astral-sh__ruff-15725/gold/report.json",
+          "summary_report.json": "astral-sh__ruff-15725/gold/summary_report.json",
+          "stdout_path": "astral-sh__ruff-15725/gold/r22scb-61ce8b1885_stdout.log",
+          "stderr_path": "astral-sh__ruff-15725/gold/r22scb-61ce8b1885_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "astral-sh__ruff-15725/noop/run_instance.log",
+          "test_output.txt": "astral-sh__ruff-15725/noop/test_output.txt",
+          "report.json": "astral-sh__ruff-15725/noop/report.json",
+          "summary_report.json": "astral-sh__ruff-15725/noop/summary_report.json",
+          "stdout_path": "astral-sh__ruff-15725/noop/r22scb-6de1855dc8_stdout.log",
+          "stderr_path": "astral-sh__ruff-15725/noop/r22scb-6de1855dc8_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:6045d9611a478df951d57937eae0560f2410f9e83f47b7689892a1e53d6048b8",
+      "image_observed_digest": "sha256:6045d9611a478df951d57937eae0560f2410f9e83f47b7689892a1e53d6048b8",
+      "case_sha256": "724af16e168b0b0e788c6b449b40f8c325bedc1ac74097d6769b06a21663196c",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "astral-sh__ruff-15997": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "6e8d1e901dd849b2a4597ff83c525f93528c27102b71a7d321a980374870bca8",
+        "evidence": {
+          "run_instance.log": "astral-sh__ruff-15997/gold/run_instance.log",
+          "test_output.txt": "astral-sh__ruff-15997/gold/test_output.txt",
+          "report.json": "astral-sh__ruff-15997/gold/report.json",
+          "summary_report.json": "astral-sh__ruff-15997/gold/summary_report.json",
+          "stdout_path": "astral-sh__ruff-15997/gold/r22scb-5b96c99da9_stdout.log",
+          "stderr_path": "astral-sh__ruff-15997/gold/r22scb-5b96c99da9_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "astral-sh__ruff-15997/noop/run_instance.log",
+          "test_output.txt": "astral-sh__ruff-15997/noop/test_output.txt",
+          "report.json": "astral-sh__ruff-15997/noop/report.json",
+          "summary_report.json": "astral-sh__ruff-15997/noop/summary_report.json",
+          "stdout_path": "astral-sh__ruff-15997/noop/r22scb-4ccb2d0064_stdout.log",
+          "stderr_path": "astral-sh__ruff-15997/noop/r22scb-4ccb2d0064_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:4ff6fbb327893411d27cf96f6e43fc37d3b62057d99759f78de3bd0a52e89106",
+      "image_observed_digest": "sha256:4ff6fbb327893411d27cf96f6e43fc37d3b62057d99759f78de3bd0a52e89106",
+      "case_sha256": "29eb0637bfe0cc7785f0a9ebb85a38c52e266642328dd6bd47d5b5cc373bf7bb",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "astral-sh__ruff-16445": {
+      "present": true,
+      "gold": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": false,
+        "p2p_regression": 0,
+        "patch_sha256": "7d9a01ce0b0aa6a05f51aa69108b64df90ef5b71cfeb32b69e17a58cfb6e44a1",
+        "evidence": {
+          "run_instance.log": "astral-sh__ruff-16445/gold/run_instance.log",
+          "test_output.txt": "astral-sh__ruff-16445/gold/test_output.txt",
+          "report.json": "astral-sh__ruff-16445/gold/report.json",
+          "summary_report.json": "astral-sh__ruff-16445/gold/summary_report.json",
+          "stdout_path": "astral-sh__ruff-16445/gold/r22scb-b7eb769f8b_stdout.log",
+          "stderr_path": "astral-sh__ruff-16445/gold/r22scb-b7eb769f8b_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "astral-sh__ruff-16445/noop/run_instance.log",
+          "test_output.txt": "astral-sh__ruff-16445/noop/test_output.txt",
+          "report.json": "astral-sh__ruff-16445/noop/report.json",
+          "summary_report.json": "astral-sh__ruff-16445/noop/summary_report.json",
+          "stdout_path": "astral-sh__ruff-16445/noop/r22scb-c8ab6de715_stdout.log",
+          "stderr_path": "astral-sh__ruff-16445/noop/r22scb-c8ab6de715_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:f05058578e9bbd8ad6ed9ce0d96e2426ddc7590cb65ae2cda2dadb7b59fdcee6",
+      "image_observed_digest": "sha256:f05058578e9bbd8ad6ed9ce0d96e2426ddc7590cb65ae2cda2dadb7b59fdcee6",
+      "case_sha256": "b159f1a2fd33686173bfa2f3da3c59be2d56c654e2aa098000f8cc93248b3e2f",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "astropy__astropy-14500": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "d1a721929bec5e94c6593341c22cf5f42b61f258a17e0830a21586fec275df7b",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-14500/gold/run_instance.log",
+          "test_output.txt": "astropy__astropy-14500/gold/test_output.txt",
+          "report.json": "astropy__astropy-14500/gold/report.json",
+          "summary_report.json": "astropy__astropy-14500/gold/summary_report.json",
+          "stdout_path": "astropy__astropy-14500/gold/r22scb-cda15872e6_stdout.log",
+          "stderr_path": "astropy__astropy-14500/gold/r22scb-cda15872e6_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-14500/noop/run_instance.log",
+          "test_output.txt": "astropy__astropy-14500/noop/test_output.txt",
+          "report.json": "astropy__astropy-14500/noop/report.json",
+          "summary_report.json": "astropy__astropy-14500/noop/summary_report.json",
+          "stdout_path": "astropy__astropy-14500/noop/r22scb-9f1004369e_stdout.log",
+          "stderr_path": "astropy__astropy-14500/noop/r22scb-9f1004369e_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:420915045f16dd2c329d15b31f65b0c8f13cc46029dcd119d2c2de63fbe17696",
+      "image_observed_digest": "sha256:420915045f16dd2c329d15b31f65b0c8f13cc46029dcd119d2c2de63fbe17696",
+      "case_sha256": "63692b2d304b37f5a33533a5063ff6abd7913928155e137efd3b5ec55d2b2019",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "astropy__astropy-15082": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "9e8ec6aff5adc5c6a92b183d4068aaf7d85c3cfb09ea76329161bc7e80e772b4",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-15082/gold/run_instance.log",
+          "test_output.txt": "astropy__astropy-15082/gold/test_output.txt",
+          "report.json": "astropy__astropy-15082/gold/report.json",
+          "summary_report.json": "astropy__astropy-15082/gold/summary_report.json",
+          "stdout_path": "astropy__astropy-15082/gold/r22scb-ae28166052_stdout.log",
+          "stderr_path": "astropy__astropy-15082/gold/r22scb-ae28166052_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-15082/noop/run_instance.log",
+          "test_output.txt": "astropy__astropy-15082/noop/test_output.txt",
+          "report.json": "astropy__astropy-15082/noop/report.json",
+          "summary_report.json": "astropy__astropy-15082/noop/summary_report.json",
+          "stdout_path": "astropy__astropy-15082/noop/r22scb-44545a56d1_stdout.log",
+          "stderr_path": "astropy__astropy-15082/noop/r22scb-44545a56d1_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:f5fc6543da91a27f641c75c6003a5525e59b5ba69974254f61509a290b5ff289",
+      "image_observed_digest": "sha256:f5fc6543da91a27f641c75c6003a5525e59b5ba69974254f61509a290b5ff289",
+      "case_sha256": "422a172e8852d162f369bcbfc386ff19ca8e6bd5adf4296fc9df85697fc4153d",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "astropy__astropy-6389": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "db835e0605045e2920afac02b53a3d76423090ae69ba9ce8ea1e6c868e750313",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-6389/gold/run_instance.log",
+          "test_output.txt": "astropy__astropy-6389/gold/test_output.txt",
+          "report.json": "astropy__astropy-6389/gold/report.json",
+          "summary_report.json": "astropy__astropy-6389/gold/summary_report.json",
+          "stdout_path": "astropy__astropy-6389/gold/r22scb-6a5f792944_stdout.log",
+          "stderr_path": "astropy__astropy-6389/gold/r22scb-6a5f792944_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-6389/noop/run_instance.log",
+          "test_output.txt": "astropy__astropy-6389/noop/test_output.txt",
+          "report.json": "astropy__astropy-6389/noop/report.json",
+          "summary_report.json": "astropy__astropy-6389/noop/summary_report.json",
+          "stdout_path": "astropy__astropy-6389/noop/r22scb-f72720918c_stdout.log",
+          "stderr_path": "astropy__astropy-6389/noop/r22scb-f72720918c_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:53ee58c2d7108386ede3bd2cb81b0093106fcf44c9fb90866fb567c4e0aecd6b",
+      "image_observed_digest": "sha256:53ee58c2d7108386ede3bd2cb81b0093106fcf44c9fb90866fb567c4e0aecd6b",
+      "case_sha256": "794cbfa6c8b4e9bdc9946d38c1d1703a93a7eb1dfa03551e250b7730f2b619cb",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "astropy__astropy-7167": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "0220819e25143aa255540095f16263a37d53ccbd1b52762c521a37ebc3ba6193",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-7167/gold/run_instance.log",
+          "test_output.txt": "astropy__astropy-7167/gold/test_output.txt",
+          "report.json": "astropy__astropy-7167/gold/report.json",
+          "summary_report.json": "astropy__astropy-7167/gold/summary_report.json",
+          "stdout_path": "astropy__astropy-7167/gold/r22scb-0bc5360271_stdout.log",
+          "stderr_path": "astropy__astropy-7167/gold/r22scb-0bc5360271_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-7167/noop/run_instance.log",
+          "test_output.txt": "astropy__astropy-7167/noop/test_output.txt",
+          "report.json": "astropy__astropy-7167/noop/report.json",
+          "summary_report.json": "astropy__astropy-7167/noop/summary_report.json",
+          "stdout_path": "astropy__astropy-7167/noop/r22scb-6274c077fe_stdout.log",
+          "stderr_path": "astropy__astropy-7167/noop/r22scb-6274c077fe_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:b8072f49fbfbce89a00854b2305c85206ecf51b92489150337d5dce8bb16d828",
+      "image_observed_digest": "sha256:b8072f49fbfbce89a00854b2305c85206ecf51b92489150337d5dce8bb16d828",
+      "case_sha256": "b2ee760bf955e474240c228b3ee7ff9332339a3e440898632a66c4bd731952d2",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "astropy__astropy-8614": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "db835e0605045e2920afac02b53a3d76423090ae69ba9ce8ea1e6c868e750313",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-8614/gold/run_instance.log",
+          "test_output.txt": "astropy__astropy-8614/gold/test_output.txt",
+          "report.json": "astropy__astropy-8614/gold/report.json",
+          "summary_report.json": "astropy__astropy-8614/gold/summary_report.json",
+          "stdout_path": "astropy__astropy-8614/gold/r22scb-13bf95be15_stdout.log",
+          "stderr_path": "astropy__astropy-8614/gold/r22scb-13bf95be15_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-8614/noop/run_instance.log",
+          "test_output.txt": "astropy__astropy-8614/noop/test_output.txt",
+          "report.json": "astropy__astropy-8614/noop/report.json",
+          "summary_report.json": "astropy__astropy-8614/noop/summary_report.json",
+          "stdout_path": "astropy__astropy-8614/noop/r22scb-777c0e3253_stdout.log",
+          "stderr_path": "astropy__astropy-8614/noop/r22scb-777c0e3253_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:9625641e886b388d57047c480c9e5c6b7bd20d5f18a19d7a3e7c84d6d83c5864",
+      "image_observed_digest": "sha256:9625641e886b388d57047c480c9e5c6b7bd20d5f18a19d7a3e7c84d6d83c5864",
+      "case_sha256": "c164f2115ba5de99454c2229b5547bebe462dce9b8e73d20766fb8a9f5d483c5",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "astropy__astropy-8711": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "8f007202784e67e2efac3fc02d2ceb662a1305f5b6909103ef5feb6dafed97b0",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-8711/gold/run_instance.log",
+          "test_output.txt": "astropy__astropy-8711/gold/test_output.txt",
+          "report.json": "astropy__astropy-8711/gold/report.json",
+          "summary_report.json": "astropy__astropy-8711/gold/summary_report.json",
+          "stdout_path": "astropy__astropy-8711/gold/r22scb-30dbf17059_stdout.log",
+          "stderr_path": "astropy__astropy-8711/gold/r22scb-30dbf17059_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "astropy__astropy-8711/noop/run_instance.log",
+          "test_output.txt": "astropy__astropy-8711/noop/test_output.txt",
+          "report.json": "astropy__astropy-8711/noop/report.json",
+          "summary_report.json": "astropy__astropy-8711/noop/summary_report.json",
+          "stdout_path": "astropy__astropy-8711/noop/r22scb-b77630d26a_stdout.log",
+          "stderr_path": "astropy__astropy-8711/noop/r22scb-b77630d26a_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:608abe390f72d18162a1b46420135a0178973cfcaa0a6b747b1f1e1ce9cf4a6d",
+      "image_observed_digest": "sha256:608abe390f72d18162a1b46420135a0178973cfcaa0a6b747b1f1e1ce9cf4a6d",
+      "case_sha256": "5cd2ca23b1c0be875e27ad70cf1afb79475e58aaec4dc42c6f2dcbf924bfd3b7",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "caddyserver__caddy-5770": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "53c0b2390d005c47efaea58eaf3c12e61c4855ed7cba562c315e59366c3f277d",
+        "evidence": {
+          "run_instance.log": "caddyserver__caddy-5770/gold/run_instance.log",
+          "test_output.txt": "caddyserver__caddy-5770/gold/test_output.txt",
+          "report.json": "caddyserver__caddy-5770/gold/report.json",
+          "summary_report.json": "caddyserver__caddy-5770/gold/summary_report.json",
+          "stdout_path": "caddyserver__caddy-5770/gold/r22scb-07c1c1732e_stdout.log",
+          "stderr_path": "caddyserver__caddy-5770/gold/r22scb-07c1c1732e_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "caddyserver__caddy-5770/noop/run_instance.log",
+          "test_output.txt": "caddyserver__caddy-5770/noop/test_output.txt",
+          "report.json": "caddyserver__caddy-5770/noop/report.json",
+          "summary_report.json": "caddyserver__caddy-5770/noop/summary_report.json",
+          "stdout_path": "caddyserver__caddy-5770/noop/r22scb-779482a253_stdout.log",
+          "stderr_path": "caddyserver__caddy-5770/noop/r22scb-779482a253_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:a7f736c206038ac9c2815c614d22254a4fb1550c6e0f273591fb7c45c90f14c6",
+      "image_observed_digest": "sha256:a7f736c206038ac9c2815c614d22254a4fb1550c6e0f273591fb7c45c90f14c6",
+      "case_sha256": "9d2148331a36c7ed52e19e2424bea9efef21f3084d74b17bf1dfd9713bad3e46",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    },
+    "caddyserver__caddy-5930": {
+      "present": true,
+      "gold": {
+        "resolved": true,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "f2p_complete": true,
+        "p2p_regression": 0,
+        "patch_sha256": "c8703f78453062480624c9fec196ac817d3a479ccdaf76eb2d4715d609ee4159",
+        "evidence": {
+          "run_instance.log": "caddyserver__caddy-5930/gold/run_instance.log",
+          "test_output.txt": "caddyserver__caddy-5930/gold/test_output.txt",
+          "report.json": "caddyserver__caddy-5930/gold/report.json",
+          "summary_report.json": "caddyserver__caddy-5930/gold/summary_report.json",
+          "stdout_path": "caddyserver__caddy-5930/gold/r22scb-dc1e8077ce_stdout.log",
+          "stderr_path": "caddyserver__caddy-5930/gold/r22scb-dc1e8077ce_stderr.log"
+        }
+      },
+      "noop_baseline": {
+        "resolved": false,
+        "patch_applied": true,
+        "infra_ok": true,
+        "tests_executed": true,
+        "not_shortcircuit": true,
+        "patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+        "evidence": {
+          "run_instance.log": "caddyserver__caddy-5930/noop/run_instance.log",
+          "test_output.txt": "caddyserver__caddy-5930/noop/test_output.txt",
+          "report.json": "caddyserver__caddy-5930/noop/report.json",
+          "summary_report.json": "caddyserver__caddy-5930/noop/summary_report.json",
+          "stdout_path": "caddyserver__caddy-5930/noop/r22scb-055c58835e_stdout.log",
+          "stderr_path": "caddyserver__caddy-5930/noop/r22scb-055c58835e_stderr.log"
+        }
+      },
+      "image_expected_digest": "sha256:12cb3ea252d89e7ec5e1606efbeb5f567240adeeac567024b82649d2da55ec1f",
+      "image_observed_digest": "sha256:12cb3ea252d89e7ec5e1606efbeb5f567240adeeac567024b82649d2da55ec1f",
+      "case_sha256": "1ec9d4035bcc953c292d3de0fe6b1c8c103ac9ceec9f41fcd2437f1c2cdbd753",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985"
+    }
+  }
+}

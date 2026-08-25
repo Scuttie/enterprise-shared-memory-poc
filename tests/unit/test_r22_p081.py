@@ -28,7 +28,7 @@ def test_exactly_one_report_claims_current_endpoint():
     txt = open(holders[0], encoding="utf-8").read()
     endpoint = re.search(r"R22_CURRENT_ENDPOINT:\s*(\S+)", txt).group(1)
     sup = json.load(open(os.path.join(ART, "grader_smoke_supersession.json"), encoding="utf-8"))
-    assert endpoint == sup["current_endpoint"] == "R22_UPSTREAM_EVALUATOR_EXECUTION_REVIEW"
+    assert endpoint == sup["current_endpoint"] == "R22_SCB_GRADER_GATE_FAIL"
 
 
 def test_generic_report_is_superseded_and_retitled():

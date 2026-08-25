@@ -1,4 +1,4 @@
-<!-- R22_CURRENT_ENDPOINT: R22_UPSTREAM_EVALUATOR_EXECUTION_REVIEW -->
+<!-- R22_CURRENT_ENDPOINT: R22_SCB_GRADER_GATE_FAIL -->
 # R22-P0.8/P0.8.1 — Official SCB grader discrimination smoke (frozen P1 12)
 
 **This is the authoritative CURRENT R22 grader gate.** It supersedes the generic enriched-SWE-bench G0.1 result
@@ -31,20 +31,40 @@ NOOP-BASELINE: patch_applied=true · infra_ok=true · resolved=false · tests ac
 Campaign: target completeness 12/12 · result completeness 24/24 · gold 12/12 · noop 0/12 · infra 0 ·
 expected==observed digest 12/12 · official tests modified by us 0.
 
-## Status — PENDING EXECUTION APPROVAL (not run)
-This smoke **executes the pinned upstream evaluator**, whose code has **no explicit license**
-(`R22_UPSTREAM_RIGHTS_STATUS.md`), and needs a Docker host. It is dispatch-only and gated on
-`confirm_exec_approved=EXEC_APPROVED` + `R22_SCB_UPSTREAM_EXEC_APPROVED=1`. Until then it does not execute upstream
-code. **paid API calls = 0.**
+## Status — EXECUTED (user-authorized EXEC_APPROVED) → `R22_SCB_GRADER_GATE_FAIL`
+The smoke was executed once under the user's EXEC_APPROVED (GitHub Actions run **32863011986**, commit `6f55b83`;
+credential-free — no secret, no model, paid API = 0; official images pulled by digest). 24 cells completed.
 
-On approval → dispatch `ci-r22-scb-grader-smoke` with `EXEC_APPROVED` → 24 cells populate
-`artifacts/r22/scb_grader_smoke.json`; if all criteria pass the endpoint flips to
-`R22_OFFICIAL_SCB_GRADER_READY_AWAITING_READER_SELECTION`.
+**Harness fully validated:** noop-baseline resolved **0/12** (perfect discrimination), image expected==observed
+digest **12/12**, infrastructure failures **0**, tests actually executed on all 24 cells, missing raw evidence
+**0**. A first attempt (run 32858666703) exposed a harness bug — the evaluator ran with a relative `PYTHONPATH`
+under `cwd=results_dir` (`ModuleNotFoundError: swebench_memory`) — fixed (absolute paths) with a regression test;
+that run was cancelled, not counted.
+
+**Gate FAIL — 2 targets:** gold resolved **10/12**. The two failures are **`astral-sh__ruff-15725`** and
+**`astral-sh__ruff-16445`**: with the **official gold patch** applied on the **official image**, the official
+evaluator reports **`FAIL_TO_PASS 0/98` ("Collected 0 test(s)")** while `PASS_TO_PASS` passes — i.e. the gold patch
+does not resolve those two instances under the benchmark's own evaluator. This is an **upstream benchmark/evaluator
+inconsistency for those 2 instances**, not a harness defect (the 3rd ruff `ruff-15997` and all Java/Go/Python
+targets resolve 10/10 gold + 10/10 F2P-complete). Per §5 the run is preserved and **not** re-run. The frozen 12
+set (§0) was not altered.
 
 <!-- SCB_RESULTS_START -->
 ## Results (aggregated from shard artifacts)
-Not yet run — pending the single EXEC_APPROVED dispatch of `ci-r22-scb-grader-smoke`. The fail-closed aggregate job
-(`scripts/r22_scb_aggregate.py`) fills this block from the downloaded shard artifacts.
+Verdict: **FAIL** — endpoint `R22_SCB_GRADER_GATE_FAIL`.
+
+| gate | value |
+|---|---|
+| gold resolved | 10/12 |
+| noop resolved | 0/12 |
+| gold tests_executed | 12/12 |
+| noop tests_executed | 12/12 |
+| expected==observed digest | 12/12 |
+| infra failures | 0 |
+| missing raw evidence | 0 |
+| duplicate cells | 0 |
+
+Failed gates: ['gold_resolved', 'gold_f2p_complete']
 <!-- SCB_RESULTS_END -->
 
 ### Manifest semantic hash (P0.8.2 §1)

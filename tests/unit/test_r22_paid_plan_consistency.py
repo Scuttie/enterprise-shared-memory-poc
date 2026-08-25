@@ -68,10 +68,12 @@ def test_p3_main_budget_forbidden_and_unset():
 
 def test_v1_superseded_and_distinct_from_v2():
     v1 = json.load(open(os.path.join(ROOT, "configs", "r22", "paid_run_plan.json"), encoding="utf-8"))
-    assert "SUPERSEDED" in v1.get("_SUPERSEDED", "")
+    assert "SUPERSEDED" in v1.get("_SUPERSEDED", "")            # non-sealed v1 plan carries the note
     assert _plan()["authoritative"] is True
-    arm1 = json.load(open(os.path.join(ROOT, "artifacts", "r22", "oracle_arm_manifest.json"), encoding="utf-8"))
-    assert "SUPERSEDED" in arm1.get("_SUPERSEDED", "")
+    # the v1 oracle_arm_manifest.json is kept byte-identical (under the preserved oracle freeze 100d7caa);
+    # supersession is recorded on the v2 side instead
+    arm2 = json.load(open(os.path.join(ROOT, "artifacts", "r22", "oracle_arm_manifest_v2.json"), encoding="utf-8"))
+    assert "oracle_arm_manifest.json" in arm2.get("supersedes", "")
 
 
 def test_v2_dev_task_count_is_40():

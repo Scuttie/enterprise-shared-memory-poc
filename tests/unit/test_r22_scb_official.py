@@ -98,6 +98,36 @@ def test_scb_workflows_are_dispatch_only_and_exec_gated():
         assert "EXEC_APPROVED" in src and "R22_SCB_UPSTREAM_EXEC_APPROVED" in src
 
 
+# ---- regression: grade() must use ABSOLUTE cwd + PYTHONPATH (evaluator runs with cwd=results_dir) ----
+def test_grade_uses_absolute_paths_under_cwd(tmp_path, monkeypatch):
+    import types
+    captured = {}
+    monkeypatch.setenv("R22_SCB_UPSTREAM_EXEC_APPROVED", "1")
+    monkeypatch.setattr(SG, "ensure_checkout", lambda d: os.makedirs(d, exist_ok=True) or d)
+    monkeypatch.setattr(SG, "verify_tree_hashes", lambda c: {"verified_files": 8})
+    monkeypatch.setattr(SG, "_load_case", lambda c, r: {"instance_id": r["instance_id"], "patch": "x"})
+    monkeypatch.setattr(SG, "pull_and_verify_image",
+                        lambda tag, dig: {"expected_digest": dig, "observed_digest": dig, "verified": True})
+
+    def fake_run(cmd, cwd=None, env=None, capture_output=False, text=False, **kw):
+        captured["cwd"] = cwd
+        captured["pythonpath"] = (env or {}).get("PYTHONPATH", "")
+        rid = cmd[cmd.index("--run_id") + 1]
+        json.dump({"resolved_ids": [], "unresolved_ids": ["astropy__astropy-14500"]},
+                  open(os.path.join(cwd, rid + ".json"), "w"))
+        return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(SG.subprocess, "run", fake_run)
+    route = {"instance_id": "astropy__astropy-14500",
+             "case_path": "cases/x.json", "image_digest": "sha256:deadbeef"}
+    # pass a RELATIVE results_dir (the exact failure condition) from a different cwd
+    monkeypatch.chdir(tmp_path)
+    SG.grade(route, "patch", "rel_results")
+    assert os.path.isabs(captured["cwd"]), "evaluator cwd must be absolute"
+    first_pp = captured["pythonpath"].split(os.pathsep)[0]
+    assert os.path.isabs(first_pp), "PYTHONPATH entry must be absolute, got %r" % first_pp
+
+
 # ---- §1 the P0.7 technical-block doc is retracted -----------------------------
 def test_p07_block_is_retracted():
     doc = open(os.path.join(ROOT, "reports", "R22_PAID_TARGET_ROUTE_AUDIT.md"), encoding="utf-8").read()

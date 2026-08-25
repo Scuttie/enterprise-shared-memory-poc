@@ -160,9 +160,12 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
         raise UpstreamExecutionNotApproved(
             "SCB official evaluator execution requires R22_SCB_UPSTREAM_EXEC_APPROVED=1 "
             "(upstream evaluation code has no explicit license; see R22_UPSTREAM_RIGHTS_STATUS.md)")
+    # ABSOLUTE paths throughout: the evaluator subprocess runs with cwd=results_dir, so a relative PYTHONPATH /
+    # dataset / predictions path would resolve against that cwd and miss the pinned checkout (ModuleNotFoundError).
+    results_dir = os.path.abspath(results_dir)
     os.makedirs(results_dir, exist_ok=True)
     iid = case_route["instance_id"]
-    checkout = ensure_checkout(os.path.join(results_dir, "_scb_upstream"))
+    checkout = os.path.abspath(ensure_checkout(os.path.join(results_dir, "_scb_upstream")))
     lock_info = verify_tree_hashes(checkout)
     case = _load_case(checkout, case_route)
 

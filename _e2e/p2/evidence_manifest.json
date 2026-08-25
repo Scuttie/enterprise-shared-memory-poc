@@ -1,0 +1,34 @@
+{
+  "phase": "p2",
+  "arms": [
+    "O0",
+    "O1",
+    "O2",
+    "O3",
+    "O4",
+    "O5",
+    "O6"
+  ],
+  "tasks": 6,
+  "cells": 42,
+  "reused_o0": 6,
+  "resolved_by_arm": {
+    "O0": 6,
+    "O1": 6,
+    "O2": 6,
+    "O3": 6,
+    "O4": 6,
+    "O5": 6,
+    "O6": 6
+  },
+  "ledger": {
+    "model": "fake-reader",
+    "calls": 168,
+    "input_tokens": 168000,
+    "output_tokens": 16800,
+    "cost_usd": 0.0,
+    "hard_cap_usd": 100.0
+  },
+  "provider_mode": "fake",
+  "results_sha256": "62b7cb5f1a1faba55ccb2e8dcabe4a095922c414b5c99fd64f1d768712fc3b92"
+}

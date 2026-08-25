@@ -43,9 +43,11 @@ def fake_tasks(n, seed_prefix="t"):
     return tasks, {t["target_id"]: t["shuffled_source"] for t in tasks}
 
 
-def run(*, phase, arms, provider_spec, hard_cap, out_dir, n_tasks, reuse_o0_from=None):
+def run(*, phase, arms, provider_spec, hard_cap, out_dir, n_tasks, reuse_o0_from=None, task_prefix=None):
     os.makedirs(out_dir, exist_ok=True)
-    tasks, derange = fake_tasks(n_tasks, seed_prefix=phase)
+    # reader-band and P2 share the frozen DEV task set (so P2 can reuse the selected reader's O0); P1 uses the
+    # separate SMOKE set. task_prefix pins which frozen set this phase operates on.
+    tasks, derange = fake_tasks(n_tasks, seed_prefix=task_prefix or phase)
     ck = CheckpointStore(os.path.join(out_dir, "results.jsonl"))
     ledger = Ledger(provider_spec.get("model", "fake-reader"), hard_cap)
     # reuse selected-reader O0 cells (P2) — copy them into this store if provided
@@ -105,9 +107,10 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--n", type=int, required=True)
     ap.add_argument("--reuse-o0-from")
+    ap.add_argument("--task-prefix")
     a = ap.parse_args()
     manifest, integ = run(phase=a.phase, arms=a.arms.split(","), provider_spec=_spec_from_args(a),
-                          hard_cap=a.hard_cap, out_dir=a.out, n_tasks=a.n, reuse_o0_from=a.reuse_o0_from)
+                          hard_cap=a.hard_cap, out_dir=a.out, n_tasks=a.n, reuse_o0_from=a.reuse_o0_from, task_prefix=a.task_prefix)
     print(json.dumps({"resolved_by_arm": manifest["resolved_by_arm"], "cells": manifest["cells"],
                       "integrity_clean": integ["clean"], "violations": integ["violations"][:5]}, indent=2))
     return 0 if integ["clean"] else 1

@@ -27,7 +27,7 @@ def main():
         "mode": "real", "provider": a.provider, "model": a.model, "secret_name": a.secret_name}
     # run all 7 arms; if reuse provided, O0 cells are pre-seeded (not re-called)
     manifest, integ = PR.run(phase="p2", arms=ALL_ARMS, provider_spec=spec, hard_cap=a.hard_cap,
-                             out_dir=a.out, n_tasks=a.n, reuse_o0_from=a.reuse_o0_from)
+                             out_dir=a.out, n_tasks=a.n, reuse_o0_from=a.reuse_o0_from, task_prefix="dev")
     expected = a.n * len(ALL_ARMS)
     out = {"phase": "p2", "analyzed_cells": integ["cells"], "expected": expected,
            "new_cells_o1_o6": a.n * len(NEW_ARMS), "reused_o0": manifest["reused_o0"],

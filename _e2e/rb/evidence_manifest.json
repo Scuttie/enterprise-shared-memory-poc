@@ -1,0 +1,22 @@
+{
+  "phase": "reader_band",
+  "arms": [
+    "O0"
+  ],
+  "tasks": 6,
+  "cells": 6,
+  "reused_o0": 0,
+  "resolved_by_arm": {
+    "O0": 6
+  },
+  "ledger": {
+    "model": "fake-reader",
+    "calls": 18,
+    "input_tokens": 18000,
+    "output_tokens": 1800,
+    "cost_usd": 0.0,
+    "hard_cap_usd": 100.0
+  },
+  "provider_mode": "fake",
+  "results_sha256": "99a2fbdf880b25586cdf48fac34e645f62ed3cc845e07caa0b682999da0767cf"
+}

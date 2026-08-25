@@ -24,7 +24,7 @@ def main():
     spec = {"mode": "fake", "model": a.model} if a.mode == "fake" else {
         "mode": "real", "provider": a.provider, "model": a.model, "secret_name": a.secret_name}
     manifest, integ = PR.run(phase="p1", arms=ARMS, provider_spec=spec, hard_cap=a.hard_cap,
-                             out_dir=a.out, n_tasks=a.n)
+                             out_dir=a.out, n_tasks=a.n, task_prefix="smoke")
     expected = a.n * len(ARMS)
     verdict = "P1_INTEGRITY_PASS" if (integ["clean"] and integ["cells"] == expected) else "R22_P1_INTEGRATION_STOP"
     out = {"phase": "p1", "verdict": verdict, "cells": integ["cells"], "expected": expected,

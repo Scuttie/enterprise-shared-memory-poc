@@ -27,7 +27,7 @@ def main():
     spec = {"mode": "fake", "model": a.model} if a.mode == "fake" else {
         "mode": "real", "provider": a.provider, "model": a.model, "secret_name": a.secret_name}
     manifest, integ = PR.run(phase="reader_band", arms=["O0"], provider_spec=spec, hard_cap=a.hard_cap,
-                             out_dir=a.out, n_tasks=a.n)
+                             out_dir=a.out, n_tasks=a.n, task_prefix="dev")
     resolved = manifest["resolved_by_arm"]["O0"]
     rate = resolved / max(1, a.n)
     if not integ["clean"]:

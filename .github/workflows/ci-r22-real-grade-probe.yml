@@ -1,0 +1,81 @@
+name: ci-r22-real-grade-probe
+# §3.4 DECISIVE FEASIBILITY PROBE — can the official swebench harness BUILD + GRADE a frozen SWE-ContextBench
+# Related target (none are in the enriched prebuilt-image datasets)? Grades a python target (gold -> resolved,
+# no-patch -> unresolved) and records the built image digest. No model calls. Result decides READY vs
+# R22_REAL_PAID_HARNESS_TECHNICAL_BLOCK.
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['.github/workflows/ci-r22-real-grade-probe.yml', 'experiments/r22/runtime/official_grader.py']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        instance: [astropy__astropy-14500, apache__lucene-13388]   # one python + one multilingual route type
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Free disk + docker preflight
+        run: |
+          docker info >/dev/null && echo "docker OK"
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "$AGENT_TOOLSDIRECTORY" || true
+          docker image prune -af >/dev/null 2>&1 || true
+          df -h /
+      - run: pip install -q pandas pyarrow "datasets>=2.19,<3" "swebench==5.0.2"
+      - name: Get the SCB gold patch + write predictions
+        run: |
+          mkdir -p scb/data probe
+          for f in Related Experience; do
+            curl -sfL "https://huggingface.co/datasets/jiayuanz3/SWEContextBench/resolve/main/data/SWEContextBench_${f}.parquet" -o "scb/data/SWEContextBench_${f}.parquet"
+          done
+          python - <<'PY'
+          import json, pandas as pd
+          iid = "${{ matrix.instance }}"
+          rel = pd.read_parquet("scb/data/SWEContextBench_Related.parquet")
+          exp = pd.read_parquet("scb/data/SWEContextBench_Experience.parquet")
+          row = None
+          for df in (rel, exp):
+              m = df[df.instance_id == iid]
+              if len(m): row = m.iloc[0]; break
+          assert row is not None, iid
+          open("probe/gold.jsonl", "w").write(json.dumps({"instance_id": iid, "model_name_or_path": "gold", "model_patch": row["patch"]}) + "\n")
+          open("probe/nopatch.jsonl", "w").write(json.dumps({"instance_id": iid, "model_name_or_path": "nopatch", "model_patch": ""}) + "\n")
+          print("wrote predictions for", iid, "repo", row["repo"])
+          PY
+      - name: Grade GOLD (build image from SCB row) — expect resolved
+        run: |
+          timeout 3000 python -m swebench.harness.run_evaluation \
+            --dataset_name jiayuanz3/SWEContextBench --instance_ids "${{ matrix.instance }}" \
+            --predictions_path probe/gold.jsonl --run_id probe-gold --max_workers 1 || echo "GOLD_HARNESS_RC=$?"
+      - name: Grade NO-PATCH — expect unresolved
+        run: |
+          timeout 1800 python -m swebench.harness.run_evaluation \
+            --dataset_name jiayuanz3/SWEContextBench --instance_ids "${{ matrix.instance }}" \
+            --predictions_path probe/nopatch.jsonl --run_id probe-nopatch --max_workers 1 || echo "NOPATCH_HARNESS_RC=$?"
+      - name: Report feasibility (build + discrimination)
+        run: |
+          python - <<'PY'
+          import glob, json, subprocess
+          iid = "${{ matrix.instance }}"
+          def resolved(run):
+              for p in glob.glob("**/*%s*.json" % run, recursive=True):
+                  try:
+                      r = json.load(open(p))
+                      if "resolved_ids" in r: return iid in set(r["resolved_ids"]), p
+                  except Exception: pass
+              return None, None
+          g, gp = resolved("probe-gold"); n, npp = resolved("probe-nopatch")
+          imgs = subprocess.run(["docker","images","--format","{{.Repository}}:{{.Tag}} {{.ID}}"],
+                                capture_output=True, text=True).stdout
+          out = {"instance": iid, "gold_report": gp, "gold_resolved": g, "nopatch_report": npp,
+                 "nopatch_resolved": n, "images_built": [l for l in imgs.splitlines() if "sweb" in l][:5],
+                 "feasible": bool(g is True and n is False)}
+          print(json.dumps(out, indent=2))
+          import sys; sys.exit(0 if out["feasible"] else 1)
+          PY

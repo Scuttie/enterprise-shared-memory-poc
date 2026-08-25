@@ -1,0 +1,245 @@
+{
+  "schema": "r22/paid_image_manifest/1.0.0",
+  "images": [
+    {
+      "instance_id": "apache__lucene-13388",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "astral-sh__ruff-15725",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "astral-sh__ruff-15997",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "astral-sh__ruff-16445",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "astropy__astropy-14500",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "astropy__astropy-15082",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "astropy__astropy-6389",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "astropy__astropy-7167",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "astropy__astropy-8614",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "astropy__astropy-8711",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "caddyserver__caddy-5770",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "caddyserver__caddy-5930",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "google__gson-2787",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "google__gson-904",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "laravel__framework-52660",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "mwaskom__seaborn-3203",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "php-cs-fixer__php-cs-fixer-8027",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "php-cs-fixer__php-cs-fixer-8058",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "php-cs-fixer__php-cs-fixer-8398",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "prometheus__prometheus-15177",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "prometheus__prometheus-9485",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "pydata__xarray-3891",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "pydata__xarray-508",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "pydata__xarray-7068",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "pydata__xarray-7220",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "rubocop__rubocop-13096",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "rubocop__rubocop-13299",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "rubocop__rubocop-13623",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-11707",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-12426",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-12427",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-14973",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-14975",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-15974",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-16342",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-16924",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-16946",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-16953",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-18115",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    },
+    {
+      "instance_id": "sympy__sympy-18196",
+      "route": "OFFICIAL_IMAGE_BUILD",
+      "image": null,
+      "build_validated": false
+    }
+  ]
+}

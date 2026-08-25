@@ -131,7 +131,9 @@ def run(*, phase, arms, hard_cap, out_dir, n_tasks, task_source="fake", reader_p
         mem_loader = LD.FrozenStageMemoryLoader()
 
         def grade_fn(t, patch):
-            return LD.OfficialSWEGrader.grade_via_cli(t, patch, grader_results_dir or os.path.join(out_dir, "grade"))
+            # BENCHMARK-SPECIFIC official SCB evaluator (pinned ephemeral checkout + official per-instance image).
+            # NOT generic swebench 5.0.2 (that expects an enriched `image` field SCB Related rows do not carry).
+            return LD.SCBOfficialGrader.grade_via_cli(t, patch, grader_results_dir or os.path.join(out_dir, "grade"))
     else:
         task_loader = LD.FakeTaskLoader(n_tasks, task_prefix or phase)
         wsf = LD.FakeWorkspaceFactory()

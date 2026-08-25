@@ -1,0 +1,569 @@
+{
+  "image_repository": "jiayuanz3/swecontextbench",
+  "targets": 40,
+  "manifest_found": 40,
+  "linux_amd64": 40,
+  "tag_derivation": "instance_id.replace('__','.').lower()",
+  "images": {
+    "apache__lucene-13388": {
+      "instance_id": "apache__lucene-13388",
+      "image": "jiayuanz3/swecontextbench:apache.lucene-13388",
+      "tag": "apache.lucene-13388",
+      "http_status": 200,
+      "digest": "sha256:e0e7f0b130132e8c115291396a2d974d9ace062fe90157f7d9614230a1f5b1c0",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 2393473886
+    },
+    "astral-sh__ruff-15725": {
+      "instance_id": "astral-sh__ruff-15725",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15725",
+      "tag": "astral-sh.ruff-15725",
+      "http_status": 200,
+      "digest": "sha256:6045d9611a478df951d57937eae0560f2410f9e83f47b7689892a1e53d6048b8",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 5365917853
+    },
+    "astral-sh__ruff-15997": {
+      "instance_id": "astral-sh__ruff-15997",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15997",
+      "tag": "astral-sh.ruff-15997",
+      "http_status": 200,
+      "digest": "sha256:4ff6fbb327893411d27cf96f6e43fc37d3b62057d99759f78de3bd0a52e89106",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 5410988989
+    },
+    "astral-sh__ruff-16445": {
+      "instance_id": "astral-sh__ruff-16445",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-16445",
+      "tag": "astral-sh.ruff-16445",
+      "http_status": 200,
+      "digest": "sha256:f05058578e9bbd8ad6ed9ce0d96e2426ddc7590cb65ae2cda2dadb7b59fdcee6",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 5455319823
+    },
+    "astropy__astropy-14500": {
+      "instance_id": "astropy__astropy-14500",
+      "image": "jiayuanz3/swecontextbench:astropy.astropy-14500",
+      "tag": "astropy.astropy-14500",
+      "http_status": 200,
+      "digest": "sha256:420915045f16dd2c329d15b31f65b0c8f13cc46029dcd119d2c2de63fbe17696",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1217741773
+    },
+    "astropy__astropy-15082": {
+      "instance_id": "astropy__astropy-15082",
+      "image": "jiayuanz3/swecontextbench:astropy.astropy-15082",
+      "tag": "astropy.astropy-15082",
+      "http_status": 200,
+      "digest": "sha256:f5fc6543da91a27f641c75c6003a5525e59b5ba69974254f61509a290b5ff289",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1245243563
+    },
+    "astropy__astropy-6389": {
+      "instance_id": "astropy__astropy-6389",
+      "image": "jiayuanz3/swecontextbench:astropy.astropy-6389",
+      "tag": "astropy.astropy-6389",
+      "http_status": 200,
+      "digest": "sha256:53ee58c2d7108386ede3bd2cb81b0093106fcf44c9fb90866fb567c4e0aecd6b",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1291438133
+    },
+    "astropy__astropy-7167": {
+      "instance_id": "astropy__astropy-7167",
+      "image": "jiayuanz3/swecontextbench:astropy.astropy-7167",
+      "tag": "astropy.astropy-7167",
+      "http_status": 200,
+      "digest": "sha256:b8072f49fbfbce89a00854b2305c85206ecf51b92489150337d5dce8bb16d828",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1201347169
+    },
+    "astropy__astropy-8614": {
+      "instance_id": "astropy__astropy-8614",
+      "image": "jiayuanz3/swecontextbench:astropy.astropy-8614",
+      "tag": "astropy.astropy-8614",
+      "http_status": 200,
+      "digest": "sha256:9625641e886b388d57047c480c9e5c6b7bd20d5f18a19d7a3e7c84d6d83c5864",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1291251616
+    },
+    "astropy__astropy-8711": {
+      "instance_id": "astropy__astropy-8711",
+      "image": "jiayuanz3/swecontextbench:astropy.astropy-8711",
+      "tag": "astropy.astropy-8711",
+      "http_status": 200,
+      "digest": "sha256:608abe390f72d18162a1b46420135a0178973cfcaa0a6b747b1f1e1ce9cf4a6d",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1291092670
+    },
+    "caddyserver__caddy-5770": {
+      "instance_id": "caddyserver__caddy-5770",
+      "image": "jiayuanz3/swecontextbench:caddyserver.caddy-5770",
+      "tag": "caddyserver.caddy-5770",
+      "http_status": 200,
+      "digest": "sha256:a7f736c206038ac9c2815c614d22254a4fb1550c6e0f273591fb7c45c90f14c6",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 906360535
+    },
+    "caddyserver__caddy-5930": {
+      "instance_id": "caddyserver__caddy-5930",
+      "image": "jiayuanz3/swecontextbench:caddyserver.caddy-5930",
+      "tag": "caddyserver.caddy-5930",
+      "http_status": 200,
+      "digest": "sha256:12cb3ea252d89e7ec5e1606efbeb5f567240adeeac567024b82649d2da55ec1f",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 895095737
+    },
+    "google__gson-2787": {
+      "instance_id": "google__gson-2787",
+      "image": "jiayuanz3/swecontextbench:google.gson-2787",
+      "tag": "google.gson-2787",
+      "http_status": 200,
+      "digest": "sha256:477684e23d55f5241931563c2deb978d8ee6728c0bea95e45a93f6aea5e45b4e",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1122399310
+    },
+    "google__gson-904": {
+      "instance_id": "google__gson-904",
+      "image": "jiayuanz3/swecontextbench:google.gson-904",
+      "tag": "google.gson-904",
+      "http_status": 200,
+      "digest": "sha256:4fcec2d620858c3f1908acf57233e5e306e73ecf5fbfb3b584902e1d61ddc1a1",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1098021561
+    },
+    "laravel__framework-52660": {
+      "instance_id": "laravel__framework-52660",
+      "image": "jiayuanz3/swecontextbench:laravel.framework-52660",
+      "tag": "laravel.framework-52660",
+      "http_status": 200,
+      "digest": "sha256:9645e7cb0486bcaea709418403f4d37848d23c9019207ca9083e8cc7c83ffc8f",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 854977374
+    },
+    "mwaskom__seaborn-3203": {
+      "instance_id": "mwaskom__seaborn-3203",
+      "image": "jiayuanz3/swecontextbench:mwaskom.seaborn-3203",
+      "tag": "mwaskom.seaborn-3203",
+      "http_status": 200,
+      "digest": "sha256:46241bb75011807cbf990bd0cabf462ac1bacd4bf69b2f594892b1cca9def15d",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1069305533
+    },
+    "php-cs-fixer__php-cs-fixer-8027": {
+      "instance_id": "php-cs-fixer__php-cs-fixer-8027",
+      "image": "jiayuanz3/swecontextbench:php-cs-fixer.php-cs-fixer-8027",
+      "tag": "php-cs-fixer.php-cs-fixer-8027",
+      "http_status": 200,
+      "digest": "sha256:7009c2c31133d1604d0fbd0fa94b0d412cf2227956cc8281bd595d8334e17d0d",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 724133746
+    },
+    "php-cs-fixer__php-cs-fixer-8058": {
+      "instance_id": "php-cs-fixer__php-cs-fixer-8058",
+      "image": "jiayuanz3/swecontextbench:php-cs-fixer.php-cs-fixer-8058",
+      "tag": "php-cs-fixer.php-cs-fixer-8058",
+      "http_status": 200,
+      "digest": "sha256:86a3a3319d0095fd532c91cdded64a6d255e6c894a800434afc114bbc98c7f1e",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 715818639
+    },
+    "php-cs-fixer__php-cs-fixer-8398": {
+      "instance_id": "php-cs-fixer__php-cs-fixer-8398",
+      "image": "jiayuanz3/swecontextbench:php-cs-fixer.php-cs-fixer-8398",
+      "tag": "php-cs-fixer.php-cs-fixer-8398",
+      "http_status": 200,
+      "digest": "sha256:f5a83f330764c69c3ed027d0d2dbc2dcb09b307de6c76e98b0aa2176fd005a9a",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 715819751
+    },
+    "prometheus__prometheus-15177": {
+      "instance_id": "prometheus__prometheus-15177",
+      "image": "jiayuanz3/swecontextbench:prometheus.prometheus-15177",
+      "tag": "prometheus.prometheus-15177",
+      "http_status": 200,
+      "digest": "sha256:396fe49d9954c4ae94d864697d47724bf2c1997a4cde2a368374830bb06c7cf3",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1678139624
+    },
+    "prometheus__prometheus-9485": {
+      "instance_id": "prometheus__prometheus-9485",
+      "image": "jiayuanz3/swecontextbench:prometheus.prometheus-9485",
+      "tag": "prometheus.prometheus-9485",
+      "http_status": 200,
+      "digest": "sha256:d40d069ffc2f3b4d6d81358e97009292b6efe0f610320e3de5b104d4bfbd5162",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1718511934
+    },
+    "pydata__xarray-3891": {
+      "instance_id": "pydata__xarray-3891",
+      "image": "jiayuanz3/swecontextbench:pydata.xarray-3891",
+      "tag": "pydata.xarray-3891",
+      "http_status": 200,
+      "digest": "sha256:958d35befd36095c5e79bd852fef2a1934c1e5337273f3a55247eb0daf71ee2d",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 972181032
+    },
+    "pydata__xarray-508": {
+      "instance_id": "pydata__xarray-508",
+      "image": "jiayuanz3/swecontextbench:pydata.xarray-508",
+      "tag": "pydata.xarray-508",
+      "http_status": 200,
+      "digest": "sha256:124d36cd2ff00a49efcb55eb05a2383d1d3e8a1f1410d3c2e5a07d576232a791",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 917111650
+    },
+    "pydata__xarray-7068": {
+      "instance_id": "pydata__xarray-7068",
+      "image": "jiayuanz3/swecontextbench:pydata.xarray-7068",
+      "tag": "pydata.xarray-7068",
+      "http_status": 200,
+      "digest": "sha256:23059c61c074c7bf7006edad9f1759667012aef5227eae0162af805fe915fb29",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 921679378
+    },
+    "pydata__xarray-7220": {
+      "instance_id": "pydata__xarray-7220",
+      "image": "jiayuanz3/swecontextbench:pydata.xarray-7220",
+      "tag": "pydata.xarray-7220",
+      "http_status": 200,
+      "digest": "sha256:28a6fadbb31002a76e5b28afa92915cb25f3a6bed7094d371fe288cb71dbd7dd",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 921679378
+    },
+    "rubocop__rubocop-13096": {
+      "instance_id": "rubocop__rubocop-13096",
+      "image": "jiayuanz3/swecontextbench:rubocop.rubocop-13096",
+      "tag": "rubocop.rubocop-13096",
+      "http_status": 200,
+      "digest": "sha256:afce8de3cac00dcee3aabb8e0ae016342678b67766f3c123db373cb07a06b493",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 693345571
+    },
+    "rubocop__rubocop-13299": {
+      "instance_id": "rubocop__rubocop-13299",
+      "image": "jiayuanz3/swecontextbench:rubocop.rubocop-13299",
+      "tag": "rubocop.rubocop-13299",
+      "http_status": 200,
+      "digest": "sha256:344b562679c327d83d8135255fe7c206dd31ca64312abb74ba00cc274e5a4762",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 693448840
+    },
+    "rubocop__rubocop-13623": {
+      "instance_id": "rubocop__rubocop-13623",
+      "image": "jiayuanz3/swecontextbench:rubocop.rubocop-13623",
+      "tag": "rubocop.rubocop-13623",
+      "http_status": 200,
+      "digest": "sha256:ff50baac518510f13b2f170ae9b3054236eafb56e63e002da0a38e61feaa0005",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 693643999
+    },
+    "sympy__sympy-11707": {
+      "instance_id": "sympy__sympy-11707",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-11707",
+      "tag": "sympy.sympy-11707",
+      "http_status": 200,
+      "digest": "sha256:9aa593dea810443e1f106ae1e2a2b5c36f82c8104c8ecb0b27219174de9cd40e",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1178638912
+    },
+    "sympy__sympy-12426": {
+      "instance_id": "sympy__sympy-12426",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-12426",
+      "tag": "sympy.sympy-12426",
+      "http_status": 200,
+      "digest": "sha256:1d7b5e8249ce98306618bd6eeeedd3bd5264fdfa1089408773181351ff0bad40",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1106657680
+    },
+    "sympy__sympy-12427": {
+      "instance_id": "sympy__sympy-12427",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-12427",
+      "tag": "sympy.sympy-12427",
+      "http_status": 200,
+      "digest": "sha256:a44e683fcf0354b3f8e92853935199b9d68b89a62539c26518e294bfc0c0662b",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1106857229
+    },
+    "sympy__sympy-14973": {
+      "instance_id": "sympy__sympy-14973",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-14973",
+      "tag": "sympy.sympy-14973",
+      "http_status": 200,
+      "digest": "sha256:2b4721f1e79e554640c37ab18fc2fbd3b39183c43224bcb54f79497b951f3b90",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1190873295
+    },
+    "sympy__sympy-14975": {
+      "instance_id": "sympy__sympy-14975",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-14975",
+      "tag": "sympy.sympy-14975",
+      "http_status": 200,
+      "digest": "sha256:b6d5e161be29b9724937f52a7101cc1b7077ec1edfe97eb75ed03deda95893da",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1190873295
+    },
+    "sympy__sympy-15974": {
+      "instance_id": "sympy__sympy-15974",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-15974",
+      "tag": "sympy.sympy-15974",
+      "http_status": 200,
+      "digest": "sha256:8c12da0a5a4900f37cb65c456ae60e3af203dcb6c32fabfdf06e37495f08f962",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1197810456
+    },
+    "sympy__sympy-16342": {
+      "instance_id": "sympy__sympy-16342",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-16342",
+      "tag": "sympy.sympy-16342",
+      "http_status": 200,
+      "digest": "sha256:b9cf8c0d39b649850e45d3f94508390ae020df3b96f1c8b097406afb49a37413",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1201423588
+    },
+    "sympy__sympy-16924": {
+      "instance_id": "sympy__sympy-16924",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-16924",
+      "tag": "sympy.sympy-16924",
+      "http_status": 200,
+      "digest": "sha256:bcf1b48bfa3db7bb090e71bf01a37e40145c26d7e2e43d7f78560585f9c22ddb",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1178638912
+    },
+    "sympy__sympy-16946": {
+      "instance_id": "sympy__sympy-16946",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-16946",
+      "tag": "sympy.sympy-16946",
+      "http_status": 200,
+      "digest": "sha256:8c25475bc782771a131f624aaa6efc2fd86f02f642bf5a8e71e720eed112a912",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1199437004
+    },
+    "sympy__sympy-16953": {
+      "instance_id": "sympy__sympy-16953",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-16953",
+      "tag": "sympy.sympy-16953",
+      "http_status": 200,
+      "digest": "sha256:2b507edfe21667854cfbb90a3988aa1b06f04a2d2420032180b973fa52164c2f",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1201423588
+    },
+    "sympy__sympy-18115": {
+      "instance_id": "sympy__sympy-18115",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-18115",
+      "tag": "sympy.sympy-18115",
+      "http_status": 200,
+      "digest": "sha256:147c7b442ad753b0ea30f6eeef8dc72a491d4aa49b1b0bc9a7dce6fdad8d1c1d",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1217975514
+    },
+    "sympy__sympy-18196": {
+      "instance_id": "sympy__sympy-18196",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-18196",
+      "tag": "sympy.sympy-18196",
+      "http_status": 200,
+      "digest": "sha256:b0d921c3245c2403d3ebe5668f2aaa4bc29a026bb7d481ff24ee8df1109a4dbf",
+      "content_type": "application/vnd.oci.image.index.v1+json",
+      "linux_amd64": true,
+      "platforms": [
+        "linux/amd64",
+        "unknown/unknown"
+      ],
+      "size_bytes": 1217975514
+    }
+  }
+}

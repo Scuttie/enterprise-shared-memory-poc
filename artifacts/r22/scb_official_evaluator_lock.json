@@ -1,0 +1,59 @@
+{
+  "upstream_repo": "jiayuanz3/SWEContextBench",
+  "pinned_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+  "dataset_license": "MIT (per released dataset metadata)",
+  "evaluation_code_license": "NO EXPLICIT LICENSE FILE DETECTED \u2014 redistribution rights unresolved",
+  "image_tag_derivation": "jiayuanz3/swecontextbench:{instance_id.replace('__','.').lower()}",
+  "image_tag_derivation_source": "swebench_memory/harness/run_evaluation.py:2954",
+  "official_grade_command": "python -m swebench_memory.harness.run_evaluation --dataset_name <combined> --predictions_path <preds> --run_id <id>",
+  "files": {
+    "README.md": {
+      "sha256": "6bd3efdd5b7407f28e7221e78e1dd4c48b065ea30d219a1798468cbe0bedc04f",
+      "git_blob_sha": "351e0cc71f3725144f5225e61adc1689fbecdbe6",
+      "bytes": 2191
+    },
+    "evaluation.sh": {
+      "sha256": "4382682a3a387c930de0f106aeca48d6f04824a4bed37f4c92c9d9ece6ed26cd",
+      "git_blob_sha": "0c443d983ac975f217549da1859772d2cbe2acca",
+      "bytes": 2744
+    },
+    "environment.yml": {
+      "sha256": "d052a2c1bc14cded3add36d331b8eebf7527fc75af28560bbea618277c0dc4ec",
+      "git_blob_sha": "9375f421ca5984101da7c3d87c45372f5ad4f5af",
+      "bytes": 224174
+    },
+    "swebench_memory/harness/run_evaluation.py": {
+      "sha256": "e6b29452302df417cfde1493ab38817ac2d4ebb19750b374d60e383271ad5b69",
+      "git_blob_sha": "f97c4dc737c8b786da6fab3ee1a642a82561a8d7",
+      "bytes": 207603
+    },
+    "swebench_memory/harness/combine_instances.py": {
+      "sha256": "93f6c83c54979bfaa3d417e043c105a2b4e48a6192193b0db81882144e9a8557",
+      "git_blob_sha": "6dfb2b95bfdff24f04936ffc05cdf7078e3d0b5b",
+      "bytes": 4301
+    },
+    "swebench_memory/harness/build_instance.py": {
+      "sha256": "e45c2a7e8b5cfd3cc6494cccfe7990a21f9bdfbfb59305fbddc2969ac176fb2d",
+      "git_blob_sha": "7a38572eac152df7cb3e3e93dbcd67403a622f73",
+      "bytes": 57232
+    },
+    "swebench_memory/harness/build_base.py": {
+      "sha256": "088ee24d1e53b28683af92d566d308b015136297ab9f48ff986a4461ef3ada49",
+      "git_blob_sha": "0346a249c4eb3257f50844694237b88bb9757099",
+      "bytes": 3119
+    },
+    "swebench_memory/__init__.py": {
+      "sha256": "d70645eb15bd110b14ac3346021005093816c13cdf039ba1ee158046b172a94e",
+      "git_blob_sha": "a0b8641c21d59faccad9e6238dc2ca3cc55b8817",
+      "bytes": 305
+    }
+  },
+  "trees": {
+    "cases": {
+      "git_tree_sha": "b4a06fef2a00ba8852b84df6c8a12e7d42ff8ecd"
+    },
+    "swebench_memory": {
+      "git_tree_sha": "d9d3910b9d52b2511fe8a975f31b047b7d6e9bd9"
+    }
+  }
+}

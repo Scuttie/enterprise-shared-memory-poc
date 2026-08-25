@@ -87,10 +87,24 @@ SCB_DATASET = "jiayuanz3/SWEContextBench"
 SCB_GH_COMMIT = "31bb04155f52b184bf31b220e3cff0607ac9c953"
 
 
+def _load_case_route_manifest():
+    p = os.path.join(ART, "scb_case_route_manifest.json")
+    return json.load(open(p, encoding="utf-8"))["cases"] if os.path.isfile(p) else {}
+
+
+def _load_image_manifest():
+    p = os.path.join(ART, "scb_image_manifest.json")
+    return json.load(open(p, encoding="utf-8"))["images"] if os.path.isfile(p) else {}
+
+
 class RealR22TaskLoader(TaskLoader):
-    """Loads the frozen oracle TARGET rows from the MIT SWE-ContextBench dataset (Related), where the frozen ids
-    live. SCB rows carry the SWE-bench schema (base_commit/FAIL_TO_PASS/PASS_TO_PASS/patch/test_patch) but no
-    prebuilt `image`; the official harness builds the image from base_commit at grade time. Credential-free."""
+    """Loads the frozen oracle TARGET rows and attaches the OFFICIAL SWE-ContextBench grading route (P0.8).
+
+    The reader-facing fields (issue/base_commit/repo) come from the MIT SCB dataset row; the grading route
+    (official case JSON path+hash, official prebuilt image tag `jiayuanz3/swecontextbench:<tag>` + digest) comes
+    from the frozen P0.8 audits. There is NO `image=None`: SCB Related targets ARE graded by the benchmark's own
+    evaluator against prebuilt per-instance images. Gold patch / test_patch / F2P / P2P are withheld from the
+    reader (grading reads them from the official case inside the pinned checkout). Credential-free load."""
 
     def __init__(self, manifest_name: str, scb_data: Optional[str] = None):
         self.manifest_name = manifest_name
@@ -105,19 +119,27 @@ class RealR22TaskLoader(TaskLoader):
         for df in (rel, exp):
             for _, r in df.iterrows():
                 by.setdefault(r["instance_id"], r)
+        routes = _load_case_route_manifest()
+        images = _load_image_manifest()
         tasks = []
         for tid in target_ids:
             if tid not in by:
                 raise RealModeViolation("frozen target %s not in the SWE-ContextBench dataset" % tid)
+            if tid not in routes:
+                raise RealModeViolation("no OFFICIAL case route for %s (run the P0.8 case audit)" % tid)
             r = by[tid]
+            route = dict(routes[tid])
+            img = images.get(tid, {})
+            route["image_digest"] = img.get("digest")
             tasks.append({
-                "target_id": tid, "subset": "SWE-ContextBench", "dataset_name": SCB_DATASET,
+                "target_id": tid, "subset": route.get("subset_used"), "dataset_name": SCB_DATASET,
                 "dataset_revision": SCB_GH_COMMIT,
                 "repository": r["repo"], "base_commit": r["base_commit"],
                 "problem_statement": r["problem_statement"], "issue": r["problem_statement"],
-                "image": None,  # SCB has no prebuilt image; harness builds from base_commit at grade time
+                "image": img.get("image"),          # OFFICIAL prebuilt image tag jiayuanz3/swecontextbench:<tag>
+                "image_digest": img.get("digest"),
+                "case_route": route,                 # official case path + hashes (no gold content in cleartext)
                 "environment_setup_commit": r.get("environment_setup_commit"), "version": str(r.get("version")),
-                "FAIL_TO_PASS": r["FAIL_TO_PASS"], "PASS_TO_PASS": r["PASS_TO_PASS"],
                 "repo_cluster": r["repo"],
                 "_gold_patch": r["patch"], "_test_patch": r["test_patch"],   # withheld from the reader
                 "stage": "COMPREHEND",
@@ -126,65 +148,67 @@ class RealR22TaskLoader(TaskLoader):
 
 
 class OfficialImageWorkspaceFactory(WorkspaceFactory):
-    """Pull the official row-declared image, verify digest, extract /testbed at base_commit. Requires Docker."""
+    """Editable READER workspace for a REAL SCB target. Grading always uses the OFFICIAL SCB image separately
+    (see SCBOfficialGrader); this only produces a repo tree the reader edits. Two methods (§7):
+      B) git checkout base_commit (default; credential-free, no image pull), or
+      A) extract /testbed from the official SCB image (R22_WORKSPACE_METHOD=image; requires Docker).
+    Records task['workspace_method']. Never creates the fake-fixture files."""
 
     def make(self, task):
-        image = task["image"]
+        image = task.get("image")
         if not image:
-            raise RealModeViolation("no official image for %s" % task["target_id"])
-        subprocess.run(["docker", "pull", image], check=True, capture_output=True)
-        digest = subprocess.run(["docker", "inspect", "--format", "{{index .RepoDigests 0}}", image],
-                                capture_output=True, text=True).stdout.strip()
-        task["image_digest"] = digest
+            raise RealModeViolation("no official image tag for %s (run the P0.8 image audit)" % task["target_id"])
+        method = os.environ.get("R22_WORKSPACE_METHOD", "git")
         wr = tempfile.mkdtemp()
-        cid = subprocess.run(["docker", "create", image], capture_output=True, text=True).stdout.strip()
-        try:
-            subprocess.run(["docker", "cp", "%s:/testbed/." % cid, wr], check=True, capture_output=True)
-        finally:
-            subprocess.run(["docker", "rm", "-f", cid], capture_output=True)
+        if method == "image":
+            subprocess.run(["docker", "pull", image], check=True, capture_output=True)
+            digest = subprocess.run(["docker", "inspect", "--format", "{{index .RepoDigests 0}}", image],
+                                    capture_output=True, text=True).stdout.strip()
+            task["image_pulled_digest"] = digest
+            cid = subprocess.run(["docker", "create", image], capture_output=True, text=True).stdout.strip()
+            try:
+                subprocess.run(["docker", "cp", "%s:/testbed/." % cid, wr], check=True, capture_output=True)
+            finally:
+                subprocess.run(["docker", "rm", "-f", cid], capture_output=True)
+        else:
+            repo = task["repository"]
+            subprocess.run(["git", "init", "-q"], cwd=wr, check=True, capture_output=True)
+            subprocess.run(["git", "remote", "add", "origin", "https://github.com/%s.git" % repo],
+                           cwd=wr, capture_output=True)
+            subprocess.run(["git", "fetch", "--depth", "1", "origin", task["base_commit"]],
+                           cwd=wr, check=True, capture_output=True)
+            subprocess.run(["git", "checkout", "-q", task["base_commit"]], cwd=wr, check=True, capture_output=True)
+        task["workspace_method"] = method
         # the real path must never create the fixture files
         if os.path.exists(os.path.join(wr, "bug.py")) or os.path.exists(os.path.join(wr, "test_bug.py")):
             raise RealModeViolation("fixture files present in a REAL workspace")
         return wr
 
 
-class OfficialSWEGrader(Grader):
-    """Wraps the validated mixed-subset official grader (scripts/r22_grader_run.py adapter). Never local_grade."""
+class SCBOfficialGrader(Grader):
+    """Grade a REAL SCB target with the BENCHMARK-SPECIFIC official evaluator (pinned ephemeral checkout of
+    swebench_memory.harness.run_evaluation + official per-instance image). Never generic swebench, never
+    local_grade. Requires task['case_route'] from the P0.8 case audit."""
 
     def grade(self, task, model_patch):
-        import importlib.util
-        spec = importlib.util.spec_from_file_location(
-            "r22gr", os.path.join(ROOT, "scripts", "r22_grader_run.py"))
-        m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-        # write predictions + call the official harness for this instance's subset (as G0 does)
-        # (delegated; returns the harness resolved verdict + report path)
-        raise NotImplementedError("wired via scripts/r22_grader_run.py in the real workflow; "
-                                  "see OfficialSWEGrader.grade_via_cli")
+        return SCBOfficialGrader.grade_via_cli(task, model_patch,
+                                               os.environ.get("R22_GRADER_RESULTS", tempfile.mkdtemp()))
 
     @staticmethod
     def grade_via_cli(task, model_patch, results_dir):
-        """Run the official harness for one (instance, patch). Credential-free (Docker only)."""
-        import glob
-        os.makedirs(results_dir, exist_ok=True)
-        iid = task["target_id"]
-        run_id = "r22real-%s" % hashlib.sha256((iid + model_patch).encode()).hexdigest()[:10]
-        preds = os.path.join(results_dir, run_id + "_preds.jsonl")
-        with open(preds, "w", encoding="utf-8") as fh:
-            fh.write(json.dumps({"instance_id": iid, "model_name_or_path": "r22real",
-                                 "model_patch": model_patch}) + "\n")
-        cmd = ["python", "-m", "swebench.harness.run_evaluation", "--dataset_name", task["dataset_name"],
-               "--instance_ids", iid, "--predictions_path", preds, "--run_id", run_id, "--max_workers", "1"]
-        proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
-        report = None
-        for p in glob.glob(os.path.join(ROOT, "**", "*%s*.json" % run_id), recursive=True):
-            try:
-                report = json.load(open(p)); break
-            except Exception:
-                pass
-        resolved = bool(report and iid in set(report.get("resolved_ids", [])))
-        return {"resolved": resolved, "grader": "official_swebench", "dataset": task["dataset_name"],
-                "image_digest": task.get("image_digest"), "returncode": proc.returncode,
-                "report_found": report is not None, "log_tail": (proc.stdout or "")[-1500:]}
+        from experiments.r22.runtime import scb_official_grader as SG
+        route = task.get("case_route")
+        if not route:
+            raise RealModeViolation("no official case_route for %s; cannot grade with the SCB evaluator"
+                                    % task["target_id"])
+        route = dict(route)
+        route.setdefault("instance_id", task["target_id"])
+        route.setdefault("image_digest", task.get("image_digest"))
+        return SG.grade(route, model_patch, results_dir, model_name="r22-reader")
+
+
+# Back-compat alias: the previous (WRONG, generic-swebench) grader name now routes to the SCB official grader.
+OfficialSWEGrader = SCBOfficialGrader
 
 
 class FrozenStageMemoryLoader(MemorySourceLoader):

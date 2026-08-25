@@ -74,14 +74,18 @@ def test_real_mode_cannot_call_fake_fixtures(monkeypatch):
     assert len(tasks) == 12
 
 
-# ---- 4,5 grading discrimination reused from G0 (same adapter) ----------------
-def test_grader_discrimination_reused_from_g0_and_adapter_is_official():
-    g0 = json.load(open(os.path.join(ROOT, "artifacts", "r22", "grader_smoke.json")))
-    assert g0.get("gold_resolved") == 12 and g0.get("nopatch_resolved") == 0
-    assert hasattr(LD.OfficialSWEGrader, "grade_via_cli")   # the adapter the real runtime calls (not local_grade)
+# ---- 4,5 real grade path routes to the BENCHMARK-SPECIFIC SCB official evaluator (P0.8) -------
+def test_real_grade_path_is_scb_official_not_generic_swebench():
+    assert hasattr(LD.SCBOfficialGrader, "grade_via_cli")          # the adapter the real runtime calls
+    assert LD.OfficialSWEGrader is LD.SCBOfficialGrader            # back-compat alias re-routed away from generic
     src = open(os.path.join(ROOT, "experiments", "r22", "paid_runner.py"), encoding="utf-8").read()
-    real_block = src.split('cfg.task_source == "real"')[1][:400]
-    assert "OfficialSWEGrader.grade_via_cli" in real_block and "LocalFixtureGrader" not in real_block
+    real_block = src.split('cfg.task_source == "real"')[1][:700]
+    assert "SCBOfficialGrader.grade_via_cli" in real_block and "LocalFixtureGrader" not in real_block
+    # the real grade path must NOT call generic swebench.harness.run_evaluation (only the SCB evaluator)
+    sg = open(os.path.join(ROOT, "experiments", "r22", "runtime", "scb_official_grader.py"), encoding="utf-8").read()
+    assert "swebench_memory.harness.run_evaluation" in sg
+    ld = open(os.path.join(ROOT, "experiments", "r22", "runtime", "loaders.py"), encoding="utf-8").read()
+    assert "swebench.harness.run_evaluation" not in ld            # no generic grader call left in loaders
 
 
 # ---- 6 stage-record source lookup -------------------------------------------

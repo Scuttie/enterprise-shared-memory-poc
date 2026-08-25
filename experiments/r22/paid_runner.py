@@ -43,14 +43,68 @@ def fake_tasks(n, seed_prefix="t"):
     return tasks, {t["target_id"]: t["shuffled_source"] for t in tasks}
 
 
-def run(*, phase, arms, provider_spec, hard_cap, out_dir, n_tasks, reuse_o0_from=None, task_prefix=None):
+def _fake_frozen_derangement(tasks):
+    ids = [t["target_id"] for t in tasks]
+    src = [t["source_id"] for t in tasks]
+    return dict(zip(ids, src[1:] + src[:1]))
+
+
+def _manifest_task_list(manifest_name):
+    p = os.path.join(ROOT, "artifacts", "r22", manifest_name)
+    return json.load(open(p, encoding="utf-8")).get("task_list", [])
+
+
+def _real_derangement(manifest_name, tasks):
+    """Frozen O2 derangement from the oracle manifest (target -> assigned unrelated source)."""
+    d = {}
+    for e in _manifest_task_list(manifest_name):
+        if e["arm"] == "O2":
+            d[e["target_id"]] = e.get("mem_source")
+    # fall back to a deterministic rotation over target ids if the manifest lacks O2 rows
+    if not d:
+        ids = [t["target_id"] for t in tasks]
+        d = dict(zip(ids, ids[1:] + ids[:1]))
+    return d
+
+
+def _source_of(manifest_name, target_id, arm, derange):
+    """Exact frozen source assignment for (target, arm) from the oracle manifest."""
+    for e in _manifest_task_list(manifest_name):
+        if e["target_id"] == target_id and e["arm"] == arm:
+            return e.get("mem_source") or (derange.get(target_id) if arm == "O2" else target_id)
+    return derange.get(target_id) if arm == "O2" else target_id
+
+
+def run(*, phase, arms, provider_spec, hard_cap, out_dir, n_tasks, reuse_o0_from=None, task_prefix=None,
+        mode="fake", manifest_name=None, grader_results_dir=None):
+    """mode='fake' uses the local-fixture path; mode='real' uses the frozen SWE-ContextBench loaders and NEVER
+    touches fake_tasks/make_fixture/local_grade (guarded)."""
+    from experiments.r22.runtime import loaders as LD
     os.makedirs(out_dir, exist_ok=True)
-    # reader-band and P2 share the frozen DEV task set (so P2 can reuse the selected reader's O0); P1 uses the
-    # separate SMOKE set. task_prefix pins which frozen set this phase operates on.
-    tasks, derange = fake_tasks(n_tasks, seed_prefix=task_prefix or phase)
+
+    if mode == "real":
+        if provider_spec.get("mode") == "fake":
+            pass  # a mock provider is allowed for the credential-free real-path CI; no model key is used
+        task_loader = LD.RealR22TaskLoader(manifest_name)
+        wsf = LD.OfficialImageWorkspaceFactory()
+        mem_loader = LD.FrozenStageMemoryLoader()
+
+        def grade_fn(t, patch):
+            return LD.OfficialSWEGrader.grade_via_cli(t, patch, grader_results_dir or os.path.join(out_dir, "grade"))
+    else:
+        task_loader = LD.FakeTaskLoader(n_tasks, task_prefix or phase)
+        wsf = LD.FakeWorkspaceFactory()
+        mem_loader = LD.FakeMemorySourceLoader()
+
+        def grade_fn(t, patch):
+            return LD.LocalFixtureGrader().grade(t, patch)
+
+    tasks = task_loader.load()
+    derange = _fake_frozen_derangement(tasks) if mode == "fake" else _real_derangement(manifest_name, tasks)
     ck = CheckpointStore(os.path.join(out_dir, "results.jsonl"))
-    ledger = Ledger(provider_spec.get("model", "fake-reader"), hard_cap)
-    # reuse selected-reader O0 cells (P2) — copy them into this store if provided
+    campaign_model = provider_spec.get("model", "fake-reader")
+    ledger = Ledger(campaign_model, hard_cap)
+
     reused = 0
     if reuse_o0_from and os.path.isfile(reuse_o0_from):
         for line in open(reuse_o0_from, encoding="utf-8"):
@@ -60,26 +114,33 @@ def run(*, phase, arms, provider_spec, hard_cap, out_dir, n_tasks, reuse_o0_from
 
     cells = [(t["target_id"], a) for t in tasks for a in arms]
     for (tid, arm) in ck.missing(cells):
-        task = next(t for t in tasks if t["target_id"] == tid)
+        task = dict(next(t for t in tasks if t["target_id"] == tid))
         # O2 uses the frozen deranged (unrelated) source
-        if arm == "O2":
-            task = dict(task, source_id=derange[tid], source_user="gold_shuf_" + tid)
-        wr = tempfile.mkdtemp()
-        shutil.rmtree(wr)
-        fixroot = tempfile.mkdtemp()
-        fix = RA.make_fixture(fixroot)
-        shutil.copytree(fixroot, wr)
-        task = dict(task, fix=fix)
+        src_id = derange[tid] if arm == "O2" else task["target_id"] + "_src"
+        task["source_id"] = src_id
+        task["source_user"] = "gold_" + hashlib.sha256(src_id.encode()).hexdigest()[:8]
+        task["target_user"] = "u_" + hashlib.sha256(tid.encode()).hexdigest()[:8]
+        wr = wsf.make(task)
+        mem_rec = None
+        from experiments.r22.runtime.arm_payload import MEMORY_ENABLED
+        if MEMORY_ENABLED[arm]:
+            mem_rec = mem_loader.load(src_id if mode == "fake" else _source_of(manifest_name, tid, arm, derange),
+                                      task["stage"])
         spec = provider_spec
         if provider_spec.get("mode") == "fake":
-            spec = {**provider_spec, "script": {"fix": fix, "stage": task["stage"]}}
+            spec = {**provider_spec, "script": {"fix": task.get("_fix", {}), "stage": task["stage"]}}
         prov = make_provider(spec)
-        rec = TR.run_task_arm(task=task, arm=arm, provider=prov, ledger=ledger,
-                              grade_fn=lambda r: RA.local_grade(r), workspace_root=wr)
+        rec = TR.run_task_arm(task=task, arm=arm, provider=prov, ledger=ledger, grade_fn=grade_fn,
+                              workspace_root=wr, memory_record=mem_rec)
         ck.append(rec)
 
     records = ck.all()
+    # campaign-level model lock: every cell must share one returned model
+    models = set(r.get("returned_model") for r in records if r.get("returned_model"))
     integ = check_campaign(records, expected_cells=len(cells), o2_derangement=derange)
+    if len(models) > 1:
+        integ["violations"].append("campaign model drift across cells: %s" % models)
+        integ["clean"] = False
     resolved = {a: sum(1 for r in records if r["arm"] == a and r["resolved"]) for a in arms}
     manifest = {"phase": phase, "arms": arms, "tasks": n_tasks, "cells": len(records),
                 "reused_o0": reused, "resolved_by_arm": resolved,

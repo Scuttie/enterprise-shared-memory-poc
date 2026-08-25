@@ -23,12 +23,12 @@
   },
   "ledger": {
     "model": "fake-reader",
-    "calls": 93,
-    "input_tokens": 93000,
-    "output_tokens": 9300,
+    "calls": 63,
+    "input_tokens": 63000,
+    "output_tokens": 6300,
     "cost_usd": 0.0,
     "hard_cap_usd": 100.0
   },
   "provider_mode": "fake",
-  "results_sha256": "347455a3cfc590bd74474b16cdfe9cdc9577e7e5463a507243a4378fdad64771"
+  "results_sha256": "20846971c415192eed29398da0834c0e7b1814e9a43f0595ed351f6abe5df080"
 }

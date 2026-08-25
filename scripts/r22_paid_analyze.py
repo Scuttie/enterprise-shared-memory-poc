@@ -42,8 +42,11 @@ def fail_closed(records, expected_cells):
         if r.get("returned_model"):
             returned_models.add(r["returned_model"])
         errs += ["%s: %s" % (r.get("cell_key"), m) for m in check_cell(r)]
-        if not r.get("injection", {}).get("repo_cluster") and not r.get("target_id"):
+        if not r.get("repo_cluster"):
             errs.append("%s: missing repository cluster id" % r.get("cell_key"))
+        g = r.get("grader") or {}
+        if isinstance(g, dict) and g.get("returncode") not in (None, 0) and r.get("terminal", "ok") == "ok":
+            errs.append("%s: official grader error (returncode %s)" % (r.get("cell_key"), g.get("returncode")))
     if len(seen) != expected_cells:
         errs.append("incomplete table: %d/%d cells" % (len(seen), expected_cells))
     if len(returned_models) > 1:

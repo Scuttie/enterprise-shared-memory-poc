@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm_run_approved: {description: "must be exactly RUN_APPROVED", required: true, default: ""}
+      reader_provider: {description: "openai | deepseek", required: true}
       reader_model: {description: "selected reader model id (same as P1)", required: true}
       reader_secret_name: {description: "secret NAME only", required: true}
       oracle_budget_usd: {description: "R22_ORACLE_BUDGET_USD (>= P2 total hard cap)", required: true}
@@ -37,7 +38,7 @@ jobs:
           python scripts/r22_verify_p1_pass.py "artifacts/r22_paid_v2/p1/integrity_result.json" \
             "${{ inputs.p1_pass_sha256 }}"
           python experiments/r22/p2_runner.py --mode real \
-            --provider "${{ inputs.reader_model }}" --model "${{ inputs.reader_model }}" \
+            --provider "${{ inputs.reader_provider }}" --model "${{ inputs.reader_model }}" \
             --secret-name "${{ inputs.reader_secret_name }}" \
             --hard-cap "${{ inputs.oracle_budget_usd }}" --out "artifacts/r22_paid_v2/p2" --n 40 \
             --reuse-o0-from "artifacts/r22_paid_v2/reader_band/${{ inputs.reader_model }}/results.jsonl"

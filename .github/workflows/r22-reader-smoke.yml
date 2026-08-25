@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm_run_approved: {description: "must be exactly RUN_APPROVED", required: true, default: ""}
+      reader_provider: {description: "openai | deepseek", required: true}
       reader_model: {description: "selected reader model id", required: true}
       reader_secret_name: {description: "secret NAME only", required: true}
       smoke_budget_usd: {description: "R22_SMOKE_BUDGET_USD (>= P1 hard cap)", required: true}
@@ -38,7 +39,7 @@ jobs:
             "artifacts/r22_paid_v2/reader_band/${{ inputs.reader_model }}/reader_lock.json" \
             "${{ inputs.reader_lock_sha256 }}"
           python experiments/r22/p1_runner.py --mode real \
-            --provider "${{ inputs.reader_model }}" --model "${{ inputs.reader_model }}" \
+            --provider "${{ inputs.reader_provider }}" --model "${{ inputs.reader_model }}" \
             --secret-name "${{ inputs.reader_secret_name }}" \
             --hard-cap "${{ inputs.smoke_budget_usd }}" --out "artifacts/r22_paid_v2/p1" --n 12
       - uses: actions/upload-artifact@v4

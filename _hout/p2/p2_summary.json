@@ -1,0 +1,28 @@
+{
+  "phase": "p2",
+  "analyzed_cells": 42,
+  "expected": 42,
+  "new_cells_o1_o6": 36,
+  "reused_o0": 0,
+  "integrity_clean": true,
+  "violations": [],
+  "resolved_by_arm": {
+    "O0": 6,
+    "O1": 6,
+    "O2": 6,
+    "O3": 6,
+    "O4": 6,
+    "O5": 6,
+    "O6": 6
+  },
+  "result_hash": "258457c60d7b876cd14fda2ba8d93ec69758363f9941ce6c8c8ba4906d41a2ef",
+  "ledger": {
+    "model": "fake-reader",
+    "calls": 186,
+    "input_tokens": 186000,
+    "output_tokens": 18600,
+    "cost_usd": 0.0,
+    "hard_cap_usd": 100.0
+  },
+  "NOTE": "development method-discovery; NOT confirmatory"
+}

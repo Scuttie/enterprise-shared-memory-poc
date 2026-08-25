@@ -28,9 +28,19 @@ jobs:
           python scripts/r22_paid_gate.py --stage p2 --model "${{ inputs.reader_model }}" \
             --budget "${{ inputs.oracle_budget_usd }}" --run-approved "${{ inputs.confirm_run_approved }}" \
             --secret-name "${{ inputs.reader_secret_name }}"
-      - name: P2 O1-O6 40x6 (only after gate PASS + P1 integrity PASS verified)
+      - name: Verify P1 integrity PASS, then run P2 (real; only after gate PASS)
         if: ${{ inputs.confirm_run_approved == 'RUN_APPROVED' }}
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          echo "GATE PASSED — require p1_pass_sha256; reuse selected reader O0; run O1-O6 (per-cell checkpoint)"
-          echo "primary Q1 O5-O2, Q2 O5-O4, Q3 O6-O5; O3 upper-bound not selectable; ITT; no arm/threshold change"
-          # python experiments/r22/main.py --phase p2 --p1-pass <sha> ...
+          python scripts/r22_verify_p1_pass.py "artifacts/r22_paid_v2/p1/integrity_result.json" \
+            "${{ inputs.p1_pass_sha256 }}"
+          python experiments/r22/p2_runner.py --mode real \
+            --provider "${{ inputs.reader_model }}" --model "${{ inputs.reader_model }}" \
+            --secret-name "${{ inputs.reader_secret_name }}" \
+            --hard-cap "${{ inputs.oracle_budget_usd }}" --out "artifacts/r22_paid_v2/p2" --n 40 \
+            --reuse-o0-from "artifacts/r22_paid_v2/reader_band/${{ inputs.reader_model }}/results.jsonl"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: p2-results, path: artifacts/r22_paid_v2/p2/}

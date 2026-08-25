@@ -1,12 +1,13 @@
 name: ci-r22-paid-analysis
-# §8 — credential-free analysis over COMPLETED P2 artifacts. NO model calls, NO secrets. Dispatch-only or on
-# a committed p2_results artifact; computes McNemar + Holm + bootstrap and the method-selection verdict.
+# §9 — credential-free FAIL-CLOSED analysis over COMPLETED P2 artifacts. NO model calls, NO secrets, no failure
+# suppression (the analyzer exits non-zero on any integrity error).
 on:
   workflow_dispatch: {}
   push:
     branches: [codex/r22-stage-aligned-memory]
-    paths: ['artifacts/r22_paid_v1/p2_results.jsonl', 'experiments/r22/statistics.py',
-            'experiments/r22/mechanism_audit.py', '.github/workflows/ci-r22-paid-analysis.yml']
+    paths: ['artifacts/r22_paid_v2/p2/results.jsonl', 'experiments/r22/statistics.py',
+            'experiments/r22/mechanism_audit.py', 'experiments/r22/information_retention.py',
+            'scripts/r22_paid_analyze.py', '.github/workflows/ci-r22-paid-analysis.yml']
 permissions:
   contents: read
 jobs:
@@ -17,14 +18,11 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
       - run: pip install -q -e .
-      - name: Analysis is credential-free (assert no secret usage)
+      - name: Fail-closed analysis (only when a completed P2 table exists)
         run: |
-          for f in experiments/r22/statistics.py experiments/r22/mechanism_audit.py; do
-            test -f "$f" && ! grep -qE "API_KEY|api_key=" "$f" || true
-          done
-          echo "R22 paid-analysis: credential-free; runs only over completed P2 artifacts (none yet)."
-          if [ -f artifacts/r22_paid_v1/p2_results.jsonl ]; then
-            python experiments/r22/statistics.py --input artifacts/r22_paid_v1/p2_results.jsonl || true
+          if [ -f artifacts/r22_paid_v2/p2/results.jsonl ]; then
+            python scripts/r22_paid_analyze.py --input artifacts/r22_paid_v2/p2/results.jsonl \
+              --expected-cells 280 --out artifacts/r22_paid_v2/p2/analysis.json
           else
-            echo "no P2 results yet — nothing to analyze (expected before paid approval)"
+            echo "no completed P2 table yet — nothing to analyze (expected before paid approval)"
           fi

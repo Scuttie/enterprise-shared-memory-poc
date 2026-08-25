@@ -1,0 +1,27 @@
+{
+  "phase": "p1",
+  "verdict": "P1_INTEGRITY_PASS",
+  "cells": 21,
+  "expected": 21,
+  "integrity_clean": true,
+  "violations": [],
+  "resolved_by_arm": {
+    "O0": 3,
+    "O1": 3,
+    "O2": 3,
+    "O3": 3,
+    "O4": 3,
+    "O5": 3,
+    "O6": 3
+  },
+  "NOTE": "NO EFFICACY CONCLUSION \u2014 INTEGRATION SMOKE",
+  "result_hash": "20846971c415192eed29398da0834c0e7b1814e9a43f0595ed351f6abe5df080",
+  "ledger": {
+    "model": "fake-reader",
+    "calls": 93,
+    "input_tokens": 93000,
+    "output_tokens": 9300,
+    "cost_usd": 0.0,
+    "hard_cap_usd": 100.0
+  }
+}

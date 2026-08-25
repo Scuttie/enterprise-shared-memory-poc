@@ -28,9 +28,19 @@ jobs:
           python scripts/r22_paid_gate.py --stage p1 --model "${{ inputs.reader_model }}" \
             --budget "${{ inputs.smoke_budget_usd }}" --run-approved "${{ inputs.confirm_run_approved }}" \
             --secret-name "${{ inputs.reader_secret_name }}"
-      - name: P1 12x7 integration smoke (invoked only after gate PASS + reader lock verified)
+      - name: Verify committed reader lock, then run P1 (real; only after gate PASS)
         if: ${{ inputs.confirm_run_approved == 'RUN_APPROVED' }}
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          echo "GATE PASSED — verify reader_lock_sha256 then run P1 84 cells (per-cell checkpoint/resume)"
-          echo "P1 is integration only; NO efficacy conclusion. P1 fail => P2 forbidden."
-          # python experiments/r22/main.py --phase p1 --reader-lock <sha> ...
+          python scripts/r22_verify_reader_lock.py \
+            "artifacts/r22_paid_v2/reader_band/${{ inputs.reader_model }}/reader_lock.json" \
+            "${{ inputs.reader_lock_sha256 }}"
+          python experiments/r22/p1_runner.py --mode real \
+            --provider "${{ inputs.reader_model }}" --model "${{ inputs.reader_model }}" \
+            --secret-name "${{ inputs.reader_secret_name }}" \
+            --hard-cap "${{ inputs.smoke_budget_usd }}" --out "artifacts/r22_paid_v2/p1" --n 12
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: p1-results, path: artifacts/r22_paid_v2/p1/}

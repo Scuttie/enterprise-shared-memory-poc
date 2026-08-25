@@ -28,12 +28,17 @@ jobs:
           python scripts/r22_paid_gate.py --stage reader_band \
             --model "${{ inputs.reader_model }}" --budget "${{ inputs.selection_budget_usd }}" \
             --run-approved "${{ inputs.confirm_run_approved }}" --secret-name "${{ inputs.reader_secret_name }}"
-      - name: Reader-band O0 pilot (invoked only after gate PASS)
+      - name: Reader-band O0 pilot (real runner; invoked only after gate PASS)
         if: ${{ inputs.confirm_run_approved == 'RUN_APPROVED' }}
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          echo "GATE PASSED — reader-band O0 pilot runner is invoked here at approval time"
-          echo "per-cell checkpoint + missing-cell resume + max-spend hard stop enforced by the runner"
-          # python experiments/r22/reader_band.py --model "${{ inputs.reader_model }}" ...
+          python experiments/r22/reader_band.py --mode real \
+            --provider "${{ inputs.reader_provider }}" --model "${{ inputs.reader_model }}" \
+            --secret-name "${{ inputs.reader_secret_name }}" \
+            --hard-cap "${{ inputs.selection_budget_usd }}" \
+            --out "artifacts/r22_paid_v2/reader_band/${{ inputs.reader_model }}" --n 40
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: reader-band-${{ inputs.reader_model }}, path: artifacts/r22_paid_v2/reader_band/}

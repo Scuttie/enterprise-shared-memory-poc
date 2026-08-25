@@ -4,10 +4,8 @@ name: ci-r22-real-grade-probe
 # no-patch -> unresolved) and records the built image digest. No model calls. Result decides READY vs
 # R22_REAL_PAID_HARNESS_TECHNICAL_BLOCK.
 on:
-  workflow_dispatch: {}
-  push:
-    branches: [codex/r22-stage-aligned-memory]
-    paths: ['.github/workflows/ci-r22-real-grade-probe.yml', 'experiments/r22/runtime/official_grader.py']
+  workflow_dispatch: {}   # dispatch-only: this probe DETERMINED infeasibility (swebench 5.0.2 KeyError:'image');
+                          # kept runnable to reproduce the evidence, not auto-run (would be a documented red).
 permissions:
   contents: read
 jobs:

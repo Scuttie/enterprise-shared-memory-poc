@@ -686,5 +686,15 @@
       "build_validated": false
     }
   ],
-  "block_if_any_unbuildable": "R22_REAL_PAID_HARNESS_TECHNICAL_BLOCK \u2014 set once the grade probe result for the OFFICIAL_IMAGE_BUILD route type is known"
+  "block_if_any_unbuildable": "R22_REAL_PAID_HARNESS_TECHNICAL_BLOCK (CONFIRMED by grade_probe)",
+  "grade_probe": {
+    "run": "32817881771 (ci-r22-real-grade-probe)",
+    "targets": [
+      "astropy__astropy-14500 (python)",
+      "apache__lucene-13388 (java/multilingual)"
+    ],
+    "swebench_version": "5.0.2",
+    "finding": "swebench 5.0.2 make_test_spec raises KeyError:'image' \u2014 it REQUIRES a prebuilt `image` field and does NOT build images from base_commit. SCB Related rows have no `image`; passing the SCB HF dataset name fails to load (DatasetGenerationError, wrong split); a local SWE-bench-format dataset loads but still hits KeyError:'image' at spec time. No-patch short-circuits (empty patch) so only gold reveals it.",
+    "verdict": "R22_REAL_PAID_HARNESS_TECHNICAL_BLOCK"
+  }
 }

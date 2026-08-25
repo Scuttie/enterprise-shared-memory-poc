@@ -187,7 +187,8 @@ def run(*, phase, arms, hard_cap, out_dir, n_tasks, task_source="fake", reader_p
     resolved = {a: sum(1 for r in records if r["arm"] == a and r["resolved"]) for a in arms}
     manifest = {"phase": phase, "arms": arms, "tasks": n_tasks, "cells": len(records),
                 "reused_o0": reused, "resolved_by_arm": resolved,
-                "ledger": ledger.snapshot(), "provider_mode": provider_spec.get("mode"),
+                "ledger": ledger.snapshot(), "reader_provider": cfg.reader_provider,
+                "task_source": cfg.task_source, "provider_mode": cfg.reader_provider,
                 "results_sha256": hashlib.sha256(
                     json.dumps(sorted(r["cell_key"] for r in records)).encode()).hexdigest()}
     json.dump(manifest, open(os.path.join(out_dir, "evidence_manifest.json"), "w", encoding="utf-8"), indent=2)

@@ -86,17 +86,29 @@ def test_grade_verifies_digest_before_evaluator():
 
 
 # ---- §4 matrix derived from the frozen manifest ------------------------------
+SPEC_TASKLIST_SHA256 = "9e2d24a8a04a22b8bbab70f794fad1b8d4191ffc49aba4b4f6f296aa5dbb9fd0"
+
+
+def test_manifest_semantic_hash_is_task_list_sortkeys():
+    # 9e2d... is sha256(json.dumps(task_list, sort_keys=True)) == embedded manifest_sha256, NOT a raw-file hash.
+    m = json.load(open(os.path.join(ART, "oracle_smoke_manifest.json"), encoding="utf-8"))
+    recomputed = hashlib.sha256(json.dumps(m["task_list"], sort_keys=True).encode()).hexdigest()
+    assert recomputed == SPEC_TASKLIST_SHA256 == m["manifest_sha256"]
+    assert len(m["task_list"]) == 84            # frozen task-arm rows preserved
+
+
 def test_prepare_matrix_from_frozen_manifest(tmp_path):
     out = tmp_path / "matrix.json"
     r = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "r22_scb_prepare_matrix.py"),
                         "--out", str(out)], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
     d = json.load(open(out, encoding="utf-8"))
-    assert d["targets"] == 12 and len(d["instance_ids"]) == 12
+    assert d["targets"] == 12 and len(d["instance_ids"]) == 12 and d["task_arm_rows"] == 84
     assert d["frozen_ids_sha256"] == "081440dbbb63bed1f1b800673f4885aadce6524d1d7c637186e840f714c70a3c"
     assert d["cases_present"] and d["image_digests_present"] and d["errors"] == []
-    # spec §4 hash is surfaced as UNRECONCILED (does not match); frozen identity is authoritative
-    assert d["spec_manifest_hash_matches"] is False
+    # three distinct integrity values, never cross-compared
+    assert d["task_list_manifest_sha256"] == d["embedded_manifest_sha256"] == SPEC_TASKLIST_SHA256
+    assert d["spec_manifest_hash_matches"] is True
 
 
 def test_workflow_has_no_second_hardcoded_target_list():

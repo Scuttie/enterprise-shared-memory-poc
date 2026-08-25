@@ -1,13 +1,16 @@
 name: ci-r22-scb-grader-smoke
-# R22-P0.8 §6 — OFFICIAL SWE-ContextBench grader discrimination smoke (12 frozen P1 targets).
-# Grades the official GOLD patch (expect resolved) and a NO-PATCH prediction (expect unresolved) with the
+# R22-P0.8/P0.8.1/P0.8.2 — OFFICIAL SWE-ContextBench grader discrimination smoke (12 frozen P1 targets).
+# Grades the official GOLD patch (expect resolved) and a NOOP-BASELINE patch (adds .r22_noop; no source/test
+# change -> tests actually execute, expect UNRESOLVED, NOT the empty-patch 'No patch' short-circuit) with the
 # BENCHMARK-SPECIFIC evaluator: an ephemeral pinned checkout of `swebench_memory.harness.run_evaluation` + the
-# official per-instance image `jiayuanz3/swecontextbench:<tag>`. NO model calls, NO secret, paid API = 0.
+# official per-instance image `jiayuanz3/swecontextbench:<tag>` (pulled BY DIGEST and verified). NO model calls,
+# NO secret, paid API = 0.
 #
 # GATED: dispatch-only AND requires confirm_exec_approved == 'EXEC_APPROVED'. The upstream evaluation code has NO
 # explicit license (reports/R22_UPSTREAM_RIGHTS_STATUS.md); executing it — even as an ephemeral checkout — is a
 # research-execution decision. Without approval the job runs the gate and stops (it does NOT execute upstream code).
-# Sharded by target; both conditions for a target run in the same shard so the image is pulled once.
+# Sharded by target (both conditions per shard, image pulled once); a fail-closed aggregate job derives the verdict
+# from the downloaded shard artifacts.
 on:
   workflow_dispatch:
     inputs:
@@ -55,21 +58,50 @@ jobs:
           df -h /
       - run: pip install -q -e .
         if: ${{ inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
-      - name: OFFICIAL SCB grader smoke — gold + no-patch (single target shard)
+      - name: OFFICIAL SCB grader smoke — GOLD + NOOP-BASELINE (single target shard)
         if: ${{ inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
         env:
           R22_SCB_UPSTREAM_EXEC_APPROVED: "1"
         run: |
           timeout 5400 python scripts/r22_scb_grader_smoke.py \
             --instance-ids "${{ matrix.instance }}" \
+            --results-dir "artifacts/r22/scb_smoke_run" \
             --out "artifacts/r22/scb_grader_smoke_${{ matrix.instance }}.json"
       - name: Cleanup instance image
         if: ${{ always() && inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
         run: |
           tag=$(python -c "print('${{ matrix.instance }}'.replace('__','.').lower())")
           docker rmi "jiayuanz3/swecontextbench:${tag}" 2>/dev/null || true
+      # §2 — upload the FULL per-target evidence tree (reports, run_instance.log, test_output.txt, stdout, stderr)
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: scb-smoke-${{ matrix.instance }}
-          path: artifacts/r22/scb_grader_smoke_${{ matrix.instance }}.json
+          path: |
+            artifacts/r22/scb_grader_smoke_${{ matrix.instance }}.json
+            artifacts/r22/scb_smoke_run/${{ matrix.instance }}/
+          if-no-files-found: warn
+  # §3 — fail-closed aggregate: derive the campaign verdict from DOWNLOADED shard artifacts, not console output.
+  aggregate:
+    needs: scb-smoke
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          path: _shards
+      - name: Aggregate + fail-closed verdict
+        run: |
+          python scripts/r22_scb_aggregate.py --download-dir _shards
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scb-grader-campaign
+          path: |
+            artifacts/r22/scb_grader_smoke.json
+            artifacts/r22/scb_grader_smoke_evidence_manifest.json
+            artifacts/r22/SHA256SUMS
+            reports/R22_SCB_GRADER_REPRODUCTION.md

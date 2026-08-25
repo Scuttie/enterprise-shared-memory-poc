@@ -10,8 +10,10 @@ swebench_memory + the official image, pulled BY DIGEST and verified):
 An EMPTY patch is explicitly rejected as an invalid control. No model calls, no secret, paid API = 0. Requires
 Docker + R22_SCB_UPSTREAM_EXEC_APPROVED=1."""
 import argparse
+import hashlib
 import json
 import os
+import shutil
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,6 +61,28 @@ def main():
     # NOOP baseline is the ONLY valid control; an empty patch would short-circuit (assert that up front).
     noop = SG.assert_valid_baseline_patch(SG.NOOP_BASELINE_PATCH)
 
+    def _stash_evidence(res, cond_dir):
+        """Copy the upstream raw logs + report into predictable names under cond_dir; return relative evidence map."""
+        ev = {}
+        for key, dst in (("run_instance_log", "run_instance.log"), ("test_output_txt", "test_output.txt"),
+                         ("instance_report_path", "report.json"), ("report_path", "summary_report.json"),
+                         ("stdout_path", None), ("stderr_path", None)):
+            src = res.get(key)
+            if key in ("stdout_path", "stderr_path"):
+                ev[key] = os.path.relpath(src, a.results_dir) if src and os.path.isfile(src) else None
+                continue
+            if src and os.path.isfile(src):
+                d = os.path.join(cond_dir, dst)
+                try:
+                    if os.path.abspath(src) != os.path.abspath(d):
+                        shutil.copyfile(src, d)
+                    ev[dst] = os.path.relpath(d, a.results_dir)
+                except Exception:
+                    ev[dst] = None
+            else:
+                ev[dst] = None
+        return ev
+
     results = {}
     gold_resolved = noop_resolved = infra_fail = digest_ok = 0
     gold_cells = noop_cells = 0
@@ -67,11 +91,10 @@ def main():
         route["image_digest"] = images.get(iid, {}).get("digest")
         case = json.loads(open(os.path.join(checkout, route["case_path"]), encoding="utf-8").read())
         gold_patch = case.get("patch") or ""
+        gold_dir, noop_dir = os.path.join(a.results_dir, iid, "gold"), os.path.join(a.results_dir, iid, "noop")
         try:
-            g = SG.grade(route, gold_patch, os.path.join(a.results_dir, iid, "gold"))
-            gold_cells += 1
-            n = SG.grade(route, noop, os.path.join(a.results_dir, iid, "noop"))
-            noop_cells += 1
+            g = SG.grade(route, gold_patch, gold_dir); gold_cells += 1
+            n = SG.grade(route, noop, noop_dir); noop_cells += 1
         except SG.ImageDigestMismatch as e:
             results[iid] = {"image_integrity_error": str(e)}; print("DIGEST-MISMATCH", iid); continue
         except SG.GraderInfraError as e:
@@ -81,16 +104,20 @@ def main():
         infra_fail += (not g.get("infra_ok")) + (not n.get("infra_ok"))
         digest_ok += bool(g.get("image_digest_verified")) and (g.get("image_expected_digest") == g.get("image_observed_digest"))
         results[iid] = {
-            "image": route["image_digest"] and images[iid]["image"],
+            "image": images[iid]["image"], "case_sha256": route.get("case_sha256"),
+            "noop_patch_sha256": hashlib.sha256(noop.encode()).hexdigest(),
             "image_expected_digest": g.get("image_expected_digest"),
             "image_observed_digest": g.get("image_observed_digest"),
             "image_digest_verified": g.get("image_digest_verified"),
             "gold": {"resolved": gr, "patch_applied": g.get("patch_applied"), "infra_ok": g.get("infra_ok"),
                      "tests_executed": g.get("tests_executed"), "f2p_complete": _f2p_complete(g),
-                     "p2p_regression": _p2p_regression(g)},
+                     "p2p_regression": _p2p_regression(g), "patch_sha256": g.get("model_patch_sha256"),
+                     "evidence": _stash_evidence(g, gold_dir)},
             "noop_baseline": {"resolved": nr, "patch_applied": n.get("patch_applied"), "infra_ok": n.get("infra_ok"),
                               "tests_executed": n.get("tests_executed"),
-                              "not_shortcircuit": bool(n.get("tests_executed")) and (n.get("patch_applied") is True)},
+                              "not_shortcircuit": bool(n.get("tests_executed")) and (n.get("patch_applied") is True),
+                              "patch_sha256": n.get("model_patch_sha256"),
+                              "evidence": _stash_evidence(n, noop_dir)},
         }
         print("SMOKE", iid, "gold", gr, "noop", nr, "noop_tests_exec", n.get("tests_executed"))
         sys.stdout.flush()

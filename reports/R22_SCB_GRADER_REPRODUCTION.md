@@ -41,9 +41,16 @@ On approval → dispatch `ci-r22-scb-grader-smoke` with `EXEC_APPROVED` → 24 c
 `artifacts/r22/scb_grader_smoke.json`; if all criteria pass the endpoint flips to
 `R22_OFFICIAL_SCB_GRADER_READY_AWAITING_READER_SELECTION`.
 
-### Manifest-hash reconciliation note
-The P0.8.1 §4 "required manifest hash" `9e2d24a8…` matches neither the committed bytes (`895bcdd2…`) nor any
-canonical content hash of `oracle_smoke_manifest.json`; the frozen 12-target identity is intact
-(`081440db…`). The prepare job verifies the real frozen identity and records
-`spec_manifest_hash_matches:false` in `artifacts/r22/scb_smoke_matrix.json` for reconciliation — the frozen
-manifest was not altered.
+<!-- SCB_RESULTS_START -->
+## Results (aggregated from shard artifacts)
+Not yet run — pending the single EXEC_APPROVED dispatch of `ci-r22-scb-grader-smoke`. The fail-closed aggregate job
+(`scripts/r22_scb_aggregate.py`) fills this block from the downloaded shard artifacts.
+<!-- SCB_RESULTS_END -->
+
+### Manifest semantic hash (P0.8.2 §1)
+`9e2d24a8a04a22b8…` is the manifest's **semantic** hash — `sha256(json.dumps(task_list, sort_keys=True))` over the
+84 frozen task-arm rows — and is stored in the manifest as `manifest_sha256`. The prepare job recomputes it and
+requires `task_list_manifest_sha256 == embedded_manifest_sha256 == 9e2d24a8…` (`spec_manifest_hash_matches:true`).
+Three integrity values are kept distinct and never cross-compared: `manifest_file_sha256` (LF bytes),
+`task_list_manifest_sha256` (`9e2d24a8…`), `frozen_target_ids_sha256` (`081440db…`, sorted 12 IDs). The earlier
+P0.8.1 "UNRECONCILED" note was a mistake (it hashed the whole file / wrong object) and is withdrawn.

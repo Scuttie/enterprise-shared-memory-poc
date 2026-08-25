@@ -13,6 +13,7 @@ is gated on an explicit approval flag; without it the adapter refuses to run (co
 """
 from __future__ import annotations
 
+import glob
 import hashlib
 import json
 import os
@@ -186,6 +187,12 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
         cwd=results_dir, env=env, capture_output=True, text=True)
     elapsed = time.time() - t0
 
+    # §2 — persist FULL stdout/stderr (not only tails)
+    stdout_path = os.path.join(results_dir, run_id + "_stdout.log")
+    stderr_path = os.path.join(results_dir, run_id + "_stderr.log")
+    open(stdout_path, "w", encoding="utf-8").write(proc.stdout or "")
+    open(stderr_path, "w", encoding="utf-8").write(proc.stderr or "")
+
     report_path = os.path.join(results_dir, run_id + ".json")
     report = json.load(open(report_path, encoding="utf-8")) if os.path.isfile(report_path) else None
     per = (report or {}).get(iid, {}) if isinstance(report, dict) else {}
@@ -195,6 +202,14 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
     # tests actually EXECUTED (not the empty-patch 'No patch' short-circuit) iff tests_status carries any test id
     tests_executed = bool((f2p.get("success") or f2p.get("failure") or
                            p2p.get("success") or p2p.get("failure")))
+    # upstream per-instance logs (run_instance.log / test_output.txt) under logs/run_evaluation/<run_id>/<inst>/
+    def _find(name):
+        for p in glob.glob(os.path.join(results_dir, "logs", "run_evaluation", run_id, "**", name), recursive=True):
+            return p
+        return None
+    run_instance_log = _find("run_instance.log")
+    test_output_txt = _find("test_output.txt")
+    instance_report_json = _find("report.json")
     report_found = report is not None
     infra_ok = report_found and proc.returncode == 0
     return {
@@ -202,6 +217,7 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
         "upstream_repo": UPSTREAM_REPO_URL, "pinned_commit": PINNED_COMMIT,
         "evaluator_hash_verified": lock_info["verified_files"],
         "case_path": case_route["case_path"], "case_sha256": case_route.get("case_sha256"),
+        "model_patch_sha256": hashlib.sha256((model_patch or "").encode()).hexdigest(),
         "image": image_tag,
         "image_expected_digest": img_info["expected_digest"], "image_observed_digest": img_info["observed_digest"],
         "image_digest_verified": img_info["verified"],
@@ -210,6 +226,9 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
         "patch_applied": per.get("patch_applied") if isinstance(per, dict) else None,
         "tests_executed": tests_executed,
         "report_found": report_found, "report_path": report_path if report_found else None,
+        "instance_report_path": instance_report_json,
+        "run_instance_log": run_instance_log, "test_output_txt": test_output_txt,
+        "stdout_path": stdout_path, "stderr_path": stderr_path,
         "returncode": proc.returncode, "infra_ok": infra_ok, "elapsed_sec": round(elapsed, 2),
         "predictions_path": preds_path, "dataset_path": ds_path,
         "stdout_tail": (proc.stdout or "")[-2500:], "stderr_tail": (proc.stderr or "")[-2500:],

@@ -1,92 +1,75 @@
 {
-  "schema": "r22/grader_smoke/1.0.0",
-  "run": "32754432915",
+  "schema": "r22/grader_smoke/2.0.0",
+  "run": "32801365294",
+  "datasets": "enriched SWE-bench/* (pinned)",
   "tasks": 12,
-  "gold_resolved": 9,
+  "gold_resolved": 12,
   "nopatch_resolved": 0,
   "completeness": 24,
-  "infrastructure_failures": 3,
-  "PASS": false,
-  "verdict": "R22_MIXED_GRADER_TECHNICAL_BLOCK",
-  "multilingual_gold_resolved": 9,
-  "python_gold_infra_failures": [
-    "astropy__astropy-8707",
-    "mwaskom__seaborn-3190",
-    "sympy__sympy-14774"
-  ],
-  "python_failure_cause": "swebench 5.0.2 internal KeyError: 'image' (python x86 image-spec path); NOT disk (110GB free)",
+  "infrastructure_failures": 0,
+  "official_tests_modified": 0,
+  "PASS": true,
+  "verdict": "R22_GRADER_READY_AWAITING_PAID_APPROVAL",
   "per_task": {
     "apache__lucene-11760": {
       "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Multilingual",
-      "gold_infra_ok": true
+      "subset": "SWE-bench Multilingual"
     },
     "astral-sh__ruff-15543": {
       "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Multilingual",
-      "gold_infra_ok": true
+      "subset": "SWE-bench Multilingual"
     },
     "astropy__astropy-8707": {
-      "gold": false,
+      "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Verified",
-      "gold_infra_ok": false
+      "subset": "SWE-bench Verified"
     },
     "caddyserver__caddy-5761": {
       "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Multilingual",
-      "gold_infra_ok": true
+      "subset": "SWE-bench Multilingual"
     },
     "google__gson-2311": {
       "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Multilingual",
-      "gold_infra_ok": true
+      "subset": "SWE-bench Multilingual"
     },
     "mwaskom__seaborn-3190": {
-      "gold": false,
+      "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Lite",
-      "gold_infra_ok": false
+      "subset": "SWE-bench Lite"
     },
     "php-cs-fixer__php-cs-fixer-7875": {
       "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Multilingual",
-      "gold_infra_ok": true
+      "subset": "SWE-bench Multilingual"
     },
     "prometheus__prometheus-9248": {
       "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Multilingual",
-      "gold_infra_ok": true
+      "subset": "SWE-bench Multilingual"
     },
     "rubocop__rubocop-13396": {
       "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Multilingual",
-      "gold_infra_ok": true
+      "subset": "SWE-bench Multilingual"
     },
     "sympy__sympy-14774": {
-      "gold": false,
+      "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Lite",
-      "gold_infra_ok": false
+      "subset": "SWE-bench Lite"
     },
     "tokio-rs__axum-1119": {
       "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Multilingual",
-      "gold_infra_ok": true
+      "subset": "SWE-bench Multilingual"
     },
     "tokio-rs__tokio-6724": {
       "gold": true,
       "nopatch": false,
-      "subset": "SWE-bench Multilingual",
-      "gold_infra_ok": true
+      "subset": "SWE-bench Multilingual"
     }
   }
 }

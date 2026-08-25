@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""R22-P0.8 §6 — OFFICIAL SCB grader discrimination smoke.
+"""R22-P0.8.1 §2/§6 — OFFICIAL SCB grader discrimination smoke (frozen P1 12 targets).
 
-For each frozen target: grade the OFFICIAL gold patch (expect resolved) and a no-patch prediction (expect
-unresolved) with the BENCHMARK-SPECIFIC evaluator (pinned ephemeral checkout of swebench_memory + official
-per-instance image). Requires Docker at runtime and R22_SCB_UPSTREAM_EXEC_APPROVED=1 (compliance gate — upstream
-evaluation code has no explicit license). No model calls, no secret, no paid API.
+For each target, two conditions graded by the BENCHMARK-SPECIFIC evaluator (pinned ephemeral checkout of
+swebench_memory + the official image, pulled BY DIGEST and verified):
+  A. GOLD           = official case `patch`         -> expect resolved, FAIL_TO_PASS complete, PASS_TO_PASS 0 regress
+  B. NOOP-BASELINE  = NOOP_BASELINE_PATCH (adds .r22_noop; no source/test change) -> expect UNRESOLVED but with the
+     tests ACTUALLY EXECUTED (patch_applied=true, tests_status present) — NOT the empty-patch 'No patch' short-circuit.
 
-Usage:
-  python scripts/r22_scb_grader_smoke.py --manifest oracle_smoke_manifest.json --out artifacts/r22/scb_grader_smoke.json
-  python scripts/r22_scb_grader_smoke.py --instance-ids apache__lucene-13388 astropy__astropy-14500 --out ...
-"""
+An EMPTY patch is explicitly rejected as an invalid control. No model calls, no secret, paid API = 0. Requires
+Docker + R22_SCB_UPSTREAM_EXEC_APPROVED=1."""
 import argparse
 import json
 import os
@@ -32,6 +31,16 @@ def _frozen_ids(manifest_name):
     return out
 
 
+def _f2p_complete(res):
+    ts = (res.get("fail_to_pass_result") or {})
+    return bool(ts.get("success")) and not ts.get("failure")
+
+
+def _p2p_regression(res):
+    ts = (res.get("pass_to_pass_result") or {})
+    return len(ts.get("failure") or [])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest")
@@ -44,46 +53,68 @@ def main():
     routes = json.load(open(os.path.join(ART, "scb_case_route_manifest.json"), encoding="utf-8"))["cases"]
     images = json.load(open(os.path.join(ART, "scb_image_manifest.json"), encoding="utf-8"))["images"]
 
-    # single ephemeral checkout reused across targets (the gold patch lives in the official case JSON)
     checkout = SG.ensure_checkout(os.path.join(a.results_dir, "_scb_upstream"))
     SG.verify_tree_hashes(checkout)
 
+    # NOOP baseline is the ONLY valid control; an empty patch would short-circuit (assert that up front).
+    noop = SG.assert_valid_baseline_patch(SG.NOOP_BASELINE_PATCH)
+
     results = {}
-    gold_resolved = nopatch_resolved = infra_fail = 0
+    gold_resolved = noop_resolved = infra_fail = digest_ok = 0
+    gold_cells = noop_cells = 0
     for iid in ids:
-        route = dict(routes[iid])
-        route["instance_id"] = iid
+        route = dict(routes[iid]); route["instance_id"] = iid
         route["image_digest"] = images.get(iid, {}).get("digest")
         case = json.loads(open(os.path.join(checkout, route["case_path"]), encoding="utf-8").read())
         gold_patch = case.get("patch") or ""
         try:
             g = SG.grade(route, gold_patch, os.path.join(a.results_dir, iid, "gold"))
-            n = SG.grade(route, "", os.path.join(a.results_dir, iid, "nopatch"))
+            gold_cells += 1
+            n = SG.grade(route, noop, os.path.join(a.results_dir, iid, "noop"))
+            noop_cells += 1
+        except SG.ImageDigestMismatch as e:
+            results[iid] = {"image_integrity_error": str(e)}; print("DIGEST-MISMATCH", iid); continue
         except SG.GraderInfraError as e:
-            infra_fail += 1
-            results[iid] = {"infra_error": str(e)}
-            print("INFRA-FAIL", iid, str(e)[:120]); continue
-        gr = bool(g.get("resolved")); nr = bool(n.get("resolved"))
-        gold_resolved += gr; nopatch_resolved += nr
+            infra_fail += 1; results[iid] = {"infra_error": str(e)}; print("INFRA-FAIL", iid); continue
+        gr, nr = bool(g.get("resolved")), bool(n.get("resolved"))
+        gold_resolved += gr; noop_resolved += nr
         infra_fail += (not g.get("infra_ok")) + (not n.get("infra_ok"))
-        results[iid] = {"image": route.get("image", images.get(iid, {}).get("image")),
-                        "image_digest": route["image_digest"],
-                        "gold_resolved": gr, "nopatch_resolved": nr,
-                        "gold_infra_ok": g.get("infra_ok"), "nopatch_infra_ok": n.get("infra_ok"),
-                        "gold_report": g.get("report_path"), "elapsed_sec": g.get("elapsed_sec")}
-        print("SMOKE", iid, "gold_resolved", gr, "nopatch_resolved", nr)
+        digest_ok += bool(g.get("image_digest_verified")) and (g.get("image_expected_digest") == g.get("image_observed_digest"))
+        results[iid] = {
+            "image": route["image_digest"] and images[iid]["image"],
+            "image_expected_digest": g.get("image_expected_digest"),
+            "image_observed_digest": g.get("image_observed_digest"),
+            "image_digest_verified": g.get("image_digest_verified"),
+            "gold": {"resolved": gr, "patch_applied": g.get("patch_applied"), "infra_ok": g.get("infra_ok"),
+                     "tests_executed": g.get("tests_executed"), "f2p_complete": _f2p_complete(g),
+                     "p2p_regression": _p2p_regression(g)},
+            "noop_baseline": {"resolved": nr, "patch_applied": n.get("patch_applied"), "infra_ok": n.get("infra_ok"),
+                              "tests_executed": n.get("tests_executed"),
+                              "not_shortcircuit": bool(n.get("tests_executed")) and (n.get("patch_applied") is True)},
+        }
+        print("SMOKE", iid, "gold", gr, "noop", nr, "noop_tests_exec", n.get("tests_executed"))
         sys.stdout.flush()
 
     n = len(ids)
-    summary = {"targets": n, "pinned_commit": SG.PINNED_COMMIT,
-               "gold_resolved": gold_resolved, "nopatch_resolved": nopatch_resolved,
-               "infra_failures": infra_fail,
-               "discrimination_pass": (gold_resolved == n and nopatch_resolved == 0 and infra_fail == 0),
+    gold_ok = all(r.get("gold", {}).get("resolved") and r["gold"]["patch_applied"] and r["gold"]["infra_ok"]
+                  and r["gold"]["f2p_complete"] and r["gold"]["p2p_regression"] == 0
+                  for r in results.values() if "gold" in r)
+    noop_ok = all((not r["noop_baseline"]["resolved"]) and r["noop_baseline"]["patch_applied"]
+                  and r["noop_baseline"]["infra_ok"] and r["noop_baseline"]["tests_executed"]
+                  for r in results.values() if "noop_baseline" in r)
+    summary = {"targets": n, "pinned_commit": SG.PINNED_COMMIT, "baseline": "noop-baseline",
+               "noop_patch_sha256": __import__("hashlib").sha256(noop.encode()).hexdigest(),
+               "gold_cells": gold_cells, "noop_cells": noop_cells,
+               "gold_resolved": gold_resolved, "noop_resolved": noop_resolved,
+               "infra_failures": infra_fail, "image_digest_verified": digest_ok,
+               "discrimination_pass": (gold_cells == n and noop_cells == n and gold_resolved == n
+                                       and noop_resolved == 0 and infra_fail == 0 and digest_ok == n
+                                       and gold_ok and noop_ok),
                "results": results}
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     json.dump(summary, open(a.out, "w", encoding="utf-8"), indent=2)
-    print("SCB SMOKE: gold_resolved=%d/%d nopatch_resolved=%d/%d infra_fail=%d PASS=%s"
-          % (gold_resolved, n, nopatch_resolved, n, infra_fail, summary["discrimination_pass"]))
+    print("SCB SMOKE: gold=%d/%d noop_resolved=%d/%d digest_ok=%d/%d infra_fail=%d PASS=%s"
+          % (gold_resolved, n, noop_resolved, n, digest_ok, n, infra_fail, summary["discrimination_pass"]))
     return 0 if summary["discrimination_pass"] else 1
 
 

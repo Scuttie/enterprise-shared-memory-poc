@@ -33,6 +33,67 @@ def derive_image_tag(instance_id: str) -> str:
     return "%s:%s" % (IMAGE_REPOSITORY, instance_id.replace("__", ".").lower())
 
 
+# ---- §2 no-op baseline -------------------------------------------------------
+# A deterministic, repository-independent no-op patch. It ADDS one untracked file and modifies NO source/test file,
+# so the official test_patch still applies and FAIL_TO_PASS/PASS_TO_PASS actually EXECUTE — unlike an EMPTY patch,
+# which the upstream evaluator short-circuits as unresolved WITHOUT running any test (an invalid discrimination
+# control). `patch_applied` is true and the report carries test-status evidence, yet the target stays unresolved.
+NOOP_BASELINE_PATCH = (
+    "diff --git a/.r22_noop b/.r22_noop\n"
+    "new file mode 100644\n"
+    "--- /dev/null\n"
+    "+++ b/.r22_noop\n"
+    "@@ -0,0 +1 @@\n"
+    "+r22 grader discrimination noop\n"
+)
+
+
+class EmptyBaselineRejected(Exception):
+    """Raised when an EMPTY patch is used as a smoke discrimination control (short-circuits without executing)."""
+
+
+def assert_valid_baseline_patch(patch: str) -> str:
+    if not (patch or "").strip():
+        raise EmptyBaselineRejected(
+            "empty model_patch is an INVALID discrimination control: the upstream evaluator marks it unresolved "
+            "via the 'No patch' short-circuit WITHOUT executing FAIL_TO_PASS/PASS_TO_PASS. Use NOOP_BASELINE_PATCH.")
+    return patch
+
+
+# ---- §3 runtime image-digest integrity ---------------------------------------
+class ImageDigestMismatch(Exception):
+    """The pulled image's digest does not equal the frozen expected digest (-> R22_SCB_IMAGE_INTEGRITY_BLOCK)."""
+
+
+def verify_digest(expected: str, observed: str) -> bool:
+    return bool(expected) and bool(observed) and expected.strip() == observed.strip()
+
+
+def pull_and_verify_image(image_tag: str, expected_digest: str) -> dict:
+    """Pull by IMMUTABLE digest (never the mutable tag), require observed==expected, then locally tag that exact
+    image as the tag the upstream evaluator pulls by — so grading runs the frozen image, not a re-resolved tag.
+    Docker required. Digest mismatch raises BEFORE any grading."""
+    if not expected_digest:
+        raise ImageDigestMismatch("no frozen expected digest for %s" % image_tag)
+    repo = image_tag.split(":")[0]
+    ref = "%s@%s" % (repo, expected_digest)
+    subprocess.run(["docker", "pull", "--platform", "linux/amd64", ref], check=True, capture_output=True)
+    out = subprocess.run(["docker", "inspect", "--format", "{{json .RepoDigests}}", ref],
+                         capture_output=True, text=True).stdout.strip()
+    observed = None
+    try:
+        for rd in json.loads(out or "[]"):
+            if rd.startswith(repo + "@"):
+                observed = rd.split("@", 1)[1]; break
+    except Exception:
+        pass
+    if not verify_digest(expected_digest, observed):
+        raise ImageDigestMismatch("image digest mismatch for %s: expected %s observed %s"
+                                  % (image_tag, expected_digest, observed))
+    subprocess.run(["docker", "tag", ref, image_tag], check=True, capture_output=True)
+    return {"expected_digest": expected_digest, "observed_digest": observed, "verified": True, "pulled_ref": ref}
+
+
 class UpstreamExecutionNotApproved(Exception):
     """Raised when the adapter would execute the unlicensed upstream evaluator without explicit approval."""
 
@@ -104,6 +165,10 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
     lock_info = verify_tree_hashes(checkout)
     case = _load_case(checkout, case_route)
 
+    # §3 — pull the frozen image BY DIGEST and verify before grading; tag it as the evaluator's pull tag.
+    image_tag = derive_image_tag(iid)
+    img_info = pull_and_verify_image(image_tag, case_route.get("image_digest"))
+
     run_id = "r22scb-%s" % hashlib.sha256((iid + (model_patch or "")).encode()).hexdigest()[:10]
     # official dataset row = the official case JSON (single instance); official predictions row
     ds_path = os.path.join(results_dir, run_id + "_dataset.json")
@@ -114,7 +179,6 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
 
     env = dict(os.environ)
     env["PYTHONPATH"] = checkout + os.pathsep + env.get("PYTHONPATH", "")
-    image_tag = derive_image_tag(iid)
     t0 = time.time()
     proc = subprocess.run(
         ["python", "-m", EVALUATOR_MODULE, "--dataset_name", ds_path,
@@ -126,6 +190,11 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
     report = json.load(open(report_path, encoding="utf-8")) if os.path.isfile(report_path) else None
     per = (report or {}).get(iid, {}) if isinstance(report, dict) else {}
     resolved = bool(report and iid in set(report.get("resolved_ids", [])))
+    ts = per.get("tests_status", {}) if isinstance(per, dict) else {}
+    f2p, p2p = ts.get("FAIL_TO_PASS", {}), ts.get("PASS_TO_PASS", {})
+    # tests actually EXECUTED (not the empty-patch 'No patch' short-circuit) iff tests_status carries any test id
+    tests_executed = bool((f2p.get("success") or f2p.get("failure") or
+                           p2p.get("success") or p2p.get("failure")))
     report_found = report is not None
     infra_ok = report_found and proc.returncode == 0
     return {
@@ -133,11 +202,13 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
         "upstream_repo": UPSTREAM_REPO_URL, "pinned_commit": PINNED_COMMIT,
         "evaluator_hash_verified": lock_info["verified_files"],
         "case_path": case_route["case_path"], "case_sha256": case_route.get("case_sha256"),
-        "image": image_tag, "image_digest": case_route.get("image_digest"),
+        "image": image_tag,
+        "image_expected_digest": img_info["expected_digest"], "image_observed_digest": img_info["observed_digest"],
+        "image_digest_verified": img_info["verified"],
         "resolved": resolved,
-        "fail_to_pass_result": per.get("tests_status", {}).get("FAIL_TO_PASS") if isinstance(per, dict) else None,
-        "pass_to_pass_result": per.get("tests_status", {}).get("PASS_TO_PASS") if isinstance(per, dict) else None,
-        "patch_applied": per.get("patch_successfully_applied") if isinstance(per, dict) else None,
+        "fail_to_pass_result": f2p or None, "pass_to_pass_result": p2p or None,
+        "patch_applied": per.get("patch_applied") if isinstance(per, dict) else None,
+        "tests_executed": tests_executed,
         "report_found": report_found, "report_path": report_path if report_found else None,
         "returncode": proc.returncode, "infra_ok": infra_ok, "elapsed_sec": round(elapsed, 2),
         "predictions_path": preds_path, "dataset_path": ds_path,

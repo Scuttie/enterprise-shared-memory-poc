@@ -73,8 +73,12 @@ def main():
 
     out = {"instance_id": iid, "pinned_commit": SG.PINNED_COMMIT,
            "image": task["image"], "image_digest": task.get("image_digest"),
+           "image_expected_digest": gold.get("image_expected_digest"),
+           "image_observed_digest": gold.get("image_observed_digest"),
+           "image_digest_verified": gold.get("image_digest_verified"),
            "workspace_method": task.get("workspace_method"),
            "case_path": task["case_route"]["case_path"],
+           "replay_condition": "replay-no-patch",
            "replay_patch_sha256": rec.get("patch_sha256"),
            "replay_resolved": bool(rec.get("resolved")),
            "replay_grader": (rec.get("grader") or {}),

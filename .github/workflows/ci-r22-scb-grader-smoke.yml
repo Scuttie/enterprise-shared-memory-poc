@@ -18,26 +18,27 @@ on:
 permissions:
   contents: read
 jobs:
+  # §4 — single source of truth: derive the 12-target matrix from the FROZEN manifest (no second hard-coded list).
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - id: gen
+        run: python scripts/r22_scb_prepare_matrix.py
+      - uses: actions/upload-artifact@v4
+        with: {name: scb-smoke-matrix, path: artifacts/r22/scb_smoke_matrix.json}
   scb-smoke:
+    needs: prepare
     runs-on: ubuntu-latest
     environment: research-paid            # reuse the approval-gated environment (no secret is read here)
     strategy:
       fail-fast: false
       max-parallel: 3
-      matrix:
-        instance:
-          - apache__lucene-13388
-          - astral-sh__ruff-15725
-          - astral-sh__ruff-15997
-          - astral-sh__ruff-16445
-          - astropy__astropy-14500
-          - astropy__astropy-15082
-          - astropy__astropy-6389
-          - astropy__astropy-7167
-          - astropy__astropy-8614
-          - astropy__astropy-8711
-          - caddyserver__caddy-5770
-          - caddyserver__caddy-5930
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

@@ -1,9 +1,22 @@
-# R22 §3 (G0/G0.1) — mixed official-grader reproduction: PASS
+<!-- R22_SUPERSEDED_BY: R22_UPSTREAM_EVALUATOR_EXECUTION_REVIEW -->
+# R22 (G0.1) — GENERIC_ENRICHED_SWEBENCH_GRADER_PASS
 
-The official SWE-bench grader **discriminates 12/12** on the frozen mixed smoke after routing to the enriched
-`SWE-bench/*` datasets (image taken from the row). No model calls, no test modification.
+**Status: `GENERIC_ENRICHED_SWEBENCH_GRADER_PASS` — narrow scope only.** This result validates the **generic
+enriched SWE-bench** grader routing (Verified/Lite/Multilingual, `image` taken from the enriched `SWE-bench/*`
+row). It is **NOT** the SWE-ContextBench Related grader and **does not** gate the R22 paid campaign.
 
-## Result (run 32801365294, enriched datasets)
+> ⚠️ Scope boundaries (P0.8.1 §1):
+> - Validates **generic enriched SWE-bench Verified/Lite/Multilingual routing** only.
+> - Uses the **historical G0.1 12-task set** (a *different* set: `apache__lucene-11760`, `astral-sh__ruff-15543`,
+>   `astropy__astropy-8707`, `caddyserver__caddy-5761`, `google__gson-2311`, … — it does **not** overlap the frozen
+>   SWE-ContextBench P1 12).
+> - **Does NOT validate** the frozen SWE-ContextBench **Related** P1/P2 grader (that path uses the benchmark's own
+>   `swebench_memory.harness.run_evaluation` + `jiayuanz3/swecontextbench:<tag>` images).
+> - **Is NOT sufficient for paid approval.**
+> - **Superseded for the R22 paid gate** by **`R22_UPSTREAM_EVALUATOR_EXECUTION_REVIEW`** (see
+>   `reports/R22_SCB_GRADER_REPRODUCTION.md` and `artifacts/r22/grader_smoke_supersession.json`).
+
+## Result (run 32801365294, enriched SWE-bench/* datasets, historical commit `1cc9d92`)
 | Gate | Required | Actual |
 | --- | --- | --- |
 | gold resolved | 12/12 | **12/12** |
@@ -12,17 +25,14 @@ The official SWE-bench grader **discriminates 12/12** on the frozen mixed smoke 
 | result completeness | 24/24 | **24/24** |
 | official tests modified | 0 | **0** |
 
-All 12 instances resolve with the gold patch and stay unresolved with no patch, across 3 subsets / 6 languages:
-Verified+Lite python (astropy, sympy, seaborn) and Multilingual go/java/ruby/rust/php (caddy, prometheus, lucene,
-gson, rubocop, tokio, axum, ruff, php-cs-fixer).
+The historical bytes of `artifacts/r22/grader_smoke.json` are preserved unchanged (schema `r22/grader_smoke/2.0.0`,
+verdict field `R22_GRADER_READY_AWAITING_PAID_APPROVAL` retained as a historical value). Its supersession is
+recorded in `artifacts/r22/grader_smoke_supersession.json` — that verdict must **not** be read as the current R22
+endpoint.
 
-## Root cause of the earlier failure (resolved)
-The 3 python instances had been routed to **legacy `princeton-nlp/*`** rows, which lack the enriched
-`image`/`eval_script`/`log_parser`/`eval_type` fields swebench 5.0.2 requires → `KeyError:'image'`. Re-routing to
-the enriched `SWE-bench/*` datasets (pinned; 12/12 EXACT_CORE_MATCH with the legacy rows) supplies the `image`
-field from the row and the python instances now grade correctly. It was a dataset-schema compatibility issue, not a
-harness defect.
-
-## Verdict: mixed grader gate PASS → `R22_GRADER_READY_AWAITING_PAID_APPROVAL`
-Credential-free CI = **8/8 green**. P1/P2 are NOT started (paid approval absent). See
-`reports/R22_PAID_EXECUTION_PLAN.md` for the model-specific P1/P2 hard-cap table and the required approval variables.
+## Why this cannot gate P1/P2
+The generic enriched-SWE-bench path pulls the `image` field from the enriched row; the frozen SWE-ContextBench
+Related targets are **not** in those enriched datasets and are graded by the **benchmark's own** evaluator/images.
+Two additional gaps closed in P0.8.1 for the real SCB gate: the baseline control is now a **no-op patch** (not an
+empty patch that short-circuits without executing tests), and the official image is **pulled by digest and
+verified** at runtime. See `reports/R22_SCB_GRADER_REPRODUCTION.md`.

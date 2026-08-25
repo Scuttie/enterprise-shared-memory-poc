@@ -34,11 +34,22 @@ def main():
     ap.add_argument("--budget", type=float, required=True)
     ap.add_argument("--run-approved", required=True)
     ap.add_argument("--secret-name", required=True)
+    ap.add_argument("--reader-candidate", help="§8: model being selected; enforced against the frozen order")
+    ap.add_argument("--decided", default="", help="§8: comma list of candidates already decided out-of-band")
     a = ap.parse_args()
 
     fails = []
     if a.run_approved != "RUN_APPROVED":
         fails.append("RUN_APPROVED gate: value is not exactly 'RUN_APPROVED'")
+    # §8 — a human must not skip directly to a later reader candidate
+    if a.reader_candidate:
+        import sys as _sys
+        _sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from experiments.r22.runtime.candidate_order import assert_not_skipping, CandidateOrderViolation
+        try:
+            assert_not_skipping(a.reader_candidate, [x for x in a.decided.split(",") if x])
+        except CandidateOrderViolation as e:
+            fails.append(str(e))
     try:
         caps, _ = _caps(a.model)
     except KeyError:

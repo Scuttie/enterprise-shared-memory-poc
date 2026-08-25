@@ -103,6 +103,32 @@ class FakeReaderProvider(ReaderProvider):
                           retry_count=0, raw_response_sha256=hashlib.sha256(raw.encode()).hexdigest())
 
 
+class ReplayReaderProvider(ReaderProvider):
+    """Offline provider for the credential-free REAL-path E2E: real issue + real repo tools, submits NO patch (or a
+    fixed harmless no-op), never sees target gold/tests, no network, no secret. Exercises the tool protocol against
+    a real workspace so the official grader returns UNRESOLVED (a real no-patch cell)."""
+
+    def __init__(self, model: str = "replay-no-patch", submit_immediately: bool = True):
+        super().__init__("replay", model)
+        self.submit_immediately = submit_immediately
+        self._turn = 0
+
+    def chat(self, messages, tools=None):
+        self._turn += 1
+        offered = {t["function"]["name"] for t in (tools or [])}
+        if self._turn == 1 and "read_file" in offered:
+            tcs = [{"id": "r1", "type": "function", "function": {
+                "name": "read_file", "arguments": json.dumps({"path": "README.md"})}}]
+        else:
+            tcs = [{"id": "s1", "type": "function", "function": {"name": "submit", "arguments": "{}"}}]
+        self._check_model_stable(self.requested_model)
+        raw = json.dumps({"turn": self._turn, "tool_calls": tcs}, sort_keys=True)
+        return ChatResult(content="", tool_calls=tcs, prompt_tokens=500, completion_tokens=10,
+                          returned_model=self.requested_model, request_id="replay-%d" % self._turn,
+                          latency_s=0.0, retry_count=0,
+                          raw_response_sha256=hashlib.sha256(raw.encode()).hexdigest())
+
+
 class OpenAICompatibleReaderProvider(ReaderProvider):
     """OpenAI + DeepSeek chat/completions over HTTPS (urllib), reusing the R14 request shape. NEVER called in
     credential-free work. Requires the named secret; refuses if missing; never logs the secret value."""
@@ -157,8 +183,14 @@ class OpenAICompatibleReaderProvider(ReaderProvider):
 
 
 def make_provider(spec: dict) -> ReaderProvider:
-    """spec = {mode: 'fake'|'real', provider, model, secret_name, script?}. Explicit; never infers from model."""
-    if spec.get("mode") == "fake":
+    """spec = {reader_provider: 'fake'|'replay'|'openai'|'deepseek', model, secret_name, script?}. Explicit; never
+    infers the provider from the model text."""
+    rp = spec.get("reader_provider", spec.get("mode"))
+    if rp == "fake":
         return FakeReaderProvider(script=spec.get("script"), model=spec.get("model", "fake-reader"))
-    return OpenAICompatibleReaderProvider(spec["provider"], spec["model"], spec["secret_name"],
-                                          temperature=spec.get("temperature", 0.0))
+    if rp == "replay":
+        return ReplayReaderProvider(model=spec.get("model", "replay-no-patch"))
+    if rp in ("openai", "deepseek"):
+        return OpenAICompatibleReaderProvider(rp, spec["model"], spec["secret_name"],
+                                              temperature=spec.get("temperature", 0.0))
+    raise ProviderError("unknown reader_provider %r" % rp)

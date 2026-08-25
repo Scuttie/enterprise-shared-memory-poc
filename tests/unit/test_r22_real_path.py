@@ -80,7 +80,8 @@ def test_grader_discrimination_reused_from_g0_and_adapter_is_official():
     assert g0.get("gold_resolved") == 12 and g0.get("nopatch_resolved") == 0
     assert hasattr(LD.OfficialSWEGrader, "grade_via_cli")   # the adapter the real runtime calls (not local_grade)
     src = open(os.path.join(ROOT, "experiments", "r22", "paid_runner.py"), encoding="utf-8").read()
-    assert "OfficialSWEGrader.grade_via_cli" in src and "LocalFixtureGrader" not in src.split("mode == \"real\"")[1][:400]
+    real_block = src.split('cfg.task_source == "real"')[1][:400]
+    assert "OfficialSWEGrader.grade_via_cli" in real_block and "LocalFixtureGrader" not in real_block
 
 
 # ---- 6 stage-record source lookup -------------------------------------------

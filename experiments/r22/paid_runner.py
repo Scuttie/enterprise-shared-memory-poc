@@ -43,6 +43,36 @@ def fake_tasks(n, seed_prefix="t"):
     return tasks, {t["target_id"]: t["shuffled_source"] for t in tasks}
 
 
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class RunConfig:
+    """Separates the two independent choices and validates the combination before any provider is built."""
+    task_source: str            # "fake" | "real"
+    reader_provider: str        # "fake" | "replay" | "openai" | "deepseek"
+    manifest_name: str = None
+    model: str = "fake-reader"
+    secret_name: str = None
+
+    def validate(self):
+        assert self.task_source in ("fake", "real"), "bad task_source %r" % self.task_source
+        assert self.reader_provider in ("fake", "replay", "openai", "deepseek"), \
+            "bad reader_provider %r" % self.reader_provider
+        if self.task_source == "fake":
+            assert self.reader_provider not in ("openai", "deepseek"), \
+                "task_source=fake with a paid provider is forbidden"
+        if self.task_source == "real":
+            assert self.reader_provider != "fake", "task_source=real must not use the fake provider"
+            assert self.manifest_name, "real mode requires an explicit manifest_name"
+        if self.reader_provider in ("openai", "deepseek"):
+            assert self.secret_name, "paid provider requires a secret name"
+        return self
+
+    def provider_spec(self):
+        return {"reader_provider": self.reader_provider, "model": self.model, "secret_name": self.secret_name}
+
+
 def _fake_frozen_derangement(tasks):
     ids = [t["target_id"] for t in tasks]
     src = [t["source_id"] for t in tasks]
@@ -75,16 +105,27 @@ def _source_of(manifest_name, target_id, arm, derange):
     return derange.get(target_id) if arm == "O2" else target_id
 
 
-def run(*, phase, arms, provider_spec, hard_cap, out_dir, n_tasks, reuse_o0_from=None, task_prefix=None,
-        mode="fake", manifest_name=None, grader_results_dir=None):
-    """mode='fake' uses the local-fixture path; mode='real' uses the frozen SWE-ContextBench loaders and NEVER
-    touches fake_tasks/make_fixture/local_grade (guarded)."""
+def run(*, phase, arms, hard_cap, out_dir, n_tasks, task_source="fake", reader_provider="fake",
+        manifest_name=None, model="fake-reader", secret_name=None, reuse_o0_from=None, task_prefix=None,
+        grader_results_dir=None, provider_spec=None, mode=None):
+    """task_source in {fake,real}; reader_provider in {fake,replay,openai,deepseek}. REAL task_source uses the
+    frozen SWE-ContextBench loaders and NEVER touches fake_tasks/make_fixture/local_grade (guarded)."""
     from experiments.r22.runtime import loaders as LD
     os.makedirs(out_dir, exist_ok=True)
+    # backward-compat: legacy callers pass provider_spec={mode:'fake'|'real'} + mode=
+    if provider_spec is not None and reader_provider == "fake":
+        reader_provider = provider_spec.get("reader_provider", provider_spec.get("mode", "fake"))
+        model = provider_spec.get("model", model)
+        secret_name = provider_spec.get("secret_name", secret_name)
+    if mode is not None:
+        task_source = mode
+    if reader_provider == "real":
+        reader_provider = "replay"          # legacy 'real' spec had no model call in CI
+    cfg = RunConfig(task_source=task_source, reader_provider=reader_provider, manifest_name=manifest_name,
+                    model=model, secret_name=secret_name).validate()
+    provider_spec = cfg.provider_spec()
 
-    if mode == "real":
-        if provider_spec.get("mode") == "fake":
-            pass  # a mock provider is allowed for the credential-free real-path CI; no model key is used
+    if cfg.task_source == "real":
         task_loader = LD.RealR22TaskLoader(manifest_name)
         wsf = LD.OfficialImageWorkspaceFactory()
         mem_loader = LD.FrozenStageMemoryLoader()
@@ -100,9 +141,9 @@ def run(*, phase, arms, provider_spec, hard_cap, out_dir, n_tasks, reuse_o0_from
             return LD.LocalFixtureGrader().grade(t, patch)
 
     tasks = task_loader.load()
-    derange = _fake_frozen_derangement(tasks) if mode == "fake" else _real_derangement(manifest_name, tasks)
+    derange = _fake_frozen_derangement(tasks) if cfg.task_source == "fake" else _real_derangement(manifest_name, tasks)
     ck = CheckpointStore(os.path.join(out_dir, "results.jsonl"))
-    campaign_model = provider_spec.get("model", "fake-reader")
+    campaign_model = cfg.model
     ledger = Ledger(campaign_model, hard_cap)
 
     reused = 0
@@ -115,19 +156,21 @@ def run(*, phase, arms, provider_spec, hard_cap, out_dir, n_tasks, reuse_o0_from
     cells = [(t["target_id"], a) for t in tasks for a in arms]
     for (tid, arm) in ck.missing(cells):
         task = dict(next(t for t in tasks if t["target_id"] == tid))
-        # O2 uses the frozen deranged (unrelated) source
-        src_id = derange[tid] if arm == "O2" else task["target_id"] + "_src"
+        # exact frozen source assignment: real -> from the oracle manifest; fake -> deterministic
+        if cfg.task_source == "real":
+            src_id = _source_of(manifest_name, tid, arm, derange)
+        else:
+            src_id = derange[tid] if arm == "O2" else task["target_id"] + "_src"
         task["source_id"] = src_id
-        task["source_user"] = "gold_" + hashlib.sha256(src_id.encode()).hexdigest()[:8]
+        task["source_user"] = "gold_" + hashlib.sha256(str(src_id).encode()).hexdigest()[:8]
         task["target_user"] = "u_" + hashlib.sha256(tid.encode()).hexdigest()[:8]
         wr = wsf.make(task)
         mem_rec = None
         from experiments.r22.runtime.arm_payload import MEMORY_ENABLED
         if MEMORY_ENABLED[arm]:
-            mem_rec = mem_loader.load(src_id if mode == "fake" else _source_of(manifest_name, tid, arm, derange),
-                                      task["stage"])
+            mem_rec = mem_loader.load(src_id, task["stage"])
         spec = provider_spec
-        if provider_spec.get("mode") == "fake":
+        if cfg.reader_provider == "fake":
             spec = {**provider_spec, "script": {"fix": task.get("_fix", {}), "stage": task["stage"]}}
         prov = make_provider(spec)
         rec = TR.run_task_arm(task=task, arm=arm, provider=prov, ledger=ledger, grade_fn=grade_fn,

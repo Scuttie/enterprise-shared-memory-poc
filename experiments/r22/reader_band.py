@@ -18,16 +18,17 @@ BAND = (0.10, 0.70)
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=["fake", "real"], default="fake")
-    ap.add_argument("--provider"); ap.add_argument("--model", required=True); ap.add_argument("--secret-name")
+    ap.add_argument("--task-source", choices=["fake", "real"], default="fake")
+    ap.add_argument("--reader-provider", choices=["fake", "replay", "openai", "deepseek"], default="fake")
+    ap.add_argument("--model", required=True); ap.add_argument("--secret-name")
     ap.add_argument("--hard-cap", type=float, required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--n", type=int, default=40)
     a = ap.parse_args()
-    spec = {"mode": "fake", "model": a.model} if a.mode == "fake" else {
-        "mode": "real", "provider": a.provider, "model": a.model, "secret_name": a.secret_name}
-    manifest, integ = PR.run(phase="reader_band", arms=["O0"], provider_spec=spec, hard_cap=a.hard_cap,
-                             out_dir=a.out, n_tasks=a.n, task_prefix="dev")
+    manifest, integ = PR.run(phase="reader_band", arms=["O0"], hard_cap=a.hard_cap, out_dir=a.out, n_tasks=a.n,
+                             task_source=a.task_source, reader_provider=a.reader_provider, model=a.model,
+                             secret_name=a.secret_name, task_prefix="dev",
+                             manifest_name="oracle_dev_manifest.json" if a.task_source == "real" else None)
     resolved = manifest["resolved_by_arm"]["O0"]
     rate = resolved / max(1, a.n)
     if not integ["clean"]:

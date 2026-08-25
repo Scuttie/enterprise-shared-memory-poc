@@ -9,26 +9,26 @@
     "O5",
     "O6"
   ],
-  "tasks": 3,
-  "cells": 21,
+  "tasks": 2,
+  "cells": 14,
   "reused_o0": 0,
   "resolved_by_arm": {
-    "O0": 3,
-    "O1": 3,
-    "O2": 3,
-    "O3": 3,
-    "O4": 3,
-    "O5": 3,
-    "O6": 3
+    "O0": 2,
+    "O1": 2,
+    "O2": 2,
+    "O3": 2,
+    "O4": 2,
+    "O5": 2,
+    "O6": 2
   },
   "ledger": {
     "model": "fake-reader",
-    "calls": 63,
-    "input_tokens": 63000,
-    "output_tokens": 6300,
+    "calls": 42,
+    "input_tokens": 42000,
+    "output_tokens": 4200,
     "cost_usd": 0.0,
     "hard_cap_usd": 100.0
   },
-  "provider_mode": "fake",
-  "results_sha256": "20846971c415192eed29398da0834c0e7b1814e9a43f0595ed351f6abe5df080"
+  "provider_mode": null,
+  "results_sha256": "6b2150b1f2c22dadcfe7dc8928652f21a53085a532bcaaa92dafe6394e28760c"
 }

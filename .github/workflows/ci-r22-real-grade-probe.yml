@@ -28,7 +28,7 @@ jobs:
           docker image prune -af >/dev/null 2>&1 || true
           df -h /
       - run: pip install -q pandas pyarrow "datasets>=2.19,<3" "swebench==5.0.2"
-      - name: Get the SCB gold patch + write predictions
+      - name: Build a LOCAL SWE-bench-format dataset from the SCB row (+ predictions)
         run: |
           mkdir -p scb/data probe
           for f in Related Experience; do
@@ -42,21 +42,31 @@ jobs:
           row = None
           for df in (rel, exp):
               m = df[df.instance_id == iid]
-              if len(m): row = m.iloc[0]; break
+              if len(m): row = m.iloc[0].to_dict(); break
           assert row is not None, iid
-          open("probe/gold.jsonl", "w").write(json.dumps({"instance_id": iid, "model_name_or_path": "gold", "model_patch": row["patch"]}) + "\n")
-          open("probe/nopatch.jsonl", "w").write(json.dumps({"instance_id": iid, "model_name_or_path": "nopatch", "model_patch": ""}) + "\n")
-          print("wrote predictions for", iid, "repo", row["repo"])
+          # local dataset carries the full SWE-bench spec so swebench BUILDS the image from base_commit
+          cols = ["instance_id","repo","base_commit","patch","test_patch","problem_statement","hints_text",
+                  "created_at","version","FAIL_TO_PASS","PASS_TO_PASS","environment_setup_commit"]
+          inst = {c: row.get(c) for c in cols if c in row}
+          for k in ("FAIL_TO_PASS","PASS_TO_PASS"):
+              v = inst.get(k)
+              if isinstance(v, str):
+                  try: inst[k] = json.loads(v)
+                  except Exception: pass
+          open("probe/scb_local.jsonl","w").write(json.dumps(inst) + "\n")
+          open("probe/gold.jsonl","w").write(json.dumps({"instance_id": iid, "model_name_or_path": "gold", "model_patch": row["patch"]}) + "\n")
+          open("probe/nopatch.jsonl","w").write(json.dumps({"instance_id": iid, "model_name_or_path": "nopatch", "model_patch": ""}) + "\n")
+          print("built local dataset for", iid, "repo", row["repo"], "version", row.get("version"))
           PY
-      - name: Grade GOLD (build image from SCB row) — expect resolved
+      - name: Grade GOLD via LOCAL dataset (swebench builds image from base_commit) — expect resolved
         run: |
-          timeout 3000 python -m swebench.harness.run_evaluation \
-            --dataset_name jiayuanz3/SWEContextBench --instance_ids "${{ matrix.instance }}" \
+          timeout 3300 python -m swebench.harness.run_evaluation \
+            --dataset_name probe/scb_local.jsonl --instance_ids "${{ matrix.instance }}" \
             --predictions_path probe/gold.jsonl --run_id probe-gold --max_workers 1 || echo "GOLD_HARNESS_RC=$?"
-      - name: Grade NO-PATCH — expect unresolved
+      - name: Grade NO-PATCH via LOCAL dataset — expect unresolved
         run: |
           timeout 1800 python -m swebench.harness.run_evaluation \
-            --dataset_name jiayuanz3/SWEContextBench --instance_ids "${{ matrix.instance }}" \
+            --dataset_name probe/scb_local.jsonl --instance_ids "${{ matrix.instance }}" \
             --predictions_path probe/nopatch.jsonl --run_id probe-nopatch --max_workers 1 || echo "NOPATCH_HARNESS_RC=$?"
       - name: Report feasibility (build + discrimination)
         run: |

@@ -16,18 +16,18 @@ ALL_ARMS = ["O0"] + NEW_ARMS
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=["fake", "real"], default="fake")
-    ap.add_argument("--provider"); ap.add_argument("--model", required=True); ap.add_argument("--secret-name")
+    ap.add_argument("--task-source", choices=["fake", "real"], default="fake")
+    ap.add_argument("--reader-provider", choices=["fake", "replay", "openai", "deepseek"], default="fake")
+    ap.add_argument("--model", required=True); ap.add_argument("--secret-name")
     ap.add_argument("--hard-cap", type=float, required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--n", type=int, default=40)
     ap.add_argument("--reuse-o0-from", help="reader-band results.jsonl with the selected reader's O0 cells")
     a = ap.parse_args()
-    spec = {"mode": "fake", "model": a.model} if a.mode == "fake" else {
-        "mode": "real", "provider": a.provider, "model": a.model, "secret_name": a.secret_name}
-    # run all 7 arms; if reuse provided, O0 cells are pre-seeded (not re-called)
-    manifest, integ = PR.run(phase="p2", arms=ALL_ARMS, provider_spec=spec, hard_cap=a.hard_cap,
-                             out_dir=a.out, n_tasks=a.n, reuse_o0_from=a.reuse_o0_from, task_prefix="dev")
+    manifest, integ = PR.run(phase="p2", arms=ALL_ARMS, hard_cap=a.hard_cap, out_dir=a.out, n_tasks=a.n,
+                             task_source=a.task_source, reader_provider=a.reader_provider, model=a.model,
+                             secret_name=a.secret_name, reuse_o0_from=a.reuse_o0_from, task_prefix="dev",
+                             manifest_name="oracle_dev_manifest.json" if a.task_source == "real" else None)
     expected = a.n * len(ALL_ARMS)
     out = {"phase": "p2", "analyzed_cells": integ["cells"], "expected": expected,
            "new_cells_o1_o6": a.n * len(NEW_ARMS), "reused_o0": manifest["reused_o0"],

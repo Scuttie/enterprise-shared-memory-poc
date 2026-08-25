@@ -61,9 +61,8 @@ class FakeTaskLoader(TaskLoader):
 class FakeWorkspaceFactory(WorkspaceFactory):
     def make(self, task):
         from experiments.r22.runtime import repo_agent as RA
-        fixroot = tempfile.mkdtemp()
-        task["_fix"] = RA.make_fixture(fixroot)
-        wr = tempfile.mkdtemp(); shutil.rmtree(wr); shutil.copytree(fixroot, wr)
+        wr = tempfile.mkdtemp()                 # build the fixture directly in the workspace (no copytree race)
+        task["_fix"] = RA.make_fixture(wr)
         return wr
 
 

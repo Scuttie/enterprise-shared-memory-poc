@@ -11,7 +11,7 @@ company_handoff_status: READY          # fresh-clone + offline demo pass; NOT st
 production_certification_status: NOT_CLAIMED
 
 migration_head: "0014"                 # experience layer (P6/R19); 13 tables
-workflow_count: 80                     # +ci-r22-real-path (real benchmark path verify)
+workflow_count: 81                     # +ci-r22-real-grade-probe (dispatch-only feasibility probe)
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)

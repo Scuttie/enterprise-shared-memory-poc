@@ -78,9 +78,10 @@ def main():
     m = json.load(open(os.path.join(ART, "oracle_dev_manifest.json"), encoding="utf-8"))
     for t in m["task_list"]:
         orig40.add(t["target_id"])
-    tree = json.load(open(os.path.join(
-        r"C:/Users/jewon/AppData/Local/Temp/claude/g-----------PC----2026-1-------/3ac33feb-5c89-4bf4-84af-fb1563bea476/scratchpad",
-        "scb_tree.json"), encoding="utf-8"))
+    # fetch the pinned repo tree from GitHub (no local/temp dependency)
+    st_t, _, tbody = http("https://api.github.com/repos/jiayuanz3/SWEContextBench/git/trees/%s?recursive=1" % COMMIT,
+                          {"Accept": "application/vnd.github+json"})
+    tree = json.loads(tbody)
     case_blobs = [t["path"] for t in tree["tree"] if t["path"].startswith("cases/") and t["type"] == "blob"]
     noop_sha = sha256(__import__("importlib").import_module(
         "experiments.r22.runtime.scb_official_grader").NOOP_BASELINE_PATCH)

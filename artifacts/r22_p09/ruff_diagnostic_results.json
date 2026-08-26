@@ -1,0 +1,1254 @@
+{
+  "experiment": "R22_P09_1_RUFF_FORENSIC_DIAGNOSTIC",
+  "source_run": "32922333871",
+  "targets": {
+    "F1": {
+      "role": "F1",
+      "instance_id": "astral-sh__ruff-15725",
+      "official_command": "source $HOME/.cargo/env && cargo test",
+      "command_matches_official": true,
+      "base_commit_manifest": "cb3361e682fc52d7ac9fdc5e2558373eb1d94a1f",
+      "base_commit_case": "cb3361e682fc52d7ac9fdc5e2558373eb1d94a1f",
+      "base_commit_in_container_head": "cb3361e682fc52d7ac9fdc5e2558373eb1d94a1f",
+      "base_commit_match_manifest_vs_case": true,
+      "base_commit_match": true,
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15725",
+      "image_ref": "jiayuanz3/swecontextbench@sha256:6045d9611a478df951d57937eae0560f2410f9e83f47b7689892a1e53d6048b8",
+      "image_digest_verified": true,
+      "docker_returncode": 0,
+      "test_patch_apply_rc": 0,
+      "gold_patch_apply_rc": 0,
+      "official_cargo_rc": 101,
+      "no_run_rc": 0,
+      "list_rc": 0,
+      "compile_ok": true,
+      "raw_collected_count": 509,
+      "raw_by_status": {
+        "ok": 474,
+        "FAILED": 1,
+        "ignored": 34,
+        "bench": 0
+      },
+      "raw_summary": [
+        {
+          "result": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 22,
+          "failed": 0,
+          "ignored": 1
+        },
+        {
+          "result": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 2
+        },
+        {
+          "result": "ok",
+          "passed": 193,
+          "failed": 0,
+          "ignored": 31
+        },
+        {
+          "result": "ok",
+          "passed": 158,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 60,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "FAILED",
+          "passed": 15,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "raw_summary_total": {
+        "passed": 478,
+        "failed": 1,
+        "ignored": 34
+      },
+      "collected_list_count": 3678,
+      "parser_method": "REPLICATED",
+      "parser_detail": "no parser symbol in swebench_memory.harness.run_evaluation",
+      "parser_error": null,
+      "parser_output_count": 509,
+      "selector_mapping": {
+        "rows": [
+          {
+            "selector": "rules::refurb::tests::rules::rule_forloopwrites_path_new_furb122_py_expects",
+            "expected_source": "crates/**/src/rules/refurb/**.rs",
+            "expected_symbol": "rule_forloopwrites_path_new_furb122_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::refurb::tests::rules::rule_forloopwrites_path_new_furb122_py_expects"
+          }
+        ],
+        "selectors_total": 1,
+        "selectors_matched": 1,
+        "selectors_absent": 0
+      },
+      "gold_failed": true,
+      "primary_class": "R6_UPSTREAM_GOLD_INVALID",
+      "classification_reasons": [
+        "intended test(s) collect but fail under the official gold patch"
+      ],
+      "evidence": {
+        "command_matches_official": true,
+        "base_commit_match": true,
+        "test_patch_rc": 0,
+        "gold_patch_rc": 0,
+        "compile_ok": true,
+        "no_run_rc": 0,
+        "raw_collected_count": 509,
+        "parser_output_count": 509,
+        "selectors_total": 1,
+        "selectors_matched": 1,
+        "gold_failed": true
+      },
+      "artifacts": {
+        "official_cargo_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15725/official_cargo.stdout",
+          "sha256": "85e56d3782f4f0f3b0ae724d6e51e4dacad2e1ff66f3b495d9b9cf14d792f326"
+        },
+        "official_cargo_stderr": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15725/official_cargo.stderr",
+          "sha256": "9dfca051931a4e2abb43cc4e753ccfae77251bd74214e1733d88886e4004aa3f"
+        },
+        "list_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15725/list.stdout",
+          "sha256": "f50897cba498a46f7bc8f4f6ffd9ee90fe8cdbd40f713d4c34c871b00e7b5756"
+        },
+        "norun_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15725/norun.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "test_files_txt": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15725/test_files.txt",
+          "sha256": "27abf7717f6347f9a3fbb3aaa20fc424bd356f02c9e23dff300b4f20036af384"
+        },
+        "diag_sh": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15725/diag.sh",
+          "sha256": "e0f2e891039712e3b239c60aa61832d48bac0d4b8942519e6eba1efcf383ec63"
+        },
+        "docker_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15725/_docker.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "docker_stderr": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15725/_docker.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "official_stderr_tail": "0.15.2\n   Compiling quickcheck v1.0.3\n   Compiling number_prefix v0.4.0\n   Compiling indicatif v0.17.9\n   Compiling env_filter v0.1.0\n   Compiling yansi v1.0.1\n   Compiling tikv-jemallocator v0.6.0\n   Compiling diff v0.1.13\n   Compiling humantime v2.1.0\n   Compiling pretty_assertions v1.4.1\n   Compiling env_logger v0.11.6\n   Compiling tracing-indicatif v0.3.9\n   Compiling red_knot_wasm v0.0.0 (/testbed/crates/red_knot_wasm)\n   Compiling imara-diff v0.1.7\n   Compiling ruff_python_resolver v0.0.0 (/testbed/crates/ruff_python_resolver)\n   Compiling ruff_wasm v0.9.3 (/testbed/crates/ruff_wasm)\n   Compiling ruff_dev v0.0.0 (/testbed/crates/ruff_dev)\n   Compiling red_knot v0.0.0 (/testbed/crates/red_knot)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 4m 00s\n     Running unittests src/main.rs (target/debug/deps/red_knot-53e7b599f129549b)\n     Running tests/cli.rs (target/debug/deps/cli-126408dfbbc45d08)\n     Running tests/file_watching.rs (target/debug/deps/file_watching-858e02399ccd8332)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_project-7f78ed8b250d064c)\n     Running tests/check.rs (target/debug/deps/check-f6b3e51c4c18532f)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_python_semantic-614b42bd993e00c0)\n     Running tests/mdtest.rs (target/debug/deps/mdtest-738394bd64c5bd7c)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_server-2d9d1c2462bbfd5f)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_test-e1809a3494aa1b24)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_vendored-0a198a883642405b)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_wasm-7d3ed6bbcd703aee)\n     Running tests/api.rs (target/debug/deps/api-7d21d6f2a1636baf)\n     Running unittests src/lib.rs (target/debug/deps/ruff-b9b823e9e09c449b)\nstored new snapshot /testbed/crates/ruff/src/commands/snapshots/ruff__commands__check__test__E902_E902.py.snap.new\nerror: test failed, to rerun pass `-p ruff --lib`\n"
+    },
+    "F2": {
+      "role": "F2",
+      "instance_id": "astral-sh__ruff-16445",
+      "official_command": "source $HOME/.cargo/env && cargo test",
+      "command_matches_official": true,
+      "base_commit_manifest": "0d615b8765d7676e4842cd0e3dc91c6a27d6bc17",
+      "base_commit_case": "0d615b8765d7676e4842cd0e3dc91c6a27d6bc17",
+      "base_commit_in_container_head": "0d615b8765d7676e4842cd0e3dc91c6a27d6bc17",
+      "base_commit_match_manifest_vs_case": true,
+      "base_commit_match": true,
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-16445",
+      "image_ref": "jiayuanz3/swecontextbench@sha256:f05058578e9bbd8ad6ed9ce0d96e2426ddc7590cb65ae2cda2dadb7b59fdcee6",
+      "image_digest_verified": true,
+      "docker_returncode": 0,
+      "test_patch_apply_rc": 0,
+      "gold_patch_apply_rc": 0,
+      "official_cargo_rc": 101,
+      "no_run_rc": 0,
+      "list_rc": 0,
+      "compile_ok": true,
+      "raw_collected_count": 592,
+      "raw_by_status": {
+        "ok": 553,
+        "FAILED": 1,
+        "ignored": 38,
+        "bench": 0
+      },
+      "raw_summary": [
+        {
+          "result": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 17,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 24,
+          "failed": 0,
+          "ignored": 1
+        },
+        {
+          "result": "ok",
+          "passed": 23,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 2
+        },
+        {
+          "result": "ok",
+          "passed": 193,
+          "failed": 0,
+          "ignored": 35
+        },
+        {
+          "result": "ok",
+          "passed": 176,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 98,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "FAILED",
+          "passed": 15,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "raw_summary_total": {
+        "passed": 557,
+        "failed": 1,
+        "ignored": 38
+      },
+      "collected_list_count": 4028,
+      "parser_method": "REPLICATED",
+      "parser_detail": "no parser symbol in swebench_memory.harness.run_evaluation",
+      "parser_error": null,
+      "parser_output_count": 589,
+      "selector_mapping": {
+        "rows": [
+          {
+            "selector": "rules::pyupgrade::tests::async_timeout_error_alias_not_applied_py310",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "async_timeout_error_alias_not_applied_py310",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::async_timeout_error_alias_not_applied_py310"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::datetime_utc_alias_py311",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "datetime_utc_alias_py311",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::datetime_utc_alias_py311"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::future_annotations_keep_runtime_typing_p310",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "future_annotations_keep_runtime_typing_p310",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::future_annotations_keep_runtime_typing_p310"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::future_annotations_pep_585_py310",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "future_annotations_pep_585_py310",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::future_annotations_pep_585_py310"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::future_annotations_pep_604_p37",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "future_annotations_pep_604_p37",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::future_annotations_pep_604_p37"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::future_annotations_pep_604_py310",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "future_annotations_pep_604_py310",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::future_annotations_pep_604_py310"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::non_pep695_type_alias_not_applied_py311",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "non_pep695_type_alias_not_applied_py311",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::non_pep695_type_alias_not_applied_py311"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_redundantopenmodes_path_new_up015_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_redundantopenmodes_path_new_up015_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_convertnamedtuplefunctionaltoclass_path_new_up014_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_convertnamedtuplefunctionaltoclass_path_new_up014_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_convertnamedtuplefunctionaltoclass_path_new_up014_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_converttypeddictfunctionaltoclass_path_new_up013_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_converttypeddictfunctionaltoclass_path_new_up013_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_converttypeddictfunctionaltoclass_path_new_up013_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_deprecatedcelementtree_path_new_up023_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_deprecatedcelementtree_path_new_up023_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_deprecatedcelementtree_path_new_up023_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_deprecatedimport_path_new_up035_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_deprecatedimport_path_new_up035_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_deprecatedimport_path_new_up035_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_deprecatedmockimport_path_new_up026_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_deprecatedmockimport_path_new_up026_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_deprecatedmockimport_path_new_up026_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_deprecatedunittestalias_path_new_up005_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_deprecatedunittestalias_path_new_up005_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_deprecatedunittestalias_path_new_up005_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_extraneousparentheses_path_new_up034_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_extraneousparentheses_path_new_up034_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_extraneousparentheses_path_new_up034_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_formatliterals_path_new_up030_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_formatliterals_path_new_up030_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_fstring_path_new_up032_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_fstring_path_new_up032_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_2_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_fstring_path_new_up032_2_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_2_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_3_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_fstring_path_new_up032_3_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_3_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_lrucachewithmaxsizenone_path_new_up033_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_lrucachewithmaxsizenone_path_new_up033_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_lrucachewithoutparameters_path_new_up011_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_lrucachewithoutparameters_path_new_up011_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_lrucachewithoutparameters_path_new_up011_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nativeliterals_path_new_up018_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nativeliterals_path_new_up018_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nativeliterals_path_new_up018_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep585annotation_path_new_up006_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep585annotation_path_new_up006_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_2_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep585annotation_path_new_up006_2_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_2_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_3_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep585annotation_path_new_up006_3_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_3_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up007_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep604annotationunion_path_new_up007_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up007_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up045_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep604annotationunion_path_new_up045_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up045_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep604isinstance_path_new_up038_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep604isinstance_path_new_up038_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep604isinstance_path_new_up038_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep695genericclass_path_new_up046_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep695genericclass_path_new_up046_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep695genericfunction_path_new_up047_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep695genericfunction_path_new_up047_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep695genericfunction_path_new_up047_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep695typealias_path_new_up040_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_pyi_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_nonpep695typealias_path_new_up040_pyi_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_pyi_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_openalias_path_new_up020_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_openalias_path_new_up020_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_openalias_path_new_up020_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_oserroralias_path_new_up024_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_oserroralias_path_new_up024_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_2_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_oserroralias_path_new_up024_2_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_2_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_3_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_oserroralias_path_new_up024_3_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_3_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_4_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_oserroralias_path_new_up024_4_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_4_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_outdatedversionblock_path_new_up036_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_outdatedversionblock_path_new_up036_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_2_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_outdatedversionblock_path_new_up036_2_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_2_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_3_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_outdatedversionblock_path_new_up036_3_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_3_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_4_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_outdatedversionblock_path_new_up036_4_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_4_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_5_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_outdatedversionblock_path_new_up036_5_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_5_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_printfstringformatting_path_new_up031_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_printfstringformatting_path_new_up031_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_privatetypeparameter_path_new_up049_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_privatetypeparameter_path_new_up049_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_quotedannotation_path_new_up037_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_quotedannotation_path_new_up037_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_2_pyi_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_quotedannotation_path_new_up037_2_pyi_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_2_pyi_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_redundantopenmodes_path_new_up015_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_redundantopenmodes_path_new_up015_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_replacestdoutstderr_path_new_up022_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_replacestdoutstderr_path_new_up022_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_replacestdoutstderr_path_new_up022_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_replacestrenum_path_new_up042_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_replacestrenum_path_new_up042_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_replacestrenum_path_new_up042_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_replaceuniversalnewlines_path_new_up021_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_replaceuniversalnewlines_path_new_up021_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_replaceuniversalnewlines_path_new_up021_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_supercallwithparameters_path_new_up008_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_supercallwithparameters_path_new_up008_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_supercallwithparameters_path_new_up008_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_timeouterroralias_path_new_up041_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_timeouterroralias_path_new_up041_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_timeouterroralias_path_new_up041_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_typeofprimitive_path_new_up003_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_typeofprimitive_path_new_up003_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_typeofprimitive_path_new_up003_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_typingtextstralias_path_new_up019_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_typingtextstralias_path_new_up019_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_typingtextstralias_path_new_up019_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_unicodekindprefix_path_new_up025_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_unicodekindprefix_path_new_up025_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_unicodekindprefix_path_new_up025_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_unnecessarybuiltinimport_path_new_up029_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_unnecessarybuiltinimport_path_new_up029_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_unnecessarybuiltinimport_path_new_up029_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_unnecessaryclassparentheses_path_new_up039_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_unnecessaryclassparentheses_path_new_up039_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_unnecessaryclassparentheses_path_new_up039_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_unnecessarydefaulttypeargs_path_new_up043_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_unnecessarydefaulttypeargs_path_new_up043_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_unnecessarydefaulttypeargs_path_new_up043_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_unnecessaryencodeutf8_path_new_up012_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_unnecessaryencodeutf8_path_new_up012_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_unnecessaryencodeutf8_path_new_up012_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_unnecessaryfutureimport_path_new_up010_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_unnecessaryfutureimport_path_new_up010_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_unnecessaryfutureimport_path_new_up010_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_uselessmetaclasstype_path_new_up001_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_uselessmetaclasstype_path_new_up001_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_uselessmetaclasstype_path_new_up001_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_uselessobjectinheritance_path_new_up004_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_uselessobjectinheritance_path_new_up004_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_uselessobjectinheritance_path_new_up004_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_10_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_10_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_10_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_2_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_2_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_2_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_3_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_3_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_3_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_4_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_4_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_4_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_5_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_5_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_5_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_6_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_6_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_6_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_7_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_7_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_7_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_8_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_8_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_8_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_9_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_9_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_9_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_code_utf8_utf8_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_code_utf8_utf8_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_code_utf8_utf8_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_hashbang_utf8_other_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_hashbang_utf8_other_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_hashbang_utf8_other_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_many_empty_lines_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_many_empty_lines_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_many_empty_lines_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_other_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_other_other_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_other_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_utf8_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_other_utf8_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_utf8_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_code_other_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_utf8_code_other_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_code_other_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_other_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_utf8_other_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_other_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_other_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_other_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_other_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_0_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_yieldinforloop_path_new_up028_0_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_0_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_1_py_expects",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "rule_yieldinforloop_path_new_up028_1_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_1_py_expects"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::unpack_pep_646_py311",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "unpack_pep_646_py311",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::unpack_pep_646_py311"
+          },
+          {
+            "selector": "rules::pyupgrade::tests::up007_preview",
+            "expected_source": "crates/**/src/rules/pyupgrade/**.rs",
+            "expected_symbol": "up007_preview",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::pyupgrade::tests::up007_preview"
+          }
+        ],
+        "selectors_total": 98,
+        "selectors_matched": 98,
+        "selectors_absent": 0
+      },
+      "gold_failed": true,
+      "primary_class": "R6_UPSTREAM_GOLD_INVALID",
+      "classification_reasons": [
+        "intended test(s) collect but fail under the official gold patch"
+      ],
+      "evidence": {
+        "command_matches_official": true,
+        "base_commit_match": true,
+        "test_patch_rc": 0,
+        "gold_patch_rc": 0,
+        "compile_ok": true,
+        "no_run_rc": 0,
+        "raw_collected_count": 592,
+        "parser_output_count": 589,
+        "selectors_total": 98,
+        "selectors_matched": 98,
+        "gold_failed": true
+      },
+      "artifacts": {
+        "official_cargo_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-16445/official_cargo.stdout",
+          "sha256": "83f3fa45c973312d0ba6349d11058bbaa0eeaa5442c0c80f568444337f46165e"
+        },
+        "official_cargo_stderr": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-16445/official_cargo.stderr",
+          "sha256": "714f23e1651c2e66bb49497039d8e25f8326776302e3ce44c5f989f4382ef1e4"
+        },
+        "list_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-16445/list.stdout",
+          "sha256": "97bf867e8a70aeaec38365969fff00dd4effc4dd23332954477ad349f64e08b2"
+        },
+        "norun_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-16445/norun.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "test_files_txt": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-16445/test_files.txt",
+          "sha256": "a3064737492de6d26ba2606994b09b7a5ddc1aae776dbb088385b537654f584a"
+        },
+        "diag_sh": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-16445/diag.sh",
+          "sha256": "e0f2e891039712e3b239c60aa61832d48bac0d4b8942519e6eba1efcf383ec63"
+        },
+        "docker_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-16445/_docker.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "docker_stderr": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-16445/_docker.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "official_stderr_tail": "ompiling quickcheck v1.0.3\n   Compiling vt100 v0.15.2\n   Compiling tikv-jemallocator v0.6.0\n   Compiling serde-wasm-bindgen v0.6.5\n   Compiling number_prefix v0.4.0\n   Compiling indicatif v0.17.11\n   Compiling env_filter v0.1.3\n   Compiling yansi v1.0.1\n   Compiling diff v0.1.13\n   Compiling humantime v2.1.0\n   Compiling pretty_assertions v1.4.1\n   Compiling env_logger v0.11.6\n   Compiling tracing-indicatif v0.3.9\n   Compiling red_knot_wasm v0.0.0 (/testbed/crates/red_knot_wasm)\n   Compiling imara-diff v0.1.8\n   Compiling ruff_python_resolver v0.0.0 (/testbed/crates/ruff_python_resolver)\n   Compiling ruff_wasm v0.9.9 (/testbed/crates/ruff_wasm)\n   Compiling ruff_dev v0.0.0 (/testbed/crates/ruff_dev)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3m 58s\n     Running unittests src/main.rs (target/debug/deps/red_knot-e299bb12b94d65f2)\n     Running tests/cli.rs (target/debug/deps/cli-5376eafc4ab01bf9)\n     Running tests/file_watching.rs (target/debug/deps/file_watching-b1a3062bbfdc4c85)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_project-c24f8d038387910f)\n     Running tests/check.rs (target/debug/deps/check-dbbc52fce2ee0723)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_python_semantic-d32a4a1064f9852d)\n     Running tests/mdtest.rs (target/debug/deps/mdtest-65e6b7594072d309)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_server-6bad03fc4b9e30b7)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_test-a5e2048330301e5f)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_vendored-1708fd6fcdea31f3)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_wasm-29e75ab5ef909e22)\n     Running tests/api.rs (target/debug/deps/api-654e3437ac30afa9)\n     Running unittests src/lib.rs (target/debug/deps/ruff-1faf7acde38f27a7)\nstored new snapshot /testbed/crates/ruff/src/commands/snapshots/ruff__commands__check__test__E902_E902.py.snap.new\nerror: test failed, to rerun pass `-p ruff --lib`\n"
+    },
+    "POSITIVE_CONTROL": {
+      "role": "POSITIVE_CONTROL",
+      "instance_id": "astral-sh__ruff-15997",
+      "official_command": "source $HOME/.cargo/env && cargo test",
+      "command_matches_official": true,
+      "base_commit_manifest": "10d3e64ccdf69d90c3252a15b3408a4238427792",
+      "base_commit_case": "10d3e64ccdf69d90c3252a15b3408a4238427792",
+      "base_commit_in_container_head": "10d3e64ccdf69d90c3252a15b3408a4238427792",
+      "base_commit_match_manifest_vs_case": true,
+      "base_commit_match": true,
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15997",
+      "image_ref": "jiayuanz3/swecontextbench@sha256:4ff6fbb327893411d27cf96f6e43fc37d3b62057d99759f78de3bd0a52e89106",
+      "image_digest_verified": true,
+      "docker_returncode": 0,
+      "test_patch_apply_rc": 0,
+      "gold_patch_apply_rc": 0,
+      "official_cargo_rc": 101,
+      "no_run_rc": 0,
+      "list_rc": 0,
+      "compile_ok": true,
+      "raw_collected_count": 549,
+      "raw_by_status": {
+        "ok": 514,
+        "FAILED": 1,
+        "ignored": 34,
+        "bench": 0
+      },
+      "raw_summary": [
+        {
+          "result": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 22,
+          "failed": 0,
+          "ignored": 1
+        },
+        {
+          "result": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 2
+        },
+        {
+          "result": "ok",
+          "passed": 197,
+          "failed": 0,
+          "ignored": 31
+        },
+        {
+          "result": "ok",
+          "passed": 162,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 82,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "result": "FAILED",
+          "passed": 15,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "raw_summary_total": {
+        "passed": 518,
+        "failed": 1,
+        "ignored": 34
+      },
+      "collected_list_count": 3951,
+      "parser_method": "REPLICATED",
+      "parser_detail": "no parser symbol in swebench_memory.harness.run_evaluation",
+      "parser_error": null,
+      "parser_output_count": 546,
+      "selector_mapping": {
+        "rows": [
+          {
+            "selector": "rules::flake8_pie::tests::rules::rule_unnecessaryspread_path_new_pie800_py_expects",
+            "expected_source": "crates/**/src/rules/flake8_pie/**.rs",
+            "expected_symbol": "rule_unnecessaryspread_path_new_pie800_py_expects",
+            "collected_match_kind": "exact",
+            "collected_match_name": "rules::flake8_pie::tests::rules::rule_unnecessaryspread_path_new_pie800_py_expects"
+          }
+        ],
+        "selectors_total": 1,
+        "selectors_matched": 1,
+        "selectors_absent": 0
+      },
+      "gold_failed": true,
+      "primary_class": null,
+      "classification_reasons": [
+        "positive control (not classified)"
+      ],
+      "evidence": {
+        "command_matches_official": true,
+        "base_commit_match": true,
+        "test_patch_rc": 0,
+        "gold_patch_rc": 0,
+        "compile_ok": true,
+        "no_run_rc": 0,
+        "raw_collected_count": 549,
+        "parser_output_count": 546,
+        "selectors_total": 1,
+        "selectors_matched": 1,
+        "gold_failed": true
+      },
+      "artifacts": {
+        "official_cargo_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15997/official_cargo.stdout",
+          "sha256": "311f0270ba44e9fd8b57279c7b4a309e46ee7f91570057ba27e068c7f2dd00db"
+        },
+        "official_cargo_stderr": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15997/official_cargo.stderr",
+          "sha256": "f938ea0708b7e63f463832a1445798f43ce73ae4c75024852c254925fe4afa8b"
+        },
+        "list_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15997/list.stdout",
+          "sha256": "6a8dfba8b033b829be2e237e5240cc3c13b27a1d9d727aab8e1e075feb0a7786"
+        },
+        "norun_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15997/norun.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "test_files_txt": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15997/test_files.txt",
+          "sha256": "933fa6a2c789aff8302ff9f4cb602352a662a257100acffe1b16890fd5bdf346"
+        },
+        "diag_sh": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15997/diag.sh",
+          "sha256": "e0f2e891039712e3b239c60aa61832d48bac0d4b8942519e6eba1efcf383ec63"
+        },
+        "docker_stdout": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15997/_docker.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "docker_stderr": {
+          "path": "artifacts/r22_p09/ruff_diag_run/astral-sh__ruff-15997/_docker.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "official_stderr_tail": "ompiling quickcheck_macros v1.0.0\n   Compiling vt100 v0.15.2\n   Compiling serde-wasm-bindgen v0.6.5\n   Compiling quickcheck v1.0.3\n   Compiling number_prefix v0.4.0\n   Compiling indicatif v0.17.11\n   Compiling env_filter v0.1.3\n   Compiling diff v0.1.13\n   Compiling humantime v2.1.0\n   Compiling yansi v1.0.1\n   Compiling env_logger v0.11.6\n   Compiling pretty_assertions v1.4.1\n   Compiling tracing-indicatif v0.3.9\n   Compiling red_knot_wasm v0.0.0 (/testbed/crates/red_knot_wasm)\n   Compiling imara-diff v0.1.8\n   Compiling ruff_python_resolver v0.0.0 (/testbed/crates/ruff_python_resolver)\n   Compiling ruff_wasm v0.9.5 (/testbed/crates/ruff_wasm)\n   Compiling ruff_dev v0.0.0 (/testbed/crates/ruff_dev)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 4m 47s\n     Running unittests src/main.rs (target/debug/deps/red_knot-2f405b082de15161)\n     Running tests/cli.rs (target/debug/deps/cli-6df4bfb81c99d97f)\n     Running tests/file_watching.rs (target/debug/deps/file_watching-5b610fc15faa439c)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_project-42352e9978083752)\n     Running tests/check.rs (target/debug/deps/check-b74b6a53f112f126)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_python_semantic-3bcdf90046c969b9)\n     Running tests/mdtest.rs (target/debug/deps/mdtest-4a6692f7a32bcd8f)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_server-9524f461d2aa1656)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_test-80f6259920e6d7ae)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_vendored-7b50ee0d4d3ddb69)\n     Running unittests src/lib.rs (target/debug/deps/red_knot_wasm-0cb79849243f2f31)\n     Running tests/api.rs (target/debug/deps/api-102aad162a88ffe3)\n     Running unittests src/lib.rs (target/debug/deps/ruff-71dc010ec68bad22)\nstored new snapshot /testbed/crates/ruff/src/commands/snapshots/ruff__commands__check__test__E902_E902.py.snap.new\nerror: test failed, to rerun pass `-p ruff --lib`\n"
+    }
+  },
+  "pinned_evaluator_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+  "official_command": "source $HOME/.cargo/env && cargo test",
+  "parser_method": "REPLICATED",
+  "parser_detail": "no parser symbol in swebench_memory.harness.run_evaluation",
+  "rule_classes": [
+    "R1_ADAPTER_INVOCATION_BUG",
+    "R2_CASE_SELECTOR_BUG",
+    "R3_TEST_PATCH_BUG",
+    "R4_IMAGE_CASE_DRIFT",
+    "R5_UPSTREAM_PARSER_BUG",
+    "R6_UPSTREAM_GOLD_INVALID",
+    "R7_TOOLCHAIN_INCOMPATIBILITY",
+    "R8_UNKNOWN"
+  ]
+}

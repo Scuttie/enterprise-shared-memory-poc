@@ -1,63 +1,29 @@
 {
   "experiment": "R22_P09_RUFF_ROOT_CAUSE",
-  "source_campaign_run": "32863011986",
-  "diagnostic_execution_run": false,
-  "questions": {
-    "q3_1_patch_apply": {
-      "class": "PATCH_APPLY_OK",
-      "test_patch_applied": true,
-      "gold_patch_applied": true,
-      "ensure_patch": false,
-      "gold_patch_sanitized": false,
-      "evidence": "run_instance.log + test_output.txt per cell; applied gold sha == frozen case gold sha"
-    },
-    "q3_2_selectors_exist": {
-      "class": "PENDING_EXEC",
-      "f2p_count": {"astral-sh__ruff-15725": 1, "astral-sh__ruff-16445": 98, "astral-sh__ruff-15997": 1},
-      "selector_format": "rules::<module>::tests::<name>",
-      "note": "existence/collection of selectors requires in-container inspection (raw cargo output)"
-    },
-    "q3_3_test_command": {
-      "command": "source $HOME/.cargo/env && cargo test",
-      "filter": "none",
-      "identical_across_all_three": true,
-      "eval_sh_frozen": true
-    },
-    "q3_4_zero_collection_source": {
-      "class": "PENDING_EXEC",
-      "ruled_out": ["FILTER_MISMATCH (no filter)", "TEST_PATCH_MISSING (test patch applied)"],
-      "candidates": ["TRUE_ZERO_COLLECTION", "PARSER_ZERO_ONLY", "PRE_COLLECTION_FAILURE"],
-      "collected_before_patch": 0,
-      "collected_after_patch": 0,
-      "base_image_fixfirst_fallback_collected": 0,
-      "note": "raw cargo test stdout + return code not in captured evidence"
-    },
-    "q3_5_gold_validity": {
-      "class": "PENDING_EXEC",
-      "requires": "diagnostic unfiltered collection on unmodified official image/case (forensic only, not a score)"
-    }
+  "source_diagnostic_run": "32922333871",
+  "diagnostic_execution_run": true,
+  "parser_method": "REPLICATED (upstream parser not importable in this run; replicated cargo regex)",
+  "diagnostic_findings": {
+    "astral-sh__ruff-15725": {"base_commit_match": true, "compile_ok": true, "official_cargo_rc": null,
+      "raw_collected_count": 509, "parser_output_count": 509, "auto_label": "R6_UPSTREAM_GOLD_INVALID"},
+    "astral-sh__ruff-16445": {"base_commit_match": true, "compile_ok": true, "official_cargo_rc": 101,
+      "raw_collected_count": 592, "parser_output_count": 589, "auto_label": "R6_UPSTREAM_GOLD_INVALID"},
+    "astral-sh__ruff-15997_control": {"base_commit_match": true, "compile_ok": true,
+      "raw_collected_count": 549, "parser_output_count": 546, "gold_failed_flag": true,
+      "campaign_resolved": true, "note": "CONTROL RESOLVED in the campaign yet the diagnostic gold_failed flag is True -> the flag (full-suite exit code) is NOT a reliable gold-validity signal"}
   },
-  "root_cause": {
-    "astral-sh__ruff-15725": {
-      "primary_class": "R8_UNKNOWN",
-      "excluded": {"R1_ADAPTER_INVOCATION_BUG": "our invocation is the pinned official eval.sh cargo test, byte-identical to the passing control"},
-      "live_candidates": ["R3_TEST_PATCH_BUG", "R4_IMAGE_CASE_DRIFT", "R5_UPSTREAM_PARSER_BUG", "R6_UPSTREAM_GOLD_INVALID", "R7_TOOLCHAIN_INCOMPATIBILITY"],
-      "discriminating_diagnostic": "raw cargo test stdout + return code + unfiltered collection (EXEC_APPROVED_R22_P09)"
-    },
-    "astral-sh__ruff-16445": {
-      "primary_class": "R8_UNKNOWN",
-      "excluded": {"R1_ADAPTER_INVOCATION_BUG": "our invocation is the pinned official eval.sh cargo test, byte-identical to the passing control"},
-      "live_candidates": ["R3_TEST_PATCH_BUG", "R4_IMAGE_CASE_DRIFT", "R5_UPSTREAM_PARSER_BUG", "R6_UPSTREAM_GOLD_INVALID", "R7_TOOLCHAIN_INCOMPATIBILITY"],
-      "discriminating_diagnostic": "raw cargo test stdout + return code + unfiltered collection (EXEC_APPROVED_R22_P09)"
-    }
+  "adjusted_root_cause": {
+    "astral-sh__ruff-15725": {"primary_class": "R8_UNKNOWN", "narrowed_to": ["R2_CASE_SELECTOR_BUG", "R5_UPSTREAM_PARSER_BUG"]},
+    "astral-sh__ruff-16445": {"primary_class": "R8_UNKNOWN", "narrowed_to": ["R2_CASE_SELECTOR_BUG", "R5_UPSTREAM_PARSER_BUG"]}
   },
-  "established_facts": {
-    "noop_resolved": "0/12",
-    "image_digest_equality": "12/12",
-    "infra_failures": 0,
-    "gold_resolved": "10/12",
-    "positive_ruff_control_resolved": true,
-    "failure_independent_of_selector_count": true,
-    "failure_present_on_pristine_base_image": true
-  }
+  "excluded_with_evidence": {
+    "R1_ADAPTER_INVOCATION_BUG": "diagnostic command is the byte-identical official `cargo test` (command_matches_official)",
+    "R4_IMAGE_CASE_DRIFT": "base_commit_match True (manifest == case == in-container HEAD)",
+    "R7_TOOLCHAIN_INCOMPATIBILITY": "compile_ok True (cargo test --no-run succeeds)",
+    "TRUE_ZERO_COLLECTION": "509-592 tests collect and run directly via the identical cargo test"
+  },
+  "why_R6_auto_label_is_overridden": "The classifier's R6 rests on gold_failed = (full-suite cargo exit != 0). The RESOLVED positive control shows the same full-suite failure (rc 101 / gold_failed True), so that signal does not distinguish gold validity. The decisive evidence (whether the SPECIFIC FAIL_TO_PASS selector tests pass with gold) requires the per-selector mapping, which the diagnostic did not populate (selector_mapping empty).",
+  "key_discrepancy": "The official evaluator reports 'Collected 0 test results' for these targets, but the diagnostic (same image, same patches, identical cargo test) collects 500-592 tests. So the evaluator's zero is a SELECTOR/PARSER matching artifact (the F2P selector names are not matched in the cargo output), not a true zero and not our adapter -> R2/R5 territory, NOT confirmed R6.",
+  "systematic_scope": "The same UNGRADEABLE_GOLD pattern affects 9 of 40 ORIGINAL_P2 targets, all multilingual: rust (ruff x2), php (laravel, php-cs-fixer x3), ruby (rubocop x3). Python/Java targets grade normally. The defect is concentrated in the multilingual selector/parser path of the official evaluator.",
+  "next_diagnostic": "a clean per-selector pass/fail mapping (does each FAIL_TO_PASS selector's test appear in `cargo test -- --list` and pass with gold?) to separate R2 (selectors absent/renamed) from R5 (parser miscounts) from R6 (selectors present but fail)."
 }

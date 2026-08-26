@@ -67,23 +67,32 @@ def classify(g, n):
     return "UNKNOWN"                                          # e.g. noop unexpectedly resolved / not applied
 
 
+# §5 — the FULL raw evidence set per condition (grade() key -> predictable stash name). Recorded as
+# {relpath,bytes,sha256} per file (NOT a boolean); the aggregate re-verifies each against the download tree.
+EVIDENCE_FILES = (("run_instance_log", "run_instance.log"), ("test_output_txt", "test_output.txt"),
+                  ("instance_report_path", "report.json"), ("report_path", "summary_report.json"),
+                  ("stdout_path", "stdout.log"), ("stderr_path", "stderr.log"),
+                  ("dataset_path", "dataset.json"), ("predictions_path", "prediction.json"))
+
+
+def _file_meta(path, results_dir):
+    data = open(path, "rb").read()
+    return {"relpath": os.path.relpath(path, results_dir).replace(os.sep, "/"),
+            "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+
+
 def _stash_evidence(res, cond_dir, results_dir):
-    """Copy the upstream raw logs + report into predictable names under cond_dir; return relative evidence map."""
+    """Copy the FULL upstream raw evidence set into predictable names under cond_dir; return {name:{relpath,bytes,sha256}}."""
     os.makedirs(cond_dir, exist_ok=True)
     ev = {}
-    for key, dst in (("run_instance_log", "run_instance.log"), ("test_output_txt", "test_output.txt"),
-                     ("instance_report_path", "report.json"), ("report_path", "summary_report.json"),
-                     ("stdout_path", None), ("stderr_path", None)):
+    for key, dst in EVIDENCE_FILES:
         src = res.get(key)
-        if key in ("stdout_path", "stderr_path"):
-            ev[key] = os.path.relpath(src, results_dir) if src and os.path.isfile(src) else None
-            continue
         if src and os.path.isfile(src):
             d = os.path.join(cond_dir, dst)
             try:
                 if os.path.abspath(src) != os.path.abspath(d):
                     shutil.copyfile(src, d)
-                ev[dst] = os.path.relpath(d, results_dir)
+                ev[dst] = _file_meta(d, results_dir)
             except Exception:
                 ev[dst] = None
         else:
@@ -112,10 +121,12 @@ def grade_one(rec, results_dir, checkout):
     noop = SG.assert_valid_baseline_patch(SG.NOOP_BASELINE_PATCH)   # empty patch is an INVALID control
     gold_patch = json.loads(open(os.path.join(checkout, rec["case_path"]), encoding="utf-8").read()).get("patch") or ""
 
+    # §6 one-pull-per-target: GOLD pulls+verifies the frozen image by digest ONCE and keeps the built instance image
+    # (--no-remove-instance-image); NOOP reuses that already-verified local tag (no re-pull).
     # ImageDigestMismatch / GraderInfraError raised before collection classify directly (do not conflate with a model result)
     try:
-        g = SG.grade(route, gold_patch, gold_dir)
-        n = SG.grade(route, noop, noop_dir)
+        g = SG.grade(route, gold_patch, gold_dir, keep_instance_image=True, reuse_pulled_image=False)
+        n = SG.grade(route, noop, noop_dir, keep_instance_image=False, reuse_pulled_image=True)
     except SG.ImageDigestMismatch as e:
         base.update({"label": "UNGRADEABLE_CASE_IMAGE", "error": str(e),
                      "image_expected_digest": rec.get("image_digest"), "image_observed_digest": None,

@@ -19,6 +19,13 @@ on:
         description: "must be exactly EXEC_APPROVED_R22_P09 (acknowledges executing the unlicensed pinned upstream evaluator)"
         required: true
         default: ""
+  # workflow_dispatch cannot register this branch-only workflow (main is frozen), so the one-time execution approval
+  # is a COMMITTED sentinel on a NEW P0.9 path (never artifacts/r22/EXEC_APPROVED, which belongs to the 12-target SCB
+  # smoke). A push that adds/changes artifacts/r22_p09/EXEC_APPROVED_R22_P09 (content exactly EXEC_APPROVED_R22_P09)
+  # triggers exactly one run; the path filter makes it fire only on that file.
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['artifacts/r22_p09/EXEC_APPROVED_R22_P09']
 permissions:
   contents: read
 jobs:
@@ -46,14 +53,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
-      - name: Execution-approval gate (compliance, not a technical block)
+      - name: Execution-approval gate (dispatch input OR committed sentinel; compliance, not a technical block)
         id: gate
         run: |
-          if [ "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED_R22_P09" ]; then
+          if [ "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED_R22_P09" ] \
+             || [ "$(tr -d '[:space:]' < artifacts/r22_p09/EXEC_APPROVED_R22_P09 2>/dev/null)" = "EXEC_APPROVED_R22_P09" ]; then
             echo "approved=true" >> "$GITHUB_OUTPUT"; echo "EXEC_APPROVED_R22_P09"
           else
             echo "approved=false" >> "$GITHUB_OUTPUT"
-            echo "R22_P09_EXECUTION_REVIEW: approval not given; not executing upstream code."; exit 1
+            echo "R22_P09_EXECUTION_REVIEW: approval not given; not executing upstream code (no-op)."
           fi
       - name: Free disk + docker preflight
         if: ${{ steps.gate.outputs.approved == 'true' }}
@@ -85,6 +93,47 @@ jobs:
           path: |
             artifacts/r22_p09/grade_${{ matrix.instance }}.json
             artifacts/r22_p09/grade_run/${{ matrix.instance }}/
+          if-no-files-found: warn
+  # §3 — three-target Ruff raw diagnostic (F1 ruff-15725, F2 ruff-16445, POSITIVE ruff-15997): raw `cargo test` +
+  # unfiltered collection + selector mapping + separate parser, to classify the gold-fail root cause.
+  ruff-forensics:
+    runs-on: ubuntu-latest
+    environment: research-paid
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [F1, F2, POSITIVE_CONTROL]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Execution-approval gate (dispatch input OR committed sentinel)
+        id: gate
+        run: |
+          if [ "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED_R22_P09" ] \
+             || [ "$(tr -d '[:space:]' < artifacts/r22_p09/EXEC_APPROVED_R22_P09 2>/dev/null)" = "EXEC_APPROVED_R22_P09" ]; then
+            echo "approved=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "approved=false" >> "$GITHUB_OUTPUT"; echo "not approved (no-op)"
+          fi
+      - name: docker preflight
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        run: docker info >/dev/null && echo "docker OK" && df -h /
+      - run: pip install -q -e .
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+      - name: Ruff raw diagnostic (single role)
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        env:
+          R22_SCB_UPSTREAM_EXEC_APPROVED: "1"
+        run: |
+          timeout 5400 python scripts/r22_p09_ruff_forensics.py --roles "${{ matrix.role }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ruff-diag-${{ matrix.role }}
+          path: |
+            artifacts/r22_p09/ruff_diagnostic_results.json
+            artifacts/r22_p09/ruff_diag_run/
           if-no-files-found: warn
   # fail-closed aggregate: derive the audit verdict from DOWNLOADED shard artifacts, not console output.
   aggregate:

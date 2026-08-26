@@ -128,6 +128,46 @@ def test_grade_uses_absolute_paths_under_cwd(tmp_path, monkeypatch):
     assert os.path.isabs(first_pp), "PYTHONPATH entry must be absolute, got %r" % first_pp
 
 
+# ---- §6 one image pull per target (GOLD pulls+keeps; NOOP reuses) ------------
+def test_one_image_pull_per_target(tmp_path, monkeypatch):
+    import types
+    monkeypatch.setenv("R22_SCB_UPSTREAM_EXEC_APPROVED", "1")
+    monkeypatch.setattr(SG, "ensure_checkout", lambda d: os.makedirs(d, exist_ok=True) or d)
+    monkeypatch.setattr(SG, "verify_tree_hashes", lambda c: {"verified_files": 8})
+    monkeypatch.setattr(SG, "_load_case", lambda c, r: {"instance_id": r["instance_id"], "patch": "x"})
+    dig = "sha256:deadbeefcafe"
+    counters = {"pull": 0, "no_remove": 0}
+
+    def fake_run(cmd, cwd=None, env=None, capture_output=False, text=False, **kw):
+        if cmd[:2] == ["docker", "pull"]:
+            counters["pull"] += 1
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+        if cmd[:2] == ["docker", "inspect"]:
+            return types.SimpleNamespace(returncode=0, stdout='["jiayuanz3/swecontextbench@%s"]' % dig, stderr="")
+        if cmd[:3] == ["docker", "image", "inspect"]:
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")     # local image present
+        if cmd[:2] == ["docker", "tag"] or cmd[:2] == ["docker", "rmi"]:
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+        if "-m" in cmd and SG.EVALUATOR_MODULE in cmd:
+            if "--no-remove-instance-image" in cmd:
+                counters["no_remove"] += 1
+            rid = cmd[cmd.index("--run_id") + 1]
+            json.dump({"resolved_ids": [cmd_iid], "unresolved_ids": []}, open(os.path.join(cwd, rid + ".json"), "w"))
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+        return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(SG.subprocess, "run", fake_run)
+    # the derive_image_tag for this fake iid must be jiayuanz3/swecontextbench:x for the digest ref to match
+    cmd_iid = "x"
+    route = {"instance_id": cmd_iid, "case_path": "cases/x.json", "image_digest": dig}
+    g = SG.grade(route, "gold-patch", str(tmp_path / "gold"), keep_instance_image=True, reuse_pulled_image=False)
+    n = SG.grade(route, SG.NOOP_BASELINE_PATCH, str(tmp_path / "noop"), keep_instance_image=False, reuse_pulled_image=True)
+    assert counters["pull"] == 1, "expected exactly one docker pull for GOLD+NOOP, got %d" % counters["pull"]
+    assert counters["no_remove"] == 1                                   # GOLD kept the instance image
+    assert g["image_expected_digest"] == g["image_observed_digest"] == dig
+    assert n["image_observed_digest"] == dig and n["image_digest_verified"] == "reused"
+
+
 # ---- §1 the P0.7 technical-block doc is retracted -----------------------------
 def test_p07_block_is_retracted():
     doc = open(os.path.join(ROOT, "reports", "R22_PAID_TARGET_ROUTE_AUDIT.md"), encoding="utf-8").read()

@@ -1,0 +1,63 @@
+{
+  "experiment": "REALBENCH_R22A_STAGE_ALIGNED_GRADEABLE_V1",
+  "rule": "retain frozen ORIGINAL_P2 -> temporal-valid -> sha256(EXP|target|source)",
+  "targets": {
+    "astropy__astropy-15082": {
+      "target_id": "astropy__astropy-15082",
+      "competing_sources": [
+        {
+          "source_id": "astropy__astropy-14995",
+          "relation_class": "CLEAN_RELATED",
+          "temporal_valid": true
+        },
+        {
+          "source_id": "astropy__astropy-14995",
+          "relation_class": "CLEAN_RELATED",
+          "temporal_valid": true
+        }
+      ],
+      "frozen_o2_source": "prometheus__prometheus-15177",
+      "selected_source_id": "astropy__astropy-14995",
+      "selection_hash": "17cff8941aaa6340b40f82521ffcf490a9232bd43f7fc9adecc47480e59085b9",
+      "reason": "deterministic hash order (all temporal-valid)"
+    },
+    "sympy__sympy-12426": {
+      "target_id": "sympy__sympy-12426",
+      "competing_sources": [
+        {
+          "source_id": "sympy__sympy-12419",
+          "relation_class": "CLEAN_RELATED",
+          "temporal_valid": true
+        },
+        {
+          "source_id": "sympy__sympy-12419",
+          "relation_class": "CLEAN_RELATED",
+          "temporal_valid": true
+        }
+      ],
+      "frozen_o2_source": "astropy__astropy-8614",
+      "selected_source_id": "sympy__sympy-12419",
+      "selection_hash": "3526bc8b6989166ac1aceb4285f072f8c2d2449831c4e7c82567414ab52e306e",
+      "reason": "deterministic hash order (all temporal-valid)"
+    },
+    "sympy__sympy-12427": {
+      "target_id": "sympy__sympy-12427",
+      "competing_sources": [
+        {
+          "source_id": "sympy__sympy-12419",
+          "relation_class": "CLEAN_RELATED",
+          "temporal_valid": true
+        },
+        {
+          "source_id": "sympy__sympy-12419",
+          "relation_class": "CLEAN_RELATED",
+          "temporal_valid": true
+        }
+      ],
+      "frozen_o2_source": "astral-sh__ruff-15725",
+      "selected_source_id": "sympy__sympy-12419",
+      "selection_hash": "36ace4f1fa8d480c2e0cc58fb197a3a2fae755273ac937f4429c0de0e26d51ef",
+      "reason": "deterministic hash order (all temporal-valid)"
+    }
+  }
+}

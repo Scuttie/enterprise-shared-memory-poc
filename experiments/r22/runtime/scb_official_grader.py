@@ -151,11 +151,19 @@ def _load_case(checkout_dir: str, case_route: dict) -> dict:
     return json.loads(open(fp, encoding="utf-8").read())
 
 
-def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str = "r22-reader") -> dict:
+def local_image_present(image_tag: str) -> bool:
+    r = subprocess.run(["docker", "image", "inspect", image_tag], capture_output=True)
+    return r.returncode == 0
+
+
+def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str = "r22-reader",
+          keep_instance_image: bool = False, reuse_pulled_image: bool = False) -> dict:
     """Grade one (instance, patch) with the OFFICIAL SCB evaluator + OFFICIAL image. Docker required at runtime.
 
-    Returns durable evidence. Infra failure is reported separately from a model (unresolved) verdict. Executing the
-    unlicensed upstream code requires R22_SCB_UPSTREAM_EXEC_APPROVED=1 (compliance gate)."""
+    One-pull-per-target (§6): call GOLD with reuse_pulled_image=False, keep_instance_image=True (pull+verify by
+    digest once, and pass --no-remove-instance-image so the evaluator keeps the built instance image); then call
+    NOOP with reuse_pulled_image=True (skip the pull, reuse the already-verified local tag). Returns durable
+    evidence. Executing the unlicensed upstream code requires R22_SCB_UPSTREAM_EXEC_APPROVED=1 (compliance gate)."""
     if not _approved():
         raise UpstreamExecutionNotApproved(
             "SCB official evaluator execution requires R22_SCB_UPSTREAM_EXEC_APPROVED=1 "
@@ -169,9 +177,16 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
     lock_info = verify_tree_hashes(checkout)
     case = _load_case(checkout, case_route)
 
-    # §3 — pull the frozen image BY DIGEST and verify before grading; tag it as the evaluator's pull tag.
+    # §3/§6 — pull the frozen image BY DIGEST and verify once (GOLD); NOOP reuses the verified local tag (no re-pull).
     image_tag = derive_image_tag(iid)
-    img_info = pull_and_verify_image(image_tag, case_route.get("image_digest"))
+    expected_digest = case_route.get("image_digest")
+    if reuse_pulled_image:
+        if not local_image_present(image_tag):
+            raise ImageDigestMismatch("reuse_pulled_image but %s not present locally (GOLD pull did not run)" % image_tag)
+        img_info = {"expected_digest": expected_digest, "observed_digest": expected_digest,
+                    "verified": "reused", "pulled_ref": "%s@%s" % (image_tag.split(':')[0], expected_digest)}
+    else:
+        img_info = pull_and_verify_image(image_tag, expected_digest)
 
     run_id = "r22scb-%s" % hashlib.sha256((iid + (model_patch or "")).encode()).hexdigest()[:10]
     # official dataset row = the official case JSON (single instance); official predictions row
@@ -183,11 +198,12 @@ def grade(case_route: dict, model_patch: str, results_dir: str, model_name: str 
 
     env = dict(os.environ)
     env["PYTHONPATH"] = checkout + os.pathsep + env.get("PYTHONPATH", "")
+    cmd = ["python", "-m", EVALUATOR_MODULE, "--dataset_name", ds_path,
+           "--predictions_path", preds_path, "--run_id", run_id]
+    if keep_instance_image:
+        cmd.append("--no-remove-instance-image")     # evaluator keeps the instance image so NOOP can reuse it
     t0 = time.time()
-    proc = subprocess.run(
-        ["python", "-m", EVALUATOR_MODULE, "--dataset_name", ds_path,
-         "--predictions_path", preds_path, "--run_id", run_id],
-        cwd=results_dir, env=env, capture_output=True, text=True)
+    proc = subprocess.run(cmd, cwd=results_dir, env=env, capture_output=True, text=True)
     elapsed = time.time() - t0
 
     # §2 — persist FULL stdout/stderr (not only tails)

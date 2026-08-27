@@ -1,0 +1,161 @@
+name: ci-r22-p09-gradeability
+# R22-P0.9 — FULL dev-pool GRADEABILITY audit (55 unique dev targets = 40 ORIGINAL_P2 + 15 DEV_RESERVE).
+# Per target, grades the official GOLD patch (expect resolved) and a NOOP-BASELINE patch (adds .r22_noop; no
+# source/test change -> tests actually execute, expect UNRESOLVED, NOT the empty-patch 'No patch' short-circuit) with
+# the BENCHMARK-SPECIFIC evaluator: an ephemeral pinned checkout of `swebench_memory.harness.run_evaluation` + the
+# official per-instance image `jiayuanz3/swecontextbench:<tag>` (pulled BY DIGEST and verified). Emits a per-target
+# gradeability verdict; a fail-closed aggregate REPORTS gradeability (GRADEABLE<55 is a scientific result) but exits
+# nonzero when the audit is INCOMPLETE. NO model calls, NO secret, NO paid endpoint, paid API = 0.
+#
+# GATED: dispatch-only AND requires confirm_exec_approved == 'EXEC_APPROVED_R22_P09'. The upstream evaluation code has
+# NO explicit license (reports/R22_UPSTREAM_RIGHTS_STATUS.md); executing it — even as an ephemeral checkout — is a
+# research-execution decision. Because this workflow lives only on a FROZEN-MAIN feature branch, workflow_dispatch
+# cannot register it; actual triggering will require the SAME committed-sentinel mechanism used by
+# ci-r22-scb-grader-smoke (a path-filtered push of the approval sentinel) once execution is later approved.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_exec_approved:
+        description: "must be exactly EXEC_APPROVED_R22_P09 (acknowledges executing the unlicensed pinned upstream evaluator)"
+        required: true
+        default: ""
+  # workflow_dispatch cannot register this branch-only workflow (main is frozen), so the one-time execution approval
+  # is a COMMITTED sentinel on a NEW P0.9 path (never artifacts/r22/EXEC_APPROVED, which belongs to the 12-target SCB
+  # smoke). A push that adds/changes artifacts/r22_p09/EXEC_APPROVED_R22_P09 (content exactly EXEC_APPROVED_R22_P09)
+  # triggers exactly one run; the path filter makes it fire only on that file.
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['artifacts/r22_p09/EXEC_APPROVED_R22_P09']
+permissions:
+  contents: read
+jobs:
+  # single source of truth: derive the 55-target matrix from the FROZEN manifest (no second hard-coded list).
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - id: gen
+        run: |
+          python -c "import json,os; recs=json.load(open('artifacts/r22_p09/dev55_gradeability_manifest.json',encoding='utf-8'))['records']; open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8').write('matrix='+json.dumps({'instance':list(recs.keys())})+'\n')"
+  gradeability:
+    needs: prepare
+    runs-on: ubuntu-latest
+    environment: research-paid            # reuse the approval-gated environment (no secret is read here)
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Execution-approval gate (dispatch input OR committed sentinel; compliance, not a technical block)
+        id: gate
+        run: |
+          if [ "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED_R22_P09" ] \
+             || [ "$(tr -d '[:space:]' < artifacts/r22_p09/EXEC_APPROVED_R22_P09 2>/dev/null)" = "EXEC_APPROVED_R22_P09" ]; then
+            echo "approved=true" >> "$GITHUB_OUTPUT"; echo "EXEC_APPROVED_R22_P09"
+          else
+            echo "approved=false" >> "$GITHUB_OUTPUT"
+            echo "R22_P09_EXECUTION_REVIEW: approval not given; not executing upstream code (no-op)."
+          fi
+      - name: Free disk + docker preflight
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        run: |
+          docker info >/dev/null && echo "docker OK"
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "$AGENT_TOOLSDIRECTORY" || true
+          df -h /
+      - run: pip install -q -e .
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+      - name: Gradeability grade — GOLD + NOOP-BASELINE (single dev target)
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        env:
+          R22_SCB_UPSTREAM_EXEC_APPROVED: "1"
+        run: |
+          timeout 5400 python scripts/r22_p09_gradeability.py \
+            --instance-id "${{ matrix.instance }}" \
+            --results-dir "artifacts/r22_p09/grade_run" \
+            --out "artifacts/r22_p09/grade_${{ matrix.instance }}.json"
+      - name: Cleanup instance image
+        if: ${{ always() && steps.gate.outputs.approved == 'true' }}
+        run: |
+          tag=$(python -c "print('${{ matrix.instance }}'.replace('__','.').lower())")
+          docker rmi "jiayuanz3/swecontextbench:${tag}" 2>/dev/null || true
+      # upload the FULL per-target evidence tree (reports, run_instance.log, test_output.txt, stdout, stderr) + summary
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: grade-${{ matrix.instance }}
+          path: |
+            artifacts/r22_p09/grade_${{ matrix.instance }}.json
+            artifacts/r22_p09/grade_run/${{ matrix.instance }}/
+          if-no-files-found: warn
+  # §3 — three-target Ruff raw diagnostic (F1 ruff-15725, F2 ruff-16445, POSITIVE ruff-15997): raw `cargo test` +
+  # unfiltered collection + selector mapping + separate parser, to classify the gold-fail root cause.
+  ruff-forensics:
+    runs-on: ubuntu-latest
+    environment: research-paid
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [F1, F2, POSITIVE_CONTROL]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Execution-approval gate (dispatch input OR committed sentinel)
+        id: gate
+        run: |
+          if [ "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED_R22_P09" ] \
+             || [ "$(tr -d '[:space:]' < artifacts/r22_p09/EXEC_APPROVED_R22_P09 2>/dev/null)" = "EXEC_APPROVED_R22_P09" ]; then
+            echo "approved=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "approved=false" >> "$GITHUB_OUTPUT"; echo "not approved (no-op)"
+          fi
+      - name: docker preflight
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        run: docker info >/dev/null && echo "docker OK" && df -h /
+      - run: pip install -q -e .
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+      - name: Ruff raw diagnostic (single role)
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        env:
+          R22_SCB_UPSTREAM_EXEC_APPROVED: "1"
+        run: |
+          timeout 5400 python scripts/r22_p09_ruff_forensics.py --roles "${{ matrix.role }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ruff-diag-${{ matrix.role }}
+          path: |
+            artifacts/r22_p09/ruff_diagnostic_results.json
+            artifacts/r22_p09/ruff_diag_run/
+          if-no-files-found: warn
+  # fail-closed aggregate: derive the audit verdict from DOWNLOADED shard artifacts, not console output.
+  aggregate:
+    needs: gradeability
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v4
+        with:
+          path: _shards
+      - name: Aggregate + fail-closed verdict
+        run: |
+          python scripts/r22_p09_aggregate.py --download-dir _shards
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: r22-p09-gradeability-campaign
+          path: |
+            artifacts/r22_p09/dev58_gradeability_results.json
+            artifacts/r22_p09/dev58_gradeability_evidence_manifest.json
+            artifacts/r22_p09/SHA256SUMS
+            reports/R22_P09_FULL_GRADEABILITY_AUDIT.md

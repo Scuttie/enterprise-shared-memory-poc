@@ -1,0 +1,150 @@
+{
+  "experiment": "R22_P09_RUFF_FORENSIC",
+  "pinned_evaluator_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+  "evaluator_file_hashes": {
+    "README.md": "6bd3efdd5b7407f28e7221e78e1dd4c48b065ea30d219a1798468cbe0bedc04f",
+    "evaluation.sh": "4382682a3a387c930de0f106aeca48d6f04824a4bed37f4c92c9d9ece6ed26cd",
+    "environment.yml": "d052a2c1bc14cded3add36d331b8eebf7527fc75af28560bbea618277c0dc4ec",
+    "swebench_memory/harness/run_evaluation.py": "e6b29452302df417cfde1493ab38817ac2d4ebb19750b374d60e383271ad5b69",
+    "swebench_memory/harness/combine_instances.py": "93f6c83c54979bfaa3d417e043c105a2b4e48a6192193b0db81882144e9a8557",
+    "swebench_memory/harness/build_instance.py": "e45c2a7e8b5cfd3cc6494cccfe7990a21f9bdfbfb59305fbddc2969ac176fb2d",
+    "swebench_memory/harness/build_base.py": "088ee24d1e53b28683af92d566d308b015136297ab9f48ff986a4461ef3ada49",
+    "swebench_memory/__init__.py": "d70645eb15bd110b14ac3346021005093816c13cdf039ba1ee158046b172a94e"
+  },
+  "evaluator_tree_hashes": {
+    "cases": {
+      "git_tree_sha": "b4a06fef2a00ba8852b84df6c8a12e7d42ff8ecd"
+    },
+    "swebench_memory": {
+      "git_tree_sha": "d9d3910b9d52b2511fe8a975f31b047b7d6e9bd9"
+    }
+  },
+  "source_campaign_run": "32863011986",
+  "source_campaign_head": "6f55b83",
+  "targets": {
+    "F1": {
+      "role": "F1",
+      "instance_id": "astral-sh__ruff-15725",
+      "case_path": "cases/SWEContextBench Multilingual/astral-sh__ruff-15725.json",
+      "case_sha256": "724af16e168b0b0e788c6b449b40f8c325bedc1ac74097d6769b06a21663196c",
+      "subset": "SWEContextBench Multilingual",
+      "repo": "astral-sh/ruff",
+      "base_commit": "cb3361e682fc52d7ac9fdc5e2558373eb1d94a1f",
+      "problem_statement_sha256": "b178d5160c4139bb39d547be05de2696536019e645cb8b3ebe67099fe62edd41",
+      "gold_patch_sha256": "a80ddbb0c6d2bb7bf67646bacf07d413b9f3ee7feabb1654be8621609483f16f",
+      "test_patch_sha256": "513b8a07629e0e53b4dd82773fec28b2337a54829932f9a0d429991c8e560abe",
+      "f2p_canon": "5ce5fa3e848442f1ed36b1da7e036a7fc8515373a09e72194c11f48e50a005ed",
+      "p2p_canon": "f8275ce243ba02acf45989219b6897bd3c9cf69ee3c56d07bca81fb7fc24d5e7",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15725",
+      "image_digest": "sha256:6045d9611a478df951d57937eae0560f2410f9e83f47b7689892a1e53d6048b8",
+      "evaluator_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+      "campaign_result": {
+        "gold_resolved": false,
+        "noop_resolved": false,
+        "gold_f2p_complete": false,
+        "gold_patch_applied": true,
+        "gold_tests_executed": true
+      },
+      "shard_summary_sha256": "efec47b6e7832ac9715c3cab6b6568fb7343391fa99879688dfbe14929f56c7c",
+      "evidence_hashes": {
+        "gold": {
+          "eval_sh_sha256": null,
+          "test_output_sha256": "03d903040d40d54c6851b6bc62d5b4786fb924b7651387f72f8f3cce345c39d1",
+          "run_instance_log_sha256": "2e3b2ef6d92a4a6dd911306cdb9399202b12f03dbe93005ac006aaaa4bb19bb9",
+          "report_json_sha256": "6aca2ec0a2f02c80e385bfb26be1cb52b0c77e61c53389368924434916caab73",
+          "patch_diff_sha256": null
+        },
+        "noop": {
+          "eval_sh_sha256": null,
+          "test_output_sha256": "0daf0c1dae6a485b1b599b4fb00255a1d6e64903c13ecf865098e680587970cd",
+          "run_instance_log_sha256": "6bac490fa0d1a62cf4388dc7ac418298c91152202dbc3df2a6044d18f14daad5",
+          "report_json_sha256": "6aca2ec0a2f02c80e385bfb26be1cb52b0c77e61c53389368924434916caab73",
+          "patch_diff_sha256": null
+        }
+      }
+    },
+    "F2": {
+      "role": "F2",
+      "instance_id": "astral-sh__ruff-16445",
+      "case_path": "cases/SWEContextBench Multilingual/astral-sh__ruff-16445.json",
+      "case_sha256": "b159f1a2fd33686173bfa2f3da3c59be2d56c654e2aa098000f8cc93248b3e2f",
+      "subset": "SWEContextBench Multilingual",
+      "repo": "astral-sh/ruff",
+      "base_commit": "0d615b8765d7676e4842cd0e3dc91c6a27d6bc17",
+      "problem_statement_sha256": "65e1f65b02e1ab89e54f95aaebc6b2f948322c2a81c0cb10cda301aea87019c0",
+      "gold_patch_sha256": "7d9a01ce0b0aa6a05f51aa69108b64df90ef5b71cfeb32b69e17a58cfb6e44a1",
+      "test_patch_sha256": "5a897c51f8b2d6e5b3407ee5e4d749bc2c88ecb77272f713d09bff94e3a24140",
+      "f2p_canon": "081534bd995860d282e2b101cb2f7aa48a30558b20312d3672e05e387fd4b9ba",
+      "p2p_canon": "9201f742f6fae8d943ef830486c2ab42e32468436fef2030994280061b16d3d1",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-16445",
+      "image_digest": "sha256:f05058578e9bbd8ad6ed9ce0d96e2426ddc7590cb65ae2cda2dadb7b59fdcee6",
+      "evaluator_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+      "campaign_result": {
+        "gold_resolved": false,
+        "noop_resolved": false,
+        "gold_f2p_complete": false,
+        "gold_patch_applied": true,
+        "gold_tests_executed": true
+      },
+      "shard_summary_sha256": "9192eb37800548fc87748713c038f346946bbcfda79837a97094219e4886ac7f",
+      "evidence_hashes": {
+        "gold": {
+          "eval_sh_sha256": null,
+          "test_output_sha256": "54fc7846becdffccaa2253b7136170701190d677e128e1002c23a302a1d27b1a",
+          "run_instance_log_sha256": "b2d2806a2b4df4e4c0d99d52f09e59c1bad790666f07f240a08c5144292dc879",
+          "report_json_sha256": "8036b9efd082c9f66105e9fcaa951568e9a47e4c7cad05f5f61fb574cae0dad7",
+          "patch_diff_sha256": null
+        },
+        "noop": {
+          "eval_sh_sha256": null,
+          "test_output_sha256": "06bf4d39412427d3e52904f00cf8b5c4341e30de3cad1051e2f3784a602857bb",
+          "run_instance_log_sha256": "9b5fc30d3f0999bac7afadf055cc537cb2b1fab4b67ff938ac9981bfc9c1824d",
+          "report_json_sha256": "8036b9efd082c9f66105e9fcaa951568e9a47e4c7cad05f5f61fb574cae0dad7",
+          "patch_diff_sha256": null
+        }
+      }
+    },
+    "POSITIVE_CONTROL": {
+      "role": "POSITIVE_CONTROL",
+      "instance_id": "astral-sh__ruff-15997",
+      "case_path": "cases/SWEContextBench Multilingual/astral-sh__ruff-15997.json",
+      "case_sha256": "29eb0637bfe0cc7785f0a9ebb85a38c52e266642328dd6bd47d5b5cc373bf7bb",
+      "subset": "SWEContextBench Multilingual",
+      "repo": "astral-sh/ruff",
+      "base_commit": "10d3e64ccdf69d90c3252a15b3408a4238427792",
+      "problem_statement_sha256": "d6c7d8112d9447740338c68ebfccbe184bf8a95fadcb675f6144b0ec7057565c",
+      "gold_patch_sha256": "6e8d1e901dd849b2a4597ff83c525f93528c27102b71a7d321a980374870bca8",
+      "test_patch_sha256": "f223d1e15ff954ffeead8e0c8dbcd8e9bfd60221e8cc6de753522bd51f3b19e9",
+      "f2p_canon": "76190928380d55635b5d458bcc8b5fe8ae5090746a28525ee672f99f826f125f",
+      "p2p_canon": "e02acab5c9570e453c100b3ddb240ffd7d8c73f59ce0037d4bd7da402d87ebb3",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15997",
+      "image_digest": "sha256:4ff6fbb327893411d27cf96f6e43fc37d3b62057d99759f78de3bd0a52e89106",
+      "evaluator_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+      "campaign_result": {
+        "gold_resolved": true,
+        "noop_resolved": false,
+        "gold_f2p_complete": true,
+        "gold_patch_applied": true,
+        "gold_tests_executed": true
+      },
+      "shard_summary_sha256": "6ddaba498cde12b6e912e36795f3ea06fd43ff0306aa345f009e7d3cff0b9eee",
+      "evidence_hashes": {
+        "gold": {
+          "eval_sh_sha256": null,
+          "test_output_sha256": "c4c72df4c77bd3f50635d35d88f1afe8e41742575fe62b2364d613a88c31f4d2",
+          "run_instance_log_sha256": "70f413acce6888778067e9d84243adde245d407d4ae77827921f5df2d600d3c7",
+          "report_json_sha256": "9ef05880d755845fc7f6576cda6be8e81865adcb3f4cc41cb7a877ec78c715df",
+          "patch_diff_sha256": null
+        },
+        "noop": {
+          "eval_sh_sha256": null,
+          "test_output_sha256": "398daf9eaad4e135287383048cb8e760f8c6e51637aecb5f05dd78f9a2876838",
+          "run_instance_log_sha256": "a307442248bacb59498b90f4a065c645b565a5086ca7958a7502a8147abf9592",
+          "report_json_sha256": "db51ffdf750baf1e662727a911f9b6655381c5a9e2427b7c24b87c610232e7e6",
+          "patch_diff_sha256": null
+        }
+      }
+    }
+  },
+  "note": "F1/F2 = failed frozen Ruff (gold unresolved). POSITIVE_CONTROL = frozen Ruff whose official gold resolved in the SAME campaign. Frozen for forensics; no diagnostic execution has run."
+}

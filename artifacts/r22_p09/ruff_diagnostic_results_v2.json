@@ -1,0 +1,2854 @@
+{
+  "experiment": "R22_P09_2_RUFF_SELECTOR_DIAGNOSTIC",
+  "source_run": "33050922491",
+  "targets": {
+    "F1": {
+      "role": "F1",
+      "instance_id": "astral-sh__ruff-15725",
+      "per_selector_command_form": "cargo test \"<selector>\" -- --exact --nocapture",
+      "official_command": "source $HOME/.cargo/env && cargo test",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15725",
+      "image_ref": "jiayuanz3/swecontextbench@sha256:6045d9611a478df951d57937eae0560f2410f9e83f47b7689892a1e53d6048b8",
+      "image_digest_verified": true,
+      "docker_returncode": 0,
+      "base_commit_case": "cb3361e682fc52d7ac9fdc5e2558373eb1d94a1f",
+      "base_commit_in_container_head": "cb3361e682fc52d7ac9fdc5e2558373eb1d94a1f",
+      "base_commit_match": true,
+      "test_patch_apply_rc": 0,
+      "gold_patch_apply_rc": 0,
+      "list_rc": 0,
+      "collected_list_count": 3678,
+      "official_status_baseline": "not_passed",
+      "selectors_total": 1,
+      "per_selector": [
+        {
+          "selector": "rules::refurb::tests::rules::rule_forloopwrites_path_new_furb122_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::refurb::tests::rules::rule_forloopwrites_path_new_furb122_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::refurb::tests::rules::rule_forloopwrites_path_new_furb122_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/sel_0.stdout",
+            "sha256": "631682241a10c37f762f1a1617816ace59c478d5eef696d91c176a694d65a222"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/sel_0.stderr",
+            "sha256": "1ea151e8cb8d9c205c36b28dd62ebceb20c68ec22c0ef1c7f086ead222c8a10f"
+          }
+        }
+      ],
+      "counts": {
+        "total": 1,
+        "present": 1,
+        "absent": 0,
+        "pass": 1,
+        "fail": 0,
+        "ignored": 0,
+        "agree": 0,
+        "disagree": 1
+      },
+      "primary_class": "R5_UPSTREAM_PARSER_BUG",
+      "classification_reason": "all 1 executing selector(s) PASS directly under gold but the official evaluator marked them not_passed (direct-pass vs official-not_passed DISAGREE)",
+      "artifacts": {
+        "sel_sh": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/sel.sh",
+          "sha256": "2f55584145c28358ec24ad77ef87f78c0a64fd2caaa2eef1be15e7874a5ac5a4"
+        },
+        "selectors_txt": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/selectors.txt",
+          "sha256": "65e6e84c97eecaf07db65df5687c14e6e9e03731f6d8723bd41d718e166a932f"
+        },
+        "test_patch": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/test.patch",
+          "sha256": "513b8a07629e0e53b4dd82773fec28b2337a54829932f9a0d429991c8e560abe"
+        },
+        "gold_patch": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/patch.diff",
+          "sha256": "a80ddbb0c6d2bb7bf67646bacf07d413b9f3ee7feabb1654be8621609483f16f"
+        },
+        "list_stdout": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/list.stdout",
+          "sha256": "f50897cba498a46f7bc8f4f6ffd9ee90fe8cdbd40f713d4c34c871b00e7b5756"
+        },
+        "list_merged": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/list.merged",
+          "sha256": "f7452026f4b4ce601ebd1d48ae026ec75db75337eea601c0cd20fcd1c42702bb"
+        },
+        "head_txt": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/head.txt",
+          "sha256": "3b2d25e4023cd2485d0663313681546700ce85d66c4c2a0d41b4750b7578ee11"
+        },
+        "test_patch_stderr": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/test_patch.stderr",
+          "sha256": "7da35e6f1e6333446e22e9437d81c41c65693c96f693360db8ed85e3a41139ed"
+        },
+        "gold_patch_stderr": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/gold_patch.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "docker_stdout": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/_docker.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "docker_stderr": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15725/_docker.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "F2": {
+      "role": "F2",
+      "instance_id": "astral-sh__ruff-16445",
+      "per_selector_command_form": "cargo test \"<selector>\" -- --exact --nocapture",
+      "official_command": "source $HOME/.cargo/env && cargo test",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-16445",
+      "image_ref": "jiayuanz3/swecontextbench@sha256:f05058578e9bbd8ad6ed9ce0d96e2426ddc7590cb65ae2cda2dadb7b59fdcee6",
+      "image_digest_verified": true,
+      "docker_returncode": 0,
+      "base_commit_case": "0d615b8765d7676e4842cd0e3dc91c6a27d6bc17",
+      "base_commit_in_container_head": "0d615b8765d7676e4842cd0e3dc91c6a27d6bc17",
+      "base_commit_match": true,
+      "test_patch_apply_rc": 0,
+      "gold_patch_apply_rc": 0,
+      "list_rc": 0,
+      "collected_list_count": 4028,
+      "official_status_baseline": "not_passed",
+      "selectors_total": 98,
+      "per_selector": [
+        {
+          "selector": "rules::pyupgrade::tests::async_timeout_error_alias_not_applied_py310",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::async_timeout_error_alias_not_applied_py310",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::async_timeout_error_alias_not_applied_py310\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_0.stdout",
+            "sha256": "7f091798a42ea67b0a5400966b4a8b262575a7b9bea1c55db6926c3106ed2120"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_0.stderr",
+            "sha256": "374fc483f121d772a7b4755304f0c2b90f8fb73d301e66b244f7ee756bb09d12"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::datetime_utc_alias_py311",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::datetime_utc_alias_py311",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::datetime_utc_alias_py311\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_1.stdout",
+            "sha256": "2fec0e86344cbc4048f115e12eb121e03cf52737d96bb88c23c46dec7f89cb53"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_1.stderr",
+            "sha256": "035d88d5acce584010c4fb280a002bdce2e6e0b2678a4e23091fee67f2c7b6e0"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::future_annotations_keep_runtime_typing_p310",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::future_annotations_keep_runtime_typing_p310",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::future_annotations_keep_runtime_typing_p310\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_2.stdout",
+            "sha256": "8778d65a020152e4e84dfed6394e3c61cd642a5fc79705f5e9f04ce3de37a7b0"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_2.stderr",
+            "sha256": "674049d948238336fa7313c7ab6f3d5b118de9fe8036f3cd404b133de6e07ab2"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::future_annotations_pep_585_py310",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::future_annotations_pep_585_py310",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::future_annotations_pep_585_py310\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_3.stdout",
+            "sha256": "19dfbbfd5bfe82287ca727f142c64b6063b601f558a096176410d577ed0d40a7"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_3.stderr",
+            "sha256": "1acfd7ada2cc75384f6c0d437db43edfd65cac5e679395db88bf3d7103484292"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::future_annotations_pep_604_p37",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::future_annotations_pep_604_p37",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::future_annotations_pep_604_p37\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_4.stdout",
+            "sha256": "8e84925f6835ba1c48b01226aeb1f2ecae86bf7e9f4130d95f1d15d96a59b123"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_4.stderr",
+            "sha256": "b35bb44713d1884d09e75683c48c46043f63549c5073b20dbc949b9ecd88687b"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::future_annotations_pep_604_py310",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::future_annotations_pep_604_py310",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::future_annotations_pep_604_py310\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_5.stdout",
+            "sha256": "a3d20c7d8616830849ac9814c4e2edb92d70307fb6e326038f820a7b8e57cff8"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_5.stderr",
+            "sha256": "769aa1d8e8f07bdc72a8004728e251b730f82ecf73a1d2ac3cb95bba595f12cc"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::non_pep695_type_alias_not_applied_py311",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::non_pep695_type_alias_not_applied_py311",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::non_pep695_type_alias_not_applied_py311\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_6.stdout",
+            "sha256": "c5711574afd298d4877efbe6d8b484ed4922b98b0cac8c15b944b49722e38b0e"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_6.stderr",
+            "sha256": "1721e8090962f84bca97d62bfcc2afbe56e39c523352f61b6fdadea9ae438103"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_7.stdout",
+            "sha256": "7679ab2c0e223510d2a28020456216bf2d2ee6658a0db1af2b561db096840b85"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_7.stderr",
+            "sha256": "8d7c3cbf9851c78cc735d90d84cadd930ff5f2d5ef967135b370a46a75dfe309"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::preview_rules::rule_redundantopenmodes_path_new_up015_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_8.stdout",
+            "sha256": "59fe6f903584e2e3f2f4db4734a99d618a5998063b2166c0ec580ca4c2fd4df2"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_8.stderr",
+            "sha256": "82890886d82e03e679780734000f0d6ee000c2a02ec245817fd9a40dc5621a61"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_convertnamedtuplefunctionaltoclass_path_new_up014_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_convertnamedtuplefunctionaltoclass_path_new_up014_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_convertnamedtuplefunctionaltoclass_path_new_up014_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_9.stdout",
+            "sha256": "2968a40b4e3b41a379a3450063f79d98f0789182fd912206d51dd53cb2c74fd8"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_9.stderr",
+            "sha256": "8b9dfd71c6f76bac93e3f3b782a09360e455b770163667c75f8d18731d048f00"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_converttypeddictfunctionaltoclass_path_new_up013_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_converttypeddictfunctionaltoclass_path_new_up013_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_converttypeddictfunctionaltoclass_path_new_up013_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_10.stdout",
+            "sha256": "b786c6d1fb523f53ab20110dac117e5a240bfe1ef95cb2c5fe725408ab9949b2"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_10.stderr",
+            "sha256": "034950caabe576bee5477cdbb62a738e57c99d8d82b6c6008872020ca1820dfd"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_deprecatedcelementtree_path_new_up023_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_deprecatedcelementtree_path_new_up023_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_deprecatedcelementtree_path_new_up023_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_11.stdout",
+            "sha256": "797815dbe05ace84eb5665e02cfc7e740bc4e4da470219b1559cf958f0509027"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_11.stderr",
+            "sha256": "18e74c3db808627455874e701e6ff60ce217e47090ce4acc24d5765ead86fe40"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_deprecatedimport_path_new_up035_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_deprecatedimport_path_new_up035_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_deprecatedimport_path_new_up035_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_12.stdout",
+            "sha256": "cbc6c93649afa78e03b6c9d306396166bee7222146f63945ade6be60b2690c17"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_12.stderr",
+            "sha256": "e924e7fe8afc40a804a28f10204bd392e2e64dd76ecbc3442e7d0a4d561e364e"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_deprecatedmockimport_path_new_up026_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_deprecatedmockimport_path_new_up026_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_deprecatedmockimport_path_new_up026_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_13.stdout",
+            "sha256": "ed5e3a375032d6a3413c2d2d4918c4bb3565436847ba1ef89f2d3dabe8463406"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_13.stderr",
+            "sha256": "99a5f4f0f3f0db5d5627f8a1bb1996f61d54efe71bd32778d2e70d27b8c43f50"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_deprecatedunittestalias_path_new_up005_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_deprecatedunittestalias_path_new_up005_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_deprecatedunittestalias_path_new_up005_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_14.stdout",
+            "sha256": "dff206e4506a329f558eec300bafb535821dd067414b3bfd23f1c86af4739a0e"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_14.stderr",
+            "sha256": "0351c83fbc48fc06ade4df5575412644bc1f57bc2bd4d56752f7baf7985fe67a"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_extraneousparentheses_path_new_up034_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_extraneousparentheses_path_new_up034_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_extraneousparentheses_path_new_up034_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_15.stdout",
+            "sha256": "84f647c1825ad4b0c1508732a41deddad86bf80f530b194df2d7b112de24be44"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_15.stderr",
+            "sha256": "b148e695e04857f9f9794a4b8d8be27d958e9bb2577f9f9101bd7495c0b61c32"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_16.stdout",
+            "sha256": "1aba0811d83ea68372e945683b8a23a7d6e9d7cc5423576c4e08410bf278e94d"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_16.stderr",
+            "sha256": "faa6c21e21d940e1f609be22ba0138a410327c5d327ba1411ac8354eca54f2d7"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_formatliterals_path_new_up030_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_17.stdout",
+            "sha256": "5ea5ee245cf424f7aab6b9b326d5c2d4133e8f45eb0a9b1023283e4cc0d6bf36"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_17.stderr",
+            "sha256": "cb65a59f5366c262c639981e0b3d7afb0189aa61c3c290039c2131c9befd8ad8"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_18.stdout",
+            "sha256": "197ff575e29a39c1d8e31a328aad85c3afee5309457fa1efd79cf9e867779a3b"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_18.stderr",
+            "sha256": "03c0c07f2b437e23f0276e4f01af0089764d390d9988f29f329dda591c50b2f9"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_19.stdout",
+            "sha256": "cacd34220506b7752fabe1217daf3279cef316882692f1f89360f338be107b81"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_19.stderr",
+            "sha256": "ff36f24fbf34addf5c34bce5504d7e9a9fc489199c76417a0b1d4fd263c7e8c9"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_2_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_2_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_2_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_20.stdout",
+            "sha256": "37f50ff0f43624969056f5c4532e58135c69081c86d38d3797a7b7aec7a6ec54"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_20.stderr",
+            "sha256": "46e2e158b1620ea59f1402677db845830ebe20df256c6b252147f3f307181f04"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_3_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_3_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_fstring_path_new_up032_3_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_21.stdout",
+            "sha256": "83cc74185fdf434588147324ee00b1a4ea91a6779e6b87c1ce50df4a89210f55"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_21.stderr",
+            "sha256": "a3c66074b3575b5134c0d15c9e467e8daebc840347f8813aa15261fdcc513d8e"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_22.stdout",
+            "sha256": "e5d4b58ae5be8260e515f8f2c1958fab58bcbd7ed7d2126e1248e49052001b49"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_22.stderr",
+            "sha256": "4b0c2266927b4429938f737a218769c05fc63a42579a7e29ce4baec298a74fab"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_lrucachewithmaxsizenone_path_new_up033_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_23.stdout",
+            "sha256": "0e77d0be24982714b297ca842a5959e13ea7ada6158f349d85336af6fcaff938"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_23.stderr",
+            "sha256": "e7cfe3a4a4eb6127bbd8ac49209c73b10f79ddd0c9defd827d24318a049c4e5f"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_lrucachewithoutparameters_path_new_up011_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_lrucachewithoutparameters_path_new_up011_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_lrucachewithoutparameters_path_new_up011_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_24.stdout",
+            "sha256": "eb961aec2c18fa84b2998e4fc30e4fba2fb2bbe2f40f076de4e05a4b95c66b01"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_24.stderr",
+            "sha256": "41f5d49a1a491fedbc52af0897f7d1772de87ca4d2597a6d7d495d0c106d1041"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nativeliterals_path_new_up018_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nativeliterals_path_new_up018_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nativeliterals_path_new_up018_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_25.stdout",
+            "sha256": "12a3f34b9691ae7abdc17cb98832582aa3b693dcd47ffc549d87dea1ea30dad1"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_25.stderr",
+            "sha256": "40de8423e6f31aaddbe2e150a76ce091e290aa77363bc1738e34cb9bc5e65717"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_26.stdout",
+            "sha256": "bbd9535b43d6062e249d82675358d97809eea22929ee72473243c26081ca825f"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_26.stderr",
+            "sha256": "f62904ba87d7fb21d7a9a8ef0bb5cf2c392497aced376ff65dd246b3a714548e"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_27.stdout",
+            "sha256": "b7f66137d3f190f3abef4365191a229688b86d1a909c344ec0f16a6590e2dfaf"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_27.stderr",
+            "sha256": "818521b0f3ea26149dddc1f045d0e6a150c036df4ae447ae987e2d5faa70baf1"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_2_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_2_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_2_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_28.stdout",
+            "sha256": "ff21d0890857cdcb8c155ac3397f6b2a9f07e071164d08a58777766c4966cbb5"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_28.stderr",
+            "sha256": "0734d0bee92eb50002d55ed7251bf86f038f752eee328dec5ae34a711beea89e"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_3_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_3_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep585annotation_path_new_up006_3_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_29.stdout",
+            "sha256": "ef031d5abf10e9a72a475c8e57eab95a47e8be69cdf2d7b4d8236160caeaaac6"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_29.stderr",
+            "sha256": "cd3a9d0238d4088b285f31994650b834b9264b17f78cd728858cbf613129d32f"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up007_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up007_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up007_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_30.stdout",
+            "sha256": "aad21de025d62e432a48bb9963977fda8bda6a96219c69bfc97bf7d1979ef1e7"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_30.stderr",
+            "sha256": "c3fc090833ce25c9bb1f1ba3247caef3bf8c048c5cbde89adfe621a68a9d082a"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up045_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up045_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep604annotationunion_path_new_up045_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_31.stdout",
+            "sha256": "ae9bf4f309bfc372a2fa62883ddb7dea17089ffb1f8300277bbab117065076d8"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_31.stderr",
+            "sha256": "f7a77a85e1b5b3552b08d995045350a077d06f27eb106cf748600b7cd2468a46"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep604isinstance_path_new_up038_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep604isinstance_path_new_up038_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep604isinstance_path_new_up038_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_32.stdout",
+            "sha256": "d8bb61fc626264e663d17f89e99f26fdeb85d6a2e6b31dd8ea911cd0b7247fe2"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_32.stderr",
+            "sha256": "f33b850b39e3f0f6b603acc0559bacbd82574279b30aeb6db49f1adfa39e13cb"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_33.stdout",
+            "sha256": "a52a37c8d34bce6992d877b9b081c729f84d9888e049e4599218dbd7620b1da9"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_33.stderr",
+            "sha256": "6d2bcbb0b16aa992f0e15ebaeb5f802bba7aa9cc11fc7e74e241ef964dff42d0"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep695genericclass_path_new_up046_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_34.stdout",
+            "sha256": "6188d4694ad30bac604c95767a70c819036a2a88180e97a69786f995714bdad6"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_34.stderr",
+            "sha256": "f59fbf51489bfd55011e3adba1cf3a69acec56c9502f3e77107f1164d96fa397"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep695genericfunction_path_new_up047_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep695genericfunction_path_new_up047_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep695genericfunction_path_new_up047_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_35.stdout",
+            "sha256": "a25f1f393700fd22682d9fa7a00af3c250a00b660e729f3766293bd7d8e06bb3"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_35.stderr",
+            "sha256": "fb9ae536a8be1b632ce98e15f11e895bcdd5219f3bab7b776d82f178784dafce"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_36.stdout",
+            "sha256": "ab2aa9e71ad86a7f1a04a23bc912f3a280b69f10999a75cdf43007dc73fc6ff4"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_36.stderr",
+            "sha256": "424a19d017ab72c4cc0e8727f122973840ad5bca81095d1a54580fb1b383db20"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_pyi_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_pyi_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_nonpep695typealias_path_new_up040_pyi_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_37.stdout",
+            "sha256": "b16a941f58dc78d29c9f65874ee442c886325085c6f77f42f31d4d5dfa134d3d"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_37.stderr",
+            "sha256": "701c9d84d6135000bd682f2c24c996f1d53b58e392589ff4052153921f9385fb"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_openalias_path_new_up020_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_openalias_path_new_up020_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_openalias_path_new_up020_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_38.stdout",
+            "sha256": "b238862bd1189588475b5434866e062b7e1f03d2aabb6eb4da7d065fb910362e"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_38.stderr",
+            "sha256": "e69df7d311b7f810d976fe746de79531bed3d940529682209abbfd70d7efb767"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_39.stdout",
+            "sha256": "7811afa70bfd9eb89580342d965f9c05a59d16d99b4d4b62e3fdfb96a64490a2"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_39.stderr",
+            "sha256": "a257c35b2d272ee79119eef14ea20282870976f3174805348548476419ef8930"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_40.stdout",
+            "sha256": "bc97045c2bcd8d2a4d2fbb89efcebf7a9d08996bdb158180490b4b765df7a545"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_40.stderr",
+            "sha256": "37f168b570dd595a9f1a447cfc30b7a483a6e77dae3d716ae21b726d96daf911"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_2_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_2_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_2_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_41.stdout",
+            "sha256": "6150bbc4bb432f29c89c5a443ea5346da6152a84213b153381ff7729e64647bc"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_41.stderr",
+            "sha256": "e82406224e945e8dcc22ca5a7c3c5b60b2013e28a8e81e991d90282dcc6c768c"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_3_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_3_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_3_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_42.stdout",
+            "sha256": "cbb03ad8d98506e5ad1552cb8b9a3c2f1a5bc647a08c05380e544c868da5e146"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_42.stderr",
+            "sha256": "49c8bc7c0d5129d3e44ffc354305f93f8ba9353a0ceed0499df18d5101a1a6dd"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_4_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_4_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_oserroralias_path_new_up024_4_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_43.stdout",
+            "sha256": "52d9e1331400dbb7e621f750bb981bd11c076f330fdd298fbea53c76dbd0c617"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_43.stderr",
+            "sha256": "f59fbf51489bfd55011e3adba1cf3a69acec56c9502f3e77107f1164d96fa397"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_44.stdout",
+            "sha256": "702e1bc573beef7fedcd2019a568592fff80fc017117dbc5f237418e1c7f9f85"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_44.stderr",
+            "sha256": "d258bc980014ff6483ca64002313177a49da42432b0f6de32c7a061c2b605914"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_45.stdout",
+            "sha256": "8e5bafa4150566dc3bb1303f2087a198d0da4b627b02e87d9c65b3a7a4050ba8"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_45.stderr",
+            "sha256": "bf4448399547e80a7a730ef3559f2f2aacc4dd2fd2949f3b567be8a936000779"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_2_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_2_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_2_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_46.stdout",
+            "sha256": "ca42c34566220fcdba1ab3b8e724f740e540a4158d176d374fa6f7edc8c18a3f"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_46.stderr",
+            "sha256": "8ac521f898cdefb3600d25111f8bf9640add2113ecd5b6ae1e3608ff7a2cabb2"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_3_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_3_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_3_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_47.stdout",
+            "sha256": "1110c2a7bb07058cea0742e1d834c507a22d0ee80d9f19b4d4bac91f30618689"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_47.stderr",
+            "sha256": "330de1d6e29ab0dcaa3997f0e138ab2586d62f54e63ecf87c9bbd0b926521614"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_4_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_4_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_4_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_48.stdout",
+            "sha256": "6470ef8994bbb3f0e245cfe495b72463982fd8e8d384c3d0847e74f942f6400e"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_48.stderr",
+            "sha256": "da187d298d536eab1cb418ada841a7925da611382d369e6ff5b51f3f58c6d367"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_5_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_5_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_outdatedversionblock_path_new_up036_5_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_49.stdout",
+            "sha256": "4140bf41411147c745d2ddad7320866cb91ffc6f5b0cb3663c2b9f26e77c3cb4"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_49.stderr",
+            "sha256": "61744b458226abcba52690cfbaf1a381d1e1a0ce2b323d4fe93c4cea6ef0b60f"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_50.stdout",
+            "sha256": "855f07dc952cc3ab88d84daf0d698365364d1498b221be2f9cc8442e662779d7"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_50.stderr",
+            "sha256": "a7752e30302b2aebbd6c0177dcb4ee79fe40da42abe4b443742415b59604c776"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_printfstringformatting_path_new_up031_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_51.stdout",
+            "sha256": "a79cd6aa0c95e4ba70e0aed9877df28acc7ceaf084137110d27cf7ea9e12c099"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_51.stderr",
+            "sha256": "78c8c0e48ed5ac372f089b0d7c4161175c1be39abac212ff87ff2248c278cb84"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_52.stdout",
+            "sha256": "3918277091c4ae5222a2408c627db3132c5aeb2784e8a3a66ffcef05ac04d6dc"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_52.stderr",
+            "sha256": "4c1223468baee81fc33d4d498c769e0cd63e37f42f8b3a608ce3957f0786286e"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_privatetypeparameter_path_new_up049_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_53.stdout",
+            "sha256": "4a27a09120f9c3ba0aa3ae29692e10ab051afd5f39d0360583de7491dda11675"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_53.stderr",
+            "sha256": "c35a4207ba7f2d55805586b0f66c2f180c6215acbede846edc30bdf1311edc01"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_54.stdout",
+            "sha256": "ce0bda1f2c22a486e1d5e40b025eca91d1c9f46bf3ac81eca66a30ff3cccc92c"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_54.stderr",
+            "sha256": "662c783bb5da416eea6bfd222a4e58d2aa8f631f692157364a20c38432382d27"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_55.stdout",
+            "sha256": "6f3191d27d7502413ee30913055ebd9fc4e4a1bec056bb828e5bc1ace4c6cb06"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_55.stderr",
+            "sha256": "75cf463c7a2246d4156948b96674d4b96dd2eb0ce47d1ff96ad59a4be345da90"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_2_pyi_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_2_pyi_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_quotedannotation_path_new_up037_2_pyi_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_56.stdout",
+            "sha256": "e51c81626d71b10ac2f8e58e5d5ef6b5b20af177d5c1d2038ad93a4a9a57c55a"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_56.stderr",
+            "sha256": "9c0c2cd7372db7c1475cdff3b094389284f9369b62497ec79b3005f5a307852b"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_57.stdout",
+            "sha256": "7ea80043cb100bd0d7c1cdb2c994edd88a729ac72df9c591c5e0308a5301901e"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_57.stderr",
+            "sha256": "5eee720511311e52d3a89f0f75c1299c512aac626cb3f5f729b4bb5ce030258b"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_redundantopenmodes_path_new_up015_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_58.stdout",
+            "sha256": "25d2a899390d99909a4d6c6d6db647e82bad8724c5a100a2bbc9c8af81505bf7"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_58.stderr",
+            "sha256": "dd0b5c54d3f88822730a2f2bb8c714e10c2e379e5b82bb31d02413e3a4cc86ad"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_replacestdoutstderr_path_new_up022_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_replacestdoutstderr_path_new_up022_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_replacestdoutstderr_path_new_up022_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_59.stdout",
+            "sha256": "31f3819e0b25bea7c16e171a9d85be7519b4d5187dfa7c33a3d6d835fc79012f"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_59.stderr",
+            "sha256": "bf4448399547e80a7a730ef3559f2f2aacc4dd2fd2949f3b567be8a936000779"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_replacestrenum_path_new_up042_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_replacestrenum_path_new_up042_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_replacestrenum_path_new_up042_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_60.stdout",
+            "sha256": "12c66ca7f39b8b50dcd84edc0a7111ec4cdfab94a5a9ad6947102de8c454b792"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_60.stderr",
+            "sha256": "fe5586d220ae12f8c4d159d036204b5bed3bfc34fbac6da89e0ce7da819345d9"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_replaceuniversalnewlines_path_new_up021_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_replaceuniversalnewlines_path_new_up021_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_replaceuniversalnewlines_path_new_up021_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_61.stdout",
+            "sha256": "2d1ae73eaea72400f4f5dce05a7696a7cc87f789535540573ca5f9d69ce71331"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_61.stderr",
+            "sha256": "9eea77477a491ce0ee77f35f0d3343c97406f7cbee1374c21af18b8655b2fc92"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_supercallwithparameters_path_new_up008_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_supercallwithparameters_path_new_up008_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_supercallwithparameters_path_new_up008_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_62.stdout",
+            "sha256": "cde22d75a61d932397b5bdd060966f40a06b377e535d399d8fdf9f1efdfd304a"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_62.stderr",
+            "sha256": "fe5586d220ae12f8c4d159d036204b5bed3bfc34fbac6da89e0ce7da819345d9"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_timeouterroralias_path_new_up041_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_timeouterroralias_path_new_up041_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_timeouterroralias_path_new_up041_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_63.stdout",
+            "sha256": "f3b2f6f277d509101a030c2f3f4a2648bf87cd576f4d0049e0e4a2b8188ce983"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_63.stderr",
+            "sha256": "cbe31bff4925ea04ac9d3c95400566ec6e7cf644652f98316f93c5f30fab5896"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_typeofprimitive_path_new_up003_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_typeofprimitive_path_new_up003_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_typeofprimitive_path_new_up003_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_64.stdout",
+            "sha256": "88505afb398f5afde88bee10499583f00ee043e810addd6bf48b588a7a688d67"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_64.stderr",
+            "sha256": "bda1adf5d325491773dd1ea518fa37a9e3a2347b240bd455c445f1652dc16541"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_typingtextstralias_path_new_up019_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_typingtextstralias_path_new_up019_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_typingtextstralias_path_new_up019_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_65.stdout",
+            "sha256": "0a87d3505c394b484814359cdf52a1fc163533ded836890a5e15d77dad876fad"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_65.stderr",
+            "sha256": "cf34a57b1f516ccf8f61702554b66fbdd14808f7fa642269268bb71c28ef989d"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_unicodekindprefix_path_new_up025_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_unicodekindprefix_path_new_up025_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_unicodekindprefix_path_new_up025_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_66.stdout",
+            "sha256": "0d5db6b54d4ad86e9ac904f8078864d556c6a47358d46e6e46cc466c1e2623cb"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_66.stderr",
+            "sha256": "9b5530a3144e38d19257df1e53e7917a22cc6e3da6bb62c97e16af12fafde81c"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_unnecessarybuiltinimport_path_new_up029_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_unnecessarybuiltinimport_path_new_up029_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_unnecessarybuiltinimport_path_new_up029_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_67.stdout",
+            "sha256": "97872eacd032ed4f36fb09d2c696670f70020b117cd708dd25acc508d5da5f7b"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_67.stderr",
+            "sha256": "16260271ffedca958da56cf497bbd1fa89a00aceb84f67abda4ed6ca813506b7"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_unnecessaryclassparentheses_path_new_up039_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_unnecessaryclassparentheses_path_new_up039_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_unnecessaryclassparentheses_path_new_up039_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_68.stdout",
+            "sha256": "c3c89de4c574c1cf51ff782ccbc76c4d79ef798d9a014fcd1c902aa906659ed5"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_68.stderr",
+            "sha256": "d6d67d2a2f8aa2a2fe595f4d6057f35d9c07d6e9b106b188cc487aa9d279e165"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_unnecessarydefaulttypeargs_path_new_up043_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_unnecessarydefaulttypeargs_path_new_up043_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_unnecessarydefaulttypeargs_path_new_up043_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_69.stdout",
+            "sha256": "559d1f9498a6c5b300114d0981aeda9d670f92e95434964a2b88294b6fd9ec78"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_69.stderr",
+            "sha256": "fd4167ff95a99057acad2292ace90d3490cf425f3e7814036f4173fbbb5f9e17"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_unnecessaryencodeutf8_path_new_up012_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_unnecessaryencodeutf8_path_new_up012_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_unnecessaryencodeutf8_path_new_up012_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_70.stdout",
+            "sha256": "19f7dbbbf2dce1e2d3142a06fa584d4912037a05d7e175268baac526030a78b6"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_70.stderr",
+            "sha256": "d6d67d2a2f8aa2a2fe595f4d6057f35d9c07d6e9b106b188cc487aa9d279e165"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_unnecessaryfutureimport_path_new_up010_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_unnecessaryfutureimport_path_new_up010_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_unnecessaryfutureimport_path_new_up010_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_71.stdout",
+            "sha256": "45d21d2aa4b86b7aa10531be4c664542be01529c2bf4efc075e0e90d5b56b7a4"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_71.stderr",
+            "sha256": "885c9a34f20d44b7bcfd857f91b94c306b5448707d77c4b4d5c885d1ddbc2975"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_uselessmetaclasstype_path_new_up001_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_uselessmetaclasstype_path_new_up001_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_uselessmetaclasstype_path_new_up001_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_72.stdout",
+            "sha256": "1be736268bd9ee4d7e3f19d3fe439a7ad4a67e5ecbb098c8be13b98d98c54dfd"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_72.stderr",
+            "sha256": "34dba9c774b508595bc71cfe330b772b8cec0fe9fce1a920f97d29472dda4db1"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_uselessobjectinheritance_path_new_up004_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_uselessobjectinheritance_path_new_up004_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_uselessobjectinheritance_path_new_up004_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_73.stdout",
+            "sha256": "d93e5dd69a047db7f28431245b6319c8ec1f78db7948a6d6cf2b95dc8b77dad8"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_73.stderr",
+            "sha256": "477459a015fe56ac63f4775c9a60cbe2f4da5afad32b59c969c43e73878091d4"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_74.stdout",
+            "sha256": "ab09d5a962bd21fcfcdf679e0ba3f469ef2c982e33c75cba84ec5d160a7bc087"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_74.stderr",
+            "sha256": "6b7ee1ed2cb2168f09f7c7f50973493e68dde2c89b25e70333537df53e5bad60"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_10_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_10_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_10_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_75.stdout",
+            "sha256": "e9f8299b7d37aeaa18b120d83d033b316b450026c5fa1696107cc1d100ae9057"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_75.stderr",
+            "sha256": "5aac11478fae9fa8ee10eb3229a96b12672c20bfffb13cbaaaaf1e3d8fc27a4f"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_76.stdout",
+            "sha256": "d14d4d4b4991250087273ef3673363f1789408f3a30a9373c2185df1017713be"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_76.stderr",
+            "sha256": "82890886d82e03e679780734000f0d6ee000c2a02ec245817fd9a40dc5621a61"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_2_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_2_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_2_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_77.stdout",
+            "sha256": "d22d6a8115591bd1c2385331109741dfd5a01ce4cc39765122a1928b3e8d0734"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_77.stderr",
+            "sha256": "5abd8ac4bec8064715e3f4c94925ba5b3c8d197fd6d21abc5bcf51939f86c892"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_3_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_3_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_3_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_78.stdout",
+            "sha256": "fd5a35971e0274bfe6d79a28ffa4ddfd7300891dd46bad96295b94d33eeb2c07"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_78.stderr",
+            "sha256": "80649b6bcd7667a2bbd35c48f0fee025951fca42d66be4ba502231a8daa6ed76"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_4_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_4_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_4_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_79.stdout",
+            "sha256": "e5a2ef768ffefd0b16d29a2ef2c8ccb172f26cc118d9fcdf17222276a1d7b023"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_79.stderr",
+            "sha256": "5aa69185247f9290172fc54397180a6a929df4a0b5e68cc2a0028876b741cbda"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_5_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_5_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_5_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_80.stdout",
+            "sha256": "4cf4fd1c1f3ad143ab08a38d3d33d5789bb5e9086ff78f04f2535c9d0becc1ae"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_80.stderr",
+            "sha256": "dab5a3e91bf8a6438d48150b704d14377a5bfa127d3276a995b532b0c16fb433"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_6_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_6_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_6_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_81.stdout",
+            "sha256": "772bedc7c88d5b8d0953830ed3de9cb878214a5c5707b50bd0959a3c5716f393"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_81.stderr",
+            "sha256": "5aa69185247f9290172fc54397180a6a929df4a0b5e68cc2a0028876b741cbda"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_7_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_7_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_7_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_82.stdout",
+            "sha256": "ca5511a30ec186908c8f8c877f65dd5b83a67cffc82a4aa2a14c739443c72c11"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_82.stderr",
+            "sha256": "9fdf1c8f095816157ec1dd1d5640e30fa4266befe342b162147694f0f1eda673"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_8_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_8_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_8_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_83.stdout",
+            "sha256": "aa67e023553d80ceeb10bd6067b20a0e875edacc256bb6ae2de6110e3667632e"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_83.stderr",
+            "sha256": "7a5de1345a4c0c7b23c53d4c143dc0cc2845b9908f1847608508aae883cfa44e"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_9_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_9_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_9_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_84.stdout",
+            "sha256": "a26fb8615fb3b5d331208849f2b3d4ae4b9e907e2f7a41f605ac01a3f1d97e7f"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_84.stderr",
+            "sha256": "e69df7d311b7f810d976fe746de79531bed3d940529682209abbfd70d7efb767"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_code_utf8_utf8_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_code_utf8_utf8_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_code_utf8_utf8_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_85.stdout",
+            "sha256": "d4e8e9d50ac8eaa8d1e4e13c86bb74bd546e850d24d3183ed92e857e1d84ab52"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_85.stderr",
+            "sha256": "17e8a0eb091cb81dd10b3ea2170ab4b8666a87da022c3e2262b02e893bee7f16"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_hashbang_utf8_other_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_hashbang_utf8_other_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_hashbang_utf8_other_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_86.stdout",
+            "sha256": "191fd7cf4922bc85872e1301124ce6ff11703901d23754b9c4332199c2ee8ae9"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_86.stderr",
+            "sha256": "7a3d0f174830f476ff49a88d8d12ed59a189696a98dc1355ebd1e9e63d90cccf"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_many_empty_lines_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_many_empty_lines_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_many_empty_lines_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_87.stdout",
+            "sha256": "dccbeb1641b2ad22834d0b6cc4c2e85d7cf2fc5bdcebebd2d448b87c5a8b8500"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_87.stderr",
+            "sha256": "cd039bd976c1d895d479b87bfcd18362e2c3e7fc0a76c6ca217d834238ec0a41"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_other_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_other_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_other_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_88.stdout",
+            "sha256": "f546acb92398eec1494ce6b3cf3ea3b8dd759d8d556eb30c9f44aeada926ce29"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_88.stderr",
+            "sha256": "4faa1a9b0e2d6fffd9a61c4b3fdc3c6a9eaa3482a6df630892f857fe0fecd49f"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_utf8_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_utf8_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_other_utf8_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_89.stdout",
+            "sha256": "f03c8486af2fe36c56e174f2b53b8c2667d5ab436ca23fc37fcf1537722f43ba"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_89.stderr",
+            "sha256": "e2262a345d9319f91071114a81f6f43dcce843ee33ceae952ac8d9d6abf3c4a2"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_code_other_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_code_other_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_code_other_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_90.stdout",
+            "sha256": "1b0c107852624c4e92b8ff6bbc1cb0a285b6336d346e620cff1ac1dc65e37b08"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_90.stderr",
+            "sha256": "c003c3c1256b4d05888b9d59b1ccfb95f230db97ee9796490ae9028d53efa189"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_other_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_other_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_other_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_91.stdout",
+            "sha256": "9dc67e15cce6d81c6228902a5593700020b9908d950de125f1e7ce61bd60336d"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_91.stderr",
+            "sha256": "02fdbf3a9de30f9edbcc59449467e5c29480c23220d575ae6bb9899a46294780"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_other_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_other_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_other_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_92.stdout",
+            "sha256": "87047aa3e38b34fb7adcb4116829101c032945956eb7eb6913e511d295fcfade"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_92.stderr",
+            "sha256": "9cdd7b92c06f798bab33e2f498a4d67b83fbfdb04d0aa171ff83b4d15f23297d"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_utf8encodingdeclaration_path_new_up009_utf8_utf8_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_93.stdout",
+            "sha256": "2123bd577be24990a3b86bb3eedd7ec321c7929e85b46f42c8aa5c59e082301b"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_93.stderr",
+            "sha256": "a3c66074b3575b5134c0d15c9e467e8daebc840347f8813aa15261fdcc513d8e"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_0_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_0_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_0_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_94.stdout",
+            "sha256": "8edaf31b9cb52e4167f6cbbb439f92ea0271af978b3013a49fc5947dd923c7dc"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_94.stderr",
+            "sha256": "662c783bb5da416eea6bfd222a4e58d2aa8f631f692157364a20c38432382d27"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_1_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_1_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::rules::rule_yieldinforloop_path_new_up028_1_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_95.stdout",
+            "sha256": "e397c4638b3adf2c37d51402186328b9856ae41dedce5c6ce02f6250df54e057"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_95.stderr",
+            "sha256": "844b6c0c8f2679c7cd034051cb1a9aa2191aaf613b69821323e3caa43106394c"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::unpack_pep_646_py311",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::unpack_pep_646_py311",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::unpack_pep_646_py311\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_96.stdout",
+            "sha256": "691853a77e7ca83f5b23e8915de554057823bb3881ce115a17355fa20e193093"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_96.stderr",
+            "sha256": "42f6e9e2af7b093b9073e333824aa455e1f61ae5f1a5731a4a4611a7585d4ae4"
+          }
+        },
+        {
+          "selector": "rules::pyupgrade::tests::up007_preview",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::pyupgrade::tests::up007_preview",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::pyupgrade::tests::up007_preview\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "not_passed",
+          "agreement": "DISAGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_97.stdout",
+            "sha256": "98bc7a0d5d51871cdb0fbe05b212edacc5d8bef3448ed90e13c161d70e942762"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel_97.stderr",
+            "sha256": "29700ed51655116419cc724b102ba5d7b3d23c921c1eb203d55110d26bb1addc"
+          }
+        }
+      ],
+      "counts": {
+        "total": 98,
+        "present": 98,
+        "absent": 0,
+        "pass": 98,
+        "fail": 0,
+        "ignored": 0,
+        "agree": 0,
+        "disagree": 98
+      },
+      "primary_class": "R5_UPSTREAM_PARSER_BUG",
+      "classification_reason": "all 98 executing selector(s) PASS directly under gold but the official evaluator marked them not_passed (direct-pass vs official-not_passed DISAGREE)",
+      "artifacts": {
+        "sel_sh": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/sel.sh",
+          "sha256": "2f55584145c28358ec24ad77ef87f78c0a64fd2caaa2eef1be15e7874a5ac5a4"
+        },
+        "selectors_txt": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/selectors.txt",
+          "sha256": "815acfbf1b8302ff72899d04fa8195e9cbbac37dd3abb51291449824ebdeace2"
+        },
+        "test_patch": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/test.patch",
+          "sha256": "5a897c51f8b2d6e5b3407ee5e4d749bc2c88ecb77272f713d09bff94e3a24140"
+        },
+        "gold_patch": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/patch.diff",
+          "sha256": "7d9a01ce0b0aa6a05f51aa69108b64df90ef5b71cfeb32b69e17a58cfb6e44a1"
+        },
+        "list_stdout": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/list.stdout",
+          "sha256": "97bf867e8a70aeaec38365969fff00dd4effc4dd23332954477ad349f64e08b2"
+        },
+        "list_merged": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/list.merged",
+          "sha256": "ddb7698e958f3ca6c59cc2724a3a75c2a629bc923593bdb857814bec7b375910"
+        },
+        "head_txt": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/head.txt",
+          "sha256": "e8cf9124bec8c3d101ad73f6eab0edaf4068137c62e3f4e775e3f2e6781b543d"
+        },
+        "test_patch_stderr": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/test_patch.stderr",
+          "sha256": "4ff90a87989520179ff806cc824288344894637f4db82fe7e01ba36dbb284b8c"
+        },
+        "gold_patch_stderr": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/gold_patch.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "docker_stdout": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/_docker.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "docker_stderr": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-16445/_docker.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "POSITIVE_CONTROL": {
+      "role": "POSITIVE_CONTROL",
+      "instance_id": "astral-sh__ruff-15997",
+      "per_selector_command_form": "cargo test \"<selector>\" -- --exact --nocapture",
+      "official_command": "source $HOME/.cargo/env && cargo test",
+      "image": "jiayuanz3/swecontextbench:astral-sh.ruff-15997",
+      "image_ref": "jiayuanz3/swecontextbench@sha256:4ff6fbb327893411d27cf96f6e43fc37d3b62057d99759f78de3bd0a52e89106",
+      "image_digest_verified": true,
+      "docker_returncode": 0,
+      "base_commit_case": "10d3e64ccdf69d90c3252a15b3408a4238427792",
+      "base_commit_in_container_head": "10d3e64ccdf69d90c3252a15b3408a4238427792",
+      "base_commit_match": true,
+      "test_patch_apply_rc": 0,
+      "gold_patch_apply_rc": 0,
+      "list_rc": 0,
+      "collected_list_count": 3951,
+      "official_status_baseline": "passed",
+      "selectors_total": 1,
+      "per_selector": [
+        {
+          "selector": "rules::flake8_pie::tests::rules::rule_unnecessaryspread_path_new_pie800_py_expects",
+          "listed_exact": true,
+          "listed_normalized": true,
+          "matched_list_name": "rules::flake8_pie::tests::rules::rule_unnecessaryspread_path_new_pie800_py_expects",
+          "package": "ruff_linter",
+          "direct_command": "cargo test \"rules::flake8_pie::tests::rules::rule_unnecessaryspread_path_new_pie800_py_expects\" -- --exact --nocapture",
+          "return_code": 0,
+          "status": "pass",
+          "status_detail": {
+            "passed": 1,
+            "failed": 0,
+            "ignored": 0,
+            "ran": 1
+          },
+          "official_status": "passed",
+          "agreement": "AGREE",
+          "stdout": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/sel_0.stdout",
+            "sha256": "8406a975260e071da7838bd0f2edf7571c53cc80ef96331bf116e83d63c1cffb"
+          },
+          "stderr": {
+            "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/sel_0.stderr",
+            "sha256": "0584f968a2c95b8f1145c3a8735814a4098f56e44920ca2157397098a2f63d29"
+          }
+        }
+      ],
+      "counts": {
+        "total": 1,
+        "present": 1,
+        "absent": 0,
+        "pass": 1,
+        "fail": 0,
+        "ignored": 0,
+        "agree": 1,
+        "disagree": 0
+      },
+      "primary_class": null,
+      "classification_reason": "POSITIVE_CONTROL (method validation; not classified)",
+      "artifacts": {
+        "sel_sh": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/sel.sh",
+          "sha256": "2f55584145c28358ec24ad77ef87f78c0a64fd2caaa2eef1be15e7874a5ac5a4"
+        },
+        "selectors_txt": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/selectors.txt",
+          "sha256": "028e36e9d69c1101747d8d8c9eed363132fabea4946d41cb11c351a9b8e45a8a"
+        },
+        "test_patch": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/test.patch",
+          "sha256": "f223d1e15ff954ffeead8e0c8dbcd8e9bfd60221e8cc6de753522bd51f3b19e9"
+        },
+        "gold_patch": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/patch.diff",
+          "sha256": "6e8d1e901dd849b2a4597ff83c525f93528c27102b71a7d321a980374870bca8"
+        },
+        "list_stdout": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/list.stdout",
+          "sha256": "6a8dfba8b033b829be2e237e5240cc3c13b27a1d9d727aab8e1e075feb0a7786"
+        },
+        "list_merged": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/list.merged",
+          "sha256": "018051e3765a18a98f805ff5aaa592c54a1afc9b77b5b61a657c8db0503e3272"
+        },
+        "head_txt": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/head.txt",
+          "sha256": "d5ceef28986fe3df42db8daee946cdd4b1a6be348c2831cec4c38c6c45f3546f"
+        },
+        "test_patch_stderr": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/test_patch.stderr",
+          "sha256": "9f4d4090f13f81a6fd2c46557439fced544cf4661ecd4211d4d97867c5e2d1e2"
+        },
+        "gold_patch_stderr": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/gold_patch.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "docker_stdout": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/_docker.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "docker_stderr": {
+          "path": "artifacts/r22_p09/ruff_sel_run/astral-sh__ruff-15997/_docker.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  },
+  "pinned_evaluator_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+  "per_selector_command_form": "cargo test \"<selector>\" -- --exact --nocapture",
+  "official_command": "source $HOME/.cargo/env && cargo test",
+  "primary_classes": [
+    "R2_CASE_SELECTOR_BUG",
+    "R5_UPSTREAM_PARSER_BUG",
+    "R6_UPSTREAM_GOLD_INVALID",
+    "MIXED",
+    "R8_UNKNOWN"
+  ],
+  "official_baseline_note": "official_status per FAIL_TO_PASS selector = 'not_passed' for the failed targets (campaign FAIL_TO_PASS 0/N: all F2P selectors reported NOT passing / uncollected); 'passed' for the resolved positive control. DIRECT-pass vs official-not_passed = DISAGREE; DIRECT-fail vs official-not_passed = AGREE."
+}

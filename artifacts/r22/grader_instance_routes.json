@@ -1,0 +1,139 @@
+{
+  "schema": "r22/grader_instance_routes/2.0.0",
+  "note": "enriched SWE-bench/* datasets with pinned revisions; image taken from the row",
+  "total": 12,
+  "routes": [
+    {
+      "instance_id": "astropy__astropy-8707",
+      "subset": "SWE-bench Verified",
+      "dataset_name": "SWE-bench/SWE-bench_Verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "repo": "astropy/astropy",
+      "base_commit": "a85a0747c54bac75e9c3b2fe436b105ea029d6cf",
+      "image_from_row": "swebench/sweb.eval.x86_64.astropy_1776_astropy-8707:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "f993c1ada6f19bcdfa8989e0c1c61151cd881a81d549f2789663270537c093f2"
+    },
+    {
+      "instance_id": "sympy__sympy-14774",
+      "subset": "SWE-bench Lite",
+      "dataset_name": "SWE-bench/SWE-bench_Lite",
+      "dataset_revision": "b0dde1093fe417d83b7184254edf8199c1f0dff5",
+      "repo": "sympy/sympy",
+      "base_commit": "8fc63c2d71752389a44367b8ef4aba8a91af6a45",
+      "image_from_row": "swebench/sweb.eval.x86_64.sympy_1776_sympy-14774:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "442fce72a3eb4d34f5c2ed917a11c34e91976af7bd3c56b3e7317139c1c318ed"
+    },
+    {
+      "instance_id": "caddyserver__caddy-5761",
+      "subset": "SWE-bench Multilingual",
+      "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+      "dataset_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "repo": "caddyserver/caddy",
+      "base_commit": "0a6d3333b2c92553e66c93c14d3258a790aac639",
+      "image_from_row": "swebench/sweb.eval.x86_64.caddyserver_1776_caddy-5761:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "203d3ee8c69f86c3dad70a4e79e09e57c56673c8d963dffbc4e6da99ba23ce38"
+    },
+    {
+      "instance_id": "apache__lucene-11760",
+      "subset": "SWE-bench Multilingual",
+      "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+      "dataset_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "repo": "apache/lucene",
+      "base_commit": "0ea8035612344e861bbdeaffca2255e5e1480a6a",
+      "image_from_row": "swebench/sweb.eval.x86_64.apache_1776_lucene-11760:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "bb186a9d6d25de762590a911c24c445d5ffb4cf777b59814bdb9b664a82bb2f5"
+    },
+    {
+      "instance_id": "rubocop__rubocop-13396",
+      "subset": "SWE-bench Multilingual",
+      "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+      "dataset_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "repo": "rubocop/rubocop",
+      "base_commit": "3e855b0e2eb51311c690bb809d767653d1a0ee4a",
+      "image_from_row": "swebench/sweb.eval.x86_64.rubocop_1776_rubocop-13396:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "21df8025cbf61cae270827db95d98105a92ca52fd5b3e81972ab0dd3b06f5f9f"
+    },
+    {
+      "instance_id": "tokio-rs__tokio-6724",
+      "subset": "SWE-bench Multilingual",
+      "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+      "dataset_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "repo": "tokio-rs/tokio",
+      "base_commit": "0cbf1a5adae81e8ff86ca6d040aeee67cf888262",
+      "image_from_row": "swebench/sweb.eval.x86_64.tokio-rs_1776_tokio-6724:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "6e153c271e2bd2a4304920e93d8e944c5fb66cecfb4bad5b1aacf7bf4a3d4d24"
+    },
+    {
+      "instance_id": "mwaskom__seaborn-3190",
+      "subset": "SWE-bench Lite",
+      "dataset_name": "SWE-bench/SWE-bench_Lite",
+      "dataset_revision": "b0dde1093fe417d83b7184254edf8199c1f0dff5",
+      "repo": "mwaskom/seaborn",
+      "base_commit": "4a9e54962a29c12a8b103d75f838e0e795a6974d",
+      "image_from_row": "swebench/sweb.eval.x86_64.mwaskom_1776_seaborn-3190:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "e014761e43e1a1d3eb8879a4ac67aadc810db3aab87701a8f499ba7c4571fe77"
+    },
+    {
+      "instance_id": "php-cs-fixer__php-cs-fixer-7875",
+      "subset": "SWE-bench Multilingual",
+      "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+      "dataset_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "repo": "php-cs-fixer/php-cs-fixer",
+      "base_commit": "18d9e42f276f65ba45da02597191ce555bf23cd0",
+      "image_from_row": "swebench/sweb.eval.x86_64.php-cs-fixer_1776_php-cs-fixer-7875:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "57865ab1fd0f40440e430ab39d125d07cd01d1c800bd617c010aeb80022a148a"
+    },
+    {
+      "instance_id": "google__gson-2311",
+      "subset": "SWE-bench Multilingual",
+      "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+      "dataset_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "repo": "google/gson",
+      "base_commit": "9f26679e7a96f0bb9952c326b2d9f79ef03ea9f5",
+      "image_from_row": "swebench/sweb.eval.x86_64.google_1776_gson-2311:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "1085aa8644f4923398d820cac29819b244a2a24b834b209223282733e60e6e17"
+    },
+    {
+      "instance_id": "prometheus__prometheus-9248",
+      "subset": "SWE-bench Multilingual",
+      "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+      "dataset_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "repo": "prometheus/prometheus",
+      "base_commit": "1fb3c1b5980d2ae3f844b6b9ae2ad38117710aa0",
+      "image_from_row": "swebench/sweb.eval.x86_64.prometheus_1776_prometheus-9248:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "13a2692eb89f2f089c009d7f67777dd1150300385ead4af0129fecc459135018"
+    },
+    {
+      "instance_id": "astral-sh__ruff-15543",
+      "subset": "SWE-bench Multilingual",
+      "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+      "dataset_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "repo": "astral-sh/ruff",
+      "base_commit": "3950b00ee410754913122e8104cbc39353b62c0b",
+      "image_from_row": "swebench/sweb.eval.x86_64.astral-sh_1776_ruff-15543:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "8885bc329f2e0ec5d43bccb8f1c32fa6a104b646d4df2a473d52dcf907157cb6"
+    },
+    {
+      "instance_id": "tokio-rs__axum-1119",
+      "subset": "SWE-bench Multilingual",
+      "dataset_name": "SWE-bench/SWE-bench_Multilingual",
+      "dataset_revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "repo": "tokio-rs/axum",
+      "base_commit": "23808f72a2c00c314cedea40a75b73954402a148",
+      "image_from_row": "swebench/sweb.eval.x86_64.tokio-rs_1776_axum-1119:latest",
+      "eval_type": "pass_and_fail",
+      "gold_patch_sha256": "2394a7769f72c1ca8b36f4e0af2492063f671debc007dc5d71049dd1caa2d3b2"
+    }
+  ]
+}

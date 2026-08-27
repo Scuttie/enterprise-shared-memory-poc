@@ -1,0 +1,47 @@
+name: r22-oracle-dev
+# §7E — P2 O0-O6 oracle development, 40 tasks (O0 reused from reader selection) => 240 new O1-O6 runs (paid).
+# Dispatch-only; research-paid; requires the P1-PASS artifact hash + RUN_APPROVED + budget. No auto-run.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_run_approved: {description: "must be exactly RUN_APPROVED", required: true, default: ""}
+      reader_provider: {description: "openai | deepseek", required: true}
+      reader_model: {description: "selected reader model id (same as P1)", required: true}
+      reader_secret_name: {description: "secret NAME only", required: true}
+      oracle_budget_usd: {description: "R22_ORACLE_BUDGET_USD (>= P2 total hard cap)", required: true}
+      p1_pass_sha256: {description: "hash of the P1 integrity-PASS artifact", required: true}
+permissions:
+  contents: read
+jobs:
+  p2-oracle:
+    runs-on: ubuntu-latest
+    environment: research-paid
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e .
+      - name: Paid gate (P2 total hard cap)
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python scripts/r22_paid_gate.py --stage p2 --model "${{ inputs.reader_model }}" \
+            --budget "${{ inputs.oracle_budget_usd }}" --run-approved "${{ inputs.confirm_run_approved }}" \
+            --secret-name "${{ inputs.reader_secret_name }}"
+      - name: Verify P1 integrity PASS, then run P2 (real; only after gate PASS)
+        if: ${{ inputs.confirm_run_approved == 'RUN_APPROVED' }}
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python scripts/r22_verify_p1_pass.py "artifacts/r22_paid_v2/p1/integrity_result.json" \
+            "${{ inputs.p1_pass_sha256 }}"
+          python experiments/r22/p2_runner.py --mode real \
+            --provider "${{ inputs.reader_provider }}" --model "${{ inputs.reader_model }}" \
+            --secret-name "${{ inputs.reader_secret_name }}" \
+            --hard-cap "${{ inputs.oracle_budget_usd }}" --out "artifacts/r22_paid_v2/p2" --n 40 \
+            --reuse-o0-from "artifacts/r22_paid_v2/reader_band/${{ inputs.reader_model }}/results.jsonl"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: p2-results, path: artifacts/r22_paid_v2/p2/}

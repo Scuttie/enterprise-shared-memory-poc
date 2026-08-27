@@ -1,0 +1,44 @@
+name: ci-r22-paid-harness
+# §11 — LOCAL FIXTURE harness E2E (LOCAL_FIXTURE_HARNESS_PASS) with FakeReaderProvider + local fixtures + local grader. NO model key,
+# NO paid endpoint, NO Docker. Exercises task manifest -> stage state -> repo/memory tools -> payload -> edit ->
+# patch -> local grader -> evidence -> checkpoint/resume -> integrity -> analysis, plus negative tests.
+on:
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['experiments/r22/**', 'scripts/r22_paid_*.py', 'scripts/r22_verify_*.py',
+            'tests/unit/test_r22_paid_harness.py', '.github/workflows/ci-r22-paid-harness.yml']
+  pull_request:
+    paths: ['experiments/r22/**', 'scripts/r22_paid_*.py', 'scripts/r22_verify_*.py',
+            'tests/unit/test_r22_paid_harness.py', '.github/workflows/ci-r22-paid-harness.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  fake-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e . pytest
+      - name: Negative + E2E unit tests
+        run: python -m pytest -q tests/unit/test_r22_paid_harness.py
+      - name: Reader-band (fake) -> P1 (fake) -> P2 (fake) -> fail-closed analysis
+        run: |
+          set -e
+          python experiments/r22/reader_band.py --task-source fake --reader-provider fake --model fake-reader --hard-cap 100 --out _e2e/rb --n 6
+          python experiments/r22/p1_runner.py --task-source fake --reader-provider fake --model fake-reader --hard-cap 100 --out _e2e/p1 --n 3
+          python scripts/r22_verify_p1_pass.py _e2e/p1/integrity_result.json
+          python experiments/r22/p2_runner.py --task-source fake --reader-provider fake --model fake-reader --hard-cap 100 --out _e2e/p2 --n 6 \
+            --reuse-o0-from _e2e/rb/results.jsonl
+          python scripts/r22_paid_analyze.py --input _e2e/p2/results.jsonl --expected-cells 42 --out _e2e/p2/analysis.json
+          echo "LOCAL_FIXTURE_HARNESS_PASS (fake provider + local fixtures; NOT the real benchmark path)"
+      - name: Assert zero paid API calls in fake mode
+        run: |
+          python - <<'PY'
+          import json
+          m = json.load(open("_e2e/p2/evidence_manifest.json"))
+          assert m["ledger"]["cost_usd"] == 0.0, m["ledger"]
+          assert m["provider_mode"] == "fake"
+          print("paid API calls = 0 (fake provider, cost $0.00)")
+          PY

@@ -1,0 +1,46 @@
+name: r22-reader-selection
+# §3 — reader-band O0 pilot on the frozen 40-task dev set (paid). Dispatch-only; research-paid environment;
+# RUN_APPROVED + budget + secret-name gate. No auto-run on push/PR. The runner is invoked only after the gate.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_run_approved: {description: "must be exactly RUN_APPROVED", required: true, default: ""}
+      reader_provider: {description: "deepseek | openai", required: true}
+      reader_model: {description: "deepseek-chat | gpt-4o-mini | gpt-4o", required: true}
+      reader_secret_name: {description: "DEEPSEEK_API_KEY | OPENAI_API_KEY (name only)", required: true}
+      selection_budget_usd: {description: "R22_READER_SELECTION_BUDGET_USD (>= reader-band hard cap)", required: true}
+permissions:
+  contents: read
+jobs:
+  reader-band:
+    runs-on: ubuntu-latest
+    environment: research-paid
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e .
+      - name: Paid gate (RUN_APPROVED + budget >= hard cap + secret name; no secret value printed)
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python scripts/r22_paid_gate.py --stage reader_band \
+            --model "${{ inputs.reader_model }}" --budget "${{ inputs.selection_budget_usd }}" \
+            --run-approved "${{ inputs.confirm_run_approved }}" --secret-name "${{ inputs.reader_secret_name }}"
+      - name: Reader-band O0 pilot (real runner; invoked only after gate PASS)
+        if: ${{ inputs.confirm_run_approved == 'RUN_APPROVED' }}
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python experiments/r22/reader_band.py --mode real \
+            --provider "${{ inputs.reader_provider }}" --model "${{ inputs.reader_model }}" \
+            --secret-name "${{ inputs.reader_secret_name }}" \
+            --hard-cap "${{ inputs.selection_budget_usd }}" \
+            --out "artifacts/r22_paid_v2/reader_band/${{ inputs.reader_model }}" --n 40
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reader-band-${{ inputs.reader_model }}
+          path: artifacts/r22_paid_v2/reader_band/

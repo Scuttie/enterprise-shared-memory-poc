@@ -1,0 +1,23 @@
+name: ci-r22-stage-retrieval
+on:
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['src/enterprise_memory/retrieval/stage_*', 'src/enterprise_memory/retrieval/hybrid_candidates.py',
+            'src/enterprise_memory/retrieval/applicability_reranker.py', 'src/enterprise_memory/service/stage_*',
+            'tests/unit/test_stage_pipeline.py', '.github/workflows/ci-r22-stage-retrieval.yml']
+  pull_request:
+    paths: ['src/enterprise_memory/retrieval/stage_*', 'src/enterprise_memory/retrieval/hybrid_candidates.py',
+            'src/enterprise_memory/retrieval/applicability_reranker.py', 'src/enterprise_memory/service/stage_*',
+            'tests/unit/test_stage_pipeline.py', '.github/workflows/ci-r22-stage-retrieval.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  stage-retrieval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e . pytest
+      - run: python -m pytest -q tests/unit/test_stage_pipeline.py

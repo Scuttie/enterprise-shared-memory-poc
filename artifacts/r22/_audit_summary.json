@@ -1,0 +1,27 @@
+{
+  "rows": {
+    "experience_base": 1100,
+    "related_target": 376,
+    "relationship": 376
+  },
+  "repository_count": 57,
+  "duplicate_base": 93,
+  "duplicate_related": 19,
+  "leakage_class_counts": {
+    "CLEAN_RELATED": 111,
+    "NEAR_DUPLICATE": 3,
+    "TARGET_ADJACENT": 16,
+    "TARGET_PATCH_MATCH": 1,
+    "TEMPORAL_INVALID": 245,
+    "UNKNOWN": 0
+  },
+  "split": {
+    "dev_repos": 16,
+    "main_repos": 18,
+    "dev_pairs": 53,
+    "main_pairs": 58,
+    "overlap": [],
+    "crossing_excluded": 0,
+    "main_seal": "4250513cfcefe098748f5ac9a2e684097ce472e84426689397b21230558118fe"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "r22/official_dataset_schema_lock/1.0.0",
+  "datasets": {
+    "SWE-bench Verified": {
+      "dataset": "SWE-bench/SWE-bench_Verified",
+      "revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "split": "test",
+      "rows": 500,
+      "license": "MIT (SWE-bench)",
+      "fields": [
+        "base_commit",
+        "created_at",
+        "difficulty",
+        "environment_setup_commit",
+        "eval_type",
+        "image",
+        "instance_id",
+        "log_parser",
+        "repo",
+        "version",
+        "patch",
+        "test_patch",
+        "eval_script",
+        "problem_statement",
+        "hints_text",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS"
+      ],
+      "required_present": [
+        "instance_id",
+        "repo",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "image",
+        "eval_script",
+        "log_parser",
+        "eval_type"
+      ],
+      "required_missing": []
+    },
+    "SWE-bench Lite": {
+      "dataset": "SWE-bench/SWE-bench_Lite",
+      "revision": "b0dde1093fe417d83b7184254edf8199c1f0dff5",
+      "split": "test",
+      "rows": 300,
+      "license": "MIT (SWE-bench)",
+      "fields": [
+        "base_commit",
+        "created_at",
+        "difficulty",
+        "environment_setup_commit",
+        "eval_type",
+        "image",
+        "instance_id",
+        "log_parser",
+        "repo",
+        "version",
+        "patch",
+        "test_patch",
+        "eval_script",
+        "problem_statement",
+        "hints_text",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS"
+      ],
+      "required_present": [
+        "instance_id",
+        "repo",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "image",
+        "eval_script",
+        "log_parser",
+        "eval_type"
+      ],
+      "required_missing": []
+    },
+    "SWE-bench Multilingual": {
+      "dataset": "SWE-bench/SWE-bench_Multilingual",
+      "revision": "846e647b9f33c0b51b739d005d13d85493c9af09",
+      "split": "test",
+      "rows": 300,
+      "license": "MIT (SWE-bench)",
+      "fields": [
+        "base_commit",
+        "created_at",
+        "eval_type",
+        "image",
+        "instance_id",
+        "log_parser",
+        "repo",
+        "version",
+        "patch",
+        "test_patch",
+        "eval_script",
+        "problem_statement",
+        "hints_text",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS"
+      ],
+      "required_present": [
+        "instance_id",
+        "repo",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "image",
+        "eval_script",
+        "log_parser",
+        "eval_type"
+      ],
+      "required_missing": []
+    }
+  }
+}

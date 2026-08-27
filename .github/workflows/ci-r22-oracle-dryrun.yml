@@ -1,0 +1,42 @@
+name: ci-r22-oracle-dryrun
+on:
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['experiments/r22/oracle.py', 'experiments/r22/data_orientation.py',
+            '.github/workflows/ci-r22-oracle-dryrun.yml']
+  pull_request:
+    paths: ['experiments/r22/oracle.py', 'experiments/r22/data_orientation.py',
+            '.github/workflows/ci-r22-oracle-dryrun.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  oracle-dryrun:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e . pandas pyarrow
+      - name: Download public MIT dataset (no token)
+        run: |
+          mkdir -p scb/data
+          for f in Experience Related Relationship; do
+            curl -sfL "https://huggingface.co/datasets/jiayuanz3/SWEContextBench/resolve/main/data/SWEContextBench_${f}.parquet" -o "scb/data/SWEContextBench_${f}.parquet"
+          done
+      - name: Rebuild split + oracle dry-run (fake reader; assert safety, paid calls=0)
+        env: {R22_SCB_DATA: scb/data}
+        run: |
+          python experiments/r22/benchmark_adapter.py >/dev/null
+          python experiments/r22/data_orientation.py >/dev/null
+          python experiments/r22/oracle.py
+          python - <<'PY'
+          import json
+          r = json.load(open("artifacts/r22/oracle_dryrun_result.json"))
+          assert r["idempotent"] and r["source_user_ne_target_user"]
+          assert r["o2_derangement_fixed_points"] == 0
+          assert r["target_gold_test_leakage"] == 0
+          assert r["injected_eq_payload"] and r["content_arm_budgets_matched"]
+          assert r["paid_api_calls"] == 0
+          print("R22 oracle dry-run: PASS")
+          PY

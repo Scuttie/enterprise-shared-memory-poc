@@ -1,0 +1,21 @@
+name: ci-r22-stage-schema
+on:
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['src/enterprise_memory/experience/stage_*', 'tests/unit/test_stage_schema.py',
+            '.github/workflows/ci-r22-stage-schema.yml']
+  pull_request:
+    paths: ['src/enterprise_memory/experience/stage_*', 'tests/unit/test_stage_schema.py',
+            '.github/workflows/ci-r22-stage-schema.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  stage-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e . pytest
+      - run: python -m pytest -q tests/unit/test_stage_schema.py

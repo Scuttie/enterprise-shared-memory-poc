@@ -1,0 +1,95 @@
+name: ci-r22-grader-smoke
+# §3 (G0) — official mixed SWE-bench grader on the frozen 12-task smoke, routed PER INSTANCE to its own subset
+# (Verified / Lite / Multilingual). Sharded (1 instance/job, both conditions), Docker-checked, resumable.
+# No model calls, no test modification, no invented images. Gate: gold 12/12 resolved, no-patch 12/12 unresolved,
+# infra failures 0, completeness 24/24.
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['scripts/r22_grader_run.py', 'scripts/r22_grader_smoke.py', 'experiments/r22/grader_routing.py',
+            '.github/workflows/ci-r22-grader-smoke.yml']
+permissions:
+  contents: read
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        instance:
+          - astropy__astropy-8707        # Lite (py)
+          - sympy__sympy-14774           # Verified/Lite (py)
+          - mwaskom__seaborn-3190        # Lite (py)
+          - caddyserver__caddy-5761      # Multilingual (go)
+          - prometheus__prometheus-9248  # Multilingual (go)
+          - apache__lucene-11760         # Multilingual (java)
+          - google__gson-2311            # Multilingual (java)
+          - rubocop__rubocop-13396       # Multilingual (ruby)
+          - tokio-rs__tokio-6724         # Multilingual (rust)
+          - tokio-rs__axum-1119          # Multilingual (rust)
+          - astral-sh__ruff-15543        # Multilingual (rust)
+          - php-cs-fixer__php-cs-fixer-7875  # Multilingual (php)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Docker + disk preflight (free ~25GB for python image builds)
+        run: |
+          docker info >/dev/null && echo "docker OK"
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+                      /opt/hostedtoolcache/CodeQL /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" || true
+          docker image prune -af >/dev/null 2>&1 || true
+          df -h /
+      - run: pip install -q -e . pandas pyarrow "datasets>=2.19,<3" "swebench==5.0.2"
+      - name: Reconstruct routing (public datasets, no token)
+        run: |
+          mkdir -p scb/data
+          for f in Experience Related Relationship; do
+            curl -sfL "https://huggingface.co/datasets/jiayuanz3/SWEContextBench/resolve/main/data/SWEContextBench_${f}.parquet" -o "scb/data/SWEContextBench_${f}.parquet"
+          done
+          R22_SCB_DATA=scb/data python experiments/r22/benchmark_adapter.py >/dev/null
+          R22_SCB_DATA=scb/data python experiments/r22/data_orientation.py >/dev/null
+          R22_SCB_DATA=scb/data python scripts/r22_grader_smoke.py --prepare
+          python experiments/r22/dataset_schema_audit.py   # enriched SWE-bench/* routing (image from row)
+      - name: Grade gold + no-patch for this instance (official harness, routed)
+        run: |
+          # keep the built/pulled instance image so no-patch reuses it (don't prune between conditions)
+          python scripts/r22_grader_run.py --instance "${{ matrix.instance }}" --condition gold || true
+          python scripts/r22_grader_run.py --instance "${{ matrix.instance }}" --condition nopatch || true
+          df -h /
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: grader-result-${{ matrix.instance }}
+          path: artifacts/r22/grader_results/*_result.json
+          if-no-files-found: warn
+
+  aggregate:
+    needs: grade
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e .
+      - name: Reconstruct smoke manifest (for instance list)
+        run: |
+          mkdir -p scb/data
+          for f in Experience Related Relationship; do
+            curl -sfL "https://huggingface.co/datasets/jiayuanz3/SWEContextBench/resolve/main/data/SWEContextBench_${f}.parquet" -o "scb/data/SWEContextBench_${f}.parquet"
+          done
+          pip install -q pandas pyarrow
+          R22_SCB_DATA=scb/data python experiments/r22/benchmark_adapter.py >/dev/null
+          R22_SCB_DATA=scb/data python experiments/r22/data_orientation.py >/dev/null
+          R22_SCB_DATA=scb/data python scripts/r22_grader_smoke.py --prepare
+      - uses: actions/download-artifact@v4
+        with:
+          path: _dl
+      - name: Collect per-task results and gate
+        run: |
+          mkdir -p artifacts/r22/grader_results
+          find _dl -name '*_result.json' -exec cp {} artifacts/r22/grader_results/ \; || true
+          python scripts/r22_grader_smoke.py --verify-sharded

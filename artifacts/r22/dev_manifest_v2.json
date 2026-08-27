@@ -1,0 +1,428 @@
+{
+  "schema": "r22/dev_manifest_v2/1.0.0",
+  "repositories": [
+    "PHP-CS-Fixer/PHP-CS-Fixer",
+    "apache/lucene",
+    "astral-sh/ruff",
+    "astropy/astropy",
+    "caddyserver/caddy",
+    "google/gson",
+    "laravel/framework",
+    "mwaskom/seaborn",
+    "prometheus/prometheus",
+    "pydata/xarray",
+    "rubocop/rubocop",
+    "sympy/sympy",
+    "tokio-rs/axum",
+    "tokio-rs/tokio"
+  ],
+  "pairs": [
+    {
+      "source_id": "astropy__astropy-14995",
+      "target_id": "astropy__astropy-15082",
+      "source_repo": "astropy/astropy",
+      "target_repo": "astropy/astropy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "mwaskom__seaborn-3190",
+      "target_id": "mwaskom__seaborn-3203",
+      "source_repo": "mwaskom/seaborn",
+      "target_repo": "mwaskom/seaborn",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "pydata__xarray-3364",
+      "target_id": "pydata__xarray-508",
+      "source_repo": "pydata/xarray",
+      "target_repo": "pydata/xarray",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-12419",
+      "target_id": "sympy__sympy-12426",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-12419",
+      "target_id": "sympy__sympy-12427",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-14774",
+      "target_id": "sympy__sympy-19235",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-16988",
+      "target_id": "sympy__sympy-16953",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-16988",
+      "target_id": "sympy__sympy-16342",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-16988",
+      "target_id": "sympy__sympy-16946",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-18057",
+      "target_id": "sympy__sympy-19006",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-19487",
+      "target_id": "sympy__sympy-19484",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-21055",
+      "target_id": "sympy__sympy-21203",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-21055",
+      "target_id": "sympy__sympy-21309",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-21055",
+      "target_id": "sympy__sympy-9384",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-24102",
+      "target_id": "sympy__sympy-27868",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "apache__lucene-11760",
+      "target_id": "apache__lucene-13388",
+      "source_repo": "apache/lucene",
+      "target_repo": "apache/lucene",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "astral-sh__ruff-15394",
+      "target_id": "astral-sh__ruff-15997",
+      "source_repo": "astral-sh/ruff",
+      "target_repo": "astral-sh/ruff",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "astral-sh__ruff-15543",
+      "target_id": "astral-sh__ruff-16445",
+      "source_repo": "astral-sh/ruff",
+      "target_repo": "astral-sh/ruff",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "astral-sh__ruff-15543",
+      "target_id": "astral-sh__ruff-15725",
+      "source_repo": "astral-sh/ruff",
+      "target_repo": "astral-sh/ruff",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "caddyserver__caddy-5761",
+      "target_id": "caddyserver__caddy-5770",
+      "source_repo": "caddyserver/caddy",
+      "target_repo": "caddyserver/caddy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "caddyserver__caddy-6051",
+      "target_id": "caddyserver__caddy-5930",
+      "source_repo": "caddyserver/caddy",
+      "target_repo": "caddyserver/caddy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "google__gson-2311",
+      "target_id": "google__gson-904",
+      "source_repo": "google/gson",
+      "target_repo": "google/gson",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "google__gson-2479",
+      "target_id": "google__gson-2787",
+      "source_repo": "google/gson",
+      "target_repo": "google/gson",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "laravel__framework-52680",
+      "target_id": "laravel__framework-52660",
+      "source_repo": "laravel/framework",
+      "target_repo": "laravel/framework",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "php-cs-fixer__php-cs-fixer-7875",
+      "target_id": "php-cs-fixer__php-cs-fixer-8027",
+      "source_repo": "PHP-CS-Fixer/PHP-CS-Fixer",
+      "target_repo": "PHP-CS-Fixer/PHP-CS-Fixer",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "php-cs-fixer__php-cs-fixer-7998",
+      "target_id": "php-cs-fixer__php-cs-fixer-8058",
+      "source_repo": "PHP-CS-Fixer/PHP-CS-Fixer",
+      "target_repo": "PHP-CS-Fixer/PHP-CS-Fixer",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "php-cs-fixer__php-cs-fixer-7998",
+      "target_id": "php-cs-fixer__php-cs-fixer-8398",
+      "source_repo": "PHP-CS-Fixer/PHP-CS-Fixer",
+      "target_repo": "PHP-CS-Fixer/PHP-CS-Fixer",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "prometheus__prometheus-15142",
+      "target_id": "prometheus__prometheus-15177",
+      "source_repo": "prometheus/prometheus",
+      "target_repo": "prometheus/prometheus",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "prometheus__prometheus-9248",
+      "target_id": "prometheus__prometheus-9485",
+      "source_repo": "prometheus/prometheus",
+      "target_repo": "prometheus/prometheus",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "rubocop__rubocop-13396",
+      "target_id": "rubocop__rubocop-13299",
+      "source_repo": "rubocop/rubocop",
+      "target_repo": "rubocop/rubocop",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "rubocop__rubocop-13396",
+      "target_id": "rubocop__rubocop-13096",
+      "source_repo": "rubocop/rubocop",
+      "target_repo": "rubocop/rubocop",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "rubocop__rubocop-13627",
+      "target_id": "rubocop__rubocop-13623",
+      "source_repo": "rubocop/rubocop",
+      "target_repo": "rubocop/rubocop",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "tokio-rs__axum-1119",
+      "target_id": "tokio-rs__axum-1120",
+      "source_repo": "tokio-rs/axum",
+      "target_repo": "tokio-rs/axum",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "tokio-rs__tokio-6724",
+      "target_id": "tokio-rs__tokio-3679",
+      "source_repo": "tokio-rs/tokio",
+      "target_repo": "tokio-rs/tokio",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "astropy__astropy-13977",
+      "target_id": "astropy__astropy-14500",
+      "source_repo": "astropy/astropy",
+      "target_repo": "astropy/astropy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "astropy__astropy-14995",
+      "target_id": "astropy__astropy-15082",
+      "source_repo": "astropy/astropy",
+      "target_repo": "astropy/astropy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "astropy__astropy-7166",
+      "target_id": "astropy__astropy-7167",
+      "source_repo": "astropy/astropy",
+      "target_repo": "astropy/astropy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "astropy__astropy-8707",
+      "target_id": "astropy__astropy-8711",
+      "source_repo": "astropy/astropy",
+      "target_repo": "astropy/astropy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "astropy__astropy-8872",
+      "target_id": "astropy__astropy-8614",
+      "source_repo": "astropy/astropy",
+      "target_repo": "astropy/astropy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "astropy__astropy-8872",
+      "target_id": "astropy__astropy-6389",
+      "source_repo": "astropy/astropy",
+      "target_repo": "astropy/astropy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "pydata__xarray-3305",
+      "target_id": "pydata__xarray-3891",
+      "source_repo": "pydata/xarray",
+      "target_repo": "pydata/xarray",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "pydata__xarray-6461",
+      "target_id": "pydata__xarray-7220",
+      "source_repo": "pydata/xarray",
+      "target_repo": "pydata/xarray",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "pydata__xarray-6461",
+      "target_id": "pydata__xarray-7068",
+      "source_repo": "pydata/xarray",
+      "target_repo": "pydata/xarray",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-12419",
+      "target_id": "sympy__sympy-12427",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-12419",
+      "target_id": "sympy__sympy-12426",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-14976",
+      "target_id": "sympy__sympy-7229",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-14976",
+      "target_id": "sympy__sympy-14973",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-14976",
+      "target_id": "sympy__sympy-14975",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-15976",
+      "target_id": "sympy__sympy-15974",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-16766",
+      "target_id": "sympy__sympy-22908",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-18189",
+      "target_id": "sympy__sympy-18196",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-18189",
+      "target_id": "sympy__sympy-18115",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-20801",
+      "target_id": "sympy__sympy-16924",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-20801",
+      "target_id": "sympy__sympy-19915",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-20801",
+      "target_id": "sympy__sympy-19976",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-20801",
+      "target_id": "sympy__sympy-11707",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-21930",
+      "target_id": "sympy__sympy-20959",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    },
+    {
+      "source_id": "sympy__sympy-21930",
+      "target_id": "sympy__sympy-21758",
+      "source_repo": "sympy/sympy",
+      "target_repo": "sympy/sympy",
+      "class": "CLEAN_RELATED"
+    }
+  ],
+  "pair_count": 58
+}

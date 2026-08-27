@@ -1,0 +1,771 @@
+{
+  "pinned_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+  "targets": 40,
+  "found": 40,
+  "missing": [],
+  "cases": {
+    "apache__lucene-13388": {
+      "instance_id": "apache__lucene-13388",
+      "case_path": "cases/SWEContextBench Multilingual/apache__lucene-13388.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/apache__lucene-13388.json",
+        "cases/SWEContextBench Multilingual/apache__lucene-13388.json"
+      ],
+      "in_full": true,
+      "case_sha256": "ba92b30c6536c9d94173cf44a5a3de7445f30e13ad4932f74abd9434c6e4893d",
+      "repo": "apache/lucene",
+      "base_commit": "22d50be2eab84c9a75ea65f55fcc4356724faba1",
+      "patch_sha256": "cefffac3009ed4acf95dd9589e8f50da5937438cc4f07ed2cc5dc75c0b392c2b",
+      "test_patch_sha256": "72f3c2585c38e0cdaadb2dfdeafc99a52da8dfd8a6fb4b24cd1b3f2ad049c804",
+      "f2p_canon": "2d124080ef3044c1d2731b59cdb86e5aabdd2a1659f206d66c7c75f7d457feb6",
+      "p2p_canon": "51a98a9c9c341ffb3fdb568924c5ee7ca2462ab30df5322ca424c0e4da55c58a",
+      "problem_statement_sha256": "3d862fcf8f44e82460631daafbcadac5649ed749cc0ac2973b61152053db4e30",
+      "environment_setup_commit": "22d50be2eab84c9a75ea65f55fcc4356724faba1"
+    },
+    "astral-sh__ruff-15725": {
+      "instance_id": "astral-sh__ruff-15725",
+      "case_path": "cases/SWEContextBench Multilingual/astral-sh__ruff-15725.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/astral-sh__ruff-15725.json",
+        "cases/SWEContextBench Multilingual/astral-sh__ruff-15725.json"
+      ],
+      "in_full": true,
+      "case_sha256": "724af16e168b0b0e788c6b449b40f8c325bedc1ac74097d6769b06a21663196c",
+      "repo": "astral-sh/ruff",
+      "base_commit": "cb3361e682fc52d7ac9fdc5e2558373eb1d94a1f",
+      "patch_sha256": "a80ddbb0c6d2bb7bf67646bacf07d413b9f3ee7feabb1654be8621609483f16f",
+      "test_patch_sha256": "513b8a07629e0e53b4dd82773fec28b2337a54829932f9a0d429991c8e560abe",
+      "f2p_canon": "5ce5fa3e848442f1ed36b1da7e036a7fc8515373a09e72194c11f48e50a005ed",
+      "p2p_canon": "f8275ce243ba02acf45989219b6897bd3c9cf69ee3c56d07bca81fb7fc24d5e7",
+      "problem_statement_sha256": "b178d5160c4139bb39d547be05de2696536019e645cb8b3ebe67099fe62edd41",
+      "environment_setup_commit": "cb3361e682fc52d7ac9fdc5e2558373eb1d94a1f"
+    },
+    "astral-sh__ruff-15997": {
+      "instance_id": "astral-sh__ruff-15997",
+      "case_path": "cases/SWEContextBench Multilingual/astral-sh__ruff-15997.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/astral-sh__ruff-15997.json",
+        "cases/SWEContextBench Multilingual/astral-sh__ruff-15997.json"
+      ],
+      "in_full": true,
+      "case_sha256": "29eb0637bfe0cc7785f0a9ebb85a38c52e266642328dd6bd47d5b5cc373bf7bb",
+      "repo": "astral-sh/ruff",
+      "base_commit": "10d3e64ccdf69d90c3252a15b3408a4238427792",
+      "patch_sha256": "6e8d1e901dd849b2a4597ff83c525f93528c27102b71a7d321a980374870bca8",
+      "test_patch_sha256": "f223d1e15ff954ffeead8e0c8dbcd8e9bfd60221e8cc6de753522bd51f3b19e9",
+      "f2p_canon": "76190928380d55635b5d458bcc8b5fe8ae5090746a28525ee672f99f826f125f",
+      "p2p_canon": "e02acab5c9570e453c100b3ddb240ffd7d8c73f59ce0037d4bd7da402d87ebb3",
+      "problem_statement_sha256": "d6c7d8112d9447740338c68ebfccbe184bf8a95fadcb675f6144b0ec7057565c",
+      "environment_setup_commit": "10d3e64ccdf69d90c3252a15b3408a4238427792"
+    },
+    "astral-sh__ruff-16445": {
+      "instance_id": "astral-sh__ruff-16445",
+      "case_path": "cases/SWEContextBench Multilingual/astral-sh__ruff-16445.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/astral-sh__ruff-16445.json",
+        "cases/SWEContextBench Multilingual/astral-sh__ruff-16445.json"
+      ],
+      "in_full": true,
+      "case_sha256": "b159f1a2fd33686173bfa2f3da3c59be2d56c654e2aa098000f8cc93248b3e2f",
+      "repo": "astral-sh/ruff",
+      "base_commit": "0d615b8765d7676e4842cd0e3dc91c6a27d6bc17",
+      "patch_sha256": "7d9a01ce0b0aa6a05f51aa69108b64df90ef5b71cfeb32b69e17a58cfb6e44a1",
+      "test_patch_sha256": "5a897c51f8b2d6e5b3407ee5e4d749bc2c88ecb77272f713d09bff94e3a24140",
+      "f2p_canon": "081534bd995860d282e2b101cb2f7aa48a30558b20312d3672e05e387fd4b9ba",
+      "p2p_canon": "9201f742f6fae8d943ef830486c2ab42e32468436fef2030994280061b16d3d1",
+      "problem_statement_sha256": "65e1f65b02e1ab89e54f95aaebc6b2f948322c2a81c0cb10cda301aea87019c0",
+      "environment_setup_commit": "0d615b8765d7676e4842cd0e3dc91c6a27d6bc17"
+    },
+    "astropy__astropy-14500": {
+      "instance_id": "astropy__astropy-14500",
+      "case_path": "cases/SWEContextBench Verified/astropy__astropy-14500.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/astropy__astropy-14500.json",
+        "cases/SWEContextBench Verified/astropy__astropy-14500.json"
+      ],
+      "in_full": true,
+      "case_sha256": "63692b2d304b37f5a33533a5063ff6abd7913928155e137efd3b5ec55d2b2019",
+      "repo": "astropy/astropy",
+      "base_commit": "2869ba2e7d5194a844dac1ce0f853705071bead4",
+      "patch_sha256": "d1a721929bec5e94c6593341c22cf5f42b61f258a17e0830a21586fec275df7b",
+      "test_patch_sha256": "daf6de5b1a918915d2e25a0c65aac57ddf9d38bd3e5ff948d70d33216b7361df",
+      "f2p_canon": "e0d33ac5e21971e3de5532a9f0c9bd2e744c6af26515d6c194b6e8e6be9aee3b",
+      "p2p_canon": "8fb302be2cbf8c37c3b70e7cdfaa10ef13739f60d4befd81ab197019b6b8c5f0",
+      "problem_statement_sha256": "7a315f7e1f63e175792075bdf9ab139906f147dfe6d0f83436866b4f5aff58cc",
+      "environment_setup_commit": "2869ba2e7d5194a844dac1ce0f853705071bead4"
+    },
+    "astropy__astropy-15082": {
+      "instance_id": "astropy__astropy-15082",
+      "case_path": "cases/SWEContextBench Lite/astropy__astropy-15082.json",
+      "subset_used": "SWEContextBench Lite",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/astropy__astropy-15082.json",
+        "cases/SWEContextBench Lite/astropy__astropy-15082.json",
+        "cases/SWEContextBench Verified/astropy__astropy-15082.json"
+      ],
+      "in_full": true,
+      "case_sha256": "422a172e8852d162f369bcbfc386ff19ca8e6bd5adf4296fc9df85697fc4153d",
+      "repo": "astropy/astropy",
+      "base_commit": "c5e2521db013d9641999be9c79d1d807741bc39a",
+      "patch_sha256": "9e8ec6aff5adc5c6a92b183d4068aaf7d85c3cfb09ea76329161bc7e80e772b4",
+      "test_patch_sha256": "f16303bcb47c38fe6a78b4f722e0256dbcf3ce3308480f08c314127d51058613",
+      "f2p_canon": "46996d2f450c1ce3e1f0b18aea4f620c4f424d8bf9b5606a27ecc6f4c8efce40",
+      "p2p_canon": "5934e9e2e572b088be59dd97d58188c05bf9e6d3183a81f3b03b70d2a56feff1",
+      "problem_statement_sha256": "e1305cbaa315c405b3a0c48863457bdfffaa83ffb52b819f9aacdb547557a3c6",
+      "environment_setup_commit": "c5e2521db013d9641999be9c79d1d807741bc39a"
+    },
+    "astropy__astropy-6389": {
+      "instance_id": "astropy__astropy-6389",
+      "case_path": "cases/SWEContextBench Verified/astropy__astropy-6389.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/astropy__astropy-6389.json",
+        "cases/SWEContextBench Verified/astropy__astropy-6389.json"
+      ],
+      "in_full": true,
+      "case_sha256": "794cbfa6c8b4e9bdc9946d38c1d1703a93a7eb1dfa03551e250b7730f2b619cb",
+      "repo": "astropy/astropy",
+      "base_commit": "872a7a1d7fdea083f8936c4ecbb5a2f5f7d1b020",
+      "patch_sha256": "db835e0605045e2920afac02b53a3d76423090ae69ba9ce8ea1e6c868e750313",
+      "test_patch_sha256": "d7c0b535c4375f2b3bac0091f53fa81af6f53c1037d624e3fdd2def9bae0e172",
+      "f2p_canon": "e34aaba8ae1b82e6c5b00f661c06bbef5b243dd3c3bc0e0d4bfe1687dff8a7c4",
+      "p2p_canon": "1a6abab6c6036bdd3419b0d74640ef0a35a5c85592ff9de7e3babd79397ff4ee",
+      "problem_statement_sha256": "413db379618ba42c576a60464938e217f7104d36105a04aa5f669bd3ac8fc0ad",
+      "environment_setup_commit": "872a7a1d7fdea083f8936c4ecbb5a2f5f7d1b020"
+    },
+    "astropy__astropy-7167": {
+      "instance_id": "astropy__astropy-7167",
+      "case_path": "cases/SWEContextBench Verified/astropy__astropy-7167.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/astropy__astropy-7167.json",
+        "cases/SWEContextBench Verified/astropy__astropy-7167.json"
+      ],
+      "in_full": true,
+      "case_sha256": "b2ee760bf955e474240c228b3ee7ff9332339a3e440898632a66c4bd731952d2",
+      "repo": "astropy/astropy",
+      "base_commit": "da8ceef7574324a92e7bdda1b38ccf0552fbff86",
+      "patch_sha256": "0220819e25143aa255540095f16263a37d53ccbd1b52762c521a37ebc3ba6193",
+      "test_patch_sha256": "9bda69e93efc8122862e5bbbc484f52fdf1de144046cab9af1369016356a9aff",
+      "f2p_canon": "497b9af5d3a9a8943d0d5a8c7dc23cdbcc29c384cb5599dc70c3ea2b94988867",
+      "p2p_canon": "7a05b64afded6573e4d48ccbe842efade204dea7e47941f09fda23ccac702071",
+      "problem_statement_sha256": "52f6844fa1538ccf853847a6e803a6b6c54a239626f8e3896bbc172e208ca384",
+      "environment_setup_commit": "da8ceef7574324a92e7bdda1b38ccf0552fbff86"
+    },
+    "astropy__astropy-8614": {
+      "instance_id": "astropy__astropy-8614",
+      "case_path": "cases/SWEContextBench Verified/astropy__astropy-8614.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/astropy__astropy-8614.json",
+        "cases/SWEContextBench Verified/astropy__astropy-8614.json"
+      ],
+      "in_full": true,
+      "case_sha256": "c164f2115ba5de99454c2229b5547bebe462dce9b8e73d20766fb8a9f5d483c5",
+      "repo": "astropy/astropy",
+      "base_commit": "872a7a1d7fdea083f8936c4ecbb5a2f5f7d1b020",
+      "patch_sha256": "db835e0605045e2920afac02b53a3d76423090ae69ba9ce8ea1e6c868e750313",
+      "test_patch_sha256": "d7c0b535c4375f2b3bac0091f53fa81af6f53c1037d624e3fdd2def9bae0e172",
+      "f2p_canon": "e34aaba8ae1b82e6c5b00f661c06bbef5b243dd3c3bc0e0d4bfe1687dff8a7c4",
+      "p2p_canon": "1a6abab6c6036bdd3419b0d74640ef0a35a5c85592ff9de7e3babd79397ff4ee",
+      "problem_statement_sha256": "cf5ddf4250e98e3eb7fc4a18d4d1e2ec3652eeee1dca02eb9429c64d07620822",
+      "environment_setup_commit": "872a7a1d7fdea083f8936c4ecbb5a2f5f7d1b020"
+    },
+    "astropy__astropy-8711": {
+      "instance_id": "astropy__astropy-8711",
+      "case_path": "cases/SWEContextBench Verified/astropy__astropy-8711.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/astropy__astropy-8711.json",
+        "cases/SWEContextBench Verified/astropy__astropy-8711.json"
+      ],
+      "in_full": true,
+      "case_sha256": "5cd2ca23b1c0be875e27ad70cf1afb79475e58aaec4dc42c6f2dcbf924bfd3b7",
+      "repo": "astropy/astropy",
+      "base_commit": "69b4bf9d2b88c7b370f4c69727a0c925517301be",
+      "patch_sha256": "8f007202784e67e2efac3fc02d2ceb662a1305f5b6909103ef5feb6dafed97b0",
+      "test_patch_sha256": "cb5e6a6bd5a21607b02687b5fd84007f6fe460e4e37436fcd73e342c799b7e9d",
+      "f2p_canon": "8c21e3ffafd9bb0d323da054cc96fcadf551b7037e8df2a1cb66d8d69afda84b",
+      "p2p_canon": "d3110f7075789832277ed2fa560e964799ddc5350369f1810b6a98ee28129474",
+      "problem_statement_sha256": "3bad11a6037cc1b79bd20afd54b505e37beb0712551bd0be1a5f83fb454bf6b6",
+      "environment_setup_commit": "69b4bf9d2b88c7b370f4c69727a0c925517301be"
+    },
+    "caddyserver__caddy-5770": {
+      "instance_id": "caddyserver__caddy-5770",
+      "case_path": "cases/SWEContextBench Multilingual/caddyserver__caddy-5770.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/caddyserver__caddy-5770.json",
+        "cases/SWEContextBench Multilingual/caddyserver__caddy-5770.json"
+      ],
+      "in_full": true,
+      "case_sha256": "9d2148331a36c7ed52e19e2424bea9efef21f3084d74b17bf1dfd9713bad3e46",
+      "repo": "caddyserver/caddy",
+      "base_commit": "888c6d7e93c50edbb880fc6e2cf10753ccadb5c0",
+      "patch_sha256": "53c0b2390d005c47efaea58eaf3c12e61c4855ed7cba562c315e59366c3f277d",
+      "test_patch_sha256": "407305c9840451250e299471a3463ba7f3d4d62874631de515c6a46bb04cbf91",
+      "f2p_canon": "db8b2f0fe936c7a438b845ca245b58d39cda2d8ba0b320f0ac031e89a91b7f91",
+      "p2p_canon": "7338256c2abd7a88d63715e99796856c384fd784344fe6af02c6a120fccc8a63",
+      "problem_statement_sha256": "252c64bb2e30ef9ea72673b6983fded6721ebe0b351e634314239603440ec130",
+      "environment_setup_commit": "888c6d7e93c50edbb880fc6e2cf10753ccadb5c0"
+    },
+    "caddyserver__caddy-5930": {
+      "instance_id": "caddyserver__caddy-5930",
+      "case_path": "cases/SWEContextBench Multilingual/caddyserver__caddy-5930.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/caddyserver__caddy-5930.json",
+        "cases/SWEContextBench Multilingual/caddyserver__caddy-5930.json"
+      ],
+      "in_full": true,
+      "case_sha256": "1ec9d4035bcc953c292d3de0fe6b1c8c103ac9ceec9f41fcd2437f1c2cdbd753",
+      "repo": "caddyserver/caddy",
+      "base_commit": "dba556fe4b8562dc236f09de6374c7809a7003ee",
+      "patch_sha256": "c8703f78453062480624c9fec196ac817d3a479ccdaf76eb2d4715d609ee4159",
+      "test_patch_sha256": "a05c114f796548748dc49f17fd24652e50b8fc885cd05bd1878943ec4db035b9",
+      "f2p_canon": "aae4a2f116bc3418712675ea523b0a59624b12cf2f1a73862b7a66e7cffc7092",
+      "p2p_canon": "75c9181713c9e813189f5d8eea915be8e1c562a5c0fe634586ef7937400cdae6",
+      "problem_statement_sha256": "97a07fec0df760e15732708befd5fed70de95bb5e4fbefd7a17012f0edcb5613",
+      "environment_setup_commit": "dba556fe4b8562dc236f09de6374c7809a7003ee"
+    },
+    "google__gson-2787": {
+      "instance_id": "google__gson-2787",
+      "case_path": "cases/SWEContextBench Multilingual/google__gson-2787.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/google__gson-2787.json",
+        "cases/SWEContextBench Multilingual/google__gson-2787.json"
+      ],
+      "in_full": true,
+      "case_sha256": "a50b27116904d64802e4db9a97d029a0bab9dfa93e8d0267fd30ea92c89d2ef2",
+      "repo": "google/gson",
+      "base_commit": "e5dce841f73382cb7acdfe32250767ddb2c86b49",
+      "patch_sha256": "87d4125d2323de8b056efb0d1f60359713cf92e3d34b07488b7e3b199613c0d9",
+      "test_patch_sha256": "d736e024a4194288a4ea992abc12fa2548ff1665936fb813797729bbefec510e",
+      "f2p_canon": "f2228ccece3fa92c7ea4edc9298e63550a66ee0208aeb23bfb4d643de1cf5eee",
+      "p2p_canon": "65d6877766edb284ac4fc41eccc048acfd74e57f418944eec9a9316d45ae0335",
+      "problem_statement_sha256": "cdfc64094ed7c50a2db92fcec6ff14a6db881bcff728a7268bafa97eb950492b",
+      "environment_setup_commit": "e5dce841f73382cb7acdfe32250767ddb2c86b49"
+    },
+    "google__gson-904": {
+      "instance_id": "google__gson-904",
+      "case_path": "cases/SWEContextBench Multilingual/google__gson-904.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/google__gson-904.json",
+        "cases/SWEContextBench Multilingual/google__gson-904.json"
+      ],
+      "in_full": true,
+      "case_sha256": "872e4d3930c95c1c5ba95dcca20bd935b3918e193518b8d334758b3f77a782f2",
+      "repo": "google/gson",
+      "base_commit": "b7c3e1d0b8bc9b9e0270cdaf3209cc3eeefe392f",
+      "patch_sha256": "fcf11b78425a8a60a828b69c8ef9f5239c7cd12e265eef6ab40fac8fd038f0d8",
+      "test_patch_sha256": "8ba827bd6f18149e19ad3fca556ae2be4d6382866e573044e64797848e449bdb",
+      "f2p_canon": "5af6a1415846cd1392860b264f680e1351fed11a82fde64bf24f73fc428dd7a6",
+      "p2p_canon": "8adec646880108e3df5d29e103f6b87fc239670a349b164c9790a4ab6841b5f4",
+      "problem_statement_sha256": "80cd6342d280073b9e4ea54dcb324644f9effcd2fbebb66fe31c947f158a01be",
+      "environment_setup_commit": "b7c3e1d0b8bc9b9e0270cdaf3209cc3eeefe392f"
+    },
+    "laravel__framework-52660": {
+      "instance_id": "laravel__framework-52660",
+      "case_path": "cases/SWEContextBench Multilingual/laravel__framework-52660.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/laravel__framework-52660.json",
+        "cases/SWEContextBench Multilingual/laravel__framework-52660.json"
+      ],
+      "in_full": true,
+      "case_sha256": "098484dd32bf6335fbd108d0617a26458e69f7688960fa3e6e7c9d5de0e2273b",
+      "repo": "laravel/framework",
+      "base_commit": "e216708d17f1b5f0b4de6ab81ff1f5c34c33488c",
+      "patch_sha256": "f196cc43fa22f40675be0ffd3005f669cb72c3885a8287c4880a8ce5eef8af91",
+      "test_patch_sha256": "6b9228525d5a27a5148733460d98a779cccc24e79e91c510e430e2be2c4299c6",
+      "f2p_canon": "386ced577c8795564eac26983097188c5d25bf00c526d00a62ea9c89a60c674e",
+      "p2p_canon": "b82ff094bb6b1aeb9949df859960cf68129949aebf385ab00b795ba49d9034f8",
+      "problem_statement_sha256": "46d7e25b59667dbf6bd12b5e61559a199e13fc9144b0289fc64b13822f950e20",
+      "environment_setup_commit": "e216708d17f1b5f0b4de6ab81ff1f5c34c33488c"
+    },
+    "mwaskom__seaborn-3203": {
+      "instance_id": "mwaskom__seaborn-3203",
+      "case_path": "cases/SWEContextBench Lite/mwaskom__seaborn-3203.json",
+      "subset_used": "SWEContextBench Lite",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/mwaskom__seaborn-3203.json",
+        "cases/SWEContextBench Lite/mwaskom__seaborn-3203.json"
+      ],
+      "in_full": true,
+      "case_sha256": "29f916e668f968ad8aa5bf5f63e7e20d0feed1c084305fc215dca9675bf1e4ef",
+      "repo": "mwaskom/seaborn",
+      "base_commit": "87e097275ce468db8f18c80ef8970310cfef1fe8",
+      "patch_sha256": "5a16363e1abedd2fb236dcf411e371a470385ef0e90f6c27840b38463e7b483c",
+      "test_patch_sha256": "21c9c1785038b558adf933dc8684eb8474c6e0c79415a4c779e00ebaba4a4fe2",
+      "f2p_canon": "79929bcb7b015c3f57822ab8c0eb1ab43c80c09ff58a6bd02a901592a05f96bb",
+      "p2p_canon": "04909e3c72e66edc4546fe79a95efb5fe8e7c506922bf2f6b263955015fec579",
+      "problem_statement_sha256": "ecbb90b8943e970b683c71ca6185b7359d69be95f69593ce184befa0a2a94ca3",
+      "environment_setup_commit": "87e097275ce468db8f18c80ef8970310cfef1fe8"
+    },
+    "php-cs-fixer__php-cs-fixer-8027": {
+      "instance_id": "php-cs-fixer__php-cs-fixer-8027",
+      "case_path": "cases/SWEContextBench Multilingual/php-cs-fixer__php-cs-fixer-8027.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/php-cs-fixer__php-cs-fixer-8027.json",
+        "cases/SWEContextBench Multilingual/php-cs-fixer__php-cs-fixer-8027.json"
+      ],
+      "in_full": true,
+      "case_sha256": "8b0b81850f8e6bae963759d35ba5627c0f61f6840bfc2c0aeb8f5be48d88e8c2",
+      "repo": "PHP-CS-Fixer/PHP-CS-Fixer",
+      "base_commit": "578ea7aa560f1626bc35cfb9c0d9b2e18935eea6",
+      "patch_sha256": "eda01c13e45e206ff27a55ab864383350fc7cbf4171b71a9eb1145d4b228f32d",
+      "test_patch_sha256": "68c6af434f62627aca8ff1c01faf97ee187daa9ef47e507c02122a1b01da10ab",
+      "f2p_canon": "6b8a5d0f0f7721bf96f4cc7ac44ab278781c45682f2d1a6d1c8d2c4a43926123",
+      "p2p_canon": "653a3fcec8348c1c211a9b3a9e9bc2391f8a902464a94ebcb7760444048ed616",
+      "problem_statement_sha256": "1e8a73f37a49f7600d95c0efeb7f618fc0d4156b9367ce5c15d81294f28aa723",
+      "environment_setup_commit": "578ea7aa560f1626bc35cfb9c0d9b2e18935eea6"
+    },
+    "php-cs-fixer__php-cs-fixer-8058": {
+      "instance_id": "php-cs-fixer__php-cs-fixer-8058",
+      "case_path": "cases/SWEContextBench Multilingual/php-cs-fixer__php-cs-fixer-8058.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/php-cs-fixer__php-cs-fixer-8058.json",
+        "cases/SWEContextBench Multilingual/php-cs-fixer__php-cs-fixer-8058.json"
+      ],
+      "in_full": true,
+      "case_sha256": "acee0cb6816e9346faefe486474c48550981816d34b47be3ffcf391082ec100e",
+      "repo": "PHP-CS-Fixer/PHP-CS-Fixer",
+      "base_commit": "f33bd29153c29ee0889f5cef17fe1fbdb2963355",
+      "patch_sha256": "28954f1ab3397871653e4157cd14a868e424b5e8081de99f9457fb4e05935ddb",
+      "test_patch_sha256": "f9a7f4e73355c9c1b259f804e97ae539ab3ac92fc3b319533904dfcec9d16e5c",
+      "f2p_canon": "c9d1256c964c7fc96eb99b8bc161825ed89cd40228cfd4a21741bd57897bbe11",
+      "p2p_canon": "83a9f3166b62ffc822a32aa7611e2468134bee252088bfde661235c03bdfc5fe",
+      "problem_statement_sha256": "acafb49312a00e9409e55198dd316f03e41b14868f39871786af860a6dd9722d",
+      "environment_setup_commit": "f33bd29153c29ee0889f5cef17fe1fbdb2963355"
+    },
+    "php-cs-fixer__php-cs-fixer-8398": {
+      "instance_id": "php-cs-fixer__php-cs-fixer-8398",
+      "case_path": "cases/SWEContextBench Multilingual/php-cs-fixer__php-cs-fixer-8398.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/php-cs-fixer__php-cs-fixer-8398.json",
+        "cases/SWEContextBench Multilingual/php-cs-fixer__php-cs-fixer-8398.json"
+      ],
+      "in_full": true,
+      "case_sha256": "cdfdc5e950acff9c4c7507d4c025385e3c0f397ebd9dd5a388c78566d3fb2dc4",
+      "repo": "PHP-CS-Fixer/PHP-CS-Fixer",
+      "base_commit": "f33bd29153c29ee0889f5cef17fe1fbdb2963355",
+      "patch_sha256": "28954f1ab3397871653e4157cd14a868e424b5e8081de99f9457fb4e05935ddb",
+      "test_patch_sha256": "f9a7f4e73355c9c1b259f804e97ae539ab3ac92fc3b319533904dfcec9d16e5c",
+      "f2p_canon": "c9d1256c964c7fc96eb99b8bc161825ed89cd40228cfd4a21741bd57897bbe11",
+      "p2p_canon": "83a9f3166b62ffc822a32aa7611e2468134bee252088bfde661235c03bdfc5fe",
+      "problem_statement_sha256": "e58b39c4188a7ad44d37bb9b7a6b4771b4caa2fd07c1c977cb5d9a6bcf18ed84",
+      "environment_setup_commit": "f33bd29153c29ee0889f5cef17fe1fbdb2963355"
+    },
+    "prometheus__prometheus-15177": {
+      "instance_id": "prometheus__prometheus-15177",
+      "case_path": "cases/SWEContextBench Multilingual/prometheus__prometheus-15177.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/prometheus__prometheus-15177.json",
+        "cases/SWEContextBench Multilingual/prometheus__prometheus-15177.json"
+      ],
+      "in_full": true,
+      "case_sha256": "ab47e33cce46a8304da613ef4ff15021081d00de7e103677369bff40828adc80",
+      "repo": "prometheus/prometheus",
+      "base_commit": "7416f33df5789a6423f46c36390d62e41a6a317d",
+      "patch_sha256": "9cee4a095c041e002a7a46a5de7303e7155bc1822f104af35af8d0afd01f3aa1",
+      "test_patch_sha256": "8f5b7040b438e06942d0696f5a01b58ec9e3f70a95df7648a39692ae44055b3f",
+      "f2p_canon": "ddc38cce32d4c8636107f7b43a57f2f740a5bbd8d4673dfc21c0e3680840be7d",
+      "p2p_canon": "39de1ae6b038eff7dd1e3a2d17a96fde7ae5def3f3f69c660db0d82ca01bf595",
+      "problem_statement_sha256": "2f4a19354690f689f4c234d64a271867aed2ef8f67b5e24d99cb1cd552589c64",
+      "environment_setup_commit": "7416f33df5789a6423f46c36390d62e41a6a317d"
+    },
+    "prometheus__prometheus-9485": {
+      "instance_id": "prometheus__prometheus-9485",
+      "case_path": "cases/SWEContextBench Multilingual/prometheus__prometheus-9485.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/prometheus__prometheus-9485.json",
+        "cases/SWEContextBench Multilingual/prometheus__prometheus-9485.json"
+      ],
+      "in_full": true,
+      "case_sha256": "4846072bd0bc706226985b6258e51d17f78f369f36b15d09f38eee40c434dd13",
+      "repo": "prometheus/prometheus",
+      "base_commit": "fdbc40a9efcc8197a94f23f0e479b0b56e52d424",
+      "patch_sha256": "dcfeeac70f85047cd623ae3457d4a57d04cd213c8c5dbc9391dee6a61a6b18ee",
+      "test_patch_sha256": "7ad4090976494ef5ba6d1ee366bea24224f339314a65f8ff42a9ffe05475f1a1",
+      "f2p_canon": "2d973db17838eb70f5b1b51be152d3e13a09c4c506dd2b66d7713a291e4d60a2",
+      "p2p_canon": "73eb3f1be2df06ce6963fcd473770e1837d09fe1c921117cf1e09780b3911f6c",
+      "problem_statement_sha256": "96dfa4b80bdfbe9998edf4010471ba6da14cd70c40d6ff068808d071c9c03f67",
+      "environment_setup_commit": "fdbc40a9efcc8197a94f23f0e479b0b56e52d424"
+    },
+    "pydata__xarray-3891": {
+      "instance_id": "pydata__xarray-3891",
+      "case_path": "cases/SWEContextBench Verified/pydata__xarray-3891.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/pydata__xarray-3891.json",
+        "cases/SWEContextBench Verified/pydata__xarray-3891.json"
+      ],
+      "in_full": true,
+      "case_sha256": "72f661e11dc3d99273a27fbf1ca4766f8adb991d7eb1012d53b0b65af83c7795",
+      "repo": "pydata/xarray",
+      "base_commit": "05adfa628f2893b07bc074c7abf28194b283b8bc",
+      "patch_sha256": "04694950a9a7dc922458a5bff059d5141b72bbc4d564b738b127203247ab5308",
+      "test_patch_sha256": "4a7e9d480b3bb1c6f539cb3f17d36d1f5771256df3bc04bfbb8033f365c2afae",
+      "f2p_canon": "bfcb8cb56617282dbf30f352931dac474e24f8b6e8d0ce4f6c92a4dd369c22f0",
+      "p2p_canon": "ed1dc3eef9590ca9f08aa0224879361d6865f253fc3204d95fecbc5b97924b7b",
+      "problem_statement_sha256": "97225ff6af99535fa40d3b6dfa204e0952c93aa4e2b8a5b874215e934de24530",
+      "environment_setup_commit": "05adfa628f2893b07bc074c7abf28194b283b8bc"
+    },
+    "pydata__xarray-508": {
+      "instance_id": "pydata__xarray-508",
+      "case_path": "cases/SWEContextBench Lite/pydata__xarray-508.json",
+      "subset_used": "SWEContextBench Lite",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/pydata__xarray-508.json",
+        "cases/SWEContextBench Lite/pydata__xarray-508.json"
+      ],
+      "in_full": true,
+      "case_sha256": "76eb84b57c4fc4851e461728ef5eba921ebce11ada76fb16e373f023be90eda7",
+      "repo": "pydata/xarray",
+      "base_commit": "b21f62ee37eea3650a58e9ffa3a7c9f4ae83006b",
+      "patch_sha256": "9a0bce41aed462f2ddaa606236845ea2332c1240dc675e2194d737f9436cb16c",
+      "test_patch_sha256": "d49ce659238d250995eaacf641947a31a073b66fe5accf76068387ba48352d79",
+      "f2p_canon": "5362c7f908bf86f2d82c32a26b9674c3679503580978cac6d1378d27de75e941",
+      "p2p_canon": "c509ce72ba982704da6c27277c105f0256b46aeea06d09383f181679b95acf11",
+      "problem_statement_sha256": "e78b63861fd05452bec851896facf0a702c5d8313fc29d27d7b2cc57f0d4776d",
+      "environment_setup_commit": "b21f62ee37eea3650a58e9ffa3a7c9f4ae83006b"
+    },
+    "pydata__xarray-7068": {
+      "instance_id": "pydata__xarray-7068",
+      "case_path": "cases/SWEContextBench Verified/pydata__xarray-7068.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/pydata__xarray-7068.json",
+        "cases/SWEContextBench Verified/pydata__xarray-7068.json"
+      ],
+      "in_full": true,
+      "case_sha256": "f5fbb1b951730c0ed109583218af96eea8d25d93a1a017e91cc3ced1dd350b1e",
+      "repo": "pydata/xarray",
+      "base_commit": "3aa75c8d00a4a2d4acf10d80f76b937cadb666b7",
+      "patch_sha256": "2394ec907cf590f74e7abfb042faf2dc6eb821b76ae8c1c2b8f2f5c73cd914c6",
+      "test_patch_sha256": "43f3fac8432be2f3f876d9998f335ff6248ad0fb8fc0ac7700b946dc4e02d1da",
+      "f2p_canon": "5de277105e77c18759ae89b2177561984792b7e0c3f00d36bfab5ac882a9bad7",
+      "p2p_canon": "5ff19a46b51ca4617c72d892e97e290fc8c89e9184941886b6e1a76b89aa06ae",
+      "problem_statement_sha256": "7fc1d7edb45517c8f6e5999e0845c8076aa27f6f39905d24d0db226a907af74d",
+      "environment_setup_commit": "3aa75c8d00a4a2d4acf10d80f76b937cadb666b7"
+    },
+    "pydata__xarray-7220": {
+      "instance_id": "pydata__xarray-7220",
+      "case_path": "cases/SWEContextBench Verified/pydata__xarray-7220.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/pydata__xarray-7220.json",
+        "cases/SWEContextBench Verified/pydata__xarray-7220.json"
+      ],
+      "in_full": true,
+      "case_sha256": "cd15634a51262afe3faae0a5e5e3798ff4a780aeb1b2456ef2ddd494383aac6d",
+      "repo": "pydata/xarray",
+      "base_commit": "3aa75c8d00a4a2d4acf10d80f76b937cadb666b7",
+      "patch_sha256": "2394ec907cf590f74e7abfb042faf2dc6eb821b76ae8c1c2b8f2f5c73cd914c6",
+      "test_patch_sha256": "43f3fac8432be2f3f876d9998f335ff6248ad0fb8fc0ac7700b946dc4e02d1da",
+      "f2p_canon": "5de277105e77c18759ae89b2177561984792b7e0c3f00d36bfab5ac882a9bad7",
+      "p2p_canon": "5ff19a46b51ca4617c72d892e97e290fc8c89e9184941886b6e1a76b89aa06ae",
+      "problem_statement_sha256": "1755ba7fe03d6f5917886ea3d5f0e5116a78593b08596ad9d394c5ccbb7f26aa",
+      "environment_setup_commit": "3aa75c8d00a4a2d4acf10d80f76b937cadb666b7"
+    },
+    "rubocop__rubocop-13096": {
+      "instance_id": "rubocop__rubocop-13096",
+      "case_path": "cases/SWEContextBench Multilingual/rubocop__rubocop-13096.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/rubocop__rubocop-13096.json",
+        "cases/SWEContextBench Multilingual/rubocop__rubocop-13096.json"
+      ],
+      "in_full": true,
+      "case_sha256": "71da774b31f1557fb681bfeaddf23aa46ce97813c315f5030667440ad7509b40",
+      "repo": "rubocop/rubocop",
+      "base_commit": "5800663c334011cc0fb580498ebc54f5a09187c2",
+      "patch_sha256": "6f61358c5d4d66c1c4e7a602b57dea8b4aa7000b5cb430fa4386405436de8921",
+      "test_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "f2p_canon": "d6832869869ed5071ead82052326eb5fb9357bb886809fe211c4146cabd3af46",
+      "p2p_canon": "f41d45b61c7c6b5a1c893c2263eb8258f5861acada1a97f48f938c9132e99f84",
+      "problem_statement_sha256": "8b2398864fb6e2b9bb39dd623571e903b117b2cd8e9d56d24226d92939969582",
+      "environment_setup_commit": "5800663c334011cc0fb580498ebc54f5a09187c2"
+    },
+    "rubocop__rubocop-13299": {
+      "instance_id": "rubocop__rubocop-13299",
+      "case_path": "cases/SWEContextBench Multilingual/rubocop__rubocop-13299.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/rubocop__rubocop-13299.json",
+        "cases/SWEContextBench Multilingual/rubocop__rubocop-13299.json"
+      ],
+      "in_full": true,
+      "case_sha256": "c7ac4849fec7181eb8d7c1abd216b313e82b3fd14945355d8a2fdf577bfad73d",
+      "repo": "rubocop/rubocop",
+      "base_commit": "1826d563421c442cee7ab15fba731b7dad72cfd2",
+      "patch_sha256": "0da69c9db57d15d871ebeb740b847e1c4c5fe927262d090937099c1103b0e224",
+      "test_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "f2p_canon": "49aee6ceb79b95041abf38b0c57bba821ffc5356743151d69cacd060a955fa34",
+      "p2p_canon": "c517e76beb167d7cf9e691649457e854e65b25bb4005a8415ca0552c8d44848e",
+      "problem_statement_sha256": "8f7df297d462a6951574de938b1a5ad55d0cd0bee8515cfc896a870b0b741177",
+      "environment_setup_commit": "1826d563421c442cee7ab15fba731b7dad72cfd2"
+    },
+    "rubocop__rubocop-13623": {
+      "instance_id": "rubocop__rubocop-13623",
+      "case_path": "cases/SWEContextBench Multilingual/rubocop__rubocop-13623.json",
+      "subset_used": "SWEContextBench Multilingual",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/rubocop__rubocop-13623.json",
+        "cases/SWEContextBench Multilingual/rubocop__rubocop-13623.json"
+      ],
+      "in_full": true,
+      "case_sha256": "3a6c5b6e79ce45d9b8d12d908375e84402e598edbc5f36d09129500bf5e69d7e",
+      "repo": "rubocop/rubocop",
+      "base_commit": "d3491555fa64ea2c96d38d612a5e757b346f88e2",
+      "patch_sha256": "ee8ed286266dbe3c366ab6965f4ef91d7620bde9a2cd7e3ade73855d9a893e14",
+      "test_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "f2p_canon": "f1a4c4f9c0bcfaa029e548a133e8511f1cf4b413f6e8d8ec7220d8e0f9df3ca5",
+      "p2p_canon": "e55c7e6f23930b5449a649599bfa853e238bd49c6abed5f9dfbc77f04320f5e3",
+      "problem_statement_sha256": "28709456258cf9e4dc4f4407c5c8b160822e3e980363719e4b3d22bda465750f",
+      "environment_setup_commit": "d3491555fa64ea2c96d38d612a5e757b346f88e2"
+    },
+    "sympy__sympy-11707": {
+      "instance_id": "sympy__sympy-11707",
+      "case_path": "cases/SWEContextBench Verified/sympy__sympy-11707.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-11707.json",
+        "cases/SWEContextBench Verified/sympy__sympy-11707.json"
+      ],
+      "in_full": true,
+      "case_sha256": "14705ad3619815968d9f14c27e315260d754aafd8f05f3b71d94f728d6c3f2e6",
+      "repo": "sympy/sympy",
+      "base_commit": "bdc95a90491fdb8f9e64877f7059a05210bdf49a",
+      "patch_sha256": "2bdda2f9e220b7b311572e9006b958bf79df89fcf0c0d7353d1de24cebc57483",
+      "test_patch_sha256": "b8cb51d061849ae98ea5eecd9f6a84e1b0a6696be01b3395d70ed515c22f3dd6",
+      "f2p_canon": "f212f26d4b99927db1848388cc44cba09c8f9ddd53fefbac2c48b3a2f2fc5ae6",
+      "p2p_canon": "ea07240da66ecd2963b65234c9b417fdf3c5de55b009a98d5342589b917c7f37",
+      "problem_statement_sha256": "562976fad742076f777d44045e12be814bcdb59948baed167ad06263af057aa2",
+      "environment_setup_commit": "bdc95a90491fdb8f9e64877f7059a05210bdf49a"
+    },
+    "sympy__sympy-12426": {
+      "instance_id": "sympy__sympy-12426",
+      "case_path": "cases/SWEContextBench Lite/sympy__sympy-12426.json",
+      "subset_used": "SWEContextBench Lite",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-12426.json",
+        "cases/SWEContextBench Lite/sympy__sympy-12426.json",
+        "cases/SWEContextBench Verified/sympy__sympy-12426.json"
+      ],
+      "in_full": true,
+      "case_sha256": "1f6e96fc93d0c32eac186c9aadea70a14c6e1f5d3edb886180a0788c5aa0d7dd",
+      "repo": "sympy/sympy",
+      "base_commit": "2340de24255dce927b66840f6271431269ba5b93",
+      "patch_sha256": "cfce5998ec48b8699d7ae05120740506b86823bb1c2efc51940d5c263877b123",
+      "test_patch_sha256": "7d0a5a81cde2ae56c72959b6b468f53703efccdf892af55028077f313a3c8a63",
+      "f2p_canon": "0db6ecee16c5ad1d18e209ed668110b82b80cc9e5c2eeb20efa6dd4276327032",
+      "p2p_canon": "6fc869f4b6c1d62296347e872b0c0c96c1c2772ce8e1eb4bca694793252f9c94",
+      "problem_statement_sha256": "c93fb0c97643663562435da7c0193c20b177396da2014f576e3c82f2e2a04d8c",
+      "environment_setup_commit": "2340de24255dce927b66840f6271431269ba5b93"
+    },
+    "sympy__sympy-12427": {
+      "instance_id": "sympy__sympy-12427",
+      "case_path": "cases/SWEContextBench Lite/sympy__sympy-12427.json",
+      "subset_used": "SWEContextBench Lite",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-12427.json",
+        "cases/SWEContextBench Lite/sympy__sympy-12427.json",
+        "cases/SWEContextBench Verified/sympy__sympy-12427.json"
+      ],
+      "in_full": true,
+      "case_sha256": "6efc85649f3a22d7533e3d709e6dc29d0b515e023f33bef28724b0c904fd9175",
+      "repo": "sympy/sympy",
+      "base_commit": "d3fcdb72bfcbb560eb45264ac1c03f359436edef",
+      "patch_sha256": "4af5d0ac5b80f2f8cdb93faa4de28bb626701bf1cde31796537afda9bd5774a6",
+      "test_patch_sha256": "7ec05444ccd481fd5bea98afe890d1eba1f0075d36ccc4b836a62a74947bfde6",
+      "f2p_canon": "b2e513c52c787db3072073920d58328ce2f145da79bb53d9d101a58de7d4662d",
+      "p2p_canon": "f11108cb09ffd5eccafd17e4c18bc562c5fa1cdfa6adc108a312d57e53870c8f",
+      "problem_statement_sha256": "48b0e3d088c9433d226473a2df183a285ae49f3338732a6fa036afb929f8713c",
+      "environment_setup_commit": "d3fcdb72bfcbb560eb45264ac1c03f359436edef"
+    },
+    "sympy__sympy-14973": {
+      "instance_id": "sympy__sympy-14973",
+      "case_path": "cases/SWEContextBench Verified/sympy__sympy-14973.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-14973.json",
+        "cases/SWEContextBench Verified/sympy__sympy-14973.json"
+      ],
+      "in_full": true,
+      "case_sha256": "e50e5dbe0d8848ca29146cdc5caa77de647ee57053e296b553e633aa45de852d",
+      "repo": "sympy/sympy",
+      "base_commit": "2b4afb6cd0a7cd5791d512b80fce493cda9b57e0",
+      "patch_sha256": "3daa42a299e00dd27c3bdddecba010e6af94e54cf7f6496275d3b322e2d77ba9",
+      "test_patch_sha256": "4953056fad9b267b140232836b8162e6f5bf2e4a0c8fdb58bf3c73b9a12fecf6",
+      "f2p_canon": "dd16e15333d15cbe09be237f89d3a218182d3066bc811cd1c763dd78e0a77dbc",
+      "p2p_canon": "0ce218b46b355f0a9b7a4cb4ebf8dfe585dd4f609df41767cdd46844f4649697",
+      "problem_statement_sha256": "656e73996858c4bb56a41f4ab8d790384667007e328a724f28f2bf2b8078a206",
+      "environment_setup_commit": "2b4afb6cd0a7cd5791d512b80fce493cda9b57e0"
+    },
+    "sympy__sympy-14975": {
+      "instance_id": "sympy__sympy-14975",
+      "case_path": "cases/SWEContextBench Verified/sympy__sympy-14975.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-14975.json",
+        "cases/SWEContextBench Verified/sympy__sympy-14975.json"
+      ],
+      "in_full": true,
+      "case_sha256": "d0bbd43beb1b786bdf710f50876ea5a4eeb340ea2a22e5508e71d9e71bb29d4b",
+      "repo": "sympy/sympy",
+      "base_commit": "2b4afb6cd0a7cd5791d512b80fce493cda9b57e0",
+      "patch_sha256": "3daa42a299e00dd27c3bdddecba010e6af94e54cf7f6496275d3b322e2d77ba9",
+      "test_patch_sha256": "4953056fad9b267b140232836b8162e6f5bf2e4a0c8fdb58bf3c73b9a12fecf6",
+      "f2p_canon": "dd16e15333d15cbe09be237f89d3a218182d3066bc811cd1c763dd78e0a77dbc",
+      "p2p_canon": "0ce218b46b355f0a9b7a4cb4ebf8dfe585dd4f609df41767cdd46844f4649697",
+      "problem_statement_sha256": "f4888a62e7265bee535c757ad6c0356bf6d7734338303b8f5f6734e81e6fd529",
+      "environment_setup_commit": "2b4afb6cd0a7cd5791d512b80fce493cda9b57e0"
+    },
+    "sympy__sympy-15974": {
+      "instance_id": "sympy__sympy-15974",
+      "case_path": "cases/SWEContextBench Verified/sympy__sympy-15974.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-15974.json",
+        "cases/SWEContextBench Verified/sympy__sympy-15974.json"
+      ],
+      "in_full": true,
+      "case_sha256": "c42d9cb22d2ac42746258601245a9400b0a4932ea3d09550e9357bde0386b7e2",
+      "repo": "sympy/sympy",
+      "base_commit": "3d8300a569cfeed57bd36908240862ca330204b0",
+      "patch_sha256": "4cf03316795e53368b489294c139f448f0b5614db845d5c93446faf50bdd1302",
+      "test_patch_sha256": "12f9493a239e0905ad3a6192aa8df2ee65987a9b13115eaa528739659f56c041",
+      "f2p_canon": "c071c6f731141105da84ca05fabd16ab05bbbce2c570fd0bc9ab54c48d4cd4d6",
+      "p2p_canon": "3d60eab01c683a1063219a2a2c8a8e3c63c3f0d0ed0f894966141e24e71da62b",
+      "problem_statement_sha256": "e3558492d31e932c3c1380e6927c71fc7077ca79c24b8f5d1d425a9106409438",
+      "environment_setup_commit": "3d8300a569cfeed57bd36908240862ca330204b0"
+    },
+    "sympy__sympy-16342": {
+      "instance_id": "sympy__sympy-16342",
+      "case_path": "cases/SWEContextBench Lite/sympy__sympy-16342.json",
+      "subset_used": "SWEContextBench Lite",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-16342.json",
+        "cases/SWEContextBench Lite/sympy__sympy-16342.json"
+      ],
+      "in_full": true,
+      "case_sha256": "ffb00639826512125ba010379fe62bfcb92574846172507bd584a5306561329f",
+      "repo": "sympy/sympy",
+      "base_commit": "215b9ee31f3aa5eb31826c904674cb2ff37617ff",
+      "patch_sha256": "10030be98db7836dde9dfb03e2bc27866f6f8a4b920612d52bcebce130e11a1c",
+      "test_patch_sha256": "169145ea4b4201d83aae371a26c0577291974237d7a61d8f55caa53cbabbbb0e",
+      "f2p_canon": "7ae0ebf296e821b33e0cdda8ec376a20c35f3c6c83033ae5cb15e5603b6915e9",
+      "p2p_canon": "b9c8e61ffd911475b991c3bcc932a68089fd218dcd52e96c7ee1c1a66b5ce0c1",
+      "problem_statement_sha256": "912cbfa3308f192a7e31ed344cee7f04182a7ee2656397e91433d945b2fd68a0",
+      "environment_setup_commit": "215b9ee31f3aa5eb31826c904674cb2ff37617ff"
+    },
+    "sympy__sympy-16924": {
+      "instance_id": "sympy__sympy-16924",
+      "case_path": "cases/SWEContextBench Verified/sympy__sympy-16924.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-16924.json",
+        "cases/SWEContextBench Verified/sympy__sympy-16924.json"
+      ],
+      "in_full": true,
+      "case_sha256": "4261c1185ca8cb5a1c729d1cb73f8a9d2623f5d09aa1a0ddd55fce5fb196fae9",
+      "repo": "sympy/sympy",
+      "base_commit": "bdc95a90491fdb8f9e64877f7059a05210bdf49a",
+      "patch_sha256": "2bdda2f9e220b7b311572e9006b958bf79df89fcf0c0d7353d1de24cebc57483",
+      "test_patch_sha256": "b8cb51d061849ae98ea5eecd9f6a84e1b0a6696be01b3395d70ed515c22f3dd6",
+      "f2p_canon": "f212f26d4b99927db1848388cc44cba09c8f9ddd53fefbac2c48b3a2f2fc5ae6",
+      "p2p_canon": "ea07240da66ecd2963b65234c9b417fdf3c5de55b009a98d5342589b917c7f37",
+      "problem_statement_sha256": "bdada84a9573f6fa4e554418c577e819934985547b91595b296499d446b14242",
+      "environment_setup_commit": "bdc95a90491fdb8f9e64877f7059a05210bdf49a"
+    },
+    "sympy__sympy-16946": {
+      "instance_id": "sympy__sympy-16946",
+      "case_path": "cases/SWEContextBench Lite/sympy__sympy-16946.json",
+      "subset_used": "SWEContextBench Lite",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-16946.json",
+        "cases/SWEContextBench Lite/sympy__sympy-16946.json"
+      ],
+      "in_full": true,
+      "case_sha256": "56f6dbc9600b24cfb3625d9a2332c599c57da0f8006d232f1bb6f72f1de0bed2",
+      "repo": "sympy/sympy",
+      "base_commit": "99c6670e65207e879342cb5b1dd11cbffd5cb5ab",
+      "patch_sha256": "3cf319702bb88aeb3ceb1cf4acbcb8119e0b14ec256b5fb68da72def1ae979d7",
+      "test_patch_sha256": "59fef388510d1f44d94d77c8505dc03ea1dea548244eff99186813d5353e128d",
+      "f2p_canon": "dcca5eccf9b20e58ec265533ed4ccc07b86351e101ab502ce77c77b64f5038c2",
+      "p2p_canon": "1fae60be41c88df049739264d6102dd16308808eacdcaf50c7aa20f34eb2a261",
+      "problem_statement_sha256": "74e20acbb7515a6e50d72d35fc2cdd8f154251949a292b170299fc743c880525",
+      "environment_setup_commit": "99c6670e65207e879342cb5b1dd11cbffd5cb5ab"
+    },
+    "sympy__sympy-16953": {
+      "instance_id": "sympy__sympy-16953",
+      "case_path": "cases/SWEContextBench Lite/sympy__sympy-16953.json",
+      "subset_used": "SWEContextBench Lite",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-16953.json",
+        "cases/SWEContextBench Lite/sympy__sympy-16953.json"
+      ],
+      "in_full": true,
+      "case_sha256": "188b2eb0d83c55d1a364b82673b5568e803d6e32181d6b9ebe841e2af4b223db",
+      "repo": "sympy/sympy",
+      "base_commit": "215b9ee31f3aa5eb31826c904674cb2ff37617ff",
+      "patch_sha256": "10030be98db7836dde9dfb03e2bc27866f6f8a4b920612d52bcebce130e11a1c",
+      "test_patch_sha256": "169145ea4b4201d83aae371a26c0577291974237d7a61d8f55caa53cbabbbb0e",
+      "f2p_canon": "7ae0ebf296e821b33e0cdda8ec376a20c35f3c6c83033ae5cb15e5603b6915e9",
+      "p2p_canon": "b9c8e61ffd911475b991c3bcc932a68089fd218dcd52e96c7ee1c1a66b5ce0c1",
+      "problem_statement_sha256": "73db6185fcf57599435f58cc45ab8567fc72e7f42cbf6826952b58570d22ca00",
+      "environment_setup_commit": "215b9ee31f3aa5eb31826c904674cb2ff37617ff"
+    },
+    "sympy__sympy-18115": {
+      "instance_id": "sympy__sympy-18115",
+      "case_path": "cases/SWEContextBench Verified/sympy__sympy-18115.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-18115.json",
+        "cases/SWEContextBench Verified/sympy__sympy-18115.json"
+      ],
+      "in_full": true,
+      "case_sha256": "e1b98544a7db27bd45abdd74ddaa37d2d76fe677946f36081c23d63adc2a3609",
+      "repo": "sympy/sympy",
+      "base_commit": "c559a8421ac4865ebfe66024be6cd43a6103a62b",
+      "patch_sha256": "fad10d29b8483503b5aff2eafb9aae2230e29b7e045c2770727d9235625d4457",
+      "test_patch_sha256": "04d418e8ae2ff07d9ff1c01176ff11ae82afce5e3a2ecc8942eaa9007b583d0c",
+      "f2p_canon": "caf415308bf67d768e9ce270d776fcf15ffe9c82d7f210d17b8575e512319529",
+      "p2p_canon": "979bf6ced035aee1329ffb1947eaadab55cbe2ec8029e135dde32350abf6cfd9",
+      "problem_statement_sha256": "5a7c666ffcb39ea79c57b915455c74efcf8ee8c72e238062392c23c2490eaeca",
+      "environment_setup_commit": "c559a8421ac4865ebfe66024be6cd43a6103a62b"
+    },
+    "sympy__sympy-18196": {
+      "instance_id": "sympy__sympy-18196",
+      "case_path": "cases/SWEContextBench Verified/sympy__sympy-18196.json",
+      "subset_used": "SWEContextBench Verified",
+      "all_case_paths": [
+        "cases/SWEContextBench Full/sympy__sympy-18196.json",
+        "cases/SWEContextBench Verified/sympy__sympy-18196.json"
+      ],
+      "in_full": true,
+      "case_sha256": "eac3705b2a37a8062024aa88bc5a6be3384e1af609b11abb1ea6f4d9cba65403",
+      "repo": "sympy/sympy",
+      "base_commit": "c559a8421ac4865ebfe66024be6cd43a6103a62b",
+      "patch_sha256": "fad10d29b8483503b5aff2eafb9aae2230e29b7e045c2770727d9235625d4457",
+      "test_patch_sha256": "04d418e8ae2ff07d9ff1c01176ff11ae82afce5e3a2ecc8942eaa9007b583d0c",
+      "f2p_canon": "caf415308bf67d768e9ce270d776fcf15ffe9c82d7f210d17b8575e512319529",
+      "p2p_canon": "979bf6ced035aee1329ffb1947eaadab55cbe2ec8029e135dde32350abf6cfd9",
+      "problem_statement_sha256": "31a6cc8701bda29ecd1e787d4e71c8d74cc9af5ab45426aa03c6827f528a2e1e",
+      "environment_setup_commit": "c559a8421ac4865ebfe66024be6cd43a6103a62b"
+    }
+  }
+}

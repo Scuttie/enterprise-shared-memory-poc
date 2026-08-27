@@ -1,0 +1,3649 @@
+{
+  "schema": "r22a/oracle_dev_manifest/1.0.0",
+  "experiment": "REALBENCH_R22A_STAGE_ALIGNED_GRADEABLE_V1",
+  "manifest_sha256": "b1a7dac56aa9b51933436da0756055e288c492a1d776ac947bc1c49551bbc780",
+  "task_list": [
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O2",
+      "mem_source": "astral-sh__ruff-15997",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "65febb7b034f3e7000b472ccc6bf0d5510e135bf504dea7e9d5564112f8b5b59",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O3",
+      "mem_source": "apache__lucene-11760",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "594cc475463e8e60e396e899f18737c7cc06fde61e20db635ff2599a70f24b08",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O4",
+      "mem_source": "apache__lucene-11760",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "844490b8cfe70143612fca59a08567cf076ab029d7ffd201fe5ade044f39b992",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O5",
+      "mem_source": "apache__lucene-11760",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O6",
+      "mem_source": "apache__lucene-11760",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-14500",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "35eefd6ee8f8b52dbf61e5b2eff53dfd21cde84105dc838cdcf884ccd2e0a5e3",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O3",
+      "mem_source": "astral-sh__ruff-15394",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "345130812b01a46c6ee7b188824fb2aba1428782786187304d3a691ea4a53585",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O4",
+      "mem_source": "astral-sh__ruff-15394",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "9e2b5dc7ee7d13c48291ab7c1d415f95ae78073cad5b9165beb136224f271e51",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O5",
+      "mem_source": "astral-sh__ruff-15394",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O6",
+      "mem_source": "astral-sh__ruff-15394",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-15082",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "7f41571afb79c71a5ef184b9083d4b7d7c5ed64deda7e1c52c6b190ab45a265e",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-13977",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "12eb47aa6e34fc99279aeabfeb9dde9e48411f7ad2b9be4ba8fb7d6d643563e4",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-13977",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "24e81d188b9d9d624b251045446424411a83c6342a3b19126d672f8459291e00",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-13977",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-13977",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-6389",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "b1631db9e07749844b6867e210f1a14ca47d6a1ba6ea8461989630fb5529c76f",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-14995",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "07ae5e59b7b1c40dc30eda457950d442be7ed7db9c3c74d474e2b0df7c305699",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-14995",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "38e263360fd66cdde840cec25b7a488301f3e676467b76409afc14dee00ef87d",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-14995",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-14995",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-7167",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "7c1eecdf23017a3b42fc1546c9dc0303a985b190ae8dfc0a743b3436dbb5e6d3",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "9c92e274a7ec8ebba17f094a3e6d4f29ae3d7a6e6d70e76a4efd6253556ca6dc",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "79a4af1595e9d30c4ad4430a1d40dbbe8c33527d58878817fc5862ab45536f65",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-8614",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "17ee8f71489a87305e49f613ad70c82a7aeb7963a61dc301761559d0b6aa09f7",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-7166",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "b8b825a449532443a289a0beb9f3891b0bfcae63cb8cc8b1f301a7a4543037a3",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-7166",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "c975818c04dca87cb5a50e42d582f7ef1b53f44f3f271bdca4c057ea9c9b4003",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-7166",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-7166",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-8711",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "911246242edba76812e576da28a1e415432f19c77fff180a426329a74314b1c2",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "9c92e274a7ec8ebba17f094a3e6d4f29ae3d7a6e6d70e76a4efd6253556ca6dc",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "79a4af1595e9d30c4ad4430a1d40dbbe8c33527d58878817fc5862ab45536f65",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O2",
+      "mem_source": "caddyserver__caddy-5770",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "03afc721e8f964e6615563154db01eb8411c55814b48cd3a9ec5a91efb5c8f91",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-8707",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "94339855037baa13e7dff6bb9e9810390af53410f11b5f6c549fde8018c255de",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-8707",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "fa1c3bcd1d8def629347b82fa46c6d20c3804ca1c9420f9d3814c497a37d92e5",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-8707",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-8707",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O2",
+      "mem_source": "caddyserver__caddy-5930",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "2bc2a46ed5f911fb4c81286ef005eaff05d3827278ef3ddb21ab49fc7f6ef951",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O3",
+      "mem_source": "caddyserver__caddy-5761",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "aaddafc6460ef1ed42792621feaabdfc9aa95ce9ea2d95e735df6ef57451986b",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O4",
+      "mem_source": "caddyserver__caddy-5761",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "a3414549edac9350a7f6b4e2de7ec93fb69424d92d77432cb1a890760f4844bc",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O5",
+      "mem_source": "caddyserver__caddy-5761",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O6",
+      "mem_source": "caddyserver__caddy-5761",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O2",
+      "mem_source": "google__gson-2787",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "bf2628e01a2e3e08f7f6b4a41163ba3f7b13cc3ea153ba880cce5b9824bf2608",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O3",
+      "mem_source": "caddyserver__caddy-6051",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "adcb2f2108dff0b61b0b0979e1f439ec94a9d0b996ad3bf78657f35ecdd0050c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O4",
+      "mem_source": "caddyserver__caddy-6051",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "67f6d99de3766b2703303d8736946c38000f3168d4f9d774cb837e4abea460d6",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O5",
+      "mem_source": "caddyserver__caddy-6051",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O6",
+      "mem_source": "caddyserver__caddy-6051",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-2787",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_a9daf814aa",
+      "source_user": "gold_a62df3a719",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-2787",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_a9daf814aa",
+      "source_user": "gold_a62df3a719",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-2787",
+      "arm": "O2",
+      "mem_source": "google__gson-904",
+      "target_user": "u_a9daf814aa",
+      "source_user": "gold_a62df3a719",
+      "payload_hash": "77c93570dfc3273983625ec2548c0baed2a5a4724ad24f09941ebdca0c5860af",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-2787",
+      "arm": "O3",
+      "mem_source": "google__gson-2479",
+      "target_user": "u_a9daf814aa",
+      "source_user": "gold_a62df3a719",
+      "payload_hash": "1dedac3e3ac3f95fe1b9319829d5276bb4a59c249120bd5ec66d9e954e8e8c92",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-2787",
+      "arm": "O4",
+      "mem_source": "google__gson-2479",
+      "target_user": "u_a9daf814aa",
+      "source_user": "gold_a62df3a719",
+      "payload_hash": "56ae0ad8c551e580612578506f502bc45cb2a227d5213a99f53edf8d43897595",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-2787",
+      "arm": "O5",
+      "mem_source": "google__gson-2479",
+      "target_user": "u_a9daf814aa",
+      "source_user": "gold_a62df3a719",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-2787",
+      "arm": "O6",
+      "mem_source": "google__gson-2479",
+      "target_user": "u_a9daf814aa",
+      "source_user": "gold_a62df3a719",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-904",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_d6985c96cf",
+      "source_user": "gold_54157cac71",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-904",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_d6985c96cf",
+      "source_user": "gold_54157cac71",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-904",
+      "arm": "O2",
+      "mem_source": "mwaskom__seaborn-3203",
+      "target_user": "u_d6985c96cf",
+      "source_user": "gold_54157cac71",
+      "payload_hash": "e1157f645e11235932f26295308eaad8ca0f76e8020c9a21313319c7dc37288b",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-904",
+      "arm": "O3",
+      "mem_source": "google__gson-2311",
+      "target_user": "u_d6985c96cf",
+      "source_user": "gold_54157cac71",
+      "payload_hash": "1a4b372703e12be74395960ea9a08c79456021b6bfc98cef1f54a57f753090fe",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-904",
+      "arm": "O4",
+      "mem_source": "google__gson-2311",
+      "target_user": "u_d6985c96cf",
+      "source_user": "gold_54157cac71",
+      "payload_hash": "7ac3741469a8af635f2a2dc87bcf34d91bd8b689bfa12c06fe2ed9199c1a5b71",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-904",
+      "arm": "O5",
+      "mem_source": "google__gson-2311",
+      "target_user": "u_d6985c96cf",
+      "source_user": "gold_54157cac71",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "google__gson-904",
+      "arm": "O6",
+      "mem_source": "google__gson-2311",
+      "target_user": "u_d6985c96cf",
+      "source_user": "gold_54157cac71",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "mwaskom__seaborn-3203",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_738fa81839",
+      "source_user": "gold_48bfad25ca",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "mwaskom__seaborn-3203",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_738fa81839",
+      "source_user": "gold_48bfad25ca",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "mwaskom__seaborn-3203",
+      "arm": "O2",
+      "mem_source": "prometheus__prometheus-15177",
+      "target_user": "u_738fa81839",
+      "source_user": "gold_48bfad25ca",
+      "payload_hash": "c67c2a49abd53bcd0c24d417dfe96b4da4e9abb6be61453f31d79f5d72d86ce4",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "mwaskom__seaborn-3203",
+      "arm": "O3",
+      "mem_source": "mwaskom__seaborn-3190",
+      "target_user": "u_738fa81839",
+      "source_user": "gold_48bfad25ca",
+      "payload_hash": "92b71e88b8ee8d5a764452ded2f258449b2a65bccd4bbb5109577445a630b51f",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "mwaskom__seaborn-3203",
+      "arm": "O4",
+      "mem_source": "mwaskom__seaborn-3190",
+      "target_user": "u_738fa81839",
+      "source_user": "gold_48bfad25ca",
+      "payload_hash": "ecbe9ad724992bf3c22a2efb8f18eeb9e77662925a46f97fbd2d942c2305e0ea",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "mwaskom__seaborn-3203",
+      "arm": "O5",
+      "mem_source": "mwaskom__seaborn-3190",
+      "target_user": "u_738fa81839",
+      "source_user": "gold_48bfad25ca",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "mwaskom__seaborn-3203",
+      "arm": "O6",
+      "mem_source": "mwaskom__seaborn-3190",
+      "target_user": "u_738fa81839",
+      "source_user": "gold_48bfad25ca",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-15177",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_fe1c39d0c3",
+      "source_user": "gold_f77e9af7a6",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-15177",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_fe1c39d0c3",
+      "source_user": "gold_f77e9af7a6",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-15177",
+      "arm": "O2",
+      "mem_source": "prometheus__prometheus-9485",
+      "target_user": "u_fe1c39d0c3",
+      "source_user": "gold_f77e9af7a6",
+      "payload_hash": "923675f9c680ba6af037e50cf70d746dae8f21fcb7d5bcd3beb5817a93e74d1d",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-15177",
+      "arm": "O3",
+      "mem_source": "prometheus__prometheus-15142",
+      "target_user": "u_fe1c39d0c3",
+      "source_user": "gold_f77e9af7a6",
+      "payload_hash": "b7a2ca98d21036fa1562dd33ef367e77be9478c072ccbcdcb8f41994fdd1a5c4",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-15177",
+      "arm": "O4",
+      "mem_source": "prometheus__prometheus-15142",
+      "target_user": "u_fe1c39d0c3",
+      "source_user": "gold_f77e9af7a6",
+      "payload_hash": "a222dbc6548aea8132a40373cc5c1b190b3bfa5b0b7de6614a918efb8d7de7bb",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-15177",
+      "arm": "O5",
+      "mem_source": "prometheus__prometheus-15142",
+      "target_user": "u_fe1c39d0c3",
+      "source_user": "gold_f77e9af7a6",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-15177",
+      "arm": "O6",
+      "mem_source": "prometheus__prometheus-15142",
+      "target_user": "u_fe1c39d0c3",
+      "source_user": "gold_f77e9af7a6",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-9485",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_4a700bfc77",
+      "source_user": "gold_6281d4ffad",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-9485",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_4a700bfc77",
+      "source_user": "gold_6281d4ffad",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-9485",
+      "arm": "O2",
+      "mem_source": "pydata__xarray-3891",
+      "target_user": "u_4a700bfc77",
+      "source_user": "gold_6281d4ffad",
+      "payload_hash": "13d81100558c8b9890c0c162a0b11f2dadad78f40b402e5dbec4136d001a6c5a",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-9485",
+      "arm": "O3",
+      "mem_source": "prometheus__prometheus-9248",
+      "target_user": "u_4a700bfc77",
+      "source_user": "gold_6281d4ffad",
+      "payload_hash": "70901d6731bcae39292115e08966130a247914623e4b00a02a27e601c9dc063f",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-9485",
+      "arm": "O4",
+      "mem_source": "prometheus__prometheus-9248",
+      "target_user": "u_4a700bfc77",
+      "source_user": "gold_6281d4ffad",
+      "payload_hash": "eef06b827988a5ea2eadd05d9b2cd31de3f065fba0ded441d1701e180c1c6613",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-9485",
+      "arm": "O5",
+      "mem_source": "prometheus__prometheus-9248",
+      "target_user": "u_4a700bfc77",
+      "source_user": "gold_6281d4ffad",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "prometheus__prometheus-9485",
+      "arm": "O6",
+      "mem_source": "prometheus__prometheus-9248",
+      "target_user": "u_4a700bfc77",
+      "source_user": "gold_6281d4ffad",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-3891",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_a679e66277",
+      "source_user": "gold_b0b96b9211",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-3891",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_a679e66277",
+      "source_user": "gold_b0b96b9211",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-3891",
+      "arm": "O2",
+      "mem_source": "pydata__xarray-508",
+      "target_user": "u_a679e66277",
+      "source_user": "gold_b0b96b9211",
+      "payload_hash": "76df0186081c41d265f48191826513129dbf96a4c545de8c61db1e06503f5c06",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-3891",
+      "arm": "O3",
+      "mem_source": "pydata__xarray-3305",
+      "target_user": "u_a679e66277",
+      "source_user": "gold_b0b96b9211",
+      "payload_hash": "996f7729b4d2c2d7003ecb4ad8360712d7ae65a91b9c7c9ed18ae3f2676162ec",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-3891",
+      "arm": "O4",
+      "mem_source": "pydata__xarray-3305",
+      "target_user": "u_a679e66277",
+      "source_user": "gold_b0b96b9211",
+      "payload_hash": "cef26eac7064f00e6ed1cbe8e22dc6551ac140e1185843a1de44ebb50c198301",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-3891",
+      "arm": "O5",
+      "mem_source": "pydata__xarray-3305",
+      "target_user": "u_a679e66277",
+      "source_user": "gold_b0b96b9211",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-3891",
+      "arm": "O6",
+      "mem_source": "pydata__xarray-3305",
+      "target_user": "u_a679e66277",
+      "source_user": "gold_b0b96b9211",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-508",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_ab71914328",
+      "source_user": "gold_7d45a178a6",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-508",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_ab71914328",
+      "source_user": "gold_7d45a178a6",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-508",
+      "arm": "O2",
+      "mem_source": "pydata__xarray-7068",
+      "target_user": "u_ab71914328",
+      "source_user": "gold_7d45a178a6",
+      "payload_hash": "b82eaeab862596d2e03f978ad351332500ef6f6681cefe53b82372188a83bdf1",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-508",
+      "arm": "O3",
+      "mem_source": "pydata__xarray-3364",
+      "target_user": "u_ab71914328",
+      "source_user": "gold_7d45a178a6",
+      "payload_hash": "7343976017ccfb2e2678fc553ab04c26736e7e7df8eb8a987d1cfc772d464bce",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-508",
+      "arm": "O4",
+      "mem_source": "pydata__xarray-3364",
+      "target_user": "u_ab71914328",
+      "source_user": "gold_7d45a178a6",
+      "payload_hash": "e7bd192fb572ae21a0d067fd5b8ec2c0f01253534eeee34fa243cb455a507884",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-508",
+      "arm": "O5",
+      "mem_source": "pydata__xarray-3364",
+      "target_user": "u_ab71914328",
+      "source_user": "gold_7d45a178a6",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-508",
+      "arm": "O6",
+      "mem_source": "pydata__xarray-3364",
+      "target_user": "u_ab71914328",
+      "source_user": "gold_7d45a178a6",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7068",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_828a693bed",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7068",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_828a693bed",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7068",
+      "arm": "O2",
+      "mem_source": "pydata__xarray-7220",
+      "target_user": "u_828a693bed",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "5a6f8a09838943e02b6f209a4fe9ce98d85ebe176dd417a14d41de70dbe950f1",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7068",
+      "arm": "O3",
+      "mem_source": "pydata__xarray-6461",
+      "target_user": "u_828a693bed",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "b4d688b89de47a729aaaad571975d68d7ce0ea1cc127fcc6974508f9537f0da1",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7068",
+      "arm": "O4",
+      "mem_source": "pydata__xarray-6461",
+      "target_user": "u_828a693bed",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "347ad6b75d34049fe4e502ec4abf8b3472ad8e2ecd4c910d926f1fc36cd8b881",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7068",
+      "arm": "O5",
+      "mem_source": "pydata__xarray-6461",
+      "target_user": "u_828a693bed",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7068",
+      "arm": "O6",
+      "mem_source": "pydata__xarray-6461",
+      "target_user": "u_828a693bed",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7220",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_93ea0cf788",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7220",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_93ea0cf788",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7220",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-11707",
+      "target_user": "u_93ea0cf788",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "85932998178c9ba83af120d79e82974f9a963917d23d1f490ca32ee20e17bc07",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7220",
+      "arm": "O3",
+      "mem_source": "pydata__xarray-6461",
+      "target_user": "u_93ea0cf788",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "b4d688b89de47a729aaaad571975d68d7ce0ea1cc127fcc6974508f9537f0da1",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7220",
+      "arm": "O4",
+      "mem_source": "pydata__xarray-6461",
+      "target_user": "u_93ea0cf788",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "347ad6b75d34049fe4e502ec4abf8b3472ad8e2ecd4c910d926f1fc36cd8b881",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7220",
+      "arm": "O5",
+      "mem_source": "pydata__xarray-6461",
+      "target_user": "u_93ea0cf788",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "pydata__xarray-7220",
+      "arm": "O6",
+      "mem_source": "pydata__xarray-6461",
+      "target_user": "u_93ea0cf788",
+      "source_user": "gold_87e58f64fa",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-11707",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_39ad3892b6",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-11707",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_39ad3892b6",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-11707",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-12426",
+      "target_user": "u_39ad3892b6",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "13bd8e27d58f701e13071817ed6c32e19a749024d10927bd80d88d7e6a36b39c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-11707",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_39ad3892b6",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "4ad2ca4abb3ccabff4e5646a29b06b99a67d0ae0c3bc1c4f784fa602d31fafcd",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-11707",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_39ad3892b6",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "c60809feeb4cbf43873b775895a6303c7804cfe24b80fa1af39c15a38c1e4bc2",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-11707",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_39ad3892b6",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-11707",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_39ad3892b6",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12426",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_4266f8b22b",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12426",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_4266f8b22b",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12426",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-12427",
+      "target_user": "u_4266f8b22b",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "f1a8d6485bfce26040510e62f4fb584ce0a034f10a7921354269853319e22ddf",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12426",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-12419",
+      "target_user": "u_4266f8b22b",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "794b4affd2879d53074aba23b58635fb3ee77d65898b73e14aa20c76128b0326",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12426",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-12419",
+      "target_user": "u_4266f8b22b",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "2ebf1a2b6278a14fe38e9f538bace7b57f03517f7e39bc5afad77ab770879ce4",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12426",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-12419",
+      "target_user": "u_4266f8b22b",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12426",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-12419",
+      "target_user": "u_4266f8b22b",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12427",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_e0a672edd9",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12427",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_e0a672edd9",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12427",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-14973",
+      "target_user": "u_e0a672edd9",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "d416e9bb18527f15c86cc6dc8c0f85b540f10c30f02df7fb7e3b7ed0fb4635ea",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12427",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-12419",
+      "target_user": "u_e0a672edd9",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "794b4affd2879d53074aba23b58635fb3ee77d65898b73e14aa20c76128b0326",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12427",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-12419",
+      "target_user": "u_e0a672edd9",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "2ebf1a2b6278a14fe38e9f538bace7b57f03517f7e39bc5afad77ab770879ce4",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12427",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-12419",
+      "target_user": "u_e0a672edd9",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-12427",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-12419",
+      "target_user": "u_e0a672edd9",
+      "source_user": "gold_7660e1d2f6",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14973",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_2beb582d3f",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14973",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_2beb582d3f",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14973",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-14975",
+      "target_user": "u_2beb582d3f",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "779134a4818635ecc3b74bf9986a94a703060270797cb118cf0eb17209d7f160",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14973",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_2beb582d3f",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "98fc267a61244586ffd6825d2321d8bfcb2ce9e5481aad26deae197ee3650674",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14973",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_2beb582d3f",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "4b6d8910580e60e9ab02a925b78eba3b544f2751186044f86c8221187f658c2b",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14973",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_2beb582d3f",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14973",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_2beb582d3f",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14975",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_b99e765f2b",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14975",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_b99e765f2b",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14975",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-15974",
+      "target_user": "u_b99e765f2b",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "8f043e4b591528d98de798fc0894e28521913a0332b74ab24b1c1d452729f208",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14975",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_b99e765f2b",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "98fc267a61244586ffd6825d2321d8bfcb2ce9e5481aad26deae197ee3650674",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14975",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_b99e765f2b",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "4b6d8910580e60e9ab02a925b78eba3b544f2751186044f86c8221187f658c2b",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14975",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_b99e765f2b",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-14975",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_b99e765f2b",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-15974",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_7b8b8846d2",
+      "source_user": "gold_49c8b68c0d",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-15974",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_7b8b8846d2",
+      "source_user": "gold_49c8b68c0d",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-15974",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-16342",
+      "target_user": "u_7b8b8846d2",
+      "source_user": "gold_49c8b68c0d",
+      "payload_hash": "f5b50753bef20eb60cbefe177b78e9fd8c44f24d05774793f9b3e3760442be34",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-15974",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-15976",
+      "target_user": "u_7b8b8846d2",
+      "source_user": "gold_49c8b68c0d",
+      "payload_hash": "484c285112e2c5e7e040cb4fe3efa2641f0d1db4d41f13bbc9911bf11276f3a1",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-15974",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-15976",
+      "target_user": "u_7b8b8846d2",
+      "source_user": "gold_49c8b68c0d",
+      "payload_hash": "eaf645e331f7030d3a90555f8bea4da01d614edf97b82c08d0907101be894b7e",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-15974",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-15976",
+      "target_user": "u_7b8b8846d2",
+      "source_user": "gold_49c8b68c0d",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-15974",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-15976",
+      "target_user": "u_7b8b8846d2",
+      "source_user": "gold_49c8b68c0d",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16342",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_a9c9334486",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16342",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_a9c9334486",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16342",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-16924",
+      "target_user": "u_a9c9334486",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "47d870558abd4bd521575a9d93bf7e297cdf087742ef392b6a3a93d2d999291b",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16342",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_a9c9334486",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "79a24a70a255052e864dcb04318ae324d53191e043fb5cddf9655e4969334611",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16342",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_a9c9334486",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "85effa7d615e2d8fb0609a3842c80e8311a81c2a7291ad533e2bcbc28367decc",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16342",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_a9c9334486",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16342",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_a9c9334486",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16924",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_ec30fd0b05",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16924",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_ec30fd0b05",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16924",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-16946",
+      "target_user": "u_ec30fd0b05",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "d8a0a0207da9d54d843e38a4614de9bdb4a83d8bd0f8fe01e66f23c5b305a4c1",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16924",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_ec30fd0b05",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "4ad2ca4abb3ccabff4e5646a29b06b99a67d0ae0c3bc1c4f784fa602d31fafcd",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16924",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_ec30fd0b05",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "c60809feeb4cbf43873b775895a6303c7804cfe24b80fa1af39c15a38c1e4bc2",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16924",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_ec30fd0b05",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16924",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_ec30fd0b05",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16946",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_e370573bf1",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16946",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_e370573bf1",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16946",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-16953",
+      "target_user": "u_e370573bf1",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "296511f320b0691f7c27bee8abd5384879c67893301be026dfc2c439504e752c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16946",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_e370573bf1",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "79a24a70a255052e864dcb04318ae324d53191e043fb5cddf9655e4969334611",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16946",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_e370573bf1",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "85effa7d615e2d8fb0609a3842c80e8311a81c2a7291ad533e2bcbc28367decc",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16946",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_e370573bf1",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16946",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_e370573bf1",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16953",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_993388ffcf",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16953",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_993388ffcf",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16953",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-18115",
+      "target_user": "u_993388ffcf",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "04f9ac91246375ee66f763b7fa822df1ebdd1f87244f62338b04d11d8d829912",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16953",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_993388ffcf",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "79a24a70a255052e864dcb04318ae324d53191e043fb5cddf9655e4969334611",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16953",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_993388ffcf",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "85effa7d615e2d8fb0609a3842c80e8311a81c2a7291ad533e2bcbc28367decc",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16953",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_993388ffcf",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-16953",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-16988",
+      "target_user": "u_993388ffcf",
+      "source_user": "gold_c9624302b3",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18115",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_677a9d2240",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18115",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_677a9d2240",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18115",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-18196",
+      "target_user": "u_677a9d2240",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "40f3bde708c046c0c07d4b260bc6453983cdb506223d7ac681d190dd9b40a4d4",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18115",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-18189",
+      "target_user": "u_677a9d2240",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "bf6badd90c5fc974530dd181108629ad991965c4efb5655000685953509d4193",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18115",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-18189",
+      "target_user": "u_677a9d2240",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "abfbd6b2d636c63d8a293357e24831243d22068696e114001c3859b36f5a267e",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18115",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-18189",
+      "target_user": "u_677a9d2240",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18115",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-18189",
+      "target_user": "u_677a9d2240",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18196",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_ab6bc0db9f",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18196",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_ab6bc0db9f",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18196",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-19235",
+      "target_user": "u_ab6bc0db9f",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "0a359c4af5b90c4fcb58070d5997c852b2425e47257cd9b7333ee9c26e190490",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18196",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-18189",
+      "target_user": "u_ab6bc0db9f",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "bf6badd90c5fc974530dd181108629ad991965c4efb5655000685953509d4193",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18196",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-18189",
+      "target_user": "u_ab6bc0db9f",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "abfbd6b2d636c63d8a293357e24831243d22068696e114001c3859b36f5a267e",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18196",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-18189",
+      "target_user": "u_ab6bc0db9f",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-18196",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-18189",
+      "target_user": "u_ab6bc0db9f",
+      "source_user": "gold_aa4a8a8547",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19235",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_59a8b0f74e",
+      "source_user": "gold_06dd8e2ae3",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19235",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_59a8b0f74e",
+      "source_user": "gold_06dd8e2ae3",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19235",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-19484",
+      "target_user": "u_59a8b0f74e",
+      "source_user": "gold_06dd8e2ae3",
+      "payload_hash": "67403ba22e0cec79eb20ee699ba1539129abd20c0aab89ac91447b3137fbb3e2",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19235",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-14774",
+      "target_user": "u_59a8b0f74e",
+      "source_user": "gold_06dd8e2ae3",
+      "payload_hash": "0283d62f600a8aac0cf21b8c2e06749e2aeba5806feeb86fdeeacb41ebf11689",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19235",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-14774",
+      "target_user": "u_59a8b0f74e",
+      "source_user": "gold_06dd8e2ae3",
+      "payload_hash": "95d99f94c9f48a848ff3283f666dbbe6b0043d2f60d44cc4ae27378b98c9c0db",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19235",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-14774",
+      "target_user": "u_59a8b0f74e",
+      "source_user": "gold_06dd8e2ae3",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19235",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-14774",
+      "target_user": "u_59a8b0f74e",
+      "source_user": "gold_06dd8e2ae3",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19484",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_4425dfe02e",
+      "source_user": "gold_dca3330c66",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19484",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_4425dfe02e",
+      "source_user": "gold_dca3330c66",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19484",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-19976",
+      "target_user": "u_4425dfe02e",
+      "source_user": "gold_dca3330c66",
+      "payload_hash": "b0f3920e307e823c869ca30a6a4c836295918b20c4135f522fd981217ed1ebbd",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19484",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-19487",
+      "target_user": "u_4425dfe02e",
+      "source_user": "gold_dca3330c66",
+      "payload_hash": "24dae2d835082231420a717a2c94c82632334f25dc80a51e3cf075acce8bb4aa",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19484",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-19487",
+      "target_user": "u_4425dfe02e",
+      "source_user": "gold_dca3330c66",
+      "payload_hash": "64d1313239434173983043edd5270b69c22ad70c814adb08b2500dccd83f5945",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19484",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-19487",
+      "target_user": "u_4425dfe02e",
+      "source_user": "gold_dca3330c66",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19484",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-19487",
+      "target_user": "u_4425dfe02e",
+      "source_user": "gold_dca3330c66",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19976",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_7de093fb3d",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19976",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_7de093fb3d",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19976",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-21203",
+      "target_user": "u_7de093fb3d",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "8a368d0dfdc82d9059e8fdbe61d9c835605e3c34ff84a7ed30fbbd495fde0fc0",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19976",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_7de093fb3d",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "4ad2ca4abb3ccabff4e5646a29b06b99a67d0ae0c3bc1c4f784fa602d31fafcd",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19976",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_7de093fb3d",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "c60809feeb4cbf43873b775895a6303c7804cfe24b80fa1af39c15a38c1e4bc2",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19976",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_7de093fb3d",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-19976",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-20801",
+      "target_user": "u_7de093fb3d",
+      "source_user": "gold_455b246d73",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21203",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_4a12ab4212",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21203",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_4a12ab4212",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21203",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-21309",
+      "target_user": "u_4a12ab4212",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "43e6ef7e0f89059f6761db2cd5df6efff62ec6bd2d5ab8f2933a3efa9c8c4c43",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21203",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_4a12ab4212",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ada6d3b039bd1da71a32b1a9b9af29f4f050d6ff6e84a802fd1538067a3dd511",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21203",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_4a12ab4212",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ebf6f1c53ea4647760f2ff7f2dad46b622cb8c93f6a18f3ee0730dac97f1df52",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21203",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_4a12ab4212",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21203",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_4a12ab4212",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21309",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_18f257d9d2",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21309",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_18f257d9d2",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21309",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-27868",
+      "target_user": "u_18f257d9d2",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "4d086b90bedb464a25cc7251ab020e973397b7d125d7d4e3dc6a4992128a025d",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21309",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_18f257d9d2",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ada6d3b039bd1da71a32b1a9b9af29f4f050d6ff6e84a802fd1538067a3dd511",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21309",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_18f257d9d2",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ebf6f1c53ea4647760f2ff7f2dad46b622cb8c93f6a18f3ee0730dac97f1df52",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21309",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_18f257d9d2",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-21309",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_18f257d9d2",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-27868",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_f968b36861",
+      "source_user": "gold_7b2a1989a0",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-27868",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_f968b36861",
+      "source_user": "gold_7b2a1989a0",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-27868",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-7229",
+      "target_user": "u_f968b36861",
+      "source_user": "gold_7b2a1989a0",
+      "payload_hash": "ec284bf0088d4652f5d44edf4b9493945bc451897f2f8ce71aa330b228c3c646",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-27868",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-24102",
+      "target_user": "u_f968b36861",
+      "source_user": "gold_7b2a1989a0",
+      "payload_hash": "b270c69e92c49d6b9b793c81d92d36448749896dbffb6fdb2aa6893d7b3ba22b",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-27868",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-24102",
+      "target_user": "u_f968b36861",
+      "source_user": "gold_7b2a1989a0",
+      "payload_hash": "929fc127b0664d3e128072edc1114ec47fbbbc04942e666f02ee1685c6d36355",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-27868",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-24102",
+      "target_user": "u_f968b36861",
+      "source_user": "gold_7b2a1989a0",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-27868",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-24102",
+      "target_user": "u_f968b36861",
+      "source_user": "gold_7b2a1989a0",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-7229",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_698b6285a6",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-7229",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_698b6285a6",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-7229",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-9384",
+      "target_user": "u_698b6285a6",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "7de4a57889d571ea2eb62ab52136303e57a3937a66a354fdc1989c5cdb8dfd7c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-7229",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_698b6285a6",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "98fc267a61244586ffd6825d2321d8bfcb2ce9e5481aad26deae197ee3650674",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-7229",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_698b6285a6",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "4b6d8910580e60e9ab02a925b78eba3b544f2751186044f86c8221187f658c2b",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-7229",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_698b6285a6",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-7229",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-14976",
+      "target_user": "u_698b6285a6",
+      "source_user": "gold_86bcd98c58",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O2",
+      "mem_source": "tokio-rs__tokio-3679",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ecf46a3a004bd8ecaafd75d37085b391bc20729fdb7431d7a47fbbcd1a701c77",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ada6d3b039bd1da71a32b1a9b9af29f4f050d6ff6e84a802fd1538067a3dd511",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ebf6f1c53ea4647760f2ff7f2dad46b622cb8c93f6a18f3ee0730dac97f1df52",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O2",
+      "mem_source": "apache__lucene-13388",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "c47b231c47d5307c36a636c2cfb4afa754ad5e44c76331d0f2b9d1bec7a92bf8",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O3",
+      "mem_source": "tokio-rs__tokio-6724",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "222fcbd6389b8231d141205351b3f21812f15ba6366ed03458d3c96a94b68d66",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O4",
+      "mem_source": "tokio-rs__tokio-6724",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "c48f2de5b656f986f26530f6db3c8b9e087bd65a437513f7b9c3c7732fa7ace2",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O5",
+      "mem_source": "tokio-rs__tokio-6724",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O6",
+      "mem_source": "tokio-rs__tokio-6724",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    }
+  ],
+  "target_count": 40,
+  "cell_count": 280
+}

@@ -1,0 +1,660 @@
+{
+  "total_duplicate_rows": 93,
+  "classes": {
+    "EXACT_DUPLICATE_ROW": 93
+  },
+  "detail": [
+    {
+      "instance_id": "astropy__astropy-12907",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "astropy__astropy-14182",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "astropy__astropy-14365",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "astropy__astropy-14995",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "django__django-10914",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-11099",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-11133",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-11179",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-11815",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-11848",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-11964",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-11999",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "django__django-12125",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 3
+    },
+    {
+      "instance_id": "django__django-12308",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-12708",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 5
+    },
+    {
+      "instance_id": "django__django-13028",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-13033",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-13158",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-13315",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 2
+    },
+    {
+      "instance_id": "django__django-13401",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-13551",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-13590",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-13658",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-13925",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-13933",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-13964",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 3
+    },
+    {
+      "instance_id": "django__django-14017",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "django__django-14155",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-14238",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-14534",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-14580",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-14608",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "django__django-14672",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-14752",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-14787",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "django__django-14855",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "django__django-14915",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-14999",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-15252",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 3
+    },
+    {
+      "instance_id": "django__django-15695",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 3
+    },
+    {
+      "instance_id": "django__django-15814",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-15851",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-16139",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-16255",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "django__django-16527",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-16595",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "django__django-17087",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23299",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23314",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23476",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-24149",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 3
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-24970",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25311",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25332",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 2
+    },
+    {
+      "instance_id": "psf__requests-2317",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "pydata__xarray-4094",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "pylint-dev__pylint-7080",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "pytest-dev__pytest-7432",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "pytest-dev__pytest-7490",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-10297",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13142",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13439",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13496",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13779",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-14087",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-14894",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-14983",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-25747",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-11445",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8595",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8721",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-12419",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 2
+    },
+    {
+      "instance_id": "sympy__sympy-12481",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-13031",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13480",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-13647",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-15345",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-16792",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "sympy__sympy-17139",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-17630",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-17655",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-18189",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 2
+    },
+    {
+      "instance_id": "sympy__sympy-18199",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 3
+    },
+    {
+      "instance_id": "sympy__sympy-18698",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-20154",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-20590",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 1
+    },
+    {
+      "instance_id": "sympy__sympy-21379",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-21612",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-21847",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-22714",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-23262",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-24066",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    },
+    {
+      "instance_id": "sympy__sympy-24213",
+      "rows": 2,
+      "distinct_row_hashes": 1,
+      "class": "EXACT_DUPLICATE_ROW",
+      "related_targets": 0
+    }
+  ],
+  "exact_duplicate_rows_to_drop": 93
+}

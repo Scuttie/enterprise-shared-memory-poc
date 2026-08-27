@@ -1,0 +1,29 @@
+{
+  "schema": "r22/oracle_arm_manifest/1.0.0",
+  "arms": [
+    "O0",
+    "O1",
+    "O2",
+    "O3",
+    "O4",
+    "O5",
+    "O6"
+  ],
+  "arm_content": {
+    "O0": null,
+    "O1": "compute_only",
+    "O2": "shuffled",
+    "O3": "full_precedent",
+    "O4": "issue_card",
+    "O5": "stage_semantic",
+    "O6": "stage_dual"
+  },
+  "primary_contrast": "O6 - O2",
+  "secondary": [
+    "O6-O0",
+    "O6-O4",
+    "O5-O4",
+    "O6-O5",
+    "O3-O6"
+  ]
+}

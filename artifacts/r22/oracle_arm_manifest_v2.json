@@ -1,0 +1,28 @@
+{
+  "schema": "r22/oracle_arm_manifest_v2/2.0.0",
+  "authoritative": true,
+  "supersedes": "artifacts/r22/oracle_arm_manifest.json (v1: O6-O2 primary) — preserved for provenance",
+  "arms": {
+    "O0": "NO_MEMORY",
+    "O1": "COMPUTE_CONTROL",
+    "O2": "SHUFFLED_STAGE_MEMORY",
+    "O3": "RELATED_FULL_PRECEDENT",
+    "O4": "RELATED_ISSUE_CARD",
+    "O5": "RELATED_STAGE_SEMANTIC",
+    "O6": "RELATED_STAGE_DUAL"
+  },
+  "primary_holm": {
+    "Q1": {"contrast": "O5 - O2", "question": "does historical content matter?"},
+    "Q2": {"contrast": "O5 - O4", "question": "does stage alignment matter?"},
+    "Q3": {"contrast": "O6 - O5", "question": "does the dual representation matter?"}
+  },
+  "diagnostics": ["O1 - O0", "O2 - O1", "O3 - O0", "O3 - O2", "O4 - O1", "O5 - O1", "O6 - O1"],
+  "product_candidates": ["O4", "O5", "O6"],
+  "oracle_upper_bound_not_selectable": "O3",
+  "p1_smoke_tasks": 12,
+  "p2_dev_tasks": 40,
+  "arms_per_task": 7,
+  "p1_runs": 84,
+  "p2_cells": 280,
+  "note": "P2 development method-discovery only; not a confirmatory efficacy claim. P3 main withheld (power-blocked)."
+}

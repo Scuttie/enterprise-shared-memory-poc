@@ -1,0 +1,6 @@
+{
+  "experiment": "REALBENCH_R22A_STAGE_ALIGNED_GRADEABLE_V1",
+  "gradeable_audit_sha256": "53ad6f59e879021cbf48d4a7d3bdedfc57a8fb850aedbe2d8eab8fbe7dc58002",
+  "dev55_manifest_sha256": "e6d345940384a1e7a6b154bd088d441b52776a3ebac1ab1be3de09d2fc5b39e3",
+  "dual_pair_sha256": "3e9a12e1a709dda3fb4055045b9af51717f1015ff82a5053f4d8aea7932ab6ec"
+}

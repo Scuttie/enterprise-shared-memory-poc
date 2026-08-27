@@ -1,0 +1,116 @@
+{
+  "schema": "r22/benchmark_lock/1.0.0",
+  "dataset": "jiayuanz3/SWEContextBench",
+  "dataset_license": "MIT",
+  "github_repo": "jiayuanz3/SWEContextBench",
+  "github_commit": "31bb04155f52b184bf31b220e3cff0607ac9c953",
+  "eval_code_license": "NONE (no LICENSE file in eval repo) -> not vendored",
+  "grader": "official SWE-bench harness (clean-room adapter; eval code NOT vendored)",
+  "files_sha256": {
+    "SWEContextBench_Experience.parquet": "384aa65247255b4b95323d039f701b7ed9198570029c503a881f48ba73dfa7b9",
+    "SWEContextBench_Related.parquet": "890aaf0fc82a739e5031232d81e208b82d71798c86d1960725055ffdeaeca2ad",
+    "SWEContextBench_Relationship.parquet": "4bcbe81657a58ad3349ae97c8ff836ed154d3e30d98de2207b1bc5309843ce93"
+  },
+  "rows": {
+    "experience_base": 1100,
+    "related_target": 376,
+    "relationship": 376
+  },
+  "repositories": [
+    "BurntSushi/ripgrep",
+    "PHP-CS-Fixer/PHP-CS-Fixer",
+    "PHPOffice/PhpSpreadsheet",
+    "apache/druid",
+    "apache/lucene",
+    "astral-sh/ruff",
+    "astropy/astropy",
+    "axios/axios",
+    "babel/babel",
+    "briannesbitt/Carbon",
+    "briannesbitt/carbon",
+    "burntsushi/ripgrep",
+    "caddyserver/caddy",
+    "django/django",
+    "facebook/docusaurus",
+    "faker-ruby/faker",
+    "fastlane/fastlane",
+    "fluent/fluentd",
+    "fmtlib/fmt",
+    "gin-gonic/gin",
+    "gohugoio/hugo",
+    "google/gson",
+    "hashicorp/terraform",
+    "immutable-js/immutable-js",
+    "javaparser/javaparser",
+    "jekyll/jekyll",
+    "jordansissel/fpm",
+    "jqlang/jq",
+    "laravel/framework",
+    "matplotlib/matplotlib",
+    "micropython/micropython",
+    "mrdoob/three.js",
+    "mwaskom/seaborn",
+    "nlohmann/json",
+    "nushell/nushell",
+    "pallets/flask",
+    "php-cs-fixer/php-cs-fixer",
+    "phpoffice/phpspreadsheet",
+    "preactjs/preact",
+    "projectlombok/lombok",
+    "prometheus/prometheus",
+    "psf/requests",
+    "pydata/xarray",
+    "pylint-dev/pylint",
+    "pytest-dev/pytest",
+    "reactivex/rxjava",
+    "redis/redis",
+    "rubocop/rubocop",
+    "scikit-learn/scikit-learn",
+    "sharkdp/bat",
+    "sphinx-doc/sphinx",
+    "sympy/sympy",
+    "tokio-rs/axum",
+    "tokio-rs/tokio",
+    "uutils/coreutils",
+    "valkey-io/valkey",
+    "vuejs/core"
+  ],
+  "repository_count": 57,
+  "base_repository_count": 53,
+  "field_completeness": {
+    "base_commit": {
+      "missing_in_base": 0,
+      "missing_in_related": 0
+    },
+    "environment_setup_commit": {
+      "missing_in_base": 300,
+      "missing_in_related": 111
+    },
+    "FAIL_TO_PASS": {
+      "missing_in_base": 0,
+      "missing_in_related": 0
+    },
+    "PASS_TO_PASS": {
+      "missing_in_base": 0,
+      "missing_in_related": 0
+    },
+    "problem_statement": {
+      "missing_in_base": 0,
+      "missing_in_related": 0
+    },
+    "patch": {
+      "missing_in_base": 0,
+      "missing_in_related": 0
+    },
+    "test_patch": {
+      "missing_in_base": 0,
+      "missing_in_related": 5
+    },
+    "created_at": {
+      "missing_in_base": 0,
+      "missing_in_related": 0
+    }
+  },
+  "duplicate_base_instance_ids": 93,
+  "duplicate_related_instance_ids": 19
+}

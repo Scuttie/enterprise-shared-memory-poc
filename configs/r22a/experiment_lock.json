@@ -1,0 +1,24 @@
+{
+  "experiment_id": "REALBENCH_R22A_STAGE_ALIGNED_GRADEABLE_V1",
+  "supersedes": null,
+  "does_not_mutate": "R22 (R22_SCB_GRADER_GATE_FAIL)",
+  "p2_target_count": 40,
+  "p2_cell_count": 280,
+  "p1_target_count": 12,
+  "p1_cell_count": 84,
+  "p2_manifest_sha256": "b1a7dac56aa9b51933436da0756055e288c492a1d776ac947bc1c49551bbc780",
+  "p1_manifest_sha256": "bdab5e0ea6f393bfa8c3ed088a705ec868b4fa5f0fd8ef96d798833e0eed7083",
+  "language_composition": {
+    "java": 3,
+    "rust": 2,
+    "python": 31,
+    "go": 4
+  },
+  "subset_composition": {
+    "SWEContextBench Multilingual": 9,
+    "SWEContextBench Verified": 17,
+    "SWEContextBench Lite": 14
+  },
+  "estimand": "memory effect on the pre-model, official-grader-gradeable SWE-ContextBench development subset (Python-heavy; retains Multilingual Java/Go/Rust); does NOT represent all SWE-ContextBench languages",
+  "p3_confirmatory_main": "NOT RUN / POWER BLOCKED"
+}

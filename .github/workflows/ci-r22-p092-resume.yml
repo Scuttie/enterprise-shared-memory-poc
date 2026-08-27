@@ -1,0 +1,113 @@
+name: ci-r22-p092-resume
+# R22-P0.9.2 — complete the gradeability audit: resume ONLY the 2 missing sympy DEV_RESERVE targets (one fixed
+# 180-min attempt each) + the 3-target selector-level Ruff diagnostic. Reuses the frozen 53 P0.9.1 results (they are
+# NOT re-run). NO model calls, NO secret, NO paid endpoint, paid API = 0.
+#
+# GATED: dispatch input OR the committed sentinel artifacts/r22_p092/EXEC_APPROVED_R22_P09_RESUME1 (content exactly
+# EXEC_APPROVED_R22_P09_RESUME1). NEW path — never re-touches the old artifacts/r22_p09/EXEC_APPROVED_R22_P09.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_exec_approved:
+        description: "must be exactly EXEC_APPROVED_R22_P09_RESUME1"
+        required: true
+        default: ""
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['artifacts/r22_p092/EXEC_APPROVED_R22_P09_RESUME1']
+permissions:
+  contents: read
+jobs:
+  # resume ONLY the 2 frozen missing targets; 180-min fixed timeout; one attempt (no auto-retry).
+  resume:
+    runs-on: ubuntu-latest
+    environment: research-paid
+    strategy:
+      fail-fast: false
+      matrix:
+        instance: [sympy__sympy-20959, sympy__sympy-21758]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Execution-approval gate (dispatch input OR RESUME1 sentinel)
+        id: gate
+        run: |
+          if [ "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED_R22_P09_RESUME1" ] \
+             || [ "$(tr -d '[:space:]' < artifacts/r22_p092/EXEC_APPROVED_R22_P09_RESUME1 2>/dev/null)" = "EXEC_APPROVED_R22_P09_RESUME1" ]; then
+            echo "approved=true" >> "$GITHUB_OUTPUT"; echo "EXEC_APPROVED_R22_P09_RESUME1"
+          else
+            echo "approved=false" >> "$GITHUB_OUTPUT"; echo "not approved (no-op)"
+          fi
+      - name: Free disk + docker preflight
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        run: |
+          docker info >/dev/null && echo "docker OK"
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL "$AGENT_TOOLSDIRECTORY" || true
+          df -h /
+      - run: pip install -q -e .
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+      - name: Resume gradeability — GOLD + NOOP (180-min fixed timeout, single target)
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        env:
+          R22_SCB_UPSTREAM_EXEC_APPROVED: "1"
+        run: |
+          timeout 10800 python scripts/r22_p09_gradeability.py \
+            --instance-id "${{ matrix.instance }}" \
+            --results-dir "artifacts/r22_p092/grade_run" \
+            --out "artifacts/r22_p092/grade_${{ matrix.instance }}.json" \
+            || echo "RESUME_RC=$? (124 = persistent 180-min timeout -> UNGRADEABLE_TOOLCHAIN/PERSISTENT_TIMEOUT_180M)"
+      - name: Cleanup instance image
+        if: ${{ always() && steps.gate.outputs.approved == 'true' }}
+        run: |
+          tag=$(python -c "print('${{ matrix.instance }}'.replace('__','.').lower())")
+          docker rmi "jiayuanz3/swecontextbench:${tag}" 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: resume-${{ matrix.instance }}
+          path: |
+            artifacts/r22_p092/grade_${{ matrix.instance }}.json
+            artifacts/r22_p092/grade_run/${{ matrix.instance }}/
+          if-no-files-found: warn
+  # §4 — selector-level Ruff diagnostic (per FAIL_TO_PASS selector, direct `cargo test -- --exact`).
+  ruff-selector:
+    runs-on: ubuntu-latest
+    environment: research-paid
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [F1, F2, POSITIVE_CONTROL]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Execution-approval gate
+        id: gate
+        run: |
+          if [ "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED_R22_P09_RESUME1" ] \
+             || [ "$(tr -d '[:space:]' < artifacts/r22_p092/EXEC_APPROVED_R22_P09_RESUME1 2>/dev/null)" = "EXEC_APPROVED_R22_P09_RESUME1" ]; then
+            echo "approved=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "approved=false" >> "$GITHUB_OUTPUT"; echo "not approved (no-op)"
+          fi
+      - name: docker preflight
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        run: docker info >/dev/null && echo "docker OK" && df -h /
+      - run: pip install -q -e .
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+      - name: Selector-level ruff diagnostic (single role)
+        if: ${{ steps.gate.outputs.approved == 'true' }}
+        env:
+          R22_SCB_UPSTREAM_EXEC_APPROVED: "1"
+        run: |
+          timeout 7200 python scripts/r22_p092_ruff_selector.py --roles "${{ matrix.role }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ruff-sel-${{ matrix.role }}
+          path: |
+            artifacts/r22_p09/ruff_diagnostic_results_v2.json
+            artifacts/r22_p09/ruff_root_cause_v2.json
+            artifacts/r22_p09/ruff_sel_run/
+          if-no-files-found: warn

@@ -1,0 +1,28 @@
+name: ci-r22-paid-analysis
+# §9 — credential-free FAIL-CLOSED analysis over COMPLETED P2 artifacts. NO model calls, NO secrets, no failure
+# suppression (the analyzer exits non-zero on any integrity error).
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['artifacts/r22_paid_v2/p2/results.jsonl', 'experiments/r22/statistics.py',
+            'experiments/r22/mechanism_audit.py', 'experiments/r22/information_retention.py',
+            'scripts/r22_paid_analyze.py', '.github/workflows/ci-r22-paid-analysis.yml']
+permissions:
+  contents: read
+jobs:
+  paid-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e .
+      - name: Fail-closed analysis (only when a completed P2 table exists)
+        run: |
+          if [ -f artifacts/r22_paid_v2/p2/results.jsonl ]; then
+            python scripts/r22_paid_analyze.py --input artifacts/r22_paid_v2/p2/results.jsonl \
+              --expected-cells 280 --out artifacts/r22_paid_v2/p2/analysis.json
+          else
+            echo "no completed P2 table yet — nothing to analyze (expected before paid approval)"
+          fi

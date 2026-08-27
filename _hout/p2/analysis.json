@@ -1,0 +1,172 @@
+{
+  "schema": "r22/paid_analysis/1.0.0",
+  "cells": 42,
+  "note": "DEVELOPMENT method-discovery; not confirmatory. O3 not selectable.",
+  "primary_holm": {
+    "Q1": {
+      "contrast": "O5-O2",
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6,
+      "task_boot": {
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "cluster_boot": {
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "holm_adjusted_p": 1.0
+    },
+    "Q2": {
+      "contrast": "O5-O4",
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6,
+      "task_boot": {
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "cluster_boot": {
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "holm_adjusted_p": 1.0
+    },
+    "Q3": {
+      "contrast": "O6-O5",
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6,
+      "task_boot": {
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "cluster_boot": {
+        "ci95_low": 0.0,
+        "ci95_high": 0.0
+      },
+      "holm_adjusted_p": 1.0
+    }
+  },
+  "diagnostics": {
+    "O1-O0": {
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6
+    },
+    "O2-O1": {
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6
+    },
+    "O3-O0": {
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6
+    },
+    "O3-O2": {
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6
+    },
+    "O4-O1": {
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6
+    },
+    "O5-O1": {
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6
+    },
+    "O6-O1": {
+      "b": 0,
+      "c": 0,
+      "p_value": 1.0,
+      "delta_pp": 0.0,
+      "net_flips": 0,
+      "n": 6
+    }
+  },
+  "mechanism": {
+    "by_stage": {},
+    "adoption": {
+      "ACTION_ADOPTED_or_CONTENT": 6
+    }
+  },
+  "information_retention": {
+    "O3": {
+      "n": 6,
+      "mean_tokens": 17.0,
+      "file": 0.0,
+      "symbol": 0.0,
+      "api": 0.0,
+      "operation": 1.0,
+      "precondition": 1.0,
+      "validation": 0.0,
+      "raw_diff": 1.0
+    },
+    "O4": {
+      "n": 6,
+      "mean_tokens": 15.0,
+      "file": 0.0,
+      "symbol": 0.0,
+      "api": 0.0,
+      "operation": 0.0,
+      "precondition": 0.0,
+      "validation": 0.0,
+      "raw_diff": 0.0
+    },
+    "O5": {
+      "n": 6,
+      "mean_tokens": 22.0,
+      "file": 0.0,
+      "symbol": 0.0,
+      "api": 0.0,
+      "operation": 0.0,
+      "precondition": 1.0,
+      "validation": 1.0,
+      "raw_diff": 0.0
+    },
+    "O6": {
+      "n": 6,
+      "mean_tokens": 36.0,
+      "file": 0.0,
+      "symbol": 0.0,
+      "api": 0.0,
+      "operation": 1.0,
+      "precondition": 1.0,
+      "validation": 1.0,
+      "raw_diff": 0.0
+    }
+  },
+  "result_hash": "258457c60d7b876cd14fda2ba8d93ec69758363f9941ce6c8c8ba4906d41a2ef"
+}

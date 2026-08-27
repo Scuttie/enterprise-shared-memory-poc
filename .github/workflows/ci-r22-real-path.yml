@@ -1,0 +1,47 @@
+name: ci-r22-real-path
+# §11 — credential-free REAL-benchmark path verification. NO API key, NO model call. Loads the frozen SWE-ContextBench
+# targets, verifies real loaders/adapter wiring/runtime plumbing, and reuses the G0 grader PASS as the grading
+# discrimination evidence (the paid runtime calls the same official grader adapter).
+on:
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['experiments/r22/**', 'scripts/r22_paid_*.py', 'tests/unit/test_r22_real_path.py',
+            'artifacts/r22/oracle_*_manifest.json', '.github/workflows/ci-r22-real-path.yml']
+  pull_request:
+    paths: ['experiments/r22/**', 'scripts/r22_paid_*.py', 'tests/unit/test_r22_real_path.py',
+            '.github/workflows/ci-r22-real-path.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  real-path:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e . pytest pandas pyarrow
+      - name: Download the MIT SWE-ContextBench dataset (no token)
+        run: |
+          mkdir -p scb/data
+          for f in Experience Related Relationship; do
+            curl -sfL "https://huggingface.co/datasets/jiayuanz3/SWEContextBench/resolve/main/data/SWEContextBench_${f}.parquet" -o "scb/data/SWEContextBench_${f}.parquet"
+          done
+      - name: Real-path verification (frozen ids, loaders, adapter wiring, plumbing, G0 reuse)
+        env: {R22_SCB_DATA: scb/data}
+        run: python -m pytest -q tests/unit/test_r22_real_path.py
+      - name: Assert real task loader yields the exact frozen ids
+        env: {R22_SCB_DATA: scb/data}
+        run: |
+          python - <<'PY'
+          import hashlib, json, sys
+          sys.path.insert(0, "."); sys.path.insert(0, "src")
+          from experiments.r22.runtime import loaders as LD
+          for mf, n, h in [("oracle_smoke_manifest.json", 12, "081440dbbb63bed1"),
+                           ("oracle_dev_manifest.json", 40, "20f887f1f1b93afe")]:
+              t = LD.RealR22TaskLoader(mf, "scb/data").load()
+              ids = sorted(x["target_id"] for x in t)
+              got = hashlib.sha256(json.dumps(ids).encode()).hexdigest()[:16]
+              assert len(t) == n and got == h, (mf, len(t), got)
+          print("R22 REAL-PATH: frozen ids exact; loaders + adapter wired; grading reused from G0 (12/12).")
+          PY

@@ -1,0 +1,63 @@
+name: ci-r22-scb-real-path
+# R22-P0.8 §8 — credential-free REAL-path E2E through the OFFICIAL SCB grader with the ReplayReaderProvider.
+# Trace per target: frozen target -> official case route -> official image -> real repo tools -> replay provider
+# -> (no / non-solving patch) -> OFFICIAL SCB evaluator -> unresolved -> durable evidence. Also grades the official
+# GOLD patch for the same two targets (expect resolved) to prove the grader discriminates on the real path.
+# ReplayReaderProvider only: no secret, no network model call, paid API = 0. Fake loaders / fixture / generic
+# swebench graders MUST raise if reached.
+#
+# GATED: dispatch-only AND confirm_exec_approved == 'EXEC_APPROVED' (unlicensed pinned upstream evaluator).
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_exec_approved:
+        description: "must be exactly EXEC_APPROVED (acknowledges executing the unlicensed pinned upstream evaluator)"
+        required: true
+        default: ""
+permissions:
+  contents: read
+jobs:
+  scb-real-path:
+    runs-on: ubuntu-latest
+    environment: research-paid
+    strategy:
+      fail-fast: false
+      matrix:
+        instance:
+          - astropy__astropy-14500      # Python
+          - apache__lucene-13388        # non-Python (Java, Multilingual)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Execution-approval gate
+        run: |
+          test "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED" \
+            || { echo "R22_UPSTREAM_EVALUATOR_EXECUTION_REVIEW: approval not given; not executing upstream code."; exit 1; }
+      - name: docker preflight
+        if: ${{ inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
+        run: docker info >/dev/null && echo "docker OK" && df -h /
+      - run: pip install -q -e . pandas pyarrow
+        if: ${{ inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
+      - name: Fetch frozen SCB parquet (reader-facing issue text only)
+        if: ${{ inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
+        run: |
+          mkdir -p artifacts/r22/_scb_data
+          for f in Related Experience; do
+            curl -sfL "https://huggingface.co/datasets/jiayuanz3/SWEContextBench/resolve/main/data/SWEContextBench_${f}.parquet" \
+              -o "artifacts/r22/_scb_data/SWEContextBench_${f}.parquet"
+          done
+      - name: REAL-path E2E (replay reader -> OFFICIAL SCB grader)
+        if: ${{ inputs.confirm_exec_approved == 'EXEC_APPROVED' }}
+        env:
+          R22_SCB_UPSTREAM_EXEC_APPROVED: "1"
+          R22_WORKSPACE_METHOD: git
+        run: |
+          timeout 5400 python scripts/r22_scb_real_path.py \
+            --instance-id "${{ matrix.instance }}" \
+            --out "artifacts/r22/scb_real_path_${{ matrix.instance }}.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scb-real-path-${{ matrix.instance }}
+          path: artifacts/r22/scb_real_path_${{ matrix.instance }}.json

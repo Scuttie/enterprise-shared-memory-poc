@@ -1,0 +1,33 @@
+name: ci-r22-leakage
+on:
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['experiments/r22/gold_precedent_bank.py', 'scripts/r22_leakage_check.py',
+            'src/enterprise_memory/experience/stage_*', '.github/workflows/ci-r22-leakage.yml']
+  pull_request:
+    paths: ['experiments/r22/gold_precedent_bank.py', 'scripts/r22_leakage_check.py',
+            'src/enterprise_memory/experience/stage_*', '.github/workflows/ci-r22-leakage.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  leakage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q -e . pandas pyarrow
+      - name: Download public MIT dataset (no token)
+        run: |
+          mkdir -p scb/data
+          for f in Experience Related Relationship; do
+            curl -sfL "https://huggingface.co/datasets/jiayuanz3/SWEContextBench/resolve/main/data/SWEContextBench_${f}.parquet" -o "scb/data/SWEContextBench_${f}.parquet"
+          done
+      - name: Rebuild split + gold bank then leakage-check
+        env: {R22_SCB_DATA: scb/data}
+        run: |
+          python experiments/r22/benchmark_adapter.py >/dev/null
+          python experiments/r22/data_orientation.py >/dev/null
+          python experiments/r22/gold_precedent_bank.py
+          python scripts/r22_leakage_check.py

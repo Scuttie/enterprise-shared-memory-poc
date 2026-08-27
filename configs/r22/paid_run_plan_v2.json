@@ -1,0 +1,103 @@
+{
+  "schema": "r22/paid_run_plan_v2/2.0.0",
+  "authoritative": true,
+  "supersedes": "configs/r22/paid_run_plan.json (v1) \u2014 preserved for provenance",
+  "price_check_date": "2026-08-25",
+  "hard_per_run_tokens": {
+    "input": 800000,
+    "output": 80000
+  },
+  "prices_per_mtok": {
+    "deepseek-chat": {
+      "in": 0.27,
+      "out": 1.1,
+      "provider": "deepseek",
+      "secret": "DEEPSEEK_API_KEY",
+      "snapshot_pinnable": false,
+      "note": "alias -> MODEL_DRIFT_REPLICATION"
+    },
+    "gpt-4o-mini": {
+      "in": 0.15,
+      "out": 0.6,
+      "provider": "openai",
+      "secret": "OPENAI_API_KEY",
+      "snapshot_pinnable": true
+    },
+    "gpt-4o": {
+      "in": 2.5,
+      "out": 10.0,
+      "provider": "openai",
+      "secret": "OPENAI_API_KEY",
+      "snapshot_pinnable": true
+    }
+  },
+  "reader_candidate_order": [
+    "deepseek-chat",
+    "gpt-4o-mini",
+    "gpt-4o"
+  ],
+  "reader_band": "[0.10, 0.70] resolved on frozen 40-task dev O0; first in-band candidate wins",
+  "run_counts": {
+    "reader_band_per_candidate": 40,
+    "p1_smoke": 84,
+    "p2_analyzed_cells": 280,
+    "p2_new_for_selected": 240,
+    "selected_reader_total_new": 364
+  },
+  "per_run_usd": {
+    "deepseek-chat": 0.304,
+    "gpt-4o-mini": 0.168,
+    "gpt-4o": 2.8
+  },
+  "hard_caps": {
+    "deepseek-chat": {
+      "per_run_usd": 0.304,
+      "reader_band_hard_cap": 12.16,
+      "p1_hard_cap": 25.536,
+      "p2_total_hard_cap": 85.12,
+      "selected_reader_total_hard_cap": 110.656
+    },
+    "gpt-4o-mini": {
+      "per_run_usd": 0.168,
+      "reader_band_hard_cap": 6.72,
+      "p1_hard_cap": 14.112,
+      "p2_total_hard_cap": 47.04,
+      "selected_reader_total_hard_cap": 61.152
+    },
+    "gpt-4o": {
+      "per_run_usd": 2.8,
+      "reader_band_hard_cap": 112.0,
+      "p1_hard_cap": 235.2,
+      "p2_total_hard_cap": 784.0,
+      "selected_reader_total_hard_cap": 1019.2
+    }
+  },
+  "primary_contrasts": {
+    "Q1": "O5 - O2",
+    "Q2": "O5 - O4",
+    "Q3": "O6 - O5"
+  },
+  "product_candidates": [
+    "O4",
+    "O5",
+    "O6"
+  ],
+  "oracle_upper_bound_not_selectable": "O3",
+  "approval_variables": {
+    "reader_selection": "R22_READER_SELECTION_BUDGET_USD",
+    "p1_smoke": "R22_SMOKE_BUDGET_USD",
+    "p2_oracle": "R22_ORACLE_BUDGET_USD",
+    "gate": "RUN_APPROVED",
+    "forbidden": "R22_MAIN_BUDGET_USD (P3 withheld \u2014 power-blocked)"
+  },
+  "run_order": [
+    "reader-band O0 pilot",
+    "reader lock commit",
+    "P1 12x7",
+    "P1 integrity PASS",
+    "P2 O1-O6 40x6 (reuse O0)",
+    "P2 analysis",
+    "method verdict",
+    "P3 NOT RUN"
+  ]
+}

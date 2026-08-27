@@ -1,0 +1,29 @@
+name: ci-r22-upstream-audit
+on:
+  push:
+    branches: [codex/r22-stage-aligned-memory]
+    paths: ['artifacts/r22/upstream/**', 'reports/R22_SWE_EXP_*', '.github/workflows/ci-r22-upstream-audit.yml']
+  pull_request:
+    paths: ['artifacts/r22/upstream/**', 'reports/R22_SWE_EXP_*', '.github/workflows/ci-r22-upstream-audit.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  upstream-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: SWE-Exp lock is valid + Apache-2.0
+        run: |
+          python - <<'PY'
+          import json
+          d = json.load(open("artifacts/r22/upstream/swe_exp_lock.json"))
+          assert d["license"] == "Apache-2.0", d["license"]
+          assert d["pinned_commit"] == "6b5c92ed0a6fc14de972c5d499673e2c4f03ce33"
+          assert d["verified_from_code"]["policy_temperature"] == 0.7
+          assert d["verified_from_code"]["max_iterations"] == 20
+          assert d["author_artifacts"]["verdict"] == "AUTHOR_ARTIFACT_UNAVAILABLE"
+          print("R22 upstream audit: PASS")
+          PY

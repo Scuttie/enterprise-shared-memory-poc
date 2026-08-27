@@ -1,0 +1,18 @@
+{
+  "note": "grader_smoke.json is the HISTORICAL generic enriched-SWE-bench G0.1 result. Its bytes are preserved; this file records its scope and supersession. It does NOT gate the R22 SWE-ContextBench Related paid campaign.",
+  "historical_commit": "1cc9d922c28a79d3e95e45c32bfae95d83f1f255",
+  "historical_run": "32801365294",
+  "historical_scope": "generic enriched SWE-bench Verified/Lite/Multilingual routing; historical G0.1 12-task set (apache__lucene-11760, astral-sh__ruff-15543, astropy__astropy-8707, caddyserver__caddy-5761, google__gson-2311, ...); NOT the frozen SWE-ContextBench Related P1/P2 set",
+  "historical_verdict_field": "R22_GRADER_READY_AWAITING_PAID_APPROVAL",
+  "historical_status": "GENERIC_ENRICHED_SWEBENCH_GRADER_PASS",
+  "current_head": "f1e78b75ca7bc1d4de2bde7a3c108ce763bcb2e1",
+  "current_endpoint": "R22_SCB_GRADER_GATE_FAIL",
+  "reason_cannot_gate_p1_p2": "The frozen SWE-ContextBench Related targets are absent from the enriched SWE-bench/* datasets and are graded ONLY by the benchmark's own swebench_memory.harness.run_evaluation against jiayuanz3/swecontextbench:<tag> images. The generic result also (a) used a different 12-task set and (b) used an EMPTY no-patch control that short-circuits without executing tests. The real SCB grader gate is R22_UPSTREAM_EVALUATOR_EXECUTION_REVIEW pending upstream execution approval.",
+  "authoritative_current_report": "reports/R22_SCB_GRADER_REPRODUCTION.md",
+  "grader_smoke_json_sha256_preserved": true,
+  "gate_fail_targets": [
+    "astral-sh__ruff-15725",
+    "astral-sh__ruff-16445"
+  ],
+  "gate_fail_reason": "CANDIDATE_UPSTREAM_INCONSISTENCY: official gold patch does not resolve under the official evaluator (FAIL_TO_PASS 0/N, 0 tests collected); exact cause under forensic investigation (reports/R22_P09_RUFF_ROOT_CAUSE.md); adapter invocation EXCLUDED. Harness validated: noop 0/12, digest 12/12, infra 0"
+}

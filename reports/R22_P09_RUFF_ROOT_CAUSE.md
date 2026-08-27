@@ -13,6 +13,14 @@
 > same full-suite failure behavior). Current class: **`astral-sh__ruff-15725` = R8_UNKNOWN**,
 > **`astral-sh__ruff-16445` = R8_UNKNOWN**. The definitive per-selector scoring is P0.9.2 §4
 > (`ruff_root_cause_v2.json`).
+>
+> ## FINAL (P0.9.2 selector-level, run 33050922491): `R5_UPSTREAM_PARSER_BUG`
+> Every intended FAIL_TO_PASS selector, run **directly** under the official gold patch with
+> `cargo test "<selector>" -- --exact`, **PASSES**: `ruff-15725` **1/1**, `ruff-16445` **98/98** (0 fail, 0 absent).
+> Yet the official evaluator scores every one not-passed (DISAGREE 1 and 98). So the **official gold is VALID** and
+> the failure is the **evaluator's parser miscounting** — **`R5_UPSTREAM_PARSER_BUG`** for both; **not** R6, **not**
+> our adapter; R2 excluded (all selectors present in `cargo test -- --list`). Evidence:
+> `artifacts/r22_p09/ruff_diagnostic_results_v2.json`.
 
 _The sections below were written before execution and are retained as the static-forensics record._
 

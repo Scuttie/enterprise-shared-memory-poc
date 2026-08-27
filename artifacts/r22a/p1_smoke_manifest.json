@@ -1,0 +1,1101 @@
+{
+  "schema": "r22a/p1_smoke_manifest/1.0.0",
+  "experiment": "REALBENCH_R22A_STAGE_ALIGNED_GRADEABLE_V1",
+  "manifest_sha256": "bdab5e0ea6f393bfa8c3ed088a705ec868b4fa5f0fd8ef96d798833e0eed7083",
+  "task_list": [
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O2",
+      "mem_source": "astral-sh__ruff-15997",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "65febb7b034f3e7000b472ccc6bf0d5510e135bf504dea7e9d5564112f8b5b59",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O3",
+      "mem_source": "apache__lucene-11760",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "594cc475463e8e60e396e899f18737c7cc06fde61e20db635ff2599a70f24b08",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O4",
+      "mem_source": "apache__lucene-11760",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "844490b8cfe70143612fca59a08567cf076ab029d7ffd201fe5ade044f39b992",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O5",
+      "mem_source": "apache__lucene-11760",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "apache__lucene-13388",
+      "arm": "O6",
+      "mem_source": "apache__lucene-11760",
+      "target_user": "u_5cb9026d12",
+      "source_user": "gold_235045fbb9",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-14500",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "35eefd6ee8f8b52dbf61e5b2eff53dfd21cde84105dc838cdcf884ccd2e0a5e3",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O3",
+      "mem_source": "astral-sh__ruff-15394",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "345130812b01a46c6ee7b188824fb2aba1428782786187304d3a691ea4a53585",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O4",
+      "mem_source": "astral-sh__ruff-15394",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "9e2b5dc7ee7d13c48291ab7c1d415f95ae78073cad5b9165beb136224f271e51",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O5",
+      "mem_source": "astral-sh__ruff-15394",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astral-sh__ruff-15997",
+      "arm": "O6",
+      "mem_source": "astral-sh__ruff-15394",
+      "target_user": "u_3612910948",
+      "source_user": "gold_ebe34ce93d",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-15082",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "7f41571afb79c71a5ef184b9083d4b7d7c5ed64deda7e1c52c6b190ab45a265e",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-13977",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "12eb47aa6e34fc99279aeabfeb9dde9e48411f7ad2b9be4ba8fb7d6d643563e4",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-13977",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "24e81d188b9d9d624b251045446424411a83c6342a3b19126d672f8459291e00",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-13977",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-14500",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-13977",
+      "target_user": "u_a9bbbd7529",
+      "source_user": "gold_60bc490ec6",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-6389",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "b1631db9e07749844b6867e210f1a14ca47d6a1ba6ea8461989630fb5529c76f",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-14995",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "07ae5e59b7b1c40dc30eda457950d442be7ed7db9c3c74d474e2b0df7c305699",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-14995",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "38e263360fd66cdde840cec25b7a488301f3e676467b76409afc14dee00ef87d",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-14995",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-15082",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-14995",
+      "target_user": "u_0ac1f299d7",
+      "source_user": "gold_a74a8cc03d",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-7167",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "7c1eecdf23017a3b42fc1546c9dc0303a985b190ae8dfc0a743b3436dbb5e6d3",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "9c92e274a7ec8ebba17f094a3e6d4f29ae3d7a6e6d70e76a4efd6253556ca6dc",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "79a4af1595e9d30c4ad4430a1d40dbbe8c33527d58878817fc5862ab45536f65",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-6389",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_44d645ed07",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-8614",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "17ee8f71489a87305e49f613ad70c82a7aeb7963a61dc301761559d0b6aa09f7",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-7166",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "b8b825a449532443a289a0beb9f3891b0bfcae63cb8cc8b1f301a7a4543037a3",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-7166",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "c975818c04dca87cb5a50e42d582f7ef1b53f44f3f271bdca4c057ea9c9b4003",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-7166",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-7167",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-7166",
+      "target_user": "u_d964aa2976",
+      "source_user": "gold_b622be913a",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O2",
+      "mem_source": "astropy__astropy-8711",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "911246242edba76812e576da28a1e415432f19c77fff180a426329a74314b1c2",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "9c92e274a7ec8ebba17f094a3e6d4f29ae3d7a6e6d70e76a4efd6253556ca6dc",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "79a4af1595e9d30c4ad4430a1d40dbbe8c33527d58878817fc5862ab45536f65",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8614",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-8872",
+      "target_user": "u_411f01e3de",
+      "source_user": "gold_afd373b7c2",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O2",
+      "mem_source": "caddyserver__caddy-5770",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "03afc721e8f964e6615563154db01eb8411c55814b48cd3a9ec5a91efb5c8f91",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O3",
+      "mem_source": "astropy__astropy-8707",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "94339855037baa13e7dff6bb9e9810390af53410f11b5f6c549fde8018c255de",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O4",
+      "mem_source": "astropy__astropy-8707",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "fa1c3bcd1d8def629347b82fa46c6d20c3804ca1c9420f9d3814c497a37d92e5",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O5",
+      "mem_source": "astropy__astropy-8707",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "astropy__astropy-8711",
+      "arm": "O6",
+      "mem_source": "astropy__astropy-8707",
+      "target_user": "u_cddc05ceb6",
+      "source_user": "gold_06401b7b5b",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O2",
+      "mem_source": "caddyserver__caddy-5930",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "2bc2a46ed5f911fb4c81286ef005eaff05d3827278ef3ddb21ab49fc7f6ef951",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O3",
+      "mem_source": "caddyserver__caddy-5761",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "aaddafc6460ef1ed42792621feaabdfc9aa95ce9ea2d95e735df6ef57451986b",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O4",
+      "mem_source": "caddyserver__caddy-5761",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "a3414549edac9350a7f6b4e2de7ec93fb69424d92d77432cb1a890760f4844bc",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O5",
+      "mem_source": "caddyserver__caddy-5761",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5770",
+      "arm": "O6",
+      "mem_source": "caddyserver__caddy-5761",
+      "target_user": "u_c38e5bf8ad",
+      "source_user": "gold_168815601a",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O2",
+      "mem_source": "sympy__sympy-9384",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "7de4a57889d571ea2eb62ab52136303e57a3937a66a354fdc1989c5cdb8dfd7c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O3",
+      "mem_source": "caddyserver__caddy-6051",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "adcb2f2108dff0b61b0b0979e1f439ec94a9d0b996ad3bf78657f35ecdd0050c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O4",
+      "mem_source": "caddyserver__caddy-6051",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "67f6d99de3766b2703303d8736946c38000f3168d4f9d774cb837e4abea460d6",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O5",
+      "mem_source": "caddyserver__caddy-6051",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "caddyserver__caddy-5930",
+      "arm": "O6",
+      "mem_source": "caddyserver__caddy-6051",
+      "target_user": "u_c324cc565f",
+      "source_user": "gold_19acb70866",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O2",
+      "mem_source": "tokio-rs__tokio-3679",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ecf46a3a004bd8ecaafd75d37085b391bc20729fdb7431d7a47fbbcd1a701c77",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O3",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ada6d3b039bd1da71a32b1a9b9af29f4f050d6ff6e84a802fd1538067a3dd511",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O4",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "ebf6f1c53ea4647760f2ff7f2dad46b622cb8c93f6a18f3ee0730dac97f1df52",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O5",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "sympy__sympy-9384",
+      "arm": "O6",
+      "mem_source": "sympy__sympy-21055",
+      "target_user": "u_5baa0c36ef",
+      "source_user": "gold_5e747d9925",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O0",
+      "mem_source": null,
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "budget": {
+        "search": 0,
+        "browse": 0,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O1",
+      "mem_source": null,
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "9a289a0c1a47c04d51d82f7d905438122d70474ecc1de97cc0fd7d63e7718546",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O2",
+      "mem_source": "apache__lucene-13388",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "c47b231c47d5307c36a636c2cfb4afa754ad5e44c76331d0f2b9d1bec7a92bf8",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O3",
+      "mem_source": "tokio-rs__tokio-6724",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "222fcbd6389b8231d141205351b3f21812f15ba6366ed03458d3c96a94b68d66",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O4",
+      "mem_source": "tokio-rs__tokio-6724",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "c48f2de5b656f986f26530f6db3c8b9e087bd65a437513f7b9c3c7732fa7ace2",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O5",
+      "mem_source": "tokio-rs__tokio-6724",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "797482c9bdf136fa3b93ea4bca1481b9b89a73042b6449f7fa63d6cc1cff136c",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    },
+    {
+      "target_id": "tokio-rs__tokio-3679",
+      "arm": "O6",
+      "mem_source": "tokio-rs__tokio-6724",
+      "target_user": "u_8661f58746",
+      "source_user": "gold_44610f4a98",
+      "payload_hash": "87130280c9a2281d58ec27b152404b18ede96221b27702503ba3626559fc5694",
+      "budget": {
+        "search": 2,
+        "browse": 2,
+        "exec_tokens": 440
+      }
+    }
+  ],
+  "target_count": 12,
+  "cell_count": 84
+}

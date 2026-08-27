@@ -13,8 +13,13 @@
       "campaign_resolved": true, "note": "CONTROL RESOLVED in the campaign yet the diagnostic gold_failed flag is True -> the flag (full-suite exit code) is NOT a reliable gold-validity signal"}
   },
   "adjusted_root_cause": {
-    "astral-sh__ruff-15725": {"primary_class": "R8_UNKNOWN"},
-    "astral-sh__ruff-16445": {"primary_class": "R8_UNKNOWN"}
+    "astral-sh__ruff-15725": {"primary_class": "R8_UNKNOWN", "superseded_by": "ruff_root_cause_v2.json = R5_UPSTREAM_PARSER_BUG"},
+    "astral-sh__ruff-16445": {"primary_class": "R8_UNKNOWN", "superseded_by": "ruff_root_cause_v2.json = R5_UPSTREAM_PARSER_BUG"}
+  },
+  "FINAL_selector_level_class_P0_9_2": {
+    "astral-sh__ruff-15725": "R5_UPSTREAM_PARSER_BUG (1/1 intended FAIL_TO_PASS selectors PASS directly under gold; official scores not_passed -> DISAGREE 1)",
+    "astral-sh__ruff-16445": "R5_UPSTREAM_PARSER_BUG (98/98 intended FAIL_TO_PASS selectors PASS directly under gold; official scores not_passed -> DISAGREE 98)",
+    "evidence": "artifacts/r22_p09/ruff_diagnostic_results_v2.json (run 33050922491); the official gold is VALID (intended tests pass) — the evaluator's parser miscounts them as failed/uncollected."
   },
   "claim_boundary_P0_9_2": "TRUE_ZERO_COLLECTION is excluded: raw cargo tests compile, collect, and run. The adapter, image digest, base commit, and patch application are valid. However, the precise failure is UNRESOLVED until the intended FAIL_TO_PASS selectors are scored DIRECTLY under the official gold patch (P0.9.2 §4). R2 and R5 are NOT claimed yet. Gold invalidity is NOT inferred from the full-suite cargo return code (the positive control shows the same full-suite failure behavior).",
   "excluded_with_evidence": {

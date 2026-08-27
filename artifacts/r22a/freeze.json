@@ -1,0 +1,11 @@
+{
+  "experiment": "REALBENCH_R22A_STAGE_ALIGNED_GRADEABLE_V1",
+  "sealed_files": {
+    "oracle_dev_manifest.json": "ad4c51234597591269f2793699160d1d11ac6bc290db5037ef7f1dce23637451",
+    "p1_smoke_manifest.json": "0a89545b33165ce3dc8f9965a68e9d74035ea1e3ebcaecc0757fb25fc44f96cf",
+    "oracle_arm_manifest.json": "03e3c9dd01d2547e6196f1fd4bc9864d2faa1d2058e0d639cfe38917d356f4a9",
+    "task_selection_audit.json": "5353c708447e39e813b613182c7fe8aeba82c5ce6bf1add9d1b67c0f242453eb",
+    "gradeability_source_lock.json": "88780d4d739f75d1fecc0ba371b7bc77e00f59cd45637fe94dfc5bf392d91e34",
+    "configs/r22a/experiment_lock.json": "a18279c55cd4fe78de7526339b7c3a82f431b1a7636c9f838620bc8a4e7299ed"
+  }
+}

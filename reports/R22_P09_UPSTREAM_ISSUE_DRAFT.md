@@ -48,9 +48,13 @@ The raw `cargo test` diagnostic **has run** (run 32922333871): the code **compil
 true-zero-collection are **excluded**, and the adapter/image/base/patch are valid. What remains is a **selector-level**
 determination — whether each intended FAIL_TO_PASS test is (a) absent from `cargo test -- --list`, (b) present and
 **passes** under gold but is scored failed/uncollected by the evaluator, or (c) present and **fails** under gold.
-That P0.9.2 selector-level diagnostic is gated (`EXEC_APPROVED_R22_P09_RESUME1`). **No R2/R5/R6 claim is made until it
-completes.** Gold invalidity is **not** inferred from the full-suite exit code (the resolved control shows the same
-full-suite failure behavior).
+That P0.9.2 selector-level diagnostic **has now run** (run 33050922491) and is **decisive**: every intended
+FAIL_TO_PASS selector, executed **directly** under the official gold patch with
+`cargo test "<selector>" -- --exact`, **PASSES** — `astral-sh__ruff-15725` **1/1**, `astral-sh__ruff-16445`
+**98/98** (0 fail, 0 absent) — yet the official evaluator scores every one not-passed. **The official gold is VALID;
+the evaluator's PARSER miscounts the intended tests.** Class: **`R5_UPSTREAM_PARSER_BUG`** for both. This is the
+concrete, reproducible defect to report (evidence: `artifacts/r22_p09/ruff_diagnostic_results_v2.json`). Still **not
+posted** — posting requires separate user approval.
 
 ## Provenance (no secrets, no model output)
 Pinned case JSON hashes, official image digests, and evaluator file/tree hashes are in the reproducer manifest and

@@ -1,7 +1,20 @@
-# R22-P0.9 §3/§4 — Ruff gold-fail root-cause (static forensics)
+# R22-P0.9 §3/§4 — Ruff gold-fail root-cause
 
-All answers below are from the **existing captured campaign evidence** (run 32863011986). No diagnostic execution
-has run; questions that require the raw `cargo test` output inside the container are marked **PENDING §3.5 EXEC**.
+> ## UPDATE (P0.9.1 diagnostic EXECUTED, run 32922333871; P0.9.2 selector-level pending)
+> The §3.5 diagnostic **has now run** (the "PENDING §3.5 EXEC" markers below are historical). Executed findings
+> (`artifacts/r22_p09/ruff_diagnostic_results.json`, `ruff_root_cause.json`): for both failed ruff targets the code
+> **compiles**, base_commit **matches**, and **509–592 tests collect and run** directly via the byte-identical
+> `cargo test`. **Excluded with evidence: R1 (command matches), R4 (base drift), R7 (toolchain), TRUE_ZERO_COLLECTION.**
+> The adapter, image digest, base commit, and patch application are valid.
+>
+> **Corrected claim boundary (P0.9.2 §1):** the precise failure is **UNRESOLVED** until the intended FAIL_TO_PASS
+> selectors are scored **directly** under the official gold patch. **No R2/R5/R6 claim is made.** Gold invalidity is
+> **not** inferred from the full-suite `cargo test` return code (the RESOLVED positive control `ruff-15997` shows the
+> same full-suite failure behavior). Current class: **`astral-sh__ruff-15725` = R8_UNKNOWN**,
+> **`astral-sh__ruff-16445` = R8_UNKNOWN**. The definitive per-selector scoring is P0.9.2 §4
+> (`ruff_root_cause_v2.json`).
+
+_The sections below were written before execution and are retained as the static-forensics record._
 
 ## §3.1 Did the official patches apply? → `PATCH_APPLY_OK` (all cells)
 From each cell's `run_instance.log` + `test_output.txt`:

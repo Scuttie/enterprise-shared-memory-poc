@@ -42,10 +42,15 @@ source $HOME/.cargo/env && cargo test
 - **Expected:** with the official gold applied, the intended FAIL_TO_PASS tests should collect and pass (as they do
   for `ruff-15997`).
 
-## Diagnostic still required before assigning a class (we have not run it)
-Run `cargo test` in the two affected base/official images and capture the **raw** stdout + return code, plus a
-diagnostic unfiltered collection, to determine whether it is: a compile/pre-collection failure, tests that run but
-whose names the parser fails to match, or an invalid gold. That diagnostic is gated (`EXEC_APPROVED_R22_P09`).
+## Diagnostic status (updated)
+The raw `cargo test` diagnostic **has run** (run 32922333871): the code **compiles**, base_commit **matches**, and
+**509–592 tests collect and run** directly via the identical command — so a compile/pre-collection failure and a
+true-zero-collection are **excluded**, and the adapter/image/base/patch are valid. What remains is a **selector-level**
+determination — whether each intended FAIL_TO_PASS test is (a) absent from `cargo test -- --list`, (b) present and
+**passes** under gold but is scored failed/uncollected by the evaluator, or (c) present and **fails** under gold.
+That P0.9.2 selector-level diagnostic is gated (`EXEC_APPROVED_R22_P09_RESUME1`). **No R2/R5/R6 claim is made until it
+completes.** Gold invalidity is **not** inferred from the full-suite exit code (the resolved control shows the same
+full-suite failure behavior).
 
 ## Provenance (no secrets, no model output)
 Pinned case JSON hashes, official image digests, and evaluator file/tree hashes are in the reproducer manifest and

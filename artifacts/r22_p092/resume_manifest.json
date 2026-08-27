@@ -1,0 +1,53 @@
+{
+  "experiment": "R22_P09_2_RESUME",
+  "resume_attempt": "RESUME1",
+  "resume_timeout_minutes": 180,
+  "targets": [
+    "sympy__sympy-20959",
+    "sympy__sympy-21758"
+  ],
+  "source_run": "32922333871",
+  "records": {
+    "sympy__sympy-20959": {
+      "target_id": "sympy__sympy-20959",
+      "original_status": "DEV_RESERVE",
+      "subset": "SWEContextBench Verified",
+      "manifest_record_sha256": "7edf86b11ec67a2b3f30716854aca475881fd2707860b02e70c0414bf03047a7",
+      "case_sha256": "130521d2033277d307b99730143d5a7d31bb0966d7d79e820c2a4ae2877a2467",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-20959",
+      "image_digest": "sha256:4e7990538d2e898517d63c32df0fb6d2e194a79c4539436d793ea0f968048d11",
+      "gold_patch_sha256": "92e83ffa1dd942c4232369b3b01328caf362a0c0c46877e5cd67b5979db5e112",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+      "original_shard_job_id": "98038244833",
+      "original_timeout_evidence": {
+        "run": "32922333871",
+        "exit_code": 124,
+        "timeout_minutes": 90,
+        "note": "step killed at 90-min `timeout` (05:02->06:32)"
+      },
+      "original_p091_campaign_sha256": "36659dba957755dfddd1ca0d444bfb992d6ba156fb4960d4f6a59f849ded4efb",
+      "idempotency_key": "e6d17fd84169b5e7393c2a65d6b0a252516bcde85bfa13a80ea4aac9a9c4d7bf"
+    },
+    "sympy__sympy-21758": {
+      "target_id": "sympy__sympy-21758",
+      "original_status": "DEV_RESERVE",
+      "subset": "SWEContextBench Verified",
+      "manifest_record_sha256": "89f2f99b3e4624109339be715c517116076b1e72e0d5fd61e6da01489bef8d13",
+      "case_sha256": "f855135b9d6bf730cd52b846fa0cc5e796cbbcd43cf1e4bae742f2456ef8d0f0",
+      "image": "jiayuanz3/swecontextbench:sympy.sympy-21758",
+      "image_digest": "sha256:38b4c99897556119ebcd12a5e3055f62dea1c675aed8311ff00e2ebabd18c012",
+      "gold_patch_sha256": "92e83ffa1dd942c4232369b3b01328caf362a0c0c46877e5cd67b5979db5e112",
+      "noop_patch_sha256": "feb66c0022a6901a2b0a84be8a6fe993a8be33afedafa68aa62cd3d661303985",
+      "original_shard_job_id": "98038244910",
+      "original_timeout_evidence": {
+        "run": "32922333871",
+        "exit_code": 124,
+        "timeout_minutes": 90,
+        "note": "step killed at 90-min `timeout` (05:02->06:32)"
+      },
+      "original_p091_campaign_sha256": "36659dba957755dfddd1ca0d444bfb992d6ba156fb4960d4f6a59f849ded4efb",
+      "idempotency_key": "81658a5024bf355f62518f857d2b87ec98afd1c725109797445ac484615cdc02"
+    }
+  },
+  "rule": "resume ONLY these 2 missing targets, one 180-min attempt; do not alter the frozen 53"
+}

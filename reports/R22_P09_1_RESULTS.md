@@ -26,31 +26,30 @@ Discrimination held throughout: noop resolved 0/55, image digest verified on eve
 among the 53. The 10 UNGRADEABLE_GOLD are targets whose **official gold patch does not resolve under the official
 evaluator**.
 
-## Systematic finding — the gold-fail is a MULTILINGUAL cluster
-The 9 UNGRADEABLE_GOLD among ORIGINAL_P2 are **exactly the rust/php/ruby multilingual targets**:
-`astral-sh__ruff-15725`, `astral-sh__ruff-16445` (rust); `laravel__framework-52660`,
-`php-cs-fixer__php-cs-fixer-8027/-8058/-8398` (php); `rubocop__rubocop-13096/-13299/-13623` (ruby). Every
-Python/Java target grades normally. So the defect is concentrated in the **multilingual selector/parser path of the
-official evaluator**, not in isolated instances.
+## Observation — the UNGRADEABLE_GOLD label clusters by language
+The 9 UNGRADEABLE_GOLD among ORIGINAL_P2 are the rust/php/ruby targets: `astral-sh__ruff-15725/-16445` (rust);
+`laravel__framework-52660`, `php-cs-fixer__php-cs-fixer-8027/-8058/-8398` (php);
+`rubocop__rubocop-13096/-13299/-13623` (ruby). Python/Java targets grade normally. This is a **per-label
+observation** over the completed 53 cells — **not** a proven "the multilingual path is defective" claim: only ruff
+is being diagnosed at the selector level (P0.9.2 §4); php/ruby were not separately diagnosed. Note the gradeable
+pool **retains** other Multilingual targets (Java/Go/Rust), so this is not a Python-only story.
 
-## Ruff root cause (executed diagnostic, `ruff_diagnostic_results.json`)
-For both failed ruff targets the diagnostic (same official image, same patches, byte-identical `cargo test`):
-compile **OK**, base_commit **matches**, and **509–592 tests collect and run directly**. This **excludes** R1
-(command matches), R4 (base drift), R7 (toolchain), and true-zero-collection. The official evaluator's
-"Collected 0 test results" is therefore a **selector/parser matching artifact** (the FAIL_TO_PASS selector names are
-not matched in the cargo output), i.e. **R2/R5 territory — not our adapter and not confirmed gold-invalid**. The
-auto-classifier's `R6_UPSTREAM_GOLD_INVALID` is **overridden**: it keys on the full-suite exit code (rc 101), which
-the **resolved** positive control (`ruff-15997`) also shows, so it does not distinguish gold validity. Rigorous
-class: **`R8_UNKNOWN`, narrowed to {R2_CASE_SELECTOR_BUG, R5_UPSTREAM_PARSER_BUG}**. The decisive per-selector
-pass/fail was not captured (diagnostic `selector_mapping` empty) — the one remaining diagnostic.
+## Ruff — corrected claim boundary (§1)
+The executed diagnostic (`ruff_diagnostic_results.json`) established, for both failed ruff targets: compile **OK**,
+base_commit **matches**, **509–592 tests collect and run** directly via the byte-identical `cargo test`.
+**TRUE_ZERO_COLLECTION is excluded; the adapter, image digest, base commit, and patch application are valid.**
+The auto-classifier's `R6_UPSTREAM_GOLD_INVALID` is **overridden** (it keyed on the full-suite exit code, which the
+**resolved** positive control also shows). However, **the precise failure is UNRESOLVED** until the intended
+FAIL_TO_PASS selectors are scored directly under the official gold patch (P0.9.2 §4). Current class:
+**`R8_UNKNOWN`** for both. **No R2/R5/R6 claim is made yet.** Excluded with evidence: R1, R4, R7, TRUE_ZERO.
 
 ## R22A viability (NOT sealed)
 40 GRADEABLE targets are **achievable** (31 gradeable originals + 9 gradeable reserves; 12 gradeable reserves
-available). **But** the 9 removed originals are rust/php/ruby, and the multilingual targets are systematically
-ungradeable — so any gradeable R22A would be **Python/Java-dominated**, materially changing the benchmark's
-language coverage. R22A is therefore **not sealed**: the audit is incomplete (2 python reserves pending) and the
-Python/Java-only composition is a design decision for the user, not an automatic fill. R22A generation code +
-regression tests are ready (`scripts/r22a_build_manifests.py`).
+available). The 9 removed originals are rust/php/ruby; replacements draw from gradeable reserves per the frozen
+deterministic rule, giving a **Python-heavy official-gradeable subset that still retains Multilingual (Java/Go/Rust)
+targets** — not a Python/Java-only benchmark. R22A is **not sealed** here: the audit is incomplete (2 python
+reserves pending, P0.9.2 resume) and the exact composition is reported once complete. Generation code + regression
+tests are ready (`scripts/r22a_build_manifests.py`).
 
 ## Recommended next step (user decision)
 1. Resume the 2 sympy reserves with a longer timeout to **complete the audit** (they are python → almost certainly

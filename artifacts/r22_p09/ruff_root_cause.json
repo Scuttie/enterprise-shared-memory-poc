@@ -13,9 +13,10 @@
       "campaign_resolved": true, "note": "CONTROL RESOLVED in the campaign yet the diagnostic gold_failed flag is True -> the flag (full-suite exit code) is NOT a reliable gold-validity signal"}
   },
   "adjusted_root_cause": {
-    "astral-sh__ruff-15725": {"primary_class": "R8_UNKNOWN", "narrowed_to": ["R2_CASE_SELECTOR_BUG", "R5_UPSTREAM_PARSER_BUG"]},
-    "astral-sh__ruff-16445": {"primary_class": "R8_UNKNOWN", "narrowed_to": ["R2_CASE_SELECTOR_BUG", "R5_UPSTREAM_PARSER_BUG"]}
+    "astral-sh__ruff-15725": {"primary_class": "R8_UNKNOWN"},
+    "astral-sh__ruff-16445": {"primary_class": "R8_UNKNOWN"}
   },
+  "claim_boundary_P0_9_2": "TRUE_ZERO_COLLECTION is excluded: raw cargo tests compile, collect, and run. The adapter, image digest, base commit, and patch application are valid. However, the precise failure is UNRESOLVED until the intended FAIL_TO_PASS selectors are scored DIRECTLY under the official gold patch (P0.9.2 §4). R2 and R5 are NOT claimed yet. Gold invalidity is NOT inferred from the full-suite cargo return code (the positive control shows the same full-suite failure behavior).",
   "excluded_with_evidence": {
     "R1_ADAPTER_INVOCATION_BUG": "diagnostic command is the byte-identical official `cargo test` (command_matches_official)",
     "R4_IMAGE_CASE_DRIFT": "base_commit_match True (manifest == case == in-container HEAD)",
@@ -23,7 +24,7 @@
     "TRUE_ZERO_COLLECTION": "509-592 tests collect and run directly via the identical cargo test"
   },
   "why_R6_auto_label_is_overridden": "The classifier's R6 rests on gold_failed = (full-suite cargo exit != 0). The RESOLVED positive control shows the same full-suite failure (rc 101 / gold_failed True), so that signal does not distinguish gold validity. The decisive evidence (whether the SPECIFIC FAIL_TO_PASS selector tests pass with gold) requires the per-selector mapping, which the diagnostic did not populate (selector_mapping empty).",
-  "key_discrepancy": "The official evaluator reports 'Collected 0 test results' for these targets, but the diagnostic (same image, same patches, identical cargo test) collects 500-592 tests. So the evaluator's zero is a SELECTOR/PARSER matching artifact (the F2P selector names are not matched in the cargo output), not a true zero and not our adapter -> R2/R5 territory, NOT confirmed R6.",
-  "systematic_scope": "The same UNGRADEABLE_GOLD pattern affects 9 of 40 ORIGINAL_P2 targets, all multilingual: rust (ruff x2), php (laravel, php-cs-fixer x3), ruby (rubocop x3). Python/Java targets grade normally. The defect is concentrated in the multilingual selector/parser path of the official evaluator.",
+  "key_discrepancy": "The official evaluator reports 'Collected 0 test results' for these targets, but the diagnostic (same image, same patches, identical cargo test) collects 500-592 tests. This is recorded as an OBSERVED discrepancy; whether it reflects a selector-name mismatch, a parser miscount, or intended-selector failure under gold is UNRESOLVED until the P0.9.2 selector-level scoring runs. No R2/R5/R6 claim is made here.",
+  "systematic_scope": "The same UNGRADEABLE_GOLD label affects 9 of 40 ORIGINAL_P2 targets, all multilingual: rust (ruff x2), php (laravel, php-cs-fixer x3), ruby (rubocop x3); Python/Java targets grade normally. This is a per-label OBSERVATION over the completed 53 cells; it is NOT a proven defect claim (the underlying cause is under selector-level investigation for ruff, and was not separately diagnosed for php/ruby).",
   "next_diagnostic": "a clean per-selector pass/fail mapping (does each FAIL_TO_PASS selector's test appear in `cargo test -- --list` and pass with gold?) to separate R2 (selectors absent/renamed) from R5 (parser miscounts) from R6 (selectors present but fail)."
 }

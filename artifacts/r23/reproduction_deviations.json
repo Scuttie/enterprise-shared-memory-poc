@@ -1,0 +1,15 @@
+{
+  "experiment": "REALBENCH_R23_SEMANTIC_SUBTASK_GRAPH_V1 / track R23-R",
+  "status": "CLEAN_ROOM_REIMPLEMENTATION",
+  "reason": "arXiv:2602.21611 code is NOT released (author: 'upon acceptance'); no official artifact to reproduce byte-for-byte. Details absent from the paper are assumptions, NOT 'author settings'.",
+  "known_deviations_to_record": [
+    {"item": "agent scaffold", "paper": "unspecified in abstract/method excerpt (likely a Mini-SWE-Agent-style scaffold)", "r23": "Mini-SWE-Agent scaffold pinned in R23-R0 (repo/commit/system-prompt/tool-schema); recorded as a deviation if it differs"},
+    {"item": "similarity/embedding model", "paper": "cosine over an embedding E(.) (model unspecified in excerpt)", "r23": "to be pinned in R23-R0; recorded"},
+    {"item": "extractor prompt / transition prompt exact text", "paper": "described, verbatim text unspecified in excerpt", "r23": "clean-room prompts written from the described behavior; verbatim author prompts NOT claimed"},
+    {"item": "reader/backbone model", "paper": "4 backbones (Gemini/Claude)", "r23": "reader selected by the frozen reader-band pilot [0.10,0.70]; same model used for task-solving and same-model extractor (confound control)"},
+    {"item": "step/token budget exact values", "paper": "unspecified numerics", "r23": "pinned after the R23 token audit; extraction cost counted in the total budget as the paper states"},
+    {"item": "Best@3 vs Avg.Pass@1", "paper": "both reported", "r23": "primary = Avg.Pass@1 over frozen orders; Best@3 secondary"}
+  ],
+  "prohibited": ["calling any assumption an 'author setting'", "presenting the clean-room reimplementation as the official code",
+                 "tuning until AR3 matches +4.7pp"]
+}

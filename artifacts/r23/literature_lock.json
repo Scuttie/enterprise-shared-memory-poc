@@ -1,0 +1,55 @@
+{
+  "experiment": "REALBENCH_R23_SEMANTIC_SUBTASK_GRAPH_V1",
+  "audited_utc": "2026-08-31",
+  "primary_sources": {
+    "A": {
+      "arxiv": "2602.21611", "revision": "v1",
+      "title": "Structurally Aligned Subtask-Level Memory for Software Engineering Agents",
+      "authors": ["Kangning Shen", "Jingyuan Zhang", "Chenxi Sun", "Wencong Zeng", "Yang Yue"],
+      "benchmark": "SWE-bench Verified (500)",
+      "models": ["Gemini 2.5 Flash", "Gemini 2.5 Pro", "Claude 3.7 Sonnet", "Claude 4.0 Sonnet"],
+      "memory_unit": "triple m=(z,d,e): category z in {Analyze,Reproduce,Edit,Verify}; description d=objective+keywords; abstracted experience e",
+      "retrieval_rule": "category hard-filter -> semantic Top-1 (forced; no threshold; no abstention)",
+      "update_rule": "per-subtask extraction of reusable success pattern / failure-avoidance experience",
+      "ablations": ["Vanilla", "Instance-level (ReasoningBank repro)", "Structured-prompt-only (+1.0)", "No-category-filter (+1.6)", "Raw-trajectory (+1.2)"],
+      "reported_effect_pp": {"Gemini2.5Flash": 5.6, "Gemini2.5Pro": 6.8, "Claude3.7Sonnet": 3.9, "Claude4.0Sonnet": 2.3, "mean": 4.7},
+      "seeds": "3 independent runs, shuffled order over 500 instances; Avg. Pass@1 mean +/- std",
+      "code_released": false, "code_note": "will release upon acceptance",
+      "does_operation_precondition_dependency_graph": false,
+      "does_source_query_2x2_factorial": false,
+      "does_overlap_conditioned_causal_analysis": false,
+      "does_conditional_efficacy_vs_natural_stream_abstention": false,
+      "source_hash_note": "abstract+method fetched via ar5iv.labs.arxiv.org/abs/2602.21611 on 2026-08-31; PDF byte-hash to be pinned in R23-B0 when the PDF is downloaded"
+    },
+    "B": {
+      "arxiv": "2507.23361",
+      "title": "SWE-Exp: Experience-Driven Software Issue Resolution",
+      "authors": ["Silin Chen", "Shaoxin Lin", "Yuling Shi", "Heng Lian", "Xiaodong Gu", "Longfei Yun", "Dong Chen", "Lin Cao", "Jiyang Liu", "Nu Xia", "Qianxiang Wang"],
+      "benchmark": "SWE-bench Verified", "model": "Claude 4 Sonnet", "scaffold": "multi-agent + MCTS",
+      "reported": "73.0% Pass@1", "memory_unit": "multi-level experience bank (success + failure)",
+      "code_released": true, "code_repo": "https://github.com/YerbaPage/SWE-Exp"
+    },
+    "C": {
+      "arxiv": "2510.04851", "revision": "v1",
+      "title": "LEGOMem: Modular Procedural Memory for Multi-agent LLM Systems for Workflow Automation",
+      "authors": ["Dongge Han", "Camille Couturier", "Daniel Madrigal Diaz", "Xuchao Zhang", "Victor Ruhle", "Saravan Rajmohan"],
+      "benchmark": "OfficeBench (workflow automation; NOT SWE-bench)",
+      "memory_unit": "modular procedural memory units (orchestrator + agent)",
+      "code_released": null, "relevance": "different domain (workflow automation), included as comparison not primary"
+    }
+  },
+  "comparison_set": ["ReasoningBank", "ExperRepair", "Agent Workflow Memory", "Reflexion", "ExpeL", "CodePlan",
+                     "TRAD", "StructuThink", "repository-memory/commit-history retrieval", "step-wise thought retrieval"],
+  "novelty_judgment": {
+    "NOT_NOVEL": "category-level subtask memory (= paper A m=(z,d,e); R23 reproduces this as AR3 / uses as the STAGE baseline)",
+    "POTENTIALLY_DISTINCT": [
+      "semantic operation/precondition/dependency-graph atoms (A has none)",
+      "source-atomization x target-query 2x2 factorial (A has none)",
+      "overlap-conditioned causal analysis: whole-task similarity vs semantic-subtask overlap (A stratifies by trajectory length only)",
+      "conditional-efficacy vs natural-stream-utility with abstention (A forced Top-1, no abstention)",
+      "known-wrong-atom safety (A none)"
+    ],
+    "collision": false,
+    "endpoint_this_gate": "PROCEED (no R23_NOVELTY_COLLISION_REVIEW)"
+  }
+}

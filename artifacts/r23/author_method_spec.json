@@ -1,0 +1,28 @@
+{
+  "experiment": "REALBENCH_R23_SEMANTIC_SUBTASK_GRAPH_V1 / track R23-R",
+  "source": "arXiv:2602.21611v1 (author code NOT released -> CLEAN_ROOM_REIMPLEMENTATION)",
+  "confirmed_from_paper": {
+    "functional_categories": ["ANALYZE", "REPRODUCE", "EDIT", "VERIFY"],
+    "subtask_intent": {"category_z": "one of the 4 categories", "description_d": {"objective": "string", "keywords": "list"}},
+    "memory_entry": "m = (z, d, e)  where e = abstracted experience (success pattern | failure-avoidance)",
+    "retrieval": "1) drop memory whose category != current category z; 2) semantic cosine(E(d_query), E(m.d)); 3) Top-1; forced (no threshold, no abstention); 4) inject e into the subtask-start context",
+    "update": "1) on subtask completion split the local trajectory; 2) same-model extractor evaluates; 3) success -> reusable pattern, failure -> failure-avoidance; 4) append a new memory entry",
+    "streaming": "each arm/order starts empty; a target's experience is added only AFTER that target finishes; a task never reuses its own experience mid-run; extraction cost counts inside the total budget",
+    "benchmark": "SWE-bench Verified", "temperature": 0, "seeds": "3 shuffled execution orders",
+    "metric": "Avg. Pass@1 (mean +/- std over 3 runs); Best@3 also reported by the paper"
+  },
+  "reproduction_arms": {
+    "AR0": "VANILLA (author scaffold; no forced subtask transition; no historical memory) = paper 'Vanilla Agent'",
+    "AR1": "STRUCTURED_ONLY (category/subtask transitions; no retrieval/update) = paper 'Structured-prompt-only' (+1.0)",
+    "AR2": "INSTANCE_MEMORY (whole-task query; whole-trajectory/instance summary atom) = paper 'Instance-level (ReasoningBank)'",
+    "AR3": "AUTHOR_SUBTASK_MEMORY (category + local intent; category hard-filter; semantic Top-1; abstract experience) = paper full method (+2.3..+6.8; mean +4.7)",
+    "AR4": "NO_CATEGORY_FILTER (same entries; global atom search) = paper 'No Category Filter' (+1.6)",
+    "AR5": "RAW_SUBTASK_TRAJECTORY (AR3 source/query; raw bounded subtask trajectory instead of e; token-matched) = paper 'Raw Trajectory' (+1.2)"
+  },
+  "reproduction_estimands": {"R-Q1": "AR3 - AR0", "R-Q2": "AR3 - AR2", "R-Q3": "AR3 - AR1"},
+  "reproduction_labels": {
+    "AUTHOR_METHOD_REPRODUCED": "AR3 > AR0 and AR2; prereg CI/stat rule pass; no integrity failure; direction stable across frozen orders",
+    "AUTHOR_METHOD_DIRECTIONAL": "point estimate positive but CI includes 0",
+    "AUTHOR_METHOD_NOT_REPRODUCED": "AR3 <= controls or unstable direction"
+  }
+}

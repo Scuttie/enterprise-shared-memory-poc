@@ -1,0 +1,97 @@
+name: TriMem V1 official grader smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frozen-gold-noop-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    environment: trimem-grader-smoke-exec
+    env:
+      CUBLAS_WORKSPACE_CONFIG: ":4096:8"
+      CUDA_VISIBLE_DEVICES: ""
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      MKL_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONHASHSEED: "0"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Checkout approved frozen source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.11.10
+          cache: ""
+      - name: Install hash-locked environment
+        run: |
+          python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Materialize protected external approval
+        env:
+          TRIMEM_EXEC_APPROVAL_B64: ${{ secrets.TRIMEM_EXEC_APPROVAL_B64 }}
+        run: |
+          python -c "import base64,os,pathlib; pathlib.Path(os.environ['RUNNER_TEMP'],'trimem-exec-approval.json').write_bytes(base64.b64decode(os.environ['TRIMEM_EXEC_APPROVAL_B64'], validate=True))"
+          mkdir -p artifacts/trimem_v1/grader_smoke_exec
+      - name: Verify pre-container smoke EXEC gate
+        run: >-
+          python scripts/trimem_verify_ready.py
+          --level grader-smoke-exec
+          --require-git-tracked
+          --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
+      - name: Pull committed images by digest and verify local observations
+        run: >-
+          python scripts/trimem_pull_locked_images.py
+          --phase grader-smoke
+          --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
+          --evidence-dir artifacts/trimem_v1/grader_smoke_exec/image-materialization
+      - name: Run exact committed GOLD and NOOP targets serially
+        run: >-
+          python scripts/trimem_grader_smoke.py
+          --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
+          --output-dir artifacts/trimem_v1/grader_smoke_exec/results
+      - name: Aggregate exact target set fail closed
+        run: >-
+          python scripts/trimem_benchmark_matrix.py aggregate
+          --manifest grader-smoke
+          --results-dir artifacts/trimem_v1/grader_smoke_exec/results
+          --output artifacts/trimem_v1/grader_smoke_exec/aggregate.json
+      - name: Build public allowlisted result
+        run: >-
+          python scripts/trimem_public_artifact.py
+          --source artifacts/trimem_v1/grader_smoke_exec/results
+          --aggregate artifacts/trimem_v1/grader_smoke_exec/aggregate.json
+          --output artifacts/trimem_v1/grader_smoke_exec/public-results.json
+      - name: Encrypt complete restricted evidence
+        if: always()
+        env:
+          TRIMEM_EVIDENCE_PASSPHRASE: ${{ secrets.TRIMEM_EVIDENCE_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          tar -C artifacts/trimem_v1/grader_smoke_exec -cf - . | openssl enc -aes-256-cbc -salt -pbkdf2 -pass env:TRIMEM_EVIDENCE_PASSPHRASE -out "$RUNNER_TEMP/trimem-grader-smoke-restricted.tar.enc"
+      - name: Upload public smoke result
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-grader-smoke-public
+          path: artifacts/trimem_v1/grader_smoke_exec/public-results.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload encrypted restricted evidence
+        if: always()
+        id: restricted-upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-grader-smoke-restricted-encrypted
+          path: ${{ runner.temp }}/trimem-grader-smoke-restricted.tar.enc
+          if-no-files-found: error
+          retention-days: 14
+      - name: Remove plaintext and temporary EXEC material
+        if: always()
+        run: python scripts/trimem_cleanup_exec.py --phase grader-smoke

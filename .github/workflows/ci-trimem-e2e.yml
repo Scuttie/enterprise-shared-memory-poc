@@ -1,0 +1,87 @@
+name: TriMem V1 credential-free service E2E
+
+on:
+  pull_request:
+  push:
+    branches:
+      - codex/trimem-coder-v1
+
+permissions:
+  contents: read
+
+jobs:
+  postgres-qdrant-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+        env:
+          POSTGRES_DB: trimem_test
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d trimem_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      qdrant:
+        image: qdrant/qdrant@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
+        ports:
+          - 6333:6333
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/trimem_test
+      MIGRATION_PASSWORD: postgres
+      MIGRATION_USER: postgres
+      PGDATABASE: trimem_test
+      PGHOST: localhost
+      PGPASSWORD: postgres
+      PGUSER: postgres
+      TRIMEM_TEST_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/trimem_test
+      TRIMEM_TEST_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@localhost:5432/trimem_test
+      TRIMEM_TEST_QDRANT_URL: http://localhost:6333
+    steps:
+      - name: Checkout frozen source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.11.10
+          cache: ""
+      - name: Install hash-locked environment
+        run: |
+          python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Wait for exact Qdrant service
+        run: |
+          python - <<'PY'
+          import time
+          import httpx
+
+          for attempt in range(60):
+              try:
+                  response = httpx.get("http://localhost:6333/healthz", timeout=2.0)
+                  if response.status_code == 200:
+                      break
+              except httpx.HTTPError:
+                  pass
+              if attempt == 59:
+                  raise SystemExit("Qdrant did not become healthy")
+              time.sleep(1)
+          PY
+      - name: Apply exact migration head
+        run: |
+          python scripts/postgres_bootstrap.py
+          python -m alembic upgrade head
+      - name: Regenerate credential-free full-path evidence
+        run: |
+          python scripts/run_trimem_replay_e2e.py --output "${RUNNER_TEMP}/trimem-credential-free"
+          python scripts/trimem_verify_credential_free.py --root "${RUNNER_TEMP}/trimem-credential-free"
+      - name: Exercise real PostgreSQL and Qdrant without skips
+        run: >-
+          python scripts/trimem_pytest_no_skip.py
+          tests/trimem/test_real_services_e2e.py

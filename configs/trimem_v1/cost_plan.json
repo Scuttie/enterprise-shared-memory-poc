@@ -1,0 +1,151 @@
+{
+  "actual_to_date": {
+    "decomposition_calls": 0,
+    "extraction_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "solve_calls": 0,
+    "task_arm_runs": 0,
+    "task_instances": 0
+  },
+  "calculation_contract": {
+    "development_physical_runs": "4 preregistered M2 candidate bundles * 12 targets + selected-prompt M0 and M1 * 12 targets = 72; candidate results are tuning evidence, not component ablations",
+    "decomposition_calls": "task_arm_runs * exactly one decomposition call",
+    "extraction_calls": "task_arm_runs * exactly one extraction call; never folded into solve calls",
+    "grader_containers": "12 GOLD/NOOP smoke targets + 72 development task-arm runs + 81 held-out task-arm runs",
+    "heldout_physical_runs": "27 held-out targets * M0/M1/selected-M2 = 81",
+    "model_cost": "uncached_input_tokens * 2.50/1M + cached_input_tokens * 0.25/1M + output_tokens * 15.00/1M USD",
+    "no_long_context_surcharge": "each request reserves len(UTF-8 prompt bytes)+4096 envelope tokens and is rejected above 262000, conservatively below the 272K-token surcharge threshold",
+    "solve_calls": "sum of actual solve calls; expected 12 and hard maximum 24 per task-arm",
+    "stream_order": "each candidate/arm has one independent frozen serial task sequence; stream order is not multiplied into task N"
+  },
+  "expected_cost": {
+    "assumptions_per_task_arm": {
+      "cached_input_tokens": 0,
+      "decomposition_calls": 1,
+      "extraction_calls": 1,
+      "input_tokens": 164000,
+      "output_tokens": 6000,
+      "solve_calls": 12
+    },
+    "decomposition_calls": 153,
+    "extraction_calls": 153,
+    "grader_containers_including_smoke": 165,
+    "input_tokens": 25092000,
+    "model_calls": 2142,
+    "output_tokens": 918000,
+    "paid_model_calls": 2142,
+    "phase_totals": {
+      "DEVELOPMENT_TUNING": {
+        "input_tokens": 11808000,
+        "model_calls": 1008,
+        "output_tokens": 432000,
+        "task_arm_runs": 72,
+        "total_usd": 36.0
+      },
+      "GRADER_SMOKE": {
+        "grader_containers": 12,
+        "model_calls": 0,
+        "task_arm_runs": 0,
+        "total_usd": 0.0
+      },
+      "HELDOUT_BENCHMARK": {
+        "input_tokens": 13284000,
+        "model_calls": 1134,
+        "output_tokens": 486000,
+        "task_arm_runs": 81,
+        "total_usd": 40.5
+      }
+    },
+    "solve_calls": 1836,
+    "status": "FROZEN_PLANNING_ESTIMATE",
+    "task_arm_runs": 153,
+    "total_usd": 76.5
+  },
+  "model_pricing": {
+    "cached_input_per_million_tokens_usd": 0.25,
+    "input_per_million_tokens_usd": 2.5,
+    "model_id": "gpt-5.4-2026-03-05",
+    "output_per_million_tokens_usd": 15.0,
+    "source_url": "https://developers.openai.com/api/docs/models/gpt-5.4"
+  },
+  "phase_hard_caps": {
+    "DEVELOPMENT_TUNING": {
+      "benchmark_grader_containers": 72,
+      "decomposition_calls": 72,
+      "extraction_calls": 72,
+      "input_tokens": 36000000,
+      "max_input_tokens_per_task_arm": 500000,
+      "max_model_calls_per_task_arm": 26,
+      "model_calls": 1872,
+      "output_tokens": 3796992,
+      "paid_model_calls": 1872,
+      "solve_calls": 1728,
+      "task_arm_runs": 72,
+      "total_usd": 150.0,
+      "uncached_token_cost_ceiling_usd": 146.95488
+    },
+    "GRADER_SMOKE": {
+      "benchmark_grader_containers": 12,
+      "decomposition_calls": 0,
+      "extraction_calls": 0,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "solve_calls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0.0
+    },
+    "HELDOUT_BENCHMARK": {
+      "benchmark_grader_containers": 81,
+      "decomposition_calls": 81,
+      "extraction_calls": 81,
+      "input_tokens": 40500000,
+      "max_input_tokens_per_task_arm": 500000,
+      "max_model_calls_per_task_arm": 26,
+      "model_calls": 2106,
+      "output_tokens": 4271616,
+      "paid_model_calls": 2106,
+      "solve_calls": 1944,
+      "task_arm_runs": 81,
+      "total_usd": 170.0,
+      "uncached_token_cost_ceiling_usd": 165.32424
+    }
+  },
+  "proposed_hard_cap": {
+    "benchmark_grader_containers": 153,
+    "decomposition_calls": 153,
+    "enforcement": "A phase-scoped external approval binds exact phase caps. One serial job and one durable AtomicBudgetLedger reserve task, grader, call, conservative uncached input, maximum output, and USD before any provider/container side effect.",
+    "extraction_calls": 153,
+    "grader_containers_including_smoke": 165,
+    "input_tokens": 76500000,
+    "max_input_tokens_per_task_arm": 500000,
+    "max_model_calls_per_task_arm": 26,
+    "model_calls": 3978,
+    "output_tokens": 8068608,
+    "paid_model_calls": 3978,
+    "solve_calls": 3672,
+    "status": "PROPOSED_PENDING_SEPARATE_PHASE_EXEC_APPROVALS",
+    "task_arm_runs": 153,
+    "total_usd": 320.0,
+    "uncached_token_cost_ceiling_usd": 312.27912
+  },
+  "run_counts": {
+    "development_m0_m1_runs_after_selection": 24,
+    "development_m2_candidate_runs": 48,
+    "development_physical_task_arm_runs": 72,
+    "development_unique_instances": 12,
+    "grader_smoke_instances": 6,
+    "grader_smoke_targets": 12,
+    "heldout_physical_task_arm_runs": 81,
+    "heldout_unique_instances": 27,
+    "total_physical_task_arm_runs": 153
+  },
+  "schema": "trimem/cost-plan/1.1",
+  "status": "FROZEN_FOR_BENCHMARK_APPROVAL"
+}

@@ -1,0 +1,157 @@
+{
+  "base_policy_file_sha256": "ca7c1be00addd47ec7781d3e89d9af08575c548034c1f8b4f27be8d0fda60ed9",
+  "base_policy_manifest_sha256": "sha256:775cc3357329ec0aa6741f54ec91c135ee7dc2262725a93b07ae69e2565e013f",
+  "base_policy_path": "configs/trimem_v1/m2_policy.json",
+  "candidate_order": [
+    "baseline",
+    "precision",
+    "recall",
+    "balanced"
+  ],
+  "candidates": [
+    {
+      "candidate_id": "baseline",
+      "decomposition_prompt_suffix": "",
+      "decomposition_prompt_suffix_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "full_policy_file_sha256": "f18fcc305e4d936d2337c6eca08ba1bfbb07e5ae6200f10737c11a7d5d2bc6dd",
+      "full_policy_manifest_sha256": "sha256:775cc3357329ec0aa6741f54ec91c135ee7dc2262725a93b07ae69e2565e013f",
+      "full_policy_path": "configs/trimem_v1/m2_candidates/baseline.json",
+      "order_index": 0,
+      "runtime_lock_manifest": {
+        "limits": {
+          "max_agent_steps": 24,
+          "max_decomposition_calls": 1,
+          "max_extraction_calls": 1,
+          "max_memory_context_bytes": 12000,
+          "max_memory_injections": 3,
+          "max_output_tokens_decomposition": 2048,
+          "max_output_tokens_extraction": 1536,
+          "max_output_tokens_per_solve": 2048,
+          "max_solve_calls": 24,
+          "max_steps_per_subtask": 8
+        },
+        "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
+        "prompt_hashes": {
+          "decomposer_prompt": "8a2a27bb89e3747f832dd8ec2d57da5134c10526ac7e8b8bbc5c6538985ab1ec",
+          "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
+          "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50"
+        },
+        "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+        "version": "trimem-agent-v1"
+      },
+      "runtime_lock_sha256": "sha256:92a8c4c4ad0a62e686db51965aa8db02039c009ce5e427cfe6d5b2a522a720c2"
+    },
+    {
+      "candidate_id": "precision",
+      "decomposition_prompt_suffix": "\nPrefer the smallest evidence-supported DAG. Add a subtask only when a concrete repository observation proves a distinct operation, precondition, invariant, or dependency.\n",
+      "decomposition_prompt_suffix_sha256": "fc558e42b0341f434a79eec08ecfa59ec44f84f8699eb55b6ded43d85413f4fe",
+      "full_policy_file_sha256": "1c9ea64e16986e1c93a26a5a62428dbc7fd3497d179d84fb194ff90af2eb26b5",
+      "full_policy_manifest_sha256": "sha256:36f857ae92ad07b6ac3335e4a19c5d7e395f596a15ca7ced4d32fe3462f405f2",
+      "full_policy_path": "configs/trimem_v1/m2_candidates/precision.json",
+      "order_index": 1,
+      "runtime_lock_manifest": {
+        "limits": {
+          "max_agent_steps": 24,
+          "max_decomposition_calls": 1,
+          "max_extraction_calls": 1,
+          "max_memory_context_bytes": 12000,
+          "max_memory_injections": 3,
+          "max_output_tokens_decomposition": 2048,
+          "max_output_tokens_extraction": 1536,
+          "max_output_tokens_per_solve": 2048,
+          "max_solve_calls": 24,
+          "max_steps_per_subtask": 8
+        },
+        "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
+        "prompt_hashes": {
+          "decomposer_prompt": "f70f3055ac4ba910fa3aeef9fc944410d847e3c7741708f0d347afef5f4be013",
+          "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
+          "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50"
+        },
+        "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+        "version": "trimem-agent-v1"
+      },
+      "runtime_lock_sha256": "sha256:d3dbd7fb1ff2de1a9f6aaf27627a3c49a4d6bf276c79008eb47f9bef33e725d0"
+    },
+    {
+      "candidate_id": "recall",
+      "decomposition_prompt_suffix": "\nEnumerate every evidence-supported semantic operation, precondition, invariant, and dependency needed for the public task; retain distinct nodes when their verification evidence differs.\n",
+      "decomposition_prompt_suffix_sha256": "3cd7d610199e13ef5ead6bb268163d243595e92ce8039e7f042eb9b167c21bb9",
+      "full_policy_file_sha256": "1985ca2cceaa6ebdc02d4bd320b318a47a8144f64bde5ad0da8367c777d3d85c",
+      "full_policy_manifest_sha256": "sha256:645a559a816673312a12e370fc4b1ab0e22d126470c20a5d5886fb25b7029d16",
+      "full_policy_path": "configs/trimem_v1/m2_candidates/recall.json",
+      "order_index": 2,
+      "runtime_lock_manifest": {
+        "limits": {
+          "max_agent_steps": 24,
+          "max_decomposition_calls": 1,
+          "max_extraction_calls": 1,
+          "max_memory_context_bytes": 12000,
+          "max_memory_injections": 3,
+          "max_output_tokens_decomposition": 2048,
+          "max_output_tokens_extraction": 1536,
+          "max_output_tokens_per_solve": 2048,
+          "max_solve_calls": 24,
+          "max_steps_per_subtask": 8
+        },
+        "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
+        "prompt_hashes": {
+          "decomposer_prompt": "b7538ba90142b07e7cf152e990efc5e5b50de0c30889f726c09361afaf654bb8",
+          "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
+          "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50"
+        },
+        "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+        "version": "trimem-agent-v1"
+      },
+      "runtime_lock_sha256": "sha256:9bf9d4514a883e4d880cce04161f9593a8672dcf395a467f374ee8cd086782a8"
+    },
+    {
+      "candidate_id": "balanced",
+      "decomposition_prompt_suffix": "\nBuild a compact dependency-complete semantic DAG, merging equivalent work while preserving separately verifiable operations and explicit prerequisite edges.\n",
+      "decomposition_prompt_suffix_sha256": "3b9529cea099b1fac511885a23a9a480baa30ac06f3b20ab508605b2fd08dc0e",
+      "full_policy_file_sha256": "e0474d88505c0a75ff21914f552b71f9796274bd4939e92b299aaf75d0ab4b2d",
+      "full_policy_manifest_sha256": "sha256:63fec3b67f6ce895cc5b25029807aef7f18e4b2d1ac5931bc2a9a8c8243cdcfa",
+      "full_policy_path": "configs/trimem_v1/m2_candidates/balanced.json",
+      "order_index": 3,
+      "runtime_lock_manifest": {
+        "limits": {
+          "max_agent_steps": 24,
+          "max_decomposition_calls": 1,
+          "max_extraction_calls": 1,
+          "max_memory_context_bytes": 12000,
+          "max_memory_injections": 3,
+          "max_output_tokens_decomposition": 2048,
+          "max_output_tokens_extraction": 1536,
+          "max_output_tokens_per_solve": 2048,
+          "max_solve_calls": 24,
+          "max_steps_per_subtask": 8
+        },
+        "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
+        "prompt_hashes": {
+          "decomposer_prompt": "84705566bc66ed1be7d2110a2553d5f9d7bb874978b69a1b39fbb553b2cd486d",
+          "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
+          "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50"
+        },
+        "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+        "version": "trimem-agent-v1"
+      },
+      "runtime_lock_sha256": "sha256:ae7ccff87c1d0a4c4c32aef35ec390c3a46b041aab148809cf2718f9f0b8f15b"
+    }
+  ],
+  "development_contract": {
+    "candidate_task_arm_runs": 48,
+    "component_ablation_claim": "PROHIBITED",
+    "heldout_results_visible_during_selection": false,
+    "one_fresh_durable_namespace_per_candidate": true,
+    "same_order_and_source_evidence": true,
+    "selection_order": [
+      "resolved_count descending",
+      "actual_total_tokens ascending",
+      "actual_usd ascending",
+      "candidate_id ascending"
+    ],
+    "targets_per_candidate": 12
+  },
+  "schema": "trimem/m2-candidate-bundles/1.0",
+  "status": "FROZEN_BEFORE_DEVELOPMENT_RESULTS"
+}

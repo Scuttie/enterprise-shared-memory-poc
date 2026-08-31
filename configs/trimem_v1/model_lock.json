@@ -1,0 +1,102 @@
+{
+  "schema": "trimem/model-lock/1.1",
+  "status": "FROZEN_PRE_EXEC_EXECUTION_PENDING_APPROVAL",
+  "actual_execution": {
+    "model_gateway_calls": 0,
+    "paid_model_calls": 0
+  },
+  "primary_model": {
+    "provider": "openai",
+    "model_id": "gpt-5.4-2026-03-05",
+    "status": "FROZEN",
+    "reason": "Officially documented dated snapshot avoids alias drift",
+    "input_price_per_million_tokens_usd": 2.5,
+    "cached_input_price_per_million_tokens_usd": 0.25,
+    "output_price_per_million_tokens_usd": 15.0
+  },
+  "model_roles": {
+    "decomposition": {
+      "model_id": "gpt-5.4-2026-03-05",
+      "status": "FROZEN_EXECUTION_PENDING_APPROVAL"
+    },
+    "solve": {
+      "model_id": "gpt-5.4-2026-03-05",
+      "status": "FROZEN_EXECUTION_PENDING_APPROVAL"
+    },
+    "experience_extraction": {
+      "model_id": "gpt-5.4-2026-03-05",
+      "status": "FROZEN_EXECUTION_PENDING_APPROVAL"
+    }
+  },
+  "decoding_contract": {
+    "attempts": 1,
+    "reasoning_effort": "medium",
+    "temperature": "OMITTED_FOR_REASONING_MODEL",
+    "top_p": "OMITTED_FOR_REASONING_MODEL"
+  },
+  "request_schema": {
+    "endpoint": "https://api.openai.com/v1/responses",
+    "http_method": "POST",
+    "body": {
+      "model": "gpt-5.4-2026-03-05",
+      "input": "one user message containing the byte-exact common-runtime prompt",
+      "reasoning": {
+        "effort": "medium"
+      },
+      "max_output_tokens": "per-call value from the frozen RuntimeLock"
+    },
+    "temperature": "OMITTED",
+    "top_p": "OMITTED",
+    "response_requirements": [
+      "non-empty output text",
+      "returned model exactly gpt-5.4-2026-03-05",
+      "exact non-negative input_tokens",
+      "exact non-negative cached_input_tokens",
+      "exact non-negative output_tokens",
+      "exact non-negative reasoning_tokens",
+      "attempt count and wall time"
+    ]
+  },
+  "request_schema_sha256": "649540af5f638efa1a92f8345de586c9373feaa9a5c657437171b7591e3abf42",
+  "provider_bridge": {
+    "async_provider_class": "enterprise_memory.providers.openai_responses.OpenAIResponsesProvider",
+    "common_runtime_bridge_class": "enterprise_memory.trimem.gateway.AsyncProviderModelGateway",
+    "provider_family": "gpt5.4",
+    "exact_returned_model_required": "gpt-5.4-2026-03-05",
+    "long_lived_coroutine_runner_required": true,
+    "provider_retry_attempt_cap": 1
+  },
+  "long_context_surcharge_guard": {
+    "official_surcharge_threshold_input_tokens_exclusive": 272000,
+    "conservative_reservation_formula": "UTF-8 prompt byte length + 4096 Responses-envelope tokens",
+    "maximum_reserved_input_tokens_per_call": 262000,
+    "contract": "NO_LONG_CONTEXT_SURCHARGE",
+    "enforcement": "reject before provider send when the conservative reservation exceeds 262000; one UTF-8 byte is treated as at least one reserved token"
+  },
+  "pricing_evidence": {
+    "model_detail_url": "https://developers.openai.com/api/docs/models/gpt-5.4",
+    "observed_date_utc": "2026-08-31",
+    "source_policy": "official OpenAI documentation only",
+    "documented_long_context_pricing": "prompts above 272K input tokens charge the full session at 2x input and 1.5x output"
+  },
+  "retrieval_embedding": {
+    "production": {
+      "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "dimension": 384,
+      "license": "Apache-2.0",
+      "model_url": "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/tree/1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "status": "FROZEN"
+    },
+    "credential_free_fixture": {
+      "implementation": "DeterministicHashEmbedder",
+      "scope": "credential-free tests and replay only",
+      "benchmark_execution_allowed": false
+    }
+  },
+  "runtime_lock_source": "src/enterprise_memory/trimem/runtime_lock.py",
+  "approval_boundary": {
+    "pre_exec_ready": "exact model, request schema, prices, expected cost, and proposed caps are frozen",
+    "execution": "a separate external immutable approval must bind the committed Git SHA, freeze digest, phase, and hard caps"
+  }
+}

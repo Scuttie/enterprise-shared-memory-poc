@@ -1,0 +1,52 @@
+{
+  "benchmark_approval_requires": [
+    "git-tracked explicit allowlist freeze integrity with LF-stable bytes",
+    "credential-free full source-to-target E2E PASS with paid_model_calls=0 and official_grader_runs=0",
+    "public-identity-only deterministic selection reproduces frozen smoke 6, development 12, and held-out 27 with zero instance overlap",
+    "all 45 smoke/development/held-out target images plus one support image are immutable digest references sourced from official registry metadata without official grader/benchmark target image pull or run",
+    "four executable joint M2 development candidates and deterministic result-independent selection and post-development freeze rule",
+    "frozen M0/M1/M2 common runtime, workspace, tool, parser, model, dataset, harness, dependency, service, and compute-ceiling contracts",
+    "exact gpt-5.4-2026-03-05 pricing and request schema plus immutable all-MiniLM-L6-v2 embedding revision",
+    "expected cost separated from proposed hard caps for 72 development and 81 held-out task-arm runs plus 12 grader-smoke containers",
+    "fail-closed per-arm/per-benchmark n, resolved, and Pass@1 aggregation with SWE-bench Verified primary, Multi-SWE-bench secondary, and pooled totals descriptive only",
+    "phase-specific single-use external approval plan bound to an already committed Git HEAD, freeze digest, workflow run ID, and run attempt",
+    "public benchmark evaluation scope and no-redistribution policy documented; SWE-bench Verified dataset license remains undeclared and the EXEC actor must accept applicable source/project terms"
+  ],
+  "current_status": "READY_IF_BENCHMARK_APPROVAL_VERIFIER_PASSES",
+  "execution_counters": {
+    "grader_containers": 0,
+    "model_gateway_calls": 0,
+    "official_grader_runs": 0,
+    "paid_model_calls": 0
+  },
+  "explicitly_allowed_pending_at_pre_exec_ready": {
+    "external_hard_cap_approval": "PENDING_EXEC_APPROVAL",
+    "official_grader_smoke": "PENDING_EXEC_APPROVAL; viability NOT_YET_ESTABLISHED",
+    "selected_m2_checkpoint": "PRE_DEVELOPMENT; produced only after approved development execution"
+  },
+  "frozen_counts": {
+    "development_instances": 12,
+    "development_physical_task_arm_runs": 72,
+    "grader_smoke_containers": 12,
+    "grader_smoke_unique_instances": 6,
+    "heldout_instances": 27,
+    "heldout_physical_task_arm_runs": 81,
+    "total_benchmark_physical_task_arm_runs": 153
+  },
+  "post_approval_gates": [
+    "GRADER_SMOKE approval, digest-only pull and observed digest verification, then official GOLD+NOOP PASS",
+    "new committed smoke result and freeze before DEVELOPMENT_TUNING approval",
+    "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
+    "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
+    "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
+  ],
+  "schema": "trimem/readiness-requirements/1.1",
+  "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
+  "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
+  "static_ci_meaning": "Static CI and credential-free E2E establish implementation and execution-plan readiness only. They do not claim official grader, paid model, benchmark, causal, performance, full-suite, or leaderboard viability.",
+  "target_set_sha256": {
+    "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
+    "grader_smoke": "2c91358e9c78cd26f989f875c755b62cb30037c407ada214148064411e7ac809",
+    "heldout": "abd3f182acef8f37018e5f05ab9ba185b7b1efbc111dee273e66a38e6ab16267"
+  }
+}

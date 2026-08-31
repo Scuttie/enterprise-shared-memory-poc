@@ -1,0 +1,44 @@
+# TriMem V1 host-side benchmark runtime inputs.
+# The compiled lock is Linux x86_64 / CPython 3.11.10 only. Harness source
+# packages themselves are imported from their exact Git checkouts and are not
+# installed from a mutable VCS URL.
+beautifulsoup4
+chardet
+datasets
+docker
+ghapi<2
+GitPython
+modal
+pre-commit
+python-dotenv
+PyYAML
+requests
+rich
+typer
+tenacity
+tqdm
+unidiff
+dataclasses_json
+toml
+PyGithub
+swe-rex
+
+# TriMem production bridge/store/index.
+httpx==0.27.0
+SQLAlchemy==2.0.51
+asyncpg==0.30.0
+qdrant-client==1.12.2
+pyarrow
+alembic==1.13.3
+psycopg2-binary==2.9.9
+pytest==8.2.0
+
+# Frozen PPR embedder stack; benchmark workflows force CPU deterministic mode.
+sentence-transformers==3.0.1
+transformers==4.44.2
+tokenizers==0.19.1
+torch==2.4.1
+numpy==1.26.4
+scikit-learn==1.5.1
+scipy==1.14.1
+huggingface-hub==0.24.7

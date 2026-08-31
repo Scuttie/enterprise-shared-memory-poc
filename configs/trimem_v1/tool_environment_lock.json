@@ -1,0 +1,95 @@
+{
+  "schema": "trimem/tool-environment-lock/1.0",
+  "status": "FROZEN",
+  "runtime_lock_manifest": {
+    "version": "trimem-agent-v1",
+    "prompt_hashes": {
+      "decomposer_prompt": "8a2a27bb89e3747f832dd8ec2d57da5134c10526ac7e8b8bbc5c6538985ab1ec",
+      "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50",
+      "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098"
+    },
+    "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+    "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
+    "limits": {
+      "max_agent_steps": 24,
+      "max_steps_per_subtask": 8,
+      "max_solve_calls": 24,
+      "max_decomposition_calls": 1,
+      "max_extraction_calls": 1,
+      "max_output_tokens_per_solve": 2048,
+      "max_output_tokens_decomposition": 2048,
+      "max_output_tokens_extraction": 1536,
+      "max_memory_injections": 3,
+      "max_memory_context_bytes": 12000
+    }
+  },
+  "runtime_lock_content_hash": "92a8c4c4ad0a62e686db51965aa8db02039c009ce5e427cfe6d5b2a522a720c2",
+  "source_files": {
+    "src/enterprise_memory/trimem/runtime_lock.py": {
+      "bytes": 6116,
+      "sha256": "053de00adb66a13fb0cb3b039b008e9fdc028121dc5fc060cfddc2c371a32aed"
+    },
+    "src/enterprise_memory/trimem/agent_runtime.py": {
+      "bytes": 85644,
+      "sha256": "bceabe961c0fa566cb5648c5444623e1a60e4158794de3d46bd8fb6976559b1c"
+    },
+    "src/enterprise_memory/trimem/workspace.py": {
+      "bytes": 18587,
+      "sha256": "359661324335ad092c8b6c7786d42b0744148e2dc01d8c47e779ddd7a5c4f953"
+    },
+    "src/enterprise_memory/trimem/git_workspace.py": {
+      "bytes": 34119,
+      "sha256": "a4b1f3d3f0265fc5a695a1d67376f3714035d498295125b8df077b5b2a00631e"
+    },
+    "src/enterprise_memory/trimem/checkpoint.py": {
+      "bytes": 6003,
+      "sha256": "091fc4e665ed92984f5ed2dd45ceb25fe60c0824df5c604529de959d18557ebf"
+    }
+  },
+  "benchmark_workspace": {
+    "factory_class": "enterprise_memory.trimem.git_workspace.GitCheckoutWorkspaceFactory",
+    "production_capable_required": true,
+    "all_tasks_require_digest_bound_command_runner": true,
+    "same_factory_content_hash_across_arms": true,
+    "max_read_bytes": 131072,
+    "chunked_read_supported": true,
+    "max_search_hits": 100
+  },
+  "docker_command_runner": {
+    "class": "enterprise_memory.trimem.git_workspace.DockerSandboxCommandRunner",
+    "schema": "trimem/docker-command-runner/1.0",
+    "container_workspace": "/testbed",
+    "image": "per-target exact image@sha256 from grader_image_lock.json",
+    "pull": "never",
+    "network": "none",
+    "root_filesystem": "read-only",
+    "writable_mounts": [
+      "task checkout",
+      "/tmp tmpfs"
+    ],
+    "checkout_git_metadata": "nested read-only bind",
+    "host_environment_forwarded_to_container": false,
+    "container_environment": {
+      "CI": "1",
+      "HOME": "/tmp/trimem-home",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "/tmp"
+    },
+    "cap_drop": "ALL",
+    "no_new_privileges": true,
+    "pids_limit": 1024,
+    "cpu_limit": "4",
+    "memory_limit": "8g",
+    "tmpfs_size_bytes": 1073741824,
+    "max_timeout_seconds": 120,
+    "max_output_bytes_per_stream": 262144
+  },
+  "tool_authority_boundary": {
+    "gold_patch_visible_to_agent": false,
+    "hidden_tests_visible_to_agent": false,
+    "generic_host_shell": false,
+    "arbitrary_host_environment": false,
+    "public_repository_commands": "argv-only in the digest-pinned task container",
+    "dag_revision": "evidence-driven task-local topology only"
+  }
+}

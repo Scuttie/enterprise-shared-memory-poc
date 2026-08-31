@@ -1,0 +1,11 @@
+{
+  "actual_execution": {
+    "docker_pulls": 0,
+    "grader_containers": 0,
+    "official_grader_runs": 0
+  },
+  "expected_target_count": 12,
+  "official_grader_viability": "NOT_YET_ESTABLISHED",
+  "schema": "trimem/grader-smoke-result/1.0",
+  "status": "PENDING_EXEC_APPROVAL"
+}

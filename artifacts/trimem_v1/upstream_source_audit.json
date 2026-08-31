@@ -1,0 +1,93 @@
+{
+  "benchmarks": [
+    {
+      "benchmark_id": "swebench_verified",
+      "dataset": {
+        "card_url": "https://huggingface.co/datasets/SWE-bench/SWE-bench_Verified/blob/78f471bf655a3137b2e8a75af1501690ec009ec3/README.md",
+        "data_file": {
+          "bytes": 6304616,
+          "lfs_oid_sha256": "030cfd7f2a704c4c0226e7f104c725a3b41230b1d3517f9c915ad7ea5be3fa25",
+          "path": "data/test-00000-of-00001.parquet"
+        },
+        "dataset_id": "SWE-bench/SWE-bench_Verified",
+        "declared_license": "UNSPECIFIED_BY_PINNED_DATASET_CARD",
+        "license_status": "DATASET_LICENSE_NOT_DECLARED_PUBLIC_EVALUATION_SCOPE_DOCUMENTED_NO_REDISTRIBUTION",
+        "record_count": 500,
+        "record_count_evidence": "pinned dataset card dataset_info.splits and official dataset-server size endpoint",
+        "raw_file_verification": "VERIFIED_SHA256_AND_ROW_COUNT_AT_2026-08-31T14:01:11Z",
+        "revision": "78f471bf655a3137b2e8a75af1501690ec009ec3"
+      },
+      "harness": {
+        "commit_url": "https://github.com/SWE-bench/SWE-bench/commit/7a21e05772954cc81471ae19d56f436cecf43c54",
+        "license": "MIT",
+        "repository": "https://github.com/SWE-bench/SWE-bench",
+        "revision": "7a21e05772954cc81471ae19d56f436cecf43c54",
+        "version_strategy": "immutable Git commit candidate; no package-tag substitution"
+      },
+      "role": "PRIMARY"
+    },
+    {
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset": {
+        "card_url": "https://huggingface.co/datasets/ByteDance-Seed/Multi-SWE-bench_mini/blob/d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6/README.md",
+        "data_file": {
+          "bytes": 315067581,
+          "lfs_oid_sha256": "6644b9c9ebaf5e5b37cb9d81c4dce688c101f07436aed9d50fc55c85b164c3b2",
+          "path": "multi_swe_bench_mini.jsonl"
+        },
+        "dataset_id": "ByteDance-Seed/Multi-SWE-bench_mini",
+        "declared_license": "CC0 subject to ByteDance-owned intellectual-property rights and each adapted project's license",
+        "hub_license_tag": "other",
+        "license_status": "CONDITIONALLY_DOCUMENTED_BY_PINNED_DATASET_CARD",
+        "record_count": 400,
+        "record_count_evidence": "pinned dataset card",
+        "raw_file_verification": "VERIFIED_SHA256_AND_ROW_COUNT_AT_2026-08-31T14:01:11Z",
+        "revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6"
+      },
+      "harness": {
+        "commit_url": "https://github.com/multi-swe-bench/multi-swe-bench/commit/24f493f8a103e72312ded4f6b9c89f081d69cb09",
+        "license": "Apache-2.0",
+        "repository": "https://github.com/multi-swe-bench/multi-swe-bench",
+        "revision": "24f493f8a103e72312ded4f6b9c89f081d69cb09",
+        "setup_version_at_revision": "1.1.0",
+        "version_strategy": "immutable Git commit candidate; no floating package install"
+      },
+      "role": "SECONDARY"
+    },
+    {
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset": {
+        "card_discrepancy": "The pinned flash card overview describes the 1,632-record full dataset while the official harness README announces flash as 300 records. Raw row-count verification remains required before readiness.",
+        "card_url": "https://huggingface.co/datasets/ByteDance-Seed/Multi-SWE-bench-flash/blob/b0485dbebaf8a1317ebf140e80e6fc6c02d3502b/README.md",
+        "data_file": {
+          "bytes": 87915113,
+          "lfs_oid_sha256": "48d6d02cc976a71a06b494cc60581d92e82c06c2793c0d412c52c63e6956bebe",
+          "path": "multi_swe_bench_flash.jsonl"
+        },
+        "dataset_id": "ByteDance-Seed/Multi-SWE-bench-flash",
+        "declared_license": "CC0 subject to ByteDance-owned intellectual-property rights and each adapted project's license",
+        "hub_license_tag": "other",
+        "license_status": "CONDITIONALLY_DOCUMENTED_BY_PINNED_DATASET_CARD",
+        "official_harness_readme_announced_record_count": 300,
+        "raw_file_verification": "VERIFIED_SHA256_AND_ROW_COUNT_AT_2026-08-31T14:01:11Z",
+        "record_count": 300,
+        "record_count_status": "VERIFIED",
+        "revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b"
+      },
+      "harness": {
+        "commit_url": "https://github.com/multi-swe-bench/multi-swe-bench/commit/24f493f8a103e72312ded4f6b9c89f081d69cb09",
+        "license": "Apache-2.0",
+        "repository": "https://github.com/multi-swe-bench/multi-swe-bench",
+        "revision": "24f493f8a103e72312ded4f6b9c89f081d69cb09",
+        "setup_version_at_revision": "1.1.0",
+        "version_strategy": "immutable Git commit candidate; no floating package install"
+      },
+      "role": "SECONDARY"
+    }
+  ],
+  "observed_at_utc": "2026-08-31T13:06:14Z",
+  "official_primary_sources_only": true,
+  "schema": "trimem/upstream-source-audit/1.0",
+  "legal_boundary": "This is a technical source/provenance lock, not legal clearance. External EXEC approval must accept applicable benchmark, dataset, image, and source-project terms. SWE-bench Verified data is not redistributed by this repository.",
+  "status": "FROZEN_PRIMARY_SOURCE_PROVENANCE_WITH_EXPLICIT_TERMS_BOUNDARY"
+}

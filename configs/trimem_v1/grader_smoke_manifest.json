@@ -1,0 +1,159 @@
+{
+  "execution_status": "PENDING_EXEC_APPROVAL",
+  "matrix_kind": "one_committed_target_per_job",
+  "schema": "trimem/grader-smoke-manifest/1.0",
+  "selection": {
+    "frozen_before_results": true,
+    "repository_stratification": "Within each pinned benchmark independently, rank public instance IDs with the one global seed and greedily select two repository-distinct identities. Preserve benchmark then rank order. Expand each identity to GOLD then NOOP only after selection; gold/test payload bytes and row offsets are not selection inputs.",
+    "selected_instances": 6,
+    "target_count": 12
+  },
+  "status": "FROZEN_TARGET_SET_EXECUTION_PENDING",
+  "target_set_sha256": "2c91358e9c78cd26f989f875c755b62cb30037c407ada214148064411e7ac809",
+  "targets": [
+    {
+      "base_commit": "0df94ff7097961e92fd7812036a24b145bc13ca8",
+      "benchmark_id": "swebench_verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "instance_id": "astropy__astropy-13579",
+      "language": "python",
+      "repository": "astropy/astropy",
+      "source_row_sha256": "c72c2d2f6663c1dbf73ca0fcb25a2666e1e4a1fb4b5d0ea8b837bb88a812cfd6",
+      "expected_resolved": true,
+      "probe": "GOLD",
+      "target_id": "swebench_verified--astropy__astropy-13579--gold"
+    },
+    {
+      "base_commit": "0df94ff7097961e92fd7812036a24b145bc13ca8",
+      "benchmark_id": "swebench_verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "instance_id": "astropy__astropy-13579",
+      "language": "python",
+      "repository": "astropy/astropy",
+      "source_row_sha256": "c72c2d2f6663c1dbf73ca0fcb25a2666e1e4a1fb4b5d0ea8b837bb88a812cfd6",
+      "expected_resolved": false,
+      "probe": "NOOP",
+      "target_id": "swebench_verified--astropy__astropy-13579--noop"
+    },
+    {
+      "base_commit": "cc183652bf6e1273e985e1c4b3cba79c896c1193",
+      "benchmark_id": "swebench_verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "instance_id": "pydata__xarray-6721",
+      "language": "python",
+      "repository": "pydata/xarray",
+      "source_row_sha256": "62a6f14cd21601e40cd34f5061ef0423be5dabe6ca9a3ccff972e3a048618470",
+      "expected_resolved": true,
+      "probe": "GOLD",
+      "target_id": "swebench_verified--pydata__xarray-6721--gold"
+    },
+    {
+      "base_commit": "cc183652bf6e1273e985e1c4b3cba79c896c1193",
+      "benchmark_id": "swebench_verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "instance_id": "pydata__xarray-6721",
+      "language": "python",
+      "repository": "pydata/xarray",
+      "source_row_sha256": "62a6f14cd21601e40cd34f5061ef0423be5dabe6ca9a3ccff972e3a048618470",
+      "expected_resolved": false,
+      "probe": "NOOP",
+      "target_id": "swebench_verified--pydata__xarray-6721--noop"
+    },
+    {
+      "base_commit": "3be4e3cbe34b394096210897c1be8deeb6d748d8",
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "instance_id": "vuejs__core-8911",
+      "language": "typescript",
+      "repository": "vuejs/core",
+      "source_row_sha256": "d6e0f336551a9b39f5227561ef1a04b079b276d325e228df2e4492d08166d439",
+      "expected_resolved": true,
+      "probe": "GOLD",
+      "target_id": "multi_swe_bench_mini--vuejs__core-8911--gold"
+    },
+    {
+      "base_commit": "3be4e3cbe34b394096210897c1be8deeb6d748d8",
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "instance_id": "vuejs__core-8911",
+      "language": "typescript",
+      "repository": "vuejs/core",
+      "source_row_sha256": "d6e0f336551a9b39f5227561ef1a04b079b276d325e228df2e4492d08166d439",
+      "expected_resolved": false,
+      "probe": "NOOP",
+      "target_id": "multi_swe_bench_mini--vuejs__core-8911--noop"
+    },
+    {
+      "base_commit": "e3a4cee081cf60650b8824f0646383b79cb110e7",
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "instance_id": "django__django-16493",
+      "language": "python",
+      "repository": "django/django",
+      "source_row_sha256": "1ee6773aefbac7441940e762cb46dde5d43de75e7f99c7d357819a8c2d7f037a",
+      "expected_resolved": true,
+      "probe": "GOLD",
+      "target_id": "multi_swe_bench_mini--django__django-16493--gold"
+    },
+    {
+      "base_commit": "e3a4cee081cf60650b8824f0646383b79cb110e7",
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "instance_id": "django__django-16493",
+      "language": "python",
+      "repository": "django/django",
+      "source_row_sha256": "1ee6773aefbac7441940e762cb46dde5d43de75e7f99c7d357819a8c2d7f037a",
+      "expected_resolved": false,
+      "probe": "NOOP",
+      "target_id": "multi_swe_bench_mini--django__django-16493--noop"
+    },
+    {
+      "base_commit": "dc538f6e810bd462c98ee7e6aae24c64d4b1da93",
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "instance_id": "expressjs__express-3870",
+      "language": "javascript",
+      "repository": "expressjs/express",
+      "source_row_sha256": "3f4ddb3222d10a549d6905c458c26659371312d04dfefa103540dee062845c49",
+      "expected_resolved": true,
+      "probe": "GOLD",
+      "target_id": "multi_swe_bench_flash--expressjs__express-3870--gold"
+    },
+    {
+      "base_commit": "dc538f6e810bd462c98ee7e6aae24c64d4b1da93",
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "instance_id": "expressjs__express-3870",
+      "language": "javascript",
+      "repository": "expressjs/express",
+      "source_row_sha256": "3f4ddb3222d10a549d6905c458c26659371312d04dfefa103540dee062845c49",
+      "expected_resolved": false,
+      "probe": "NOOP",
+      "target_id": "multi_swe_bench_flash--expressjs__express-3870--noop"
+    },
+    {
+      "base_commit": "7f547827e47b5ade563a293329deb4226496d72f",
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "instance_id": "jqlang__jq-2919",
+      "language": "c",
+      "repository": "jqlang/jq",
+      "source_row_sha256": "a85cdd17b1203893fa3c7f298b2262d1526cad30fe37edee20d2d9302894d6e0",
+      "expected_resolved": true,
+      "probe": "GOLD",
+      "target_id": "multi_swe_bench_flash--jqlang__jq-2919--gold"
+    },
+    {
+      "base_commit": "7f547827e47b5ade563a293329deb4226496d72f",
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "instance_id": "jqlang__jq-2919",
+      "language": "c",
+      "repository": "jqlang/jq",
+      "source_row_sha256": "a85cdd17b1203893fa3c7f298b2262d1526cad30fe37edee20d2d9302894d6e0",
+      "expected_resolved": false,
+      "probe": "NOOP",
+      "target_id": "multi_swe_bench_flash--jqlang__jq-2919--noop"
+    }
+  ]
+}

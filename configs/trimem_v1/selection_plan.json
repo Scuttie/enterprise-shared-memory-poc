@@ -1,0 +1,66 @@
+{
+  "schema": "trimem/selection-plan/3.0",
+  "status": "FROZEN_BEFORE_MODEL_OR_GRADER_RESULTS",
+  "seed": "TRIMEM_V1_PRE_REGISTERED_SUBSET_2026_08_31",
+  "row_score": "sha256(seed|trimem-selector-v3|split|benchmark_id|instance_id), ascending lowercase bytes",
+  "tie_breaker": "instance_id ascending",
+  "source_policy": {
+    "selection_inputs": [
+      "benchmark_id",
+      "public instance_id",
+      "public repository identity",
+      "public normalized language"
+    ],
+    "selection_forbidden_inputs": [
+      "source_row_sha256",
+      "row byte offset or row length",
+      "gold patch or fix patch",
+      "test patch or hidden-test outcome",
+      "model output",
+      "grader output",
+      "manual target preference"
+    ],
+    "post_selection_integrity_fields": [
+      "source_row_sha256",
+      "base_commit",
+      "dataset_revision"
+    ],
+    "per_slot_nonce_or_override_allowed": false
+  },
+  "exclusions": {
+    "development": ["grader-smoke"],
+    "heldout": ["grader-smoke", "development"]
+  },
+  "language_normalization": {
+    "c++": "cpp",
+    "js": "javascript",
+    "ts": "typescript"
+  },
+  "smoke_rule": {
+    "benchmark_order": ["swebench_verified", "multi_swe_bench_mini", "multi_swe_bench_flash"],
+    "count_per_benchmark": 2,
+    "algorithm": "Within each benchmark, rank public instance IDs by row_score with split grader-smoke and greedily take the first two repository-distinct rows. Preserve benchmark order and rank order. Expand each selected public identity to GOLD then NOOP only after selection.",
+    "probes_per_instance": ["GOLD", "NOOP"]
+  },
+  "development_rule": {
+    "benchmark_order": ["swebench_verified", "multi_swe_bench_mini", "multi_swe_bench_flash"],
+    "count_per_benchmark": {
+      "swebench_verified": 4,
+      "multi_swe_bench_mini": 4,
+      "multi_swe_bench_flash": 4
+    },
+    "algorithm": "In benchmark order, rank every eligible public instance ID by row_score and greedily take the first row from each previously unseen repository until the per-benchmark count is reached. Exclude identities already selected by an earlier benchmark in this split. Preserve benchmark order and rank order."
+  },
+  "heldout_rule": {
+    "benchmark_order": ["swebench_verified", "multi_swe_bench_mini", "multi_swe_bench_flash"],
+    "count_per_benchmark": {
+      "swebench_verified": 12,
+      "multi_swe_bench_mini": 8,
+      "multi_swe_bench_flash": 7
+    },
+    "swebench_verified_algorithm": "Rank every eligible public instance ID by row_score and greedily take the first row from each previously unseen repository until 12 rows are reached.",
+    "multi_language_order": "Rank every normalized language by sha256(seed|trimem-selector-v3|heldout|benchmark_id|language|normalized_language), then language ascending as tie-breaker; take the first exact count.",
+    "multi_row_algorithm": "Exclude identities already selected by an earlier benchmark in this split. Within each selected normalized language, take its lowest public-identity row_score whose repository is new within that benchmark when such a row exists; otherwise take the language rank-0 row. Preserve ranked language order."
+  },
+  "claim_boundary": "PRE_REGISTERED_STRATIFIED_BENCHMARK_SUBSET_NOT_FULL_SUITE_OR_LEADERBOARD"
+}

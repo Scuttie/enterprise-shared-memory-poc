@@ -1,0 +1,1 @@
+{"tool": "write_file", "arguments": {"path": "src/loader.py", "content": "def load_document(name):\n    if not name.casefold().endswith('.json'):\n        raise ValueError('json required')\n    return 'loaded'\n"}}

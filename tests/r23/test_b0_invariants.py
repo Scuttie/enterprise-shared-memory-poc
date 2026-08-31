@@ -62,8 +62,14 @@ def test_no_self_memory_rule_is_prefix_only():
 # ---- chronological eligibility: direction + no result fields -----------------
 def test_eligibility_direction_and_no_result_fields():
     e = _j("chronological_eligibility_graph.json")
-    assert e["target_start_at_field"] == "issue_created_at"
-    assert e["source_available_at_known"] == 0 and e["temporally_eligible_edges_confirmed"] == 0
+    c = _j("timestamp_cache.json")
+    assert e["target_start_at_field"] == "linked GitHub issue.created_at"
+    assert e["r23_x_chronology"] == "PENDING_B0_1"
+    assert e["source_available_at_known"] == c["coverage"]["source_available_at_known"]
+    assert e["target_start_at_known"] == c["coverage"]["linked_issue_created_at_known"]
+    assert e["pr_created_proxy_is_eligibility"] is False
+    assert e["source_target_pair_selection"] == "NOT_PERFORMED"
+    assert e["edge_partition_check"] is True
     blob = json.dumps(e).lower()
     for banned in ("resolved", "pass@1", "gold_patch", "reader", "arm"):
         assert banned not in blob, "eligibility graph must carry NO result/answer fields (%s)" % banned

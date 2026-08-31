@@ -24,3 +24,13 @@ edges** yet. A provisional created_at-ordering upper bound is **124,750** ordere
 is issue-creation ordering, an **UPPER BOUND, not eligibility**. B0 builds only the orders + the eligibility-graph
 structure; **no source–target pair is selected by any similarity in B0** (§7) — semantic applicability/overlap come
 only after R23-A0 (atoms) and R23-G0 (graphs).
+
+### B0.1 chronology correction (2026-08-31)
+
+Live provenance showed that the parquet `created_at` previously labelled `issue_created_at` is actually **fix PR
+created_at**. Because this is later than work may have begun, PR-created ordering is retained only as
+`pr_created_proxy_ordered_edges` and is explicitly not eligibility. Target start now requires `created_at` from a
+validated same-repository issue named by a GitHub closing keyword; source availability uses fix PR merge, then a
+conservative public-commit bound, then linked-issue close. Every missing or ambiguous value fails closed. Recovery
+is rate-limited and resumable, so `R23_X_CHRONOLOGY=PENDING_B0_1` until both source and target-start coverage are
+complete. No source-target pair is selected in B0.1.

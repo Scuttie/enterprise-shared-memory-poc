@@ -1,0 +1,47 @@
+{
+  "api_authentication": "NONE",
+  "chronology_only_not_pair_selection": true,
+  "confirmed_chronological_edge_count": 8,
+  "docker_executions": 0,
+  "generated_at_utc": "2026-08-31T04:39:07Z",
+  "last_network_run": {
+    "ended_at_utc": "2026-08-31T04:23:50Z",
+    "max_requests": 20,
+    "requests_made": 8,
+    "reserve_requests": 2,
+    "stop_reason": "UNAUTHENTICATED_RATE_RESERVE_REACHED"
+  },
+  "last_run": {
+    "ended_at_utc": "2026-08-31T04:39:07Z",
+    "max_requests": 0,
+    "requests_made": 0,
+    "reserve_requests": 2,
+    "stop_reason": "NO_NETWORK_REBUILD"
+  },
+  "paid_model_calls": 0,
+  "pr_created_proxy_ordered_edge_count": 38592,
+  "raw_evidence_integrity": {
+    "compressed_bytes": 2209674,
+    "manifest_sha256": "0eca539059c6532544042818e0f13095056339f992e08903385b32bd98f3c1eb",
+    "status": "PASS",
+    "uncompressed_response_bytes": 37774746,
+    "unique_response_count": 98,
+    "verified_at_utc": "2026-08-31T04:39:07Z"
+  },
+  "schema_version": "r23-b0.1-recovery-report-v1",
+  "source_target_pair_selection": "NOT_PERFORMED",
+  "status": "PENDING_B0_1_PARTIAL_FAIL_CLOSED",
+  "timestamp_coverage": {
+    "benchmark_created_at_known": 500,
+    "fix_commit_public_at_known": 5,
+    "fix_first_commit_at_known": 5,
+    "fix_pr_created_at_known": 98,
+    "fix_pr_merge_at_known": 98,
+    "fix_pr_provenance_confirmed": 98,
+    "issue_close_at_known": 4,
+    "linked_issue_created_at_known": 4,
+    "source_available_at_known": 98,
+    "source_available_at_unknown": 402,
+    "total": 500
+  }
+}

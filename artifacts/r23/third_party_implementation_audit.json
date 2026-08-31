@@ -1,0 +1,17 @@
+{
+ "repository": "taeilkim2465/agentic_memory_distillation",
+ "classification": "THIRD_PARTY_NONAUTHOR_IMPLEMENTATION",
+ "commit_main": "2895d10c07105432325b088f4803dc94a10003c9",
+ "created_at": "2026-06-18T04:00:16Z",
+ "pushed_at": "2026-08-10T06:56:34Z",
+ "license": "NONE (no explicit license file detected)",
+ "facts": [
+  "SASM implementation exists for AppWorld, BFCL, ToolSandbox (NOT the SWE-bench reproduction artifact)",
+  "belongs to another 2026 paper/program",
+  "NOT author code for arXiv:2602.21611",
+  "may be inspected only to compare interfaces / find omitted baselines",
+  "no files copied or vendored without a compatible license"
+ ],
+ "use_policy": "interface/omission comparison ONLY; no vendoring; no reuse as author artifact",
+ "reverify_official_author_code_before_paid": true
+}

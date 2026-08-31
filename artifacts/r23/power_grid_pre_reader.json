@@ -1,0 +1,228 @@
+{
+ "note": "PRELIMINARY (no model outcome yet). Paired McNemar, Holm 1st-primary alpha=0.05/3=0.0167, power 0.80. N is per primary comparison (paired tasks). MCID fixed at +0.05 (not changed for pool size).",
+ "holm_alpha_first_primary": 0.0167,
+ "power": 0.8,
+ "mcid_absolute_pass1": 0.05,
+ "repository_design_effect_illustrative": 2.14,
+ "repository_clustering": "django 231/500 dominates -> strong clustering -> repository-cluster bootstrap + design effect inflate effective N; full-500 is the max paired N per comparison.",
+ "full_500_max_paired_N": 500,
+ "grid": {
+  "base0.20_disc0.15_eff0.03": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.15,
+   "effect": 0.03,
+   "N_paired_required_holm1_power80": 1746
+  },
+  "base0.20_disc0.15_eff0.05": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.15,
+   "effect": 0.05,
+   "N_paired_required_holm1_power80": 629
+  },
+  "base0.20_disc0.15_eff0.07": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.15,
+   "effect": 0.07,
+   "N_paired_required_holm1_power80": 321
+  },
+  "base0.20_disc0.15_eff0.10": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.15,
+   "effect": 0.1,
+   "N_paired_required_holm1_power80": 158
+  },
+  "base0.20_disc0.25_eff0.03": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.25,
+   "effect": 0.03,
+   "N_paired_required_holm1_power80": 2909
+  },
+  "base0.20_disc0.25_eff0.05": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.25,
+   "effect": 0.05,
+   "N_paired_required_holm1_power80": 1048
+  },
+  "base0.20_disc0.25_eff0.07": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.25,
+   "effect": 0.07,
+   "N_paired_required_holm1_power80": 535
+  },
+  "base0.20_disc0.25_eff0.10": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.25,
+   "effect": 0.1,
+   "N_paired_required_holm1_power80": 262
+  },
+  "base0.20_disc0.35_eff0.03": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.35,
+   "effect": 0.03,
+   "N_paired_required_holm1_power80": 4073
+  },
+  "base0.20_disc0.35_eff0.05": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.35,
+   "effect": 0.05,
+   "N_paired_required_holm1_power80": 1467
+  },
+  "base0.20_disc0.35_eff0.07": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.35,
+   "effect": 0.07,
+   "N_paired_required_holm1_power80": 748
+  },
+  "base0.20_disc0.35_eff0.10": {
+   "baseline_pass1": 0.2,
+   "discordance": 0.35,
+   "effect": 0.1,
+   "N_paired_required_holm1_power80": 367
+  },
+  "base0.30_disc0.15_eff0.03": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.15,
+   "effect": 0.03,
+   "N_paired_required_holm1_power80": 1746
+  },
+  "base0.30_disc0.15_eff0.05": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.15,
+   "effect": 0.05,
+   "N_paired_required_holm1_power80": 629
+  },
+  "base0.30_disc0.15_eff0.07": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.15,
+   "effect": 0.07,
+   "N_paired_required_holm1_power80": 321
+  },
+  "base0.30_disc0.15_eff0.10": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.15,
+   "effect": 0.1,
+   "N_paired_required_holm1_power80": 158
+  },
+  "base0.30_disc0.25_eff0.03": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.25,
+   "effect": 0.03,
+   "N_paired_required_holm1_power80": 2909
+  },
+  "base0.30_disc0.25_eff0.05": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.25,
+   "effect": 0.05,
+   "N_paired_required_holm1_power80": 1048
+  },
+  "base0.30_disc0.25_eff0.07": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.25,
+   "effect": 0.07,
+   "N_paired_required_holm1_power80": 535
+  },
+  "base0.30_disc0.25_eff0.10": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.25,
+   "effect": 0.1,
+   "N_paired_required_holm1_power80": 262
+  },
+  "base0.30_disc0.35_eff0.03": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.35,
+   "effect": 0.03,
+   "N_paired_required_holm1_power80": 4073
+  },
+  "base0.30_disc0.35_eff0.05": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.35,
+   "effect": 0.05,
+   "N_paired_required_holm1_power80": 1467
+  },
+  "base0.30_disc0.35_eff0.07": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.35,
+   "effect": 0.07,
+   "N_paired_required_holm1_power80": 748
+  },
+  "base0.30_disc0.35_eff0.10": {
+   "baseline_pass1": 0.3,
+   "discordance": 0.35,
+   "effect": 0.1,
+   "N_paired_required_holm1_power80": 367
+  },
+  "base0.40_disc0.15_eff0.03": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.15,
+   "effect": 0.03,
+   "N_paired_required_holm1_power80": 1746
+  },
+  "base0.40_disc0.15_eff0.05": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.15,
+   "effect": 0.05,
+   "N_paired_required_holm1_power80": 629
+  },
+  "base0.40_disc0.15_eff0.07": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.15,
+   "effect": 0.07,
+   "N_paired_required_holm1_power80": 321
+  },
+  "base0.40_disc0.15_eff0.10": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.15,
+   "effect": 0.1,
+   "N_paired_required_holm1_power80": 158
+  },
+  "base0.40_disc0.25_eff0.03": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.25,
+   "effect": 0.03,
+   "N_paired_required_holm1_power80": 2909
+  },
+  "base0.40_disc0.25_eff0.05": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.25,
+   "effect": 0.05,
+   "N_paired_required_holm1_power80": 1048
+  },
+  "base0.40_disc0.25_eff0.07": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.25,
+   "effect": 0.07,
+   "N_paired_required_holm1_power80": 535
+  },
+  "base0.40_disc0.25_eff0.10": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.25,
+   "effect": 0.1,
+   "N_paired_required_holm1_power80": 262
+  },
+  "base0.40_disc0.35_eff0.03": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.35,
+   "effect": 0.03,
+   "N_paired_required_holm1_power80": 4073
+  },
+  "base0.40_disc0.35_eff0.05": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.35,
+   "effect": 0.05,
+   "N_paired_required_holm1_power80": 1467
+  },
+  "base0.40_disc0.35_eff0.07": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.35,
+   "effect": 0.07,
+   "N_paired_required_holm1_power80": 748
+  },
+  "base0.40_disc0.35_eff0.10": {
+   "baseline_pass1": 0.4,
+   "discordance": 0.35,
+   "effect": 0.1,
+   "N_paired_required_holm1_power80": 367
+  }
+ },
+ "chronological_pool_note": "R23-X conditional-efficacy N is bounded by the CONFIRMED temporally-eligible + semantic-overlap pool, which is UNKNOWN until fix-merge timestamps + atoms exist (B0.1/A0/G0)."
+}

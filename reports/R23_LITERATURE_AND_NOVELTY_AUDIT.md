@@ -39,3 +39,16 @@ treated as prior work (reproduction/baseline); R23's candidate contributions are
 source×query factorial, the overlap-conditioned causal analysis, the conditional-efficacy/abstention separation, and
 the wrong-atom safety — none tested by A. Per §0 no efficacy is claimed pre-result; all are hypotheses until the
 gates run.
+
+## B0 §1 correction — claim boundary
+**`NOVELTY SCREEN = PROCEED` ; `NOVELTY CLAIM = NOT YET ESTABLISHED`.** One screening pass does not establish
+publication-level novelty; it only found the audited literature does not reveal the complete R23 combination. The
+category-level subtask memory of A remains NOT NOVEL (reproduced/baseline); R23's candidate distinctions stay
+hypotheses until the gates run.
+
+## B0 §1.1 — third-party non-author implementation
+`taeilkim2465/agentic_memory_distillation` @ `2895d10c` (created 2026-06-18, pushed 2026-08-10) —
+**`THIRD_PARTY_NONAUTHOR_IMPLEMENTATION`, license NONE**. SASM for AppWorld/BFCL/ToolSandbox; **not** the SWE-bench
+reproduction artifact; belongs to another 2026 program; **not** author code for arXiv:2602.21611. Inspect for
+interface/omitted-baseline comparison only; no vendoring without a compatible license. Official author-code
+availability re-checked before any paid run. (`artifacts/r23/third_party_implementation_audit.json`)

@@ -1,0 +1,13 @@
+{
+ "experiment": "R23-X chronological eligibility",
+ "target_start_at_field": "issue_created_at",
+ "target_start_at_known": 500,
+ "source_available_at_field": "fix_pr_merge_at (UNKNOWN in enriched parquet)",
+ "source_available_at_known": 0,
+ "temporally_eligible_edges_confirmed": 0,
+ "reason": "source_available_at (fix PR merge / fix commit / issue resolution) is not in the enriched parquet; per the spec fallback it is UNKNOWN, so NO edge is confirmed TEMPORALLY_ELIGIBLE yet. Unknown timestamps do not silently pass.",
+ "max_possible_ordered_pairs": 249500,
+ "provisional_created_at_proxy_upper_bound": 124750,
+ "provisional_note": "PROVISIONAL_CREATED_AT_PROXY only (src.issue_created_at < tgt.issue_created_at); this is an issue-creation ordering, NOT source-fix-availability; it is an UPPER BOUND, not eligibility. Confirmed eligibility requires pinning fix_pr_merge_at (batched unauthenticated GitHub API).",
+ "next_step": "R23-B0.1 batched credential-free GitHub API fetch of fix-PR-merge timestamps -> confirmed edges."
+}

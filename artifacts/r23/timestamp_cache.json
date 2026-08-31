@@ -1,0 +1,2002 @@
+{
+ "astropy__astropy-12907": {
+  "issue_created_at": "2022-03-03T15:14:54Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-13033": {
+  "issue_created_at": "2022-03-31T23:28:27Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-13236": {
+  "issue_created_at": "2022-05-09T14:16:30Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-13398": {
+  "issue_created_at": "2022-06-24T15:22:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-13453": {
+  "issue_created_at": "2022-07-14T10:04:40Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-13579": {
+  "issue_created_at": "2022-08-26T15:06:53Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-13977": {
+  "issue_created_at": "2022-11-01T22:24:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-14096": {
+  "issue_created_at": "2022-12-04T17:06:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-14182": {
+  "issue_created_at": "2022-12-16T11:13:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-14309": {
+  "issue_created_at": "2023-01-23T22:34:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-14365": {
+  "issue_created_at": "2023-02-06T19:20:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-14369": {
+  "issue_created_at": "2023-02-06T21:56:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-14508": {
+  "issue_created_at": "2023-03-09T11:08:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-14539": {
+  "issue_created_at": "2023-03-16T18:45:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-14598": {
+  "issue_created_at": "2023-03-29T10:34:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-14995": {
+  "issue_created_at": "2023-06-27T19:48:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-7166": {
+  "issue_created_at": "2018-02-07T15:05:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-7336": {
+  "issue_created_at": "2018-03-28T15:31:32Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-7606": {
+  "issue_created_at": "2018-06-29T16:27:46Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-7671": {
+  "issue_created_at": "2018-07-20T19:37:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-8707": {
+  "issue_created_at": "2019-05-15T13:21:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "astropy__astropy-8872": {
+  "issue_created_at": "2019-06-19T20:34:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-10097": {
+  "issue_created_at": "2018-06-26T23:30:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-10554": {
+  "issue_created_at": "2018-10-24T14:24:45Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-10880": {
+  "issue_created_at": "2019-01-21T00:22:36Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-10914": {
+  "issue_created_at": "2019-01-30T13:13:20Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-10973": {
+  "issue_created_at": "2019-02-11T01:19:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-10999": {
+  "issue_created_at": "2019-02-16T07:44:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11066": {
+  "issue_created_at": "2019-03-09T13:03:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11087": {
+  "issue_created_at": "2019-03-16T22:59:57Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11095": {
+  "issue_created_at": "2019-03-19T15:17:28Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11099": {
+  "issue_created_at": "2019-03-20T03:46:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11119": {
+  "issue_created_at": "2019-03-24T21:17:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11133": {
+  "issue_created_at": "2019-03-27T06:48:09Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11138": {
+  "issue_created_at": "2019-03-28T13:11:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11141": {
+  "issue_created_at": "2019-03-28T20:49:53Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11149": {
+  "issue_created_at": "2019-03-30T18:14:35Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11163": {
+  "issue_created_at": "2019-04-02T21:46:42Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11179": {
+  "issue_created_at": "2019-04-05T15:54:39Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11206": {
+  "issue_created_at": "2019-04-13T10:19:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11211": {
+  "issue_created_at": "2019-04-13T12:01:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11239": {
+  "issue_created_at": "2019-04-16T09:44:54Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11265": {
+  "issue_created_at": "2019-04-21T12:57:28Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11276": {
+  "issue_created_at": "2019-04-24T12:35:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11292": {
+  "issue_created_at": "2019-04-27T14:23:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11299": {
+  "issue_created_at": "2019-04-28T11:15:08Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11333": {
+  "issue_created_at": "2019-05-06T21:00:53Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11400": {
+  "issue_created_at": "2019-05-22T11:30:39Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11433": {
+  "issue_created_at": "2019-05-31T17:06:20Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11451": {
+  "issue_created_at": "2019-06-08T19:11:42Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11477": {
+  "issue_created_at": "2019-06-14T17:40:45Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11490": {
+  "issue_created_at": "2019-06-19T07:47:46Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11532": {
+  "issue_created_at": "2019-07-02T10:29:28Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11551": {
+  "issue_created_at": "2019-07-09T22:28:45Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11555": {
+  "issue_created_at": "2019-07-10T18:07:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11603": {
+  "issue_created_at": "2019-07-28T18:14:23Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11728": {
+  "issue_created_at": "2019-08-29T17:31:03Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11734": {
+  "issue_created_at": "2019-09-01T18:46:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11740": {
+  "issue_created_at": "2019-09-03T10:44:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11749": {
+  "issue_created_at": "2019-09-05T21:47:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11790": {
+  "issue_created_at": "2019-09-17T14:33:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11815": {
+  "issue_created_at": "2019-09-24T21:45:36Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11820": {
+  "issue_created_at": "2019-09-26T08:37:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11848": {
+  "issue_created_at": "2019-09-28T04:28:22Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11880": {
+  "issue_created_at": "2019-10-07T19:10:59Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11885": {
+  "issue_created_at": "2019-10-08T15:22:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11951": {
+  "issue_created_at": "2019-10-21T09:35:46Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11964": {
+  "issue_created_at": "2019-10-23T14:16:45Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-11999": {
+  "issue_created_at": "2019-10-31T10:39:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12039": {
+  "issue_created_at": "2019-11-06T21:14:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12050": {
+  "issue_created_at": "2019-11-10T08:53:45Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12125": {
+  "issue_created_at": "2019-11-22T12:55:45Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12143": {
+  "issue_created_at": "2019-11-25T14:38:30Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12155": {
+  "issue_created_at": "2019-11-28T16:24:23Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12193": {
+  "issue_created_at": "2019-12-08T01:38:25Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12209": {
+  "issue_created_at": "2019-12-12T04:11:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12262": {
+  "issue_created_at": "2019-12-30T13:13:59Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12273": {
+  "issue_created_at": "2020-01-03T18:47:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12276": {
+  "issue_created_at": "2020-01-05T08:04:40Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12304": {
+  "issue_created_at": "2020-01-09T15:43:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12308": {
+  "issue_created_at": "2020-01-12T04:21:15Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12325": {
+  "issue_created_at": "2020-01-15T14:02:25Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12406": {
+  "issue_created_at": "2020-02-02T16:34:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12419": {
+  "issue_created_at": "2020-02-05T10:02:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12663": {
+  "issue_created_at": "2020-04-04T18:58:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12708": {
+  "issue_created_at": "2020-04-12T22:20:59Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12713": {
+  "issue_created_at": "2020-04-13T23:57:12Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12741": {
+  "issue_created_at": "2020-04-17T22:35:55Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12754": {
+  "issue_created_at": "2020-04-19T10:59:30Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12774": {
+  "issue_created_at": "2020-04-22T11:02:30Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12858": {
+  "issue_created_at": "2020-05-05T04:49:02Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-12965": {
+  "issue_created_at": "2020-05-24T13:20:03Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13012": {
+  "issue_created_at": "2020-06-02T21:19:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13023": {
+  "issue_created_at": "2020-06-04T20:40:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13028": {
+  "issue_created_at": "2020-06-05T19:49:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13033": {
+  "issue_created_at": "2020-06-07T14:52:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13089": {
+  "issue_created_at": "2020-06-20T07:36:10Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13109": {
+  "issue_created_at": "2020-06-25T08:36:45Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13112": {
+  "issue_created_at": "2020-06-26T04:51:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13121": {
+  "issue_created_at": "2020-06-29T09:04:15Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13128": {
+  "issue_created_at": "2020-06-30T18:06:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13158": {
+  "issue_created_at": "2020-07-06T19:18:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13195": {
+  "issue_created_at": "2020-07-15T11:00:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13212": {
+  "issue_created_at": "2020-07-21T02:53:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13279": {
+  "issue_created_at": "2020-08-07T05:15:16Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13297": {
+  "issue_created_at": "2020-08-12T11:20:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13315": {
+  "issue_created_at": "2020-08-17T04:24:39Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13343": {
+  "issue_created_at": "2020-08-24T19:29:12Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13344": {
+  "issue_created_at": "2020-08-24T20:50:35Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13346": {
+  "issue_created_at": "2020-08-25T06:25:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13363": {
+  "issue_created_at": "2020-08-29T18:59:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13401": {
+  "issue_created_at": "2020-09-09T11:19:00Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13406": {
+  "issue_created_at": "2020-09-10T12:38:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13410": {
+  "issue_created_at": "2020-09-11T09:58:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13417": {
+  "issue_created_at": "2020-09-14T07:49:15Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13449": {
+  "issue_created_at": "2020-09-22T13:04:03Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13512": {
+  "issue_created_at": "2020-10-08T13:52:57Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13513": {
+  "issue_created_at": "2020-10-08T14:07:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13516": {
+  "issue_created_at": "2020-10-08T19:00:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13551": {
+  "issue_created_at": "2020-10-17T17:22:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13568": {
+  "issue_created_at": "2020-10-19T15:20:08Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13569": {
+  "issue_created_at": "2020-10-19T21:20:55Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13590": {
+  "issue_created_at": "2020-10-23T09:34:55Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13658": {
+  "issue_created_at": "2020-11-09T20:50:28Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13670": {
+  "issue_created_at": "2020-11-12T11:45:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13741": {
+  "issue_created_at": "2020-12-02T10:52:52Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13786": {
+  "issue_created_at": "2020-12-17T21:10:10Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13794": {
+  "issue_created_at": "2020-12-19T20:09:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13807": {
+  "issue_created_at": "2020-12-23T21:09:32Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13809": {
+  "issue_created_at": "2020-12-24T15:31:35Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13810": {
+  "issue_created_at": "2020-12-26T12:31:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13820": {
+  "issue_created_at": "2020-12-28T22:07:57Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13821": {
+  "issue_created_at": "2020-12-29T15:16:10Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13837": {
+  "issue_created_at": "2021-01-04T17:44:23Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13925": {
+  "issue_created_at": "2021-01-21T08:08:55Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13933": {
+  "issue_created_at": "2021-01-26T03:58:23Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-13964": {
+  "issue_created_at": "2021-02-02T17:07:43Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14007": {
+  "issue_created_at": "2021-02-13T09:00:02Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14011": {
+  "issue_created_at": "2021-02-15T06:15:21Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14017": {
+  "issue_created_at": "2021-02-18T13:05:27Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14034": {
+  "issue_created_at": "2021-02-22T19:32:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14053": {
+  "issue_created_at": "2021-02-25T23:57:27Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14089": {
+  "issue_created_at": "2021-03-06T20:51:08Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14122": {
+  "issue_created_at": "2021-03-13T19:57:16Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14140": {
+  "issue_created_at": "2021-03-17T11:37:55Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14155": {
+  "issue_created_at": "2021-03-19T15:44:25Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14170": {
+  "issue_created_at": "2021-03-23T08:53:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14238": {
+  "issue_created_at": "2021-04-08T10:41:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14311": {
+  "issue_created_at": "2021-04-25T02:54:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14315": {
+  "issue_created_at": "2021-04-26T12:39:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14349": {
+  "issue_created_at": "2021-05-04T20:10:27Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14351": {
+  "issue_created_at": "2021-05-05T03:50:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14373": {
+  "issue_created_at": "2021-05-10T14:40:32Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14376": {
+  "issue_created_at": "2021-05-10T20:42:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14404": {
+  "issue_created_at": "2021-05-17T11:24:06Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14434": {
+  "issue_created_at": "2021-05-23T12:27:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14493": {
+  "issue_created_at": "2021-06-05T12:50:25Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14500": {
+  "issue_created_at": "2021-06-08T05:08:08Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14534": {
+  "issue_created_at": "2021-06-17T15:37:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14539": {
+  "issue_created_at": "2021-06-19T11:31:16Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14559": {
+  "issue_created_at": "2021-06-26T05:38:46Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14580": {
+  "issue_created_at": "2021-07-01T07:38:03Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14608": {
+  "issue_created_at": "2021-07-07T19:51:30Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14631": {
+  "issue_created_at": "2021-07-13T09:16:48Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14672": {
+  "issue_created_at": "2021-07-20T10:47:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14725": {
+  "issue_created_at": "2021-08-01T21:24:36Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14752": {
+  "issue_created_at": "2021-08-07T16:34:32Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14765": {
+  "issue_created_at": "2021-08-12T05:59:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14771": {
+  "issue_created_at": "2021-08-15T07:26:17Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14787": {
+  "issue_created_at": "2021-08-23T12:59:59Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14792": {
+  "issue_created_at": "2021-08-24T09:25:15Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14855": {
+  "issue_created_at": "2021-09-14T01:27:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14915": {
+  "issue_created_at": "2021-09-29T22:00:15Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-14999": {
+  "issue_created_at": "2021-10-16T09:31:21Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15022": {
+  "issue_created_at": "2021-10-24T17:48:28Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15037": {
+  "issue_created_at": "2021-10-30T15:21:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15098": {
+  "issue_created_at": "2021-11-17T21:30:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15103": {
+  "issue_created_at": "2021-11-19T15:57:54Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15104": {
+  "issue_created_at": "2021-11-19T20:46:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15127": {
+  "issue_created_at": "2021-11-25T13:14:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15128": {
+  "issue_created_at": "2021-11-25T15:50:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15161": {
+  "issue_created_at": "2021-12-06T09:06:13Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15252": {
+  "issue_created_at": "2021-12-28T15:51:06Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15268": {
+  "issue_created_at": "2022-01-01T09:57:13Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15277": {
+  "issue_created_at": "2022-01-03T12:14:06Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15278": {
+  "issue_created_at": "2022-01-03T20:01:32Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15280": {
+  "issue_created_at": "2022-01-04T11:16:35Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15315": {
+  "issue_created_at": "2022-01-13T18:51:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15368": {
+  "issue_created_at": "2022-01-27T13:44:35Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15375": {
+  "issue_created_at": "2022-01-28T14:48:03Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15380": {
+  "issue_created_at": "2022-01-31T19:44:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15382": {
+  "issue_created_at": "2022-02-01T18:29:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15467": {
+  "issue_created_at": "2022-02-27T03:00:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15499": {
+  "issue_created_at": "2022-03-10T22:32:35Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15503": {
+  "issue_created_at": "2022-03-12T06:22:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15525": {
+  "issue_created_at": "2022-03-18T10:39:26Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15554": {
+  "issue_created_at": "2022-03-29T10:12:46Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15561": {
+  "issue_created_at": "2022-04-01T18:29:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15563": {
+  "issue_created_at": "2022-04-06T02:48:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15569": {
+  "issue_created_at": "2022-04-08T06:55:17Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15572": {
+  "issue_created_at": "2022-04-09T09:38:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15629": {
+  "issue_created_at": "2022-04-23T21:58:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15695": {
+  "issue_created_at": "2022-05-16T07:58:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15731": {
+  "issue_created_at": "2022-05-24T12:30:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15732": {
+  "issue_created_at": "2022-05-24T12:58:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15741": {
+  "issue_created_at": "2022-05-28T09:52:42Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15814": {
+  "issue_created_at": "2022-07-03T19:10:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15851": {
+  "issue_created_at": "2022-07-18T01:36:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15863": {
+  "issue_created_at": "2022-07-20T12:58:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15916": {
+  "issue_created_at": "2022-08-04T18:59:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15930": {
+  "issue_created_at": "2022-08-07T15:26:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15957": {
+  "issue_created_at": "2022-08-13T06:18:25Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15973": {
+  "issue_created_at": "2022-08-19T18:10:02Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-15987": {
+  "issue_created_at": "2022-08-23T10:07:03Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16032": {
+  "issue_created_at": "2022-09-06T09:54:57Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16082": {
+  "issue_created_at": "2022-09-21T18:49:40Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16100": {
+  "issue_created_at": "2022-09-24T13:32:02Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16116": {
+  "issue_created_at": "2022-09-25T23:54:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16136": {
+  "issue_created_at": "2022-09-29T11:47:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16139": {
+  "issue_created_at": "2022-09-30T08:51:16Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16145": {
+  "issue_created_at": "2022-10-03T05:09:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16255": {
+  "issue_created_at": "2022-11-04T13:49:40Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16256": {
+  "issue_created_at": "2022-11-04T14:26:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16263": {
+  "issue_created_at": "2022-11-06T07:38:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16315": {
+  "issue_created_at": "2022-11-22T09:44:54Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16333": {
+  "issue_created_at": "2022-11-27T20:09:15Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16429": {
+  "issue_created_at": "2023-01-05T11:41:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16454": {
+  "issue_created_at": "2023-01-15T09:23:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16485": {
+  "issue_created_at": "2023-01-18T22:03:52Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16493": {
+  "issue_created_at": "2023-01-20T18:29:25Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16502": {
+  "issue_created_at": "2023-01-26T09:21:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16527": {
+  "issue_created_at": "2023-02-05T22:05:00Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16560": {
+  "issue_created_at": "2023-02-16T10:45:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16569": {
+  "issue_created_at": "2023-02-17T20:11:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16595": {
+  "issue_created_at": "2023-02-24T10:30:35Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16612": {
+  "issue_created_at": "2023-03-02T19:06:12Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16631": {
+  "issue_created_at": "2023-03-06T15:19:52Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16642": {
+  "issue_created_at": "2023-03-11T07:38:47Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16661": {
+  "issue_created_at": "2023-03-18T09:26:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16662": {
+  "issue_created_at": "2023-03-18T18:07:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16667": {
+  "issue_created_at": "2023-03-20T21:32:53Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16801": {
+  "issue_created_at": "2023-04-26T07:23:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16819": {
+  "issue_created_at": "2023-05-01T15:20:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16877": {
+  "issue_created_at": "2023-05-19T23:11:10Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16899": {
+  "issue_created_at": "2023-05-26T13:41:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16901": {
+  "issue_created_at": "2023-05-30T05:08:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16938": {
+  "issue_created_at": "2023-06-03T11:18:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-16950": {
+  "issue_created_at": "2023-06-06T19:58:48Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-17029": {
+  "issue_created_at": "2023-06-29T13:18:26Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-17084": {
+  "issue_created_at": "2023-07-17T16:54:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-17087": {
+  "issue_created_at": "2023-07-17T20:28:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-7530": {
+  "issue_created_at": "2016-11-08T17:27:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "django__django-9296": {
+  "issue_created_at": "2017-10-27T11:10:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-13989": {
+  "issue_created_at": "2019-04-19T01:47:57Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-14623": {
+  "issue_created_at": "2019-06-25T14:01:17Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-20488": {
+  "issue_created_at": "2021-06-23T03:05:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-20676": {
+  "issue_created_at": "2021-07-19T10:10:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-20826": {
+  "issue_created_at": "2021-08-11T06:23:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-20859": {
+  "issue_created_at": "2021-08-19T09:03:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-21568": {
+  "issue_created_at": "2021-11-08T18:41:08Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-22719": {
+  "issue_created_at": "2022-03-28T14:42:28Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-22865": {
+  "issue_created_at": "2022-04-20T15:15:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-22871": {
+  "issue_created_at": "2022-04-21T13:10:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-23299": {
+  "issue_created_at": "2022-06-18T01:34:39Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-23314": {
+  "issue_created_at": "2022-06-21T02:41:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-23412": {
+  "issue_created_at": "2022-07-11T01:41:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-23476": {
+  "issue_created_at": "2022-07-22T18:58:22Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-24026": {
+  "issue_created_at": "2022-09-28T02:45:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-24149": {
+  "issue_created_at": "2022-10-12T22:00:54Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-24177": {
+  "issue_created_at": "2022-10-15T10:52:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-24570": {
+  "issue_created_at": "2022-11-30T15:50:17Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-24627": {
+  "issue_created_at": "2022-12-05T00:05:54Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-24637": {
+  "issue_created_at": "2022-12-06T03:42:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-24870": {
+  "issue_created_at": "2023-01-02T20:37:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-24970": {
+  "issue_created_at": "2023-01-13T14:23:39Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-25122": {
+  "issue_created_at": "2023-02-01T03:41:00Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-25287": {
+  "issue_created_at": "2023-02-22T18:19:27Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-25311": {
+  "issue_created_at": "2023-02-23T21:04:12Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-25332": {
+  "issue_created_at": "2023-02-26T11:18:40Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-25479": {
+  "issue_created_at": "2023-03-16T17:59:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-25775": {
+  "issue_created_at": "2023-04-26T21:26:46Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-25960": {
+  "issue_created_at": "2023-05-23T21:58:53Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-26113": {
+  "issue_created_at": "2023-06-12T18:56:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-26208": {
+  "issue_created_at": "2023-06-28T21:31:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-26291": {
+  "issue_created_at": "2023-07-12T04:29:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-26342": {
+  "issue_created_at": "2023-07-18T10:06:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "matplotlib__matplotlib-26466": {
+  "issue_created_at": "2023-08-07T19:30:22Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "mwaskom__seaborn-3069": {
+  "issue_created_at": "2022-10-09T23:31:20Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "mwaskom__seaborn-3187": {
+  "issue_created_at": "2022-12-18T00:04:22Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pallets__flask-5014": {
+  "issue_created_at": "2023-03-04T18:36:21Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "psf__requests-1142": {
+  "issue_created_at": "2013-01-25T05:19:16Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "psf__requests-1724": {
+  "issue_created_at": "2013-11-04T09:37:00Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "psf__requests-1766": {
+  "issue_created_at": "2013-11-29T08:38:09Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "psf__requests-1921": {
+  "issue_created_at": "2014-02-14T22:15:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "psf__requests-2317": {
+  "issue_created_at": "2014-11-01T02:20:16Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "psf__requests-2931": {
+  "issue_created_at": "2015-12-16T14:57:00Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "psf__requests-5414": {
+  "issue_created_at": "2020-04-05T16:52:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "psf__requests-6028": {
+  "issue_created_at": "2022-01-04T15:32:52Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-2905": {
+  "issue_created_at": "2019-04-17T21:52:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-3095": {
+  "issue_created_at": "2019-07-11T13:16:16Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-3151": {
+  "issue_created_at": "2019-07-20T12:31:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-3305": {
+  "issue_created_at": "2019-09-12T19:27:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-3677": {
+  "issue_created_at": "2020-01-09T16:07:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-3993": {
+  "issue_created_at": "2020-04-21T20:30:35Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-4075": {
+  "issue_created_at": "2020-05-18T18:42:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-4094": {
+  "issue_created_at": "2020-05-26T00:36:02Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-4356": {
+  "issue_created_at": "2020-08-19T23:48:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-4629": {
+  "issue_created_at": "2020-11-30T23:06:17Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-4687": {
+  "issue_created_at": "2020-12-13T20:42:40Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-4695": {
+  "issue_created_at": "2020-12-15T00:30:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-4966": {
+  "issue_created_at": "2021-02-26T12:05:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-6461": {
+  "issue_created_at": "2022-04-09T03:02:40Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-6599": {
+  "issue_created_at": "2022-05-12T15:12:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-6721": {
+  "issue_created_at": "2022-06-24T18:45:45Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-6744": {
+  "issue_created_at": "2022-07-02T16:36:00Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-6938": {
+  "issue_created_at": "2022-08-20T16:45:22Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-6992": {
+  "issue_created_at": "2022-09-05T15:07:43Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-7229": {
+  "issue_created_at": "2022-10-26T21:45:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-7233": {
+  "issue_created_at": "2022-10-27T23:46:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pydata__xarray-7393": {
+  "issue_created_at": "2022-12-20T04:34:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-4551": {
+  "issue_created_at": "2021-06-07T15:14:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-4604": {
+  "issue_created_at": "2021-06-22T10:44:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-4661": {
+  "issue_created_at": "2021-07-03T00:57:06Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-4970": {
+  "issue_created_at": "2021-09-05T19:44:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-6386": {
+  "issue_created_at": "2022-04-19T06:34:57Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-6528": {
+  "issue_created_at": "2022-05-06T21:03:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-6903": {
+  "issue_created_at": "2022-06-09T19:43:36Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-7080": {
+  "issue_created_at": "2022-06-28T17:24:43Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-7277": {
+  "issue_created_at": "2022-08-08T23:07:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pylint-dev__pylint-8898": {
+  "issue_created_at": "2023-07-29T21:53:59Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-10051": {
+  "issue_created_at": "2022-06-15T17:39:53Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-10081": {
+  "issue_created_at": "2022-06-26T13:53:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-10356": {
+  "issue_created_at": "2022-10-08T06:20:42Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-5262": {
+  "issue_created_at": "2019-05-14T21:54:55Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-5631": {
+  "issue_created_at": "2019-07-19T20:13:12Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-5787": {
+  "issue_created_at": "2019-08-26T16:43:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-5809": {
+  "issue_created_at": "2019-09-01T04:40:09Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-5840": {
+  "issue_created_at": "2019-09-12T01:09:28Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-6197": {
+  "issue_created_at": "2019-11-15T16:37:22Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-6202": {
+  "issue_created_at": "2019-11-16T07:45:21Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-7205": {
+  "issue_created_at": "2020-05-09T11:25:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-7236": {
+  "issue_created_at": "2020-05-21T19:53:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-7324": {
+  "issue_created_at": "2020-06-05T13:00:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-7432": {
+  "issue_created_at": "2020-06-29T21:51:15Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-7490": {
+  "issue_created_at": "2020-07-13T22:20:10Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-7521": {
+  "issue_created_at": "2020-07-20T15:55:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-7571": {
+  "issue_created_at": "2020-07-29T12:00:47Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-7982": {
+  "issue_created_at": "2020-10-31T12:27:03Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "pytest-dev__pytest-8399": {
+  "issue_created_at": "2021-03-04T17:52:17Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-10297": {
+  "issue_created_at": "2017-12-12T22:07:47Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-10844": {
+  "issue_created_at": "2018-03-21T00:16:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-10908": {
+  "issue_created_at": "2018-04-03T03:50:46Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-11310": {
+  "issue_created_at": "2018-06-18T12:10:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-11578": {
+  "issue_created_at": "2018-07-16T23:21:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-12585": {
+  "issue_created_at": "2018-11-14T13:20:30Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-12682": {
+  "issue_created_at": "2018-11-27T08:30:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-12973": {
+  "issue_created_at": "2019-01-13T16:19:52Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-13124": {
+  "issue_created_at": "2019-02-09T02:15:23Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-13135": {
+  "issue_created_at": "2019-02-11T21:34:25Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-13142": {
+  "issue_created_at": "2019-02-12T14:32:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-13328": {
+  "issue_created_at": "2019-02-28T12:47:52Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-13439": {
+  "issue_created_at": "2019-03-12T20:32:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-13496": {
+  "issue_created_at": "2019-03-23T09:46:59Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-13779": {
+  "issue_created_at": "2019-05-03T13:24:57Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-14053": {
+  "issue_created_at": "2019-06-09T15:36:55Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-14087": {
+  "issue_created_at": "2019-06-13T20:09:22Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-14141": {
+  "issue_created_at": "2019-06-21T20:53:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-14496": {
+  "issue_created_at": "2019-07-28T13:47:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-14629": {
+  "issue_created_at": "2019-08-12T09:31:54Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-14710": {
+  "issue_created_at": "2019-08-21T16:29:47Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-14894": {
+  "issue_created_at": "2019-09-05T17:41:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-14983": {
+  "issue_created_at": "2019-09-14T15:31:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-15100": {
+  "issue_created_at": "2019-09-26T19:21:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-25102": {
+  "issue_created_at": "2022-12-02T20:03:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-25232": {
+  "issue_created_at": "2022-12-24T15:32:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-25747": {
+  "issue_created_at": "2023-03-02T20:38:47Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-25931": {
+  "issue_created_at": "2023-03-22T00:34:47Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-25973": {
+  "issue_created_at": "2023-03-25T13:27:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-26194": {
+  "issue_created_at": "2023-04-17T16:33:08Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-26323": {
+  "issue_created_at": "2023-05-04T11:55:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "scikit-learn__scikit-learn-9288": {
+  "issue_created_at": "2017-07-06T11:03:14Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-10323": {
+  "issue_created_at": "2022-04-02T14:42:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-10435": {
+  "issue_created_at": "2022-05-08T09:37:06Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-10449": {
+  "issue_created_at": "2022-05-14T14:02:26Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-10466": {
+  "issue_created_at": "2022-05-22T16:46:53Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-10614": {
+  "issue_created_at": "2022-06-29T14:29:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-10673": {
+  "issue_created_at": "2022-07-16T19:29:29Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-11445": {
+  "issue_created_at": "2023-05-28T19:15:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-11510": {
+  "issue_created_at": "2023-07-24T22:46:12Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-7440": {
+  "issue_created_at": "2020-04-08T13:46:43Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-7454": {
+  "issue_created_at": "2020-04-09T17:08:30Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-7462": {
+  "issue_created_at": "2020-04-12T04:10:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-7590": {
+  "issue_created_at": "2020-05-01T18:29:11Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-7748": {
+  "issue_created_at": "2020-05-30T06:41:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-7757": {
+  "issue_created_at": "2020-05-30T14:46:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-7889": {
+  "issue_created_at": "2020-06-29T16:20:55Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-7910": {
+  "issue_created_at": "2020-07-04T01:08:20Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-7985": {
+  "issue_created_at": "2020-07-19T10:09:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8035": {
+  "issue_created_at": "2020-08-01T16:28:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8056": {
+  "issue_created_at": "2020-08-05T17:18:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8120": {
+  "issue_created_at": "2020-08-14T07:23:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8265": {
+  "issue_created_at": "2020-10-03T03:06:00Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8269": {
+  "issue_created_at": "2020-10-03T11:08:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8459": {
+  "issue_created_at": "2020-11-20T16:44:10Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8475": {
+  "issue_created_at": "2020-11-22T16:54:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8548": {
+  "issue_created_at": "2020-12-17T13:46:32Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8551": {
+  "issue_created_at": "2020-12-19T09:34:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8593": {
+  "issue_created_at": "2020-12-27T02:41:20Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8595": {
+  "issue_created_at": "2020-12-27T03:07:50Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8621": {
+  "issue_created_at": "2020-12-30T12:13:09Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8638": {
+  "issue_created_at": "2021-01-01T13:54:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-8721": {
+  "issue_created_at": "2021-01-21T15:36:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9229": {
+  "issue_created_at": "2021-05-15T07:21:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9230": {
+  "issue_created_at": "2021-05-15T11:33:05Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9258": {
+  "issue_created_at": "2021-05-21T16:56:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9281": {
+  "issue_created_at": "2021-05-29T17:16:30Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9320": {
+  "issue_created_at": "2021-06-11T13:29:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9367": {
+  "issue_created_at": "2021-06-20T17:49:40Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9461": {
+  "issue_created_at": "2021-07-17T06:31:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9591": {
+  "issue_created_at": "2021-08-29T15:26:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9602": {
+  "issue_created_at": "2021-09-01T17:26:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9658": {
+  "issue_created_at": "2021-09-20T17:04:23Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9673": {
+  "issue_created_at": "2021-09-25T15:53:46Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9698": {
+  "issue_created_at": "2021-10-03T04:04:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sphinx-doc__sphinx-9711": {
+  "issue_created_at": "2021-10-06T15:08:03Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-11618": {
+  "issue_created_at": "2016-09-15T20:01:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-12096": {
+  "issue_created_at": "2017-01-25T13:40:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-12419": {
+  "issue_created_at": "2017-03-25T15:02:26Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-12481": {
+  "issue_created_at": "2017-04-03T01:52:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-12489": {
+  "issue_created_at": "2017-04-04T08:12:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13031": {
+  "issue_created_at": "2017-07-23T15:48:13Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13091": {
+  "issue_created_at": "2017-08-05T08:04:32Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13372": {
+  "issue_created_at": "2017-09-30T16:05:48Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13480": {
+  "issue_created_at": "2017-10-18T17:27:03Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13551": {
+  "issue_created_at": "2017-10-29T20:51:01Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13615": {
+  "issue_created_at": "2017-11-17T08:59:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13647": {
+  "issue_created_at": "2017-11-28T21:22:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13757": {
+  "issue_created_at": "2017-12-17T11:08:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13798": {
+  "issue_created_at": "2017-12-26T18:12:43Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13852": {
+  "issue_created_at": "2018-01-06T23:54:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13877": {
+  "issue_created_at": "2018-01-10T01:55:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13878": {
+  "issue_created_at": "2018-01-10T07:00:58Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-13974": {
+  "issue_created_at": "2018-01-20T18:25:59Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-14248": {
+  "issue_created_at": "2018-02-17T10:38:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-14531": {
+  "issue_created_at": "2018-03-18T18:15:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-14711": {
+  "issue_created_at": "2018-05-12T17:00:20Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-14976": {
+  "issue_created_at": "2018-07-25T17:38:07Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-15017": {
+  "issue_created_at": "2018-08-03T03:15:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-15345": {
+  "issue_created_at": "2018-10-05T06:00:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-15349": {
+  "issue_created_at": "2018-10-06T19:45:27Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-15599": {
+  "issue_created_at": "2018-12-06T17:45:49Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-15809": {
+  "issue_created_at": "2019-01-20T06:08:26Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-15875": {
+  "issue_created_at": "2019-01-29T03:18:51Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-15976": {
+  "issue_created_at": "2019-02-13T15:02:37Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-16450": {
+  "issue_created_at": "2019-03-26T18:00:02Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-16597": {
+  "issue_created_at": "2019-04-08T12:49:10Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-16766": {
+  "issue_created_at": "2019-05-01T22:02:17Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-16792": {
+  "issue_created_at": "2019-05-09T03:40:54Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-16886": {
+  "issue_created_at": "2019-05-25T05:55:25Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-17139": {
+  "issue_created_at": "2019-07-01T19:17:18Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-17318": {
+  "issue_created_at": "2019-08-01T11:55:36Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-17630": {
+  "issue_created_at": "2019-09-18T22:56:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-17655": {
+  "issue_created_at": "2019-09-25T17:04:26Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-18189": {
+  "issue_created_at": "2019-12-31T15:45:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-18199": {
+  "issue_created_at": "2020-01-01T19:08:59Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-18211": {
+  "issue_created_at": "2020-01-03T06:39:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-18698": {
+  "issue_created_at": "2020-02-21T05:46:56Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-18763": {
+  "issue_created_at": "2020-03-03T03:40:06Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-19040": {
+  "issue_created_at": "2020-03-31T19:53:54Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-19346": {
+  "issue_created_at": "2020-05-17T12:23:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-19495": {
+  "issue_created_at": "2020-06-05T11:53:09Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-19637": {
+  "issue_created_at": "2020-06-24T13:08:57Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-19783": {
+  "issue_created_at": "2020-07-16T09:40:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-19954": {
+  "issue_created_at": "2020-08-12T06:07:32Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-20154": {
+  "issue_created_at": "2020-09-26T22:49:04Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-20428": {
+  "issue_created_at": "2020-11-14T05:56:31Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-20438": {
+  "issue_created_at": "2020-11-17T08:24:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-20590": {
+  "issue_created_at": "2020-12-12T18:18:38Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-20801": {
+  "issue_created_at": "2021-01-15T02:01:23Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-20916": {
+  "issue_created_at": "2021-02-06T05:44:34Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-21379": {
+  "issue_created_at": "2021-04-24T19:49:52Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-21596": {
+  "issue_created_at": "2021-06-10T15:35:08Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-21612": {
+  "issue_created_at": "2021-06-14T04:31:24Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-21847": {
+  "issue_created_at": "2021-08-10T17:41:59Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-21930": {
+  "issue_created_at": "2021-08-22T20:29:08Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-22080": {
+  "issue_created_at": "2021-09-12T07:11:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-22456": {
+  "issue_created_at": "2021-11-10T12:24:42Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-22714": {
+  "issue_created_at": "2021-12-19T18:54:36Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-22914": {
+  "issue_created_at": "2022-01-25T10:37:44Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-23262": {
+  "issue_created_at": "2022-03-21T07:17:35Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-23413": {
+  "issue_created_at": "2022-04-23T23:40:41Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-23534": {
+  "issue_created_at": "2022-05-22T00:12:33Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-23824": {
+  "issue_created_at": "2022-07-23T22:13:36Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-23950": {
+  "issue_created_at": "2022-08-20T18:21:10Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-24066": {
+  "issue_created_at": "2022-09-16T22:58:15Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-24213": {
+  "issue_created_at": "2022-11-03T14:00:09Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-24443": {
+  "issue_created_at": "2022-12-30T14:43:19Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-24539": {
+  "issue_created_at": "2023-01-17T17:26:42Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-24562": {
+  "issue_created_at": "2023-01-21T12:06:36Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ },
+ "sympy__sympy-24661": {
+  "issue_created_at": "2023-02-05T19:15:22Z",
+  "fix_pr_merge_at": "UNKNOWN"
+ }
+}

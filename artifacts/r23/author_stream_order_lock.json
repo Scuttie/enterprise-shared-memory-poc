@@ -1,0 +1,20 @@
+{
+ "orders": [
+  {
+   "index": 0,
+   "seed": 20230,
+   "sha256": "de4d8c18539f52f2deac1ad41e6784b2cb79d0c83b5083601f3448af2e948e9a"
+  },
+  {
+   "index": 1,
+   "seed": 20231,
+   "sha256": "463d078dbab8ab239fbf09ebea766d76bb9462521b4038a38febfe0768e6a04f"
+  },
+  {
+   "index": 2,
+   "seed": 20232,
+   "sha256": "6ad7a2281d819a2e5bdb066523374f57f9bd60a46b753d86f43db75b70805537"
+  }
+ ],
+ "note": "3 result-independent frozen orders; all AR arms use the same order per index; sealed before any reader run"
+}

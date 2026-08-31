@@ -1,0 +1,22 @@
+{
+ "harness_package": "swebench",
+ "version": "5.0.2",
+ "source": "PyPI",
+ "license": "MIT",
+ "harness_repo": "https://github.com/SWE-bench/SWE-bench",
+ "invocation": "python -m swebench.harness.run_evaluation --dataset_name SWE-bench/SWE-bench_Verified --instance_ids <id> --predictions_path <preds.jsonl> --run_id <id> --max_workers 1",
+ "prediction_schema": {
+  "instance_id": "str",
+  "model_name_or_path": "str",
+  "model_patch": "str (unified diff)"
+ },
+ "report_schema": {
+  "resolved_ids": "list",
+  "unresolved_ids": "list",
+  "<iid>": "per-instance {resolved, tests_status, patch_applied}"
+ },
+ "timeout_behavior": "per-instance timeout; unresolved on timeout",
+ "image_cleanup": "removes instance image unless --no-remove-instance-image",
+ "note": "R22 established swebench 5.0.2 grades the ENRICHED SWE-bench/* datasets (image field present); R23 reuses the adapter but produces its own lock/evidence. NOT the swebench_memory fork (that was SWE-ContextBench).",
+ "reverify_before_paid": true
+}

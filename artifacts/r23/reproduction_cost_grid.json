@@ -1,0 +1,62 @@
+{
+ "date": "2026-08-31",
+ "prices_per_mtok": {
+  "cheapest_gpt-4o-mini": {
+   "in": 0.15,
+   "out": 0.6
+  },
+  "middle_gpt-4o": {
+   "in": 2.5,
+   "out": 10.0
+  },
+  "stronger_claude-sonnet": {
+   "in": 3.0,
+   "out": 15.0
+  }
+ },
+ "per_run_estimate": {
+  "input_tokens": 250000,
+  "output_tokens": 25000,
+  "note": "conservative estimate for a Mini-SWE-Agent SWE-bench Verified solve incl. accumulated context; extraction (AR2/AR3/AR5) counted inside the same budget."
+ },
+ "grid": {
+  "EXACT_PAPER_SCALE_primary": {
+   "runs": 4500,
+   "desc": "500 x 3 orders x {AR0,AR2,AR3}",
+   "cost_usd": {
+    "cheapest_gpt-4o-mini": 236.25,
+    "middle_gpt-4o": 3937.5,
+    "stronger_claude-sonnet": 5062.5
+   }
+  },
+  "EXACT_PAPER_SCALE_full_ablation": {
+   "runs": 9000,
+   "desc": "500 x 3 x AR0-AR5",
+   "cost_usd": {
+    "cheapest_gpt-4o-mini": 472.5,
+    "middle_gpt-4o": 7875.0,
+    "stronger_claude-sonnet": 10125.0
+   }
+  },
+  "SCALED_PROTOCOL_REPLICATION": {
+   "runs": 360,
+   "desc": "120 x 1 order x {AR0,AR2,AR3} (NOT exact reproduction)",
+   "cost_usd": {
+    "cheapest_gpt-4o-mini": 18.9,
+    "middle_gpt-4o": 315.0,
+    "stronger_claude-sonnet": 405.0
+   }
+  },
+  "MECHANISM_DEVELOPMENT": {
+   "runs": 200,
+   "desc": "oracle/factorial dev set x arms (sized in O0)",
+   "cost_usd": {
+    "cheapest_gpt-4o-mini": 10.5,
+    "middle_gpt-4o": 175.0,
+    "stronger_claude-sonnet": 225.0
+   }
+  }
+ },
+ "docker": "1 grader container run per (task,arm) = same run counts; GH Actions minutes scale with these",
+ "warning": "60/120-task subsets are SCALED_PROTOCOL_REPLICATION, never 'exact reproduction'. No paid call in B0."
+}

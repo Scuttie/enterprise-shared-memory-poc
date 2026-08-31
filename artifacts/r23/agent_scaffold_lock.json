@@ -1,0 +1,16 @@
+{
+ "scaffold_repo": "https://github.com/SWE-agent/mini-swe-agent",
+ "commit": "25941c89cfbc91eb40b3f8756348c91d9977d57e",
+ "default_branch": "main",
+ "license": "MIT",
+ "pushed_at": "2026-08-24T22:03:16Z",
+ "to_pin_in_R0": [
+  "system_prompt_hash",
+  "tool_schema_hash",
+  "patch_parser",
+  "default_step_cap",
+  "timeout",
+  "repo_mount_behavior"
+ ],
+ "note": "exact prompt/tool-schema hashes pinned when the repo is cloned at this commit in R23-R0; benchmark, harness, and scaffold are three DISTINCT pinned objects."
+}

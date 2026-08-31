@@ -1,11 +1,13 @@
 {
-  "schema_version": 1,
-  "commit": "a0ac4bcd6110d97a6b30bcb715f549ecf2cdeaa8",
+  "schema_version": 2,
+  "commit": "b8965b95101b7cd726e18aa9b8f6b99c0cdb5101",
+  "manifest_scope": "PRODUCT_HANDOFF_ONLY_NOT_R23_RESEARCH_STATE",
+  "hash_basis": "git ls-files (tracked files only; newline-normalized content)",
   "project_version": "0.3.0rc1",
   "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) \u2014 NOT COMPANY-STAGING-CERTIFIED",
-  "source_tree_sha256": "65f5da0994f4ef13f616c9821399b16680ecfce5036ef8b0d2c24320bee809bb",
-  "source_files": 119,
-  "docs_tree_sha256": "b0ed6b4f5e0f01dc96405a79179a452a29b49ee3c8edc284192805a739a4ffef",
+  "source_tree_sha256": "528edebe3aebd988d4dec3b8aec98eb783ad6370fd98c2e8fc6968c2655cc315",
+  "source_files": 113,
+  "docs_tree_sha256": "51f5f8d1823b664619024b258c41c8663f4b98c32c71b51d85006914bddbdf87",
   "docs_files": 58,
   "examples_tree_sha256": "dc62d76eb3fa73cf1df33236bea8257306ef108d5d7d12fc3488597f05dfd922",
   "examples_files": 7,
@@ -19,9 +21,17 @@
     "artifacts/p6/governance_thresholds.json": "994487fbd0f3d64880668c14429096d103a5365475a9fbb9c9c43d6c8c45351e",
     "examples/company_harness/tool_schema.json": "52b94c50ceca84740192f6b4022df762d09c62cb0d5c0822b42a66a4101ce240",
     "README.md": "d69aa29a1dc79193ebb0ce2e1efb39a548cd2e979a0536b81c70a48ee0882408",
-    "docs/STATUS.yaml": "ddf6bf7dc0d3ce153981e505a055592190a590af45d0bdc17d6172bf75f941cd",
+    "docs/STATUS.yaml": "5df9acf363694181011d4286db603d96617f91ef110e0eb4532b0e69f5243fbb",
     "THIRD_PARTY_RESEARCH_REFERENCES.json": "42523b999b509f37605dd3460e4b117a8effff7b726a38b8766a6423b48220ec"
   },
+  "rejected_if_tracked": [
+    "__pycache__",
+    "*.pyc",
+    "*.pyo",
+    "*.egg-info",
+    "build",
+    "dist"
+  ],
   "excluded": [
     "credentials",
     "private data",
@@ -29,9 +39,9 @@
     "raw trajectories",
     "upstream MemGovern code/data",
     "local qdrant/postgres/s3 state",
-    "caches/venvs/logs"
+    "untracked runtime output"
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "5e4a1a17eeade0c9671e05383601f5161d748dbea2fc9cd1284983c897749260"
+  "manifest_hash": "cb03c0cdc4eb7e9d825a20daa6cc980899d338c4594039f2c5fb5c10511f0771"
 }

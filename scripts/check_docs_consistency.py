@@ -8,7 +8,7 @@ Checks (P6/R19 §2):
   - README must NOT say "production-ready" while production_certification_status == NOT_CLAIMED.
   - README must NOT conflate company-ready with production-certified.
   - migration head in STATUS must match the actual alembic head on disk.
-  - workflow_count in STATUS must match the actual number of .github/workflows/*.yml.
+  - Product STATUS is not used as a research-workflow inventory; R23 records that in its own seal.
   - No doc may reference a nonexistent file path under docs/ or scripts/ that it presents as runnable.
 Exit non-zero on any violation. Pure-stdlib; safe in minimal CI images.
 """
@@ -29,7 +29,7 @@ def load_status():
     except Exception:
         # minimal fallback parser for the flat keys we need (no external dep)
         data, txt = {}, open(p, encoding="utf-8").read()
-        for key in ("migration_head", "workflow_count", "production_certification_status",
+        for key in ("migration_head", "production_certification_status",
                     "research_status", "utility_router_result", "project_version"):
             m = re.search(r"^%s:\s*\"?([^\"#\n]+?)\"?\s*(?:#.*)?$" % key, txt, re.M)
             if m:
@@ -94,12 +94,7 @@ def main() -> int:
     if real_head and str(st.get("migration_head")) != str(real_head):
         fails.append("STATUS.migration_head=%s but actual alembic head=%s." % (st.get("migration_head"), real_head))
 
-    # 6. workflow count
-    wf = len(glob.glob(os.path.join(ROOT, ".github", "workflows", "*.yml")))
-    if str(st.get("workflow_count")) not in ("", "None") and int(st.get("workflow_count")) != wf:
-        fails.append("STATUS.workflow_count=%s but actual=%d." % (st.get("workflow_count"), wf))
-
-    # 7. link existence for curated surfaces (§2: docs must not reference nonexistent files)
+    # 6. link existence for curated surfaces (§2: docs must not reference nonexistent files)
     curated = [rp, os.path.join(ROOT, "docs", "README.md")]
     linkpat = re.compile(r"\]\((?!https?://|#)([^)]+)\)")
     for surface in curated:
@@ -118,7 +113,7 @@ def main() -> int:
         for f in fails:
             print("  - " + f)
         return 1
-    print("DOC CONSISTENCY: PASS (checked README vs docs/STATUS.yaml, alembic head=%s, workflows=%d)" % (real_head, wf))
+    print("DOC CONSISTENCY: PASS (checked README vs product-only docs/STATUS.yaml, alembic head=%s)" % real_head)
     return 0
 
 

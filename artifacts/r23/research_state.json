@@ -1,0 +1,71 @@
+{
+  "schema_version": "r23/research_state/1.1.0",
+  "experiment": "REALBENCH_R23_SEMANTIC_SUBTASK_GRAPH_V1",
+  "recorded_at_utc": "2026-08-31T04:36:01Z",
+  "state": {
+    "R23_B0_STATIC_AUDIT": "PASS",
+    "R23_B0_GRADER_EXECUTION": "PENDING",
+    "R23_X_CHRONOLOGY": "PENDING_B0_1",
+    "R23_R0_CONTINUATION": "ALLOWED",
+    "PAID_MODEL_CALLS": 0
+  },
+  "r0_credential_free": {
+    "status": "IMPLEMENTED_AND_TESTED_NOT_FINAL_ENDPOINT",
+    "arms": ["AR0", "AR1", "AR2", "AR3", "AR4", "AR5"],
+    "reader_modes_tested": ["fake", "replay"],
+    "live_reader_enabled": false,
+    "evidence_bundle": "artifacts/r23/r0_credential_free_e2e_bundle.json",
+    "evidence_bundle_content_sha256": "26ab8979a692d476254c0f931e04d6905eec09ec904cb953aa767f3d4750488b",
+    "evidence_bundle_file_sha256": "164536d4b0ff85aaeaf8d1500c03286cd4717611cc409798b3251d38515c17a3"
+  },
+  "grader_smoke": {
+    "manifest": "artifacts/r23/grader_smoke_manifest.json",
+    "freeze_status": "FROZEN_PRE_EXECUTION",
+    "repository_stratified_targets": 12,
+    "conditions": ["GOLD", "NOOP"],
+    "grader_containers_executed": 0,
+    "benchmark_grader_viability": "PENDING_OFFICIAL_GRADER_SMOKE"
+  },
+  "chronology_recovery": {
+    "status": "PENDING_B0_1_PARTIAL_FAIL_CLOSED",
+    "instances_total": 500,
+    "fix_pr_identity_merge_and_source_timestamp_known": 98,
+    "conservative_fix_commit_public_timestamp_known": 5,
+    "linked_issue_created_at_known": 4,
+    "linked_issue_closed_at_known": 4,
+    "source_timestamp_unknown": 402,
+    "confirmed_chronology_only_candidate_edges": 8,
+    "pr_created_proxy_ordered_edges_not_eligible": 38592,
+    "source_target_pairs_selected": 0,
+    "unknown_policy": "FAIL_CLOSED"
+  },
+  "execution_counters": {
+    "external_model_calls": 0,
+    "paid_model_calls": 0,
+    "docker_grader_executions": 0
+  },
+  "claim_boundary": {
+    "benchmark_grader_viability": "NOT_YET_ESTABLISHED_BEFORE_OFFICIAL_GRADER_SMOKE",
+    "chronological_source_target_pairs": "NOT_SELECTED_WHILE_B0_1_COVERAGE_IS_PARTIAL",
+    "credential_free_r0_completion_is_final_endpoint": false,
+    "reproduction_and_proposed_method_results_are_pooled": false
+  },
+  "remaining_after_r0": [
+    "R23-B0.1 chronology completion",
+    "official grader smoke",
+    "A0",
+    "G0",
+    "O0",
+    "F1",
+    "S0",
+    "CF"
+  ],
+  "product_separation": {
+    "company_handoff_manifest_is_research_status": false,
+    "docs_status_is_research_status": false,
+    "product_hash_basis": "git-tracked files only",
+    "tracked_generated_artifacts_policy": "REJECT",
+    "research_state_authority": "artifacts/r23/research_state.json",
+    "research_seal_authority": "artifacts/r23/research_seal.json"
+  }
+}

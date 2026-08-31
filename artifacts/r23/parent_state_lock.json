@@ -7,7 +7,7 @@
   "parent_head_is_descendant_of": "50ddb46010a7afe7005c37748fce48ba53c3c00b",
   "descendant_verified": true,
   "new_branch": "codex/r23-semantic-subtask-graph-memory",
-  "new_worktree": "C:/Users/jewon/esm-r23",
+  "new_worktree": "<local-worktree>/esm-r23",
   "branch_point": "289413dcf737d85213eb15233e80a4daf5bf952b",
   "pr16": {"state": "OPEN", "draft": true, "head": "codex/r22-stage-aligned-memory", "base": "main", "not_modified": true},
   "preserved": {

@@ -8,7 +8,7 @@ mutated**.
 |---|---|
 | R22 branch live head | `289413dcf737d85213eb15233e80a4daf5bf952b` (descendant of `50ddb46` ✓) |
 | new branch | `codex/r23-semantic-subtask-graph-memory` (branch point = R22 live head) |
-| new worktree | `C:/Users/jewon/esm-r23` (clean checkout) |
+| new worktree | `<local-worktree>/esm-r23` (clean checkout) |
 | PR #16 | OPEN / DRAFT, head `codex/r22-stage-aligned-memory`, base `main` — **unchanged** |
 | main | `ce10ab49586db7a859fbe5cca93051b93f9f5b55` — **unchanged** |
 | v0.3.0-rc1 tag object | `c1741c6d635bc97e470ea553753c143888a0c0be` — **unchanged** |

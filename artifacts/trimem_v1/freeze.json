@@ -317,8 +317,8 @@
       "sha256": "0b3a2700298817e58e58e281725fe478b7169d76c867e6532aa53841595e2b56"
     },
     "configs/trimem_v1/benchmark_exec_request.json": {
-      "bytes": 1813,
-      "sha256": "49d66a96b93a591291061f7cb9278b718174947b4e81ebf5630b2710b27d9ec0"
+      "bytes": 1835,
+      "sha256": "a828062341ca77fd828d301ec07f0659eb971c329a545665f0b27ed70ce6c578"
     },
     "configs/trimem_v1/cost_plan.json": {
       "bytes": 5425,
@@ -653,8 +653,8 @@
       "sha256": "348b94bca4f375da971b987e0b40d3c608964d5b04954831d2ce20a974492827"
     },
     "scripts/trimem_verify_ready.py": {
-      "bytes": 39105,
-      "sha256": "a548638624f439ae1a1128a33cb75c01e8ef4a97408cfc3b85d0cfd7a588925b"
+      "bytes": 39502,
+      "sha256": "232770fafe2d0ea502e3359e6985ebacc094ecc9960d5b2245a6ef8a029fc479"
     },
     "src/enterprise_memory/contracts/codec.py": {
       "bytes": 7174,
@@ -817,8 +817,8 @@
       "sha256": "fe514cf14108f6503d6240668bb42a3ed9b10073cce66d4ad1a8b2bcd3401057"
     },
     "src/enterprise_memory/trimem/postgres_store.py": {
-      "bytes": 145951,
-      "sha256": "112add6745f34ce079e4626fe4c50705af44ec394d35c9393c74d64bf4ef677d"
+      "bytes": 147016,
+      "sha256": "09507de74232639b9ddea79b72ffff401e8230ee4879abf7b49ab0b0e592b3ce"
     },
     "src/enterprise_memory/trimem/ppr.py": {
       "bytes": 11425,
@@ -897,8 +897,8 @@
       "sha256": "686c00fa178aa80d24e4474475abd00acbba179649b568484c2e4e8e172df2c9"
     },
     "tests/unit/test_trimem_benchmark_readiness.py": {
-      "bytes": 34820,
-      "sha256": "5b022a34d05225b0717d42e85c4378195854f8205540978be56d7e28e893e22f"
+      "bytes": 35737,
+      "sha256": "724fd8e33a26ee405e16c619f8744e8fe4e901a758568e1e7871edf0bb88b931"
     },
     "tests/unit/test_trimem_git_workspace.py": {
       "bytes": 25908,
@@ -917,8 +917,8 @@
       "sha256": "28bcd9c988ff1a1c045f25c4a2f1624358f963a9d2d0f2d229ae1075b7ced68e"
     },
     "tests/unit/test_trimem_postgres_store.py": {
-      "bytes": 65458,
-      "sha256": "bfb44072e1d7efdbe07a4b640e2f6795dd6e6a9e14417576aa6eb7ecee4e76b8"
+      "bytes": 68292,
+      "sha256": "33a690e4f21b79df5d68986cbcc1abee4f4297c70c83109b4a7bb00ad58fa8a3"
     },
     "tests/unit/test_trimem_production_lifecycle.py": {
       "bytes": 31627,

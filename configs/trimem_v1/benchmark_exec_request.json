@@ -30,7 +30,7 @@
     "official grader/benchmark target image pull or run",
     "held-out task execution"
   ],
-  "readiness_gate": "python scripts/trimem_verify_ready.py --level benchmark-approval",
+  "readiness_gate": "python scripts/trimem_verify_ready.py --level benchmark-approval --require-git-tracked",
   "phase_binding": "Each phase requires a distinct external immutable approval artifact bound to that phase's committed Git HEAD, freeze bytes, request bytes, phase_hard_caps, GitHub workflow run ID, and run attempt. A DEVELOPMENT_TUNING approval cannot authorize HELDOUT_BENCHMARK or another dispatch/attempt.",
   "request_id": "TRIMEM_V1_BENCHMARK_EXEC_002",
   "required_approval_fields": [

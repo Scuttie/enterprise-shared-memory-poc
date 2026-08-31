@@ -600,7 +600,12 @@ def main() -> int:
     parser.add_argument("--approval-file", type=Path)
     args = parser.parse_args()
     try:
-        evidence = validate_static(args.require_git_tracked)
+        # Every approval or execution endpoint must prove that the entire
+        # frozen closure is committed.  The flag remains useful for strict
+        # local static checks, but cannot weaken an approval-level gate when
+        # omitted by a caller.
+        require_git_tracked = args.require_git_tracked or args.level != "static"
+        evidence = validate_static(require_git_tracked)
         blockers: list[str] = []
         phase = None
         if args.level == "benchmark-approval":
@@ -619,6 +624,7 @@ def main() -> int:
             "blockers": blockers,
             "level": args.level,
             "approved_phase": phase,
+            "git_tracked_freeze_required": require_git_tracked,
             "official_grader_viability": "NOT_YET_ESTABLISHED" if args.level == "benchmark-approval" else "EXECUTION_GATED",
             "status": "PASS" if not blockers else "FAIL_CLOSED",
         }

@@ -375,6 +375,27 @@ def _timestamp(value: Any) -> Optional[str]:
     raise ValueError("timestamp has unsupported representation")
 
 
+def _postgres_timestamp(value: Any, name: str) -> Optional[datetime]:
+    """Return an aware UTC ``datetime`` suitable for asyncpg TIMESTAMPTZ binds."""
+
+    if value in (None, ""):
+        return None
+    if isinstance(value, datetime):
+        parsed = value
+    elif isinstance(value, str):
+        try:
+            parsed = datetime.fromisoformat(
+                value[:-1] + "+00:00" if value.endswith("Z") else value
+            )
+        except ValueError as exc:
+            raise ValueError("%s must be an ISO-8601 timestamp" % name) from exc
+    else:
+        raise ValueError("%s has unsupported timestamp representation" % name)
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ValueError("%s must include a timezone" % name)
+    return parsed.astimezone(timezone.utc)
+
+
 def _json_object(value: Any) -> Mapping[str, Any]:
     if isinstance(value, str):
         value = json.loads(value)
@@ -794,7 +815,7 @@ def _review_params(review: Optional[ReviewProvenance]) -> dict[str, Any]:
     return {
         "review_id": review.review_id,
         "reviewer_id": review.reviewer_id,
-        "reviewed_at": review.reviewed_at,
+        "reviewed_at": _postgres_timestamp(review.reviewed_at, "reviewed_at"),
         "review_authority": review.authority.value,
         "review_policy_version": review.policy_version,
         "review_evidence_hash": review.evidence_hash,
@@ -803,14 +824,17 @@ def _review_params(review: Optional[ReviewProvenance]) -> dict[str, Any]:
 
 def _temporal_params(temporal: TemporalMetadata) -> dict[str, Any]:
     return {
-        "ingested_at": temporal.ingested_at,
-        "event_time": temporal.event_time,
-        "source_available_at": temporal.source_available_at,
-        "last_accessed_at": temporal.last_accessed_at,
-        "last_used_at": temporal.last_used_at,
-        "last_verified_at": temporal.last_verified_at,
-        "valid_from": temporal.valid_from,
-        "valid_until": temporal.valid_until,
+        name: _postgres_timestamp(getattr(temporal, name), name)
+        for name in (
+            "ingested_at",
+            "event_time",
+            "source_available_at",
+            "last_accessed_at",
+            "last_used_at",
+            "last_verified_at",
+            "valid_from",
+            "valid_until",
+        )
     }
 
 
@@ -1054,7 +1078,7 @@ class PostgresTriMemStore:
                 ensure_ascii=False, allow_nan=False,
             ),
             "payload_hash": node.payload_hash,
-            "archived_at": node.archived_at,
+            "archived_at": _postgres_timestamp(node.archived_at, "archived_at"),
             "archive_reason": node.archive_reason,
             "archived_from_content_hash": node.archived_from_content_hash,
             "content_hash": node.content_hash,
@@ -1243,7 +1267,8 @@ class PostgresTriMemStore:
             "graph_id": event.graph_id,
             "graph_kind": event.graph_kind.value, "owner_user_id": event.owner_user_id,
             "node_id": event.node_id, "actor_user_id": event.actor_user_id,
-            "access_type": event.access_type.value, "event_time": event.event_time,
+            "access_type": event.access_type.value,
+            "event_time": _postgres_timestamp(event.event_time, "event_time"),
             "injected_byte_count": event.injected_byte_count,
             "injected_hash": event.injected_hash, "evidence_ref": event.evidence_ref,
             "content_hash": event.content_hash,
@@ -1402,7 +1427,8 @@ class PostgresTriMemStore:
             "owner_user_id": checkpoint.owner_user_id, "sequence_no": checkpoint.sequence,
             "graph_content_hash": checkpoint.graph_content_hash,
             "active_node_id": checkpoint.active_node_id, "evidence_ref": checkpoint.evidence_ref,
-            "evidence_hash": checkpoint.evidence_hash, "created_at": checkpoint.created_at,
+            "evidence_hash": checkpoint.evidence_hash,
+            "created_at": _postgres_timestamp(checkpoint.created_at, "created_at"),
             "content_hash": checkpoint.content_hash,
         }
         return await self._append_record(
@@ -1454,7 +1480,8 @@ class PostgresTriMemStore:
             ),
             "state_features_hash": transition.state_features_hash,
             "reward": transition.reward, "delayed_credit_ref": transition.delayed_credit_ref,
-            "event_time": transition.event_time, "content_hash": transition.content_hash,
+            "event_time": _postgres_timestamp(transition.event_time, "event_time"),
+            "content_hash": transition.content_hash,
         }
         return await self._append_record(
             ctx, table="trimem_policy_transitions", columns=_TRANSITION_COLUMNS, params=params,
@@ -1521,7 +1548,7 @@ class PostgresTriMemStore:
             "negative_transfer": strength.negative_transfer,
             "contradiction": strength.contradiction,
             "version_staleness": strength.version_staleness,
-            "updated_at": record.updated_at,
+            "updated_at": _postgres_timestamp(record.updated_at, "updated_at"),
             "content_hash": record.content_hash,
         }
         return await self._append_record(
@@ -2396,7 +2423,7 @@ class PostgresTriMemStore:
             "graph_kind": node.graph_kind.value,
             "prior_content_hash": prior_content_hash,
             "payload_hash": archived.payload_hash,
-            "archived_at": archived.archived_at,
+            "archived_at": _postgres_timestamp(archived.archived_at, "archived_at"),
             "archive_reason": archived.archive_reason,
             "archived_from_content_hash": archived.archived_from_content_hash,
             "content_hash": archived.content_hash,
@@ -2617,7 +2644,7 @@ class PostgresTriMemStore:
             "verified": True,
             **digests,
             "attestation_hash": attestation_hash,
-            "verified_at": verified_at,
+            "verified_at": _postgres_timestamp(verified_at, "verified_at"),
         }
         async with self._tenant_tx(ctx) as conn:
             await conn.execute(

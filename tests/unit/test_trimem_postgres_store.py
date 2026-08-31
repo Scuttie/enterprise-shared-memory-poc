@@ -5,6 +5,7 @@ import re
 import uuid
 from copy import deepcopy
 from dataclasses import replace
+from datetime import datetime, timezone
 from types import SimpleNamespace
 
 import pytest
@@ -19,6 +20,7 @@ from enterprise_memory.trimem.postgres_store import (
     LifecycleAppendBundle,
     PostgresTriMemStore,
     SemanticStrengthIncrement,
+    _postgres_timestamp,
 )
 from enterprise_memory.trimem.schema import (
     AccessContext,
@@ -49,6 +51,23 @@ from enterprise_memory.trimem.vector_index import VectorReference
 
 
 NOW = "2026-08-31T00:00:00Z"
+_TIMESTAMPTZ_BIND_KEYS = {
+    "archived_at",
+    "claimed_at",
+    "created_at",
+    "event_time",
+    "indexed_at",
+    "ingested_at",
+    "last_accessed_at",
+    "last_used_at",
+    "last_verified_at",
+    "reviewed_at",
+    "source_available_at",
+    "updated_at",
+    "valid_from",
+    "valid_until",
+    "verified_at",
+}
 
 
 class _FakeResult:
@@ -98,6 +117,11 @@ class _FakeConnection:
     async def execute(self, statement, params=None):
         sql = " ".join(str(statement).split())
         params = dict(params or {})
+        for name in _TIMESTAMPTZ_BIND_KEYS.intersection(params):
+            value = params[name]
+            if value is not None:
+                assert isinstance(value, datetime), (sql, name, value)
+                assert value.tzinfo is not None and value.utcoffset() is not None
         self.engine.calls.append((sql, params))
         if "set_config('app.org_id'" in sql:
             self.org_id = params["o"]
@@ -610,6 +634,67 @@ def test_graph_roundtrip_uses_transaction_local_org_and_user_context():
     assert all("org_id=:org_id" in sql and "owner_user_id=:owner_user_id" in sql for sql in reads)
     assert all("namespace=:namespace" in sql for sql in reads)
     assert ("namespace", "unit-test") in engine.contexts
+
+
+def test_iso_z_timestamps_bind_as_aware_utc_datetimes():
+    engine = _FakeEngine()
+    store = PostgresTriMemStore(engine)
+    ctx = AccessContext("org-a", "alice")
+    temporal = TemporalMetadata(
+        ingested_at="2026-08-31T00:00:00Z",
+        event_time="2026-08-31T00:00:01Z",
+        source_available_at="2026-08-31T00:00:02Z",
+        last_accessed_at="2026-08-31T00:00:03Z",
+        last_used_at="2026-08-31T00:00:04Z",
+        last_verified_at="2026-08-31T00:00:05Z",
+        valid_from="2026-08-31T00:00:06Z",
+        valid_until="2026-09-01T00:00:00Z",
+    )
+    review = ReviewProvenance(
+        review_id="review-bind",
+        reviewer_id="reviewer-bind",
+        reviewed_at="2026-08-31T00:00:07Z",
+        authority=ReviewAuthority.HUMAN_REVIEW,
+        policy_version="shared-v1",
+        evidence_hash="sha256:" + "b" * 64,
+    )
+    graph = OrganisationSemanticGraph(
+        graph_id="org-bind-times",
+        org_id=ctx.org_id,
+        temporal=temporal,
+        review_provenance=review,
+    )
+
+    assert _run(store.put_graph(ctx, graph)) == graph
+    _, params = next(
+        (sql, params)
+        for sql, params in engine.calls
+        if sql.startswith("INSERT INTO trimem_graphs")
+    )
+    timestamp_names = {
+        "ingested_at",
+        "event_time",
+        "source_available_at",
+        "last_accessed_at",
+        "last_used_at",
+        "last_verified_at",
+        "valid_from",
+        "valid_until",
+        "reviewed_at",
+    }
+    assert all(isinstance(params[name], datetime) for name in timestamp_names)
+    assert all(params[name].tzinfo is timezone.utc for name in timestamp_names)
+
+
+def test_postgres_timestamp_normalizes_offsets_and_rejects_naive_values():
+    assert _postgres_timestamp(
+        "2026-08-31T09:30:00+09:00", "event_time"
+    ) == datetime(2026, 8, 31, 0, 30, tzinfo=timezone.utc)
+    assert _postgres_timestamp(None, "event_time") is None
+    with pytest.raises(ValueError, match="include a timezone"):
+        _postgres_timestamp("2026-08-31T00:00:00", "event_time")
+    with pytest.raises(ValueError, match="ISO-8601"):
+        _postgres_timestamp("not-a-timestamp", "event_time")
 
 
 def test_same_org_owner_other_namespace_is_indistinguishable_from_absent():

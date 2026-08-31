@@ -188,6 +188,9 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
     assert "digest-pinned PostgreSQL and Qdrant support services" in service_boundary
     assert "official grader/benchmark target images" in service_boundary
     request = _read(ROOT / "configs/trimem_v1/benchmark_exec_request.json")
+    assert request["readiness_gate"].endswith(
+        "--level benchmark-approval --require-git-tracked"
+    )
     assert "official grader/benchmark target image pull or run" in request["prohibited_before_approval"]
     assert "Docker image pull or run" not in request["prohibited_before_approval"]
     assert requirements["execution_counters"] == {
@@ -198,8 +201,31 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
     }
 
 
+def test_benchmark_approval_cannot_disable_git_tracked_freeze(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    observed: list[bool] = []
+    monkeypatch.setattr(
+        readiness,
+        "validate_static",
+        lambda require_git_tracked: observed.append(require_git_tracked) or {},
+    )
+    monkeypatch.setattr(readiness, "preapproval_blockers", lambda: [])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["trimem_verify_ready.py", "--level", "benchmark-approval"],
+    )
+    assert readiness.main() == 0
+    report = json.loads(capsys.readouterr().out)
+    assert observed == [True]
+    assert report["git_tracked_freeze_required"] is True
+
+
 def test_freeze_allowlist_closes_all_trimem_execution_surfaces() -> None:
     frozen = set(freeze.frozen_paths(ROOT))
+    assert "COMPANY_HANDOFF_MANIFEST.json" not in frozen
+    assert "docs/STATUS.yaml" not in frozen
     discovered = {
         path.relative_to(ROOT).as_posix()
         for base, pattern in (

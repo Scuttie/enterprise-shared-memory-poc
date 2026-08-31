@@ -1,6 +1,7 @@
-# docs/STATUS.yaml — SINGLE MACHINE-READABLE SOURCE OF TRUTH
-# Generated/maintained under P6/R19 (codex/utility-router-v0.3). CI (ci-docs) fails if user-facing
-# docs contradict this file. Do NOT hand-edit README/ARCHITECTURE claims without updating this first.
+# docs/STATUS.yaml — PRODUCT STATUS ONLY
+# This file carries product-facing structural inventory and claims. TriMem/R23
+# readiness, benchmark state, workflow gates, and results live in their separate
+# research seals and must not be inferred from this file.
 schema_version: 1
 last_verified_commit: "1de38558636e8bf6ac49653776fdfb7bbc1e6bfe"
 
@@ -10,8 +11,8 @@ research_status: MEMORY_TRANSFER_EFFICACY_NULL
 company_handoff_status: READY          # fresh-clone + offline demo pass; NOT staging-certified
 production_certification_status: NOT_CLAIMED
 
-migration_head: "0014"                 # experience layer (P6/R19); 13 tables
-workflow_count: 66                     # +ci-oss-release, codeql (OSS v0.3 release acceptance)
+migration_head: "0015"                 # structural tree inventory; not a TriMem benchmark result
+workflow_count: 70                     # structural tree inventory; research readiness is separately sealed
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)
@@ -52,7 +53,7 @@ rejected_claims:
   - id: sqlite_authoritative
     text: "Canonical memory stored in SQLite."
     status: REJECTED
-    evidence: "PostgreSQL is authoritative; Qdrant/Mem0 are replaceable indices. migrations/versions/*, alembic head 0013."
+    evidence: "PostgreSQL is authoritative; Qdrant/Mem0 are replaceable indices. migrations/versions/*, alembic head 0015."
   - id: production_ready
     text: "production-ready"
     status: REJECTED
@@ -78,4 +79,4 @@ required_company_inputs:
 # --- MILESTONE RESEARCH RESULT (R19 utility router) ---
 utility_router_result: "NULL"           # R19-SMALL held-out: A5-A0 sig but NOT beyond compute(A1)/shuffled(A2) -> compute not content; fails 10.7 gate
 
-workflow_table_note: "64 workflows at last_verified_commit; ci-docs regenerates the README workflow table."
+workflow_table_note: "70 workflows in this tree; ci-docs validates structural inventory only."

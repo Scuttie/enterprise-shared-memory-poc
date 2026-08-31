@@ -1,49 +1,116 @@
 name: ci-r23-gradeability
-# R23-B0 §6 — per-target SWE-bench Verified gradeability (GOLD + NOOP) via the official swebench harness.
-# Credential-free (Docker only; NO model, NO secret, paid API = 0). Dispatch-only + EXEC-gated; NOT auto-triggered
-# for all 500. Per-target sharded; resumable by missing target only; fail-closed aggregate. Because this workflow
-# lives only on the feature branch, a real run uses the committed-sentinel mechanism (as in R22) once approved.
+
+# R23 official-grader smoke over a pre-result frozen, repository-stratified
+# target manifest. Credential-free (Docker only; no model, no secret, paid=0)
+# and EXEC-gated by either an approved dispatch or a future R23 sentinel. Until
+# this workflow actually completes, the
+# committed manifest keeps benchmark_grader_viability=PENDING_OFFICIAL_GRADER_SMOKE.
 on:
   workflow_dispatch:
     inputs:
       confirm_exec_approved:
-        description: "must be exactly EXEC_APPROVED_R23_GRADEABILITY (credential-free docker; unlicensed-upstream note in grader_lock)"
+        description: "must be exactly EXEC_APPROVED_R23_GRADEABILITY (credential-free Docker execution)"
         required: true
         default: ""
-      instance_ids:
-        description: "comma-separated SWE-bench Verified instance_ids to grade (the fixed paid pool; NOT all 500)"
-        required: true
-        default: ""
+  # A branch-only workflow_dispatch cannot register on the default branch. A
+  # later, separately approved commit of this NEW R23 sentinel is therefore the
+  # alternate one-shot trigger. The sentinel is intentionally not committed yet.
+  push:
+    branches:
+      - codex/r23-semantic-subtask-graph-memory
+    paths:
+      - artifacts/r23/EXEC_APPROVED_GRADER_SMOKE
+
 permissions:
   contents: read
+
 jobs:
   gate:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          test "${{ inputs.confirm_exec_approved }}" = "EXEC_APPROVED_R23_GRADEABILITY" \
-            || { echo "not approved; no execution"; exit 1; }
-  grade:
+      - uses: actions/checkout@v4
+      - name: Explicit execution approval
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_CONFIRM: ${{ inputs.confirm_exec_approved }}
+        run: |
+          case "$EVENT_NAME" in
+            workflow_dispatch)
+              test "$DISPATCH_CONFIRM" = "EXEC_APPROVED_R23_GRADEABILITY"
+              ;;
+            push)
+              test -f artifacts/r23/EXEC_APPROVED_GRADER_SMOKE && \
+                test "$(cat artifacts/r23/EXEC_APPROVED_GRADER_SMOKE)" = "EXEC_APPROVED_R23_GRADEABILITY"
+              ;;
+            *)
+              echo "unsupported event: $EVENT_NAME"
+              exit 1
+              ;;
+          esac || {
+            echo "R23 grader execution is not approved for event=$EVENT_NAME; refusing before Docker"
+            exit 1
+          }
+
+  prepare:
     needs: gate
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: {python-version: '3.11'}
-      - run: docker info >/dev/null && df -h /
-      - run: pip install -q "swebench==5.0.2" "datasets>=2.19,<3"
-      - name: Grade the requested pool (GOLD + NOOP)
+        with:
+          python-version: "3.11"
+      - id: matrix
+        name: Validate frozen manifest and derive the only target matrix
+        run: |
+          python scripts/r23_gradeability_prepare.py \
+            --manifest artifacts/r23/grader_smoke_manifest.json \
+            --github-output "$GITHUB_OUTPUT" \
+            --report artifacts/r23/gradeability_prepare_report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: r23-gradeability-prepare
+          path: artifacts/r23/gradeability_prepare_report.json
+          if-no-files-found: error
+
+  grade:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Docker preflight
+        run: |
+          docker info >/dev/null
+          df -h /
+      - name: Install exact official grader stack
+        run: pip install -q "swebench==5.0.2" "datasets==2.21.0" "pyarrow==17.0.0"
+      - name: Grade one frozen target (GOLD + NOOP)
         env:
           R23_UPSTREAM_EXEC_APPROVED: "1"
         run: |
-          IFS=',' read -ra IDS <<< "${{ inputs.instance_ids }}"
-          for iid in "${IDS[@]}"; do
-            [ -f "artifacts/r23/grade_${iid}.json" ] && { echo "resume-skip $iid"; continue; }   # resume missing only
-            timeout 3600 python scripts/r23_gradeability.py --instance-id "$iid" --out "artifacts/r23/grade_${iid}.json" || echo "RC=$?"
-          done
+          timeout 6000 python scripts/r23_gradeability.py \
+            --manifest artifacts/r23/grader_smoke_manifest.json \
+            --instance-id "${{ matrix.instance_id }}" \
+            --results-dir artifacts/r23/grader_run \
+            --out "artifacts/r23/grade_${{ matrix.instance_id }}.json"
       - uses: actions/upload-artifact@v4
         if: always()
-        with: {name: r23-gradeability, path: artifacts/r23/grade_*.json}
+        with:
+          name: r23-gradeability-${{ matrix.instance_id }}
+          path: |
+            artifacts/r23/grade_${{ matrix.instance_id }}.json
+            artifacts/r23/grader_run/${{ matrix.instance_id }}/
+          if-no-files-found: error
+
   aggregate:
     needs: grade
     if: always()
@@ -51,10 +118,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: {python-version: '3.11'}
+        with:
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
-        with: {path: _shards}
-      - run: python scripts/r23_gradeability_aggregate.py --download-dir _shards || echo "fail-closed aggregate rc=$?"
+        with:
+          path: _shards
+      - name: Fail-closed expected/missing/duplicate/condition/evidence aggregate
+        run: |
+          python scripts/r23_gradeability_aggregate.py \
+            --manifest artifacts/r23/grader_smoke_manifest.json \
+            --download-dir _shards \
+            --out artifacts/r23/gradeability_results.json
       - uses: actions/upload-artifact@v4
         if: always()
-        with: {name: r23-gradeability-campaign, path: artifacts/r23/gradeability_*.json}
+        with:
+          name: r23-gradeability-campaign
+          path: artifacts/r23/gradeability_results.json
+          if-no-files-found: error

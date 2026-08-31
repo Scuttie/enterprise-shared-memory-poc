@@ -45,6 +45,7 @@ from enterprise_memory.trimem.schema import (
     UserEpisodicGraph,
     UserSemanticGraph,
     canonical_hash,
+    canonical_json,
 )
 from enterprise_memory.trimem.store import IntegrityViolation, NotFound, ScopeViolation
 from enterprise_memory.trimem.vector_index import VectorReference
@@ -226,6 +227,7 @@ class _FakeConnection:
                     indexed_at=None,
                 )
             elif table == "trimem_session_checkpoints":
+                row["checkpoint_payload"] = json.loads(row["checkpoint_payload"])
                 row.update(created_at=NOW)
             elif table == "trimem_promotion_evidence":
                 row.update(created_at=NOW)
@@ -1572,6 +1574,9 @@ def test_namespace_advance_and_recovery_checkpoint_are_one_transaction():
         _run(store.load_latest_session_checkpoint(ctx, run_nonce=claim.run_nonce))
     checkpoint_row["checkpoint_payload"] = payload
     checkpoint_row["checkpoint_digest"] = canonical_hash(payload)
+    assert _run(
+        store.load_latest_session_checkpoint(ctx, run_nonce=claim.run_nonce)
+    ) == checkpoint
 
     tampered = {**payload, "next_sequence_index": 2}
     with pytest.raises(IntegrityViolation, match="digest mismatch"):
@@ -1623,6 +1628,107 @@ def test_namespace_advance_and_recovery_checkpoint_are_one_transaction():
     ] == 0
     assert rollback_engine.tables.get("trimem_session_checkpoints", {}) == {}
     assert rollback_engine.rollbacks == 1
+
+
+def test_session_checkpoint_jsonb_envelope_preserves_exact_floats_and_fails_closed():
+    engine = _FakeEngine()
+    namespace = "trimem:exp:dev:m2-floats"
+    store = PostgresTriMemStore(engine, namespace=namespace)
+    ctx = AccessContext("org-a", "alice")
+    digest = "sha256:" + "c" * 64
+    claim = _run(
+        store.claim_namespace(
+            ctx,
+            experiment_id="exp",
+            split="dev",
+            arm_id="m2-floats",
+            task_order_hash=digest,
+            config_hash=digest,
+            run_nonce="00000000-0000-4000-8000-000000000203",
+        )
+    )
+    floats = {
+        "negative_zero": -0.0,
+        "tiny_exponent": 1.234567890123456e-200,
+        "large_exponent": -9.876543210987654e200,
+    }
+    payload = {
+        "schema": "trimem/session-recovery/1.0",
+        "namespace": namespace,
+        "run_nonce": claim.run_nonce,
+        "next_sequence_index": 1,
+        "lifecycle_state": {"policy_floats": floats},
+    }
+    _, checkpoint = _run(
+        store.advance_namespace_with_checkpoint(
+            ctx,
+            run_nonce=claim.run_nonce,
+            expected_current=0,
+            next_sequence_index=1,
+            checkpoint_payload=payload,
+            checkpoint_digest=canonical_hash(payload),
+        )
+    )
+    restored_floats = checkpoint.checkpoint_payload["lifecycle_state"][
+        "policy_floats"
+    ]
+    assert {
+        name: value.hex() for name, value in restored_floats.items()
+    } == {name: value.hex() for name, value in floats.items()}
+    assert checkpoint.checkpoint_digest == canonical_hash(payload)
+    assert canonical_hash(checkpoint.checkpoint_payload) == checkpoint.checkpoint_digest
+
+    row = engine.tables["trimem_session_checkpoints"][checkpoint.checkpoint_id]
+    envelope = deepcopy(row["checkpoint_payload"])
+    assert set(envelope) == {
+        "storage_codec",
+        "schema",
+        "namespace",
+        "run_nonce",
+        "next_sequence_index",
+        "canonical_payload_json",
+    }
+    assert envelope["storage_codec"] == (
+        "trimem/session-checkpoint-jsonb-envelope/1.0"
+    )
+    assert envelope["schema"] == payload["schema"] == row["checkpoint_schema"]
+    assert envelope["namespace"] == namespace
+    assert envelope["run_nonce"] == claim.run_nonce
+    assert envelope["next_sequence_index"] == 1
+    assert envelope["canonical_payload_json"] == canonical_json(payload)
+    assert "-0.0" in envelope["canonical_payload_json"]
+    assert "e-200" in envelope["canonical_payload_json"]
+    assert _run(
+        store.load_latest_session_checkpoint(ctx, run_nonce=claim.run_nonce)
+    ) == checkpoint
+
+    malformed = deepcopy(envelope)
+    malformed["unexpected"] = True
+    wrong_codec = deepcopy(envelope)
+    wrong_codec["storage_codec"] = "trimem/session-checkpoint-jsonb-envelope/UNKNOWN"
+    noncanonical = deepcopy(envelope)
+    noncanonical["canonical_payload_json"] = " " + canonical_json(payload)
+    tampered_payload = deepcopy(payload)
+    tampered_payload["lifecycle_state"]["policy_floats"]["tiny_exponent"] = 1.0
+    tampered = deepcopy(envelope)
+    tampered["canonical_payload_json"] = canonical_json(tampered_payload)
+    cross_outer = deepcopy(envelope)
+    cross_outer["namespace"] = "trimem:wrong:namespace"
+    cross_logical_payload = {**payload, "namespace": "trimem:wrong:namespace"}
+    cross_logical = deepcopy(envelope)
+    cross_logical["canonical_payload_json"] = canonical_json(cross_logical_payload)
+
+    for candidate in (
+        malformed,
+        wrong_codec,
+        noncanonical,
+        tampered,
+        cross_outer,
+        cross_logical,
+    ):
+        row["checkpoint_payload"] = candidate
+        with pytest.raises(CanonicalReloadError, match="session checkpoint reload failed"):
+            _run(store.load_latest_session_checkpoint(ctx, run_nonce=claim.run_nonce))
 
 
 def test_verified_episode_appends_org_visible_sanitized_promotion_evidence():

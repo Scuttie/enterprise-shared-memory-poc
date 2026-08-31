@@ -20,6 +20,7 @@ from typing import Any, Callable, Mapping, Optional, Sequence
 from sqlalchemy import text
 
 from ..persistence.tenant_context import tenant_tx
+from .accounting import strict_json_loads
 from .schema import (
     AccessContext,
     AccessType,
@@ -50,6 +51,7 @@ from .schema import (
     UserEpisodicGraph,
     UserSemanticGraph,
     canonical_hash,
+    canonical_json,
 )
 from .store import IntegrityViolation, NotFound, ScopeViolation
 from .vector_index import VectorReference
@@ -74,6 +76,17 @@ _CANONICAL_TABLES = (
 )
 
 _OUTBOX_ID_NAMESPACE = uuid.UUID("55fca334-1f48-4c56-88a2-6e40a4b9ea70")
+_CHECKPOINT_JSONB_CODEC = "trimem/session-checkpoint-jsonb-envelope/1.0"
+_CHECKPOINT_JSONB_ENVELOPE_FIELDS = frozenset(
+    {
+        "storage_codec",
+        "schema",
+        "namespace",
+        "run_nonce",
+        "next_sequence_index",
+        "canonical_payload_json",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -404,6 +417,79 @@ def _json_object(value: Any) -> Mapping[str, Any]:
     return dict(value)
 
 
+def _canonical_checkpoint_json(value: Any) -> str:
+    try:
+        return canonical_json(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("checkpoint payload is not canonical JSON") from exc
+
+
+def _checkpoint_storage_envelope(
+    payload: Mapping[str, Any],
+    *,
+    checkpoint_schema: str,
+    namespace: str,
+    run_nonce: str,
+    next_sequence_index: int,
+) -> Mapping[str, Any]:
+    """Wrap exact logical JSON so PostgreSQL JSONB cannot rewrite its numbers."""
+
+    return {
+        "storage_codec": _CHECKPOINT_JSONB_CODEC,
+        "schema": checkpoint_schema,
+        "namespace": namespace,
+        "run_nonce": run_nonce,
+        "next_sequence_index": next_sequence_index,
+        "canonical_payload_json": _canonical_checkpoint_json(payload),
+    }
+
+
+def _checkpoint_payload_from_storage(
+    value: Any,
+    *,
+    checkpoint_schema: str,
+    namespace: str,
+    run_nonce: str,
+    next_sequence_index: int,
+) -> Mapping[str, Any]:
+    """Decode the exact JSONB envelope, or one legacy unwrapped payload."""
+
+    stored = _json_object(value)
+    if "storage_codec" not in stored:
+        return stored
+    if (
+        set(stored) != _CHECKPOINT_JSONB_ENVELOPE_FIELDS
+        or stored.get("storage_codec") != _CHECKPOINT_JSONB_CODEC
+        or stored.get("schema") != checkpoint_schema
+        or stored.get("namespace") != namespace
+        or stored.get("run_nonce") != run_nonce
+        or type(stored.get("next_sequence_index")) is not int
+        or stored.get("next_sequence_index") != next_sequence_index
+    ):
+        raise ValueError("session checkpoint storage envelope mismatch")
+    canonical_payload_json = stored.get("canonical_payload_json")
+    if not isinstance(canonical_payload_json, str):
+        raise ValueError("session checkpoint canonical payload is missing")
+    try:
+        decoded = strict_json_loads(canonical_payload_json)
+    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise ValueError("session checkpoint canonical payload is invalid") from exc
+    if not isinstance(decoded, Mapping):
+        raise ValueError("session checkpoint canonical payload must be an object")
+    payload = dict(decoded)
+    if _canonical_checkpoint_json(payload) != canonical_payload_json:
+        raise ValueError("session checkpoint canonical payload is not byte canonical")
+    if (
+        payload.get("schema") != checkpoint_schema
+        or payload.get("namespace") != namespace
+        or payload.get("run_nonce") != run_nonce
+        or type(payload.get("next_sequence_index")) is not int
+        or payload.get("next_sequence_index") != next_sequence_index
+    ):
+        raise ValueError("session checkpoint storage/logical identity mismatch")
+    return payload
+
+
 def _mapping(row: Any) -> Mapping[str, Any]:
     if isinstance(row, Mapping):
         return row
@@ -695,16 +781,22 @@ def _outbox_intent(row: Any) -> IndexOutboxIntent:
 
 def _session_checkpoint(row: Any) -> SessionCheckpoint:
     data = _mapping(row)
-    payload = _json_object(data["checkpoint_payload"])
-    digest = str(data["checkpoint_digest"])
-    if canonical_hash(payload) != digest:
-        raise ValueError("session checkpoint digest mismatch")
     namespace = str(data["namespace"])
     run_nonce = str(data["run_nonce"])
     checkpoint_schema = str(data["checkpoint_schema"])
     next_index = int(data["next_sequence_index"])
     if next_index < 0:
         raise ValueError("session checkpoint sequence is invalid")
+    payload = _checkpoint_payload_from_storage(
+        data["checkpoint_payload"],
+        checkpoint_schema=checkpoint_schema,
+        namespace=namespace,
+        run_nonce=run_nonce,
+        next_sequence_index=next_index,
+    )
+    digest = str(data["checkpoint_digest"])
+    if canonical_hash(payload) != digest:
+        raise ValueError("session checkpoint digest mismatch")
     if (
         payload.get("schema") != checkpoint_schema
         or payload.get("namespace") != namespace
@@ -1884,6 +1976,13 @@ class PostgresTriMemStore:
             raise IntegrityViolation("checkpoint payload identity mismatch")
         if canonical_hash(payload) != checkpoint_digest:
             raise IntegrityViolation("checkpoint payload digest mismatch")
+        storage_envelope = _checkpoint_storage_envelope(
+            payload,
+            checkpoint_schema=checkpoint_schema,
+            namespace=self.namespace,
+            run_nonce=run_nonce,
+            next_sequence_index=next_sequence_index,
+        )
         checkpoint_id = str(
             uuid.uuid5(
                 _OUTBOX_ID_NAMESPACE,
@@ -1899,13 +1998,7 @@ class PostgresTriMemStore:
             "run_nonce": run_nonce,
             "next_sequence_index": next_sequence_index,
             "checkpoint_schema": checkpoint_schema,
-            "checkpoint_payload": json.dumps(
-                payload,
-                sort_keys=True,
-                separators=(",", ":"),
-                ensure_ascii=False,
-                allow_nan=False,
-            ),
+            "checkpoint_payload": _canonical_checkpoint_json(storage_envelope),
             "checkpoint_digest": checkpoint_digest,
         }
         async with self._tenant_tx(ctx) as conn:

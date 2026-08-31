@@ -817,8 +817,8 @@
       "sha256": "fe514cf14108f6503d6240668bb42a3ed9b10073cce66d4ad1a8b2bcd3401057"
     },
     "src/enterprise_memory/trimem/postgres_store.py": {
-      "bytes": 147016,
-      "sha256": "09507de74232639b9ddea79b72ffff401e8230ee4879abf7b49ab0b0e592b3ce"
+      "bytes": 150413,
+      "sha256": "4884458160b5a8ee7f9152c69c45aa9c19d9eb68be6005f29bdd2a006ca6622a"
     },
     "src/enterprise_memory/trimem/ppr.py": {
       "bytes": 11425,
@@ -917,8 +917,8 @@
       "sha256": "28bcd9c988ff1a1c045f25c4a2f1624358f963a9d2d0f2d229ae1075b7ced68e"
     },
     "tests/unit/test_trimem_postgres_store.py": {
-      "bytes": 68292,
-      "sha256": "33a690e4f21b79df5d68986cbcc1abee4f4297c70c83109b4a7bb00ad58fa8a3"
+      "bytes": 72354,
+      "sha256": "be1e4485315518718f7e8ebd31dead4fe67545be4e681dee4b183cc5cd78cbef"
     },
     "tests/unit/test_trimem_production_lifecycle.py": {
       "bytes": 31627,

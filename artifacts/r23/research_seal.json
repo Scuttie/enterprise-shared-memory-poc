@@ -1,13 +1,13 @@
 {
-  "schema_version": "r23/research_seal/1.0.0",
+  "schema_version": "r23/research_seal/1.1.0",
   "experiment": "REALBENCH_R23_SEMANTIC_SUBTASK_GRAPH_V1",
-  "git_head": "f6f45848e51243c016deb4e548f12aa4781f0926",
-  "seal_phase": "WORKTREE_CANDIDATE_NOT_FINAL_ENDPOINT",
+  "seal_phase": "TRACKED_TREE_NOT_FINAL_ENDPOINT",
+  "commit_binding": "CONTENT_HASH_ONLY; verify the enclosing Git commit and remote head externally",
   "file_basis": "git index plus non-ignored R23 additions; never os.walk",
-  "tracked_file_count": 151,
-  "untracked_candidate_count": 6,
+  "tracked_file_count": 157,
+  "untracked_candidate_count": 0,
   "r23_file_count": 157,
-  "r23_tree_sha256": "742ec06c52047950e5f0d1eb5617a749952c132d74d98a3c03bd02d15b582306",
+  "r23_tree_sha256": "bb2a203280d88940ecb413095f85aa481f0bea5095a76e2c88b7598b4702d1ba",
   "files": [
     {
       "path": ".github/workflows/ci-r23-benchmark.yml",
@@ -607,7 +607,7 @@
     },
     {
       "path": "scripts/r23_research_seal.py",
-      "sha256": "afc665f1ffa7437986124fffca4024d3b4f890ada1443cb16fd5d67743a07516"
+      "sha256": "a9bf07f6dccd579365d0972bf30c99013800f9845c40991328fe5cc9df128276"
     },
     {
       "path": "tests/r23/__init__.py",
@@ -651,5 +651,5 @@
   ],
   "paid_model_calls": 0,
   "final_endpoint": false,
-  "manifest_hash": "ab212a92d68881767e9c724ef148467e39b5a014b59e61bb454a549e2989e514"
+  "manifest_hash": "3a8f5f2573138e274a565412e7a5f07ea75fa259a6a74853957f8979e908ccc6"
 }

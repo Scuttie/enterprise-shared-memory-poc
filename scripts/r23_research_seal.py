@@ -51,10 +51,6 @@ def _sha(path: str) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def _head() -> str:
-    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT).decode().strip()
-
-
 def _manifest_hash(obj: dict) -> str:
     body = {k: v for k, v in obj.items() if k != "manifest_hash"}
     return hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
@@ -79,10 +75,10 @@ def build() -> dict:
     state_path = os.path.join(ROOT, "artifacts", "r23", "research_state.json")
     state = json.load(open(state_path, encoding="utf-8"))["state"]
     result = {
-        "schema_version": "r23/research_seal/1.0.0",
+        "schema_version": "r23/research_seal/1.1.0",
         "experiment": "REALBENCH_R23_SEMANTIC_SUBTASK_GRAPH_V1",
-        "git_head": _head(),
         "seal_phase": "WORKTREE_CANDIDATE_NOT_FINAL_ENDPOINT" if additions else "TRACKED_TREE_NOT_FINAL_ENDPOINT",
+        "commit_binding": "CONTENT_HASH_ONLY; verify the enclosing Git commit and remote head externally",
         "file_basis": "git index plus non-ignored R23 additions; never os.walk",
         "tracked_file_count": len(tracked - {SEAL_REL}),
         "untracked_candidate_count": len(additions - {SEAL_REL}),

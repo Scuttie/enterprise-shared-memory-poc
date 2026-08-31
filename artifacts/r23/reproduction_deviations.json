@@ -1,15 +1,54 @@
 {
   "experiment": "REALBENCH_R23_SEMANTIC_SUBTASK_GRAPH_V1 / track R23-R",
-  "status": "CLEAN_ROOM_REIMPLEMENTATION",
-  "reason": "arXiv:2602.21611 code is NOT released (author: 'upon acceptance'); no official artifact to reproduce byte-for-byte. Details absent from the paper are assumptions, NOT 'author settings'.",
-  "known_deviations_to_record": [
-    {"item": "agent scaffold", "paper": "unspecified in abstract/method excerpt (likely a Mini-SWE-Agent-style scaffold)", "r23": "Mini-SWE-Agent scaffold pinned in R23-R0 (repo/commit/system-prompt/tool-schema); recorded as a deviation if it differs"},
-    {"item": "similarity/embedding model", "paper": "cosine over an embedding E(.) (model unspecified in excerpt)", "r23": "to be pinned in R23-R0; recorded"},
-    {"item": "extractor prompt / transition prompt exact text", "paper": "described, verbatim text unspecified in excerpt", "r23": "clean-room prompts written from the described behavior; verbatim author prompts NOT claimed"},
-    {"item": "reader/backbone model", "paper": "4 backbones (Gemini/Claude)", "r23": "reader selected by the frozen reader-band pilot [0.10,0.70]; same model used for task-solving and same-model extractor (confound control)"},
-    {"item": "step/token budget exact values", "paper": "unspecified numerics", "r23": "pinned after the R23 token audit; extraction cost counted in the total budget as the paper states"},
-    {"item": "Best@3 vs Avg.Pass@1", "paper": "both reported", "r23": "primary = Avg.Pass@1 over frozen orders; Best@3 secondary"}
+  "status": "CLEAN_ROOM_IMPLEMENTATION_LOCKED_LIVE_READER_SELECTION_AND_EXECUTION_PENDING",
+  "reason": "arXiv:2602.21611 code is not released; no official artifact or verbatim prompt is available for byte-for-byte reproduction. Missing paper details are declared R23 assumptions, never author settings.",
+  "deviations_and_resolutions": [
+    {
+      "item": "agent scaffold",
+      "paper": "exact scaffold unspecified in available method text",
+      "r23": "Mini-SWE-Agent commit 25941c89cfbc91eb40b3f8756348c91d9977d57e; exact prompt/tool/parser/step/environment hashes frozen in artifacts/r23/agent_scaffold_lock.json",
+      "status": "LOCKED"
+    },
+    {
+      "item": "similarity and embedding model",
+      "paper": "cosine over embedding E(d); exact encoder unspecified in available method text",
+      "r23": "sentence-transformers/all-MiniLM-L6-v2 revision 1110a243fdf4706b3f48f1d95db1a4f5529b4d41 with sentence-transformers==3.4.1; cosine; forced Top-1",
+      "status": "LOCKED_NOT_LOADED"
+    },
+    {
+      "item": "extractor and category-transition prompt text",
+      "paper": "behavior described; verbatim prompt unavailable",
+      "r23": "independently written clean-room prompt strings and source builders hash-frozen in artifacts/r23/r0_cleanroom_lock.json",
+      "status": "LOCKED"
+    },
+    {
+      "item": "reader/backbone model",
+      "paper": "multiple Gemini/Claude backbones",
+      "r23": "selected only after the frozen reader-band pilot; one selected model must be used for both solver and extractor",
+      "status": "PENDING_READER_BAND_NOT_A_CREDENTIAL_FREE_CODE_GAP"
+    },
+    {
+      "item": "step/call/token budgets",
+      "paper": "exact numeric envelope unavailable; extraction cost is included",
+      "r23": "upstream 250 solver-step cap plus a common four-call extraction reservation; identical total call and token hard envelope across AR0-AR5; expected and hard-cap accounting separated",
+      "status": "LOCKED_IN_artifacts/r23/r0_budget_lock.json"
+    },
+    {
+      "item": "Best@3 versus Avg. Pass@1",
+      "paper": "both reported",
+      "r23": "primary Avg. Pass@1 over frozen orders; Best@3 secondary",
+      "status": "LOCKED"
+    }
   ],
-  "prohibited": ["calling any assumption an 'author setting'", "presenting the clean-room reimplementation as the official code",
-                 "tuning until AR3 matches +4.7pp"]
+  "prohibited": [
+    "calling an R23 assumption an author setting",
+    "presenting the clean-room implementation as official author code",
+    "tuning until AR3 matches the reported effect",
+    "putting proposed-method semantic atom or DAG fields into AR3",
+    "pooling R23-R reproduction and R23-X proposed-method sample means"
+  ],
+  "credential_free_evidence": "artifacts/r23/r0_credential_free_e2e_bundle.json",
+  "external_model_calls": 0,
+  "paid_model_calls": 0,
+  "docker_calls": 0
 }

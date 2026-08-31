@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "commit": "d2423bbb1f0c3e7369e2d42b5376c2b7fc9ac040",
+  "commit": "a0ac4bcd6110d97a6b30bcb715f549ecf2cdeaa8",
   "project_version": "0.3.0rc1",
   "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) \u2014 NOT COMPANY-STAGING-CERTIFIED",
-  "source_tree_sha256": "528edebe3aebd988d4dec3b8aec98eb783ad6370fd98c2e8fc6968c2655cc315",
-  "source_files": 113,
+  "source_tree_sha256": "65f5da0994f4ef13f616c9821399b16680ecfce5036ef8b0d2c24320bee809bb",
+  "source_files": 119,
   "docs_tree_sha256": "b0ed6b4f5e0f01dc96405a79179a452a29b49ee3c8edc284192805a739a4ffef",
   "docs_files": 58,
   "examples_tree_sha256": "dc62d76eb3fa73cf1df33236bea8257306ef108d5d7d12fc3488597f05dfd922",
@@ -33,5 +33,5 @@
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "fb158bf191f6be16e4c048beb62f04b84afd0c1cd4c374921642c16033da5d6c"
+  "manifest_hash": "5e4a1a17eeade0c9671e05383601f5161d748dbea2fc9cd1284983c897749260"
 }

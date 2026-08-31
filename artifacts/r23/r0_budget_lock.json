@@ -1,0 +1,180 @@
+{
+  "schema_version": "r23/r0/budget_lock/1.0.0",
+  "scope": "per target task, per arm, per frozen stream order",
+  "status": "CREDENTIAL_FREE_CONTRACT_FROZEN_NO_PAID_EXECUTION",
+  "common_hard_envelope": {
+    "mini_swe_agent_scaffold_step_cap": 250,
+    "solver_calls": 250,
+    "reserved_extraction_calls": 4,
+    "total_model_calls": 254,
+    "solver_input_tokens": 1000000,
+    "reserved_extraction_input_tokens": 64000,
+    "total_input_tokens": 1064000,
+    "solver_output_tokens": 100000,
+    "reserved_extraction_output_tokens": 8192,
+    "total_output_tokens": 108192,
+    "memory_injection_tokens": 2048
+  },
+  "equality_proof": {
+    "solver_step_cap_values_across_AR0_AR5": [
+      250
+    ],
+    "solver_call_hard_cap_values_across_AR0_AR5": [
+      250
+    ],
+    "total_call_hard_cap_values_across_AR0_AR5": [
+      254
+    ],
+    "total_input_token_hard_cap_values_across_AR0_AR5": [
+      1064000
+    ],
+    "total_output_token_hard_cap_values_across_AR0_AR5": [
+      108192
+    ],
+    "explanation": "All arms retain the exact upstream 250-step solver cap and the same 254-call/1,064,000-input/108,192-output common envelope. AR0/AR1 cannot spend extraction slots; AR2 can spend one; AR3-AR5 can spend four. Unused extraction capacity remains reserved and cannot be converted into extra solver steps, so neither no-memory arm receives extra solving budget nor memory arms exceed the common total envelope."
+  },
+  "expected_basis": {
+    "solver_calls": 40,
+    "solver_input_tokens": 250000,
+    "solver_output_tokens": 25000,
+    "per_extraction_call_input_tokens": 12000,
+    "per_extraction_call_output_tokens": 1024,
+    "classification": "EXPECTED_FOR_COSTING_NOT_A_LIMIT"
+  },
+  "arms": {
+    "AR0": {
+      "solver_calls_expected": 40,
+      "solver_calls_hard_cap": 250,
+      "extraction_calls_expected": 0,
+      "extraction_calls_hard_cap": 0,
+      "total_calls_expected": 40,
+      "total_calls_hard_cap": 254,
+      "solver_input_tokens_expected": 250000,
+      "solver_input_tokens_hard_cap": 1000000,
+      "extraction_input_tokens_expected": 0,
+      "extraction_input_tokens_hard_cap": 0,
+      "total_input_tokens_expected": 250000,
+      "total_input_tokens_hard_cap": 1064000,
+      "solver_output_tokens_expected": 25000,
+      "solver_output_tokens_hard_cap": 100000,
+      "extraction_output_tokens_expected": 0,
+      "extraction_output_tokens_hard_cap": 0,
+      "total_output_tokens_expected": 25000,
+      "total_output_tokens_hard_cap": 108192,
+      "contract_sha256": "51ce05170549f303284f0ccd40751e2bddf3fb9e5a5f6ac4fc6612c46afb39b2"
+    },
+    "AR1": {
+      "solver_calls_expected": 40,
+      "solver_calls_hard_cap": 250,
+      "extraction_calls_expected": 0,
+      "extraction_calls_hard_cap": 0,
+      "total_calls_expected": 40,
+      "total_calls_hard_cap": 254,
+      "solver_input_tokens_expected": 250000,
+      "solver_input_tokens_hard_cap": 1000000,
+      "extraction_input_tokens_expected": 0,
+      "extraction_input_tokens_hard_cap": 0,
+      "total_input_tokens_expected": 250000,
+      "total_input_tokens_hard_cap": 1064000,
+      "solver_output_tokens_expected": 25000,
+      "solver_output_tokens_hard_cap": 100000,
+      "extraction_output_tokens_expected": 0,
+      "extraction_output_tokens_hard_cap": 0,
+      "total_output_tokens_expected": 25000,
+      "total_output_tokens_hard_cap": 108192,
+      "contract_sha256": "5a06bf5355cac39ad5d65b59bc31ce291dc4415b37bbce5d9665a9d1a77d3d8e"
+    },
+    "AR2": {
+      "solver_calls_expected": 40,
+      "solver_calls_hard_cap": 250,
+      "extraction_calls_expected": 1,
+      "extraction_calls_hard_cap": 1,
+      "total_calls_expected": 41,
+      "total_calls_hard_cap": 254,
+      "solver_input_tokens_expected": 250000,
+      "solver_input_tokens_hard_cap": 1000000,
+      "extraction_input_tokens_expected": 12000,
+      "extraction_input_tokens_hard_cap": 16000,
+      "total_input_tokens_expected": 262000,
+      "total_input_tokens_hard_cap": 1064000,
+      "solver_output_tokens_expected": 25000,
+      "solver_output_tokens_hard_cap": 100000,
+      "extraction_output_tokens_expected": 1024,
+      "extraction_output_tokens_hard_cap": 2048,
+      "total_output_tokens_expected": 26024,
+      "total_output_tokens_hard_cap": 108192,
+      "contract_sha256": "1fa6fa96f88f25387b3acf93efc247c5293fbe8e4db73f2d3d5c566fe59187ec"
+    },
+    "AR3": {
+      "solver_calls_expected": 40,
+      "solver_calls_hard_cap": 250,
+      "extraction_calls_expected": 4,
+      "extraction_calls_hard_cap": 4,
+      "total_calls_expected": 44,
+      "total_calls_hard_cap": 254,
+      "solver_input_tokens_expected": 250000,
+      "solver_input_tokens_hard_cap": 1000000,
+      "extraction_input_tokens_expected": 48000,
+      "extraction_input_tokens_hard_cap": 64000,
+      "total_input_tokens_expected": 298000,
+      "total_input_tokens_hard_cap": 1064000,
+      "solver_output_tokens_expected": 25000,
+      "solver_output_tokens_hard_cap": 100000,
+      "extraction_output_tokens_expected": 4096,
+      "extraction_output_tokens_hard_cap": 8192,
+      "total_output_tokens_expected": 29096,
+      "total_output_tokens_hard_cap": 108192,
+      "contract_sha256": "c92d402bdfed6f01796cc31ad5379db08b2edbef2619c592ab654556bba8e40b"
+    },
+    "AR4": {
+      "solver_calls_expected": 40,
+      "solver_calls_hard_cap": 250,
+      "extraction_calls_expected": 4,
+      "extraction_calls_hard_cap": 4,
+      "total_calls_expected": 44,
+      "total_calls_hard_cap": 254,
+      "solver_input_tokens_expected": 250000,
+      "solver_input_tokens_hard_cap": 1000000,
+      "extraction_input_tokens_expected": 48000,
+      "extraction_input_tokens_hard_cap": 64000,
+      "total_input_tokens_expected": 298000,
+      "total_input_tokens_hard_cap": 1064000,
+      "solver_output_tokens_expected": 25000,
+      "solver_output_tokens_hard_cap": 100000,
+      "extraction_output_tokens_expected": 4096,
+      "extraction_output_tokens_hard_cap": 8192,
+      "total_output_tokens_expected": 29096,
+      "total_output_tokens_hard_cap": 108192,
+      "contract_sha256": "c6ab946dcb9044f234ff9e41a44cb48ec0d9095c7a3ec472546a2aba1a2ed55a"
+    },
+    "AR5": {
+      "solver_calls_expected": 40,
+      "solver_calls_hard_cap": 250,
+      "extraction_calls_expected": 4,
+      "extraction_calls_hard_cap": 4,
+      "total_calls_expected": 44,
+      "total_calls_hard_cap": 254,
+      "solver_input_tokens_expected": 250000,
+      "solver_input_tokens_hard_cap": 1000000,
+      "extraction_input_tokens_expected": 48000,
+      "extraction_input_tokens_hard_cap": 64000,
+      "total_input_tokens_expected": 298000,
+      "total_input_tokens_hard_cap": 1064000,
+      "solver_output_tokens_expected": 25000,
+      "solver_output_tokens_hard_cap": 100000,
+      "extraction_output_tokens_expected": 4096,
+      "extraction_output_tokens_hard_cap": 8192,
+      "total_output_tokens_expected": 29096,
+      "total_output_tokens_hard_cap": 108192,
+      "contract_sha256": "8b1cc71d51c7a942a384b23c1bea5aa32fa79e6be4d3ba07c481c515a00a924f"
+    }
+  },
+  "accounting_rules": [
+    "A solver request consumes one Mini-SWE-Agent step and one solver model-call slot.",
+    "A same-reader extraction request consumes one extraction model-call slot and its own input/output tokens.",
+    "Extraction calls and tokens also count toward the common total envelope.",
+    "Fake/replay invocations occupy accounted call slots for contract testing but make zero external and zero paid model calls.",
+    "Expected values drive cost estimates; hard caps are enforced fail-closed by BudgetLedger and are never substituted for expected use."
+  ],
+  "paid_model_calls_at_lock": 0
+}

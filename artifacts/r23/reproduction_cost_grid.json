@@ -1,0 +1,314 @@
+{
+  "date": "2026-08-31",
+  "expected_vs_hard_cap": {
+    "common_equal_envelope": "same reserved envelope for every arm; unused extraction capacity is not spendable by solver",
+    "expected": "planning estimate from r0_budget_lock expected_basis; not a limit",
+    "hard_cap": "maximum spendable under per-arm fail-closed call/token ledgers"
+  },
+  "official_grader_smoke": {
+    "conditions_per_target": [
+      "GOLD",
+      "NOOP"
+    ],
+    "frozen_targets": 12,
+    "grader_containers_executed": 0,
+    "status": "PENDING_SEPARATE_EXEC_APPROVAL",
+    "task_condition_grades_planned": 24
+  },
+  "paid_model_calls_at_generation": 0,
+  "plans": {
+    "EXACT_PAPER_SCALE_FULL_ABLATION": {
+      "arms": [
+        "AR0",
+        "AR1",
+        "AR2",
+        "AR3",
+        "AR4",
+        "AR5"
+      ],
+      "cost_usd": {
+        "enforced_spendable_hard_cap": {
+          "cheapest_gpt-4o-mini": {
+            "extraction": 70.7616,
+            "solving": 1890.0,
+            "total": 1960.7616
+          },
+          "middle_gpt-4o": {
+            "extraction": 1179.36,
+            "solving": 31500.0,
+            "total": 32679.36
+          },
+          "stronger_claude-sonnet": {
+            "extraction": 1535.04,
+            "solving": 40500.0,
+            "total": 42035.04
+          }
+        },
+        "expected": {
+          "cheapest_gpt-4o-mini": {
+            "extraction": 47.0808,
+            "solving": 472.5,
+            "total": 519.5808
+          },
+          "middle_gpt-4o": {
+            "extraction": 784.68,
+            "solving": 7875.0,
+            "total": 8659.68
+          },
+          "stronger_claude-sonnet": {
+            "extraction": 1001.52,
+            "solving": 10125.0,
+            "total": 11126.52
+          }
+        }
+      },
+      "grader_containers_planned": 9000,
+      "model_calls": {
+        "common_equal_envelope_slots": 2286000,
+        "enforced_spendable_hard_cap": {
+          "extraction": 19500,
+          "solving": 2250000,
+          "total": 2269500
+        },
+        "expected": {
+          "extraction": 19500,
+          "solving": 360000,
+          "total": 379500
+        }
+      },
+      "statistical_unique_task_n": 500,
+      "stream_order_repeats": 3,
+      "stream_orders_are_independent_task_n": false,
+      "task_runs": 9000,
+      "task_runs_by_arm": {
+        "AR0": 1500,
+        "AR1": 1500,
+        "AR2": 1500,
+        "AR3": 1500,
+        "AR4": 1500,
+        "AR5": 1500
+      },
+      "tokens": {
+        "enforced_spendable_hard_cap": {
+          "extraction_calls": 19500,
+          "extraction_input_tokens": 312000000,
+          "extraction_output_tokens": 39936000,
+          "solver_calls": 2250000,
+          "solver_input_tokens": 9000000000,
+          "solver_output_tokens": 900000000,
+          "total_input_tokens": 9312000000,
+          "total_model_calls": 2269500,
+          "total_output_tokens": 939936000
+        },
+        "expected": {
+          "extraction_calls": 19500,
+          "extraction_input_tokens": 234000000,
+          "extraction_output_tokens": 19968000,
+          "solver_calls": 360000,
+          "solver_input_tokens": 2250000000,
+          "solver_output_tokens": 225000000,
+          "total_input_tokens": 2484000000,
+          "total_model_calls": 379500,
+          "total_output_tokens": 244968000
+        }
+      }
+    },
+    "EXACT_PAPER_SCALE_PRIMARY": {
+      "arms": [
+        "AR0",
+        "AR2",
+        "AR3"
+      ],
+      "cost_usd": {
+        "enforced_spendable_hard_cap": {
+          "cheapest_gpt-4o-mini": {
+            "extraction": 27.216,
+            "solving": 945.0,
+            "total": 972.216
+          },
+          "middle_gpt-4o": {
+            "extraction": 453.6,
+            "solving": 15750.0,
+            "total": 16203.6
+          },
+          "stronger_claude-sonnet": {
+            "extraction": 590.4,
+            "solving": 20250.0,
+            "total": 20840.4
+          }
+        },
+        "expected": {
+          "cheapest_gpt-4o-mini": {
+            "extraction": 18.108,
+            "solving": 236.25,
+            "total": 254.358
+          },
+          "middle_gpt-4o": {
+            "extraction": 301.8,
+            "solving": 3937.5,
+            "total": 4239.3
+          },
+          "stronger_claude-sonnet": {
+            "extraction": 385.2,
+            "solving": 5062.5,
+            "total": 5447.7
+          }
+        }
+      },
+      "grader_containers_planned": 4500,
+      "model_calls": {
+        "common_equal_envelope_slots": 1143000,
+        "enforced_spendable_hard_cap": {
+          "extraction": 7500,
+          "solving": 1125000,
+          "total": 1132500
+        },
+        "expected": {
+          "extraction": 7500,
+          "solving": 180000,
+          "total": 187500
+        }
+      },
+      "statistical_unique_task_n": 500,
+      "stream_order_repeats": 3,
+      "stream_orders_are_independent_task_n": false,
+      "task_runs": 4500,
+      "task_runs_by_arm": {
+        "AR0": 1500,
+        "AR2": 1500,
+        "AR3": 1500
+      },
+      "tokens": {
+        "enforced_spendable_hard_cap": {
+          "extraction_calls": 7500,
+          "extraction_input_tokens": 120000000,
+          "extraction_output_tokens": 15360000,
+          "solver_calls": 1125000,
+          "solver_input_tokens": 4500000000,
+          "solver_output_tokens": 450000000,
+          "total_input_tokens": 4620000000,
+          "total_model_calls": 1132500,
+          "total_output_tokens": 465360000
+        },
+        "expected": {
+          "extraction_calls": 7500,
+          "extraction_input_tokens": 90000000,
+          "extraction_output_tokens": 7680000,
+          "solver_calls": 180000,
+          "solver_input_tokens": 1125000000,
+          "solver_output_tokens": 112500000,
+          "total_input_tokens": 1215000000,
+          "total_model_calls": 187500,
+          "total_output_tokens": 120180000
+        }
+      }
+    },
+    "SCALED_PROTOCOL_REPLICATION": {
+      "arms": [
+        "AR0",
+        "AR2",
+        "AR3"
+      ],
+      "cost_usd": {
+        "enforced_spendable_hard_cap": {
+          "cheapest_gpt-4o-mini": {
+            "extraction": 2.17728,
+            "solving": 75.6,
+            "total": 77.77728
+          },
+          "middle_gpt-4o": {
+            "extraction": 36.288,
+            "solving": 1260.0,
+            "total": 1296.288
+          },
+          "stronger_claude-sonnet": {
+            "extraction": 47.232,
+            "solving": 1620.0,
+            "total": 1667.232
+          }
+        },
+        "expected": {
+          "cheapest_gpt-4o-mini": {
+            "extraction": 1.44864,
+            "solving": 18.9,
+            "total": 20.34864
+          },
+          "middle_gpt-4o": {
+            "extraction": 24.144,
+            "solving": 315.0,
+            "total": 339.144
+          },
+          "stronger_claude-sonnet": {
+            "extraction": 30.816,
+            "solving": 405.0,
+            "total": 435.816
+          }
+        }
+      },
+      "grader_containers_planned": 360,
+      "model_calls": {
+        "common_equal_envelope_slots": 91440,
+        "enforced_spendable_hard_cap": {
+          "extraction": 600,
+          "solving": 90000,
+          "total": 90600
+        },
+        "expected": {
+          "extraction": 600,
+          "solving": 14400,
+          "total": 15000
+        }
+      },
+      "statistical_unique_task_n": 120,
+      "stream_order_repeats": 1,
+      "stream_orders_are_independent_task_n": false,
+      "task_runs": 360,
+      "task_runs_by_arm": {
+        "AR0": 120,
+        "AR2": 120,
+        "AR3": 120
+      },
+      "tokens": {
+        "enforced_spendable_hard_cap": {
+          "extraction_calls": 600,
+          "extraction_input_tokens": 9600000,
+          "extraction_output_tokens": 1228800,
+          "solver_calls": 90000,
+          "solver_input_tokens": 360000000,
+          "solver_output_tokens": 36000000,
+          "total_input_tokens": 369600000,
+          "total_model_calls": 90600,
+          "total_output_tokens": 37228800
+        },
+        "expected": {
+          "extraction_calls": 600,
+          "extraction_input_tokens": 7200000,
+          "extraction_output_tokens": 614400,
+          "solver_calls": 14400,
+          "solver_input_tokens": 90000000,
+          "solver_output_tokens": 9000000,
+          "total_input_tokens": 97200000,
+          "total_model_calls": 15000,
+          "total_output_tokens": 9614400
+        }
+      }
+    }
+  },
+  "prices_per_million_tokens_usd": {
+    "cheapest_gpt-4o-mini": {
+      "input": 0.15,
+      "output": 0.6
+    },
+    "middle_gpt-4o": {
+      "input": 2.5,
+      "output": 10.0
+    },
+    "stronger_claude-sonnet": {
+      "input": 3.0,
+      "output": 15.0
+    }
+  },
+  "rate_snapshot_status": "INHERITED_B0_PLANNING_RATES_REVERIFY_BEFORE_ANY_PAID_APPROVAL",
+  "schema_version": "r23/reproduction_cost_grid/2.0.0",
+  "statistical_note": "Three frozen stream orders are repeated measurements/order sensitivity over the same tasks; full-scale paired task N is 500, not 1500."
+}

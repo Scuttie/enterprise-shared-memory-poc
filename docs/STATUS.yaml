@@ -1,6 +1,7 @@
-# docs/STATUS.yaml — SINGLE MACHINE-READABLE SOURCE OF TRUTH
-# Generated/maintained under P6/R19 (codex/utility-router-v0.3). CI (ci-docs) fails if user-facing
-# docs contradict this file. Do NOT hand-edit README/ARCHITECTURE claims without updating this first.
+# docs/STATUS.yaml — PRODUCT STATUS ONLY
+# Generated/maintained under P6/R19 (codex/utility-router-v0.3). R23 experiment gates, workflow inventory,
+# coverage, and endpoints live in the separate R23 research seal; they must not be written into this product file.
+# CI (ci-docs) fails if product-facing docs contradict this file.
 schema_version: 1
 last_verified_commit: "1de38558636e8bf6ac49653776fdfb7bbc1e6bfe"
 
@@ -11,7 +12,7 @@ company_handoff_status: READY          # fresh-clone + offline demo pass; NOT st
 production_certification_status: NOT_CLAIMED
 
 migration_head: "0014"                 # experience layer (P6/R19); 13 tables
-workflow_count: 85                     # +ci-r22-p092-resume (P0.9.2, dispatch/exec-gated)
+workflow_count: 85                     # frozen product baseline; R23 workflows live only in the R23 research seal
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)

@@ -24,7 +24,7 @@ def load():
     except Exception:
         d = {}
         for k in ("project_version", "service_status", "research_status", "company_handoff_status",
-                  "production_certification_status", "migration_head", "workflow_count", "utility_router_result"):
+                  "production_certification_status", "migration_head", "utility_router_result"):
             m = re.search(r"^%s:\s*\"?([^\"#\n]+?)\"?\s*(?:#.*)?$" % k, txt, re.M)
             if m:
                 d[k] = m.group(1).strip()

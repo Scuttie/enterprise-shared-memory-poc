@@ -1,0 +1,26 @@
+name: ci-r23-benchmark
+# R23-B0 §12 — credential-free verification of the benchmark/eligibility foundation. NO docker, NO model, NO secret.
+on:
+  push:
+    branches: [codex/r23-semantic-subtask-graph-memory]
+    paths: ['artifacts/r23/**', 'scripts/r23_*.py', 'tests/r23/**', 'experiments/r23/**', '.github/workflows/ci-r23-*.yml']
+  pull_request:
+    branches: [codex/r22-stage-aligned-memory]
+permissions:
+  contents: read
+jobs:
+  r23-b0:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -q pytest
+      - name: B0 invariants + gradeability adapter (credential-free)
+        run: |
+          python -m pytest tests/r23 -q
+      - name: Assert zero paid/model calls in R23 code paths
+        run: |
+          ! grep -rIlE "OPENAI_API_KEY|DEEPSEEK_API_KEY|ANTHROPIC_API_KEY" scripts/r23_*.py experiments/r23 || \
+            { echo "secret reference in credential-free R23 code"; exit 1; }
+          echo "paid/model calls in B0 code paths = 0"

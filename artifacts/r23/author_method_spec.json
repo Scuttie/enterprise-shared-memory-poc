@@ -1,0 +1,134 @@
+{
+  "schema_version": "r23/r0/author_method_spec/1.0.0",
+  "experiment": "REALBENCH_R23_SEMANTIC_SUBTASK_GRAPH_V1 / track R23-R",
+  "status": "CLEAN_ROOM_CREDENTIAL_FREE_IMPLEMENTED_AND_TESTED_LIVE_EXECUTION_PENDING",
+  "source": "arXiv:2602.21611v1; author code and verbatim prompts unavailable",
+  "confirmed_from_paper": {
+    "functional_categories": [
+      "ANALYZE",
+      "REPRODUCE",
+      "EDIT",
+      "VERIFY"
+    ],
+    "subtask_intent": {
+      "category_z": "one of the four coarse categories",
+      "description_d": {
+        "objective": "string",
+        "keywords": "list"
+      }
+    },
+    "memory_entry": "m=(z,d,e), where e is an abstracted success pattern or failure-avoidance experience",
+    "retrieval": "category hard filter, cosine semantic rank, forced Top-1 without threshold/abstention, then inject e at subtask start",
+    "update": "evaluate each completed local trajectory; extract success pattern or failure avoidance; append memory",
+    "streaming": "empty per arm/order; target experience becomes visible only after target completion; no self-memory; extraction is accounted",
+    "benchmark": "SWE-bench Verified",
+    "temperature": 0,
+    "orders": 3,
+    "metric": "Avg. Pass@1 over frozen orders; Best@3 secondary"
+  },
+  "actual_payload_route": {
+    "entry_point": "scripts/r23_r0_run.py",
+    "runner": "experiments/r23/r0_runtime.py:R0Runner.run_stream",
+    "solve_builder": "experiments/r23/author_method.py:build_solve_payload",
+    "extraction_builder": "experiments/r23/author_method.py:build_extraction_payload",
+    "extraction_parser": "experiments/r23/author_method.py:parse_extracted_memory",
+    "raw_evidence": "<output>/streams/<order>/<arm>/tasks/<index_instance>/raw_evidence/{requests,responses,errors}.jsonl",
+    "checkpoint": "<output>/streams/<order>/<arm>/checkpoint.json",
+    "enabled_readers_before_EXEC": [
+      "fake",
+      "replay"
+    ],
+    "live_or_paid_reader_enabled": false,
+    "docker_enabled": false
+  },
+  "reproduction_arms": {
+    "AR0": {
+      "name": "VANILLA",
+      "solve_payload": "exact pinned Mini-SWE-Agent scaffold; r23_control=null",
+      "memory": "none",
+      "extraction": "none"
+    },
+    "AR1": {
+      "name": "STRUCTURED_ONLY",
+      "solve_payload": "current coarse category, local intent, allowed transition signals",
+      "memory": "none",
+      "extraction": "none"
+    },
+    "AR2": {
+      "name": "INSTANCE_MEMORY",
+      "solve_payload": "whole-task intent plus forced Top-1 prior completed whole-task experience",
+      "memory": "whole-task m=(WHOLE_TASK,d,e)",
+      "extraction": "one same-reader whole-task success/failure extraction after task completion"
+    },
+    "AR3": {
+      "name": "AUTHOR_COARSE_SUBTASK_MEMORY",
+      "solve_payload": "coarse category/local intent plus category-filtered forced Top-1 experience",
+      "memory": "coarse m=(z,d,e); no semantic atom or DAG",
+      "extraction": "one same-reader success/failure extraction per completed coarse category; buffered until task completion"
+    },
+    "AR4": {
+      "name": "NO_CATEGORY_FILTER",
+      "solve_payload": "same as AR3 except global forced Top-1 over completed coarse entries",
+      "memory": "coarse m=(z,d,e); no semantic atom or DAG",
+      "extraction": "same as AR3"
+    },
+    "AR5": {
+      "name": "RAW_COARSE_SUBTASK_TRAJECTORY",
+      "solve_payload": "AR3 category/local query and token-matched injection cap",
+      "memory": "bounded raw local trajectory after same-reader success/failure classification",
+      "extraction": "one classification call per completed coarse category; abstraction text is discarded"
+    }
+  },
+  "category_transitions": {
+    "ANALYZE": "ANALYSIS_COMPLETE -> REPRODUCE",
+    "REPRODUCE": "REPRODUCTION_COMPLETE -> EDIT",
+    "EDIT": "EDIT_COMPLETE -> VERIFY",
+    "VERIFY": "VERIFICATION_PASSED or VERIFICATION_FAILED -> COMPLETE",
+    "failure": "TASK_FAILED -> COMPLETE from any category",
+    "continuation": "CONTINUE remains in the current category"
+  },
+  "online_isolation": {
+    "visible_memory": "strict completed-target prefix within one arm and one order",
+    "current_target_extractions": "buffered and invisible until task completion",
+    "self_memory": "prohibited and checked in state, retrieval, payload, result",
+    "resume": "task checkpoint plus request/response call journal; an orphan request fails closed"
+  },
+  "reproduction_estimands": {
+    "R-Q1": "AR3 - AR0",
+    "R-Q2": "AR3 - AR2",
+    "R-Q3": "AR3 - AR1"
+  },
+  "reproduction_labels": {
+    "AUTHOR_METHOD_REPRODUCED": "AR3 > AR0 and AR2; preregistered CI/stat rule passes; no integrity failure; direction stable across frozen orders",
+    "AUTHOR_METHOD_DIRECTIONAL": "point estimate positive but CI includes zero",
+    "AUTHOR_METHOD_NOT_REPRODUCED": "AR3 <= controls or direction unstable"
+  },
+  "separation": {
+    "R0_representation": "coarse author-method memory only",
+    "proposed_method_implementation_gates": [
+      "A0",
+      "G0",
+      "F1"
+    ],
+    "AR3_may_include_proposed_method_outputs": false,
+    "reproduction_and_proposed_method_results_may_be_pooled": false
+  },
+  "locks": {
+    "scaffold": "artifacts/r23/agent_scaffold_lock.json",
+    "clean_room_prompts_runtime": "artifacts/r23/r0_cleanroom_lock.json",
+    "budget": "artifacts/r23/r0_budget_lock.json",
+    "credential_free_e2e": "artifacts/r23/r0_credential_free_e2e_bundle.json"
+  },
+  "not_final_endpoint": true,
+  "remaining": [
+    "B0.1 chronology",
+    "official grader smoke execution",
+    "A0",
+    "G0",
+    "O0",
+    "F1",
+    "S0",
+    "CF"
+  ],
+  "paid_model_calls": 0
+}

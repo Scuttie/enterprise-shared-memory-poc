@@ -1,0 +1,8 @@
+{"source_available_at":"2013-01-26T04:58:20Z","source_available_at_basis":"FIX_PR_MERGED_AT","source_instance_id":"psf__requests-1142","target_instance_id":"psf__requests-1724","target_start_at":"2013-11-04T05:38:31Z"}
+{"source_available_at":"2013-01-26T04:58:20Z","source_available_at_basis":"FIX_PR_MERGED_AT","source_instance_id":"psf__requests-1142","target_instance_id":"psf__requests-1921","target_start_at":"2014-02-14T15:18:04Z"}
+{"source_available_at":"2013-01-26T04:58:20Z","source_available_at_basis":"FIX_PR_MERGED_AT","source_instance_id":"psf__requests-1142","target_instance_id":"psf__requests-2317","target_start_at":"2014-10-31T22:13:00Z"}
+{"source_available_at":"2013-11-04T21:58:12Z","source_available_at_basis":"FIX_PR_MERGED_AT","source_instance_id":"psf__requests-1724","target_instance_id":"psf__requests-1921","target_start_at":"2014-02-14T15:18:04Z"}
+{"source_available_at":"2013-11-04T21:58:12Z","source_available_at_basis":"FIX_PR_MERGED_AT","source_instance_id":"psf__requests-1724","target_instance_id":"psf__requests-2317","target_start_at":"2014-10-31T22:13:00Z"}
+{"source_available_at":"2013-12-04T01:33:59Z","source_available_at_basis":"FIX_PR_MERGED_AT","source_instance_id":"psf__requests-1766","target_instance_id":"psf__requests-1921","target_start_at":"2014-02-14T15:18:04Z"}
+{"source_available_at":"2013-12-04T01:33:59Z","source_available_at_basis":"FIX_PR_MERGED_AT","source_instance_id":"psf__requests-1766","target_instance_id":"psf__requests-2317","target_start_at":"2014-10-31T22:13:00Z"}
+{"source_available_at":"2014-03-03T18:13:13Z","source_available_at_basis":"FIX_PR_MERGED_AT","source_instance_id":"psf__requests-1921","target_instance_id":"psf__requests-2317","target_start_at":"2014-10-31T22:13:00Z"}

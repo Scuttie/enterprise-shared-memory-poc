@@ -1,0 +1,56 @@
+{
+  "schema_version": "r23/r0/mini_swe_agent_lock/1.0.0",
+  "status": "FROZEN_FROM_PUBLIC_SOURCE_NO_EXECUTION",
+  "scaffold_repo": "https://github.com/SWE-agent/mini-swe-agent",
+  "commit": "25941c89cfbc91eb40b3f8756348c91d9977d57e",
+  "default_branch": "main",
+  "license": "MIT",
+  "verified_checkout_head": "25941c89cfbc91eb40b3f8756348c91d9977d57e",
+  "config_path": "src/minisweagent/config/benchmarks/swebench.yaml",
+  "config_git_blob": "106decd160e72e5164e29d15d23da354c29c309d",
+  "config_sha256": "0389e74fe7d730e384b82bbdabf5d58c307299e676f0c6453b9946116708033d",
+  "system_prompt_sha256": "06f6dd6ea8671220762ff4a4916bd0aeb4fb2adfb084469a803e2fa841018efe",
+  "instance_prompt_sha256": "8826e3fbabc7733ad4d118654bbd392c2a4e0f1931d55f9c62235d33bd494196",
+  "observation_prompt_sha256": "4cd54626f03be2dd572eeffbe31d9421d73c167d4feb79dc3c1b4336d0568e31",
+  "format_error_prompt_sha256": "0f35cfbd448dd46e17e80b571d346256d4a75cd5ceffafc5c0d088ed0e1c0d9a",
+  "tool_source_path": "src/minisweagent/models/utils/actions_toolcall.py",
+  "tool_source_git_blob": "8209113c4a1663d34468be6106b5661ec9e0be62",
+  "tool_source_file_sha256": "a88df8e2819eea45f6a5b2478dbd387062eaef0114c9c4540c1d15045f044ce6",
+  "tool_schema_canonical_sha256": "fa3f9e719935ffb5dbdccb5f58ed0a413553c7ceb651f8a6afd0ac8f01783cc4",
+  "tool_schema_source_sha256": "d258e51f106d3a72e9768c26463ee940dbf5fbca7edfad755336131063ffb2ed",
+  "tool_call_parser": "parse_toolcall_actions",
+  "tool_call_parser_source_sha256": "14236747cf9a60fe129ca6579915756c7743000201b60ec9ecdca6afcfb7d502",
+  "patch_parser_source_path": "src/minisweagent/environments/docker.py",
+  "patch_parser_source_git_blob": "42e65e35a9af9e126d7e6846060922f8c95b2d5a",
+  "patch_parser_source_file_sha256": "3ef8fd13439f8b10cb9e72199308df0cf4f38f797216a1b615fb8d7d0caba9df",
+  "patch_parser": "DockerEnvironment._check_finished",
+  "patch_parser_source_sha256": "b47cd7bf6a7c67342ed2567597e5b520d60c0ef6e01ff65b4833ecbb1ca931d3",
+  "agent_loop_source_path": "src/minisweagent/agents/default.py",
+  "agent_loop_source_git_blob": "ca310e37d7c61888c576f73f5e1790ac769407b1",
+  "agent_loop_source_file_sha256": "b921f0223dc191de398a518df6279bc54ff792582c150476abc2d19c5715be89",
+  "default_step_cap": 250,
+  "default_cost_limit_usd": 3.0,
+  "environment": {
+    "cwd": "/testbed",
+    "command_timeout_seconds": 60,
+    "interpreter": [
+      "bash",
+      "-c"
+    ],
+    "environment_class": "docker"
+  },
+  "mount_and_image_route": {
+    "batch_source_path": "src/minisweagent/run/benchmarks/swebench.py",
+    "batch_source_git_blob": "7ecaff021e389cd7d84891b86449754c1c4f0b63",
+    "batch_source_file_sha256": "1f83083034c039238d8a964fd6aa8d5138cf21e4fd8b707f84d6235d76992351",
+    "image_name_function_source_sha256": "97d99600b8adcd2c453e366cda6ad3ba2ffcf7e536010a3c28c48d5a1566b8ce",
+    "repo_working_directory": "/testbed"
+  },
+  "verification": {
+    "script": "scripts/r23_r0_verify_scaffold.py",
+    "network_required": false,
+    "model_calls": 0,
+    "docker_calls": 0
+  },
+  "boundary": "Hashes freeze upstream bytes and parsed prompt/tool contracts. R23 control and extraction prompts are separately frozen clean-room additions, not author prompts."
+}

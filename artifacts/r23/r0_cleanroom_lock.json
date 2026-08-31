@@ -1,0 +1,89 @@
+{
+  "schema_version": "r23/r0/cleanroom_lock/1.0.0",
+  "status": "CREDENTIAL_FREE_IMPLEMENTED_AND_TESTED_LIVE_MODEL_EXECUTION_NOT_APPROVED",
+  "track": "R23-R",
+  "implementation": {
+    "coarse_method": "experiments/r23/author_method.py",
+    "runtime": "experiments/r23/r0_runtime.py",
+    "entry_point": "scripts/r23_r0_run.py",
+    "scaffold_verifier": "scripts/r23_r0_verify_scaffold.py",
+    "reader_modes_enabled": [
+      "fake",
+      "replay"
+    ],
+    "live_reader_mode_enabled": false,
+    "docker_mode_enabled": false
+  },
+  "clean_room_prompt_hashes": {
+    "structured_control_prompt_sha256": "22f0e3027460c4688eb956cd269608f194ed4a7d3ec73dc4d6848589f0e2f9c0",
+    "memory_injection_prompt_sha256": "47aa90350b461426b0e140d5160f7fa745dc6e5ba27b01a2f6b88886a86b9425",
+    "subtask_extraction_prompt_sha256": "9bc866dd6489a94c4a1515699876f43d4d3738e8a1bd117e8d12fa86c327df3a",
+    "instance_extraction_prompt_sha256": "68b2fe23d01fee6f8ca9c11036e454e0cd1af001da9f704d09aa98bfc2d9056b",
+    "raw_trajectory_policy_sha256": "e2e3b599d899c9ed5ed4d2acb3619e7ef07dba60adfb8725a9db1c18e75107dc"
+  },
+  "payload_and_transition_hashes": {
+    "arms_canonical_sha256": "7db586923c0389a8896e56d6ce5673397b9a737076cdf5ce8eea9b69244782b4",
+    "transitions_canonical_sha256": "b8b16d8e2319255c352af701ca99ddd0a9378c57893fbf08b9677232b4ac86ec",
+    "solve_payload_builder_source_sha256": "66e08ddb32fe92ece4bcb2f9175861974a40095cd24d1391e71fade93c353d7d",
+    "extraction_payload_builder_source_sha256": "7065fe9af637b20db4fb4a0d8b875cc0d08644410c1d548cf8b4a773524ba979",
+    "extraction_parser_source_sha256": "44c8c4824ced942f33a64260195330d853f361459a4f1f3b7ac18e5810489b71"
+  },
+  "retrieval_encoder": {
+    "live_model_id": "sentence-transformers/all-MiniLM-L6-v2",
+    "live_model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "live_library_pin": "sentence-transformers==3.4.1",
+    "similarity": "cosine",
+    "selection": "forced Top-1; category hard filter in AR3/AR5; global in AR4",
+    "status": "FROZEN_NOT_LOADED_OR_EXECUTED",
+    "credential_free_test_encoder": "deterministic_fake_embed/sha256-bucket-v1",
+    "credential_free_test_encoder_source_sha256": "c63c78930a61a865d2950cb3443212bf80766289039509c5a2191178ce993518",
+    "test_encoder_prohibited_for_result_runs": true
+  },
+  "accounting": {
+    "token_preflight_estimator": "ceil(canonical-json UTF-8 bytes / 3), minimum 1",
+    "token_preflight_estimator_source_sha256": "c56526aebc33f70828ed03843ff7ab3a416f0589f33579544d3ffc571e51135a",
+    "budget_lock": "artifacts/r23/r0_budget_lock.json",
+    "solver_and_extraction_calls_recorded_separately": true,
+    "fake_and_replay_external_model_calls": 0,
+    "fake_and_replay_paid_model_calls": 0
+  },
+  "streaming_contract": {
+    "empty_at_arm_order_start": true,
+    "per_subtask_extractions_buffered_until_target_completion": true,
+    "same_target_memory_visible_mid_task": false,
+    "visible_sources": "strict completed-task prefix of that arm/order only",
+    "checkpoint_granularity": "task boundary plus durable call request/response journal",
+    "orphan_request_policy": "fail closed; do not repeat a potentially paid call"
+  },
+  "raw_evidence_contract": {
+    "request_file": "raw_evidence/requests.jsonl",
+    "response_file": "raw_evidence/responses.jsonl",
+    "error_file": "raw_evidence/errors.jsonl",
+    "request_contains_full_payload": true,
+    "response_contains_full_reader_response_and_token_usage": true,
+    "checkpoint_file": "checkpoint.json",
+    "paths_in_results_are_relative": true
+  },
+  "separation_boundary": {
+    "R0_unit": "coarse category/subtask memory m=(z,d,e)",
+    "R23_proposed_method_gates": [
+      "A0",
+      "G0",
+      "F1"
+    ],
+    "proposed_method_imported_by_R0": false,
+    "AR3_results_may_contain_proposed_method_fields": false,
+    "reproduction_and_proposed_method_may_share_a_sample_mean": false
+  },
+  "remaining_after_R0": [
+    "B0.1 chronology",
+    "official grader smoke execution",
+    "A0",
+    "G0",
+    "O0",
+    "F1",
+    "S0",
+    "CF"
+  ],
+  "paid_model_calls_at_lock": 0
+}

@@ -1,27 +1,38 @@
 {
-  "schema_version": 1,
-  "commit": "71e264d0a6fa72ef7e3b7d9b93d0020ad9a7029a",
+  "schema_version": 2,
+  "commit": "c6df9851818786046673af12c1f0d9913eccfca0",
+  "manifest_scope": "PRODUCT_HANDOFF_ONLY_NOT_TRIMEM_RESEARCH_STATE",
+  "hash_basis": "git ls-files -z (tracked files only; newline-normalized content)",
+  "trimem_research_state_authority": "artifacts/trimem_v1/freeze.json",
   "project_version": "0.3.0rc1",
-  "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) \u2014 NOT COMPANY-STAGING-CERTIFIED",
-  "source_tree_sha256": "78dcdcb05baea5a8cb4ca8a8760f3cbcd0859f7b5687dbf62589fcae15bc0f87",
-  "source_files": 109,
-  "docs_tree_sha256": "3fc38f64efa94742ab40b4057edb9b5267391a2cf83883229b34a8c07d294100",
-  "docs_files": 56,
+  "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) — NOT COMPANY-STAGING-CERTIFIED",
+  "source_tree_sha256": "3141a2d454235eacb85554fb93e115cac20935f67cef4c462ac5058690a80337",
+  "source_files": 131,
+  "docs_tree_sha256": "a36564e11e63469234523e806b728673e99a9792f267ab2b90d51835074ad95d",
+  "docs_files": 57,
   "examples_tree_sha256": "dc62d76eb3fa73cf1df33236bea8257306ef108d5d7d12fc3488597f05dfd922",
   "examples_files": 7,
-  "migration_head": "0014",
+  "migration_head": "0015",
   "key_hashes": {
-    "migrations/sql/0014_up.sql": "1f07170a9fd5452960a7570b6424a4b04c3331e99bffdb971f3280c4b693ad3b",
-    "migrations/sql/0014_up.sha256": "24fa848d457b3596a750709d49b82a21f0970cdc508bf4539485e22099cf23b8",
+    "migrations/sql/0015_up.sql": "9addb0818f73df61d56f820a4092a1a5405be3739addac9b8a12dfa33d4dc216",
+    "migrations/sql/0015_up.sha256": "d5052a39728164c26674ff91597bf7890e93670915621f3fb53c4e5af71708f2",
     "openapi_v1.json": "f7c5398bb73ddb54a744aecd12d37bd5c153ec5511d4c2bf8c7a521d999785f4",
     "pyproject.toml": "273629753a1da4562f1c27fd9b1308c85a2bd053f0bd6306780d8c80337dccf8",
     "artifacts/p6/router_policy.json": "5b28b1664cb57ffd7ed6aa5d2810f3ade8c6771338cd2c01840184c9e4515739",
     "artifacts/p6/governance_thresholds.json": "994487fbd0f3d64880668c14429096d103a5365475a9fbb9c9c43d6c8c45351e",
     "examples/company_harness/tool_schema.json": "52b94c50ceca84740192f6b4022df762d09c62cb0d5c0822b42a66a4101ce240",
-    "README.md": "d69aa29a1dc79193ebb0ce2e1efb39a548cd2e979a0536b81c70a48ee0882408",
-    "docs/STATUS.yaml": "41d59f98a91587665c50646bd45a4007e27e2b709326cf551a6087958fad9479",
+    "README.md": "40217c15e297bbc6eec179b16129d39de55b439d2b66f2b801cc3125e695b28c",
+    "docs/STATUS.yaml": "7b3ae1a7e8dc634db4bfcf41ba5ec7c8f67049ad1cf674ad55f6ae9d32abac5f",
     "THIRD_PARTY_RESEARCH_REFERENCES.json": "42523b999b509f37605dd3460e4b117a8effff7b726a38b8766a6423b48220ec"
   },
+  "rejected_if_tracked": [
+    "__pycache__",
+    "*.pyc",
+    "*.pyo",
+    "*.egg-info",
+    "build",
+    "dist"
+  ],
   "excluded": [
     "credentials",
     "private data",
@@ -29,9 +40,9 @@
     "raw trajectories",
     "upstream MemGovern code/data",
     "local qdrant/postgres/s3 state",
-    "caches/venvs/logs"
+    "untracked runtime output"
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "88fab3d7b229115824f4b770cc41fae52099d5c9177fad315745e121b8d086bb"
+  "manifest_hash": "7c22195508a64cc0fc6a13a65868d4533a11a32fec8d952f064003e7c14821b0"
 }

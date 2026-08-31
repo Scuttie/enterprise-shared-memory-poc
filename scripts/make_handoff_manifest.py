@@ -68,6 +68,15 @@ def _commit():
         return "unknown"
 
 
+def _branch():
+    try:
+        return subprocess.check_output(
+            ["git", "branch", "--show-current"], cwd=ROOT
+        ).decode().strip()
+    except Exception:
+        return ""
+
+
 def _manifest_hash(manifest):
     body = {key: value for key, value in manifest.items() if key != "manifest_hash"}
     return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
@@ -128,6 +137,9 @@ def build():
 
 def main():
     check = "--check" in sys.argv
+    if not check and _branch().startswith("codex/r23-"):
+        print("refusing to rewrite product handoff manifest from an R23 research branch")
+        return 2
     manifest = build()
     path = os.path.join(ROOT, "COMPANY_HANDOFF_MANIFEST.json")
     if check:

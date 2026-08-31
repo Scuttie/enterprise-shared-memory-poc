@@ -51,20 +51,20 @@ def db_heads():
 def main(argv):
     heads = script_heads()
     if len(heads) != 1:
-        print("MIGRATION HEAD: FAIL — expected exactly one script head, found %s" % heads)
+        print("MIGRATION HEAD: FAIL - expected exactly one script head, found %s" % heads)
         return 1
     script_head = heads[0]
 
     if "--script-only" in argv:
-        print("MIGRATION HEAD (script-only): PASS — single script head %s" % script_head)
+        print("MIGRATION HEAD (script-only): PASS - single script head %s" % script_head)
         return 0
 
     applied = db_heads()
     if applied != [script_head]:
-        print("MIGRATION HEAD: FAIL — script head %s but DB applied head %s (DB not at head?)"
+        print("MIGRATION HEAD: FAIL - script head %s but DB applied head %s (DB not at head?)"
               % (script_head, applied))
         return 1
-    print("MIGRATION HEAD: PASS — DB at script head %s" % script_head)
+    print("MIGRATION HEAD: PASS - DB at script head %s" % script_head)
     return 0
 
 

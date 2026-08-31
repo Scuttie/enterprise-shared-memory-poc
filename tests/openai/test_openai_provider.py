@@ -64,6 +64,21 @@ def test_gpt56_schema_reasoning_no_temperature():
     assert rec.input_tokens == 100 and rec.output_tokens == 50
 
 
+def test_gpt54_dated_snapshot_schema_reasoning_no_temperature():
+    c = FakeClient([FakeResp(200, ok_body(model="gpt-5.4-2026-03-05"))])
+    p = OpenAIResponsesProvider(
+        "https://fake/v1", "gpt-5.4-2026-03-05", FakeSecrets(), family="gpt5.4",
+        reasoning_effort="medium", max_retries=1, http_client=c,
+    )
+    run(p.generate(
+        ModelRequest(messages=[{"role": "user", "content": "solve X"}], max_output_tokens=2048),
+        logical_request_id="L-gpt54",
+    ))
+    body = c.calls[0]["body"]
+    assert body["reasoning"] == {"effort": "medium"}
+    assert "temperature" not in body
+
+
 def test_gpt4o_schema_temperature_no_reasoning():
     c = FakeClient([FakeResp(200, ok_body(model="gpt-4o-mini-2024-07-18"))])
     p = OpenAIResponsesProvider("https://fake/v1", "gpt-4o-mini-2024-07-18", FakeSecrets(), family="gpt4o",

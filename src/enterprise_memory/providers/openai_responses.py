@@ -4,7 +4,7 @@ retries (429/5xx + transport only; ordinary 4xx never retried), stable logical_r
 redaction. Uses the Responses API (`POST {base}/responses`).
 
 Per-family request rules (frozen by R12):
-  - GPT-5.6 family (luna/terra): reasoning={"effort": <effort>}; NO temperature; reasoning context = current turn
+  - GPT-5 reasoning family: reasoning={"effort": <effort>}; NO temperature; reasoning context = current turn
     (one response, no continuation); max_output_tokens = frozen budget.
   - GPT-4o family (mini): temperature=0; NO reasoning parameter; max_output_tokens = frozen budget.
 The system instruction, task prompt, memory placement, extraction, grader and budgets are identical across
@@ -20,7 +20,7 @@ from .base import (CodingModelProvider, ModelRequest, ModelResponse, ModelCallRe
                    ProviderError, AuthError, InvalidRequestError, ParserError)
 from .redaction import sanitize
 
-_REASONING_FAMILIES = {"gpt5.6", "gpt-5.6", "reasoning"}
+_REASONING_FAMILIES = {"gpt5", "gpt-5", "gpt5.4", "gpt-5.4", "gpt5.6", "gpt-5.6", "reasoning"}
 _NONREASONING_FAMILIES = {"gpt4o", "gpt-4o", "nonreasoning"}
 
 
@@ -37,7 +37,7 @@ class OpenAIResponsesProvider(CodingModelProvider):
         elif fam in _NONREASONING_FAMILIES:
             self._reasoning = False
         else:
-            raise ValueError("unknown model family %r (expected gpt5.6 or gpt4o)" % family)
+            raise ValueError("unknown model family %r (expected gpt5 reasoning or gpt4o)" % family)
         self._effort = reasoning_effort
         self._timeout = timeout
         self._max_retries = max_retries
@@ -51,7 +51,7 @@ class OpenAIResponsesProvider(CodingModelProvider):
                 "max_output_tokens": request.max_output_tokens}
         if self._reasoning:
             body["reasoning"] = {"effort": self._effort}
-            # NO temperature for GPT-5.6 (hard rule)
+            # NO temperature for GPT-5 reasoning models (hard rule)
         else:
             body["temperature"] = 0.0
             # NO reasoning parameter for GPT-4o mini (hard rule)

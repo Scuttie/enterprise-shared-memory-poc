@@ -873,8 +873,8 @@
       "sha256": "359661324335ad092c8b6c7786d42b0744148e2dc01d8c47e779ddd7a5c4f953"
     },
     "tests/openai/test_openai_provider.py": {
-      "bytes": 6491,
-      "sha256": "06e0c13d2635e8359f6c39279b4f9d825f110dcdc4843bec011e91d4412b9903"
+      "bytes": 6603,
+      "sha256": "91fc3edabfda12b2c1a15ea67b961601493a6be42680b36c240794bb207a356c"
     },
     "tests/trimem/e2e/test_full_replay.py": {
       "bytes": 20238,

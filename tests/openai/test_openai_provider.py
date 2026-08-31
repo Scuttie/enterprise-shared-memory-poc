@@ -46,7 +46,9 @@ def ok_body(model="gpt-5.6-terra", text="```python\nprint(1)\n```", rt=64):
 
 
 def run(coro):
-    return asyncio.get_event_loop().run_until_complete(coro)
+    # Each test owns its loop.  Python 3.11 no longer creates an implicit
+    # replacement after another suite closes the process-global loop.
+    return asyncio.run(coro)
 
 
 def test_gpt56_schema_reasoning_no_temperature():

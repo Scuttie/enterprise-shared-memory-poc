@@ -1,0 +1,45 @@
+{
+  "branch_policy": {
+    "id": 58766765,
+    "name": "codex/trimem-coder-v1",
+    "type": "branch"
+  },
+  "configured_before_sentinel": true,
+  "deployment_branch_policy": {
+    "custom_branch_policies": true,
+    "protected_branches": false
+  },
+  "environment": {
+    "can_admins_bypass": false,
+    "id": 20971935382,
+    "name": "trimem-grader-smoke-exec"
+  },
+  "observed_at_utc": "2026-09-01T02:01:40Z",
+  "protection_rule": {
+    "id": 64238011,
+    "prevent_self_review": false,
+    "reviewers": [
+      {
+        "id": 95427459,
+        "login": "Scuttie",
+        "type": "User"
+      }
+    ],
+    "type": "required_reviewers"
+  },
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "schema": "trimem/grader-smoke-environment-protection/1.0",
+  "secret_state_before_sentinel": {
+    "installed_secret_names": [],
+    "required_later": [
+      "TRIMEM_EVIDENCE_PASSPHRASE",
+      "TRIMEM_EXEC_APPROVAL_B64"
+    ]
+  },
+  "source_api_paths": [
+    "repos/Scuttie/enterprise-shared-memory-poc/environments/trimem-grader-smoke-exec",
+    "repos/Scuttie/enterprise-shared-memory-poc/environments/trimem-grader-smoke-exec/deployment-branch-policies",
+    "repos/Scuttie/enterprise-shared-memory-poc/environments/trimem-grader-smoke-exec/secrets"
+  ],
+  "status": "CONFIGURED"
+}

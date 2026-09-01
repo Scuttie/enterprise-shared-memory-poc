@@ -12,7 +12,12 @@
     "phase-specific single-use external approval plan bound to an already committed Git HEAD, freeze digest, workflow run ID, and run attempt",
     "public benchmark evaluation scope and no-redistribution policy documented; SWE-bench Verified dataset license remains undeclared and the EXEC actor must accept applicable source/project terms"
   ],
-  "current_status": "READY_IF_BENCHMARK_APPROVAL_VERIFIER_PASSES",
+  "current_status": {
+    "GRADER_EXEC_PACKAGE": "CORRECTION_IN_PROGRESS",
+    "OFFICIAL_GRADER_VIABILITY": "NOT_YET_ESTABLISHED",
+    "PERFORMANCE": "NOT_MEASURED",
+    "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN"
+  },
   "execution_counters": {
     "grader_containers": 0,
     "model_gateway_calls": 0,
@@ -34,7 +39,7 @@
     "total_benchmark_physical_task_arm_runs": 153
   },
   "post_approval_gates": [
-    "GRADER_SMOKE approval, digest-only pull and observed digest verification, then official GOLD+NOOP PASS",
+    "GRADER_SMOKE approval, digest-only pull and observed digest verification, then official GOLD+NOOP_BASELINE PASS",
     "new committed smoke result and freeze before DEVELOPMENT_TUNING approval",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
@@ -46,7 +51,7 @@
   "static_ci_meaning": "Static CI and credential-free E2E establish implementation and execution-plan readiness only. They do not claim official grader, paid model, benchmark, causal, performance, full-suite, or leaderboard viability.",
   "target_set_sha256": {
     "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
-    "grader_smoke": "2c91358e9c78cd26f989f875c755b62cb30037c407ada214148064411e7ac809",
+    "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",
     "heldout": "abd3f182acef8f37018e5f05ab9ba185b7b1efbc111dee273e66a38e6ab16267"
   }
 }

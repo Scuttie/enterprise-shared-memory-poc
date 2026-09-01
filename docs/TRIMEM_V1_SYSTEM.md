@@ -111,7 +111,7 @@ live product finalization pipeline.
 
 The committed selector uses one public seed and deterministic public-identity ranking;
 there are no per-slot salts or result-dependent overrides. The development,
-held-out, and GOLD/NOOP smoke target sets are disjoint and are generated only
+held-out, and GOLD/NOOP_BASELINE smoke target sets are disjoint and are generated only
 from the exact dataset revisions in the committed source audit.
 
 - development tuning: four preregistered joint M2 bundles, each over the same
@@ -126,7 +126,7 @@ from the exact dataset revisions in the committed source audit.
   endpoint;
 - held-out: 27 untouched tasks, one serial online stream per arm;
 - official grader smoke: 6 repository-stratified instances, each paired as
-  GOLD and NOOP, frozen before any result;
+  GOLD and the deterministic file-only NOOP_BASELINE, frozen before any result;
 - comparison: M0, M1, M2 only; component ablations begin only after the frozen
   full-system held-out result exists.
 
@@ -188,3 +188,28 @@ infrastructure validation, not official grading or benchmark execution. The
 approval prohibition applies specifically to official grader/benchmark target
 image pull or run, official grader invocation, benchmark task execution, and
 paid model calls.
+
+The branch-local P0.1 grader-smoke workflow may additionally start only when a
+commit on `codex/trimem-coder-v1` changes exactly
+`artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json`. The job is
+held at the protected `trimem-grader-smoke-exec` environment before any secret
+or execution step is available. Its external approval is bound to that exact
+commit, freeze, request bytes, workflow run ID and attempt, and zero-model caps.
+Ordinary source, configuration, documentation, or workflow pushes cannot start
+the grader. The retained `workflow_dispatch` path is disabled for this feature
+branch and is eligible only on `refs/heads/main` after a later merge; it is not
+an alternate P0.1 trigger.
+
+The six-instance smoke is also storage-bounded: for each frozen identity it
+pulls and inspects one target digest, executes GOLD then NOOP_BASELINE, and
+removes only that exact digest and harness tag before advancing. The frozen
+Multi-SWE support image may remain resident only across the contiguous Multi
+pairs and is then removed. This preserves one serial campaign while avoiding a
+pull-all image cache as an execution prerequisite.
+
+Until the real smoke succeeds, the executable status is
+`TRIMEM_SYSTEM_IMPLEMENTATION=CREDENTIAL_FREE_GREEN`,
+`GRADER_EXEC_PACKAGE=CORRECTION_IN_PROGRESS`,
+`OFFICIAL_GRADER_VIABILITY=NOT_YET_ESTABLISHED`, and
+`PERFORMANCE=NOT_MEASURED`. Credential-free green is not an official-grader or
+benchmark-readiness result.

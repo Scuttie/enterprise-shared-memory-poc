@@ -2,10 +2,23 @@
   "actual_execution": {
     "docker_pulls": 0,
     "grader_containers": 0,
-    "official_grader_runs": 0
+    "input_tokens": 0,
+    "model_calls": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "total_usd": 0
+  },
+  "grader_exec_package": "CORRECTION_IN_PROGRESS",
+  "expected_condition_rows": {
+    "GOLD": 6,
+    "NOOP_BASELINE": 6
   },
   "expected_target_count": 12,
+  "expected_unique_instances": 6,
   "official_grader_viability": "NOT_YET_ESTABLISHED",
+  "performance": "NOT_MEASURED",
   "schema": "trimem/grader-smoke-result/1.0",
-  "status": "PENDING_EXEC_APPROVAL"
+  "status": "CORRECTION_IN_PROGRESS",
+  "trimem_system_implementation": "CREDENTIAL_FREE_GREEN"
 }

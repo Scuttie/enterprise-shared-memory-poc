@@ -1,6 +1,7 @@
 # TriMem's research freeze hashes working-tree bytes.  Keep every textual
 # execution input and evidence envelope byte-stable across Windows and Linux.
 /.gitattributes text eol=lf
+/.gitignore text eol=lf
 /alembic.ini text eol=lf
 /DEPENDENCY_PROVENANCE.json text eol=lf
 /pyproject.toml text eol=lf

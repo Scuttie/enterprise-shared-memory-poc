@@ -43,6 +43,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     environment: trimem-grader-smoke-exec
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     env:
       CUBLAS_WORKSPACE_CONFIG: ":4096:8"
       CUDA_VISIBLE_DEVICES: ""
@@ -120,12 +124,24 @@ jobs:
             -C artifacts/trimem_v1/grader_smoke_exec . \
             -C "$RUNNER_TEMP" trimem-grader-smoke-evidence-inventory.json \
             | openssl enc -aes-256-cbc -salt -pbkdf2 -pass env:TRIMEM_EVIDENCE_PASSPHRASE -out "$RUNNER_TEMP/trimem-grader-smoke-restricted.tar.enc"
+      - name: Build deterministic official smoke attestation subject
+        run: |
+          set -euo pipefail
+          python scripts/trimem_smoke_attestation.py \
+            --public-result artifacts/trimem_v1/grader_smoke_exec/public-results.json \
+            --evidence-inventory "$RUNNER_TEMP/trimem-grader-smoke-evidence-inventory.json" \
+            --encrypted-evidence "$RUNNER_TEMP/trimem-grader-smoke-restricted.tar.enc" \
+            --approval-file "$RUNNER_TEMP/trimem-exec-approval.json" \
+            --output artifacts/trimem_v1/grader_smoke_exec/attestation-subject.json
+          python -c "import os,pathlib,shutil; source=pathlib.Path('artifacts/trimem_v1/grader_smoke_exec/attestation-subject.json'); target=pathlib.Path(os.environ['RUNNER_TEMP'],'attestation-subject.json'); assert source.is_file() and not target.exists(); shutil.copyfile(source,target); assert source.read_bytes() == target.read_bytes()"
       - name: Upload public smoke result
         if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: trimem-grader-smoke-public
-          path: artifacts/trimem_v1/grader_smoke_exec/public-results.json
+          path: |
+            artifacts/trimem_v1/grader_smoke_exec/public-results.json
+            artifacts/trimem_v1/grader_smoke_exec/attestation-subject.json
           if-no-files-found: error
           retention-days: 30
       - name: Upload non-sensitive restricted evidence inventory
@@ -145,7 +161,7 @@ jobs:
           path: ${{ runner.temp }}/trimem-grader-smoke-restricted.tar.enc
           if-no-files-found: error
           retention-days: 14
-      - name: Remove plaintext and temporary EXEC material
+      - name: Remove plaintext and temporary EXEC material before signing
         if: always()
         run: |
           set +e
@@ -156,4 +172,43 @@ jobs:
           if [ "$cleanup_status" -ne 0 ]; then
             exit "$cleanup_status"
           fi
-          exit "$inventory_status"
+          if [ "$inventory_status" -ne 0 ]; then
+            exit "$inventory_status"
+          fi
+          test ! -e artifacts/trimem_v1/grader_smoke_exec
+          test ! -e "$RUNNER_TEMP/trimem-exec-approval.json"
+          test ! -e "$RUNNER_TEMP/trimem-grader-smoke-restricted.tar.enc"
+          test ! -e "$RUNNER_TEMP/trimem-grader-smoke-evidence-inventory.json"
+      - name: Attest exact uploaded and cleaned official smoke subject
+        id: smoke-attestation
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          create-storage-record: false
+          push-to-registry: false
+          subject-path: ${{ runner.temp }}/attestation-subject.json
+      - name: Materialize fixed attestation bundle name
+        env:
+          TRIMEM_ATTESTATION_BUNDLE: ${{ steps.smoke-attestation.outputs.bundle-path }}
+        run: >-
+          python -c "import os,pathlib,shutil; source=pathlib.Path(os.environ['TRIMEM_ATTESTATION_BUNDLE']); target=pathlib.Path(os.environ['RUNNER_TEMP'],'trimem-grader-smoke-attestation-bundle.json'); assert source.is_file() and not target.exists(); shutil.copyfile(source,target); assert source.read_bytes() == target.read_bytes()"
+      - name: Upload official smoke attestation bundle
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-grader-smoke-attestation-bundle
+          path: ${{ runner.temp }}/trimem-grader-smoke-attestation-bundle.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove staged attestation material
+        if: always()
+        env:
+          TRIMEM_ATTESTATION_BUNDLE: ${{ steps.smoke-attestation.outputs.bundle-path }}
+        run: |
+          set -euo pipefail
+          rm -f -- "$RUNNER_TEMP/attestation-subject.json"
+          rm -f -- "$RUNNER_TEMP/trimem-grader-smoke-attestation-bundle.json"
+          if [ -n "${TRIMEM_ATTESTATION_BUNDLE:-}" ]; then
+            rm -f -- "$TRIMEM_ATTESTATION_BUNDLE"
+          fi
+          test ! -e "$RUNNER_TEMP/attestation-subject.json"
+          test ! -e "$RUNNER_TEMP/trimem-grader-smoke-attestation-bundle.json"

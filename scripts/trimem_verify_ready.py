@@ -8,13 +8,16 @@ from __future__ import annotations
 
 import argparse
 import ast
+import base64
 from collections import Counter
 from datetime import datetime
 import hashlib
 import inspect
 import json
+import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 from typing import Any, Iterable, Mapping
@@ -42,11 +45,29 @@ from trimem_benchmark_run import (  # noqa: E402
     AtomicBudgetLedger, BudgetedModelGateway, JournaledGraderGateway,
     JournaledModelGateway, validate_exec_approval,
 )
-from trimem_freeze import FROZEN_PATHS, check_freeze  # noqa: E402
+from trimem_freeze import (  # noqa: E402
+    FROZEN_PATHS,
+    OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
+    OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
+    OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+    OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
+    check_freeze,
+)
 from trimem_grader_smoke_protocol import (  # noqa: E402
     NOOP_BASELINE_CONTENT,
     NOOP_BASELINE_LOCK,
     NOOP_BASELINE_PATH,
+)
+from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
+    TriggerPreflightError,
+    validate_request_document,
+)
+from trimem_smoke_attestation import (  # noqa: E402
+    EXPECTED_REPOSITORY as SMOKE_ATTESTATION_REPOSITORY,
+    HOSTED_RUNNER as SMOKE_ATTESTATION_RUNNER,
+    SCHEMA as SMOKE_ATTESTATION_SCHEMA,
+    SIGNER_WORKFLOW_PATH as SMOKE_ATTESTATION_WORKFLOW,
+    SOURCE_REF_BY_EVENT as SMOKE_ATTESTATION_SOURCE_REF_BY_EVENT,
 )
 from trimem_m2_candidates import CANDIDATE_IDS, load_bundle, validate_selected_m2  # noqa: E402
 from trimem_verify_credential_free import verify_bundle  # noqa: E402
@@ -57,6 +78,61 @@ ARTIFACT = ROOT / "artifacts/trimem_v1"
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 DIGEST_IMAGE = re.compile(r"^[a-z0-9][a-z0-9._/-]*@sha256:[0-9a-f]{64}$")
+POSITIVE_INTEGER = re.compile(r"^[1-9][0-9]*$")
+
+SMOKE_RESULT_COMMON_FIELDS = {
+    "schema", "status", "trimem_system_implementation", "grader_exec_package",
+    "official_grader_viability", "performance", "expected_unique_instances",
+    "expected_target_count", "expected_condition_rows", "actual_execution",
+}
+SMOKE_AGGREGATE_BODY_FIELDS = {
+    "actual_accounting", "approval_binding", "digest_match_count",
+    "empty_patch_ids", "evidence_counts", "expected_target_count",
+    "image_lifecycle", "infrastructure_failure_count", "manifest",
+    "observed_target_count", "outcomes", "patch_applied_count",
+    "probe_counts", "resolved_counts", "status", "tests_executed_count",
+    "unresolved_counts",
+}
+SMOKE_PUBLIC_ONLY_FIELDS = {
+    "dataset_rows_or_gold_test_payloads", "restricted_evidence", "stream_totals",
+    "verified_aggregate_sha256",
+}
+SMOKE_APPROVAL_FIELDS = {
+    "approval_artifact_sha256", "approved_request_sha256",
+    "approved_workflow_run_id", "approved_workflow_run_attempt", "freeze_sha256",
+    "git_head", "phase",
+}
+SMOKE_EVIDENCE_FIELDS = {
+    "public_result_path", "public_result_raw_sha256",
+    "evidence_inventory_path", "evidence_inventory_raw_sha256",
+    "verified_aggregate_sha256", "aggregate_raw_sha256", "approval_binding",
+    "attestation_subject_path", "attestation_subject_raw_sha256",
+    "attestation_bundle_path", "attestation_bundle_raw_sha256",
+}
+SMOKE_ATTESTATION_POLICY_PATH = "configs/trimem_v1/smoke_attestation_policy.json"
+SMOKE_TRUSTED_ROOT_PATH = "configs/trimem_v1/sigstore_trusted_root.jsonl"
+SMOKE_ATTESTATION_ACTION = (
+    "actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6"
+)
+SMOKE_PROTECTED_ENVIRONMENT_OID = "1.3.6.1.4.1.57264.1.23"
+SMOKE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
+SMOKE_GH_VERSION_LINE = "gh version 2.97.0 (2026-07-31)"
+SMOKE_GITHUB_API_ACCEPT = "application/vnd.github+json"
+SMOKE_GITHUB_API_VERSION = "2022-11-28"
+SMOKE_RUN_API_ROUTE_TEMPLATE = (
+    "repos/{repository}/actions/runs/{run_id}/attempts/{run_attempt}"
+)
+SMOKE_RUN_API_JSON_PROJECTION = (
+    "{id,run_attempt,event,status,conclusion,head_sha,head_branch,path,"
+    "workflow_id,repository_full_name:.repository.full_name}"
+)
+
+
+def _smoke_cert_identity(source_ref: str) -> str:
+    return (
+        f"https://github.com/{SMOKE_ATTESTATION_REPOSITORY}/"
+        f"{SMOKE_ATTESTATION_WORKFLOW}@{source_ref}"
+    )
 
 
 class ReadinessError(ValueError):
@@ -87,6 +163,1110 @@ def canonical(value: Any) -> bytes:
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise ReadinessError(message)
+
+
+def _pretty_json(value: Any) -> bytes:
+    return (
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    ).encode("utf-8")
+
+
+def _strict_json_bytes(raw: bytes, *, label: str) -> dict[str, Any]:
+    def strict_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ReadinessError(f"duplicate JSON key in {label}: {key}")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(
+            raw.decode("utf-8"),
+            object_pairs_hook=strict_object,
+            parse_constant=lambda value: (_ for _ in ()).throw(
+                ReadinessError(f"non-finite JSON number in {label}: {value}")
+            ),
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ReadinessError(f"invalid UTF-8 JSON: {label}") from exc
+    require(isinstance(value, dict), f"JSON root is not an object: {label}")
+    return value
+
+
+def _historical_git_file(commit: str, relative: str) -> bytes:
+    completed = subprocess.run(
+        ["git", "show", f"{commit}:{relative}"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    require(
+        completed.returncode == 0,
+        f"official smoke execution commit lacks {relative}",
+    )
+    return completed.stdout
+
+
+def _execution_head_is_ancestor(commit: str) -> bool:
+    completed = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    return completed.returncode == 0
+
+
+def _validate_historical_smoke_request(
+    execution_head: str, raw: bytes
+) -> dict[str, Any]:
+    request = _strict_json_bytes(raw, label="historical grader-smoke request")
+    source_head = request.get("source_head")
+    require(
+        isinstance(source_head, str) and HEX40.fullmatch(source_head) is not None,
+        "historical grader-smoke request source_head is invalid",
+    )
+    try:
+        return validate_request_document(
+            ROOT,
+            raw,
+            expected_source_head=source_head,
+            material_commit=execution_head,
+        )
+    except (OSError, TriggerPreflightError) as exc:
+        raise ReadinessError(
+            f"historical grader-smoke sentinel validation failed: {exc}"
+        ) from None
+
+
+def _inventory_rows(inventory: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    require(
+        set(inventory)
+        == {"schema", "root", "files", "total_bytes", "total_files", "inventory_sha256"},
+        "official smoke evidence inventory field set differs",
+    )
+    files = inventory.get("files")
+    require(isinstance(files, list) and bool(files), "official smoke evidence inventory is empty")
+    rows: dict[str, dict[str, Any]] = {}
+    for row in files:
+        require(
+            isinstance(row, dict)
+            and set(row) == {"path", "sha256", "bytes"}
+            and isinstance(row.get("path"), str)
+            and bool(row["path"])
+            and not Path(row["path"]).is_absolute()
+            and ".." not in Path(row["path"]).parts
+            and isinstance(row.get("sha256"), str)
+            and HEX64.fullmatch(row["sha256"]) is not None
+            and type(row.get("bytes")) is int
+            and row["bytes"] >= 0,
+            "official smoke evidence inventory row is malformed",
+        )
+        require(row["path"] not in rows, "official smoke evidence inventory has duplicate paths")
+        rows[row["path"]] = row
+    require(
+        list(rows) == sorted(rows),
+        "official smoke evidence inventory path order differs",
+    )
+    payload = {
+        "files": files,
+        "root": inventory.get("root"),
+        "schema": inventory.get("schema"),
+        "total_bytes": inventory.get("total_bytes"),
+        "total_files": inventory.get("total_files"),
+    }
+    require(
+        inventory.get("schema") == "trimem/restricted-evidence-inventory/1.0"
+        and inventory.get("root") == "grader_smoke_exec"
+        and type(inventory.get("total_files")) is int
+        and inventory["total_files"] == len(files)
+        and type(inventory.get("total_bytes")) is int
+        and inventory["total_bytes"] == sum(row["bytes"] for row in files)
+        and inventory.get("inventory_sha256")
+        == hashlib.sha256(canonical(payload)).hexdigest(),
+        "official smoke evidence inventory seal/counts differ",
+    )
+    return rows
+
+
+def _require_inventory_raw(
+    rows: Mapping[str, Mapping[str, Any]], path: str, raw: bytes, *, label: str
+) -> None:
+    row = rows.get(path)
+    require(
+        isinstance(row, Mapping)
+        and row.get("sha256") == hashlib.sha256(raw).hexdigest()
+        and row.get("bytes") == len(raw),
+        f"official smoke inventory {label} raw binding differs",
+    )
+
+
+def validate_smoke_attestation_policy() -> dict[str, Any]:
+    """Validate the pre-execution trust root and verification policy bytes."""
+
+    policy = read_json(ROOT / SMOKE_ATTESTATION_POLICY_PATH)
+    require(
+        set(policy)
+        == {
+            "attestation_action", "certificate_policy", "expected_repository",
+            "schema", "signer_workflow", "source_ref_by_event", "trusted_root",
+            "verification",
+        },
+        "smoke attestation policy field set differs",
+    )
+    require(
+        policy.get("schema") == "trimem/smoke-attestation-policy/1.0"
+        and policy.get("expected_repository") == SMOKE_ATTESTATION_REPOSITORY
+        and policy.get("source_ref_by_event") == SMOKE_ATTESTATION_SOURCE_REF_BY_EVENT
+        and policy.get("signer_workflow") == SMOKE_ATTESTATION_WORKFLOW
+        and policy.get("attestation_action")
+        == {
+            "exact_uses": SMOKE_ATTESTATION_ACTION,
+            "inputs": {
+                "create-storage-record": False,
+                "push-to-registry": False,
+                "subject-path": "${{ runner.temp }}/attestation-subject.json",
+            },
+        },
+        "smoke attestation identity/action policy differs",
+    )
+    certificate_policy = policy.get("certificate_policy")
+    require(
+        certificate_policy
+        == {
+            "oidc_issuer": SMOKE_OIDC_ISSUER,
+            "protected_environment": "trimem-grader-smoke-exec",
+            "protected_environment_oid": SMOKE_PROTECTED_ENVIRONMENT_OID,
+            "runner_environment": SMOKE_ATTESTATION_RUNNER,
+            "runner_invocation_uri_template": (
+                "https://github.com/Scuttie/enterprise-shared-memory-poc/"
+                "actions/runs/{run_id}/attempts/{run_attempt}"
+            ),
+        },
+        "smoke attestation certificate policy differs",
+    )
+    verification = policy.get("verification")
+    required_flags = [
+        "--bundle", "--cert-identity", "--cert-oidc-issuer",
+        "--custom-trusted-root", "--digest-alg=sha256",
+        "--deny-self-hosted-runners", "--format=json",
+        "--predicate-type=https://slsa.dev/provenance/v1", "--repo",
+        "--signer-digest", "--source-digest", "--source-ref",
+    ]
+    require(
+        isinstance(verification, dict)
+        and set(verification)
+        == {
+            "cryptographic_gate_phases", "gh_cli_tcb", "live_run_attempt",
+            "required_cli_flags", "static_scope", "trusted_root_mutation_after_smoke",
+        }
+        and verification.get("cryptographic_gate_phases")
+        == ["DEVELOPMENT_TUNING", "HELDOUT_BENCHMARK"]
+        and verification.get("gh_cli_tcb")
+        == {
+            "exact_version_first_line": SMOKE_GH_VERSION_LINE,
+            "trust_boundary": (
+                "trusted host/runner installation plus exact version; executable "
+                "bytes are neither vendored nor byte-pinned"
+            ),
+        }
+        and verification.get("live_run_attempt")
+        == {
+            "accept": SMOKE_GITHUB_API_ACCEPT,
+            "api_version": SMOKE_GITHUB_API_VERSION,
+            "api_route_template": SMOKE_RUN_API_ROUTE_TEMPLATE,
+            "authentication": (
+                "GH_TOKEN from github.token scoped to the benchmark EXEC gate step only"
+            ),
+            "exact_conclusion": "success",
+            "exact_status": "completed",
+            "json_projection": SMOKE_RUN_API_JSON_PROJECTION,
+            "transport": "gh api --hostname github.com",
+        }
+        and verification.get("required_cli_flags") == required_flags
+        and verification.get("trusted_root_mutation_after_smoke") == "PROHIBITED"
+        and isinstance(verification.get("static_scope"), str)
+        and "no cryptographic viability claim" in verification["static_scope"],
+        "smoke attestation verification policy differs",
+    )
+
+    trusted = policy.get("trusted_root")
+    trusted_path = ROOT / SMOKE_TRUSTED_ROOT_PATH
+    trusted_raw = trusted_path.read_bytes()
+    require(
+        isinstance(trusted, dict)
+        and set(trusted)
+        == {
+            "bytes", "generated_at_utc", "generated_by", "generator", "line_count",
+            "path", "raw_sha256", "source",
+        }
+        and trusted.get("path") == SMOKE_TRUSTED_ROOT_PATH
+        and trusted.get("generated_by") == "gh attestation trusted-root"
+        and trusted.get("generator") == "gh version 2.97.0 (2026-07-31)"
+        and trusted.get("source")
+        == "https://cli.github.com/manual/gh_attestation_trusted-root"
+        and trusted.get("bytes") == len(trusted_raw)
+        and trusted.get("raw_sha256") == hashlib.sha256(trusted_raw).hexdigest()
+        and trusted.get("line_count") == 2
+        and isinstance(trusted.get("generated_at_utc"), str)
+        and trusted["generated_at_utc"].endswith("Z"),
+        "pre-frozen Sigstore trusted-root provenance/hash differs",
+    )
+    require(
+        trusted_raw.endswith(b"\n") and b"\r" not in trusted_raw,
+        "pre-frozen Sigstore trusted-root is not exact LF JSONL",
+    )
+    lines = trusted_raw.splitlines()
+    require(len(lines) == 2 and all(lines), "Sigstore trusted-root line set differs")
+    for index, raw in enumerate(lines):
+        root = _strict_json_bytes(raw, label=f"{SMOKE_TRUSTED_ROOT_PATH}:{index + 1}")
+        require(
+            root.get("mediaType")
+            == "application/vnd.dev.sigstore.trustedroot+json;version=0.1"
+            and isinstance(root.get("certificateAuthorities"), list)
+            and bool(root["certificateAuthorities"]),
+            f"Sigstore trusted-root line {index + 1} is malformed",
+        )
+    return policy
+
+
+def _decode_utf8_extension(raw: bytes, *, oid: str) -> str:
+    """Decode Fulcio's DER UTF8String extension (legacy raw UTF-8 is rejected)."""
+
+    require(len(raw) >= 2 and raw[0] == 0x0C, f"certificate OID {oid} is not DER UTF8String")
+    first_length = raw[1]
+    if first_length < 0x80:
+        length, offset = first_length, 2
+    elif first_length == 0x81:
+        require(
+            len(raw) >= 3 and raw[2] >= 0x80,
+            f"certificate OID {oid} DER length is nonminimal",
+        )
+        length, offset = raw[2], 3
+    elif first_length == 0x82:
+        require(
+            len(raw) >= 4 and raw[2] != 0,
+            f"certificate OID {oid} DER length is nonminimal",
+        )
+        length = int.from_bytes(raw[2:4], "big")
+        require(length >= 0x100, f"certificate OID {oid} DER length is nonminimal")
+        offset = 4
+    else:
+        raise ReadinessError(f"certificate OID {oid} DER length form is invalid")
+    require(
+        offset + length == len(raw),
+        f"certificate OID {oid} DER payload length differs",
+    )
+    try:
+        return raw[offset:].decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ReadinessError(f"certificate OID {oid} is not UTF-8") from exc
+
+
+def _bundle_statement(bundle: Mapping[str, Any]) -> dict[str, Any]:
+    envelope = bundle.get("dsseEnvelope")
+    require(
+        isinstance(envelope, Mapping)
+        and set(envelope) == {"payload", "payloadType", "signatures"}
+        and envelope.get("payloadType") == "application/vnd.in-toto+json"
+        and isinstance(envelope.get("signatures"), list)
+        and len(envelope["signatures"]) == 1
+        and isinstance(envelope["signatures"][0], Mapping)
+        and isinstance(envelope["signatures"][0].get("sig"), str)
+        and bool(envelope["signatures"][0]["sig"]),
+        "official smoke attestation DSSE envelope differs",
+    )
+    try:
+        payload = base64.b64decode(str(envelope.get("payload", "")), validate=True)
+    except ValueError as exc:
+        raise ReadinessError("official smoke attestation DSSE payload is invalid base64") from exc
+    return _strict_json_bytes(payload, label="official smoke attestation DSSE statement")
+
+
+def _bundle_certificate_bindings(bundle: Mapping[str, Any]) -> dict[str, str]:
+    try:
+        from cryptography import x509
+        from cryptography.x509.oid import ExtensionOID, ObjectIdentifier
+    except ImportError as exc:
+        raise ReadinessError("cryptography is required to inspect the attestation certificate") from exc
+
+    verification = bundle.get("verificationMaterial")
+    require(isinstance(verification, Mapping), "attestation verification material is missing")
+    certificate = verification.get("certificate")
+    require(
+        isinstance(certificate, Mapping)
+        and set(certificate) == {"rawBytes"}
+        and isinstance(certificate.get("rawBytes"), str),
+        "attestation leaf certificate field set differs",
+    )
+    try:
+        der = base64.b64decode(certificate["rawBytes"], validate=True)
+        leaf = x509.load_der_x509_certificate(der)
+    except (ValueError, TypeError) as exc:
+        raise ReadinessError("attestation leaf certificate is invalid DER/base64") from exc
+    try:
+        names = leaf.extensions.get_extension_for_oid(
+            ExtensionOID.SUBJECT_ALTERNATIVE_NAME
+        ).value.get_values_for_type(x509.UniformResourceIdentifier)
+    except x509.ExtensionNotFound as exc:
+        raise ReadinessError("attestation certificate lacks URI SAN") from exc
+    require(
+        len(names) == 1 and isinstance(names[0], str) and bool(names[0]),
+        "attestation certificate URI SAN cardinality differs",
+    )
+
+    oid_names = {
+        "issuer": "1.3.6.1.4.1.57264.1.8",
+        "buildSignerURI": "1.3.6.1.4.1.57264.1.9",
+        "buildSignerDigest": "1.3.6.1.4.1.57264.1.10",
+        "runnerEnvironment": "1.3.6.1.4.1.57264.1.11",
+        "sourceRepositoryURI": "1.3.6.1.4.1.57264.1.12",
+        "sourceRepositoryDigest": "1.3.6.1.4.1.57264.1.13",
+        "sourceRepositoryRef": "1.3.6.1.4.1.57264.1.14",
+        "buildConfigURI": "1.3.6.1.4.1.57264.1.18",
+        "buildConfigDigest": "1.3.6.1.4.1.57264.1.19",
+        "buildTrigger": "1.3.6.1.4.1.57264.1.20",
+        "runInvocationURI": "1.3.6.1.4.1.57264.1.21",
+        "sourceRepositoryVisibilityAtSigning": "1.3.6.1.4.1.57264.1.22",
+        "protectedEnvironment": SMOKE_PROTECTED_ENVIRONMENT_OID,
+    }
+    result = {"subjectAlternativeName": names[0]}
+    for name, oid in oid_names.items():
+        try:
+            value = leaf.extensions.get_extension_for_oid(
+                ObjectIdentifier(oid)
+            ).value.value
+        except x509.ExtensionNotFound as exc:
+            raise ReadinessError(f"attestation certificate lacks required OID {oid}") from exc
+        require(isinstance(value, bytes), f"attestation certificate OID {oid} has invalid value")
+        result[name] = _decode_utf8_extension(value, oid=oid)
+    return result
+
+
+def _expected_certificate_bindings(subject: Mapping[str, Any]) -> dict[str, str]:
+    execution = subject["execution"]
+    cert_identity = _smoke_cert_identity(execution["source_ref"])
+    run_uri = (
+        f"https://github.com/{SMOKE_ATTESTATION_REPOSITORY}/actions/runs/"
+        f"{execution['workflow_run_id']}/attempts/{execution['workflow_run_attempt']}"
+    )
+    return {
+        "subjectAlternativeName": cert_identity,
+        "issuer": SMOKE_OIDC_ISSUER,
+        "buildSignerURI": cert_identity,
+        "buildSignerDigest": execution["source_digest"],
+        "runnerEnvironment": SMOKE_ATTESTATION_RUNNER,
+        "sourceRepositoryURI": f"https://github.com/{SMOKE_ATTESTATION_REPOSITORY}",
+        "sourceRepositoryDigest": execution["source_digest"],
+        "sourceRepositoryRef": execution["source_ref"],
+        "buildConfigURI": cert_identity,
+        "buildConfigDigest": execution["source_digest"],
+        "buildTrigger": execution["event_name"],
+        "runInvocationURI": run_uri,
+        "sourceRepositoryVisibilityAtSigning": "public",
+        "protectedEnvironment": "trimem-grader-smoke-exec",
+    }
+
+
+def _validate_attestation_artifacts(
+    *,
+    subject_raw: bytes,
+    bundle_raw: bytes,
+    public_raw: bytes,
+    inventory_raw: bytes,
+    approval: Mapping[str, Any],
+) -> dict[str, Any]:
+    subject = _strict_json_bytes(
+        subject_raw, label=OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH
+    )
+    require(
+        set(subject) == {"approval_binding", "artifacts", "execution", "schema"}
+        and subject.get("schema") == SMOKE_ATTESTATION_SCHEMA
+        and subject_raw == _pretty_json(subject)
+        and subject.get("approval_binding") == approval,
+        "official smoke deterministic attestation subject differs",
+    )
+    execution = subject.get("execution")
+    require(
+        isinstance(execution, dict)
+        and set(execution)
+        == {
+            "event_name", "repository", "runner_environment", "signer_workflow",
+            "source_digest", "source_ref", "workflow_run_attempt", "workflow_run_id",
+        }
+        and execution.get("repository") == SMOKE_ATTESTATION_REPOSITORY
+        and execution.get("runner_environment") == SMOKE_ATTESTATION_RUNNER
+        and execution.get("signer_workflow") == SMOKE_ATTESTATION_WORKFLOW
+        and execution.get("source_digest") == approval.get("git_head")
+        and SMOKE_ATTESTATION_SOURCE_REF_BY_EVENT.get(execution.get("event_name"))
+        == execution.get("source_ref")
+        and execution.get("workflow_run_id")
+        == approval.get("approved_workflow_run_id")
+        and execution.get("workflow_run_attempt")
+        == approval.get("approved_workflow_run_attempt"),
+        "official smoke attestation execution/approval identity differs",
+    )
+    artifacts = subject.get("artifacts")
+    require(
+        isinstance(artifacts, dict)
+        and set(artifacts)
+        == {
+            "encrypted_restricted_evidence", "evidence_inventory", "public_results",
+        },
+        "official smoke attestation artifact set differs",
+    )
+    expected_artifacts = {
+        "public_results": ("public-results.json", public_raw),
+        "evidence_inventory": ("evidence-inventory.json", inventory_raw),
+    }
+    for key, (name, raw) in expected_artifacts.items():
+        require(
+            artifacts.get(key)
+            == {
+                "bytes": len(raw),
+                "name": name,
+                "sha256": hashlib.sha256(raw).hexdigest(),
+            },
+            f"official smoke attestation {key} exact bytes/hash differs",
+        )
+    encrypted = artifacts.get("encrypted_restricted_evidence")
+    require(
+        isinstance(encrypted, dict)
+        and set(encrypted) == {"bytes", "name", "sha256"}
+        and encrypted.get("name") == "trimem-grader-smoke-restricted.tar.enc"
+        and type(encrypted.get("bytes")) is int
+        and encrypted["bytes"] > 0
+        and isinstance(encrypted.get("sha256"), str)
+        and HEX64.fullmatch(encrypted["sha256"]) is not None,
+        "official smoke encrypted evidence subject binding differs",
+    )
+
+    bundle = _strict_json_bytes(
+        bundle_raw, label=OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH
+    )
+    require(
+        set(bundle) == {"dsseEnvelope", "mediaType", "verificationMaterial"}
+        and bundle.get("mediaType")
+        == "application/vnd.dev.sigstore.bundle.v0.3+json",
+        "official smoke attestation bundle field/media type differs",
+    )
+    statement = _bundle_statement(bundle)
+    require(
+        statement.get("_type") == "https://in-toto.io/Statement/v1"
+        and statement.get("predicateType") == "https://slsa.dev/provenance/v1"
+        and statement.get("subject")
+        == [{
+            "name": "attestation-subject.json",
+            "digest": {"sha256": hashlib.sha256(subject_raw).hexdigest()},
+        }],
+        "official smoke attestation statement subject/predicate differs",
+    )
+    certificate = _bundle_certificate_bindings(bundle)
+    require(
+        certificate == _expected_certificate_bindings(subject),
+        "official smoke attestation certificate identity/run/environment differs",
+    )
+    return subject
+
+
+def _strict_json_array(raw: bytes, *, label: str) -> list[Any]:
+    def strict_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        value: dict[str, Any] = {}
+        for key, child in pairs:
+            if key in value:
+                raise ReadinessError(f"duplicate JSON key in {label}: {key}")
+            value[key] = child
+        return value
+    try:
+        value = json.loads(raw.decode("utf-8"), object_pairs_hook=strict_object)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ReadinessError(f"invalid JSON output from {label}") from exc
+    require(isinstance(value, list), f"{label} root is not an array")
+    return value
+
+
+def _validate_gh_attestation_output(
+    raw: bytes, subject: Mapping[str, Any], bundle: Mapping[str, Any]
+) -> None:
+    results = _strict_json_array(raw, label="gh attestation verify")
+    cert_identity = _smoke_cert_identity(subject["execution"]["source_ref"])
+    require(len(results) == 1 and isinstance(results[0], dict), "gh verified attestation count differs")
+    row = results[0]
+    require(
+        set(row) == {"attestation", "verificationResult"},
+        "gh attestation result field set differs",
+    )
+    attestation = row.get("attestation")
+    require(
+        attestation
+        == {"bundle": bundle, "bundle_url": "", "initiator": ""},
+        "gh verified attestation bundle bytes/field set differs",
+    )
+    verified_bundle = attestation["bundle"]
+    require(
+        _bundle_certificate_bindings(verified_bundle)
+        == _expected_certificate_bindings(subject),
+        "gh verified bundle leaf certificate binding differs",
+    )
+    result = row.get("verificationResult")
+    require(
+        isinstance(result, dict)
+        and set(result)
+        == {
+            "mediaType", "signature", "statement", "verifiedIdentity",
+            "verifiedTimestamps",
+        }
+        and result.get("mediaType")
+        == "application/vnd.dev.sigstore.verificationresult+json;version=0.1"
+        and isinstance(result.get("verifiedTimestamps"), list)
+        and bool(result["verifiedTimestamps"]),
+        "gh attestation cryptographic verification result differs",
+    )
+    require(
+        result.get("verifiedIdentity")
+        == {
+            "issuer": {"issuer": "", "regexp": ".*"},
+            "runnerEnvironment": SMOKE_ATTESTATION_RUNNER,
+            "subjectAlternativeName": {
+                "subjectAlternativeName": cert_identity,
+            },
+        },
+        "gh verified identity policy differs",
+    )
+    signature = result.get("signature")
+    certificate = signature.get("certificate") if isinstance(signature, dict) else None
+    expected = _expected_certificate_bindings(subject)
+    require(isinstance(certificate, dict), "gh verified certificate summary is missing")
+    for field, value in expected.items():
+        if field == "protectedEnvironment":
+            continue
+        require(
+            certificate.get(field) == value,
+            f"gh verified certificate {field} differs",
+        )
+    statement = result.get("statement")
+    require(
+        isinstance(statement, dict)
+        and statement.get("_type") == "https://in-toto.io/Statement/v1"
+        and statement.get("predicateType") == "https://slsa.dev/provenance/v1"
+        and statement.get("subject")
+        == [{
+            "name": "attestation-subject.json",
+            "digest": {"sha256": hashlib.sha256(_pretty_json(dict(subject))).hexdigest()},
+        }],
+        "gh verified statement subject differs",
+    )
+
+
+def _validate_live_workflow_run_attempt(
+    raw: bytes, subject: Mapping[str, Any]
+) -> None:
+    """Bind the signature to the completed, successful GitHub run attempt.
+
+    A Sigstore attestation can already exist when a later artifact upload or
+    cleanup step makes its workflow run fail.  The exact attempt endpoint is
+    therefore part of the paid-phase gate rather than an informational check.
+    """
+
+    execution = subject["execution"]
+    row = _strict_json_bytes(raw, label="GitHub workflow run-attempt API")
+    require(
+        set(row)
+        == {
+            "conclusion", "event", "head_branch", "head_sha", "id", "path",
+            "repository_full_name", "run_attempt", "status", "workflow_id",
+        },
+        "GitHub workflow run-attempt field set differs",
+    )
+    run_id = execution.get("workflow_run_id")
+    run_attempt = execution.get("workflow_run_attempt")
+    source_ref = execution.get("source_ref")
+    require(
+        isinstance(run_id, str)
+        and POSITIVE_INTEGER.fullmatch(run_id) is not None
+        and isinstance(run_attempt, str)
+        and POSITIVE_INTEGER.fullmatch(run_attempt) is not None
+        and isinstance(source_ref, str)
+        and source_ref.startswith("refs/heads/")
+        and len(source_ref) > len("refs/heads/"),
+        "official smoke subject has invalid live run identity",
+    )
+    require(
+        type(row.get("id")) is int
+        and row["id"] == int(run_id)
+        and type(row.get("run_attempt")) is int
+        and row["run_attempt"] == int(run_attempt)
+        and row.get("event") == execution.get("event_name")
+        and row.get("status") == "completed"
+        and row.get("conclusion") == "success"
+        and row.get("head_sha") == execution.get("source_digest")
+        and row.get("head_branch") == source_ref.removeprefix("refs/heads/")
+        and row.get("path") == SMOKE_ATTESTATION_WORKFLOW
+        and type(row.get("workflow_id")) is int
+        and row["workflow_id"] > 0
+        and row.get("repository_full_name") == SMOKE_ATTESTATION_REPOSITORY,
+        "official smoke live run attempt is not the exact completed successful execution",
+    )
+
+
+def verify_official_smoke_attestation_cryptographically() -> None:
+    """Cryptographically enforce the official-smoke trust anchor before paid phases."""
+
+    smoke = read_json(ARTIFACT / "grader_smoke_result.json")
+    evidence = smoke.get("official_execution_evidence")
+    require(isinstance(evidence, dict), "official smoke execution evidence is missing")
+    subject_path = ROOT / OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH
+    bundle_path = ROOT / OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH
+    subject_raw, bundle_raw = subject_path.read_bytes(), bundle_path.read_bytes()
+    subject = _strict_json_bytes(
+        subject_raw, label=OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH
+    )
+    certificate = _bundle_certificate_bindings(
+        _strict_json_bytes(bundle_raw, label=OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH)
+    )
+    require(
+        certificate == _expected_certificate_bindings(subject),
+        "official smoke bundle certificate binding differs before gh verification",
+    )
+    gh = shutil.which("gh")
+    require(gh is not None, "gh CLI is required for cryptographic smoke attestation verification")
+    require(
+        bool(os.environ.get("GH_TOKEN")),
+        "GH_TOKEN is required for exact official smoke run-attempt verification",
+    )
+    version = subprocess.run(
+        [gh, "--version"], cwd=ROOT, capture_output=True, check=False
+    )
+    require(
+        version.returncode == 0
+        and version.stdout.splitlines()
+        and version.stdout.splitlines()[0]
+        == SMOKE_GH_VERSION_LINE.encode("ascii"),
+        "gh CLI version differs from the pre-frozen attestation verifier",
+    )
+    execution = subject["execution"]
+    cert_identity = _smoke_cert_identity(execution["source_ref"])
+    command = [
+        gh, "attestation", "verify", str(subject_path),
+        "--bundle", str(bundle_path),
+        "--custom-trusted-root", str(ROOT / SMOKE_TRUSTED_ROOT_PATH),
+        "--repo", SMOKE_ATTESTATION_REPOSITORY,
+        "--cert-identity", cert_identity,
+        "--cert-oidc-issuer", SMOKE_OIDC_ISSUER,
+        "--deny-self-hosted-runners",
+        "--signer-digest", execution["source_digest"],
+        "--source-digest", execution["source_digest"],
+        "--source-ref", execution["source_ref"],
+        "--predicate-type=https://slsa.dev/provenance/v1",
+        "--digest-alg=sha256",
+        "--format=json",
+    ]
+    completed = subprocess.run(
+        command, cwd=ROOT, capture_output=True, check=False
+    )
+    require(
+        completed.returncode == 0,
+        "gh cryptographic smoke attestation verification failed",
+    )
+    bundle = _strict_json_bytes(
+        bundle_raw, label=OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH
+    )
+    _validate_gh_attestation_output(completed.stdout, subject, bundle)
+    route = SMOKE_RUN_API_ROUTE_TEMPLATE.format(
+        repository=SMOKE_ATTESTATION_REPOSITORY,
+        run_id=execution["workflow_run_id"],
+        run_attempt=execution["workflow_run_attempt"],
+    )
+    live_command = [
+        gh, "api", "--hostname", "github.com", route,
+        "--method", "GET",
+        "-H", f"Accept: {SMOKE_GITHUB_API_ACCEPT}",
+        "-H", f"X-GitHub-Api-Version: {SMOKE_GITHUB_API_VERSION}",
+        "--jq", SMOKE_RUN_API_JSON_PROJECTION,
+    ]
+    live = subprocess.run(
+        live_command, cwd=ROOT, capture_output=True, check=False
+    )
+    require(
+        live.returncode == 0,
+        "GitHub official smoke run-attempt verification failed",
+    )
+    _validate_live_workflow_run_attempt(live.stdout, subject)
+
+
+def _validate_official_smoke_pass(
+    smoke: dict[str, Any], *, public_raw: bytes, inventory_raw: bytes,
+    subject_raw: bytes, bundle_raw: bytes,
+) -> None:
+    evidence = smoke.get("official_execution_evidence")
+    require(
+        isinstance(evidence, dict) and set(evidence) == SMOKE_EVIDENCE_FIELDS,
+        "passed grader smoke official evidence field set differs",
+    )
+    require(
+        evidence.get("public_result_path") == OFFICIAL_SMOKE_PUBLIC_RESULT_PATH
+        and evidence.get("evidence_inventory_path")
+        == OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+        "passed grader smoke official evidence paths differ",
+    )
+    require(
+        evidence.get("attestation_subject_path")
+        == OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH
+        and evidence.get("attestation_bundle_path")
+        == OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
+        "passed grader smoke attestation evidence paths differ",
+    )
+    for field, raw in (
+        ("public_result_raw_sha256", public_raw),
+        ("evidence_inventory_raw_sha256", inventory_raw),
+        ("attestation_subject_raw_sha256", subject_raw),
+        ("attestation_bundle_raw_sha256", bundle_raw),
+    ):
+        require(
+            isinstance(evidence.get(field), str)
+            and HEX64.fullmatch(evidence[field]) is not None
+            and evidence[field] == hashlib.sha256(raw).hexdigest(),
+            f"passed grader smoke {field} differs from committed bytes",
+        )
+
+    public = _strict_json_bytes(public_raw, label=OFFICIAL_SMOKE_PUBLIC_RESULT_PATH)
+    inventory = _strict_json_bytes(
+        inventory_raw, label=OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
+    )
+    expected_public_fields = {
+        "schema", *SMOKE_AGGREGATE_BODY_FIELDS, *SMOKE_PUBLIC_ONLY_FIELDS,
+    }
+    require(set(public) == expected_public_fields, "official public smoke field set differs")
+    require(
+        public.get("schema") == "trimem/public-benchmark-artifact/1.0"
+        and public.get("status") == "PASS"
+        and public.get("manifest") == "grader-smoke"
+        and public.get("stream_totals") == []
+        and public.get("restricted_evidence")
+        == "ENCRYPTED_SEPARATE_ARTIFACT_NOT_PUBLIC"
+        and public.get("dataset_rows_or_gold_test_payloads")
+        == "EXCLUDED_AND_EPHEMERAL_INPUTS_PURGED",
+        "official public smoke identity/privacy contract differs",
+    )
+
+    actual_accounting = {
+        "grader_calls": 12,
+        "grader_containers": 12,
+        "model_gateway_calls": 0,
+        "official_grader_runs": 12,
+        "paid_model_calls": 0,
+    }
+    evidence_counts = {
+        name: 12
+        for name in (
+            "patch", "tests", "container", "evaluator", "report", "digest",
+            "applied_patch", "test_output", "official_test_status",
+        )
+    }
+    lifecycle_actual = {
+        "target_image_pulls": 6,
+        "support_image_pulls": 1,
+        "exact_image_removals": 7,
+        "max_resident_target_images": 1,
+        "max_resident_support_images": 1,
+        "resident_target_images": 0,
+        "resident_support_images": 0,
+    }
+    lifecycle = public.get("image_lifecycle")
+    require(
+        public.get("actual_accounting") == actual_accounting
+        and public.get("probe_counts") == {"GOLD": 6, "NOOP_BASELINE": 6}
+        and public.get("resolved_counts") == {"GOLD": 6, "NOOP_BASELINE": 0}
+        and public.get("unresolved_counts") == {"GOLD": 0, "NOOP_BASELINE": 6}
+        and public.get("evidence_counts") == evidence_counts
+        and public.get("empty_patch_ids") == []
+        and type(public.get("expected_target_count")) is int
+        and public["expected_target_count"] == 12
+        and type(public.get("observed_target_count")) is int
+        and public["observed_target_count"] == 12
+        and type(public.get("patch_applied_count")) is int
+        and public["patch_applied_count"] == 12
+        and type(public.get("tests_executed_count")) is int
+        and public["tests_executed_count"] == 12
+        and type(public.get("digest_match_count")) is int
+        and public["digest_match_count"] == 12
+        and type(public.get("infrastructure_failure_count")) is int
+        and public["infrastructure_failure_count"] == 0
+        and isinstance(lifecycle, dict)
+        and set(lifecycle)
+        == {"actual", "event_count", "report_bytes", "report_sha256", "status"}
+        and lifecycle.get("actual") == lifecycle_actual
+        and type(lifecycle.get("event_count")) is int
+        and lifecycle["event_count"] == 14
+        and type(lifecycle.get("report_bytes")) is int
+        and lifecycle["report_bytes"] > 0
+        and isinstance(lifecycle.get("report_sha256"), str)
+        and HEX64.fullmatch(lifecycle["report_sha256"]) is not None
+        and lifecycle.get("status") == "PASS",
+        "official public smoke scientific/lifecycle counters differ",
+    )
+
+    manifest = read_json(CONFIG / "grader_smoke_manifest.json")
+    targets = manifest.get("targets")
+    outcomes = public.get("outcomes")
+    require(
+        isinstance(targets, list)
+        and isinstance(outcomes, list)
+        and len(targets) == len(outcomes) == 12,
+        "official public smoke outcome coverage differs",
+    )
+    outcome_fields = {
+        "benchmark_id", "order_index", "probe", "resolved", "target_id",
+        "applied_patch_sha256", "official_test_output_sha256",
+        "official_test_status_sha256",
+    }
+    for index, (target, outcome) in enumerate(zip(targets, outcomes)):
+        require(
+            isinstance(target, dict)
+            and isinstance(outcome, dict)
+            and set(outcome) == outcome_fields
+            and outcome.get("target_id") == target.get("target_id")
+            and outcome.get("benchmark_id") == target.get("benchmark_id")
+            and type(outcome.get("order_index")) is int
+            and outcome["order_index"] == index == target.get("order_index")
+            and outcome.get("probe") == target.get("probe")
+            and type(outcome.get("resolved")) is bool
+            and outcome["resolved"] is target.get("expected_resolved")
+            and all(
+                isinstance(outcome.get(field), str)
+                and HEX64.fullmatch(outcome[field]) is not None
+                for field in (
+                    "applied_patch_sha256", "official_test_output_sha256",
+                    "official_test_status_sha256",
+                )
+            ),
+            f"official public smoke outcome {index} differs from frozen target",
+        )
+
+    approval = public.get("approval_binding")
+    require(
+        isinstance(approval, dict)
+        and set(approval) == SMOKE_APPROVAL_FIELDS
+        and approval.get("phase") == "GRADER_SMOKE"
+        and isinstance(approval.get("git_head"), str)
+        and HEX40.fullmatch(approval["git_head"]) is not None
+        and all(
+            isinstance(approval.get(field), str)
+            and HEX64.fullmatch(approval[field]) is not None
+            for field in (
+                "approval_artifact_sha256", "approved_request_sha256", "freeze_sha256"
+            )
+        )
+        and all(
+            isinstance(approval.get(field), str)
+            and POSITIVE_INTEGER.fullmatch(approval[field]) is not None
+            for field in ("approved_workflow_run_id", "approved_workflow_run_attempt")
+        ),
+        "official public smoke approval binding differs",
+    )
+    require(
+        evidence.get("approval_binding") == approval,
+        "grader smoke result/public approval binding differs",
+    )
+    _validate_attestation_artifacts(
+        subject_raw=subject_raw,
+        bundle_raw=bundle_raw,
+        public_raw=public_raw,
+        inventory_raw=inventory_raw,
+        approval=approval,
+    )
+    execution_head = approval["git_head"]
+    require(
+        _execution_head_is_ancestor(execution_head),
+        "official smoke execution HEAD is not an ancestor of the result commit",
+    )
+    historical_freeze = _historical_git_file(
+        execution_head, "artifacts/trimem_v1/freeze.json"
+    )
+    historical_request = _historical_git_file(
+        execution_head,
+        "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json",
+    )
+    request = _validate_historical_smoke_request(execution_head, historical_request)
+    require(
+        hashlib.sha256(historical_freeze).hexdigest() == approval["freeze_sha256"]
+        and hashlib.sha256(historical_request).hexdigest()
+        == approval["approved_request_sha256"]
+        and request.get("schema") == "trimem/grader-smoke-branch-trigger/1.0"
+        and request.get("phase") == "GRADER_SMOKE"
+        and request.get("actual_execution_authorized") is False
+        and request.get("requires_external_approval") is True
+        and request.get("freeze_sha256") == "sha256:" + approval["freeze_sha256"],
+        "official smoke historical HEAD/freeze/request binding differs",
+    )
+    historical_freeze_value = _strict_json_bytes(
+        historical_freeze, label="historical official-smoke freeze"
+    )
+    historical_files = historical_freeze_value.get("files")
+    require(isinstance(historical_files, dict), "historical smoke freeze file inventory is missing")
+    for relative in (SMOKE_TRUSTED_ROOT_PATH, SMOKE_ATTESTATION_POLICY_PATH):
+        historical_raw = _historical_git_file(execution_head, relative)
+        current_raw = (ROOT / relative).read_bytes()
+        require(
+            historical_raw == current_raw,
+            f"post-smoke mutation of pre-frozen trust anchor is prohibited: {relative}",
+        )
+        require(
+            historical_files.get(relative)
+            == {
+                "bytes": len(historical_raw),
+                "sha256": hashlib.sha256(historical_raw).hexdigest(),
+            },
+            f"historical smoke freeze does not seal trust anchor: {relative}",
+        )
+
+    aggregate_body = {
+        field: public[field] for field in SMOKE_AGGREGATE_BODY_FIELDS
+    }
+    aggregate_body["schema"] = "trimem/verified-aggregate/1.0"
+    aggregate_sha = hashlib.sha256(canonical(aggregate_body)).hexdigest()
+    require(
+        public.get("verified_aggregate_sha256") == aggregate_sha
+        and evidence.get("verified_aggregate_sha256") == aggregate_sha,
+        "official public smoke does not reproduce its verified aggregate seal",
+    )
+    aggregate_raw = _pretty_json({**aggregate_body, "aggregate_sha256": aggregate_sha})
+    require(
+        isinstance(evidence.get("aggregate_raw_sha256"), str)
+        and HEX64.fullmatch(evidence["aggregate_raw_sha256"]) is not None
+        and evidence["aggregate_raw_sha256"]
+        == hashlib.sha256(aggregate_raw).hexdigest(),
+        "grader smoke result aggregate raw SHA differs",
+    )
+    rows = _inventory_rows(inventory)
+    _require_inventory_raw(rows, "aggregate.json", aggregate_raw, label="aggregate")
+    _require_inventory_raw(rows, "public-results.json", public_raw, label="public result")
+    public_approval_raw = _pretty_json(approval)
+    _require_inventory_raw(
+        rows,
+        "results/external-approval-evidence.json",
+        public_approval_raw,
+        label="public approval subset",
+    )
+    restricted_approval = rows.get("results/restricted-external-approval.json")
+    require(
+        isinstance(restricted_approval, Mapping)
+        and restricted_approval.get("sha256") == approval["approval_artifact_sha256"]
+        and type(restricted_approval.get("bytes")) is int
+        and restricted_approval["bytes"] > 0,
+        "official smoke restricted approval inventory binding differs",
+    )
+    lifecycle_row = rows.get("image-materialization/image-lifecycle-report.json")
+    require(
+        isinstance(lifecycle_row, Mapping)
+        and lifecycle_row.get("sha256") == lifecycle["report_sha256"]
+        and lifecycle_row.get("bytes") == lifecycle["report_bytes"],
+        "official smoke lifecycle report inventory binding differs",
+    )
+    summary = {
+        "schema": "trimem/grader-smoke-execution/1.0",
+        "expected_target_count": 12,
+        "observed_target_count": 12,
+        "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
+        "empty_patch_ids": [],
+        "failures": [],
+        "grader_containers": 12,
+        "official_grader_runs": 12,
+        "patch_applied_count": 12,
+        "tests_executed_count": 12,
+        "digest_match_count": 12,
+        "infrastructure_failure_count": 0,
+        "model_gateway_calls": 0,
+        "paid_model_calls": 0,
+        "status": "PASS",
+    }
+    _require_inventory_raw(
+        rows,
+        "results/smoke-execution-summary.json",
+        _pretty_json(summary),
+        label="execution summary",
+    )
+    expected_result_paths = set()
+    for index, target in enumerate(targets):
+        safe = re.sub(r"[^A-Za-z0-9_.-]", "_", str(target["target_id"]))
+        expected_result_paths.add(f"results/{index:03d}-{safe}/{safe}.result.json")
+    observed_result_paths = {
+        path for path in rows
+        if re.fullmatch(r"results/[0-9]{3}-[^/]+/[^/]+\.result\.json", path)
+    }
+    require(
+        observed_result_paths == expected_result_paths,
+        "official smoke inventory task-result exact set differs",
+    )
+
+
+def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
+    pending = smoke.get("status") == "CORRECTION_IN_PROGRESS"
+    expected_fields = SMOKE_RESULT_COMMON_FIELDS if pending else {
+        *SMOKE_RESULT_COMMON_FIELDS, "official_execution_evidence",
+    }
+    require(set(smoke) == expected_fields, "grader smoke result field set differs")
+    require(
+        smoke.get("schema") == "trimem/grader-smoke-result/1.0"
+        and smoke.get("trimem_system_implementation") == "CREDENTIAL_FREE_GREEN"
+        and smoke.get("performance") == "NOT_MEASURED"
+        and smoke.get("expected_unique_instances") == 6
+        and smoke.get("expected_target_count") == 12
+        and smoke.get("expected_condition_rows")
+        == {"GOLD": 6, "NOOP_BASELINE": 6},
+        "grader smoke result static contract differs",
+    )
+    pre_smoke_actual = {
+        "docker_pulls": 0,
+        "grader_containers": 0,
+        "input_tokens": 0,
+        "model_calls": 0,
+        "official_grader_runs": 0,
+        "output_tokens": 0,
+        "paid_model_calls": 0,
+        "total_usd": 0,
+    }
+    passed_smoke_actual = {
+        **pre_smoke_actual,
+        "docker_pulls": 7,
+        "grader_containers": 12,
+        "official_grader_runs": 12,
+    }
+    actual = smoke.get("actual_execution")
+    require(
+        isinstance(actual, dict) and all(type(value) is int for value in actual.values()),
+        "grader smoke execution counter types differ",
+    )
+    state = (
+        smoke.get("status"), smoke.get("grader_exec_package"),
+        smoke.get("official_grader_viability"),
+    )
+    if pending:
+        require(
+            state
+            == (
+                "CORRECTION_IN_PROGRESS", "CORRECTION_IN_PROGRESS",
+                "NOT_YET_ESTABLISHED",
+            )
+            and actual == pre_smoke_actual,
+            "pre-exec grader smoke state/counter contract is invalid",
+        )
+    else:
+        require(
+            state == ("PASS", "PASS", "ESTABLISHED")
+            and actual == passed_smoke_actual,
+            "passed grader smoke state/counter contract is invalid",
+        )
+        public_raw = (ROOT / OFFICIAL_SMOKE_PUBLIC_RESULT_PATH).read_bytes()
+        inventory_raw = (ROOT / OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH).read_bytes()
+        subject_raw = (ROOT / OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH).read_bytes()
+        bundle_raw = (ROOT / OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH).read_bytes()
+        _validate_official_smoke_pass(
+            smoke, public_raw=public_raw, inventory_raw=inventory_raw,
+            subject_raw=subject_raw, bundle_raw=bundle_raw,
+        )
+    return actual
 
 
 def exact_hash(value: Any, message: str, length: int = 64) -> str:
@@ -530,6 +1710,72 @@ def validate_runtime_and_candidates() -> None:
     )
 
 
+def validate_smoke_environment_protection(environment: Mapping[str, Any]) -> None:
+    """Require the exact protected-environment snapshot for both smoke routes."""
+
+    push_branch = SMOKE_ATTESTATION_SOURCE_REF_BY_EVENT["push"].removeprefix(
+        "refs/heads/"
+    )
+    dispatch_branch = SMOKE_ATTESTATION_SOURCE_REF_BY_EVENT[
+        "workflow_dispatch"
+    ].removeprefix("refs/heads/")
+    expected = {
+        "branch_policies": {
+            "branch_policies": [
+                {"id": 58766765, "name": push_branch, "type": "branch"},
+                {"id": 58775497, "name": dispatch_branch, "type": "branch"},
+            ],
+            "total_count": 2,
+        },
+        "configured_before_sentinel": True,
+        "deployment_branch_policy": {
+            "custom_branch_policies": True,
+            "protected_branches": False,
+        },
+        "environment": {
+            "can_admins_bypass": False,
+            "id": 20971935382,
+            "name": "trimem-grader-smoke-exec",
+        },
+        "observed_at_utc": "2026-09-01T04:18:06Z",
+        "protection_rule": {
+            "id": 64238011,
+            "prevent_self_review": False,
+            "reviewers": [{"id": 95427459, "login": "Scuttie", "type": "User"}],
+            "type": "required_reviewers",
+        },
+        "repository": SMOKE_ATTESTATION_REPOSITORY,
+        "schema": "trimem/grader-smoke-environment-protection/1.1",
+        "secret_state_before_sentinel": {
+            "installed_secret_names": [],
+            "required_later": [
+                "TRIMEM_EVIDENCE_PASSPHRASE",
+                "TRIMEM_EXEC_APPROVAL_B64",
+            ],
+            "total_count": 0,
+        },
+        "source_api_paths": [
+            (
+                "repos/Scuttie/enterprise-shared-memory-poc/environments/"
+                "trimem-grader-smoke-exec"
+            ),
+            (
+                "repos/Scuttie/enterprise-shared-memory-poc/environments/"
+                "trimem-grader-smoke-exec/deployment-branch-policies"
+            ),
+            (
+                "repos/Scuttie/enterprise-shared-memory-poc/environments/"
+                "trimem-grader-smoke-exec/secrets"
+            ),
+        ],
+        "status": "CONFIGURED",
+    }
+    require(
+        dict(environment) == expected,
+        "grader-smoke protected environment snapshot/route policy set differs",
+    )
+
+
 def validate_workflows() -> None:
     automatic = [ROOT / ".github/workflows/ci-trimem.yml", ROOT / ".github/workflows/ci-trimem-e2e.yml"]
     smoke_workflow = ROOT / ".github/workflows/trimem-grader-smoke.yml"
@@ -568,6 +1814,47 @@ def validate_workflows() -> None:
         "environment: trimem-grader-smoke-exec" in smoke,
         "smoke job is not held by the protected environment",
     )
+    require(
+        "github.ref == 'refs/heads/main'" in smoke
+        and smoke.count(SMOKE_ATTESTATION_ACTION) == 1
+        and "permissions:\n      attestations: write\n      contents: read\n      id-token: write"
+        in smoke
+        and "create-storage-record: false" in smoke
+        and "push-to-registry: false" in smoke
+        and "subject-path: ${{ runner.temp }}/attestation-subject.json"
+        in smoke
+        and "trimem_smoke_attestation.py" in smoke
+        and "trimem-grader-smoke-attestation-bundle.json" in smoke
+        and "name: trimem-grader-smoke-attestation-bundle" in smoke,
+        "smoke GitHub-hosted attestation action/permissions/artifact path differs",
+    )
+    upload_public = smoke.find("- name: Upload public smoke result")
+    upload_inventory = smoke.find(
+        "- name: Upload non-sensitive restricted evidence inventory"
+    )
+    upload_encrypted = smoke.find("- name: Upload encrypted restricted evidence")
+    cleanup_before_signing = smoke.find(
+        "- name: Remove plaintext and temporary EXEC material before signing"
+    )
+    attest = smoke.find(
+        "- name: Attest exact uploaded and cleaned official smoke subject"
+    )
+    upload_bundle = smoke.find("- name: Upload official smoke attestation bundle")
+    require(
+        -1
+        not in {
+            upload_public, upload_inventory, upload_encrypted,
+            cleanup_before_signing, attest, upload_bundle,
+        }
+        and upload_public
+        < upload_inventory
+        < upload_encrypted
+        < cleanup_before_signing
+        < attest
+        < upload_bundle
+        and "if: always()" not in smoke[attest:upload_bundle],
+        "smoke upload/cleanup/signing order can attest an incomplete or red execution",
+    )
     smoke_secrets = set(
         re.findall(r"\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)", smoke)
     )
@@ -584,6 +1871,16 @@ def validate_workflows() -> None:
             for trigger in ("pull_request:", "push:", "schedule:")
         ),
         "benchmark EXEC workflow is not manual-only",
+    )
+    gate_start = benchmark_text.find("- name: Verify exact phase EXEC gate")
+    gate_end = benchmark_text.find("- name: Apply exact migration head")
+    require(
+        "permissions:\n  actions: read\n  contents: read" in benchmark_text
+        and benchmark_text.count("GH_TOKEN: ${{ github.token }}") == 1
+        and 0 <= gate_start < gate_end
+        and "GH_TOKEN: ${{ github.token }}"
+        in benchmark_text[gate_start:gate_end],
+        "benchmark live-run gate lacks least-privilege Actions read token scope",
     )
     for path in manual:
         text = path.read_text(encoding="utf-8")
@@ -607,37 +1904,14 @@ def validate_workflows() -> None:
     environment = read_json(
         ARTIFACT / "grader_smoke_environment_protection.json"
     )
-    require(
-        environment.get("status") == "CONFIGURED"
-        and environment.get("configured_before_sentinel") is True,
-        "grader-smoke protected environment was not documented before sentinel",
-    )
-    environment_row = environment.get("environment", {})
-    reviewer_rule = environment.get("protection_rule", {})
-    branch_policy = environment.get("branch_policy", {})
-    require(
-        environment_row.get("name") == "trimem-grader-smoke-exec"
-        and environment_row.get("can_admins_bypass") is False
-        and reviewer_rule.get("type") == "required_reviewers"
-        and bool(reviewer_rule.get("reviewers"))
-        and branch_policy.get("name") == "codex/trimem-coder-v1"
-        and branch_policy.get("type") == "branch",
-        "grader-smoke protected environment proof is incomplete",
-    )
-    secret_state = environment.get("secret_state_before_sentinel", {})
-    require(
-        secret_state.get("installed_secret_names") == []
-        and set(secret_state.get("required_later", ()))
-        == {"TRIMEM_EXEC_APPROVAL_B64", "TRIMEM_EVIDENCE_PASSPHRASE"},
-        "grader-smoke pre-sentinel environment-secret state is not exact",
-    )
+    validate_smoke_environment_protection(environment)
 
 
 def validate_eol_policy() -> None:
     attributes = (ROOT / ".gitattributes").read_text(encoding="utf-8")
     require("scripts/trimem_*.py text eol=lf" in attributes and "configs/trimem_v1/** text eol=lf" in attributes, "cross-platform LF freeze policy is absent")
     representative = (
-        ".gitattributes", "alembic.ini", "DEPENDENCY_PROVENANCE.json", "requirements.lock",
+        ".gitattributes", ".gitignore", "alembic.ini", "DEPENDENCY_PROVENANCE.json", "requirements.lock",
         "pyproject.toml", "configs/trimem_v1/model_lock.json", "scripts/trimem_freeze.py",
         "scripts/check_migration_head.py", "docs/TRIMEM_V1_SYSTEM.md",
         ".github/workflows/ci-trimem.yml", "migrations/env.py",
@@ -669,6 +1943,7 @@ def validate_eol_policy() -> None:
 
 def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     check_freeze(ROOT, require_git_tracked=require_git_tracked)
+    validate_smoke_attestation_policy()
     validate_eol_policy()
     validate_sources()
     targets = validate_targets()
@@ -703,61 +1978,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     required = set(request.get("required_approval_fields", ()))
     require({"approved_workflow_run_id", "approved_workflow_run_attempt"} <= required, "single-dispatch EXEC approval binding is absent")
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
-    require(set(smoke) == {
-        "schema", "status", "trimem_system_implementation", "grader_exec_package",
-        "official_grader_viability", "performance", "expected_unique_instances",
-        "expected_target_count", "expected_condition_rows", "actual_execution",
-    }, "grader smoke result field set differs")
-    require(
-        smoke.get("schema") == "trimem/grader-smoke-result/1.0"
-        and smoke.get("trimem_system_implementation") == "CREDENTIAL_FREE_GREEN"
-        and smoke.get("performance") == "NOT_MEASURED"
-        and smoke.get("expected_unique_instances") == 6
-        and smoke.get("expected_target_count") == 12
-        and smoke.get("expected_condition_rows")
-        == {"GOLD": 6, "NOOP_BASELINE": 6},
-        "grader smoke result static contract differs",
-    )
-    smoke_actual = smoke.get("actual_execution")
-    pre_smoke_actual = {
-        "docker_pulls": 0,
-        "grader_containers": 0,
-        "input_tokens": 0,
-        "model_calls": 0,
-        "official_grader_runs": 0,
-        "output_tokens": 0,
-        "paid_model_calls": 0,
-        "total_usd": 0,
-    }
-    passed_smoke_actual = {
-        **pre_smoke_actual,
-        "docker_pulls": 7,
-        "grader_containers": 12,
-        "official_grader_runs": 12,
-    }
-    smoke_state = (
-        smoke.get("status"), smoke.get("grader_exec_package"),
-        smoke.get("official_grader_viability"),
-    )
-    require(
-        isinstance(smoke_actual, dict)
-        and all(type(value) is int for value in smoke_actual.values())
-        and (
-        (
-            smoke_state
-            == (
-                "CORRECTION_IN_PROGRESS", "CORRECTION_IN_PROGRESS",
-                "NOT_YET_ESTABLISHED",
-            )
-            and smoke_actual == pre_smoke_actual
-        )
-        or (
-            smoke_state == ("PASS", "PASS", "ESTABLISHED")
-            and smoke_actual == passed_smoke_actual
-        )
-        ),
-        "grader smoke state/counter contract is invalid",
-    )
+    smoke_actual = validate_grader_smoke_result(smoke)
     return {
         "credential_free_bundle_hash": credential["bundle_hash"],
         "development_physical_runs": 72,
@@ -767,6 +1988,9 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "model_calls": smoke_actual["model_calls"],
         "official_grader_runs": smoke_actual["official_grader_runs"],
         "paid_model_calls": smoke_actual["paid_model_calls"],
+        "grader_exec_package": smoke["grader_exec_package"],
+        "official_grader_viability": smoke["official_grader_viability"],
+        "performance": smoke["performance"],
     }
 
 
@@ -776,15 +2000,10 @@ def preapproval_blockers() -> list[str]:
     if selected.get("status") != "PRE_DEVELOPMENT":
         blockers.append("pre-development selection placeholder is not exact")
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
-    smoke_state = (
-        smoke.get("status"),
-        smoke.get("official_grader_viability"),
-    )
-    if smoke_state not in {
-        ("CORRECTION_IN_PROGRESS", "NOT_YET_ESTABLISHED"),
-        ("PASS", "ESTABLISHED"),
-    }:
-        blockers.append("grader-smoke correction/viability state is inconsistent")
+    try:
+        validate_grader_smoke_result(smoke)
+    except (OSError, ValueError) as exc:
+        blockers.append(f"grader-smoke evidence validation failed: {exc}")
     request = read_json(CONFIG / "benchmark_exec_request.json")
     if request.get("approval_state") != "PENDING_EXEC_APPROVAL":
         blockers.append("committed external approval request is not pending")
@@ -802,8 +2021,17 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
     except (OSError, ValueError) as exc:
         return [str(exc)], None
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
-    if name in {"development", "heldout"} and smoke.get("status") != "PASS":
-        return ["official GOLD+NOOP_BASELINE smoke PASS is required before benchmark execution"], name
+    if name in {"development", "heldout"}:
+        try:
+            validate_grader_smoke_result(smoke)
+        except (OSError, ValueError) as exc:
+            return [f"official grader smoke evidence is invalid: {exc}"], name
+        if smoke.get("status") != "PASS":
+            return ["official GOLD+NOOP_BASELINE smoke PASS is required before benchmark execution"], name
+        try:
+            verify_official_smoke_attestation_cryptographically()
+        except (OSError, ValueError, subprocess.SubprocessError) as exc:
+            return [f"official grader smoke attestation verification failed: {exc}"], name
     selected = validate_selected_m2(require_frozen=False)
     if name == "development" and selected.get("status") != "PRE_DEVELOPMENT":
         return ["development requires the exact PRE_DEVELOPMENT selection state"], name
@@ -841,15 +2069,21 @@ def main() -> int:
                 blockers.append("grader-smoke gate received a non-smoke approval")
             if args.level == "benchmark-exec" and phase not in {None, "development", "heldout"}:
                 blockers.append("benchmark gate received a non-benchmark approval")
+        committed_package = evidence.get(
+            "grader_exec_package", "CORRECTION_IN_PROGRESS"
+        )
+        committed_viability = evidence.get(
+            "official_grader_viability", "NOT_YET_ESTABLISHED"
+        )
         report = {
             **evidence,
             "blockers": blockers,
             "level": args.level,
             "approved_phase": phase,
             "git_tracked_freeze_required": require_git_tracked,
-            "grader_exec_package": "CORRECTION_IN_PROGRESS",
-            "official_grader_viability": "NOT_YET_ESTABLISHED" if args.level == "benchmark-approval" else "EXECUTION_GATED",
-            "performance": "NOT_MEASURED",
+            "grader_exec_package": committed_package,
+            "official_grader_viability": committed_viability,
+            "performance": evidence.get("performance", "NOT_MEASURED"),
             "status": "PASS" if not blockers else "FAIL_CLOSED",
             "trimem_system_implementation": "CREDENTIAL_FREE_GREEN",
         }

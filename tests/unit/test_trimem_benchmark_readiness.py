@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import base64
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 import hashlib
@@ -30,6 +31,7 @@ import trimem_public_artifact as public_artifact  # noqa: E402
 import trimem_pull_locked_images as image_pull  # noqa: E402
 import trimem_run_with_resume as resume_runner  # noqa: E402
 import trimem_select_targets as selector  # noqa: E402
+import trimem_smoke_attestation as smoke_attestation  # noqa: E402
 import trimem_verify_ready as readiness  # noqa: E402
 from enterprise_memory.trimem.workspace import WorkspaceGraderContext  # noqa: E402
 
@@ -219,9 +221,44 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
         "id": 20971935382,
         "name": "trimem-grader-smoke-exec",
     }
+    assert protection["schema"] == "trimem/grader-smoke-environment-protection/1.1"
+    assert protection["observed_at_utc"] == "2026-09-01T04:18:06Z"
     assert protection["protection_rule"]["type"] == "required_reviewers"
-    assert protection["branch_policy"]["name"] == "codex/trimem-coder-v1"
+    assert protection["branch_policies"] == {
+        "branch_policies": [
+            {"id": 58766765, "name": "codex/trimem-coder-v1", "type": "branch"},
+            {"id": 58775497, "name": "main", "type": "branch"},
+        ],
+        "total_count": 2,
+    }
     assert protection["secret_state_before_sentinel"]["installed_secret_names"] == []
+    assert protection["secret_state_before_sentinel"]["total_count"] == 0
+    readiness.validate_smoke_environment_protection(protection)
+
+
+def test_smoke_environment_policy_set_is_exact_and_matches_both_workflow_routes() -> None:
+    protection = _read(
+        ROOT / "artifacts/trimem_v1/grader_smoke_environment_protection.json"
+    )
+    policies = protection["branch_policies"]["branch_policies"]
+    assert {row["name"] for row in policies} == {
+        source_ref.removeprefix("refs/heads/")
+        for source_ref in readiness.SMOKE_ATTESTATION_SOURCE_REF_BY_EVENT.values()
+    }
+    for mutate in (
+        lambda value: value["branch_policies"].update(total_count=1),
+        lambda value: value["branch_policies"]["branch_policies"][1].update(
+            id=58766765
+        ),
+        lambda value: value["branch_policies"]["branch_policies"][1].update(
+            name="codex/trimem-coder-v1"
+        ),
+        lambda value: value["secret_state_before_sentinel"].update(total_count=1),
+    ):
+        tampered = json.loads(json.dumps(protection))
+        mutate(tampered)
+        with pytest.raises(readiness.ReadinessError, match="route policy set differs"):
+            readiness.validate_smoke_environment_protection(tampered)
 
 
 def test_benchmark_approval_cannot_disable_git_tracked_freeze(
@@ -245,6 +282,920 @@ def test_benchmark_approval_cannot_disable_git_tracked_freeze(
     assert report["git_tracked_freeze_required"] is True
     assert "endpoint" not in report
     assert report["official_grader_viability"] == "NOT_YET_ESTABLISHED"
+
+
+def test_readiness_report_derives_validated_post_smoke_state(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        readiness,
+        "validate_static",
+        lambda require_git_tracked: {
+            "grader_exec_package": "PASS",
+            "official_grader_viability": "ESTABLISHED",
+            "performance": "NOT_MEASURED",
+        },
+    )
+    monkeypatch.setattr(readiness, "preapproval_blockers", lambda: [])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["trimem_verify_ready.py", "--level", "benchmark-approval"],
+    )
+    assert readiness.main() == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["grader_exec_package"] == "PASS"
+    assert report["official_grader_viability"] == "ESTABLISHED"
+
+
+def test_pre_exec_grader_gate_keeps_not_yet_established_status(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        readiness,
+        "validate_static",
+        lambda require_git_tracked: {
+            "grader_exec_package": "CORRECTION_IN_PROGRESS",
+            "official_grader_viability": "NOT_YET_ESTABLISHED",
+            "performance": "NOT_MEASURED",
+        },
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["trimem_verify_ready.py", "--level", "grader-smoke-exec"],
+    )
+    assert readiness.main() == 1
+    report = json.loads(capsys.readouterr().out)
+    assert report["status"] == "FAIL_CLOSED"
+    assert report["grader_exec_package"] == "CORRECTION_IN_PROGRESS"
+    assert report["official_grader_viability"] == "NOT_YET_ESTABLISHED"
+
+
+def _inventory_bytes(value: dict) -> bytes:
+    payload = {
+        "files": value["files"],
+        "root": value["root"],
+        "schema": value["schema"],
+        "total_bytes": sum(row["bytes"] for row in value["files"]),
+        "total_files": len(value["files"]),
+    }
+    value.update(payload)
+    value["inventory_sha256"] = hashlib.sha256(_canonical(payload)).hexdigest()
+    return _canonical(value) + b"\n"
+
+
+def _official_smoke_pass_fixture(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> tuple[dict, dict, dict, bytes, bytes, bytes, bytes]:
+    source_root = ROOT
+    repository = tmp_path / "repository"
+    config = repository / "configs/trimem_v1"
+    artifact = repository / "artifacts/trimem_v1"
+    official = artifact / "grader_smoke_official"
+    config.mkdir(parents=True)
+    official.mkdir(parents=True)
+    manifest = _read(ROOT / "configs/trimem_v1/grader_smoke_manifest.json")
+    (config / "grader_smoke_manifest.json").write_text(
+        json.dumps(manifest), encoding="utf-8"
+    )
+    trusted_root_raw = (
+        source_root / "configs/trimem_v1/sigstore_trusted_root.jsonl"
+    ).read_bytes()
+    attestation_policy_raw = (
+        source_root / "configs/trimem_v1/smoke_attestation_policy.json"
+    ).read_bytes()
+    (config / "sigstore_trusted_root.jsonl").write_bytes(trusted_root_raw)
+    (config / "smoke_attestation_policy.json").write_bytes(attestation_policy_raw)
+    monkeypatch.setattr(readiness, "ROOT", repository)
+    monkeypatch.setattr(readiness, "CONFIG", config)
+    monkeypatch.setattr(readiness, "ARTIFACT", artifact)
+    monkeypatch.setenv("GH_TOKEN", "fixture-read-only-token")
+
+    execution_head = "b" * 40
+    historical_freeze = readiness._pretty_json({
+        "files": {
+            readiness.SMOKE_ATTESTATION_POLICY_PATH: {
+                "bytes": len(attestation_policy_raw),
+                "sha256": hashlib.sha256(attestation_policy_raw).hexdigest(),
+            },
+            readiness.SMOKE_TRUSTED_ROOT_PATH: {
+                "bytes": len(trusted_root_raw),
+                "sha256": hashlib.sha256(trusted_root_raw).hexdigest(),
+            },
+        },
+        "hash_algorithm": "sha256",
+        "path_policy": "fixture",
+        "schema": "trimem/freeze/1.0",
+    })
+    freeze_sha = hashlib.sha256(historical_freeze).hexdigest()
+    request = {
+        "schema": "trimem/grader-smoke-branch-trigger/1.0",
+        "phase": "GRADER_SMOKE",
+        "actual_execution_authorized": False,
+        "requires_external_approval": True,
+        "freeze_sha256": "sha256:" + freeze_sha,
+    }
+    historical_request = _canonical(request) + b"\n"
+    approval = {
+        "approval_artifact_sha256": "a" * 64,
+        "approved_request_sha256": hashlib.sha256(historical_request).hexdigest(),
+        "approved_workflow_run_id": "8123456789",
+        "approved_workflow_run_attempt": "1",
+        "freeze_sha256": freeze_sha,
+        "git_head": execution_head,
+        "phase": "GRADER_SMOKE",
+    }
+    outcomes = [
+        {
+            "benchmark_id": target["benchmark_id"],
+            "order_index": index,
+            "probe": target["probe"],
+            "resolved": target["expected_resolved"],
+            "target_id": target["target_id"],
+            "applied_patch_sha256": "c" * 64,
+            "official_test_output_sha256": "d" * 64,
+            "official_test_status_sha256": "e" * 64,
+        }
+        for index, target in enumerate(manifest["targets"])
+    ]
+    lifecycle_raw = b'{"official":"image-lifecycle"}\n'
+    lifecycle = {
+        "actual": {
+            "target_image_pulls": 6,
+            "support_image_pulls": 1,
+            "exact_image_removals": 7,
+            "max_resident_target_images": 1,
+            "max_resident_support_images": 1,
+            "resident_target_images": 0,
+            "resident_support_images": 0,
+        },
+        "event_count": 14,
+        "report_bytes": len(lifecycle_raw),
+        "report_sha256": hashlib.sha256(lifecycle_raw).hexdigest(),
+        "status": "PASS",
+    }
+    public = {
+        "schema": "trimem/public-benchmark-artifact/1.0",
+        "status": "PASS",
+        "manifest": "grader-smoke",
+        "outcomes": outcomes,
+        "stream_totals": [],
+        "approval_binding": approval,
+        "restricted_evidence": "ENCRYPTED_SEPARATE_ARTIFACT_NOT_PUBLIC",
+        "dataset_rows_or_gold_test_payloads": "EXCLUDED_AND_EPHEMERAL_INPUTS_PURGED",
+        "actual_accounting": {
+            "grader_calls": 12,
+            "grader_containers": 12,
+            "model_gateway_calls": 0,
+            "official_grader_runs": 12,
+            "paid_model_calls": 0,
+        },
+        "digest_match_count": 12,
+        "empty_patch_ids": [],
+        "evidence_counts": {
+            name: 12 for name in (
+                "patch", "tests", "container", "evaluator", "report", "digest",
+                "applied_patch", "test_output", "official_test_status",
+            )
+        },
+        "expected_target_count": 12,
+        "image_lifecycle": lifecycle,
+        "infrastructure_failure_count": 0,
+        "observed_target_count": 12,
+        "patch_applied_count": 12,
+        "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
+        "resolved_counts": {"GOLD": 6, "NOOP_BASELINE": 0},
+        "tests_executed_count": 12,
+        "unresolved_counts": {"GOLD": 0, "NOOP_BASELINE": 6},
+    }
+    aggregate_body = {
+        field: public[field] for field in readiness.SMOKE_AGGREGATE_BODY_FIELDS
+    }
+    aggregate_body["schema"] = "trimem/verified-aggregate/1.0"
+    aggregate_sha = hashlib.sha256(_canonical(aggregate_body)).hexdigest()
+    public["verified_aggregate_sha256"] = aggregate_sha
+    aggregate_raw = readiness._pretty_json(
+        {**aggregate_body, "aggregate_sha256": aggregate_sha}
+    )
+    public_raw = readiness._pretty_json(public)
+    summary = {
+        "schema": "trimem/grader-smoke-execution/1.0",
+        "expected_target_count": 12,
+        "observed_target_count": 12,
+        "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
+        "empty_patch_ids": [],
+        "failures": [],
+        "grader_containers": 12,
+        "official_grader_runs": 12,
+        "patch_applied_count": 12,
+        "tests_executed_count": 12,
+        "digest_match_count": 12,
+        "infrastructure_failure_count": 0,
+        "model_gateway_calls": 0,
+        "paid_model_calls": 0,
+        "status": "PASS",
+    }
+    inventory_rows = [
+        {"path": "aggregate.json", "sha256": hashlib.sha256(aggregate_raw).hexdigest(), "bytes": len(aggregate_raw)},
+        {"path": "image-materialization/image-lifecycle-report.json", "sha256": lifecycle["report_sha256"], "bytes": lifecycle["report_bytes"]},
+        {"path": "public-results.json", "sha256": hashlib.sha256(public_raw).hexdigest(), "bytes": len(public_raw)},
+        {"path": "results/external-approval-evidence.json", "sha256": hashlib.sha256(readiness._pretty_json(approval)).hexdigest(), "bytes": len(readiness._pretty_json(approval))},
+        {"path": "results/restricted-external-approval.json", "sha256": approval["approval_artifact_sha256"], "bytes": 257},
+        {"path": "results/smoke-execution-summary.json", "sha256": hashlib.sha256(readiness._pretty_json(summary)).hexdigest(), "bytes": len(readiness._pretty_json(summary))},
+    ]
+    for index, target in enumerate(manifest["targets"]):
+        safe = re.sub(r"[^A-Za-z0-9_.-]", "_", target["target_id"])
+        inventory_rows.append({
+            "path": f"results/{index:03d}-{safe}/{safe}.result.json",
+            "sha256": hashlib.sha256(f"result-{index}".encode()).hexdigest(),
+            "bytes": 100 + index,
+        })
+    inventory = {
+        "schema": "trimem/restricted-evidence-inventory/1.0",
+        "root": "grader_smoke_exec",
+        "files": sorted(inventory_rows, key=lambda row: row["path"]),
+        "total_bytes": 0,
+        "total_files": 0,
+        "inventory_sha256": "",
+    }
+    inventory_raw = _inventory_bytes(inventory)
+    subject = {
+        "approval_binding": approval,
+        "artifacts": {
+            "encrypted_restricted_evidence": {
+                "bytes": 4096,
+                "name": "trimem-grader-smoke-restricted.tar.enc",
+                "sha256": "f" * 64,
+            },
+            "evidence_inventory": {
+                "bytes": len(inventory_raw),
+                "name": "evidence-inventory.json",
+                "sha256": hashlib.sha256(inventory_raw).hexdigest(),
+            },
+            "public_results": {
+                "bytes": len(public_raw),
+                "name": "public-results.json",
+                "sha256": hashlib.sha256(public_raw).hexdigest(),
+            },
+        },
+        "execution": {
+            "event_name": "push",
+            "repository": readiness.SMOKE_ATTESTATION_REPOSITORY,
+            "runner_environment": readiness.SMOKE_ATTESTATION_RUNNER,
+            "signer_workflow": readiness.SMOKE_ATTESTATION_WORKFLOW,
+            "source_digest": execution_head,
+            "source_ref": readiness.SMOKE_ATTESTATION_SOURCE_REF_BY_EVENT["push"],
+            "workflow_run_attempt": approval["approved_workflow_run_attempt"],
+            "workflow_run_id": approval["approved_workflow_run_id"],
+        },
+        "schema": readiness.SMOKE_ATTESTATION_SCHEMA,
+    }
+    subject_raw = readiness._pretty_json(subject)
+    statement = {
+        "_type": "https://in-toto.io/Statement/v1",
+        "predicate": {},
+        "predicateType": "https://slsa.dev/provenance/v1",
+        "subject": [{
+            "digest": {"sha256": hashlib.sha256(subject_raw).hexdigest()},
+            "name": "attestation-subject.json",
+        }],
+    }
+    bundle = {
+        "dsseEnvelope": {
+            "payload": base64.b64encode(_canonical(statement)).decode("ascii"),
+            "payloadType": "application/vnd.in-toto+json",
+            "signatures": [{"sig": "ZmFrZS1zaWduYXR1cmU="}],
+        },
+        "mediaType": "application/vnd.dev.sigstore.bundle.v0.3+json",
+        "verificationMaterial": {
+            "certificate": {"rawBytes": "ZmFrZS1jZXJ0aWZpY2F0ZQ=="},
+            "timestampVerificationData": {},
+        },
+    }
+    bundle_raw = readiness._pretty_json(bundle)
+    smoke = {
+        "schema": "trimem/grader-smoke-result/1.0",
+        "status": "PASS",
+        "trimem_system_implementation": "CREDENTIAL_FREE_GREEN",
+        "grader_exec_package": "PASS",
+        "official_grader_viability": "ESTABLISHED",
+        "performance": "NOT_MEASURED",
+        "expected_unique_instances": 6,
+        "expected_target_count": 12,
+        "expected_condition_rows": {"GOLD": 6, "NOOP_BASELINE": 6},
+        "actual_execution": {
+            "docker_pulls": 7,
+            "grader_containers": 12,
+            "input_tokens": 0,
+            "model_calls": 0,
+            "official_grader_runs": 12,
+            "output_tokens": 0,
+            "paid_model_calls": 0,
+            "total_usd": 0,
+        },
+        "official_execution_evidence": {
+            "public_result_path": freeze.OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
+            "public_result_raw_sha256": hashlib.sha256(public_raw).hexdigest(),
+            "evidence_inventory_path": freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+            "evidence_inventory_raw_sha256": hashlib.sha256(inventory_raw).hexdigest(),
+            "verified_aggregate_sha256": aggregate_sha,
+            "aggregate_raw_sha256": hashlib.sha256(aggregate_raw).hexdigest(),
+            "approval_binding": approval,
+            "attestation_subject_path": freeze.OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
+            "attestation_subject_raw_sha256": hashlib.sha256(subject_raw).hexdigest(),
+            "attestation_bundle_path": freeze.OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
+            "attestation_bundle_raw_sha256": hashlib.sha256(bundle_raw).hexdigest(),
+        },
+    }
+    (artifact / "grader_smoke_result.json").write_bytes(readiness._pretty_json(smoke))
+    (repository / freeze.OFFICIAL_SMOKE_PUBLIC_RESULT_PATH).write_bytes(public_raw)
+    (repository / freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH).write_bytes(inventory_raw)
+    (repository / freeze.OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH).write_bytes(subject_raw)
+    (repository / freeze.OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH).write_bytes(bundle_raw)
+    monkeypatch.setattr(
+        readiness,
+        "_bundle_certificate_bindings",
+        lambda _bundle: readiness._expected_certificate_bindings(subject),
+    )
+    monkeypatch.setattr(readiness, "_execution_head_is_ancestor", lambda commit: commit == execution_head)
+    monkeypatch.setattr(
+        readiness,
+        "_validate_historical_smoke_request",
+        lambda commit, raw: json.loads(raw),
+    )
+    monkeypatch.setattr(
+        readiness,
+        "_historical_git_file",
+        lambda commit, path: {
+            "artifacts/trimem_v1/freeze.json": historical_freeze,
+            "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json": historical_request,
+            readiness.SMOKE_ATTESTATION_POLICY_PATH: attestation_policy_raw,
+            readiness.SMOKE_TRUSTED_ROOT_PATH: trusted_root_raw,
+        }[path],
+    )
+    return smoke, public, inventory, public_raw, inventory_raw, subject_raw, bundle_raw
+
+
+def _rebind_public_and_inventory(
+    smoke: dict, public: dict, inventory: dict
+) -> tuple[bytes, bytes]:
+    aggregate_body = {
+        field: public[field] for field in readiness.SMOKE_AGGREGATE_BODY_FIELDS
+    }
+    aggregate_body["schema"] = "trimem/verified-aggregate/1.0"
+    aggregate_sha = hashlib.sha256(_canonical(aggregate_body)).hexdigest()
+    public["verified_aggregate_sha256"] = aggregate_sha
+    aggregate_raw = readiness._pretty_json(
+        {**aggregate_body, "aggregate_sha256": aggregate_sha}
+    )
+    public_raw = readiness._pretty_json(public)
+    by_path = {row["path"]: row for row in inventory["files"]}
+    by_path["aggregate.json"].update({
+        "sha256": hashlib.sha256(aggregate_raw).hexdigest(),
+        "bytes": len(aggregate_raw),
+    })
+    by_path["public-results.json"].update({
+        "sha256": hashlib.sha256(public_raw).hexdigest(),
+        "bytes": len(public_raw),
+    })
+    inventory_raw = _inventory_bytes(inventory)
+    evidence = smoke["official_execution_evidence"]
+    evidence.update({
+        "public_result_raw_sha256": hashlib.sha256(public_raw).hexdigest(),
+        "evidence_inventory_raw_sha256": hashlib.sha256(inventory_raw).hexdigest(),
+        "verified_aggregate_sha256": aggregate_sha,
+        "aggregate_raw_sha256": hashlib.sha256(aggregate_raw).hexdigest(),
+    })
+    return public_raw, inventory_raw
+
+
+def _rebind_attestation(
+    smoke: dict,
+    subject_raw: bytes,
+    bundle_raw: bytes,
+    *,
+    public_raw: bytes,
+    inventory_raw: bytes,
+) -> tuple[dict, bytes, bytes]:
+    subject = json.loads(subject_raw)
+    subject["artifacts"]["public_results"].update({
+        "bytes": len(public_raw),
+        "sha256": hashlib.sha256(public_raw).hexdigest(),
+    })
+    subject["artifacts"]["evidence_inventory"].update({
+        "bytes": len(inventory_raw),
+        "sha256": hashlib.sha256(inventory_raw).hexdigest(),
+    })
+    subject_raw = readiness._pretty_json(subject)
+    bundle = json.loads(bundle_raw)
+    statement = json.loads(base64.b64decode(bundle["dsseEnvelope"]["payload"]))
+    statement["subject"] = [{
+        "digest": {"sha256": hashlib.sha256(subject_raw).hexdigest()},
+        "name": "attestation-subject.json",
+    }]
+    bundle["dsseEnvelope"]["payload"] = base64.b64encode(
+        _canonical(statement)
+    ).decode("ascii")
+    bundle_raw = readiness._pretty_json(bundle)
+    smoke["official_execution_evidence"].update({
+        "attestation_subject_raw_sha256": hashlib.sha256(subject_raw).hexdigest(),
+        "attestation_bundle_raw_sha256": hashlib.sha256(bundle_raw).hexdigest(),
+    })
+    return subject, subject_raw, bundle_raw
+
+
+def test_self_asserted_smoke_pass_without_official_artifacts_is_rejected() -> None:
+    smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
+    smoke.update({
+        "status": "PASS",
+        "grader_exec_package": "PASS",
+        "official_grader_viability": "ESTABLISHED",
+        "actual_execution": {
+            **smoke["actual_execution"],
+            "docker_pulls": 7,
+            "grader_containers": 12,
+            "official_grader_runs": 12,
+        },
+    })
+    with pytest.raises(readiness.ReadinessError, match="field set"):
+        readiness.validate_grader_smoke_result(smoke)
+
+
+def test_official_smoke_pass_requires_cross_bound_public_inventory_and_history(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    smoke, _public, _inventory, _public_raw, _inventory_raw, _subject_raw, _bundle_raw = (
+        _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    )
+    assert readiness.validate_grader_smoke_result(smoke)["official_grader_runs"] == 12
+
+
+@pytest.mark.parametrize("artifact_name", ["public", "inventory", "subject", "bundle"])
+def test_official_smoke_pass_rejects_exact_raw_byte_tamper(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, artifact_name: str
+) -> None:
+    smoke, _public, _inventory, public_raw, inventory_raw, subject_raw, bundle_raw = (
+        _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    )
+    values = {
+        "public": public_raw,
+        "inventory": inventory_raw,
+        "subject": subject_raw,
+        "bundle": bundle_raw,
+    }
+    values[artifact_name] += b" "
+    with pytest.raises(readiness.ReadinessError, match="committed bytes"):
+        readiness._validate_official_smoke_pass(
+            smoke, public_raw=values["public"], inventory_raw=values["inventory"],
+            subject_raw=values["subject"], bundle_raw=values["bundle"],
+        )
+
+
+def test_official_smoke_pass_rejects_resealed_inventory_missing_restricted_approval(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    smoke, _public, inventory, public_raw, _inventory_raw, subject_raw, bundle_raw = (
+        _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    )
+    inventory["files"] = [
+        row for row in inventory["files"]
+        if row["path"] != "results/restricted-external-approval.json"
+    ]
+    inventory_raw = _inventory_bytes(inventory)
+    smoke["official_execution_evidence"]["evidence_inventory_raw_sha256"] = (
+        hashlib.sha256(inventory_raw).hexdigest()
+    )
+    subject, subject_raw, bundle_raw = _rebind_attestation(
+        smoke,
+        subject_raw,
+        bundle_raw,
+        public_raw=public_raw,
+        inventory_raw=inventory_raw,
+    )
+    monkeypatch.setattr(
+        readiness,
+        "_bundle_certificate_bindings",
+        lambda _bundle: readiness._expected_certificate_bindings(subject),
+    )
+    with pytest.raises(readiness.ReadinessError, match="restricted approval"):
+        readiness._validate_official_smoke_pass(
+            smoke, public_raw=public_raw, inventory_raw=inventory_raw,
+            subject_raw=subject_raw, bundle_raw=bundle_raw,
+        )
+
+
+def test_official_smoke_pass_rejects_fully_resealed_scientific_outcome_tamper(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    smoke, public, inventory, _public_raw, _inventory_raw, subject_raw, bundle_raw = (
+        _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    )
+    public["outcomes"][0]["resolved"] = False
+    public_raw, inventory_raw = _rebind_public_and_inventory(
+        smoke, public, inventory
+    )
+    with pytest.raises(readiness.ReadinessError, match="outcome 0|attestation public_results"):
+        readiness._validate_official_smoke_pass(
+            smoke, public_raw=public_raw, inventory_raw=inventory_raw,
+            subject_raw=subject_raw, bundle_raw=bundle_raw,
+        )
+
+
+def test_pass_state_adds_exact_public_artifacts_to_dynamic_freeze(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(freeze, "FROZEN_PATHS", ())
+    monkeypatch.setattr(freeze, "referenced_blob_paths", lambda root: ())
+    smoke_path = tmp_path / "artifacts/trimem_v1/grader_smoke_result.json"
+    selected_path = tmp_path / "configs/trimem_v1/selected_m2.json"
+    smoke_path.parent.mkdir(parents=True)
+    selected_path.parent.mkdir(parents=True)
+    selected_path.write_text('{"status":"PRE_DEVELOPMENT"}', encoding="utf-8")
+    smoke_path.write_text(json.dumps({
+        "status": "PASS",
+        "official_execution_evidence": {
+            "attestation_bundle_path": freeze.OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
+            "attestation_subject_path": freeze.OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
+            "public_result_path": freeze.OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
+            "evidence_inventory_path": freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+        },
+    }), encoding="utf-8")
+    assert set(freeze.frozen_paths(tmp_path)) == {
+        freeze.OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
+        freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+        freeze.OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
+        freeze.OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
+    }
+
+
+def _mock_gh_verification_output(subject_raw: bytes, bundle_raw: bytes) -> bytes:
+    subject = json.loads(subject_raw)
+    bundle = json.loads(bundle_raw)
+    certificate = readiness._expected_certificate_bindings(subject)
+    cert_identity = readiness._smoke_cert_identity(
+        subject["execution"]["source_ref"]
+    )
+    certificate.pop("protectedEnvironment")
+    statement = json.loads(base64.b64decode(bundle["dsseEnvelope"]["payload"]))
+    value = [{
+        "attestation": {"bundle": bundle, "bundle_url": "", "initiator": ""},
+        "verificationResult": {
+            "mediaType": "application/vnd.dev.sigstore.verificationresult+json;version=0.1",
+            "signature": {"certificate": certificate},
+            "statement": statement,
+            "verifiedIdentity": {
+                "issuer": {"issuer": "", "regexp": ".*"},
+                "runnerEnvironment": readiness.SMOKE_ATTESTATION_RUNNER,
+                "subjectAlternativeName": {
+                    "subjectAlternativeName": cert_identity,
+                },
+            },
+            "verifiedTimestamps": [{
+                "timestamp": "2026-09-01T00:00:00Z",
+                "type": "TimestampAuthority",
+                "uri": "timestamp.githubapp.com",
+            }],
+        },
+    }]
+    return _canonical(value)
+
+
+def _mock_live_run_attempt_output(
+    subject_raw: bytes, *, status: str = "completed", conclusion: str = "success"
+) -> bytes:
+    execution = json.loads(subject_raw)["execution"]
+    return _canonical({
+        "conclusion": conclusion,
+        "event": execution["event_name"],
+        "head_branch": execution["source_ref"].removeprefix("refs/heads/"),
+        "head_sha": execution["source_digest"],
+        "id": int(execution["workflow_run_id"]),
+        "path": readiness.SMOKE_ATTESTATION_WORKFLOW,
+        "repository_full_name": readiness.SMOKE_ATTESTATION_REPOSITORY,
+        "run_attempt": int(execution["workflow_run_attempt"]),
+        "status": status,
+        "workflow_id": 123456789,
+    })
+
+
+def test_pre_frozen_sigstore_trusted_root_policy_is_exact() -> None:
+    policy = readiness.validate_smoke_attestation_policy()
+    trusted = policy["trusted_root"]
+    raw = (ROOT / trusted["path"]).read_bytes()
+    assert len(raw) == 34634
+    assert raw.count(b"\n") == 2
+    assert hashlib.sha256(raw).hexdigest() == trusted["raw_sha256"]
+
+
+def test_attestation_subject_routes_only_sentinel_push_or_post_merge_dispatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    approval = {
+        "approval_artifact_sha256": "a" * 64,
+        "approved_request_sha256": "b" * 64,
+        "approved_workflow_run_id": "8123456789",
+        "approved_workflow_run_attempt": "1",
+        "freeze_sha256": "c" * 64,
+        "git_head": "d" * 40,
+        "phase": "GRADER_SMOKE",
+    }
+    validated = {**approval, "approval": {}, "approval_document": {}}
+    monkeypatch.setattr(
+        smoke_attestation, "validate_exec_approval", lambda *_args: validated
+    )
+    public = tmp_path / "public-results.json"
+    inventory = tmp_path / "evidence-inventory.json"
+    encrypted = tmp_path / "restricted.tar.enc"
+    approval_file = tmp_path / "approval.json"
+    public.write_text(
+        json.dumps({"approval_binding": approval, "status": "PASS"}),
+        encoding="utf-8",
+    )
+    inventory.write_bytes(b"inventory")
+    encrypted.write_bytes(b"ciphertext")
+    approval_file.write_bytes(b"approval")
+    for event_name, source_ref in smoke_attestation.SOURCE_REF_BY_EVENT.items():
+        subject = smoke_attestation.build_subject(
+            public_result=public,
+            evidence_inventory=inventory,
+            encrypted_evidence=encrypted,
+            approval_file=approval_file,
+            repository=smoke_attestation.EXPECTED_REPOSITORY,
+            source_ref=source_ref,
+            event_name=event_name,
+            source_digest=approval["git_head"],
+            run_id=approval["approved_workflow_run_id"],
+            run_attempt=approval["approved_workflow_run_attempt"],
+            runner_environment=smoke_attestation.HOSTED_RUNNER,
+        )
+        assert subject["execution"]["event_name"] == event_name
+        assert subject["execution"]["source_ref"] == source_ref
+    with pytest.raises(
+        smoke_attestation.AttestationSubjectError, match="event/source ref"
+    ):
+        smoke_attestation.build_subject(
+            public_result=public,
+            evidence_inventory=inventory,
+            encrypted_evidence=encrypted,
+            approval_file=approval_file,
+            repository=smoke_attestation.EXPECTED_REPOSITORY,
+            source_ref="refs/heads/codex/trimem-coder-v1",
+            event_name="workflow_dispatch",
+            source_digest=approval["git_head"],
+            run_id=approval["approved_workflow_run_id"],
+            run_attempt=approval["approved_workflow_run_attempt"],
+            runner_environment=smoke_attestation.HOSTED_RUNNER,
+        )
+
+
+def test_certificate_oids_require_canonical_definite_der_utf8() -> None:
+    value = b"trimem-grader-smoke-exec"
+    assert readiness._decode_utf8_extension(
+        b"\x0c" + bytes([len(value)]) + value,
+        oid=readiness.SMOKE_PROTECTED_ENVIRONMENT_OID,
+    ) == value.decode("ascii")
+    identity = b"x" * 130
+    assert readiness._decode_utf8_extension(
+        b"\x0c\x81\x82" + identity,
+        oid="1.3.6.1.4.1.57264.1.9",
+    ) == identity.decode("ascii")
+    large = b"y" * 256
+    assert readiness._decode_utf8_extension(
+        b"\x0c\x82\x01\x00" + large,
+        oid="1.3.6.1.4.1.57264.1.9",
+    ) == large.decode("ascii")
+    for malformed in (
+        b"\x0c\x81" + bytes([len(value)]) + value,
+        b"\x0c\x80" + value,
+        b"\x0c\x82\x00\x82" + identity,
+        b"\x0c\x81\x82" + identity[:-1],
+        b"\x0c\x81\x82" + identity + b"x",
+        b"\x0c" + bytes([len(value)]) + value + b"x",
+        b"\x16" + bytes([len(value)]) + value,
+    ):
+        with pytest.raises(readiness.ReadinessError, match="certificate OID"):
+            readiness._decode_utf8_extension(
+                malformed, oid=readiness.SMOKE_PROTECTED_ENVIRONMENT_OID
+            )
+
+
+def test_official_smoke_pass_rejects_post_execution_trust_root_mutation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    smoke, _public, _inventory, public_raw, inventory_raw, subject_raw, bundle_raw = (
+        _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    )
+    root_path = tmp_path / "repository" / readiness.SMOKE_TRUSTED_ROOT_PATH
+    root_path.write_bytes(root_path.read_bytes() + b"\n")
+    with pytest.raises(readiness.ReadinessError, match="post-smoke mutation"):
+        readiness._validate_official_smoke_pass(
+            smoke,
+            public_raw=public_raw,
+            inventory_raw=inventory_raw,
+            subject_raw=subject_raw,
+            bundle_raw=bundle_raw,
+        )
+
+
+def test_paid_phase_attestation_gate_rejects_missing_gh(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(readiness.shutil, "which", lambda _name: None)
+    with pytest.raises(readiness.ReadinessError, match="gh CLI is required"):
+        readiness.verify_official_smoke_attestation_cryptographically()
+
+
+def test_paid_phase_attestation_gate_rejects_missing_actions_read_token(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(readiness.shutil, "which", lambda _name: "/usr/bin/gh")
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    with pytest.raises(readiness.ReadinessError, match="GH_TOKEN is required"):
+        readiness.verify_official_smoke_attestation_cryptographically()
+
+
+def test_paid_phase_attestation_gate_rejects_gh_verification_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(readiness.shutil, "which", lambda _name: "/usr/bin/gh")
+    monkeypatch.setattr(
+        readiness.subprocess,
+        "run",
+        lambda command, **kwargs: subprocess.CompletedProcess(
+            command,
+            0 if command[1:] == ["--version"] else 1,
+            stdout=(
+                b"gh version 2.97.0 (2026-07-31)\n"
+                if command[1:] == ["--version"] else b""
+            ),
+            stderr=(b"" if command[1:] == ["--version"] else b"signature failure"),
+        ),
+    )
+    with pytest.raises(readiness.ReadinessError, match="cryptographic.*failed"):
+        readiness.verify_official_smoke_attestation_cryptographically()
+
+
+def test_paid_phase_attestation_gate_rejects_gh_version_drift(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(readiness.shutil, "which", lambda _name: "/usr/bin/gh")
+    monkeypatch.setattr(
+        readiness.subprocess,
+        "run",
+        lambda command, **kwargs: subprocess.CompletedProcess(
+            command, 0, stdout=b"gh version 2.98.0 (2026-09-02)\n", stderr=b""
+        ),
+    )
+    with pytest.raises(readiness.ReadinessError, match="CLI version differs"):
+        readiness.verify_official_smoke_attestation_cryptographically()
+
+
+def test_paid_phase_attestation_gate_uses_exact_custom_root_and_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _smoke, _public, _inventory, _public_raw, _inventory_raw, subject_raw, bundle_raw = (
+        _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    )
+    commands: list[list[str]] = []
+    monkeypatch.setattr(readiness.shutil, "which", lambda _name: "/usr/bin/gh")
+
+    def fake_run(command, **kwargs):
+        commands.append(list(command))
+        if command[1:] == ["--version"]:
+            return subprocess.CompletedProcess(
+                command, 0, stdout=b"gh version 2.97.0 (2026-07-31)\n", stderr=b""
+            )
+        if command[1:3] == ["api", "--hostname"]:
+            return subprocess.CompletedProcess(
+                command,
+                0,
+                stdout=_mock_live_run_attempt_output(subject_raw),
+                stderr=b"",
+            )
+        return subprocess.CompletedProcess(
+            command,
+            0,
+            stdout=_mock_gh_verification_output(subject_raw, bundle_raw),
+            stderr=b"",
+        )
+
+    monkeypatch.setattr(readiness.subprocess, "run", fake_run)
+    readiness.verify_official_smoke_attestation_cryptographically()
+    assert len(commands) == 3
+    assert commands[0] == ["/usr/bin/gh", "--version"]
+    command = commands[1]
+    assert command[:3] == ["/usr/bin/gh", "attestation", "verify"]
+    for exact in (
+        "--custom-trusted-root",
+        "--cert-identity",
+        "--cert-oidc-issuer",
+        "--deny-self-hosted-runners",
+        "--signer-digest",
+        "--source-digest",
+        "--source-ref",
+        "--predicate-type=https://slsa.dev/provenance/v1",
+        "--digest-alg=sha256",
+        "--format=json",
+    ):
+        assert exact in command
+    assert "--signer-workflow" not in command
+    live_command = commands[2]
+    subject = json.loads(subject_raw)
+    execution = subject["execution"]
+    assert live_command == [
+        "/usr/bin/gh", "api", "--hostname", "github.com",
+        readiness.SMOKE_RUN_API_ROUTE_TEMPLATE.format(
+            repository=readiness.SMOKE_ATTESTATION_REPOSITORY,
+            run_id=execution["workflow_run_id"],
+            run_attempt=execution["workflow_run_attempt"],
+        ),
+        "--method", "GET",
+        "-H", f"Accept: {readiness.SMOKE_GITHUB_API_ACCEPT}",
+        "-H", f"X-GitHub-Api-Version: {readiness.SMOKE_GITHUB_API_VERSION}",
+        "--jq", readiness.SMOKE_RUN_API_JSON_PROJECTION,
+    ]
+
+
+def test_paid_phase_attestation_gate_rejects_red_or_incomplete_exact_attempt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _smoke, _public, _inventory, _public_raw, _inventory_raw, subject_raw, bundle_raw = (
+        _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    )
+    monkeypatch.setattr(readiness.shutil, "which", lambda _name: "/usr/bin/gh")
+
+    for status, conclusion in (("completed", "failure"), ("in_progress", "")):
+        def fake_run(command, **kwargs):
+            if command[1:] == ["--version"]:
+                stdout = readiness.SMOKE_GH_VERSION_LINE.encode() + b"\n"
+            elif command[1:3] == ["attestation", "verify"]:
+                stdout = _mock_gh_verification_output(subject_raw, bundle_raw)
+            else:
+                stdout = _mock_live_run_attempt_output(
+                    subject_raw, status=status, conclusion=conclusion
+                )
+            return subprocess.CompletedProcess(command, 0, stdout=stdout, stderr=b"")
+
+        monkeypatch.setattr(readiness.subprocess, "run", fake_run)
+        with pytest.raises(readiness.ReadinessError, match="completed successful"):
+            readiness.verify_official_smoke_attestation_cryptographically()
+
+
+def test_paid_phase_attestation_gate_rejects_live_attempt_api_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _smoke, _public, _inventory, _public_raw, _inventory_raw, subject_raw, bundle_raw = (
+        _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    )
+    monkeypatch.setattr(readiness.shutil, "which", lambda _name: "/usr/bin/gh")
+
+    def fake_run(command, **kwargs):
+        if command[1:] == ["--version"]:
+            return subprocess.CompletedProcess(
+                command, 0, stdout=readiness.SMOKE_GH_VERSION_LINE.encode() + b"\n", stderr=b""
+            )
+        if command[1:3] == ["attestation", "verify"]:
+            return subprocess.CompletedProcess(
+                command, 0, stdout=_mock_gh_verification_output(subject_raw, bundle_raw), stderr=b""
+            )
+        return subprocess.CompletedProcess(command, 1, stdout=b"", stderr=b"red run")
+
+    monkeypatch.setattr(readiness.subprocess, "run", fake_run)
+    with pytest.raises(readiness.ReadinessError, match="run-attempt verification failed"):
+        readiness.verify_official_smoke_attestation_cryptographically()
+
+
+def test_paid_phase_attestation_gate_rejects_success_exit_with_tampered_json(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _smoke, _public, _inventory, _public_raw, _inventory_raw, subject_raw, bundle_raw = (
+        _official_smoke_pass_fixture(tmp_path, monkeypatch)
+    )
+    output = json.loads(_mock_gh_verification_output(subject_raw, bundle_raw))
+    output[0]["verificationResult"]["signature"]["certificate"][
+        "runInvocationURI"
+    ] = "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/9/attempts/9"
+    monkeypatch.setattr(readiness.shutil, "which", lambda _name: "/usr/bin/gh")
+    monkeypatch.setattr(
+        readiness.subprocess,
+        "run",
+        lambda command, **kwargs: subprocess.CompletedProcess(
+            command,
+            0,
+            stdout=(
+                b"gh version 2.97.0 (2026-07-31)\n"
+                if command[1:] == ["--version"] else _canonical(output)
+            ),
+            stderr=b"",
+        ),
+    )
+    with pytest.raises(readiness.ReadinessError, match="runInvocationURI"):
+        readiness.verify_official_smoke_attestation_cryptographically()
 
 
 def test_freeze_allowlist_closes_all_trimem_execution_surfaces() -> None:
@@ -412,11 +1363,38 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json" in smoke
     assert "branch-trigger-preflight:" in smoke
     assert "environment: trimem-grader-smoke-exec" in smoke
+    assert "permissions:\n      attestations: write\n      contents: read\n      id-token: write" in smoke
+    assert smoke.count(readiness.SMOKE_ATTESTATION_ACTION) == 1
+    assert "create-storage-record: false" in smoke
+    assert "push-to-registry: false" in smoke
+    assert "subject-path: ${{ runner.temp }}/attestation-subject.json" in smoke
+    assert "trimem_smoke_attestation.py" in smoke
+    assert "trimem-grader-smoke-attestation-bundle.json" in smoke
     assert "bounded-disk exact GOLD and NOOP_BASELINE pairs" in smoke
     assert smoke.count(
         "--image-evidence-dir artifacts/trimem_v1/grader_smoke_exec/image-materialization"
     ) == 2
     assert "--cleanup-grader-smoke" in smoke
+    upload_public = smoke.index("- name: Upload public smoke result")
+    upload_inventory = smoke.index(
+        "- name: Upload non-sensitive restricted evidence inventory"
+    )
+    upload_encrypted = smoke.index("- name: Upload encrypted restricted evidence")
+    cleanup_before_signing = smoke.index(
+        "- name: Remove plaintext and temporary EXEC material before signing"
+    )
+    attest = smoke.index("- name: Attest exact uploaded and cleaned official smoke subject")
+    upload_bundle = smoke.index("- name: Upload official smoke attestation bundle")
+    assert (
+        upload_public
+        < upload_inventory
+        < upload_encrypted
+        < cleanup_before_signing
+        < attest
+        < upload_bundle
+    )
+    attest_block = smoke[attest:upload_bundle]
+    assert "if: always()" not in attest_block
     benchmark = workflows[3].read_text(encoding="utf-8")
     assert "workflow_dispatch:" in benchmark
     assert all(trigger not in benchmark for trigger in ("pull_request:", "push:", "schedule:"))
@@ -427,6 +1405,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]" in benchmark
     assert "timeout-minutes: 7200" in benchmark
     assert "matrix:" not in benchmark
+    assert "permissions:\n  actions: read\n  contents: read" in benchmark
+    assert benchmark.count("GH_TOKEN: ${{ github.token }}") == 1
+    gate_start = benchmark.index("- name: Verify exact phase EXEC gate")
+    gate_end = benchmark.index("- name: Apply exact migration head")
+    assert "GH_TOKEN: ${{ github.token }}" in benchmark[gate_start:gate_end]
     assert "trimem_run_with_resume.py" in benchmark
     assert "trimem_cleanup_exec.py --phase benchmark" in benchmark
     assert "python scripts/postgres_bootstrap.py" in benchmark

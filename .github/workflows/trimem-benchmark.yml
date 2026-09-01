@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -67,6 +68,8 @@ jobs:
       - name: Reject grader-smoke approval in benchmark executor
         run: python -c "import os; assert os.environ['TRIMEM_EXEC_SPLIT'] in {'development','heldout'}"
       - name: Verify exact phase EXEC gate
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: >-
           python scripts/trimem_verify_ready.py
           --level benchmark-exec

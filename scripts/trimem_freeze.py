@@ -17,6 +17,18 @@ from typing import Any
 
 
 FREEZE_PATH = Path("artifacts/trimem_v1/freeze.json")
+OFFICIAL_SMOKE_PUBLIC_RESULT_PATH = (
+    "artifacts/trimem_v1/grader_smoke_official/public-results.json"
+)
+OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH = (
+    "artifacts/trimem_v1/grader_smoke_official/evidence-inventory.json"
+)
+OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH = (
+    "artifacts/trimem_v1/grader_smoke_official/attestation-subject.json"
+)
+OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH = (
+    "artifacts/trimem_v1/grader_smoke_official/attestation-bundle.json"
+)
 CONFIG_PATHS = (
     "configs/trimem_v1/arms.json",
     "configs/trimem_v1/benchmark_environment.in",
@@ -37,6 +49,8 @@ CONFIG_PATHS = (
     "configs/trimem_v1/model_lock.json",
     "configs/trimem_v1/selected_m2.json",
     "configs/trimem_v1/selection_plan.json",
+    "configs/trimem_v1/sigstore_trusted_root.jsonl",
+    "configs/trimem_v1/smoke_attestation_policy.json",
     "configs/trimem_v1/tool_environment_lock.json",
 )
 ARTIFACT_PATHS = (
@@ -74,6 +88,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_pytest_no_skip.py",
     "scripts/trimem_run_with_resume.py",
     "scripts/trimem_select_targets.py",
+    "scripts/trimem_smoke_attestation.py",
     "scripts/trimem_verify_credential_free.py",
     "scripts/trimem_verify_ready.py",
 )
@@ -183,6 +198,7 @@ WORKFLOW_PATHS = (
 )
 FROZEN_PATHS = (
     ".gitattributes",
+    ".gitignore",
     "alembic.ini",
     "DEPENDENCY_PROVENANCE.json",
     "docs/TRIMEM_V1_SYSTEM.md",
@@ -207,6 +223,12 @@ POST_DEVELOPMENT_PATH_FIELDS = (
     "selected_checkpoint_path",
     "selected_full_policy_path",
 )
+OFFICIAL_SMOKE_EVIDENCE_PATH_FIELDS = {
+    "attestation_bundle_path": OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
+    "attestation_subject_path": OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
+    "public_result_path": OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
+    "evidence_inventory_path": OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+}
 EVIDENCE_EVENT_PATHS = (
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/events.ndjson",
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/events.ndjson",
@@ -299,6 +321,28 @@ def frozen_paths(root: Path) -> tuple[str, ...]:
     """Return the closed allowlist for the current pre/post-development phase."""
 
     paths = [*FROZEN_PATHS, *referenced_blob_paths(root)]
+    smoke_path = root / "artifacts/trimem_v1/grader_smoke_result.json"
+    smoke = strict_json(
+        smoke_path.read_text(encoding="utf-8"), label=smoke_path.as_posix()
+    )
+    if not isinstance(smoke, dict):
+        raise ValueError("grader smoke result root is not an object")
+    smoke_status = smoke.get("status")
+    if smoke_status == "PASS":
+        evidence = smoke.get("official_execution_evidence")
+        if not isinstance(evidence, dict):
+            raise ValueError("passed grader smoke lacks official execution evidence")
+        for field, expected_path in OFFICIAL_SMOKE_EVIDENCE_PATH_FIELDS.items():
+            if evidence.get(field) != expected_path:
+                raise ValueError(f"passed grader smoke has noncanonical {field}")
+            paths.append(expected_path)
+    elif smoke_status == "CORRECTION_IN_PROGRESS":
+        if "official_execution_evidence" in smoke:
+            raise ValueError(
+                "pre-exec grader smoke cannot claim official execution evidence"
+            )
+    else:
+        raise ValueError("grader smoke result has an unknown freeze phase")
     selected_path = root / "configs/trimem_v1/selected_m2.json"
     selected = strict_json(selected_path.read_text(encoding="utf-8"), label=selected_path.as_posix())
     if not isinstance(selected, dict):

@@ -189,9 +189,9 @@ approval prohibition applies specifically to official grader/benchmark target
 image pull or run, official grader invocation, benchmark task execution, and
 paid model calls.
 
-The branch-local P0.1 grader-smoke workflow may additionally start only when a
+The branch-local P0.1.1 grader-smoke workflow may additionally start only when a
 commit on `codex/trimem-coder-v1` changes exactly
-`artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json`. The job is
+`artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json`. The job is
 held at the protected `trimem-grader-smoke-exec` environment before any secret
 or execution step is available. Its external approval is bound to that exact
 commit, freeze, request bytes, workflow run ID and attempt, and zero-model caps.
@@ -199,6 +199,16 @@ Ordinary source, configuration, documentation, or workflow pushes cannot start
 the grader. The retained `workflow_dispatch` path is disabled for this feature
 branch and is eligible only on `refs/heads/main` after a later merge; it is not
 an alternate P0.1 trigger.
+
+The `_002` recovery amendment is classified
+`NON_SEMANTIC_EXECUTION_CONTROL_FIX`: GitHub Actions omits commit
+`added`/`modified`/`removed` arrays from its push-event payload, so changed-path
+authorization is proven exclusively from the checked-out commit's exact
+one-parent graph and `git diff-tree` result. Run `33470431940` and the original
+`GRADER_SMOKE_EXEC_REQUEST.json` remain immutable historical evidence. No
+benchmark result existed when this event-contract amendment was made, and the
+six identities, twelve GOLD/NOOP_BASELINE rows, image digests, target-set hash,
+and NOOP patch are unchanged.
 
 The six-instance smoke is also storage-bounded: for each frozen identity it
 pulls and inspects one target digest, executes GOLD then NOOP_BASELINE, and

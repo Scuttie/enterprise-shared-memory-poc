@@ -6,7 +6,11 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json
+      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json
+
+concurrency:
+  group: trimem-v1-grader-smoke-exec-002
+  cancel-in-progress: false
 
 permissions:
   contents: read

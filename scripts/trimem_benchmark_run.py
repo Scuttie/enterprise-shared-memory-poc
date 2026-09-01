@@ -78,6 +78,8 @@ from trimem_m2_candidates import (  # noqa: E402
 )
 from trimem_official_grader import FrozenOfficialTarget, OfficialHarnessGraderGateway  # noqa: E402
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
+    REQUEST_SCHEMA as GRADER_SMOKE_REQUEST_SCHEMA,
+    SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
     TriggerPreflightError,
     validate_request_document,
 )
@@ -103,7 +105,7 @@ PHASES = {
 }
 BENCHMARK_EXEC_REQUEST = Path("configs/trimem_v1/benchmark_exec_request.json")
 GRADER_SMOKE_EXEC_REQUEST = Path(
-    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json"
+    GRADER_SMOKE_SENTINEL_PATH
 )
 OFFICIAL_DATASET_URLS = {
     "swebench_verified": "https://huggingface.co/datasets/SWE-bench/SWE-bench_Verified/resolve/{revision}/{path}",
@@ -332,7 +334,7 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
     if phases.get(phase, {}).get("status") != "PENDING_EXEC_APPROVAL":
         raise BenchmarkExecutionError(f"committed {phase} request is not pending")
     if split == "grader-smoke":
-        if request.get("schema") != "trimem/grader-smoke-branch-trigger/1.0":
+        if request.get("schema") != GRADER_SMOKE_REQUEST_SCHEMA:
             raise BenchmarkExecutionError("grader-smoke sentinel schema mismatch")
         if request.get("phase") != phase:
             raise BenchmarkExecutionError("grader-smoke sentinel phase mismatch")

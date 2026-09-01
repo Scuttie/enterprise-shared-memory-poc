@@ -29,8 +29,14 @@ from trimem_grader_smoke_protocol import (
 
 EXPECTED_EVENT = "push"
 EXPECTED_REF = "refs/heads/codex/trimem-coder-v1"
-SENTINEL_PATH = (
+HISTORICAL_SENTINEL_PATH = (
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json"
+)
+HISTORICAL_SENTINEL_SHA256 = (
+    "03207843e241bef409d64d0181596f4cec4c83fe157dfc22670d429bc14f91f0"
+)
+SENTINEL_PATH = (
+    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json"
 )
 FROZEN_REQUEST_PATH = "configs/trimem_v1/benchmark_exec_request.json"
 WORKFLOW_PATH = ".github/workflows/trimem-grader-smoke.yml"
@@ -43,10 +49,43 @@ CREDENTIAL_FREE_BUNDLE_PATH = (
 PREFLIGHT_PATH = "scripts/trimem_grader_smoke_trigger_preflight.py"
 INVENTORY_PATH = "scripts/trimem_evidence_inventory.py"
 PROTOCOL_PATH = "scripts/trimem_grader_smoke_protocol.py"
-REQUEST_ID = "TRIMEM_V1_GRADER_SMOKE_EXEC_001"
-REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.0"
+REQUEST_ID = "TRIMEM_V1_GRADER_SMOKE_EXEC_002"
+REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.1"
 EXPECTED_PHASE = "GRADER_SMOKE"
 AUTHORIZATION_SEMANTICS = "The sentinel alone does not authorize execution."
+BASELINE_FROZEN_REQUEST_SHA256 = (
+    "05e19aeec6630f2362c481a86eb66d0e630041794866a638c3ebbf07e5ccbba4"
+)
+BASELINE_SCIENTIFIC_MANIFEST_PROJECTION_SHA256 = (
+    "d9882fbf694c1fba6cfab5953360b3264b284b2dee685c07a73e0c55ec5aa088"
+)
+BASELINE_TARGET_SET_SHA256 = (
+    "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e"
+)
+BASELINE_IMAGE_LOCK_SHA256 = (
+    "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb"
+)
+BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256 = (
+    "e03e96f26b56fffb2e911504b526b6986a9148b4db620aa9b58bb5e100083e4c"
+)
+BASELINE_PROTOCOL_SHA256 = (
+    "f73d7da715b3cc6a2d15e3bc39c355cfeccf585ab2014a1834c9b275839fc7b8"
+)
+EXECUTION_CONTROL_AMENDMENT = {
+    "benchmark_result_existed_when_amended": False,
+    "classification": "NON_SEMANTIC_EXECUTION_CONTROL_FIX",
+    "previous_failed_run": {
+        "head": "71edef406f0bc5202244ae1ad4f84419662e7126",
+        "run_attempt": 1,
+        "run_id": 33470431940,
+        "scientific_or_evaluator_execution": False,
+    },
+    "reason": (
+        "GitHub Actions push-event payload contract correction; "
+        "no benchmark result existed when amended."
+    ),
+    "scientific_inputs_changed": False,
+}
 EXPECTED_UNIQUE_INSTANCES = 6
 EXPECTED_MATRIX_ROWS = 12
 HARD_CAPS = {
@@ -90,13 +129,15 @@ REQUEST_FIELDS = frozenset(
 ALLOWED_WORKFLOW_SECRETS = frozenset(
     {"TRIMEM_EVIDENCE_PASSPHRASE", "TRIMEM_EXEC_APPROVAL_B64"}
 )
-KNOWN_MODEL_SECRETS = frozenset(
+FORBIDDEN_EXECUTION_SECRETS = frozenset(
     {
         "ANTHROPIC_API_KEY",
         "AZURE_OPENAI_API_KEY",
+        "DEEPSEEK_API_KEY",
         "GOOGLE_API_KEY",
         "MODEL_API_KEY",
         "OPENAI_API_KEY",
+        "RUN_APPROVED",
         "UPSTAGE_API_KEY",
     }
 )
@@ -189,6 +230,7 @@ def _strict_artifact(raw: bytes, path: str) -> dict[str, Any]:
 
 def _raw_material(repository: Path, commit: str) -> dict[str, bytes]:
     paths = (
+        HISTORICAL_SENTINEL_PATH,
         FROZEN_REQUEST_PATH,
         FREEZE_PATH,
         MANIFEST_PATH,
@@ -204,6 +246,33 @@ def _validate_frozen_material(
     """Validate and return every committed byte string bound by the sentinel."""
 
     raw = _raw_material(repository, commit)
+    _require(
+        hashlib.sha256(raw[HISTORICAL_SENTINEL_PATH]).hexdigest()
+        == HISTORICAL_SENTINEL_SHA256,
+        "historical failed-trigger sentinel bytes changed",
+    )
+    for path, expected_sha256, label in (
+        (
+            FROZEN_REQUEST_PATH,
+            BASELINE_FROZEN_REQUEST_SHA256,
+            "frozen benchmark request",
+        ),
+        (IMAGE_LOCK_PATH, BASELINE_IMAGE_LOCK_SHA256, "grader image lock"),
+        (
+            CREDENTIAL_FREE_BUNDLE_PATH,
+            BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256,
+            "credential-free bundle",
+        ),
+    ):
+        _require(
+            hashlib.sha256(raw[path]).hexdigest() == expected_sha256,
+            f"P0.1.1 changed the {label} bytes",
+        )
+    _require(
+        hashlib.sha256(_commit_bytes(repository, commit, PROTOCOL_PATH)).hexdigest()
+        == BASELINE_PROTOCOL_SHA256,
+        "P0.1.1 changed the frozen GOLD/NOOP protocol bytes",
+    )
     frozen_request = _strict_artifact(raw[FROZEN_REQUEST_PATH], FROZEN_REQUEST_PATH)
     _require(
         frozen_request.get("schema") == "trimem/benchmark-exec-request/1.1",
@@ -233,6 +302,7 @@ def _validate_frozen_material(
     freeze_files = freeze.get("files")
     _require(isinstance(freeze_files, dict), "freeze file inventory is missing")
     closure_paths = (
+        HISTORICAL_SENTINEL_PATH,
         WORKFLOW_PATH,
         FROZEN_REQUEST_PATH,
         MANIFEST_PATH,
@@ -257,6 +327,11 @@ def _validate_frozen_material(
     _require(
         manifest.get("schema") == "trimem/grader-smoke-manifest/1.0",
         "grader-smoke manifest schema mismatch",
+    )
+    amendment = manifest.get("execution_control_amendment")
+    _require(
+        amendment == EXECUTION_CONTROL_AMENDMENT,
+        "P0.1.1 execution-control amendment is not exact",
     )
     _require(
         manifest.get("status") == "FROZEN_TARGET_SET_EXECUTION_PENDING"
@@ -294,8 +369,25 @@ def _validate_frozen_material(
         raise TriggerPreflightError(str(exc)) from exc
     target_digest = hashlib.sha256(canonical_bytes(targets)).hexdigest()
     _require(
-        manifest.get("target_set_sha256") == target_digest,
+        manifest.get("target_set_sha256")
+        == target_digest
+        == BASELINE_TARGET_SET_SHA256,
         "grader-smoke canonical target-set hash mismatch",
+    )
+    scientific_projection = {
+        field: manifest[field]
+        for field in (
+            "matrix_kind",
+            "noop_baseline",
+            "selection",
+            "target_set_sha256",
+            "targets",
+        )
+    }
+    _require(
+        hashlib.sha256(canonical_bytes(scientific_projection)).hexdigest()
+        == BASELINE_SCIENTIFIC_MANIFEST_PROJECTION_SHA256,
+        "P0.1.1 changed the frozen grader-smoke scientific projection",
     )
     matrix_order: list[str] = []
     identities: list[tuple[str, str]] = []
@@ -438,33 +530,21 @@ def build_request_document(
     }
 
 
-def _exact_added_path(value: Any) -> bool:
-    return value == [SENTINEL_PATH]
-
-
 def _validate_event_shape(event: Mapping[str, Any], environ: Mapping[str, str]) -> tuple[str, str]:
     _require(environ.get("GITHUB_EVENT_NAME") == EXPECTED_EVENT, "event is not push")
+    _require(
+        environ.get("GITHUB_RUN_ATTEMPT") == "1",
+        "one-time recovery trigger forbids a rerun attempt",
+    )
     _require(environ.get("GITHUB_REF") == EXPECTED_REF, "GITHUB_REF is not the frozen branch")
     _require(event.get("ref") == EXPECTED_REF, "push ref is not the frozen branch")
-    _require(event.get("created") is False, "branch-creation pushes are forbidden")
     _require(event.get("deleted") is False, "branch-deletion pushes are forbidden")
     _require(event.get("forced") is False, "forced pushes are forbidden")
     before, after = event.get("before"), event.get("after")
     _require(isinstance(before, str) and HEX40.fullmatch(before) is not None, "push before SHA is invalid")
     _require(isinstance(after, str) and HEX40.fullmatch(after) is not None, "push after SHA is invalid")
-    _require(before != "0" * 40 and after != "0" * 40, "zero push SHA is forbidden")
     _require(environ.get("GITHUB_SHA") == after, "GITHUB_SHA differs from push after SHA")
-    commits = event.get("commits")
-    _require(isinstance(commits, list) and len(commits) == 1, "push must contain exactly one commit")
-    commit = commits[0]
-    _require(isinstance(commit, dict) and commit.get("id") == after, "push commit identity mismatch")
-    _require(_exact_added_path(commit.get("added")), "push payload must add only the sentinel")
-    _require(commit.get("modified") == [], "push payload contains a modified path")
-    _require(commit.get("removed") == [], "push payload contains a removed path")
-    head = event.get("head_commit")
-    _require(isinstance(head, dict) and head.get("id") == after, "head commit identity mismatch")
-    _require(_exact_added_path(head.get("added")), "head commit must add only the sentinel")
-    _require(head.get("modified") == [] and head.get("removed") == [], "head commit contains another path")
+    _require(before != after, "push before and after SHAs must differ")
     return before, after
 
 
@@ -503,14 +583,19 @@ def _validate_one_time_commit(repository: Path, before: str, after: str) -> byte
 def _validate_no_model_secret(
     repository: Path, after: str, environ: Mapping[str, str]
 ) -> None:
-    exposed = sorted(name for name in KNOWN_MODEL_SECRETS if name in environ)
-    _require(not exposed, f"model secret is exposed to preflight: {exposed}")
+    exposed = sorted(name for name in FORBIDDEN_EXECUTION_SECRETS if name in environ)
+    _require(not exposed, f"forbidden execution secret is exposed to preflight: {exposed}")
     workflow = _commit_bytes(repository, after, WORKFLOW_PATH).decode("utf-8")
     referenced = set(re.findall(r"\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)", workflow))
     unexpected = sorted(referenced - ALLOWED_WORKFLOW_SECRETS)
     _require(not unexpected, f"grader-smoke workflow references a non-control secret: {unexpected}")
-    model_names = sorted(name for name in KNOWN_MODEL_SECRETS if name in workflow)
-    _require(not model_names, f"grader-smoke workflow contains a model secret name: {model_names}")
+    forbidden_names = sorted(
+        name for name in FORBIDDEN_EXECUTION_SECRETS if name in workflow
+    )
+    _require(
+        not forbidden_names,
+        f"grader-smoke workflow contains a forbidden secret name: {forbidden_names}",
+    )
 
 
 def validate_request_document(

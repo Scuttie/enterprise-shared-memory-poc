@@ -40,6 +40,73 @@ def _read(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def test_p011_preserves_failed_trigger_and_records_nonsemantic_amendment() -> None:
+    historical_path = (
+        ROOT
+        / "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json"
+    )
+    historical_raw = historical_path.read_bytes()
+    assert hashlib.sha256(historical_raw).hexdigest() == (
+        "03207843e241bef409d64d0181596f4cec4c83fe157dfc22670d429bc14f91f0"
+    )
+    frozen = _read(ROOT / "artifacts/trimem_v1/freeze.json")["files"]
+    assert frozen[historical_path.relative_to(ROOT).as_posix()] == {
+        "bytes": len(historical_raw),
+        "sha256": hashlib.sha256(historical_raw).hexdigest(),
+    }
+    amendment = _read(
+        ROOT / "configs/trimem_v1/grader_smoke_manifest.json"
+    )["execution_control_amendment"]
+    assert amendment == {
+        "benchmark_result_existed_when_amended": False,
+        "classification": "NON_SEMANTIC_EXECUTION_CONTROL_FIX",
+        "previous_failed_run": {
+            "head": "71edef406f0bc5202244ae1ad4f84419662e7126",
+            "run_attempt": 1,
+            "run_id": 33470431940,
+            "scientific_or_evaluator_execution": False,
+        },
+        "reason": (
+            "GitHub Actions push-event payload contract correction; "
+            "no benchmark result existed when amended."
+        ),
+        "scientific_inputs_changed": False,
+    }
+
+    baseline_head = "71edef406f0bc5202244ae1ad4f84419662e7126"
+
+    def historical(relative: str) -> bytes:
+        return subprocess.check_output(
+            ["git", "show", f"{baseline_head}:{relative}"], cwd=ROOT
+        )
+
+    current_manifest = _read(
+        ROOT / "configs/trimem_v1/grader_smoke_manifest.json"
+    )
+    baseline_manifest = json.loads(
+        historical("configs/trimem_v1/grader_smoke_manifest.json")
+    )
+    scientific_fields = (
+        "matrix_kind",
+        "noop_baseline",
+        "selection",
+        "target_set_sha256",
+        "targets",
+    )
+    assert {
+        field: current_manifest[field] for field in scientific_fields
+    } == {
+        field: baseline_manifest[field] for field in scientific_fields
+    }
+    for relative in (
+        "configs/trimem_v1/benchmark_exec_request.json",
+        "artifacts/trimem_v1/grader_image_lock.json",
+        "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json",
+        "scripts/trimem_grader_smoke_protocol.py",
+    ):
+        assert (ROOT / relative).read_bytes() == historical(relative)
+
+
 def _canonical(value: object) -> bytes:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
@@ -390,7 +457,7 @@ def _official_smoke_pass_fixture(
     })
     freeze_sha = hashlib.sha256(historical_freeze).hexdigest()
     request = {
-        "schema": "trimem/grader-smoke-branch-trigger/1.0",
+        "schema": readiness.GRADER_SMOKE_REQUEST_SCHEMA,
         "phase": "GRADER_SMOKE",
         "actual_execution_authorized": False,
         "requires_external_approval": True,
@@ -629,7 +696,7 @@ def _official_smoke_pass_fixture(
         "_historical_git_file",
         lambda commit, path: {
             "artifacts/trimem_v1/freeze.json": historical_freeze,
-            "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json": historical_request,
+            readiness.GRADER_SMOKE_SENTINEL_PATH: historical_request,
             readiness.SMOKE_ATTESTATION_POLICY_PATH: attestation_policy_raw,
             readiness.SMOKE_TRUSTED_ROOT_PATH: trusted_root_raw,
         }[path],
@@ -1360,7 +1427,10 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "workflow_dispatch:" in smoke and "pull_request:" not in smoke
     assert "push:" in smoke
     assert "      - codex/trimem-coder-v1" in smoke
-    assert "      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json" in smoke
+    assert f"      - {readiness.GRADER_SMOKE_SENTINEL_PATH}" in smoke
+    assert "      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json" not in smoke
+    assert "group: trimem-v1-grader-smoke-exec-002" in smoke
+    assert "cancel-in-progress: false" in smoke
     assert "branch-trigger-preflight:" in smoke
     assert "environment: trimem-grader-smoke-exec" in smoke
     assert "permissions:\n      attestations: write\n      contents: read\n      id-token: write" in smoke
@@ -1807,11 +1877,11 @@ def test_external_approval_is_bound_to_single_workflow_dispatch_and_attempt(
     hard = _read(ROOT / "configs/trimem_v1/cost_plan.json")["phase_hard_caps"]["GRADER_SMOKE"]
     request_path = config / "benchmark_exec_request.json"
     request_path.write_text(json.dumps(request), encoding="utf-8")
-    sentinel_path = artifact / "exec_requests/GRADER_SMOKE_EXEC_REQUEST.json"
+    sentinel_path = artifact / "exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json"
     sentinel_path.parent.mkdir(parents=True)
     sentinel = {
-        "schema": "trimem/grader-smoke-branch-trigger/1.0",
-        "request_id": "TRIMEM_V1_GRADER_SMOKE_EXEC_001",
+        "schema": readiness.GRADER_SMOKE_REQUEST_SCHEMA,
+        "request_id": "TRIMEM_V1_GRADER_SMOKE_EXEC_002",
         "phase": "GRADER_SMOKE",
         "frozen_request_sha256": "sha256:"
         + hashlib.sha256(request_path.read_bytes()).hexdigest(),
@@ -2015,13 +2085,13 @@ def test_aggregate_revalidates_exact_workflow_approval_binding(
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "3")
     head = "b" * 40
     repository = tmp_path / "repository"
-    sentinel = repository / "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json"
+    sentinel = repository / readiness.GRADER_SMOKE_SENTINEL_PATH
     frozen = repository / "artifacts/trimem_v1/freeze.json"
     config = repository / "configs/trimem_v1"
     sentinel.parent.mkdir(parents=True)
     frozen.parent.mkdir(parents=True, exist_ok=True)
     config.mkdir(parents=True)
-    request_id = "TRIMEM_V1_GRADER_SMOKE_EXEC_001"
+    request_id = "TRIMEM_V1_GRADER_SMOKE_EXEC_002"
     sentinel.write_text(
         json.dumps({"request_id": request_id, "request": "exact-sentinel"}) + "\n",
         encoding="utf-8",

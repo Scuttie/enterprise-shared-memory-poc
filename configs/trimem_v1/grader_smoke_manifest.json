@@ -1,4 +1,16 @@
 {
+  "execution_control_amendment": {
+    "benchmark_result_existed_when_amended": false,
+    "classification": "NON_SEMANTIC_EXECUTION_CONTROL_FIX",
+    "previous_failed_run": {
+      "head": "71edef406f0bc5202244ae1ad4f84419662e7126",
+      "run_attempt": 1,
+      "run_id": 33470431940,
+      "scientific_or_evaluator_execution": false
+    },
+    "reason": "GitHub Actions push-event payload contract correction; no benchmark result existed when amended.",
+    "scientific_inputs_changed": false
+  },
   "execution_status": "PENDING_EXEC_APPROVAL",
   "matrix_kind": "single_serial_six_instance_gold_noop_campaign",
   "noop_baseline": {

@@ -38,6 +38,9 @@ from trimem_exec_approval import (  # noqa: E402
     ApprovalValidationError,
     validate_external_approval_document,
 )
+from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
+    SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
+)
 from trimem_select_targets import (  # noqa: E402
     SelectionError,
     instance_id as source_instance_id,
@@ -952,7 +955,7 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
         raise MatrixError("external approval phase differs from the aggregate manifest")
 
     request = (
-        ROOT / "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json"
+        ROOT / GRADER_SMOKE_SENTINEL_PATH
         if name == "grader-smoke"
         else ROOT / "configs/trimem_v1/benchmark_exec_request.json"
     )

@@ -59,6 +59,20 @@ from trimem_grader_smoke_protocol import (  # noqa: E402
     NOOP_BASELINE_PATH,
 )
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
+    BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256,
+    BASELINE_FROZEN_REQUEST_SHA256,
+    BASELINE_IMAGE_LOCK_SHA256,
+    BASELINE_PROTOCOL_SHA256,
+    BASELINE_TARGET_SET_SHA256,
+    CREDENTIAL_FREE_BUNDLE_PATH as GRADER_SMOKE_CREDENTIAL_BUNDLE_PATH,
+    EXECUTION_CONTROL_AMENDMENT,
+    FROZEN_REQUEST_PATH as GRADER_SMOKE_FROZEN_REQUEST_PATH,
+    HISTORICAL_SENTINEL_PATH,
+    HISTORICAL_SENTINEL_SHA256,
+    IMAGE_LOCK_PATH as GRADER_SMOKE_IMAGE_LOCK_PATH,
+    PROTOCOL_PATH as GRADER_SMOKE_PROTOCOL_PATH,
+    REQUEST_SCHEMA as GRADER_SMOKE_REQUEST_SCHEMA,
+    SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
     TriggerPreflightError,
     validate_request_document,
 )
@@ -1086,14 +1100,14 @@ def _validate_official_smoke_pass(
     )
     historical_request = _historical_git_file(
         execution_head,
-        "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json",
+        GRADER_SMOKE_SENTINEL_PATH,
     )
     request = _validate_historical_smoke_request(execution_head, historical_request)
     require(
         hashlib.sha256(historical_freeze).hexdigest() == approval["freeze_sha256"]
         and hashlib.sha256(historical_request).hexdigest()
         == approval["approved_request_sha256"]
-        and request.get("schema") == "trimem/grader-smoke-branch-trigger/1.0"
+        and request.get("schema") == GRADER_SMOKE_REQUEST_SCHEMA
         and request.get("phase") == "GRADER_SMOKE"
         and request.get("actual_execution_authorized") is False
         and request.get("requires_external_approval") is True
@@ -1380,6 +1394,30 @@ def validate_targets() -> dict[str, list[dict[str, Any]]]:
             )
         result[name] = targets
     smoke_manifest = manifests["grader-smoke"]
+    require(
+        smoke_manifest.get("execution_control_amendment")
+        == EXECUTION_CONTROL_AMENDMENT,
+        "P0.1.1 non-semantic execution-control amendment differs",
+    )
+    require(
+        smoke_manifest.get("target_set_sha256") == BASELINE_TARGET_SET_SHA256,
+        "P0.1.1 changed the frozen grader-smoke target set",
+    )
+    for relative, expected_sha256 in (
+        (HISTORICAL_SENTINEL_PATH, HISTORICAL_SENTINEL_SHA256),
+        (GRADER_SMOKE_FROZEN_REQUEST_PATH, BASELINE_FROZEN_REQUEST_SHA256),
+        (GRADER_SMOKE_IMAGE_LOCK_PATH, BASELINE_IMAGE_LOCK_SHA256),
+        (
+            GRADER_SMOKE_CREDENTIAL_BUNDLE_PATH,
+            BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256,
+        ),
+        (GRADER_SMOKE_PROTOCOL_PATH, BASELINE_PROTOCOL_SHA256),
+    ):
+        require(
+            hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
+            == expected_sha256,
+            f"P0.1.1 changed frozen scientific/control material: {relative}",
+        )
     require(
         smoke_manifest.get("matrix_kind")
         == "single_serial_six_instance_gold_noop_campaign",
@@ -1801,7 +1839,8 @@ def validate_workflows() -> None:
     require(
         "push:" in smoke
         and "      - codex/trimem-coder-v1" in smoke
-        and "      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json" in smoke,
+        and f"      - {GRADER_SMOKE_SENTINEL_PATH}" in smoke
+        and "      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json" not in smoke,
         "smoke workflow exact branch-local sentinel trigger is absent",
     )
     require(
@@ -1809,6 +1848,11 @@ def validate_workflows() -> None:
         and "needs: branch-trigger-preflight" in smoke
         and "trimem_grader_smoke_trigger_preflight.py" in smoke,
         "smoke branch trigger is not fail-closed before the protected job",
+    )
+    require(
+        "concurrency:\n  group: trimem-v1-grader-smoke-exec-002\n"
+        "  cancel-in-progress: false" in smoke,
+        "smoke recovery concurrency contract differs",
     )
     require(
         "environment: trimem-grader-smoke-exec" in smoke,

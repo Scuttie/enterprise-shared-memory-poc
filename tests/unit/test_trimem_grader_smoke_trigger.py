@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import hashlib
+import inspect
 import json
 from pathlib import Path
 import re
@@ -63,91 +64,23 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         encoding="utf-8",
         newline="\n",
     )
-    frozen = repository / trigger.FROZEN_REQUEST_PATH
-    _write_json(
-        frozen,
-        {
-            "approval_state": "PENDING_EXEC_APPROVAL",
-            "phases": [
-                {
-                    "phase": "GRADER_SMOKE",
-                    "status": "PENDING_EXEC_APPROVAL",
-                    "workflow": trigger.WORKFLOW_PATH,
-                }
-            ],
-            "request_id": "TRIMEM_V1_BENCHMARK_EXEC_002",
-            "schema": "trimem/benchmark-exec-request/1.1",
-        },
-    )
-    targets = []
-    locked_targets = []
-    for instance_index in range(trigger.EXPECTED_UNIQUE_INSTANCES):
-        benchmark_id = f"benchmark-{instance_index // 2}"
-        instance_id = f"repository__issue-{instance_index}"
-        pair = []
-        for probe in ("GOLD", "NOOP_BASELINE"):
-            suffix = "gold" if probe == "GOLD" else "noop-baseline"
-            target_id = f"{benchmark_id}--{instance_id}--{suffix}"
-            pair.append(target_id)
-            targets.append(
-                {
-                    "base_commit": f"{instance_index + 1:040x}",
-                    "benchmark_id": benchmark_id,
-                    "dataset_revision": f"{instance_index + 101:040x}",
-                    "expected_resolved": probe == "GOLD",
-                    "instance_id": instance_id,
-                    "language": "python",
-                    "order_index": len(targets),
-                    "probe": probe,
-                    "repository": f"organization/repository-{instance_index}",
-                    "source_row_sha256": f"{instance_index + 201:064x}",
-                    "target_id": target_id,
-                }
-            )
-        locked_targets.append(
-            {
-                "benchmark_id": benchmark_id,
-                "instance_id": instance_id,
-                "target_ids": pair,
-            }
-        )
-    target_set_sha256 = hashlib.sha256(trigger.canonical_bytes(targets)).hexdigest()
-    _write_json(
-        repository / trigger.MANIFEST_PATH,
-        {
-            "execution_status": "PENDING_EXEC_APPROVAL",
-            "matrix_kind": trigger.EXPECTED_MATRIX_KIND,
-            "noop_baseline": trigger.NOOP_BASELINE_LOCK,
-            "schema": "trimem/grader-smoke-manifest/1.0",
-            "selection": {
-                "frozen_before_results": True,
-                "selected_instances": trigger.EXPECTED_UNIQUE_INSTANCES,
-                "target_count": trigger.EXPECTED_MATRIX_ROWS,
-            },
-            "status": "FROZEN_TARGET_SET_EXECUTION_PENDING",
-            "target_set_sha256": target_set_sha256,
-            "targets": targets,
-        },
-    )
-    _write_json(
-        repository / trigger.IMAGE_LOCK_PATH,
-        {
-            "official_grader_execution": "PENDING_EXEC_APPROVAL",
-            "schema": "trimem/grader-image-lock/1.2",
-            "smoke_status": "FROZEN",
-            "status": "FROZEN",
-            "targets": locked_targets,
-        },
-    )
-    _write_json(
-        repository / trigger.CREDENTIAL_FREE_BUNDLE_PATH,
-        {
-            "official_grader_execution": False,
-            "paid_model_calls": 0,
-            "schema": "trimem/credential-free-e2e/1.0",
-            "status": "PASS",
-        },
-    )
+    # The one-time amendment is permitted to alter execution control only.
+    # Copy the exact scientific baseline bytes so the fixture exercises the
+    # production pin rather than manufacturing a second, synthetic baseline.
+    for path in (
+        trigger.FROZEN_REQUEST_PATH,
+        trigger.MANIFEST_PATH,
+        trigger.IMAGE_LOCK_PATH,
+        trigger.CREDENTIAL_FREE_BUNDLE_PATH,
+    ):
+        destination = repository / path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes((ROOT / path).read_bytes())
+    historical_sentinel_path = getattr(trigger, "HISTORICAL_SENTINEL_PATH", None)
+    if historical_sentinel_path is not None:
+        historical = repository / historical_sentinel_path
+        historical.parent.mkdir(parents=True, exist_ok=True)
+        historical.write_bytes((ROOT / historical_sentinel_path).read_bytes())
     for path in (
         trigger.PREFLIGHT_PATH,
         trigger.INVENTORY_PATH,
@@ -157,7 +90,7 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes((ROOT / path).read_bytes())
     closure = {}
-    for path in (
+    closure_paths = [
         trigger.WORKFLOW_PATH,
         trigger.FROZEN_REQUEST_PATH,
         trigger.MANIFEST_PATH,
@@ -166,7 +99,10 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         trigger.PREFLIGHT_PATH,
         trigger.INVENTORY_PATH,
         trigger.PROTOCOL_PATH,
-    ):
+    ]
+    if historical_sentinel_path is not None:
+        closure_paths.append(historical_sentinel_path)
+    for path in closure_paths:
         raw = (repository / path).read_bytes()
         closure[path] = {
             "bytes": len(raw),
@@ -184,18 +120,33 @@ def _rehash(document: dict[str, object]) -> None:
     document["request_sha256"] = trigger.sha256_prefixed(trigger.canonical_bytes(payload))
 
 
-def _event(before: str, after: str, *, added: list[str] | None = None) -> dict[str, object]:
-    paths = [trigger.SENTINEL_PATH] if added is None else added
+def _event(before: str, after: str) -> dict[str, object]:
+    """Mirror the Actions push payload shape observed by the failed first run.
+
+    GitHub's Actions event file retained commit identities but did not include
+    the webhook-only ``added``/``modified``/``removed`` arrays.  File-set
+    authority must therefore come from the checked-out Git objects.
+    """
+
     commit = {
-        "added": paths,
+        "author": {"email": "trimem@example.invalid", "name": "TriMem Test"},
+        "committer": {"email": "trimem@example.invalid", "name": "TriMem Test"},
+        "distinct": True,
         "id": after,
-        "modified": [],
-        "removed": [],
+        "message": "one-time grader smoke trigger",
+        "timestamp": "2026-09-01T13:35:31+09:00",
+        "tree_id": "f" * 40,
+        "url": f"https://github.com/Scuttie/enterprise-shared-memory-poc/commit/{after}",
     }
     return {
         "after": after,
+        "base_ref": None,
         "before": before,
         "commits": [commit],
+        "compare": (
+            "https://github.com/Scuttie/enterprise-shared-memory-poc/compare/"
+            f"{before}...{after}"
+        ),
         "created": False,
         "deleted": False,
         "forced": False,
@@ -208,6 +159,7 @@ def _environment(after: str) -> dict[str, str]:
     return {
         "GITHUB_EVENT_NAME": "push",
         "GITHUB_REF": trigger.EXPECTED_REF,
+        "GITHUB_RUN_ATTEMPT": "1",
         "GITHUB_SHA": after,
     }
 
@@ -233,19 +185,110 @@ def _trigger_repository(
     if raw_transform is not None:
         raw = raw_transform(raw)
     sentinel = repository / trigger.SENTINEL_PATH
-    sentinel.parent.mkdir(parents=True)
+    sentinel.parent.mkdir(parents=True, exist_ok=True)
     sentinel.write_bytes(raw)
-    added = [trigger.SENTINEL_PATH]
     if extra_path:
         (repository / "unexpected.txt").write_text("unexpected\n", encoding="utf-8")
-        added.append("unexpected.txt")
     after = _commit(repository, "one-time grader smoke trigger")
     event_path = tmp_path / "event.json"
     event_path.write_text(
-        json.dumps(_event(before, after, added=added), sort_keys=True),
+        json.dumps(_event(before, after), sort_keys=True),
         encoding="utf-8",
     )
     return repository, event_path, before, after, _environment(after)
+
+
+def _write_event(path: Path, before: str, after: str) -> Path:
+    path.write_text(
+        json.dumps(_event(before, after), sort_keys=True),
+        encoding="utf-8",
+    )
+    return path
+
+
+def _write_active_sentinel(
+    repository: Path,
+    *,
+    source_head: str,
+    material_commit: str | None = None,
+) -> None:
+    document = trigger.build_request_document(
+        repository,
+        source_head=source_head,
+        commit=material_commit,
+    )
+    target = repository / trigger.SENTINEL_PATH
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(trigger.canonical_bytes(document, trailing_lf=True))
+
+
+def _git_contract_negative(
+    tmp_path: Path, case: str
+) -> tuple[Path, Path, dict[str, str]]:
+    """Create one authoritative-Git/event negative while keeping file arrays absent."""
+
+    repository = tmp_path / "repository"
+    before = _initialize(repository)
+
+    if case == "sentinel_plus_another_file":
+        _write_active_sentinel(repository, source_head=before)
+        (repository / "unexpected.txt").write_text("unexpected\n", encoding="utf-8")
+        after = _commit(repository, "sentinel plus another file")
+    elif case == "sentinel_modified":
+        _write_active_sentinel(repository, source_head=before)
+        before = _commit(repository, "pre-existing active sentinel")
+        _write_active_sentinel(repository, source_head=before)
+        after = _commit(repository, "modify active sentinel")
+    elif case == "old_sentinel_touched":
+        historical_path = trigger.HISTORICAL_SENTINEL_PATH
+        _write_active_sentinel(repository, source_head=before)
+        historical = repository / historical_path
+        historical.write_bytes(historical.read_bytes() + b"tampered\n")
+        after = _commit(repository, "touch historical and active sentinels")
+    elif case == "two_commits_between":
+        (repository / "intermediate.txt").write_text("intermediate\n", encoding="utf-8")
+        intermediate = _commit(repository, "intermediate commit")
+        _write_active_sentinel(
+            repository,
+            source_head=before,
+            material_commit=intermediate,
+        )
+        after = _commit(repository, "sentinel after intermediate commit")
+    elif case == "merge_commit":
+        _git(repository, "checkout", "-b", "sentinel-side")
+        _write_active_sentinel(repository, source_head=before)
+        _commit(repository, "sentinel side commit")
+        _git(repository, "checkout", "codex/trimem-coder-v1")
+        _git(repository, "merge", "--no-ff", "sentinel-side", "-m", "merge sentinel")
+        after = _git(repository, "rev-parse", "HEAD")
+    elif case == "wrong_parent":
+        _git(repository, "checkout", "-b", "event-before")
+        (repository / "event-before.txt").write_text("sibling\n", encoding="utf-8")
+        event_before = _commit(repository, "event before sibling")
+        _git(repository, "checkout", "codex/trimem-coder-v1")
+        _write_active_sentinel(
+            repository,
+            source_head=event_before,
+            material_commit=before,
+        )
+        after = _commit(repository, "sentinel with different parent")
+        before = event_before
+    else:
+        _write_active_sentinel(repository, source_head=before)
+        after = _commit(repository, "one-time grader smoke trigger")
+
+    event_path = _write_event(tmp_path / "event.json", before, after)
+    event = json.loads(event_path.read_bytes())
+    environment = _environment(after)
+    if case == "wrong_branch":
+        event["ref"] = "refs/heads/main"
+        environment["GITHUB_REF"] = "refs/heads/main"
+    elif case == "forced_push":
+        event["forced"] = True
+    elif case == "deleted_push":
+        event["deleted"] = True
+    event_path.write_text(json.dumps(event, sort_keys=True), encoding="utf-8")
+    return repository, event_path, environment
 
 
 def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> None:
@@ -271,8 +314,13 @@ def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> Non
     ) == trigger.ALLOWED_WORKFLOW_SECRETS
 
 
-def test_exact_one_time_zero_cost_trigger_passes(tmp_path: Path) -> None:
+def test_actual_actions_payload_without_commit_file_arrays_passes(
+    tmp_path: Path,
+) -> None:
     repository, event_path, before, after, environment = _trigger_repository(tmp_path)
+    event = json.loads(event_path.read_bytes())
+    for commit in (event["commits"][0], event["head_commit"]):
+        assert {"added", "modified", "removed"}.isdisjoint(commit)
     report = trigger.validate_branch_trigger(
         repository,
         event_path,
@@ -296,6 +344,61 @@ def test_exact_one_time_zero_cost_trigger_passes(tmp_path: Path) -> None:
         "status": "PASS",
         "trigger_commit": after,
     }
+
+
+def test_event_validator_source_never_reads_non_authoritative_file_arrays() -> None:
+    source = inspect.getsource(trigger._validate_event_shape)
+    assert re.findall(
+        r"\.get\(\s*['\"](added|modified|removed)['\"]\s*\)", source
+    ) == []
+
+
+def test_rerun_attempt_two_fails_closed(tmp_path: Path) -> None:
+    repository, event_path, _, _, environment = _trigger_repository(tmp_path)
+    environment["GITHUB_RUN_ATTEMPT"] = "2"
+    with pytest.raises(trigger.TriggerPreflightError, match="rerun attempt"):
+        trigger.validate_branch_trigger(
+            repository,
+            event_path,
+            environ=environment,
+        )
+
+
+@pytest.mark.parametrize(
+    ("case", "message"),
+    [
+        pytest.param(
+            "sentinel_plus_another_file", "sentinel|trigger commit", id="01-sentinel-plus-another-file"
+        ),
+        pytest.param(
+            "sentinel_modified", "sentinel|trigger commit", id="02-sentinel-modified"
+        ),
+        pytest.param(
+            "old_sentinel_touched", "sentinel|trigger commit", id="03-old-sentinel-touched"
+        ),
+        pytest.param(
+            "two_commits_between", "one non-merge commit|parent", id="04-two-commits"
+        ),
+        pytest.param("merge_commit", "one non-merge commit|merge", id="05-merge"),
+        pytest.param("wrong_parent", "one non-merge commit|parent", id="06-wrong-parent"),
+        pytest.param("wrong_branch", "branch|GITHUB_REF", id="07-wrong-branch"),
+        pytest.param("forced_push", "forced", id="08-forced"),
+        pytest.param("deleted_push", "deletion|deleted", id="09-deleted"),
+    ],
+)
+def test_required_negative_git_and_event_contracts_fail_closed(
+    tmp_path: Path, case: str, message: str
+) -> None:
+    repository, event_path, environment = _git_contract_negative(tmp_path, case)
+    event = json.loads(event_path.read_bytes())
+    for commit in (event["commits"][0], event["head_commit"]):
+        assert {"added", "modified", "removed"}.isdisjoint(commit)
+    with pytest.raises(trigger.TriggerPreflightError, match=message):
+        trigger.validate_branch_trigger(
+            repository,
+            event_path,
+            environ=environment,
+        )
 
 
 def test_request_hash_covers_exact_canonical_content(tmp_path: Path) -> None:
@@ -344,7 +447,7 @@ def test_request_hash_covers_exact_canonical_content(tmp_path: Path) -> None:
     assert trigger.canonical_bytes(document, trailing_lf=True).endswith(b"\n")
 
 
-def test_frozen_image_lock_target_ids_must_equal_manifest_pairs(
+def test_frozen_image_lock_bytes_are_pinned_before_target_pair_validation(
     tmp_path: Path,
 ) -> None:
     repository = tmp_path / "repository"
@@ -363,7 +466,7 @@ def test_frozen_image_lock_target_ids_must_equal_manifest_pairs(
     changed = _commit(repository, "drift image target IDs")
     with pytest.raises(
         trigger.TriggerPreflightError,
-        match="image-lock target IDs differ from the manifest pair",
+        match="grader image lock bytes",
     ):
         trigger.build_request_document(repository, source_head=changed)
 
@@ -465,6 +568,72 @@ def test_request_identity_and_authority_fail_closed(
         trigger.validate_branch_trigger(repository, event_path, environ=environment)
 
 
+@pytest.mark.parametrize(
+    ("case", "message"),
+    [
+        pytest.param(
+            "source_head", "source_head differs", id="10-request-source-head-mismatch"
+        ),
+        pytest.param(
+            "request_hash", "request content hash", id="11-request-hash-mismatch"
+        ),
+        pytest.param("freeze_hash", "freeze hash", id="12-freeze-hash-mismatch"),
+        pytest.param("target_set", "target-set hash", id="14-target-set-hash-mismatch"),
+    ],
+)
+def test_required_negative_request_bindings_fail_closed(
+    tmp_path: Path, case: str, message: str
+) -> None:
+    repository, _, before, after, _ = _trigger_repository(tmp_path)
+    document = json.loads((repository / trigger.SENTINEL_PATH).read_bytes())
+    if case == "source_head":
+        document["source_head"] = "a" * 40
+        _rehash(document)
+    elif case == "request_hash":
+        document["request_sha256"] = "sha256:" + "0" * 64
+    elif case == "freeze_hash":
+        document["freeze_sha256"] = "sha256:" + "0" * 64
+        _rehash(document)
+    elif case == "target_set":
+        document["target_set_sha256"] = "0" * 64
+        _rehash(document)
+    else:  # pragma: no cover - parametrization is the closed case set
+        raise AssertionError(case)
+    raw = trigger.canonical_bytes(document, trailing_lf=True)
+    with pytest.raises(trigger.TriggerPreflightError, match=message):
+        trigger.validate_request_document(
+            repository,
+            raw,
+            expected_source_head=before,
+            material_commit=after,
+        )
+
+
+def test_required_negative_13_nonzero_model_token_or_usd_cap_fails_closed(
+    tmp_path: Path,
+) -> None:
+    repository, _, before, after, _ = _trigger_repository(tmp_path)
+    original = json.loads((repository / trigger.SENTINEL_PATH).read_bytes())
+    for field, replacement, message in (
+        ("model_calls", 1, "model_calls must be integer zero"),
+        ("input_tokens", 1, "input_tokens must be integer zero"),
+        ("output_tokens", 1, "output_tokens must be integer zero"),
+        ("total_usd", 0.01, "total_usd must be float zero"),
+    ):
+        document = deepcopy(original)
+        caps = document["hard_caps"]
+        assert isinstance(caps, dict)
+        caps[field] = replacement
+        _rehash(document)
+        with pytest.raises(trigger.TriggerPreflightError, match=message):
+            trigger.validate_request_document(
+                repository,
+                trigger.canonical_bytes(document, trailing_lf=True),
+                expected_source_head=before,
+                material_commit=after,
+            )
+
+
 def test_every_repository_binding_fails_closed_on_drift(tmp_path: Path) -> None:
     repository, _, before, after, _ = _trigger_repository(tmp_path)
     original = json.loads((repository / trigger.SENTINEL_PATH).read_bytes())
@@ -510,7 +679,7 @@ def test_push_must_change_only_the_new_sentinel(tmp_path: Path) -> None:
         tmp_path,
         extra_path=True,
     )
-    with pytest.raises(trigger.TriggerPreflightError, match="push payload must add only"):
+    with pytest.raises(trigger.TriggerPreflightError, match="sentinel|trigger commit"):
         trigger.validate_branch_trigger(repository, event_path, environ=environment)
 
 
@@ -525,7 +694,7 @@ def test_sentinel_cannot_be_reused_after_existing_in_history(tmp_path: Path) -> 
     repository = tmp_path / "repository"
     first = _initialize(repository)
     sentinel = repository / trigger.SENTINEL_PATH
-    sentinel.parent.mkdir(parents=True)
+    sentinel.parent.mkdir(parents=True, exist_ok=True)
     sentinel.write_text("{}\n", encoding="utf-8")
     _commit(repository, "historical sentinel")
     sentinel.unlink()
@@ -561,7 +730,7 @@ def test_model_secret_reference_or_exposure_fails_closed(tmp_path: Path) -> None
     clean_root.mkdir()
     repository, event_path, _, _, environment = _trigger_repository(clean_root)
     environment["OPENAI_API_KEY"] = "must-not-reach-preflight"
-    with pytest.raises(trigger.TriggerPreflightError, match="model secret is exposed"):
+    with pytest.raises(trigger.TriggerPreflightError, match="execution secret is exposed"):
         trigger.validate_branch_trigger(repository, event_path, environ=environment)
 
 

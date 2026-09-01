@@ -92,6 +92,27 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
             "swebench_verified"
         }:
             raise PublicArtifactError("aggregate primary endpoint is not SWE-bench Verified")
+    else:
+        if (
+            aggregate.get("probe_counts") != {"GOLD": 6, "NOOP_BASELINE": 6}
+            or aggregate.get("resolved_counts") != {"GOLD": 6, "NOOP_BASELINE": 0}
+            or aggregate.get("unresolved_counts") != {"GOLD": 0, "NOOP_BASELINE": 6}
+            or aggregate.get("patch_applied_count") != 12
+            or aggregate.get("tests_executed_count") != 12
+            or aggregate.get("digest_match_count") != 12
+            or aggregate.get("infrastructure_failure_count") != 0
+            or aggregate.get("empty_patch_ids") != []
+            or aggregate.get("actual_accounting")
+            != {
+                "grader_calls": 12,
+                "grader_containers": 12,
+                "model_gateway_calls": 0,
+                "official_grader_runs": 12,
+                "paid_model_calls": 0,
+            }
+            or aggregate.get("image_lifecycle", {}).get("status") != "PASS"
+        ):
+            raise PublicArtifactError("grader-smoke exact execution summary differs")
     required_approval = {
         "approval_artifact_sha256",
         "approved_request_sha256",
@@ -130,6 +151,15 @@ def package(aggregate_path: Path, output: Path) -> dict[str, Any]:
         "benchmark_roles", "benchmark_totals", "primary_endpoints", "secondary_endpoints"
     ):
         if field in aggregate:
+            result[field] = aggregate[field]
+    if aggregate["manifest"] == "grader-smoke":
+        for field in (
+            "actual_accounting", "digest_match_count", "empty_patch_ids",
+            "evidence_counts", "expected_target_count", "image_lifecycle",
+            "infrastructure_failure_count", "observed_target_count",
+            "patch_applied_count", "probe_counts", "resolved_counts",
+            "tests_executed_count", "unresolved_counts",
+        ):
             result[field] = aggregate[field]
     _reject_forbidden(result)
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "commit": "71648506ec34bb3fcbd86cbf0503ee90004636cf",
+  "commit": "c5d2bf5c7136390624734327c1a00bb1df8ffe31",
   "manifest_scope": "PRODUCT_HANDOFF_ONLY_NOT_TRIMEM_RESEARCH_STATE",
   "hash_basis": "git ls-files -z (tracked files only; newline-normalized content)",
   "trimem_research_state_authority": "artifacts/trimem_v1/freeze.json",
@@ -44,5 +44,5 @@
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "d2bab3d824fa88e9353019faffe228d9d40f0fd276a6212e4368dcd888f2b28e"
+  "manifest_hash": "a3c6331c81a69d27b2b5fe871e9227e2b12a8a8e67fb8e47bd721ad3a38c6a53"
 }

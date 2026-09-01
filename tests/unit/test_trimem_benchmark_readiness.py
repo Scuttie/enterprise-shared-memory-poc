@@ -73,18 +73,8 @@ def test_p011_preserves_failed_trigger_and_records_nonsemantic_amendment() -> No
         "scientific_inputs_changed": False,
     }
 
-    baseline_head = "71edef406f0bc5202244ae1ad4f84419662e7126"
-
-    def historical(relative: str) -> bytes:
-        return subprocess.check_output(
-            ["git", "show", f"{baseline_head}:{relative}"], cwd=ROOT
-        )
-
     current_manifest = _read(
         ROOT / "configs/trimem_v1/grader_smoke_manifest.json"
-    )
-    baseline_manifest = json.loads(
-        historical("configs/trimem_v1/grader_smoke_manifest.json")
     )
     scientific_fields = (
         "matrix_kind",
@@ -93,18 +83,30 @@ def test_p011_preserves_failed_trigger_and_records_nonsemantic_amendment() -> No
         "target_set_sha256",
         "targets",
     )
-    assert {
+    scientific_projection = {
         field: current_manifest[field] for field in scientific_fields
-    } == {
-        field: baseline_manifest[field] for field in scientific_fields
     }
-    for relative in (
-        "configs/trimem_v1/benchmark_exec_request.json",
-        "artifacts/trimem_v1/grader_image_lock.json",
-        "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json",
-        "scripts/trimem_grader_smoke_protocol.py",
-    ):
-        assert (ROOT / relative).read_bytes() == historical(relative)
+    assert hashlib.sha256(_canonical(scientific_projection)).hexdigest() == (
+        "d9882fbf694c1fba6cfab5953360b3264b284b2dee685c07a73e0c55ec5aa088"
+    )
+    baseline_raw_hashes = {
+        "configs/trimem_v1/benchmark_exec_request.json": (
+            "05e19aeec6630f2362c481a86eb66d0e630041794866a638c3ebbf07e5ccbba4"
+        ),
+        "artifacts/trimem_v1/grader_image_lock.json": (
+            "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb"
+        ),
+        "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json": (
+            "e03e96f26b56fffb2e911504b526b6986a9148b4db620aa9b58bb5e100083e4c"
+        ),
+        "scripts/trimem_grader_smoke_protocol.py": (
+            "f73d7da715b3cc6a2d15e3bc39c355cfeccf585ab2014a1834c9b275839fc7b8"
+        ),
+    }
+    for relative, expected_sha256 in baseline_raw_hashes.items():
+        assert hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == (
+            expected_sha256
+        )
 
 
 def _canonical(value: object) -> bytes:

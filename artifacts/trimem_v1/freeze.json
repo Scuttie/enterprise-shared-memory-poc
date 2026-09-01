@@ -941,8 +941,8 @@
       "sha256": "686c00fa178aa80d24e4474475abd00acbba179649b568484c2e4e8e172df2c9"
     },
     "tests/unit/test_trimem_benchmark_readiness.py": {
-      "bytes": 129684,
-      "sha256": "41e15558e74536de99f8cbfc88dc98374b10c498ceddc7517a1c5cb971611f52"
+      "bytes": 129927,
+      "sha256": "78091c7cb1a0f335bb1ec73f300f3efe2f5c815096893d3e3d21001fdc61747a"
     },
     "tests/unit/test_trimem_git_workspace.py": {
       "bytes": 25908,

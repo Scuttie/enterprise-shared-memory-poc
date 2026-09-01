@@ -513,7 +513,7 @@
                         "source_image_name_evidence":  "SWE-bench pinned get_instance_image_key convention",
                         "target_ids":  [
                                            "swebench_verified--astropy__astropy-13579--gold",
-                                           "swebench_verified--astropy__astropy-13579--noop"
+                                           "swebench_verified--astropy__astropy-13579--noop-baseline"
                                        ]
                     },
                     {
@@ -528,7 +528,7 @@
                         "source_image_name_evidence":  "SWE-bench pinned get_instance_image_key convention",
                         "target_ids":  [
                                            "swebench_verified--pydata__xarray-6721--gold",
-                                           "swebench_verified--pydata__xarray-6721--noop"
+                                           "swebench_verified--pydata__xarray-6721--noop-baseline"
                                        ]
                     },
                     {
@@ -543,7 +543,7 @@
                         "source_image_name_evidence":  "Multi-SWE-bench pinned harness image convention",
                         "target_ids":  [
                                            "multi_swe_bench_mini--vuejs__core-8911--gold",
-                                           "multi_swe_bench_mini--vuejs__core-8911--noop"
+                                           "multi_swe_bench_mini--vuejs__core-8911--noop-baseline"
                                        ]
                     },
                     {
@@ -558,7 +558,7 @@
                         "source_image_name_evidence":  "Multi-SWE-bench pinned harness image convention",
                         "target_ids":  [
                                            "multi_swe_bench_mini--django__django-16493--gold",
-                                           "multi_swe_bench_mini--django__django-16493--noop"
+                                           "multi_swe_bench_mini--django__django-16493--noop-baseline"
                                        ]
                     },
                     {
@@ -573,7 +573,7 @@
                         "source_image_name_evidence":  "Multi-SWE-bench pinned harness image convention",
                         "target_ids":  [
                                            "multi_swe_bench_flash--expressjs__express-3870--gold",
-                                           "multi_swe_bench_flash--expressjs__express-3870--noop"
+                                           "multi_swe_bench_flash--expressjs__express-3870--noop-baseline"
                                        ]
                     },
                     {
@@ -588,7 +588,7 @@
                         "source_image_name_evidence":  "Multi-SWE-bench pinned harness image convention",
                         "target_ids":  [
                                            "multi_swe_bench_flash--jqlang__jq-2919--gold",
-                                           "multi_swe_bench_flash--jqlang__jq-2919--noop"
+                                           "multi_swe_bench_flash--jqlang__jq-2919--noop-baseline"
                                        ]
                     }
                 ]

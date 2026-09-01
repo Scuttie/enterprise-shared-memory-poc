@@ -16,7 +16,7 @@
     "development_physical_runs": "4 preregistered M2 candidate bundles * 12 targets + selected-prompt M0 and M1 * 12 targets = 72; candidate results are tuning evidence, not component ablations",
     "decomposition_calls": "task_arm_runs * exactly one decomposition call",
     "extraction_calls": "task_arm_runs * exactly one extraction call; never folded into solve calls",
-    "grader_containers": "12 GOLD/NOOP smoke targets + 72 development task-arm runs + 81 held-out task-arm runs",
+    "grader_containers": "12 GOLD/NOOP_BASELINE smoke condition rows + 72 development task-arm runs + 81 held-out task-arm runs",
     "heldout_physical_runs": "27 held-out targets * M0/M1/selected-M2 = 81",
     "model_cost": "uncached_input_tokens * 2.50/1M + cached_input_tokens * 0.25/1M + output_tokens * 15.00/1M USD",
     "no_long_context_surcharge": "each request reserves len(UTF-8 prompt bytes)+4096 envelope tokens and is rejected above 262000, conservatively below the 272K-token surcharge threshold",

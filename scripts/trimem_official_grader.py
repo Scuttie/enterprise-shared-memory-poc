@@ -91,6 +91,8 @@ class HarnessInvocation:
     cwd: Path
     report_path: Path
     private_input_paths: tuple[Path, ...]
+    test_output_path: Path
+    test_status_path: Path
 
 
 Runner = Callable[..., subprocess.CompletedProcess[str]]
@@ -99,6 +101,164 @@ Runner = Callable[..., subprocess.CompletedProcess[str]]
 def canonical_row_hash(row: Mapping[str, Any]) -> str:
     raw = json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return hashlib.sha256(raw).hexdigest()
+
+
+def _strict_string_list(value: Any, name: str) -> list[str]:
+    if not isinstance(value, list) or any(not isinstance(item, str) or not item for item in value):
+        raise OfficialGraderError(f"official test status field {name} is invalid")
+    if len(set(value)) != len(value):
+        raise OfficialGraderError(f"official test status field {name} is duplicated")
+    return value
+
+
+def _exact_int(value: Any, expected: int) -> bool:
+    return type(value) is int and value == expected
+
+
+def _source_test_ids(row: Mapping[str, Any], name: str) -> list[str]:
+    value = row.get(name)
+    if isinstance(value, str):
+        try:
+            value = strict_json_loads(value)
+        except (json.JSONDecodeError, ValueError) as exc:
+            raise OfficialGraderError(f"source row field {name} is invalid JSON") from exc
+    return _strict_string_list(value, f"source.{name}")
+
+
+def _test_result_summary(value: Any, name: str) -> dict[str, int]:
+    if not isinstance(value, Mapping):
+        raise OfficialGraderError(f"Multi-SWE test result {name} is missing")
+    required = {
+        "passed_count", "failed_count", "skipped_count",
+        "passed_tests", "failed_tests", "skipped_tests",
+    }
+    if set(value) != required:
+        raise OfficialGraderError(f"Multi-SWE test result {name} field set drift")
+    rows = {
+        kind: _strict_string_list(value[f"{kind}_tests"], f"{name}.{kind}_tests")
+        for kind in ("passed", "failed", "skipped")
+    }
+    for kind, items in rows.items():
+        count = value.get(f"{kind}_count")
+        if type(count) is not int or count < 0 or count != len(items):
+            raise OfficialGraderError(f"Multi-SWE test result {name}.{kind}_count mismatch")
+    if any(set(rows[left]) & set(rows[right]) for left, right in (
+        ("passed", "failed"), ("passed", "skipped"), ("failed", "skipped")
+    )):
+        raise OfficialGraderError(f"Multi-SWE test result {name} classifications overlap")
+    return {f"{kind}_count": len(rows[kind]) for kind in ("passed", "failed", "skipped")}
+
+
+def validate_official_test_evidence(
+    target: FrozenOfficialTarget,
+    *,
+    source_row: Mapping[str, Any],
+    test_output_raw: bytes,
+    test_status_raw: bytes,
+    resolved: bool,
+) -> dict[str, Any]:
+    """Validate actual harness test bytes/status; return only non-sensitive counts."""
+
+    if not test_output_raw or not test_output_raw.strip():
+        raise OfficialGraderError("official test output is empty")
+    if not test_status_raw or not test_status_raw.strip():
+        raise OfficialGraderError("official test status is empty")
+    try:
+        status = strict_json_loads(test_status_raw)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise OfficialGraderError("official test status is invalid JSON") from exc
+    if not isinstance(status, Mapping):
+        raise OfficialGraderError("official test status root is not an object")
+
+    if target.benchmark_id == "swebench_verified":
+        if set(status) != {target.instance_id}:
+            raise OfficialGraderError("SWE official test status target set mismatch")
+        instance = status[target.instance_id]
+        if not isinstance(instance, Mapping):
+            raise OfficialGraderError("SWE official instance test status is missing")
+        tests = instance.get("tests_status")
+        if not isinstance(tests, Mapping) or not {"FAIL_TO_PASS", "PASS_TO_PASS"} <= set(tests):
+            raise OfficialGraderError("SWE official FAIL_TO_PASS/PASS_TO_PASS status is missing")
+
+        expected: dict[str, list[str]] = {
+            name: _source_test_ids(source_row, name)
+            for name in ("FAIL_TO_PASS", "PASS_TO_PASS")
+        }
+        if not expected["FAIL_TO_PASS"]:
+            raise OfficialGraderError("SWE source has no FAIL_TO_PASS tests")
+        classified: dict[str, dict[str, list[str]]] = {}
+        for name in ("FAIL_TO_PASS", "PASS_TO_PASS"):
+            row = tests.get(name)
+            if not isinstance(row, Mapping) or set(row) != {"success", "failure"}:
+                raise OfficialGraderError(f"SWE official {name} status field set drift")
+            success = _strict_string_list(row.get("success"), f"{name}.success")
+            failure = _strict_string_list(row.get("failure"), f"{name}.failure")
+            if set(success) & set(failure) or set(success) | set(failure) != set(expected[name]):
+                raise OfficialGraderError(f"SWE official {name} classification is incomplete")
+            classified[name] = {"success": success, "failure": failure}
+        if classified["PASS_TO_PASS"]["failure"]:
+            raise OfficialGraderError("SWE PASS_TO_PASS regression count is non-zero")
+        computed_resolved = not classified["FAIL_TO_PASS"]["failure"]
+        if (
+            instance.get("patch_exists") is not True
+            or instance.get("patch_is_None") is not False
+            or instance.get("patch_successfully_applied") is not True
+            or instance.get("infra_failure") is not False
+            or instance.get("resolved") is not computed_resolved
+            or computed_resolved is not resolved
+        ):
+            raise OfficialGraderError("SWE official test status/result mismatch")
+        expected_spec = {
+            name: sorted(expected[name]) for name in ("FAIL_TO_PASS", "PASS_TO_PASS")
+        }
+        return {
+            "schema": "trimem/official-test-status-summary/1.0",
+            "benchmark_id": target.benchmark_id,
+            "source": "SWE_PER_INSTANCE_REPORT",
+            "fail_to_pass_expected": len(expected["FAIL_TO_PASS"]),
+            "fail_to_pass_classified": sum(
+                len(classified["FAIL_TO_PASS"][kind]) for kind in ("success", "failure")
+            ),
+            "fail_to_pass_failures": len(classified["FAIL_TO_PASS"]["failure"]),
+            "pass_to_pass_expected": len(expected["PASS_TO_PASS"]),
+            "pass_to_pass_classified": sum(
+                len(classified["PASS_TO_PASS"][kind]) for kind in ("success", "failure")
+            ),
+            "pass_to_pass_regressions": 0,
+            "expected_test_spec_sha256": canonical_row_hash(expected_spec),
+            "resolved": resolved,
+        }
+
+    org, repo, number = _parse_instance_number(target.instance_id)
+    if (
+        status.get("org") != org
+        or status.get("repo") != repo
+        or str(status.get("number")) != number
+        or not isinstance(status.get("valid"), bool)
+        or status.get("valid") is not resolved
+    ):
+        raise OfficialGraderError("Multi-SWE official per-instance status identity/result mismatch")
+    summaries = {
+        name: _test_result_summary(status.get(name), name)
+        for name in ("run_result", "test_patch_result", "fix_patch_result")
+    }
+    fix = summaries["fix_patch_result"]
+    fix_total = sum(fix.values())
+    if fix_total <= 0:
+        raise OfficialGraderError("Multi-SWE official fix test output has no classified tests")
+    for name in ("fixed_tests", "p2p_tests", "f2p_tests", "s2p_tests", "n2p_tests"):
+        if not isinstance(status.get(name), Mapping):
+            raise OfficialGraderError(f"Multi-SWE official test status {name} is missing")
+    return {
+        "schema": "trimem/official-test-status-summary/1.0",
+        "benchmark_id": target.benchmark_id,
+        "source": "MULTI_SWE_PER_INSTANCE_REPORT",
+        "fix_tests_classified": fix_total,
+        "fix_tests_passed": fix["passed_count"],
+        "fix_tests_failed": fix["failed_count"],
+        "fix_tests_skipped": fix["skipped_count"],
+        "resolved": resolved,
+    }
 
 
 def minimal_subprocess_env(source: Mapping[str, str]) -> dict[str, str]:
@@ -172,6 +332,10 @@ def build_harness_invocation(
         }, lines=True)
         run_id = hashlib.sha256(f"{target.target_id}:{model_name}".encode()).hexdigest()[:20]
         report_path = report_dir / f"{model_name}.{run_id}.json"
+        instance_log_dir = (
+            harness_root / "logs" / "run_evaluation" / run_id
+            / model_name.replace("/", "__") / target.instance_id
+        )
         return HarnessInvocation(
             argv=(
                 python_binary, "-m", "swebench.harness.run_evaluation",
@@ -184,6 +348,8 @@ def build_harness_invocation(
             cwd=harness_root,
             report_path=report_path,
             private_input_paths=(dataset, prediction),
+            test_output_path=instance_log_dir / "test_output.txt",
+            test_status_path=instance_log_dir / "report.json",
         )
 
     org, repo, number = _parse_instance_number(target.instance_id)
@@ -218,17 +384,58 @@ def build_harness_invocation(
         cwd=harness_root,
         report_path=output_dir / "final_report.json",
         private_input_paths=(dataset, prediction, config_path),
+        test_output_path=workdir / org / repo / "evals" / f"pr-{number}" / "fix-patch-run.log",
+        test_status_path=workdir / org / repo / "evals" / f"pr-{number}" / "report.json",
     )
 
 
 def parse_official_report(target: FrozenOfficialTarget, report: Mapping[str, Any]) -> bool:
     if target.benchmark_id == "swebench_verified":
-        resolved = set(report.get("resolved_ids", ()))
-        unresolved = set(report.get("unresolved_ids", ()))
+        id_fields = (
+            "submitted_ids", "completed_ids", "incomplete_ids", "resolved_ids",
+            "unresolved_ids", "empty_patch_ids", "error_ids", "infra_failure_ids",
+            "ambiguous_failure_ids",
+        )
+        rows = {
+            name: _strict_string_list(report.get(name), f"summary.{name}")
+            for name in id_fields
+        }
+        resolved = set(rows["resolved_ids"])
+        unresolved = set(rows["unresolved_ids"])
+        count_pairs = {
+            "submitted_instances": "submitted_ids",
+            "completed_instances": "completed_ids",
+            "resolved_instances": "resolved_ids",
+            "unresolved_instances": "unresolved_ids",
+            "infra_failure_instances": "infra_failure_ids",
+            "ambiguous_failure_instances": "ambiguous_failure_ids",
+            "empty_patch_instances": "empty_patch_ids",
+            "error_instances": "error_ids",
+        }
+        if (
+            report.get("schema_version") != 2
+            or not _exact_int(report.get("total_instances"), 1)
+            or not _exact_int(report.get("submitted_instances"), 1)
+            or not _exact_int(report.get("completed_instances"), 1)
+            or not _exact_int(report.get("empty_patch_instances"), 0)
+            or not _exact_int(report.get("error_instances"), 0)
+            or rows["submitted_ids"] != [target.instance_id]
+            or rows["completed_ids"] != [target.instance_id]
+            or rows["incomplete_ids"]
+            or rows["empty_patch_ids"]
+            or rows["error_ids"]
+            or rows["infra_failure_ids"]
+            or rows["ambiguous_failure_ids"]
+            or any(
+                not _exact_int(report.get(count_name), len(rows[ids_name]))
+                for count_name, ids_name in count_pairs.items()
+            )
+        ):
+            raise OfficialGraderError("SWE-bench report does not prove one completed non-empty-patch evaluation")
         if target.instance_id not in resolved | unresolved or target.instance_id in resolved & unresolved:
             raise OfficialGraderError("SWE-bench report does not classify the exact target")
-        if int(report.get("submitted_instances", -1)) != 1:
-            raise OfficialGraderError("SWE-bench report submitted target count mismatch")
+        if resolved | unresolved != {target.instance_id}:
+            raise OfficialGraderError("SWE-bench report resolution target set mismatch")
         return target.instance_id in resolved
     org, repo, number = _parse_instance_number(target.instance_id)
     canonical_id = f"{org}/{repo}:pr-{number}"
@@ -238,32 +445,42 @@ def parse_official_report(target: FrozenOfficialTarget, report: Mapping[str, Any
     )
     rows: dict[str, list[str]] = {}
     for name in list_fields:
-        value = report.get(name)
-        if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
-            raise OfficialGraderError(f"Multi-SWE-bench report field {name} is invalid")
-        rows[name] = value
+        rows[name] = _strict_string_list(report.get(name), f"summary.{name}")
     count_pairs = {
         "submitted_instances": "submitted_ids", "completed_instances": "completed_ids",
         "incomplete_instances": "incomplete_ids", "resolved_instances": "resolved_ids",
         "unresolved_instances": "unresolved_ids", "empty_patch_instances": "empty_patch_ids",
         "error_instances": "error_ids",
     }
-    if report.get("total_instances") != 1 or report.get("submitted_instances") != 1:
+    if (
+        not _exact_int(report.get("total_instances"), 1)
+        or not _exact_int(report.get("submitted_instances"), 1)
+    ):
         raise OfficialGraderError("Multi-SWE-bench report target count mismatch")
     if rows["submitted_ids"] != [canonical_id]:
         raise OfficialGraderError("Multi-SWE-bench report submitted ID mismatch")
     for count_name, ids_name in count_pairs.items():
-        if report.get(count_name) != len(rows[ids_name]):
+        if not _exact_int(report.get(count_name), len(rows[ids_name])):
             raise OfficialGraderError(f"Multi-SWE-bench report count mismatch: {count_name}")
         if any(item != canonical_id for item in rows[ids_name]):
             raise OfficialGraderError(f"Multi-SWE-bench report contains an unknown ID: {ids_name}")
+    if (
+        rows["completed_ids"] != [canonical_id]
+        or rows["incomplete_ids"]
+        or rows["empty_patch_ids"]
+        or rows["error_ids"]
+        or not _exact_int(report.get("completed_instances"), 1)
+        or not _exact_int(report.get("incomplete_instances"), 0)
+        or not _exact_int(report.get("empty_patch_instances"), 0)
+        or not _exact_int(report.get("error_instances"), 0)
+    ):
+        raise OfficialGraderError("Multi-SWE-bench report does not prove one completed non-empty-patch evaluation")
     in_resolved = canonical_id in rows["resolved_ids"]
-    non_resolved = any(
-        canonical_id in rows[name]
-        for name in ("unresolved_ids", "incomplete_ids", "empty_patch_ids", "error_ids")
-    )
-    if in_resolved == non_resolved:
+    in_unresolved = canonical_id in rows["unresolved_ids"]
+    if in_resolved == in_unresolved:
         raise OfficialGraderError("Multi-SWE-bench report does not uniquely classify the exact target")
+    if set(rows["resolved_ids"]) | set(rows["unresolved_ids"]) != {canonical_id}:
+        raise OfficialGraderError("Multi-SWE-bench report resolution target set mismatch")
     return in_resolved
 
 
@@ -375,6 +592,39 @@ class OfficialHarnessGraderGateway:
         if any(path.exists() for path in paths):
             raise OfficialGraderError("private grader input purge failed")
         return evidence
+
+    def _actual_test_evidence(
+        self,
+        invocation: HarnessInvocation,
+        *,
+        resolved: bool,
+    ) -> dict[str, Any]:
+        captured: dict[str, dict[str, Any]] = {}
+        raw_values: dict[str, bytes] = {}
+        for name, path in (
+            ("test_output", invocation.test_output_path),
+            ("official_test_status", invocation.test_status_path),
+        ):
+            resolved_path = path.resolve()
+            if path.is_symlink() or not any(
+                root in resolved_path.parents for root in (self.harness_root, self.output_root)
+            ):
+                raise OfficialGraderError(f"official {name} path escaped the frozen harness roots")
+            if not resolved_path.is_file():
+                raise OfficialGraderError(f"official {name} file is missing")
+            raw = resolved_path.read_bytes()
+            if not raw or not raw.strip():
+                raise OfficialGraderError(f"official {name} file is empty")
+            raw_values[name] = raw
+            captured[name] = self._restricted_blob("official-tests", name, raw)
+        summary = validate_official_test_evidence(
+            self.target,
+            source_row=self.source_row,
+            test_output_raw=raw_values["test_output"],
+            test_status_raw=raw_values["official_test_status"],
+            resolved=resolved,
+        )
+        return {**captured, "summary": summary}
 
     def _failure(
         self,
@@ -492,6 +742,8 @@ class OfficialHarnessGraderGateway:
             self.target.target_id, self.target.repository, self.target.base_commit
         ):
             raise ValueError("grade request does not match frozen benchmark target")
+        if not isinstance(request.patch, str) or not request.patch.strip():
+            raise ValueError("official grader refuses an empty patch before evaluator execution")
         started = time.perf_counter_ns()
         image_evidence: list[dict[str, Any]] = []
         def purge(paths: Sequence[Path], *, container_started: bool) -> list[dict[str, Any]]:
@@ -526,6 +778,18 @@ class OfficialHarnessGraderGateway:
                 reason=type(exc).__name__, stderr=str(exc), evidence=image_evidence,
                 extra={"materialized_private_inputs": materialized},
             ) from None
+        stale = [
+            path for path in (invocation.test_output_path, invocation.test_status_path)
+            if path.exists()
+        ]
+        if stale:
+            materialized = purge(invocation.private_input_paths, container_started=False)
+            raise self._failure(
+                request, started, stage="official_harness", status="stale_test_evidence",
+                reason="preexisting_test_evidence", evidence=image_evidence,
+                extra={"materialized_private_inputs": materialized,
+                       "stale_test_evidence_names": [path.name for path in stale]},
+            )
         try:
             completed = self._run(invocation.argv, cwd=invocation.cwd, timeout=self.timeout_seconds)
         except subprocess.TimeoutExpired as exc:
@@ -593,6 +857,16 @@ class OfficialHarnessGraderGateway:
                 exit_code=completed.returncode, container_started=True, evidence=image_evidence,
                 extra={**common, "raw_report": report},
             ) from None
+        try:
+            test_evidence = self._actual_test_evidence(invocation, resolved=resolved)
+        except (OSError, UnicodeDecodeError, ValueError, OfficialGraderError) as exc:
+            raise self._failure(
+                request, started, stage="official_test_evidence",
+                status="test_evidence_invalid", reason=str(exc), stdout=completed.stdout,
+                stderr=completed.stderr, exit_code=completed.returncode,
+                container_started=True, evidence=image_evidence,
+                extra={**common, "raw_report": report},
+            ) from None
         report = dict(report)
         report["_trimem"] = {
             "benchmark_id": self.target.benchmark_id,
@@ -600,6 +874,7 @@ class OfficialHarnessGraderGateway:
             "harness_revision": self.target.harness_revision,
             **common,
             "source_row_sha256": self.target.source_row_sha256,
+            "test_evidence": test_evidence,
         }
         elapsed = max(0, (time.perf_counter_ns() - started) // 1_000_000)
         return GradeResult(
@@ -623,4 +898,5 @@ __all__ = [
     "FrozenOfficialTarget", "HarnessInvocation", "OfficialGraderError",
     "OfficialHarnessGraderGateway", "build_harness_invocation", "canonical_row_hash",
     "minimal_subprocess_env", "parse_official_report", "redact_text",
+    "validate_official_test_evidence",
 ]

@@ -77,6 +77,14 @@ from trimem_m2_candidates import (  # noqa: E402
     validate_selected_m2,
 )
 from trimem_official_grader import FrozenOfficialTarget, OfficialHarnessGraderGateway  # noqa: E402
+from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
+    TriggerPreflightError,
+    validate_request_document,
+)
+from trimem_exec_approval import (  # noqa: E402
+    ApprovalValidationError,
+    validate_external_approval_document,
+)
 
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -93,6 +101,10 @@ PHASES = {
     "heldout": "HELDOUT_BENCHMARK",
     "grader-smoke": "GRADER_SMOKE",
 }
+BENCHMARK_EXEC_REQUEST = Path("configs/trimem_v1/benchmark_exec_request.json")
+GRADER_SMOKE_EXEC_REQUEST = Path(
+    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json"
+)
 OFFICIAL_DATASET_URLS = {
     "swebench_verified": "https://huggingface.co/datasets/SWE-bench/SWE-bench_Verified/resolve/{revision}/{path}",
     "multi_swe_bench_mini": "https://huggingface.co/datasets/ByteDance-Seed/Multi-SWE-bench_mini/resolve/{revision}/{path}",
@@ -154,6 +166,43 @@ def git_head() -> str:
     if completed.returncode != 0 or not HEX40.fullmatch(completed.stdout.strip()):
         raise BenchmarkExecutionError("cannot resolve exact Git HEAD")
     return completed.stdout.strip()
+
+
+def validate_grader_smoke_sentinel(request_path: Path) -> dict[str, Any]:
+    """Revalidate the full committed sentinel contract at the EXEC boundary."""
+
+    request = read_json(request_path)
+    expected_source_head = request.get("source_head")
+    if not isinstance(expected_source_head, str) or HEX40.fullmatch(expected_source_head) is None:
+        raise BenchmarkExecutionError("grader-smoke sentinel source_head is invalid")
+    execution_head = git_head()
+    if os.environ.get("GITHUB_EVENT_NAME") == "push":
+        parents = subprocess.run(
+            ["git", "rev-list", "--parents", "-n", "1", execution_head],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        parent_fields = parents.stdout.strip().split()
+        if (
+            parents.returncode != 0
+            or parent_fields != [execution_head, expected_source_head]
+        ):
+            raise BenchmarkExecutionError(
+                "grader-smoke push HEAD is not the exact one-parent sentinel commit"
+            )
+    try:
+        return validate_request_document(
+            ROOT,
+            request_path.read_bytes(),
+            expected_source_head=expected_source_head,
+            material_commit=execution_head,
+        )
+    except (ImportError, OSError, TriggerPreflightError) as exc:
+        raise BenchmarkExecutionError(
+            f"grader-smoke sentinel exact-content validation failed: {exc}"
+        ) from None
 
 
 def git_tracked(path: Path) -> None:
@@ -253,18 +302,49 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
     repository and this function binds every byte of it to the committed
     request, HEAD, freeze, phase, and caps.
     """
-    request_path = ROOT / "configs/trimem_v1/benchmark_exec_request.json"
+    policy_request_path = ROOT / BENCHMARK_EXEC_REQUEST
+    request_path = (
+        ROOT / GRADER_SMOKE_EXEC_REQUEST
+        if split == "grader-smoke"
+        else policy_request_path
+    )
     freeze_path = ROOT / "artifacts/trimem_v1/freeze.json"
     cost_path = ROOT / "configs/trimem_v1/cost_plan.json"
-    for path in (request_path, freeze_path, cost_path, ROOT / MANIFESTS[split]):
+    for path in (
+        policy_request_path,
+        request_path,
+        freeze_path,
+        cost_path,
+        ROOT / MANIFESTS[split],
+    ):
         git_tracked(path)
-    request, cost = read_json(request_path), read_json(cost_path)
+    request = read_json(request_path)
+    policy_request = read_json(policy_request_path)
+    cost = read_json(cost_path)
     phase = PHASES[split]
-    if request.get("approval_state") != "PENDING_EXEC_APPROVAL":
+    if policy_request.get("approval_state") != "PENDING_EXEC_APPROVAL":
         raise BenchmarkExecutionError("committed request must remain pending and immutable")
-    phases = {row.get("phase"): row for row in request.get("phases", ()) if isinstance(row, dict)}
+    phases = {
+        row.get("phase"): row
+        for row in policy_request.get("phases", ())
+        if isinstance(row, dict)
+    }
     if phases.get(phase, {}).get("status") != "PENDING_EXEC_APPROVAL":
         raise BenchmarkExecutionError(f"committed {phase} request is not pending")
+    if split == "grader-smoke":
+        if request.get("schema") != "trimem/grader-smoke-branch-trigger/1.0":
+            raise BenchmarkExecutionError("grader-smoke sentinel schema mismatch")
+        if request.get("phase") != phase:
+            raise BenchmarkExecutionError("grader-smoke sentinel phase mismatch")
+        policy_hash = sha256_bytes(policy_request_path.read_bytes())
+        if request.get("frozen_request_sha256") not in {
+            policy_hash,
+            "sha256:" + policy_hash,
+        }:
+            raise BenchmarkExecutionError(
+                "grader-smoke sentinel does not bind the frozen execution policy"
+            )
+        validate_grader_smoke_sentinel(request_path)
     try:
         approval_resolved = approval_path.resolve(strict=True)
     except OSError as exc:
@@ -284,7 +364,9 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
     approval = approval_document.get("approval")
     if not isinstance(approval, dict):
         raise BenchmarkExecutionError("external approval binding is missing")
-    missing = sorted(set(request.get("required_approval_fields", ())) - set(approval))
+    missing = sorted(
+        set(policy_request.get("required_approval_fields", ())) - set(approval)
+    )
     if missing:
         raise BenchmarkExecutionError(f"approval binding fields are missing: {missing}")
     head = git_head()
@@ -323,10 +405,26 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
         "approved_input_token_cap": hard.get("input_tokens"),
         "approved_output_token_cap": hard.get("output_tokens"),
         "approved_currency_hard_cap": hard.get("total_usd"),
+        "approved_grader_containers": hard.get("benchmark_grader_containers"),
     }
     for name, expected in exact.items():
         if approval.get(name) != expected:
             raise BenchmarkExecutionError(f"approval cap does not equal frozen proposed cap: {name}")
+    try:
+        approval = validate_external_approval_document(
+            approval_document,
+            request=request,
+            policy_request=policy_request,
+            phase=phase,
+            hard_cap=hard,
+            request_sha256=request_hash,
+            freeze_sha256=freeze_hash,
+            git_head=head,
+            workflow_run_id=workflow_run_id,
+            workflow_run_attempt=workflow_run_attempt,
+        )
+    except ApprovalValidationError as exc:
+        raise BenchmarkExecutionError(str(exc)) from None
     return {
         "request": request,
         "approval": approval,

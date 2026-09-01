@@ -43,6 +43,11 @@ from trimem_benchmark_run import (  # noqa: E402
     JournaledModelGateway, validate_exec_approval,
 )
 from trimem_freeze import FROZEN_PATHS, check_freeze  # noqa: E402
+from trimem_grader_smoke_protocol import (  # noqa: E402
+    NOOP_BASELINE_CONTENT,
+    NOOP_BASELINE_LOCK,
+    NOOP_BASELINE_PATH,
+)
 from trimem_m2_candidates import CANDIDATE_IDS, load_bundle, validate_selected_m2  # noqa: E402
 from trimem_verify_credential_free import verify_bundle  # noqa: E402
 
@@ -194,8 +199,29 @@ def validate_targets() -> dict[str, list[dict[str, Any]]]:
                 f"{name} primary/secondary endpoint roles drift",
             )
         result[name] = targets
-    pairs = Counter((row["benchmark_id"], row["instance_id"]) for row in result["grader-smoke"])
-    require(len(pairs) == 6 and set(pairs.values()) == {2}, "smoke is not six GOLD/NOOP pairs")
+    smoke_manifest = manifests["grader-smoke"]
+    require(
+        smoke_manifest.get("matrix_kind")
+        == "single_serial_six_instance_gold_noop_campaign",
+        "smoke manifest does not describe the single serial campaign",
+    )
+    pairs = Counter(
+        (row["benchmark_id"], row["instance_id"])
+        for row in result["grader-smoke"]
+    )
+    require(
+        len(pairs) == 6 and set(pairs.values()) == {2},
+        "smoke is not six GOLD/NOOP_BASELINE pairs",
+    )
+    for offset in range(0, len(result["grader-smoke"]), 2):
+        gold, noop = result["grader-smoke"][offset : offset + 2]
+        require(
+            (gold.get("benchmark_id"), gold.get("instance_id"))
+            == (noop.get("benchmark_id"), noop.get("instance_id"))
+            and [gold.get("probe"), noop.get("probe")]
+            == ["GOLD", "NOOP_BASELINE"],
+            "smoke execution order is not deterministic GOLD then NOOP_BASELINE",
+        )
     smoke_ids = {instance for _, instance in pairs}
     development_ids = {row["instance_id"] for row in result["development"]}
     heldout_ids = {row["instance_id"] for row in result["heldout"]}
@@ -237,6 +263,55 @@ def validate_images(targets: Mapping[str, list[dict[str, Any]]]) -> None:
         "registry_last_updated_utc", "registry_response_sha256",
     )) for row in [*smoke_rows, *benchmark_rows, *support_rows])
     require(hashlib.sha256(material.encode("utf-8")).hexdigest() == observation.get("metadata_snapshot_sha256"), "registry metadata snapshot hash mismatch")
+
+
+def validate_noop_baseline_audit(
+    targets: Mapping[str, list[dict[str, Any]]]
+) -> None:
+    audit = read_json(ARTIFACT / "noop_baseline_six_commit_audit.json")
+    body = {key: value for key, value in audit.items() if key != "audit_sha256"}
+    require(
+        audit.get("schema") == "trimem/noop-baseline-six-commit-audit/1.0"
+        and audit.get("status") == "PASS"
+        and audit.get("noop_baseline") == NOOP_BASELINE_LOCK
+        and audit.get("manifest_target_set_sha256")
+        == hashlib.sha256(canonical(targets["grader-smoke"])).hexdigest()
+        and audit.get("audit_sha256")
+        == hashlib.sha256(canonical(body)).hexdigest(),
+        "NOOP_BASELINE six-base audit seal is invalid",
+    )
+    expected = {
+        (row["repository"], row["instance_id"], row["base_commit"])
+        for row in targets["grader-smoke"]
+        if row.get("probe") == "GOLD"
+    }
+    rows = audit.get("rows")
+    require(
+        isinstance(rows, list) and len(rows) == 6,
+        "NOOP_BASELINE audit row count is not six",
+    )
+    observed = set()
+    for row in rows:
+        require(isinstance(row, dict), "NOOP_BASELINE audit row is malformed")
+        observed.add(
+            (row.get("repository"), row.get("instance_id"), row.get("base_commit"))
+        )
+        require(
+            row.get("root_marker_absent_at_base") is True
+            and row.get("patch_applies_cached") is True
+            and row.get("isolated_temporary_index") is True
+            and row.get("changed_paths") == [NOOP_BASELINE_PATH]
+            and row.get("forbidden_source_test_build_or_package_paths_touched") == []
+            and row.get("staged_marker_sha256")
+            == hashlib.sha256(NOOP_BASELINE_CONTENT).hexdigest()
+            and isinstance(row.get("base_tree"), str)
+            and HEX40.fullmatch(row["base_tree"]) is not None,
+            "NOOP_BASELINE audit does not prove one safe new-file-only patch",
+        )
+    require(
+        observed == expected,
+        "NOOP_BASELINE audit target set differs from the smoke manifest",
+    )
 
 
 def validate_model_cost_environment() -> None:
@@ -457,7 +532,9 @@ def validate_runtime_and_candidates() -> None:
 
 def validate_workflows() -> None:
     automatic = [ROOT / ".github/workflows/ci-trimem.yml", ROOT / ".github/workflows/ci-trimem-e2e.yml"]
-    manual = [ROOT / ".github/workflows/trimem-grader-smoke.yml", ROOT / ".github/workflows/trimem-benchmark.yml"]
+    smoke_workflow = ROOT / ".github/workflows/trimem-grader-smoke.yml"
+    benchmark_workflow = ROOT / ".github/workflows/trimem-benchmark.yml"
+    manual = [smoke_workflow, benchmark_workflow]
     for path in [*automatic, *manual]:
         text = path.read_text(encoding="utf-8")
         for forbidden in ("continue-on-error", "|| true", ":latest"):
@@ -473,16 +550,87 @@ def validate_workflows() -> None:
     service = automatic[1].read_text(encoding="utf-8")
     require("test_real_services_e2e.py" in service and "postgres@sha256:" in service and "qdrant/qdrant@sha256:" in service, "real PostgreSQL/Qdrant CI is absent")
     require("postgres_bootstrap.py" in service and "TRIMEM_TEST_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@" in service and "TRIMEM_TEST_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@" in service, "real-service role/RLS boundary is not wired")
+    smoke = smoke_workflow.read_text(encoding="utf-8")
+    require("workflow_dispatch:" in smoke and "pull_request:" not in smoke and "schedule:" not in smoke, "smoke workflow has an unauthorized trigger")
+    require(
+        "push:" in smoke
+        and "      - codex/trimem-coder-v1" in smoke
+        and "      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json" in smoke,
+        "smoke workflow exact branch-local sentinel trigger is absent",
+    )
+    require(
+        "branch-trigger-preflight:" in smoke
+        and "needs: branch-trigger-preflight" in smoke
+        and "trimem_grader_smoke_trigger_preflight.py" in smoke,
+        "smoke branch trigger is not fail-closed before the protected job",
+    )
+    require(
+        "environment: trimem-grader-smoke-exec" in smoke,
+        "smoke job is not held by the protected environment",
+    )
+    smoke_secrets = set(
+        re.findall(r"\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)", smoke)
+    )
+    require(
+        smoke_secrets
+        == {"TRIMEM_EXEC_APPROVAL_B64", "TRIMEM_EVIDENCE_PASSPHRASE"},
+        "smoke workflow secret surface is not the exact control/evidence pair",
+    )
+    benchmark_text = benchmark_workflow.read_text(encoding="utf-8")
+    require(
+        "workflow_dispatch:" in benchmark_text
+        and all(
+            trigger not in benchmark_text
+            for trigger in ("pull_request:", "push:", "schedule:")
+        ),
+        "benchmark EXEC workflow is not manual-only",
+    )
     for path in manual:
         text = path.read_text(encoding="utf-8")
-        require("workflow_dispatch:" in text and all(trigger not in text for trigger in ("pull_request:", "push:", "schedule:")), f"EXEC workflow is not manual-only: {path.name}")
-        require("trimem_pull_locked_images.py" in text and "trimem_public_artifact.py" in text and "openssl enc -aes-256-cbc" in text, f"EXEC image/evidence protection path incomplete: {path.name}")
+        require("trimem_public_artifact.py" in text and "openssl enc -aes-256-cbc" in text, f"EXEC evidence protection path incomplete: {path.name}")
         require("if: always()" in text and "trimem_cleanup_exec.py" in text, f"EXEC plaintext cleanup path is absent: {path.name}")
+    require(
+        "bounded-disk exact GOLD and NOOP_BASELINE pairs" in smoke
+        and smoke.count(
+            "--image-evidence-dir artifacts/trimem_v1/grader_smoke_exec/image-materialization"
+        ) == 2
+        and "--cleanup-grader-smoke" in smoke
+        and "Remove only frozen smoke image references" in smoke,
+        "smoke workflow does not use bounded-disk serial image materialization",
+    )
     benchmark = manual[1].read_text(encoding="utf-8")
+    require("trimem_pull_locked_images.py" in benchmark, "benchmark digest-only image pull is absent")
     require("runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]" in benchmark and "timeout-minutes: 7200" in benchmark, "long serial benchmark is not on protected 5-day runner")
     require("matrix:" not in benchmark, "online benchmark is incorrectly task/arm sharded")
     require("trimem_run_with_resume.py" in benchmark and "trimem_benchmark_run.py\n" not in benchmark, "same-attempt benchmark recovery wrapper is not the workflow entrypoint")
     require("postgres_bootstrap.py" in benchmark and "TRIMEM_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@" in benchmark and "TRIMEM_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@" in benchmark, "benchmark admin/runtime RLS identities are not separated")
+    environment = read_json(
+        ARTIFACT / "grader_smoke_environment_protection.json"
+    )
+    require(
+        environment.get("status") == "CONFIGURED"
+        and environment.get("configured_before_sentinel") is True,
+        "grader-smoke protected environment was not documented before sentinel",
+    )
+    environment_row = environment.get("environment", {})
+    reviewer_rule = environment.get("protection_rule", {})
+    branch_policy = environment.get("branch_policy", {})
+    require(
+        environment_row.get("name") == "trimem-grader-smoke-exec"
+        and environment_row.get("can_admins_bypass") is False
+        and reviewer_rule.get("type") == "required_reviewers"
+        and bool(reviewer_rule.get("reviewers"))
+        and branch_policy.get("name") == "codex/trimem-coder-v1"
+        and branch_policy.get("type") == "branch",
+        "grader-smoke protected environment proof is incomplete",
+    )
+    secret_state = environment.get("secret_state_before_sentinel", {})
+    require(
+        secret_state.get("installed_secret_names") == []
+        and set(secret_state.get("required_later", ()))
+        == {"TRIMEM_EXEC_APPROVAL_B64", "TRIMEM_EVIDENCE_PASSPHRASE"},
+        "grader-smoke pre-sentinel environment-secret state is not exact",
+    )
 
 
 def validate_eol_policy() -> None:
@@ -526,13 +674,26 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     targets = validate_targets()
     validate_readiness_plan(targets)
     validate_images(targets)
+    validate_noop_baseline_audit(targets)
     validate_model_cost_environment()
     validate_runtime_and_candidates()
     validate_workflows()
     credential = verify_bundle(ARTIFACT / "credential_free_e2e")
     request = read_json(CONFIG / "benchmark_exec_request.json")
     require(request.get("approval_state") == "PENDING_EXEC_APPROVAL", "committed request must stay pending")
-    require(all(value == 0 for value in request.get("actual_execution", {}).values()), "committed execution counters are nonzero")
+    request_actual = request.get("actual_execution")
+    require(
+        isinstance(request_actual, dict)
+        and all(type(value) is int for value in request_actual.values())
+        and request_actual == {
+            "benchmark_target_image_pulls": 0,
+            "grader_containers": 0,
+            "official_grader_runs": 0,
+            "paid_model_calls": 0,
+            "task_arm_runs": 0,
+        },
+        "committed preapproval execution counter schema/value differs",
+    )
     prohibited = request.get("prohibited_before_approval", [])
     require(
         "official grader/benchmark target image pull or run" in prohibited
@@ -542,16 +703,70 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     required = set(request.get("required_approval_fields", ()))
     require({"approved_workflow_run_id", "approved_workflow_run_attempt"} <= required, "single-dispatch EXEC approval binding is absent")
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
-    require(smoke.get("status") in {"PENDING_EXEC_APPROVAL", "PASS"}, "grader smoke state is invalid")
+    require(set(smoke) == {
+        "schema", "status", "trimem_system_implementation", "grader_exec_package",
+        "official_grader_viability", "performance", "expected_unique_instances",
+        "expected_target_count", "expected_condition_rows", "actual_execution",
+    }, "grader smoke result field set differs")
+    require(
+        smoke.get("schema") == "trimem/grader-smoke-result/1.0"
+        and smoke.get("trimem_system_implementation") == "CREDENTIAL_FREE_GREEN"
+        and smoke.get("performance") == "NOT_MEASURED"
+        and smoke.get("expected_unique_instances") == 6
+        and smoke.get("expected_target_count") == 12
+        and smoke.get("expected_condition_rows")
+        == {"GOLD": 6, "NOOP_BASELINE": 6},
+        "grader smoke result static contract differs",
+    )
+    smoke_actual = smoke.get("actual_execution")
+    pre_smoke_actual = {
+        "docker_pulls": 0,
+        "grader_containers": 0,
+        "input_tokens": 0,
+        "model_calls": 0,
+        "official_grader_runs": 0,
+        "output_tokens": 0,
+        "paid_model_calls": 0,
+        "total_usd": 0,
+    }
+    passed_smoke_actual = {
+        **pre_smoke_actual,
+        "docker_pulls": 7,
+        "grader_containers": 12,
+        "official_grader_runs": 12,
+    }
+    smoke_state = (
+        smoke.get("status"), smoke.get("grader_exec_package"),
+        smoke.get("official_grader_viability"),
+    )
+    require(
+        isinstance(smoke_actual, dict)
+        and all(type(value) is int for value in smoke_actual.values())
+        and (
+        (
+            smoke_state
+            == (
+                "CORRECTION_IN_PROGRESS", "CORRECTION_IN_PROGRESS",
+                "NOT_YET_ESTABLISHED",
+            )
+            and smoke_actual == pre_smoke_actual
+        )
+        or (
+            smoke_state == ("PASS", "PASS", "ESTABLISHED")
+            and smoke_actual == passed_smoke_actual
+        )
+        ),
+        "grader smoke state/counter contract is invalid",
+    )
     return {
         "credential_free_bundle_hash": credential["bundle_hash"],
         "development_physical_runs": 72,
         "heldout_physical_runs": 81,
         "support_image_digests_frozen": 1,
         "target_image_digests_frozen": 45,
-        "model_calls": 0,
-        "official_grader_runs": 0,
-        "paid_model_calls": 0,
+        "model_calls": smoke_actual["model_calls"],
+        "official_grader_runs": smoke_actual["official_grader_runs"],
+        "paid_model_calls": smoke_actual["paid_model_calls"],
     }
 
 
@@ -561,8 +776,15 @@ def preapproval_blockers() -> list[str]:
     if selected.get("status") != "PRE_DEVELOPMENT":
         blockers.append("pre-development selection placeholder is not exact")
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
-    if smoke.get("status") != "PENDING_EXEC_APPROVAL" or smoke.get("official_grader_viability") != "NOT_YET_ESTABLISHED":
-        blockers.append("pre-EXEC smoke state is not pending/not-yet-established")
+    smoke_state = (
+        smoke.get("status"),
+        smoke.get("official_grader_viability"),
+    )
+    if smoke_state not in {
+        ("CORRECTION_IN_PROGRESS", "NOT_YET_ESTABLISHED"),
+        ("PASS", "ESTABLISHED"),
+    }:
+        blockers.append("grader-smoke correction/viability state is inconsistent")
     request = read_json(CONFIG / "benchmark_exec_request.json")
     if request.get("approval_state") != "PENDING_EXEC_APPROVAL":
         blockers.append("committed external approval request is not pending")
@@ -581,7 +803,7 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
         return [str(exc)], None
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
     if name in {"development", "heldout"} and smoke.get("status") != "PASS":
-        return ["official GOLD+NOOP smoke PASS is required before benchmark execution"], name
+        return ["official GOLD+NOOP_BASELINE smoke PASS is required before benchmark execution"], name
     selected = validate_selected_m2(require_frozen=False)
     if name == "development" and selected.get("status") != "PRE_DEVELOPMENT":
         return ["development requires the exact PRE_DEVELOPMENT selection state"], name
@@ -625,11 +847,12 @@ def main() -> int:
             "level": args.level,
             "approved_phase": phase,
             "git_tracked_freeze_required": require_git_tracked,
+            "grader_exec_package": "CORRECTION_IN_PROGRESS",
             "official_grader_viability": "NOT_YET_ESTABLISHED" if args.level == "benchmark-approval" else "EXECUTION_GATED",
+            "performance": "NOT_MEASURED",
             "status": "PASS" if not blockers else "FAIL_CLOSED",
+            "trimem_system_implementation": "CREDENTIAL_FREE_GREEN",
         }
-        if args.level == "benchmark-approval" and not blockers:
-            report["endpoint"] = "TRIMEM_V1_READY_FOR_BENCHMARK_APPROVAL"
         print(json.dumps(report, ensure_ascii=False, sort_keys=True))
         return 0 if not blockers else 1
     except (OSError, ValueError, json.JSONDecodeError, subprocess.SubprocessError) as exc:

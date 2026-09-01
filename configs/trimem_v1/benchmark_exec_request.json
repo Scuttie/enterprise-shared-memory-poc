@@ -42,6 +42,7 @@
     "approved_input_token_cap",
     "approved_output_token_cap",
     "approved_currency_hard_cap",
+    "approved_grader_containers",
     "approved_workflow_run_id",
     "approved_workflow_run_attempt",
     "approved_legal_terms_acceptance",

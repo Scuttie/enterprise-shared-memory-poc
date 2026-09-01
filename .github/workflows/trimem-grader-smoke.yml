@@ -2,12 +2,44 @@ name: TriMem V1 official grader smoke
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - codex/trimem-coder-v1
+    paths:
+      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json
 
 permissions:
   contents: read
 
 jobs:
+  branch-trigger-preflight:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact trigger commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.11.10
+          cache: ""
+      - name: Verify one-time zero-cost branch trigger
+        run: >-
+          python scripts/trimem_grader_smoke_trigger_preflight.py
+          --repository "$GITHUB_WORKSPACE"
+          --event-path "$GITHUB_EVENT_PATH"
+
   frozen-gold-noop-smoke:
+    needs: branch-trigger-preflight
+    if: >-
+      always() &&
+      ((github.event_name == 'workflow_dispatch' &&
+        github.ref == 'refs/heads/main') ||
+       needs.branch-trigger-preflight.result == 'success')
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     environment: trimem-grader-smoke-exec
@@ -24,6 +56,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
+          ref: ${{ github.sha }}
       - name: Set up exact Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
@@ -45,22 +78,18 @@ jobs:
           --level grader-smoke-exec
           --require-git-tracked
           --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
-      - name: Pull committed images by digest and verify local observations
-        run: >-
-          python scripts/trimem_pull_locked_images.py
-          --phase grader-smoke
-          --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
-          --evidence-dir artifacts/trimem_v1/grader_smoke_exec/image-materialization
-      - name: Run exact committed GOLD and NOOP targets serially
+      - name: Run bounded-disk exact GOLD and NOOP_BASELINE pairs serially
         run: >-
           python scripts/trimem_grader_smoke.py
           --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
           --output-dir artifacts/trimem_v1/grader_smoke_exec/results
+          --image-evidence-dir artifacts/trimem_v1/grader_smoke_exec/image-materialization
       - name: Aggregate exact target set fail closed
         run: >-
           python scripts/trimem_benchmark_matrix.py aggregate
           --manifest grader-smoke
           --results-dir artifacts/trimem_v1/grader_smoke_exec/results
+          --image-evidence-dir artifacts/trimem_v1/grader_smoke_exec/image-materialization
           --output artifacts/trimem_v1/grader_smoke_exec/aggregate.json
       - name: Build public allowlisted result
         run: >-
@@ -68,19 +97,43 @@ jobs:
           --source artifacts/trimem_v1/grader_smoke_exec/results
           --aggregate artifacts/trimem_v1/grader_smoke_exec/aggregate.json
           --output artifacts/trimem_v1/grader_smoke_exec/public-results.json
+      - name: Remove only frozen smoke image references
+        if: always()
+        run: >-
+          python scripts/trimem_pull_locked_images.py
+          --cleanup-grader-smoke
+          --evidence-dir artifacts/trimem_v1/grader_smoke_exec/workflow-image-cleanup
+      - name: Inventory every restricted evidence file
+        if: always()
+        run: >-
+          python scripts/trimem_evidence_inventory.py
+          --root artifacts/trimem_v1/grader_smoke_exec
+          --root-label grader_smoke_exec
+          --output "$RUNNER_TEMP/trimem-grader-smoke-evidence-inventory.json"
       - name: Encrypt complete restricted evidence
         if: always()
         env:
           TRIMEM_EVIDENCE_PASSPHRASE: ${{ secrets.TRIMEM_EVIDENCE_PASSPHRASE }}
         run: |
           set -euo pipefail
-          tar -C artifacts/trimem_v1/grader_smoke_exec -cf - . | openssl enc -aes-256-cbc -salt -pbkdf2 -pass env:TRIMEM_EVIDENCE_PASSPHRASE -out "$RUNNER_TEMP/trimem-grader-smoke-restricted.tar.enc"
+          tar -cf - \
+            -C artifacts/trimem_v1/grader_smoke_exec . \
+            -C "$RUNNER_TEMP" trimem-grader-smoke-evidence-inventory.json \
+            | openssl enc -aes-256-cbc -salt -pbkdf2 -pass env:TRIMEM_EVIDENCE_PASSPHRASE -out "$RUNNER_TEMP/trimem-grader-smoke-restricted.tar.enc"
       - name: Upload public smoke result
         if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: trimem-grader-smoke-public
           path: artifacts/trimem_v1/grader_smoke_exec/public-results.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload non-sensitive restricted evidence inventory
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-grader-smoke-evidence-inventory
+          path: ${{ runner.temp }}/trimem-grader-smoke-evidence-inventory.json
           if-no-files-found: error
           retention-days: 30
       - name: Upload encrypted restricted evidence
@@ -94,4 +147,13 @@ jobs:
           retention-days: 14
       - name: Remove plaintext and temporary EXEC material
         if: always()
-        run: python scripts/trimem_cleanup_exec.py --phase grader-smoke
+        run: |
+          set +e
+          python scripts/trimem_cleanup_exec.py --phase grader-smoke
+          cleanup_status=$?
+          rm -f -- "$RUNNER_TEMP/trimem-grader-smoke-evidence-inventory.json"
+          inventory_status=$?
+          if [ "$cleanup_status" -ne 0 ]; then
+            exit "$cleanup_status"
+          fi
+          exit "$inventory_status"

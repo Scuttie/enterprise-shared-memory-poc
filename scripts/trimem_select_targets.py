@@ -14,6 +14,12 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs/trimem_v1"
+from trimem_grader_smoke_protocol import (  # noqa: E402
+    NOOP_BASELINE_LOCK,
+    PROBE_SEQUENCE,
+    SmokeProtocolError,
+    validate_serial_targets,
+)
 SOURCE_URLS = {
     "swebench_verified": "https://huggingface.co/datasets/SWE-bench/SWE-bench_Verified/resolve/{revision}/{path}",
     "multi_swe_bench_mini": "https://huggingface.co/datasets/ByteDance-Seed/Multi-SWE-bench_mini/resolve/{revision}/{path}",
@@ -184,17 +190,24 @@ def reproduce_smoke(rows: Mapping[str, list[dict[str, Any]]], revisions: Mapping
             (benchmark_id, row)
             for row in _take_distinct_repositories(benchmark_id, ranked, 2)
         )
-    result = []
+    common_rows = []
     for benchmark_id, row in selected:
         common = row_target(benchmark_id, revisions[benchmark_id], row, 0, aliases)
         common.pop("order_index")
         common.pop("target_id")
-        for probe, expected in (("GOLD", True), ("NOOP", False)):
+        common_rows.append((benchmark_id, common))
+    result = []
+    for benchmark_id, common in common_rows:
+        for probe, expected in zip(PROBE_SEQUENCE[:2], (True, False)):
             result.append({
                 **common,
                 "expected_resolved": expected,
+                "order_index": len(result),
                 "probe": probe,
-                "target_id": f"{benchmark_id}--{common['instance_id']}--{probe.lower()}",
+                "target_id": (
+                    f"{benchmark_id}--{common['instance_id']}--"
+                    f"{probe.lower().replace('_', '-')}"
+                ),
             })
     return result
 
@@ -317,7 +330,20 @@ def verify(cache: Path) -> dict[str, Any]:
     if not isinstance(aliases, Mapping):
         raise SelectionError("language normalization lock is missing")
     smoke_manifest = read_object(CONFIG / "grader_smoke_manifest.json")
+    if (
+        smoke_manifest.get("noop_baseline") != NOOP_BASELINE_LOCK
+        or plan.get("smoke_rule", {}).get("noop_baseline") != NOOP_BASELINE_LOCK
+    ):
+        raise SelectionError("grader-smoke NOOP_BASELINE protocol lock drift")
     smoke = reproduce_smoke(rows, revisions, aliases, str(plan.get("seed")))
+    try:
+        validate_serial_targets(
+            matrix_kind=smoke_manifest.get("matrix_kind"),
+            noop_baseline=smoke_manifest.get("noop_baseline"),
+            targets=smoke,
+        )
+    except SmokeProtocolError as exc:
+        raise SelectionError(str(exc)) from exc
     if smoke != smoke_manifest.get("targets"):
         raise SelectionError("grader-smoke deterministic selection does not reproduce the manifest")
     if digest(canonical_bytes(smoke)) != smoke_manifest.get("target_set_sha256"):

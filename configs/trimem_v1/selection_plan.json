@@ -39,8 +39,15 @@
   "smoke_rule": {
     "benchmark_order": ["swebench_verified", "multi_swe_bench_mini", "multi_swe_bench_flash"],
     "count_per_benchmark": 2,
-    "algorithm": "Within each benchmark, rank public instance IDs by row_score with split grader-smoke and greedily take the first two repository-distinct rows. Preserve benchmark order and rank order. Expand each selected public identity to GOLD then NOOP only after selection.",
-    "probes_per_instance": ["GOLD", "NOOP"]
+    "algorithm": "Within each benchmark, rank public instance IDs by row_score with split grader-smoke and greedily take the first two repository-distinct rows. Preserve benchmark order and rank order. For each selected public identity in that order, execute GOLD then NOOP_BASELINE before advancing to the next identity.",
+    "noop_baseline": {
+      "changed_paths": [".trimem_grader_noop"],
+      "format": "GIT_UNIFIED_DIFF_NEW_FILE_ONLY_V1",
+      "patch_bytes": 165,
+      "patch_sha256": "0f4fb705a73dd7e804773b35e2ab0e4e2f17248c571e69333e9b8de7c2025775"
+    },
+    "probes_per_instance": ["GOLD", "NOOP_BASELINE"],
+    "serial_probe_order_per_instance": ["GOLD", "NOOP_BASELINE"]
   },
   "development_rule": {
     "benchmark_order": ["swebench_verified", "multi_swe_bench_mini", "multi_swe_bench_flash"],

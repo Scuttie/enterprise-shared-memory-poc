@@ -665,8 +665,8 @@
       "sha256": "33c4a2b81300ac044b065224c1ad9b391df37167d9ef922f9d8ef972125abd9d"
     },
     "pyproject.toml": {
-      "bytes": 2252,
-      "sha256": "273629753a1da4562f1c27fd9b1308c85a2bd053f0bd6306780d8c80337dccf8"
+      "bytes": 2276,
+      "sha256": "10f56591c08c6cdf069508f161473dc5b4f93df8452cfa1bc9b012080c5e87b4"
     },
     "reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md": {
       "bytes": 19906,

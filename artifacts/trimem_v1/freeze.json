@@ -328,6 +328,18 @@
       "bytes": 3930,
       "sha256": "0f8d9226ad50fbbf2703f315d4ec23b8aff071a988e7410bb124f76cdd31d98c"
     },
+    "artifacts/trimem_v1/probe_evidence/MULTI_SWE_VUE_IMAGE_PROBE_RECEIPT_001.json": {
+      "bytes": 5382,
+      "sha256": "921b728f8ce98b70aa56ba2ac73e8049c31047ae083df374d17e669dcfeb4c8c"
+    },
+    "artifacts/trimem_v1/probe_evidence/MULTI_SWE_VUE_IMAGE_PROBE_RESULT_001.json": {
+      "bytes": 749,
+      "sha256": "4e3aaebcc4a7a812d480145f252cbf0851ad478cc078a6ef7b4aa606d7dd1dba"
+    },
+    "artifacts/trimem_v1/probe_requests/MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json": {
+      "bytes": 2651,
+      "sha256": "87c9ca4f860fb546ab2190ab83212efd07eb1787a8c7e4ff78d5fe83a8bacd29"
+    },
     "artifacts/trimem_v1/readiness_requirements.json": {
       "bytes": 4422,
       "sha256": "74f4c26e642532050c2cb8277318e78513a46731f63a83f8b21270e2a19e44f9"

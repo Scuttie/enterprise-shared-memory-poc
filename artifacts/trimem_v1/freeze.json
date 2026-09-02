@@ -328,13 +328,29 @@
       "bytes": 50977,
       "sha256": "c61ffdff2ab8857e8ebd212df9d8190b9424ebafd0c3a092b91de3a311108004"
     },
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-bundle.json": {
+      "bytes": 11910,
+      "sha256": "c1cc04284b8f1be1cde006fa2309f6af918e8478485002b4556df7fcb165335e"
+    },
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-subject.json": {
+      "bytes": 1548,
+      "sha256": "647d9d3eaddaf2917bfaaa8fc47c0c54f814a50ddf5e900c3176d3c895513846"
+    },
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/evidence-inventory.json": {
+      "bytes": 113557,
+      "sha256": "b1c3ba191c4d037f4f8ee70cf8a4821592b5b25a65700d7ce3faa2d0024add8e"
+    },
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/public-results.json": {
+      "bytes": 26472,
+      "sha256": "4a1253e69a95b3058b9433fbfe51ef3f8bee538c90b5faf29c996a841224faa4"
+    },
     "artifacts/trimem_v1/grader_smoke_official/failure-receipt.json": {
       "bytes": 10213,
       "sha256": "fe9f98a07be06d7c5ee56110b0bc2058e9271f26ef0086b2232332aa7da42978"
     },
     "artifacts/trimem_v1/grader_smoke_result.json": {
-      "bytes": 3405,
-      "sha256": "5af52c2d165c5ad0ca57303f6eaff3e85aadcb0a9adce8a7665f01b05bd18af0"
+      "bytes": 2200,
+      "sha256": "90321b3b0703c8e7e506d06e268d7c8802c3498ec75c79cd3a596caa41ee4363"
     },
     "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json": {
       "bytes": 31088,
@@ -361,8 +377,8 @@
       "sha256": "87c9ca4f860fb546ab2190ab83212efd07eb1787a8c7e4ff78d5fe83a8bacd29"
     },
     "artifacts/trimem_v1/readiness_requirements.json": {
-      "bytes": 8541,
-      "sha256": "1b27111ff1a19aa1f93eb4f0dfea74f829d78ee5c7e23ba35c2d627a7a135d9c"
+      "bytes": 10452,
+      "sha256": "d96cb40a2146f8707d40015616785249e479e03ef2bfca65e4e47ab5f40aa3ba"
     },
     "artifacts/trimem_v1/upstream_source_audit.json": {
       "bytes": 5077,
@@ -389,8 +405,8 @@
       "sha256": "05e19aeec6630f2362c481a86eb66d0e630041794866a638c3ebbf07e5ccbba4"
     },
     "configs/trimem_v1/cost_plan.json": {
-      "bytes": 6278,
-      "sha256": "519127c2d7ca547ff904a2efe215439803400bd7daa75a7d988f4b11ac9d8ff1"
+      "bytes": 7822,
+      "sha256": "2236668db05b37e02ff4c53ba8c49f73726822fd5d8b341f2b1ab7d6468f6baa"
     },
     "configs/trimem_v1/development_manifest.json": {
       "bytes": 8042,
@@ -457,8 +473,8 @@
       "sha256": "7b4bafe0a5366fdb9277a49ebb70fe6197f3bb27fa253f75ffe686a7a44f7c6c"
     },
     "docs/TRIMEM_V1_SYSTEM.md": {
-      "bytes": 18761,
-      "sha256": "2c619d4bc549ef053bd941d0936e95e926a3ee9d42f4c55feec69a0c191dcf80"
+      "bytes": 19978,
+      "sha256": "a435d201724b8a7bad53cdfe6b9c44558b0b174dee3e046b8c888ee74c8f0e0c"
     },
     "migrations/env.py": {
       "bytes": 837,
@@ -661,8 +677,8 @@
       "sha256": "7ed87a5b4ed62656611e60b08aa4240539b69f537d417f7c65808a50c0f7671b"
     },
     "reports/TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md": {
-      "bytes": 11354,
-      "sha256": "87e47c611bef68311344176cf90824026fa8d994dbeab5d88a2645e14cfce639"
+      "bytes": 15573,
+      "sha256": "2ebafa733e15be116faa74693f50bc9baa43263c47ecfa95670ff1af7dddcc79"
     },
     "requirements.lock": {
       "bytes": 709,
@@ -817,8 +833,8 @@
       "sha256": "348b94bca4f375da971b987e0b40d3c608964d5b04954831d2ce20a974492827"
     },
     "scripts/trimem_verify_ready.py": {
-      "bytes": 153336,
-      "sha256": "2f0160dea48e5857b6668fab12e696715fa15fea0f3672bb56c65e684d3dd8ec"
+      "bytes": 162186,
+      "sha256": "566c14b16f13ed653b9cfc1c8e766059a65308426b5f5e049a074e36878cdde1"
     },
     "src/enterprise_memory/contracts/codec.py": {
       "bytes": 7174,
@@ -1065,8 +1081,8 @@
       "sha256": "686c00fa178aa80d24e4474475abd00acbba179649b568484c2e4e8e172df2c9"
     },
     "tests/unit/test_trimem_benchmark_readiness.py": {
-      "bytes": 248482,
-      "sha256": "edada5daa3dcd876278df0451705ebfc5bf503f435d98de2ad619fc5ef0d08d0"
+      "bytes": 253629,
+      "sha256": "54e5eed88007c5ff2372c786c193d67e9d1b16f4241d2d73f14dd03351bb345e"
     },
     "tests/unit/test_trimem_git_workspace.py": {
       "bytes": 25908,

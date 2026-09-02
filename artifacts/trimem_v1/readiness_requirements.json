@@ -15,33 +15,45 @@
     "public benchmark evaluation scope and no-redistribution policy documented; SWE-bench Verified dataset license remains undeclared and the EXEC actor must accept applicable source/project terms"
   ],
   "current_status": {
-    "DEV_APPROVAL_ALLOWED": "NO",
-    "ENDPOINT": "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_READY",
-    "GRADER_EXEC_PACKAGE": "CORRECTION_READY_FOR_EXECUTION",
-    "OFFICIAL_GRADER_VIABILITY": "NOT_YET_ESTABLISHED",
+    "DEV_APPROVAL_ALLOWED": "YES",
+    "DEV_EXECUTION_ALLOWED": "NO",
+    "ENDPOINT": "TRIMEM_V1_GRADER_SMOKE_PASS_READY_FOR_DEVELOPMENT_APPROVAL",
+    "GRADER_EXEC_PACKAGE": "PASS",
+    "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
     "PERFORMANCE": "NOT_MEASURED",
-    "SCIENTIFIC_RESULT": "NOT_AGGREGATED",
+    "SCIENTIFIC_RESULT": "GOLD_RESOLVED_6_OF_6_AND_NOOP_UNRESOLVED_6_OF_6",
     "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN"
   },
-  "execution_counter_scope": "P0.1.5_CORRECTION_BEFORE_EXEC_005",
+  "execution_counter_scope": "P0.1.5_EXEC_005_AUTHORITATIVE_PASS",
   "execution_counters": {
     "api_calls": 0,
-    "grader_containers": 0,
+    "cached_input_tokens": 0,
+    "decomposition_calls": 0,
+    "docker_pulls": 7,
+    "extraction_calls": 0,
+    "grader_calls": 12,
+    "grader_containers": 12,
     "input_tokens": 0,
     "model_calls": 0,
     "model_gateway_calls": 0,
-    "official_grader_runs": 0,
+    "official_grader_runs": 12,
     "output_tokens": 0,
     "paid_model_calls": 0,
-    "support_image_pulls": 0,
-    "target_image_pulls": 0,
+    "reasoning_tokens": 0,
+    "solve_calls": 0,
+    "support_image_pulls": 1,
+    "target_image_pulls": 6,
     "task_arm_runs": 0,
     "total_usd": 0
   },
-  "explicitly_allowed_pending_at_pre_exec_ready": {
-    "external_hard_cap_approval": "NO_ACTIVE_APPROVAL; the P0.1.4 one-time authorization was consumed by run 33630256522 attempt 1; a fresh exact _005 approval is required",
-    "official_grader_smoke": "CORRECTION_READY_FOR_EXECUTION; only the exact _005 sentinel-only child plus a fresh protected attempt-1 approval carrying TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_EXEC_APPROVED_ONCE may execute; viability remains NOT_YET_ESTABLISHED",
-    "selected_m2_checkpoint": "PRE_DEVELOPMENT; produced only after approved development execution"
+  "development_authorization_boundary": {
+    "active_development_approval": false,
+    "approval_request_eligible": true,
+    "development_execution_authorized": false,
+    "grader_smoke_rerun_authorized": false,
+    "heldout_execution_authorized": false,
+    "meaning": "DEV_APPROVAL_ALLOWED=YES grants only eligibility to request a separate DEVELOPMENT_TUNING approval; it does not authorize DEV execution.",
+    "selected_m2_checkpoint": "PRE_DEVELOPMENT; produced only after separately approved development execution"
   },
   "frozen_counts": {
     "development_instances": 12,
@@ -53,11 +65,41 @@
     "total_benchmark_physical_task_arm_runs": 153
   },
   "grader_smoke_exec_005_failure_closure": {
-    "evidence_inventory_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/evidence-inventory.json",
     "failure_receipt_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/failure-receipt.json",
+    "failure_receipt_present": false,
     "historical_p014_paths_reused": false,
-    "schema": "trimem/grader-smoke-failure-closure/2.0",
-    "status": "PENDING_EXECUTION"
+    "schema": "trimem/grader-smoke-failure-closure-status/1.0",
+    "status": "NOT_APPLICABLE_PASS"
+  },
+  "grader_smoke_exec_005_success_evidence": {
+    "aggregate_raw_sha256": "5fd116bb8266209588255e58c6dd7806ba24e2072b65fc399fb1f47b831b9f6a",
+    "approval_binding": {
+      "approval_artifact_sha256": "540c36e0bb9ff7d120d44e94c88181196a0b7f24bb92ad83626a66dcabe4bac9",
+      "approved_request_sha256": "3db77d2529f4f5bedacbf70a1de93a745034bf4642f10c0c5f2e9268e060b470",
+      "approved_workflow_run_attempt": "1",
+      "approved_workflow_run_id": "33674784590",
+      "freeze_sha256": "f1f2547ae79c9e6e19b235eb0f010509200393145299186e6bd667b7af22be63",
+      "git_head": "cc001245b8c26373b5467a0dbdcbbbda0a9542be",
+      "phase": "GRADER_SMOKE"
+    },
+    "attestation_bundle_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-bundle.json",
+    "attestation_bundle_raw_sha256": "c1cc04284b8f1be1cde006fa2309f6af918e8478485002b4556df7fcb165335e",
+    "attestation_subject_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-subject.json",
+    "attestation_subject_raw_sha256": "647d9d3eaddaf2917bfaaa8fc47c0c54f814a50ddf5e900c3176d3c895513846",
+    "evidence_inventory_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/evidence-inventory.json",
+    "evidence_inventory_raw_sha256": "b1c3ba191c4d037f4f8ee70cf8a4821592b5b25a65700d7ce3faa2d0024add8e",
+    "public_result_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/public-results.json",
+    "public_result_raw_sha256": "4a1253e69a95b3058b9433fbfe51ef3f8bee538c90b5faf29c996a841224faa4",
+    "schema": "trimem/grader-smoke-readiness-success-evidence/1.0",
+    "status": "PASS",
+    "verified_aggregate_sha256": "52c9863955b9d1b6ab5084f4671df44425406292391ff840a33e0126d73b3e0a"
+  },
+  "grader_smoke_scientific_result": {
+    "gold_resolved": 6,
+    "gold_total": 6,
+    "noop_unresolved": 6,
+    "noop_total": 6,
+    "status": "PASS"
   },
   "historical_grader_smoke_execution": {
     "approval_binding": {
@@ -126,16 +168,15 @@
     "workflow_run_id": 33630256522
   },
   "post_approval_gates": [
-    "one fresh exact _005 GRADER_SMOKE attempt-1 approval, digest-only pull and observed digest verification, then official GOLD+NOOP_BASELINE PASS",
-    "new committed smoke result and freeze before DEVELOPMENT_TUNING approval",
+    "new committed smoke result and freeze make the branch eligible to request one separate DEVELOPMENT_TUNING approval; they do not authorize development execution",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
   ],
-  "schema": "trimem/readiness-requirements/1.3",
+  "schema": "trimem/readiness-requirements/1.4",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
-  "static_ci_meaning": "Static CI and credential-free E2E establish implementation and report-semantics recovery readiness only. They do not claim official grader, paid model, benchmark, causal, performance, full-suite, or leaderboard viability.",
+  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed and independently validated exec-005 official PASS evidence, not from static CI alone; performance remains NOT_MEASURED and no paid-model, causal, full-suite, or leaderboard claim is made.",
   "target_set_sha256": {
     "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
     "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",

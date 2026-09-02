@@ -220,3 +220,75 @@ Digest-pinned PostgreSQL/Qdrant service containers used by credential-free CI
 are a separate infrastructure boundary and are not grader-image lifecycle
 operations. Model/API calls, input/output tokens, and USD spend remain zero. It
 did not run DEV, HELDOUT, or ablations and did not repeat the image probe.
+
+## Official exec-005 closure
+
+The one authorized recovery campaign ran as GitHub Actions workflow run
+`33674784590`, attempt `1`, on sentinel-only execution HEAD
+`cc001245b8c26373b5467a0dbdcbbbda0a9542be`. The branch trigger preflight,
+protected approval materialization, EXEC gate, serial grader campaign,
+fail-closed aggregate, public projection, image cleanup, evidence inventory,
+encryption/upload, plaintext cleanup, and attestation/upload all succeeded.
+The authority-rollback and namespaced failure-closure paths were correctly
+skipped. No attempt was rerun and no second dispatch was created.
+
+The independently reconstructed aggregate is byte-identical to the workflow
+aggregate: 26,286 bytes with SHA-256
+`5fd116bb8266209588255e58c6dd7806ba24e2072b65fc399fb1f47b831b9f6a`;
+its canonical aggregate seal is
+`52c9863955b9d1b6ab5084f4671df44425406292391ff840a33e0126d73b3e0a`.
+All 12 frozen rows were attempted, received one terminal record, retained
+complete official-execution evidence, normalized under the adapter contract,
+and became authoritative. GOLD resolved 6/6 and NOOP_BASELINE was unresolved
+6/6. Patch application, actual-test execution, image-digest verification, and
+submitted-patch identity each passed 12/12. Host `prepare.sh` reads and source
+image builds were both zero. The seven independent environment,
+infrastructure, image-lifecycle, official-harness, official-report,
+adapter-contract, and aggregate failure counters were all zero.
+
+The eight Multi-SWE rows reproduced the exact two-stage contract. All four
+GOLD rows were locally valid, coverage-complete, and finally resolved. All four
+NOOP rows were finally unresolved. The Vue NOOP row preserved the critical
+legal shape: `report_valid=true`, incomplete f2p coverage with one missing
+expected transition, and `final_resolved=false`. The other three Multi-SWE
+NOOP rows were locally invalid and coverage-incomplete; no NOOP pass criterion
+depended on local validity.
+
+Committed sanitized evidence is bound as follows:
+
+- public result: 26,472 bytes, SHA-256
+  `4a1253e69a95b3058b9433fbfe51ef3f8bee538c90b5faf29c996a841224faa4`;
+- restricted-evidence inventory: 113,557 bytes, SHA-256
+  `b1c3ba191c4d037f4f8ee70cf8a4821592b5b25a65700d7ce3faa2d0024add8e`;
+- attestation subject: 1,548 bytes, SHA-256
+  `647d9d3eaddaf2917bfaaa8fc47c0c54f814a50ddf5e900c3176d3c895513846`;
+- attestation bundle: 11,910 bytes, SHA-256
+  `c1cc04284b8f1be1cde006fa2309f6af918e8478485002b4556df7fcb165335e`;
+- encrypted restricted member: 12,636,192 bytes, SHA-256
+  `6b22e66e8b22b6a30420903eac5ce6699fd8047ff5d71d925cc68320a1b3179c`.
+
+The encrypted archive was safely audited with zero unsafe members. Its exact
+503 inventoried evidence files (11,706,964 bytes) matched path, size, and
+SHA-256 bidirectionally, and its additional inventory member was byte-identical
+to the uploaded inventory. The restricted aggregate was independently replayed
+with the exact run ID and attempt and reproduced the uploaded aggregate bytes.
+The pinned `gh 2.97.0` verification, certificate bindings, Rekor material, and
+live completed-successful workflow-attempt check all passed.
+
+The first offline closure check exposed one fail-closed verifier omission: the
+production execution summary correctly contained `terminal_record_count=12`,
+but the readiness reconstruction and its synthetic fixture omitted that field.
+The closure fix adds the field and independently locks the actual production
+summary at 1,409 bytes and SHA-256
+`40a86b900af452d04484c9d63ebe75002d643935e159a118a6489d87ec2ec4a5`.
+This strengthens post-execution verification only; it does not alter or rerun
+the frozen campaign.
+
+The campaign used 12 grader calls, 12 grader containers, six target-image
+pulls, one support-image pull, and seven exact image removals. Task-arm,
+solve, extraction, decomposition, model, API, paid-model, model-gateway, and
+all token counters are zero; total USD is zero. The exact endpoint is
+`TRIMEM_V1_GRADER_SMOKE_PASS_READY_FOR_DEVELOPMENT_APPROVAL`.
+`DEV_APPROVAL_ALLOWED=YES` means only that a separate development approval may
+now be considered. DEV execution remains unauthorized and was not started;
+HELDOUT, ablation, merge, tag, and release were also not performed.

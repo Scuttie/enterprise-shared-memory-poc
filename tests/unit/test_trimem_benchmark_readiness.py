@@ -322,21 +322,33 @@ def test_four_candidate_bundle_is_executable_and_preserves_hard_retrieval_limits
     assert len(hashes) == 4
 
 
-def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
+def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     cost = _read(ROOT / "configs/trimem_v1/cost_plan.json")
+    assert cost["schema"] == "trimem/cost-plan/1.3"
     assert cost["run_counts"]["development_physical_task_arm_runs"] == 72
     assert cost["run_counts"]["heldout_physical_task_arm_runs"] == 81
     assert cost["run_counts"]["total_physical_task_arm_runs"] == 153
     assert cost["actual_to_date_scope"] == (
-        "CUMULATIVE_INCLUDES_P0.1.4_DIAGNOSTIC_HISTORY"
+        "CUMULATIVE_INCLUDES_P0.1.4_DIAGNOSTIC_HISTORY_AND_"
+        "P0.1.5_EXEC_005_AUTHORITATIVE_PASS"
     )
+    p014_actual = {
+        **_smoke_accounting(6),
+        "docker_pulls": 4,
+        "support_image_pulls": 1,
+        "target_image_pulls": 3,
+    }
+    p015_actual = {
+        **_smoke_accounting(12),
+        "docker_pulls": 7,
+        "support_image_pulls": 1,
+        "target_image_pulls": 6,
+    }
     assert cost["accounting_windows"]["p014_diagnostic_history"] == {
-        "grader_containers": 6,
-        "model_api_calls": 0,
-        "official_grader_runs": 6,
-        "paid_model_calls": 0,
+        **p014_actual,
+        "git_head": "0e9ed55196da922dcebf1fb33b73940873007180",
+        "scientific_role": "DIAGNOSTIC_ONLY",
         "scope": "IMMUTABLE_DIAGNOSTIC_HISTORY_ONLY",
-        "total_usd": 0,
         "workflow_run_attempt": 1,
         "workflow_run_id": 33630256522,
     }
@@ -344,25 +356,65 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
         **readiness.SMOKE_RECOVERY_ACTUAL_EXECUTION,
         "scope": readiness.SMOKE_RECOVERY_SCOPE,
     }
+    assert cost["accounting_windows"]["p015_authoritative_exec_005"] == {
+        **p015_actual,
+        "git_head": readiness.SMOKE_PASS_EXECUTION_HEAD,
+        "scientific_role": "AUTHORITATIVE",
+        "scope": readiness.SMOKE_PASS_READINESS_SCOPE,
+        "workflow_run_attempt": int(readiness.SMOKE_PASS_RUN_ATTEMPT),
+        "workflow_run_id": int(readiness.SMOKE_PASS_RUN_ID),
+    }
+    cumulative = {
+        field: p014_actual[field] + p015_actual[field]
+        for field in p014_actual
+    }
+    assert cumulative == {
+        "api_calls": 0,
+        "cached_input_tokens": 0,
+        "decomposition_calls": 0,
+        "docker_pulls": 11,
+        "extraction_calls": 0,
+        "grader_calls": 18,
+        "grader_containers": 18,
+        "input_tokens": 0,
+        "model_calls": 0,
+        "model_gateway_calls": 0,
+        "official_grader_runs": 18,
+        "output_tokens": 0,
+        "paid_model_calls": 0,
+        "reasoning_tokens": 0,
+        "solve_calls": 0,
+        "support_image_pulls": 2,
+        "target_image_pulls": 9,
+        "task_arm_runs": 0,
+        "total_usd": 0,
+    }
+    assert cost["actual_to_date"] == cumulative
+    assert cost["expected_cost"]["phase_totals"]["GRADER_SMOKE"][
+        "grader_containers"
+    ] == 12
+    assert cost["phase_hard_caps"]["GRADER_SMOKE"][
+        "benchmark_grader_containers"
+    ] == 12
     requirements = _read(ROOT / "artifacts/trimem_v1/readiness_requirements.json")
     assert requirements["current_status"] == {
-        "DEV_APPROVAL_ALLOWED": "NO",
-        "ENDPOINT": "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_READY",
-        "GRADER_EXEC_PACKAGE": "CORRECTION_READY_FOR_EXECUTION",
-        "OFFICIAL_GRADER_VIABILITY": "NOT_YET_ESTABLISHED",
+        "DEV_APPROVAL_ALLOWED": "YES",
+        "DEV_EXECUTION_ALLOWED": "NO",
+        "ENDPOINT": readiness.SMOKE_PASS_ENDPOINT,
+        "GRADER_EXEC_PACKAGE": "PASS",
+        "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
-        "SCIENTIFIC_RESULT": "NOT_AGGREGATED",
+        "SCIENTIFIC_RESULT": readiness.SMOKE_PASS_SCIENTIFIC_RESULT,
         "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN",
     }
-    pending = requirements["explicitly_allowed_pending_at_pre_exec_ready"]
-    assert "CORRECTION_READY_FOR_EXECUTION" in pending["official_grader_smoke"]
-    assert "_005" in pending["official_grader_smoke"]
-    assert "attempt-1" in pending["official_grader_smoke"]
-    assert (
-        "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_EXEC_APPROVED_ONCE"
-        in pending["official_grader_smoke"]
-    )
-    assert "PRE_DEVELOPMENT" in pending["selected_m2_checkpoint"]
+    authorization = requirements["development_authorization_boundary"]
+    assert authorization["approval_request_eligible"] is True
+    assert authorization["active_development_approval"] is False
+    assert authorization["development_execution_authorized"] is False
+    assert authorization["grader_smoke_rerun_authorized"] is False
+    assert authorization["heldout_execution_authorized"] is False
+    assert "separate DEVELOPMENT_TUNING approval" in authorization["meaning"]
+    assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     service_boundary = requirements["credential_free_service_ci_boundary"]
     assert "ALLOWED_PRE_EXEC" in service_boundary
     assert "digest-pinned PostgreSQL and Qdrant support services" in service_boundary
@@ -375,25 +427,46 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
     assert "Docker image pull or run" not in request["prohibited_before_approval"]
     assert requirements["execution_counters"] == {
         "api_calls": 0,
-        "grader_containers": 0,
+        "cached_input_tokens": 0,
+        "decomposition_calls": 0,
+        "docker_pulls": 7,
+        "extraction_calls": 0,
+        "grader_calls": 12,
+        "grader_containers": 12,
         "input_tokens": 0,
         "model_calls": 0,
         "model_gateway_calls": 0,
-        "official_grader_runs": 0,
+        "official_grader_runs": 12,
         "output_tokens": 0,
         "paid_model_calls": 0,
-        "support_image_pulls": 0,
-        "target_image_pulls": 0,
+        "reasoning_tokens": 0,
+        "solve_calls": 0,
+        "support_image_pulls": 1,
+        "target_image_pulls": 6,
         "task_arm_runs": 0,
         "total_usd": 0,
     }
-    assert requirements["execution_counter_scope"] == readiness.SMOKE_RECOVERY_SCOPE
+    assert requirements["execution_counter_scope"] == readiness.SMOKE_PASS_READINESS_SCOPE
     assert requirements["grader_smoke_exec_005_failure_closure"] == {
-        "evidence_inventory_path": freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
         "failure_receipt_path": freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
+        "failure_receipt_present": False,
         "historical_p014_paths_reused": False,
-        "schema": readiness.P015_FAILURE_CLOSURE_SCHEMA,
-        "status": "PENDING_EXECUTION",
+        "schema": readiness.SMOKE_PASS_FAILURE_CLOSURE_STATUS_SCHEMA,
+        "status": "NOT_APPLICABLE_PASS",
+    }
+    assert not (ROOT / freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH).exists()
+    assert requirements["grader_smoke_scientific_result"] == {
+        "gold_resolved": 6,
+        "gold_total": 6,
+        "noop_unresolved": 6,
+        "noop_total": 6,
+        "status": "PASS",
+    }
+    smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
+    assert requirements["grader_smoke_exec_005_success_evidence"] == {
+        "schema": readiness.SMOKE_PASS_SUCCESS_EVIDENCE_SCHEMA,
+        "status": "PASS",
+        **smoke["official_execution_evidence"],
     }
     history = requirements["historical_grader_smoke_execution"]
     assert history == readiness._validated_p014_historical_execution()
@@ -418,6 +491,40 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
         "official_harness_failures": 0,
         "official_report_failures": 0,
     }
+
+
+def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    targets = readiness.validate_targets()
+    derived = readiness.validate_readiness_plan(targets)
+    assert derived["current_status"]["ENDPOINT"] == readiness.SMOKE_PASS_ENDPOINT
+    assert derived["scientific_result"] == {
+        "gold_resolved": 6,
+        "gold_total": 6,
+        "noop_unresolved": 6,
+        "noop_total": 6,
+        "status": "PASS",
+    }
+    assert derived["execution_counters"]["grader_containers"] == 12
+    assert derived["execution_counters"]["target_image_pulls"] == 6
+    assert derived["execution_counters"]["support_image_pulls"] == 1
+
+    tampered = _read(ROOT / "artifacts/trimem_v1/readiness_requirements.json")
+    tampered["execution_counters"]["grader_containers"] = 11
+    original_read_json = readiness.read_json
+
+    def read_json_with_tampered_plan(path: Path) -> dict:
+        if path == readiness.ARTIFACT / "readiness_requirements.json":
+            return deepcopy(tampered)
+        return original_read_json(path)
+
+    monkeypatch.setattr(readiness, "read_json", read_json_with_tampered_plan)
+    with pytest.raises(
+        readiness.ReadinessError,
+        match="authoritative exec-005 counters differ",
+    ):
+        readiness.validate_readiness_plan(targets)
     protection = _read(
         ROOT / "artifacts/trimem_v1/grader_smoke_environment_protection.json"
     )
@@ -557,11 +664,26 @@ def test_grader_smoke_exec_gate_accepts_only_validated_005_recovery_state(
         "validate_selected_m2",
         lambda require_frozen: {"status": "PRE_DEVELOPMENT"},
     )
+    original_read_json = readiness.read_json
+
+    def fake_read_json(path: Path) -> dict:
+        if path == readiness.ARTIFACT / "grader_smoke_result.json":
+            return {"status": readiness.SMOKE_RECOVERY_STATUS}
+        return original_read_json(path)
+
+    validated_smoke: list[dict] = []
+    monkeypatch.setattr(readiness, "read_json", fake_read_json)
+    monkeypatch.setattr(
+        readiness,
+        "validate_grader_smoke_result",
+        lambda smoke: validated_smoke.append(smoke) or {},
+    )
 
     blockers, phase = readiness.execution_blockers(approval_path)
     assert blockers == []
     assert phase == "grader-smoke"
     assert calls == [("grader-smoke", approval_path)]
+    assert validated_smoke == [{"status": readiness.SMOKE_RECOVERY_STATUS}]
     assert readiness.GRADER_SMOKE_REQUEST_ID == "TRIMEM_V1_GRADER_SMOKE_EXEC_005"
 
 
@@ -800,6 +922,7 @@ def _official_smoke_pass_fixture(
         "container_exit_status_validated_count": 8,
         "resolved_container_zero_exit_count": 4,
         "attempted_cell_count": 12,
+        "terminal_record_count": 12,
         "official_execution_count": 12,
         "complete_execution_evidence_count": 12,
         "adapter_normalized_count": 12,
@@ -808,13 +931,21 @@ def _official_smoke_pass_fixture(
         **{field: 0 for field in grader_smoke.FAILURE_TAXONOMY_FIELDS},
         "status": "PASS",
     }
+    summary_raw = readiness._pretty_json(summary)
+    # This is the exact production PASS summary from exec-005.  Keep the
+    # fixture independently sealed so a production field cannot be omitted
+    # from both the readiness reconstruction and its synthetic inventory.
+    assert len(summary_raw) == 1409
+    assert hashlib.sha256(summary_raw).hexdigest() == (
+        "40a86b900af452d04484c9d63ebe75002d643935e159a118a6489d87ec2ec4a5"
+    )
     inventory_rows = [
         {"path": "aggregate.json", "sha256": hashlib.sha256(aggregate_raw).hexdigest(), "bytes": len(aggregate_raw)},
         {"path": "image-materialization/image-lifecycle-report.json", "sha256": lifecycle["report_sha256"], "bytes": lifecycle["report_bytes"]},
         {"path": "public-results.json", "sha256": hashlib.sha256(public_raw).hexdigest(), "bytes": len(public_raw)},
         {"path": "results/external-approval-evidence.json", "sha256": hashlib.sha256(readiness._pretty_json(approval)).hexdigest(), "bytes": len(readiness._pretty_json(approval))},
         {"path": "results/restricted-external-approval.json", "sha256": approval["approval_artifact_sha256"], "bytes": 257},
-        {"path": "results/smoke-execution-summary.json", "sha256": hashlib.sha256(readiness._pretty_json(summary)).hexdigest(), "bytes": len(readiness._pretty_json(summary))},
+        {"path": "results/smoke-execution-summary.json", "sha256": hashlib.sha256(summary_raw).hexdigest(), "bytes": len(summary_raw)},
     ]
     for index, target in enumerate(manifest["targets"]):
         safe = re.sub(r"[^A-Za-z0-9_.-]", "_", target["target_id"])
@@ -1019,44 +1150,47 @@ def _rebind_attestation(
 
 def test_self_asserted_smoke_pass_without_official_artifacts_is_rejected() -> None:
     smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
-    smoke.update({
-        "status": "PASS",
-        "grader_exec_package": "PASS",
-        "official_grader_viability": "ESTABLISHED",
-        "actual_execution": {
-            **smoke["actual_execution"],
-            "docker_pulls": 7,
-            "grader_containers": 12,
-            "official_grader_runs": 12,
-        },
-    })
+    smoke.pop("official_execution_evidence")
     with pytest.raises(readiness.ReadinessError, match="field set"):
         readiness.validate_grader_smoke_result(smoke)
 
 
-def test_committed_recovery_ready_smoke_has_zero_delta_and_preserves_history() -> None:
+def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
     smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
     actual = readiness.validate_grader_smoke_result(smoke)
 
-    assert smoke["status"] == readiness.SMOKE_RECOVERY_STATUS
-    assert smoke["endpoint"] == readiness.SMOKE_RECOVERY_ENDPOINT
-    assert actual == readiness.SMOKE_RECOVERY_ACTUAL_EXECUTION
-    history = smoke["historical_execution"]
-    assert history == readiness._validated_p014_historical_execution()
-    assert history["campaign"] == {
-        "adapter_normalized_cell_count": 5,
-        "attempted_cell_count": 6,
-        "authoritative_cell_count": 0,
-        "complete_execution_evidence_count": 6,
-        "official_execution_count": 6,
-        "required_cell_count": 12,
-        "unattempted_cell_count": 6,
+    assert smoke["status"] == "PASS"
+    assert smoke["grader_exec_package"] == "PASS"
+    assert smoke["official_grader_viability"] == "ESTABLISHED"
+    assert actual == {
+        "docker_pulls": 7,
+        "grader_containers": 12,
+        "input_tokens": 0,
+        "model_calls": 0,
+        "official_grader_runs": 12,
+        "output_tokens": 0,
+        "paid_model_calls": 0,
+        "total_usd": 0,
     }
     assert readiness.preapproval_blockers() == []
 
 
 def test_recovery_ready_history_rejects_rebound_receipt_hash() -> None:
-    smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
+    smoke = {
+        "actual_execution": dict(readiness.SMOKE_RECOVERY_ACTUAL_EXECUTION),
+        "actual_execution_scope": readiness.SMOKE_RECOVERY_SCOPE,
+        "endpoint": readiness.SMOKE_RECOVERY_ENDPOINT,
+        "expected_condition_rows": {"GOLD": 6, "NOOP_BASELINE": 6},
+        "expected_target_count": 12,
+        "expected_unique_instances": 6,
+        "grader_exec_package": readiness.SMOKE_RECOVERY_STATUS,
+        "historical_execution": readiness._validated_p014_historical_execution(),
+        "official_grader_viability": "NOT_YET_ESTABLISHED",
+        "performance": "NOT_MEASURED",
+        "schema": readiness.P015_FAILURE_RESULT_SCHEMA,
+        "status": readiness.SMOKE_RECOVERY_STATUS,
+        "trimem_system_implementation": "CREDENTIAL_FREE_GREEN",
+    }
     smoke["historical_execution"]["evidence"][
         "failure_receipt_raw_sha256"
     ] = "f" * 64

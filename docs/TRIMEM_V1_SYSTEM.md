@@ -277,7 +277,7 @@ authority-recovery outcome, while failure closure requires recovery success or
 skip. Plaintext is deleted only after encrypted evidence uploads successfully;
 an upload failure preserves plaintext and ciphertext and fails the workflow.
 
-The current P0.1.5 pre-`_005` correction status is
+At the P0.1.5 correction source HEAD, the pre-`_005` status was
 `TRIMEM_SYSTEM_IMPLEMENTATION=CREDENTIAL_FREE_GREEN`,
 `GRADER_EXEC_PACKAGE=CORRECTION_READY_FOR_EXECUTION`,
 `ENDPOINT=TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_READY`,
@@ -298,3 +298,23 @@ only the sentinel-only `_005` child, one protected attempt-1 workflow run, one
 manual environment approval, and the twelve frozen zero-model GOLD/NOOP cells.
 It does not permit a rerun, `_006`, a model/API call, DEV, HELDOUT, ablation,
 target replacement, merge, tag, or release.
+
+That one-time authorization was consumed by workflow run `33674784590`,
+attempt `1`, at sentinel-only execution HEAD
+`cc001245b8c26373b5467a0dbdcbbbda0a9542be`. The run completed successfully:
+all 12 frozen GOLD/NOOP rows were attempted, terminal, official,
+evidence-complete, adapter-normalized, and authoritative. GOLD resolved 6/6;
+NOOP_BASELINE was unresolved 6/6. Patch application, actual-test execution,
+digest matching, and submitted-patch identity were each 12/12. Host
+`prepare.sh` reads and source-image builds were zero, and all seven independent
+failure-taxonomy counters were zero. The campaign used 12 grader containers,
+six target-image pulls, and one support-image pull, while task-arm, model, API,
+paid-model, token, and USD counters remained zero.
+
+The current endpoint is
+`TRIMEM_V1_GRADER_SMOKE_PASS_READY_FOR_DEVELOPMENT_APPROVAL`, with
+`GRADER_EXEC_PACKAGE=PASS`, `OFFICIAL_GRADER_VIABILITY=ESTABLISHED`,
+`PERFORMANCE=NOT_MEASURED`, and `DEV_APPROVAL_ALLOWED=YES`. The last field
+means only that a separate development approval may now be considered;
+`DEV_EXECUTION_ALLOWED=NO` remains the execution boundary. No DEV, HELDOUT,
+ablation, merge, tag, or release has been performed.

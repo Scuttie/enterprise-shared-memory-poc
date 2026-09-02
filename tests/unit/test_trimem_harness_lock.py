@@ -621,6 +621,9 @@ def test_cross_platform_rehearsal_workflow_is_credential_free_and_pinned() -> No
     assert "core_autocrlf: input" in workflow
     assert "runner: windows-2025" in workflow
     assert 'core_autocrlf: "true"' in workflow
+    assert "python_version: 3.11.10" in workflow
+    assert "python_version: 3.11.9" in workflow
+    assert "python-version: ${{ matrix.python_version }}" in workflow
     assert "rehearsal_arg: --blob-only" in workflow
     assert "scope: exact-linux-production-prep" in workflow
     assert "scope: windows-git-blob-portability" in workflow

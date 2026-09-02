@@ -1861,6 +1861,8 @@ def validate_workflows() -> None:
         and "runner: windows-2025" in portable
         and "core_autocrlf: input" in portable
         and 'core_autocrlf: "true"' in portable
+        and "python_version: 3.11.10" in portable
+        and "python_version: 3.11.9" in portable
         and "rehearsal_arg: --blob-only" in portable
         and "trimem_harness_lock.py" in portable
         and "environment:" not in portable

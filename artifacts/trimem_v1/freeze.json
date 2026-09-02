@@ -9,8 +9,8 @@
       "sha256": "b6eaa40355e32f422fd069fc26551049ff30fdbeada1d5a2ce5e00ed5b238287"
     },
     ".github/workflows/ci-trimem-harness-lock.yml": {
-      "bytes": 1950,
-      "sha256": "b67ec739acc38a87796ca347acd7c4cad4a77f91324fd36fa546cca7f671a240"
+      "bytes": 2042,
+      "sha256": "6dc018bd1ab598c977de3e34706993c91f5ac616d6351877f6fd2ae38d3f1285"
     },
     ".github/workflows/ci-trimem.yml": {
       "bytes": 1458,
@@ -709,8 +709,8 @@
       "sha256": "348b94bca4f375da971b987e0b40d3c608964d5b04954831d2ce20a974492827"
     },
     "scripts/trimem_verify_ready.py": {
-      "bytes": 102255,
-      "sha256": "ed7bbe80e32c3e61adacdf4481bbb10e2f575913005d882b9a3a5069d903b86e"
+      "bytes": 102354,
+      "sha256": "1900d3411295f39bc152b337c488f7f71ac4785864b6ca26e06a3782f39ef3a7"
     },
     "src/enterprise_memory/contracts/codec.py": {
       "bytes": 7174,
@@ -965,8 +965,8 @@
       "sha256": "4d1099f38aa18f044762033f01dd242f0cc25bd60ef79f56539e28e2aaba82c7"
     },
     "tests/unit/test_trimem_harness_lock.py": {
-      "bytes": 22398,
-      "sha256": "c87ad544c3b361125ef733145c6c3de3b035e3a36f819914dd77d93bebc552c5"
+      "bytes": 22565,
+      "sha256": "1593ff92730ae0b0e95536cdabe217588643977e122fef9d3746a9840bde93f5"
     },
     "tests/unit/test_trimem_m1_postwrite_recovery.py": {
       "bytes": 27768,

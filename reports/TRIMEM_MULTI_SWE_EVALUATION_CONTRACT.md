@@ -80,9 +80,12 @@ normalization.
 
 | Pinned path | Git blob object | Bytes | SHA-256 |
 |---|---:|---:|---|
+| `multi_swe_bench/harness/dataset.py` | `19aeb4370fcfdaeccef99b3a47d06c5a572d468c` | 2,833 | `dd49f55baf63b60fff309b6a5b2a1826697e2b85ad1a9bccff18321dcdc200fc` |
 | `multi_swe_bench/harness/gen_report.py` | `251e8b01059a18a9af5ae176c696eb4be8950ae4` | 21,331 | `02ebc8a5414898d12f4f5a9ba0c11a8f57c9f34a0bdc02c2311afac9f654847d` |
 | `multi_swe_bench/harness/image.py` | `da1c613d4e7074f46889ffe1c31c0582c3535d2f` | 5,892 | `86074812495b97026efb42c57acbf7738864b1f0167f99e3b9f9309458972ae9` |
+| `multi_swe_bench/harness/pull_request.py` | `0c2c99a4602bc6dc127cc0bb3ecaff56a6550d17` | 6,015 | `32b49f48b39124f67727f408898bd96cce91c0a362faa716ac858dcb0b0b47c7` |
 | `multi_swe_bench/harness/report.py` | `a0b23ab1bf3c2407e15338fd0e644c0138fd3d90` | 12,942 | `5a025fd496d42c4b7377fc0702d64c6d0e356b117eaf2face47e73a52c29902f` |
+| `multi_swe_bench/harness/test_result.py` | `bbdd5dc729582a1d06c79f416058bbc4d7db9c91` | 5,164 | `5411af794920cf4b170fe9dbe8c21c12cc63e2bbe2280d6d82acb850f4808be3` |
 | `multi_swe_bench/harness/repos/c/jqlang/jq.py` | `9328e7683d5f269a6247292b388a7c7cb6592420` | 6,431 | `e523664fcf8a1b728f5d4d77caeebc7cecd34c575f295fdb66a441b910e3a8b0` |
 | `multi_swe_bench/harness/repos/javascript/expressjs/express.py` | `15a98c72f2218925a31319dbb1a498b020a78f66` | 10,209 | `a673518e3b4d9e9e2396f97aacdc5c803d7e2298ce07dfd748cbb9f67ce36291` |
 | `multi_swe_bench/harness/repos/python/django/django.py` | `98dd428523768d4c35ff119cc50dc453675ab5c7` | 4,392 | `9b9fbcfa6e165d42b39c589e2bdd657ec0ab5df1caec8fbace683314e21bd9a8` |
@@ -95,14 +98,16 @@ normalization.
 The machine-readable lock is
 [`artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json`](../artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json).
 Its contract projection SHA-256 is
-`429c9dc08b394e91f310cf4c31f1a911add0e3da5ae130b4c584e8fe239faf2b`,
+`8f1957ac22fb823cf1540b2550ff2a5e9763e2e2db1e3f46665787f468105e6a`,
 and its self-lock SHA-256 is
-`f9cea651d404e85ef0c592c29fb9365a4e09df723d92deeededb994061ec6683`.
+`26f406176510c745eac7c3bd6ddc2000cd534b5510db7bf18a1baf1869c878af`.
+The raw lock file SHA-256 is
+`bdd392952f81e07b30be555b8f17519b2024f0e9d41989053581400ab4e9166d`.
 
 The production entrypoint itself is 25,035 bytes with SHA-256
 `16c021ac3c0eb18bc78376164307b53cfb294ac0f206415d465a1b11f1ec63ac`.
 That identity is part of the contract projection and must also be bound
-directly by the one-time `_004` request.
+directly by the one-time `_005` request.
 
 Its exact command surface requires `--harness-root <pinned-checkout>`,
 `--config <one-row-config>`, `--expected-image <immutable-digest>`,
@@ -124,12 +129,20 @@ projected file's working bytes to equal its tracked `HEAD` Git blob before it
 checks the raw byte length and SHA-256, so checkout newline conversion cannot
 silently alter the contract.
 
+The P0.1.5 execution workflow inventories and encrypts available restricted
+evidence independently of authority-recovery success. Its failure closure is
+stricter and requires recovery success or skip. Plaintext cleanup occurs only
+after the encrypted artifact is durably uploaded; otherwise plaintext and
+ciphertext are preserved and the workflow fails. A content-bound finalization
+journal is mandatory before authority promotion and for scientific-rejection
+or false-tree run-smoke failure qualification.
+
 | Local validator | Role | Bytes | Raw SHA-256 |
 |---|---|---:|---|
 | `scripts/trimem_multi_swe_entrypoint.py` | immutable-image and container-status execution guard | 25,035 | `16c021ac3c0eb18bc78376164307b53cfb294ac0f206415d465a1b11f1ec63ac` |
-| `scripts/trimem_official_grader.py` | exact frozen-domain and conditional-status validator | 67,489 | `84ed38f01ec2ef4dae63e3ed4ad6ac1880f61119afd7cf0c92ec8ea088a3f4ec` |
-| `scripts/trimem_grader_smoke.py` | per-cell evidence producer | 67,577 | `88e5a6d54ac5dfbb9722a333e447f7d18d62a13ae7590583ca41e838f12d9295` |
-| `scripts/trimem_benchmark_matrix.py` | independent fail-closed aggregate revalidator | 109,830 | `7a9b2d4b5faa26628a8bbc2b202547bce75526ca3d4404c156f54e4323c9cf36` |
+| `scripts/trimem_official_grader.py` | exact frozen-domain and conditional-status validator | 101,093 | `fbd15718a88b4d733b313af83889aae8ef6ac7837529bba52f0bb4072f57b886` |
+| `scripts/trimem_grader_smoke.py` | per-cell evidence producer | 135,285 | `15b1bae4a14ac74f53de016882e20f6962d0b5e2818b6a158ab26373c7fb748a` |
+| `scripts/trimem_benchmark_matrix.py` | independent fail-closed aggregate revalidator | 123,286 | `cf05654fa25c643ef9e2573f7e3f70b54236aa545669e353d886e80d9e710767` |
 
 ## Exact control-flow evidence
 
@@ -236,13 +249,20 @@ order; any missing expected member also returns `(report, false)`. Both kinds
 of rejection enter `invalid_reports`. At
 [`report.py` lines 309–347](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/report.py#L309-L347),
 `FinalReport.from_reports()` maps `reports` to `resolved_ids` and
-`invalid_reports` to `unresolved_ids`.
+`invalid_reports` to `unresolved_ids`. The stored target value is the inherited
+[`PullRequestBase.id` at `pull_request.py` lines 77–100](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/pull_request.py#L77-L100),
+whose exact format is `{org}/{repo}:pr-{number}`.
 
 This upstream check is expected-member coverage, not exact set equality. The
 local official-result parser additionally compares the actual run and
 test-patch classifications against the frozen row and requires exact equality
 of the fix-stage test-name domain. It applies that check before accepting
 either final classification, including a nonzero-status unresolved NOOP.
+Likewise, pinned `TestResult.__post_init__` validates already materialized sets
+(count-to-set size and pairwise disjointness); it does not unconditionally
+detect duplicates in a preceding raw JSON array. The TriMem parser deliberately
+adds the stricter fail-closed rule and rejects raw duplicate test IDs before set
+construction.
 
 ### All frozen Multi-SWE smoke target adapters
 

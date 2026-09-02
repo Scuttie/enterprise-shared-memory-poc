@@ -50,8 +50,16 @@ from trimem_select_targets import (  # noqa: E402
 from trimem_official_grader import (  # noqa: E402
     FrozenOfficialTarget,
     MULTI_FIX_PATCH_RUN_COMMAND,
+    OFFICIAL_EVIDENCE_FIELDS,
+    OFFICIAL_EVIDENCE_SCHEMA,
+    OFFICIAL_IMAGE_EVIDENCE_FIELDS,
+    OFFICIAL_IMAGE_EVIDENCE_SCHEMA,
     OfficialGraderError,
     validate_multi_swe_container_exit_status,
+)
+from trimem_multi_swe_report_semantics import (  # noqa: E402
+    MultiSWEReportSemanticsError,
+    validate_multi_swe_report_semantics,
 )
 ALLOWED_MANIFESTS = {
     "development": Path("configs/trimem_v1/development_manifest.json"),
@@ -445,45 +453,6 @@ def _exact_int(value: Any, expected: int) -> bool:
     return type(value) is int and value == expected
 
 
-def _multi_test_result(
-    value: Any,
-    *,
-    label: str,
-) -> tuple[dict[str, int], dict[str, frozenset[str]], frozenset[str]]:
-    required = {
-        "passed_count", "failed_count", "skipped_count",
-        "passed_tests", "failed_tests", "skipped_tests",
-    }
-    if not isinstance(value, dict) or set(value) != required:
-        raise MatrixError(f"{label} test result field set drift")
-    classified: dict[str, list[str]] = {}
-    for kind in ("passed", "failed", "skipped"):
-        rows = _strict_string_list(value[f"{kind}_tests"], label=f"{label}.{kind}_tests")
-        count = value.get(f"{kind}_count")
-        if type(count) is not int or count != len(rows):
-            raise MatrixError(f"{label}.{kind}_count differs from classified tests")
-        classified[kind] = rows
-    if any(
-        set(classified[left]) & set(classified[right])
-        for left, right in (("passed", "failed"), ("passed", "skipped"), ("failed", "skipped"))
-    ):
-        raise MatrixError(f"{label} test result classifications overlap")
-    classifications = {
-        kind: frozenset(classified[kind])
-        for kind in ("passed", "failed", "skipped")
-    }
-    domain = frozenset(
-        test_name
-        for kind in ("passed", "failed", "skipped")
-        for test_name in classified[kind]
-    )
-    return (
-        {f"{kind}_count": len(classified[kind]) for kind in classified},
-        classifications,
-        domain,
-    )
-
-
 def _validate_smoke_test_status(
     result_file: Path,
     target: dict[str, Any],
@@ -492,16 +461,19 @@ def _validate_smoke_test_status(
     *,
     resolved: bool,
     source_row: dict[str, Any],
+    final_report: Mapping[str, Any] | None = None,
 ) -> None:
     benchmark_id = target["benchmark_id"]
-    common = {
-        "schema": "trimem/official-test-status-summary/1.0",
-        "benchmark_id": benchmark_id,
-        "resolved": resolved,
-    }
-    if any(summary.get(field) != value for field, value in common.items()):
-        raise MatrixError(f"{result_file.name}: official test summary identity/result mismatch")
     if benchmark_id == "swebench_verified":
+        common = {
+            "schema": "trimem/official-test-status-summary/1.0",
+            "benchmark_id": benchmark_id,
+            "resolved": resolved,
+        }
+        if any(summary.get(field) != value for field, value in common.items()):
+            raise MatrixError(
+                f"{result_file.name}: official test summary identity/result mismatch"
+            )
         if set(status) != {target["instance_id"]}:
             raise MatrixError(f"{result_file.name}: SWE test-status target set mismatch")
         instance = status[target["instance_id"]]
@@ -558,75 +530,82 @@ def _validate_smoke_test_status(
             raise MatrixError(f"{result_file.name}: SWE actual test proof is incomplete")
         return
 
-    parts = target["instance_id"].split("__", 1)
-    if len(parts) != 2 or "-" not in parts[1]:
-        raise MatrixError(f"{result_file.name}: Multi-SWE target identity is invalid")
-    org, repo_number = parts
-    repo, number = repo_number.rsplit("-", 1)
-    if (
-        status.get("org") != org
-        or status.get("repo") != repo
-        or str(status.get("number")) != number
-        or status.get("valid") is not resolved
-    ):
-        raise MatrixError(f"{result_file.name}: Multi-SWE test-status identity/result mismatch")
-    result_names = ("run_result", "test_patch_result", "fix_patch_result")
-    expected_results = {
-        name: _multi_test_result(
-            source_row.get(name), label=f"{result_file.name}:source.{name}"
+    if not isinstance(final_report, Mapping):
+        raise MatrixError(f"{result_file.name}: Multi-SWE final report is unavailable")
+    try:
+        semantics = validate_multi_swe_report_semantics(
+            instance_id=target["instance_id"],
+            source_row=source_row,
+            status=status,
+            final_report=final_report,
         )
-        for name in result_names
-    }
-    actual_results = {
-        name: _multi_test_result(status.get(name), label=f"{result_file.name}:{name}")
-        for name in result_names
-    }
-    if expected_results["test_patch_result"][2] != expected_results["fix_patch_result"][2]:
+    except MultiSWEReportSemanticsError as exc:
         raise MatrixError(
-            f"{result_file.name}: frozen Multi-SWE test/fix domains differ"
-        )
-    for name in ("run_result", "test_patch_result"):
-        if actual_results[name][1] != expected_results[name][1]:
-            raise MatrixError(
-                f"{result_file.name}: Multi-SWE {name} classifications differ from source"
-            )
-    if actual_results["fix_patch_result"][2] != expected_results["fix_patch_result"][2]:
-        raise MatrixError(
-            f"{result_file.name}: Multi-SWE fix_patch_result classification domain mismatch"
-        )
-    results = {name: actual_results[name][0] for name in result_names}
-    for name in ("fixed_tests", "p2p_tests", "f2p_tests", "s2p_tests", "n2p_tests"):
-        if not isinstance(status.get(name), dict):
-            raise MatrixError(f"{result_file.name}: Multi-SWE {name} is missing")
-    fix = results["fix_patch_result"]
-    classified = sum(fix.values())
+            f"{result_file.name}: Multi-SWE two-stage semantics failed [{exc.code}]: {exc}"
+        ) from None
+    expected_summary = semantics.to_public_dict()
     if (
-        classified <= 0
-        or summary.get("source") != "MULTI_SWE_PER_INSTANCE_REPORT"
-        or summary.get("expected_run_test_count") != len(expected_results["run_result"][2])
-        or summary.get("classified_run_test_count") != sum(results["run_result"].values())
-        or summary.get("expected_test_patch_test_count")
-        != len(expected_results["test_patch_result"][2])
-        or summary.get("classified_test_patch_test_count")
-        != sum(results["test_patch_result"].values())
-        or summary.get("expected_fix_test_count") != len(expected_results["fix_patch_result"][2])
-        or summary.get("classified_fix_test_count") != classified
-        or summary.get("expected_fix_test_domain_sha256") != hashlib.sha256(
-            _canonical(sorted(expected_results["fix_patch_result"][2]))
-        ).hexdigest()
-        or summary.get("fix_tests_classified") != classified
-        or summary.get("fix_tests_passed") != fix["passed_count"]
-        or summary.get("fix_tests_failed") != fix["failed_count"]
-        or summary.get("fix_tests_skipped") != fix["skipped_count"]
+        semantics.computed_resolved is not resolved
+        or _canonical(summary) != _canonical(expected_summary)
     ):
-        raise MatrixError(f"{result_file.name}: Multi-SWE actual test proof is incomplete")
+        raise MatrixError(
+            f"{result_file.name}: Multi-SWE canonical semantic summary binding differs"
+        )
 
 
-def _restricted_evidence(result_file: Path, record: dict[str, Any]) -> None:
+def _expected_official_image_rows(
+    target: Mapping[str, Any],
+) -> list[dict[str, str]]:
+    lock = _load(ROOT / IMAGE_LOCK)
+    if lock.get("status") != "FROZEN" or lock.get("smoke_status") != "FROZEN":
+        raise MatrixError("official image evidence lock is not frozen")
+    rows = list(lock.get("targets", []))
+    benchmark_rows = lock.get("benchmark_target_images", {}).get("targets", [])
+    if isinstance(benchmark_rows, list):
+        rows.extend(benchmark_rows)
+    matches = [
+        row for row in rows
+        if isinstance(row, dict)
+        and row.get("instance_id") == target.get("instance_id")
+    ]
+    if len(matches) != 1:
+        raise MatrixError("official target image evidence lock binding differs")
+    supplied_image = target.get("image")
+    if supplied_image is not None and matches[0].get("image") != supplied_image:
+        raise MatrixError("official target image evidence lock binding differs")
+
+    def normalized(row: Mapping[str, Any], role: str) -> dict[str, str]:
+        image = row.get("image")
+        tag = row.get("harness_image_tag")
+        expected = row.get("expected_digest")
+        if (
+            not isinstance(image, str)
+            or IMAGE.fullmatch(image) is None
+            or not isinstance(tag, str)
+            or TAGGED_IMAGE.fullmatch(tag) is None
+            or expected != image.rsplit("@", 1)[1]
+        ):
+            raise MatrixError("official image evidence lock row is malformed")
+        return {"role": role, "image": image, "tag": tag, "expected": expected}
+
+    expected_rows = [normalized(matches[0], "TARGET")]
+    if str(target.get("benchmark_id", "")).startswith("multi_swe_bench"):
+        support = lock.get("support_images")
+        if not isinstance(support, list) or len(support) != 1:
+            raise MatrixError("official support image evidence lock binding differs")
+        expected_rows.append(normalized(support[0], "SUPPORT"))
+    return expected_rows
+
+
+def _restricted_evidence(
+    result_file: Path,
+    record: dict[str, Any],
+    target: Mapping[str, Any],
+) -> None:
     references = record.get("evidence", {}).get("restricted_grader_raw")
     if not isinstance(references, list) or not references:
         raise MatrixError(f"{result_file.name}: restricted grader evidence list is missing")
-    observed: set[tuple[str, str, int]] = set()
+    observed: dict[str, tuple[str, str, int]] = {}
     for index, reference in enumerate(references):
         relative = reference.get("path") if isinstance(reference, dict) else None
         if (
@@ -640,39 +619,131 @@ def _restricted_evidence(result_file: Path, record: dict[str, Any]) -> None:
             or reference["bytes"] < 0
         ):
             raise MatrixError(f"{result_file.name}: restricted grader evidence shape differs")
-        if any(row[0] == relative for row in observed):
+        if relative in observed:
             raise MatrixError(f"{result_file.name}: duplicate restricted grader evidence path")
         _evidence_reference(result_file, reference, f"restricted_grader_raw[{index}]")
-        observed.add((str(relative), str(reference["sha256"]), reference["bytes"]))
+        observed[str(relative)] = (
+            str(relative), str(reference["sha256"]), reference["bytes"]
+        )
 
     report = _json_evidence(result_file, record, "report")
     trimem = report.get("_trimem")
     if not isinstance(trimem, dict):
         raise MatrixError(f"{result_file.name}: official report has no TriMem evidence root")
-    expected: set[tuple[str, str, int]] = set()
+    expected: dict[str, tuple[str, str, int]] = {}
 
-    def require_streams(value: Any, label: str) -> None:
+    def nested_reference(value: Any, label: str) -> tuple[str, str, int]:
+        if (
+            not isinstance(value, dict)
+            or set(value) != {"path", "sha256", "bytes", "access"}
+            or value.get("access") != "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS"
+            or not isinstance(value.get("path"), str)
+            or Path(value["path"]).is_absolute()
+            or ".." in Path(value["path"]).parts
+            or not value["path"].startswith("restricted-evidence/")
+            or not isinstance(value.get("sha256"), str)
+            or SHA256.fullmatch(value["sha256"]) is None
+            or type(value.get("bytes")) is not int
+            or value["bytes"] < 0
+        ):
+            raise MatrixError(
+                f"{result_file.name}: {label} restricted reference is malformed"
+            )
+        outer_path = "official-grader/" + value["path"]
+        outer = {
+            "path": outer_path,
+            "sha256": value["sha256"],
+            "bytes": value["bytes"],
+        }
+        _evidence_reference(result_file, outer, label)
+        return outer_path, value["sha256"], value["bytes"]
+
+    def nested_raw(value: Any, label: str) -> bytes:
+        outer_path, digest, byte_count = nested_reference(value, label)
+        return _evidence_reference(
+            result_file,
+            {"path": outer_path, "sha256": digest, "bytes": byte_count},
+            label,
+        )
+
+    def require_streams(value: Any, label: str) -> dict[str, bytes]:
         if not isinstance(value, dict) or set(value) != {"stdout", "stderr"}:
             raise MatrixError(f"{result_file.name}: {label} raw stream references differ")
-        for stream, reference in value.items():
-            if (
-                not isinstance(reference, dict)
-                or not isinstance(reference.get("path"), str)
-                or not reference["path"].startswith("restricted-evidence/")
-            ):
-                raise MatrixError(
-                    f"{result_file.name}: {label}.{stream} raw reference is malformed"
-                )
+        rows = {
+            stream: nested_reference(reference, f"{label}.{stream}")
+            for stream, reference in value.items()
+        }
+        if rows["stdout"][0] == rows["stderr"][0]:
+            raise MatrixError(
+                f"{result_file.name}: {label} stdout/stderr reference is reused"
+            )
+        return {
+            stream: nested_raw(value[stream], f"{label}.{stream}")
+            for stream in ("stdout", "stderr")
+        }
 
     require_streams(trimem.get("harness_restricted_raw_streams"), "official harness")
-    image_evidence = trimem.get("image_evidence")
-    expected_image_rows = 2 if str(record.get("benchmark_id")).startswith("multi_swe_bench") else 1
-    if not isinstance(image_evidence, list) or len(image_evidence) != expected_image_rows:
-        raise MatrixError(f"{result_file.name}: image raw evidence coverage differs")
-    for index, image_row in enumerate(image_evidence):
-        if not isinstance(image_row, dict):
-            raise MatrixError(f"{result_file.name}: image raw evidence row is malformed")
+    invocation_argv = trimem.get("invocation_argv")
+    if (
+        trimem.get("harness_invocation_status") != "SUCCESS"
+        or not isinstance(invocation_argv, list)
+        or not invocation_argv
+        or any(not isinstance(value, str) or not value for value in invocation_argv)
+    ):
+        raise MatrixError(
+            f"{result_file.name}: official harness invocation lifecycle differs"
+        )
+    report_argv = trimem.get("report_invocation_argv")
+    if str(record.get("benchmark_id")).startswith("multi_swe_bench"):
+        if (
+            trimem.get("report_invocation_status") != "SUCCESS"
+            or not isinstance(report_argv, list)
+            or not report_argv
+            or any(not isinstance(value, str) or not value for value in report_argv)
+        ):
+            raise MatrixError(
+                f"{result_file.name}: Multi-SWE report invocation lifecycle differs"
+            )
         require_streams(
+            trimem.get("report_restricted_raw_streams"), "official report"
+        )
+    elif (
+        trimem.get("report_invocation_status") != "NOT_APPLICABLE"
+        or report_argv != []
+        or trimem.get("report_restricted_raw_streams") is not None
+    ):
+        raise MatrixError(
+            f"{result_file.name}: SWE inline-report invocation lifecycle differs"
+        )
+    image_evidence = trimem.get("image_evidence")
+    expected_image_rows = _expected_official_image_rows(target)
+    if not isinstance(image_evidence, list) or len(image_evidence) != len(expected_image_rows):
+        raise MatrixError(f"{result_file.name}: image raw evidence coverage differs")
+    for index, (image_row, locked_row) in enumerate(
+        zip(image_evidence, expected_image_rows, strict=True)
+    ):
+        if (
+            not isinstance(image_row, dict)
+            or set(image_row) != set(OFFICIAL_IMAGE_EVIDENCE_FIELDS)
+            or image_row.get("schema") != OFFICIAL_IMAGE_EVIDENCE_SCHEMA
+            or any(image_row.get(name) != locked_row[name] for name in locked_row)
+            or image_row.get("observed") != [locked_row["expected"]]
+            or image_row.get("inspect_argv")
+            != [
+                "docker", "image", "inspect", "--format",
+                "{{json .RepoDigests}}", locked_row["image"],
+            ]
+            or image_row.get("inspect_invocation_status") != "SUCCESS"
+            or type(image_row.get("inspect_exit_code")) is not int
+            or image_row["inspect_exit_code"] != 0
+            or image_row.get("tag_argv")
+            != ["docker", "image", "tag", locked_row["image"], locked_row["tag"]]
+            or image_row.get("tag_invocation_status") != "SUCCESS"
+            or type(image_row.get("tag_exit_code")) is not int
+            or image_row["tag_exit_code"] != 0
+        ):
+            raise MatrixError(f"{result_file.name}: image raw evidence row is malformed")
+        inspect_streams = require_streams(
             image_row.get("inspect_restricted_raw_streams"),
             f"image[{index}] inspect",
         )
@@ -680,21 +751,41 @@ def _restricted_evidence(result_file: Path, record: dict[str, Any]) -> None:
             image_row.get("tag_restricted_raw_streams"),
             f"image[{index}] tag",
         )
+        try:
+            repo_digests = _strict_loads(inspect_streams["stdout"])
+        except (UnicodeDecodeError, json.JSONDecodeError, MatrixError) as exc:
+            raise MatrixError(
+                f"{result_file.name}: image[{index}] inspect raw JSON is invalid"
+            ) from exc
+        if (
+            not isinstance(repo_digests, list)
+            or not repo_digests
+            or any(
+                type(value) is not str
+                or not value
+                or "@sha256:" not in value
+                for value in repo_digests
+            )
+            or len(repo_digests) != len(set(repo_digests))
+            or sorted({value.rsplit("@", 1)[1] for value in repo_digests})
+            != image_row["observed"]
+        ):
+            raise MatrixError(
+                f"{result_file.name}: image[{index}] raw inspect digest binding differs"
+            )
 
     def collect(value: Any) -> None:
         if isinstance(value, dict):
-            relative = value.get("path")
-            digest = value.get("sha256")
-            byte_count = value.get("bytes")
-            if (
-                isinstance(relative, str)
-                and relative.startswith("restricted-evidence/")
-                and isinstance(digest, str)
-                and SHA256.fullmatch(digest)
-                and type(byte_count) is int
-                and byte_count >= 0
+            if "path" in value and str(value.get("path", "")).startswith(
+                "restricted-evidence/"
             ):
-                expected.add(("official-grader/" + relative, digest, byte_count))
+                row = nested_reference(value, "canonical envelope")
+                if row[0] in expected:
+                    raise MatrixError(
+                        f"{result_file.name}: restricted grader reference is reused"
+                    )
+                expected[row[0]] = row
+                return
             for child in value.values():
                 collect(child)
         elif isinstance(value, list):
@@ -717,7 +808,7 @@ def _report_image_digest(result_file: Path, record: dict[str, Any], expected_ima
     if not isinstance(report, dict):
         raise MatrixError(f"{result_file.name}: official report evidence root is not an object")
     trimem = report.get("_trimem")
-    evidence = trimem.get("image_evidence") if isinstance(trimem, dict) else report.get("image_evidence")
+    evidence = trimem.get("image_evidence") if isinstance(trimem, dict) else None
     if not isinstance(evidence, list):
         raise MatrixError(f"{result_file.name}: official report has no image evidence")
     expected = expected_image.rsplit("@", 1)[1]
@@ -738,12 +829,12 @@ def _validate_smoke_completion_report(
     *,
     resolved: bool,
 ) -> None:
-    if target["benchmark_id"] == "swebench_verified":
-        identity = target["instance_id"]
-    else:
-        org, repo_number = target["instance_id"].split("__", 1)
-        repo, number = repo_number.rsplit("-", 1)
-        identity = f"{org}/{repo}:pr-{number}"
+    if target["benchmark_id"] != "swebench_verified":
+        # Multi-SWE FinalReport is already validated, including exact lifecycle,
+        # identity, count/list equality and classification, by the one shared
+        # two-stage semantic helper.
+        return
+    identity = target["instance_id"]
     ids = {
         field: _strict_string_list(report.get(field), label=f"{result_file.name}:{field}")
         for field in (
@@ -751,11 +842,10 @@ def _validate_smoke_completion_report(
             "unresolved_ids", "empty_patch_ids", "error_ids",
         )
     }
-    if target["benchmark_id"] == "swebench_verified":
-        for field in ("infra_failure_ids", "ambiguous_failure_ids"):
-            ids[field] = _strict_string_list(
-                report.get(field), label=f"{result_file.name}:{field}"
-            )
+    for field in ("infra_failure_ids", "ambiguous_failure_ids"):
+        ids[field] = _strict_string_list(
+            report.get(field), label=f"{result_file.name}:{field}"
+        )
     classified = ids["resolved_ids"] if resolved else ids["unresolved_ids"]
     opposite = ids["unresolved_ids"] if resolved else ids["resolved_ids"]
     common_invalid = (
@@ -778,21 +868,16 @@ def _validate_smoke_completion_report(
         or not _exact_int(report.get("empty_patch_instances"), len(ids["empty_patch_ids"]))
         or not _exact_int(report.get("error_instances"), len(ids["error_ids"]))
     )
-    if target["benchmark_id"] == "swebench_verified":
-        benchmark_invalid = (
-            report.get("schema_version") != 2
-            or not _exact_int(
-                report.get("infra_failure_instances"), len(ids["infra_failure_ids"])
-            )
-            or not _exact_int(
-                report.get("ambiguous_failure_instances"),
-                len(ids["ambiguous_failure_ids"]),
-            )
+    benchmark_invalid = (
+        report.get("schema_version") != 2
+        or not _exact_int(
+            report.get("infra_failure_instances"), len(ids["infra_failure_ids"])
         )
-    else:
-        benchmark_invalid = (
-            not _exact_int(report.get("incomplete_instances"), len(ids["incomplete_ids"]))
+        or not _exact_int(
+            report.get("ambiguous_failure_instances"),
+            len(ids["ambiguous_failure_ids"]),
         )
+    )
     if common_invalid or benchmark_invalid:
         raise MatrixError(f"{result_file.name}: final official report is incomplete or has an empty patch")
 
@@ -1082,9 +1167,9 @@ def _validate_smoke_submitted_patch_identity(
         trimem.get("materialized_patch_evidence") if isinstance(trimem, dict) else None
     )
     if target.get("benchmark_id") == "swebench_verified":
-        if materialized is not None or (
-            isinstance(trimem, dict) and "materialized_patch_evidence" in trimem
-        ):
+        # The total v2 envelope requires this field for every benchmark.  SWE
+        # proves its prediction-only route with a canonical null value.
+        if materialized is not None:
             raise MatrixError(
                 f"{result_file.name}: SWE route claims materialized host-patch evidence"
             )
@@ -1353,9 +1438,55 @@ def _validate_smoke_evidence(
         or not isinstance(summary, dict)
     ):
         raise MatrixError(f"{result_file.name}: actual tests evidence binding mismatch")
+    report = _json_evidence(result_file, record, "report")
+    trimem = report.get("_trimem")
+    if (
+        set(report) != {"task_id", "status", "failure_stage", "reason", "_trimem"}
+        or report.get("task_id") != target["target_id"]
+        or report.get("status") != "success"
+        or report.get("failure_stage") is not None
+        or report.get("reason") is not None
+        or not isinstance(trimem, dict)
+        or set(trimem) != set(OFFICIAL_EVIDENCE_FIELDS)
+        or trimem.get("schema") != OFFICIAL_EVIDENCE_SCHEMA
+        or trimem.get("adapter_status") != "SUCCESS"
+        or trimem.get("adapter_failure_stage") is not None
+        or trimem.get("adapter_primary_error") is not None
+        or trimem.get("adapter_secondary_evidence_failures") != []
+        or trimem.get("adapter_normalized") is not True
+        or trimem.get("official_final_report_resolved") is not record.get("resolved")
+        or trimem.get("scientific_resolved") is not record.get("resolved")
+    ):
+        raise MatrixError(f"{result_file.name}: report has no total TriMem evidence envelope")
+    raw_report_reference = trimem.get("restricted_raw_report")
+    if not isinstance(raw_report_reference, dict):
+        raise MatrixError(f"{result_file.name}: restricted final-report reference is missing")
+    raw_report_relative = raw_report_reference.get("path")
+    grader_root = result_file.parent / "official-grader"
+    if (
+        not isinstance(raw_report_relative, str)
+        or Path(raw_report_relative).is_absolute()
+        or ".." in Path(raw_report_relative).parts
+    ):
+        raise MatrixError(f"{result_file.name}: restricted final-report path is unsafe")
+    raw_report_path = (grader_root / raw_report_relative).resolve()
+    if grader_root.resolve() not in raw_report_path.parents or not raw_report_path.is_file():
+        raise MatrixError(f"{result_file.name}: restricted final report is missing")
+    raw_report = raw_report_path.read_bytes()
+    if (
+        raw_report_reference.get("sha256") != hashlib.sha256(raw_report).hexdigest()
+        or raw_report_reference.get("bytes") != len(raw_report)
+    ):
+        raise MatrixError(f"{result_file.name}: restricted final-report binding differs")
+    try:
+        final_report = _strict_loads(raw_report)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise MatrixError(f"{result_file.name}: restricted final report is invalid JSON") from exc
+    if not isinstance(final_report, dict):
+        raise MatrixError(f"{result_file.name}: restricted final report is not an object")
     _validate_smoke_test_status(
         result_file, target, status, summary,
-        resolved=record["resolved"], source_row=source_row,
+        resolved=record["resolved"], source_row=source_row, final_report=final_report,
     )
 
     container_exit_raw, container_exit_summary = _validate_smoke_container_exit(
@@ -1368,16 +1499,13 @@ def _validate_smoke_evidence(
         tests_evidence=tests,
     )
 
-    report = _json_evidence(result_file, record, "report")
     _validate_smoke_completion_report(
-        result_file, target, report, resolved=record["resolved"]
+        result_file, target, final_report, resolved=record["resolved"]
     )
-    trimem = report.get("_trimem")
-    report_tests = trimem.get("test_evidence") if isinstance(trimem, dict) else None
-    if not isinstance(report_tests, dict) or report_tests.get("summary") != summary:
+    if trimem.get("semantic_normalization") != summary:
         raise MatrixError(f"{result_file.name}: report/test-summary binding mismatch")
     for name, raw in (("test_output", test_output), ("official_test_status", status_raw)):
-        reference = report_tests.get(name)
+        reference = trimem.get(name)
         if (
             not isinstance(reference, dict)
             or reference.get("bytes") != len(raw)
@@ -1385,13 +1513,13 @@ def _validate_smoke_evidence(
         ):
             raise MatrixError(f"{result_file.name}: report/{name} evidence binding mismatch")
     if container_exit_raw is not None:
-        report_exit_reference = report_tests.get("container_exit_status")
+        report_exit_reference = trimem.get("container_exit_status")
         if (
             not isinstance(report_exit_reference, dict)
             or report_exit_reference.get("bytes") != len(container_exit_raw)
             or report_exit_reference.get("sha256")
             != hashlib.sha256(container_exit_raw).hexdigest()
-            or report_tests.get("container_exit_summary") != container_exit_summary
+            or trimem.get("container_exit_summary") != container_exit_summary
         ):
             raise MatrixError(
                 f"{result_file.name}: report/container exit evidence binding mismatch"
@@ -1547,6 +1675,11 @@ def _validate_smoke_evidence(
         "submitted_patch_identity_sha256": submitted_patch_evidence[
             "submitted_patch_identity_sha256"
         ],
+        "semantic_normalization": (
+            dict(summary)
+            if target["benchmark_id"] != "swebench_verified"
+            else None
+        ),
         **execution_evidence,
     }
 
@@ -1815,6 +1948,32 @@ def _smoke_source_rows(expected_rows: list[dict[str, Any]]) -> dict[str, dict[st
     return result
 
 
+def validate_authoritative_smoke_terminal_record(
+    record: Mapping[str, Any], *, label: str = "grader-smoke cell"
+) -> None:
+    """Reject non-normalized or non-authoritative compatibility booleans."""
+
+    if (
+        record.get("schema") != "trimem/grader-smoke-terminal-cell/2.0"
+        or record.get("grader_invoked") is not True
+        or record.get("container_started") is not True
+        or record.get("harness_completed") is not True
+        or record.get("final_report_generated") is not True
+        or record.get("official_tests_executed") is not True
+        or record.get("raw_test_evidence_captured") is not True
+        or record.get("submitted_patch_identity_verified") is not True
+        or record.get("digest_verified") is not True
+        or record.get("adapter_normalized") is not True
+        or record.get("authoritative_cell") is not True
+        or type(record.get("resolved")) is not bool
+        or record.get("official_final_report_resolved") is not record.get("resolved")
+        or record.get("scientific_resolved") is not record.get("resolved")
+        or record.get("primary_failure") is not None
+        or record.get("secondary_evidence_failures") != []
+    ):
+        raise MatrixError(f"{label}: terminal adapter record is not authoritative")
+
+
 def _aggregate_smoke(results_dir: Path) -> dict[str, Any]:
     expected_rows = execution_matrix("grader-smoke")
     expected = {row["target_id"]: row for row in expected_rows}
@@ -1841,6 +2000,7 @@ def _aggregate_smoke(results_dir: Path) -> dict[str, Any]:
             raise MatrixError(f"{path.name}: grader task failed")
         if value.get("official_grader") is not True:
             raise MatrixError(f"{path.name}: result is not an official grader result")
+        validate_authoritative_smoke_terminal_record(value, label=path.name)
         locked_digest = target["image"].rsplit("@", 1)[1]
         report_digest = _report_image_digest(path, value, target["image"])
         if (value.get("expected_image_digest") != locked_digest
@@ -1851,7 +2011,7 @@ def _aggregate_smoke(results_dir: Path) -> dict[str, Any]:
             raise MatrixError(f"{path.name}: GOLD/NOOP_BASELINE expectation failed")
         for stream in ("stdout", "stderr"):
             _evidence_file(path, value, stream)
-        _restricted_evidence(path, value)
+        _restricted_evidence(path, value, target)
         sealed = _validate_smoke_evidence(
             path,
             value,
@@ -1998,10 +2158,30 @@ def _aggregate_smoke(results_dir: Path) -> dict[str, Any]:
         "host_prepare_sh_access_count": proof_counts[
             "host_prepare_sh_access_count"
         ],
-        "infrastructure_failure_count": sum(
-            value.get("execution_status") != "SUCCESS"
+        "attempted_cell_count": len(records),
+        "terminal_record_count": len(records),
+        "official_execution_count": sum(
+            value.get("container_started") is True for _, value in records
+        ),
+        "complete_execution_evidence_count": sum(
+            value.get("official_tests_executed") is True
+            and value.get("raw_test_evidence_captured") is True
             for _, value in records
         ),
+        "adapter_normalized_count": sum(
+            value.get("adapter_normalized") is True for _, value in records
+        ),
+        "authoritative_cell_count": sum(
+            value.get("authoritative_cell") is True for _, value in records
+        ),
+        "unattempted_cell_count": 0,
+        "environment_failures": 0,
+        "infrastructure_failures": 0,
+        "image_lifecycle_failures": 0,
+        "official_harness_failures": 0,
+        "official_report_failures": 0,
+        "adapter_contract_failures": 0,
+        "aggregate_failures": 0,
         "observed_target_count": len(records),
         "outcomes": outcomes,
         "patch_applied_count": proof_counts["patch_applied_count"],
@@ -2068,13 +2248,46 @@ def _validate_smoke_image_lifecycle(
     support_rows = lock.get("support_images")
     if not isinstance(lock_rows, list) or not isinstance(support_rows, list) or len(support_rows) != 1:
         raise MatrixError("grader-smoke image lifecycle lock coverage is malformed")
-    tags = {
-        row.get("instance_id"): row.get("harness_image_tag")
-        for row in lock_rows if isinstance(row, dict)
-    }
+    locked_targets: dict[str, dict[str, str]] = {}
+    for row in lock_rows:
+        if not isinstance(row, dict):
+            raise MatrixError("grader-smoke target image lifecycle lock is malformed")
+        identity = row.get("instance_id")
+        image = row.get("image")
+        tag = row.get("harness_image_tag")
+        expected_digest = row.get("expected_digest")
+        if (
+            not isinstance(identity, str)
+            or identity in locked_targets
+            or not isinstance(image, str)
+            or IMAGE.fullmatch(image) is None
+            or not isinstance(tag, str)
+            or TAGGED_IMAGE.fullmatch(tag) is None
+            or expected_digest != image.rsplit("@", 1)[1]
+        ):
+            raise MatrixError(
+                "grader-smoke target image lifecycle lock is malformed"
+            )
+        locked_targets[identity] = {
+            "image": image,
+            "tag": tag,
+            "expected_digest": expected_digest,
+        }
     support = support_rows[0]
-    support_image, support_tag = support.get("image"), support.get("harness_image_tag")
-    if not IMAGE.fullmatch(str(support_image)) or not isinstance(support_tag, str):
+    support_image = support.get("image") if isinstance(support, dict) else None
+    support_tag = (
+        support.get("harness_image_tag") if isinstance(support, dict) else None
+    )
+    support_digest = (
+        support.get("expected_digest") if isinstance(support, dict) else None
+    )
+    if (
+        not isinstance(support_image, str)
+        or IMAGE.fullmatch(support_image) is None
+        or not isinstance(support_tag, str)
+        or TAGGED_IMAGE.fullmatch(support_tag) is None
+        or support_digest != support_image.rsplit("@", 1)[1]
+    ):
         raise MatrixError("grader-smoke support image lifecycle lock is malformed")
     expected_events: list[tuple[str, str, str, str | None]] = []
     pairs = targets[0::2]
@@ -2084,13 +2297,22 @@ def _validate_smoke_image_lifecycle(
     ]
     for pair_index, target in enumerate(pairs):
         identity = target["instance_id"]
+        locked = locked_targets.get(identity)
+        if (
+            locked is None
+            or locked["image"] != target["image"]
+            or locked["expected_digest"] != target["image"].rsplit("@", 1)[1]
+        ):
+            raise MatrixError(
+                "grader-smoke lifecycle target differs from the image lock"
+            )
         if pair_index == multi_pairs[0]:
             expected_events.append(
                 ("PULL_SUPPORT", "multi_swe_bench_support", support_image, None)
             )
         expected_events.append(("PULL_TARGET", identity, target["image"], None))
         expected_events.append(
-            ("REMOVE_TARGET", identity, target["image"], tags.get(identity))
+            ("REMOVE_TARGET", identity, target["image"], locked["tag"])
         )
         if pair_index == multi_pairs[-1]:
             expected_events.append(
@@ -2099,6 +2321,66 @@ def _validate_smoke_image_lifecycle(
     events = report.get("events")
     if not isinstance(events, list) or len(events) != len(expected_events):
         raise MatrixError("grader-smoke image lifecycle event count differs")
+    expected_stage_paths: set[str] = set()
+
+    def validated_stage(
+        operation_index: int,
+        stage_name: str,
+        expected_argv: list[str],
+        event_streams: Any,
+    ) -> dict[str, bytes]:
+        relative_stage = f"{operation_index:03d}-{stage_name}/stage.json"
+        expected_stage_paths.add(relative_stage)
+        stage_path = image_evidence_dir / relative_stage
+        if not stage_path.is_file() or stage_path.is_symlink():
+            raise MatrixError(
+                f"grader-smoke image stage metadata {operation_index} is missing"
+            )
+        try:
+            stage = _strict_loads(stage_path.read_bytes())
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, MatrixError) as exc:
+            raise MatrixError(
+                f"grader-smoke image stage metadata {operation_index} is invalid"
+            ) from exc
+        if (
+            not isinstance(stage, dict)
+            or set(stage)
+            != {"argv", "returncode", "stage", "status", "stdout", "stderr"}
+            or stage.get("argv") != expected_argv
+            or stage.get("stage") != stage_name
+            or stage.get("status") != "PASS"
+            or type(stage.get("returncode")) is not int
+            or stage["returncode"] != 0
+            or not isinstance(event_streams, dict)
+            or set(event_streams) != {"stdout", "stderr"}
+        ):
+            raise MatrixError(
+                f"grader-smoke image stage metadata {operation_index} differs"
+            )
+        raw: dict[str, bytes] = {}
+        seen_paths: set[str] = set()
+        for stream in ("stdout", "stderr"):
+            reference = stage.get(stream)
+            if reference != event_streams.get(stream):
+                raise MatrixError(
+                    f"grader-smoke image stage stream {operation_index} differs"
+                )
+            if (
+                not isinstance(reference, dict)
+                or set(reference) != {"path", "sha256", "bytes"}
+                or reference.get("path") in seen_paths
+            ):
+                raise MatrixError(
+                    f"grader-smoke image stage reference {operation_index} differs"
+                )
+            seen_paths.add(str(reference["path"]))
+            raw[stream] = _evidence_reference(
+                report_path,
+                reference,
+                f"image_lifecycle[{operation_index}].{stage_name}.{stream}",
+            )
+        return raw
+
     for index, (event, expected) in enumerate(zip(events, expected_events)):
         action, identity, image, tag = expected
         if (
@@ -2115,7 +2397,10 @@ def _validate_smoke_image_lifecycle(
             digest = image.rsplit("@", 1)[1]
             observed = record.get("observed_digests")
             if (
-                record.get("expected_digest") != digest
+                set(record) != {
+                    "image", "expected_digest", "observed_digests", "pull", "inspect"
+                }
+                or record.get("expected_digest") != digest
                 or not isinstance(observed, list)
                 or any(not isinstance(value, str) for value in observed)
                 or observed != sorted(set(observed))
@@ -2123,25 +2408,64 @@ def _validate_smoke_image_lifecycle(
                 or any(not OCI_DIGEST.fullmatch(str(value)) for value in observed)
             ):
                 raise MatrixError(f"grader-smoke pull digest evidence {index} differs")
-            stage_names = ("pull", "inspect")
+            validated_stage(
+                index,
+                "pull",
+                ["docker", "pull", image],
+                record.get("pull"),
+            )
+            inspect_streams = validated_stage(
+                index,
+                "inspect",
+                [
+                    "docker", "image", "inspect", "--format",
+                    "{{json .RepoDigests}}", image,
+                ],
+                record.get("inspect"),
+            )
+            try:
+                repo_digests = _strict_loads(inspect_streams["stdout"])
+            except (UnicodeDecodeError, json.JSONDecodeError, MatrixError) as exc:
+                raise MatrixError(
+                    f"grader-smoke raw pull digest evidence {index} is invalid"
+                ) from exc
+            if (
+                not isinstance(repo_digests, list)
+                or not repo_digests
+                or any(
+                    type(value) is not str
+                    or not value
+                    or "@sha256:" not in value
+                    for value in repo_digests
+                )
+                or len(repo_digests) != len(set(repo_digests))
+                or sorted({value.rsplit("@", 1)[1] for value in repo_digests})
+                != observed
+            ):
+                raise MatrixError(
+                    f"grader-smoke raw pull digest evidence {index} differs"
+                )
         else:
             if (
-                not isinstance(tag, str)
+                set(record) != {"image", "references", "remove", "status"}
+                or not isinstance(tag, str)
                 or record.get("status") != "PASS"
                 or record.get("references") != [tag, image]
             ):
                 raise MatrixError(f"grader-smoke exact removal evidence {index} differs")
-            stage_names = ("remove",)
-        for stage_name in stage_names:
-            stage = record.get(stage_name)
-            if not isinstance(stage, dict) or set(stage) != {"stdout", "stderr"}:
-                raise MatrixError(f"grader-smoke image stage evidence {index} differs")
-            for stream in ("stdout", "stderr"):
-                _evidence_reference(
-                    report_path,
-                    stage[stream],
-                    f"image_lifecycle[{index}].{stage_name}.{stream}",
-                )
+            validated_stage(
+                index,
+                "remove",
+                ["docker", "image", "rm", "--force", tag, image],
+                record.get("remove"),
+            )
+    actual_stage_paths = {
+        path.relative_to(image_evidence_dir).as_posix()
+        for path in image_evidence_dir.glob("[0-9][0-9][0-9]-*/stage.json")
+        if path.is_file()
+    }
+    if actual_stage_paths != expected_stage_paths:
+        raise MatrixError("grader-smoke image lifecycle stage set differs")
     raw = report_path.read_bytes()
     return {
         "actual": actual_counts,
@@ -2282,7 +2606,7 @@ def _aggregate_benchmark(name: str, results_dir: Path) -> dict[str, Any]:
         for stream in ("stdout", "stderr", "raw_events", "checkout"):
             _evidence_file(path, value, stream)
         _terminal_checkpoint(path, value)
-        _restricted_evidence(path, value)
+        _restricted_evidence(path, value, target)
         outcomes.append({
             "arm": arm, "benchmark_id": target["benchmark_id"],
             "benchmark_role": next(

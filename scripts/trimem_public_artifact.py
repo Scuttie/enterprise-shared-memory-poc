@@ -8,11 +8,77 @@ from pathlib import Path
 import re
 from typing import Any, Mapping
 
+from trimem_multi_swe_report_semantics import (
+    MultiSWEReportSemanticsError,
+    PUBLIC_SUMMARY_FIELDS,
+    validate_public_semantics_summary,
+)
+
 
 FORBIDDEN_KEYS = {
     "patch", "gold_patch", "fix_patch", "test_patch", "FAIL_TO_PASS", "PASS_TO_PASS",
     "source_row", "repository_files", "raw_report", "restricted_raw_report",
 }
+RAW_MULTI_SWE_KEYS = frozenset({
+    "error_msg",
+    "fixed_tests",
+    "passed_tests",
+    "failed_tests",
+    "skipped_tests",
+    "p2p_tests",
+    "f2p_tests",
+    "s2p_tests",
+    "n2p_tests",
+    "run_result",
+    "test_patch_result",
+    "fix_patch_result",
+    "valid",
+})
+PRIVATE_FAILURE_KEYS = frozenset({
+    "adapter_primary_error",
+    "adapter_secondary_evidence_failures",
+    "exception",
+    "failure_reason",
+    "failure_reasons",
+    "primary_failure",
+    "reason",
+    "secondary_evidence_failures",
+    "traceback",
+})
+SMOKE_OUTCOME_FIELDS = (
+    "target_id",
+    "benchmark_id",
+    "order_index",
+    "probe",
+    "resolved",
+    "applied_patch_sha256",
+    "official_test_output_sha256",
+    "official_test_status_sha256",
+    "container_exit_status_sha256",
+    "execution_contract_sha256",
+    "execution_control_sha256",
+    "submitted_patch_identity_sha256",
+    "semantic_normalization",
+    "patch_applied",
+    "tests_executed",
+    "digest_match",
+    "submitted_patch_identity",
+    "host_prepare_sh_access_count",
+    "source_image_build_count",
+    "api_calls",
+    "container_exit_status_code",
+    "container_exit_acceptance",
+)
+BENCHMARK_OUTCOME_FIELDS = (
+    "arm",
+    "benchmark_id",
+    "benchmark_role",
+    "resolved",
+    "target_id",
+    "actual_accounting",
+    "actual_memory_metrics",
+    "actual_usd",
+)
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 SMOKE_ACCOUNTING_FIELDS = (
     "api_calls",
@@ -32,6 +98,24 @@ SMOKE_ACCOUNTING_FIELDS = (
     "task_arm_runs",
     "total_usd",
 )
+SMOKE_FAILURE_TAXONOMY_FIELDS = (
+    "environment_failures",
+    "infrastructure_failures",
+    "image_lifecycle_failures",
+    "official_harness_failures",
+    "official_report_failures",
+    "adapter_contract_failures",
+    "aggregate_failures",
+)
+SMOKE_IMAGE_LIFECYCLE_ACTUAL = {
+    "target_image_pulls": 6,
+    "support_image_pulls": 1,
+    "exact_image_removals": 7,
+    "max_resident_target_images": 1,
+    "max_resident_support_images": 1,
+    "resident_target_images": 0,
+    "resident_support_images": 0,
+}
 
 
 class PublicArtifactError(ValueError):
@@ -52,22 +136,113 @@ def read_json(path: Path) -> dict[str, Any]:
     return value
 
 
-def _reject_forbidden(value: Any) -> None:
+def _is_forbidden_public_key(value: object) -> bool:
+    if not isinstance(value, str):
+        return True
+    folded = value.casefold()
+    if folded in {key.casefold() for key in FORBIDDEN_KEYS}:
+        return True
+    if folded in RAW_MULTI_SWE_KEYS:
+        return True
+    # These exact count/digest/boolean fields are the sole name-free category
+    # projection emitted by the shared semantics helper.
+    if folded in PUBLIC_SUMMARY_FIELDS:
+        return False
+    if folded in PRIVATE_FAILURE_KEYS or folded.endswith("_failure_reason"):
+        return True
+    if any(category in folded for category in ("p2p", "f2p", "s2p", "n2p")):
+        return True
+    if "test_name" in folded or folded.endswith("_test_ids"):
+        return True
+    if folded.startswith("missing_") and any(
+        token in folded for token in ("test", "name", "transition")
+    ):
+        return True
+    return False
+
+
+def _reject_forbidden(value: Any, *, path: tuple[str, ...] = ()) -> None:
     if isinstance(value, Mapping):
-        overlap = FORBIDDEN_KEYS & set(value)
-        if overlap:
-            raise PublicArtifactError(f"public artifact contains forbidden keys: {sorted(overlap)}")
-        for child in value.values():
-            _reject_forbidden(child)
+        forbidden = sorted(
+            str(key)
+            for key, child in value.items()
+            if _is_forbidden_public_key(key)
+            and not (
+                path == ("evidence_counts",)
+                and key == "patch"
+                and type(child) is int
+                and child >= 0
+            )
+        )
+        if forbidden:
+            raise PublicArtifactError(
+                f"public artifact contains forbidden keys: {forbidden}"
+            )
+        for key, child in value.items():
+            _reject_forbidden(child, path=(*path, str(key)))
     elif isinstance(value, list):
         for child in value:
-            _reject_forbidden(child)
+            _reject_forbidden(child, path=path)
 
 
 def _canonical(value: Any) -> bytes:
     return json.dumps(
         value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     ).encode("utf-8")
+
+
+def _valid_multi_swe_semantic_summary(
+    value: Any, *, resolved: object
+) -> bool:
+    """Validate through the one shared name-free semantics implementation."""
+
+    if not isinstance(value, Mapping):
+        return False
+    try:
+        summary = validate_public_semantics_summary(value)
+    except MultiSWEReportSemanticsError:
+        return False
+    return summary["computed_resolved"] is resolved
+
+
+def _valid_smoke_image_lifecycle(value: Any) -> bool:
+    """Accept only the aggregate's fixed, name-free lifecycle projection."""
+
+    return (
+        isinstance(value, Mapping)
+        and set(value)
+        == {"actual", "event_count", "report_bytes", "report_sha256", "status"}
+        and value.get("actual") == SMOKE_IMAGE_LIFECYCLE_ACTUAL
+        and type(value.get("event_count")) is int
+        and value["event_count"] == 14
+        and type(value.get("report_bytes")) is int
+        and value["report_bytes"] > 0
+        and isinstance(value.get("report_sha256"), str)
+        and SHA256.fullmatch(value["report_sha256"]) is not None
+        and value.get("status") == "PASS"
+    )
+
+
+def _public_outcome_projection(
+    outcomes: list[Any], *, manifest: str
+) -> list[dict[str, Any]]:
+    """Validate and reconstruct only the frozen public outcome shape."""
+
+    fields = (
+        SMOKE_OUTCOME_FIELDS
+        if manifest == "grader-smoke"
+        else BENCHMARK_OUTCOME_FIELDS
+    )
+    expected = set(fields)
+    projected: list[dict[str, Any]] = []
+    for index, row in enumerate(outcomes):
+        if not isinstance(row, Mapping) or set(row) != expected:
+            raise PublicArtifactError(
+                f"aggregate outcome {index} public field set differs"
+            )
+        projected.append({field: row[field] for field in fields})
+    _reject_forbidden(projected)
+    return projected
 
 
 def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
@@ -89,6 +264,7 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
     approval = aggregate.get("approval_binding")
     if not isinstance(outcomes, list) or not isinstance(totals, list):
         raise PublicArtifactError("aggregate public outcomes/totals are malformed")
+    _public_outcome_projection(outcomes, manifest=aggregate["manifest"])
     if aggregate.get("manifest") in {"development", "heldout"}:
         benchmark_totals = aggregate.get("benchmark_totals")
         primary = aggregate.get("primary_endpoints")
@@ -111,6 +287,18 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
         }:
             raise PublicArtifactError("aggregate primary endpoint is not SWE-bench Verified")
     else:
+        if totals != [] or any(
+            field in aggregate
+            for field in (
+                "benchmark_roles",
+                "benchmark_totals",
+                "primary_endpoints",
+                "secondary_endpoints",
+            )
+        ):
+            raise PublicArtifactError(
+                "grader-smoke aggregate contains non-smoke public projections"
+            )
         expected_evidence_counts = {
             name: 12
             for name in (
@@ -156,6 +344,20 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
                 and isinstance(row.get("submitted_patch_identity_sha256"), str)
                 and SHA256.fullmatch(row["submitted_patch_identity_sha256"])
                 is not None
+                and (
+                    (
+                        row.get("benchmark_id") == "swebench_verified"
+                        and row.get("semantic_normalization") is None
+                    )
+                    or (
+                        row.get("benchmark_id")
+                        in {"multi_swe_bench_mini", "multi_swe_bench_flash"}
+                        and _valid_multi_swe_semantic_summary(
+                            row.get("semantic_normalization"),
+                            resolved=row.get("resolved"),
+                        )
+                    )
+                )
                 and (
                     (
                         row.get("benchmark_id") == "swebench_verified"
@@ -207,10 +409,27 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
             or aggregate["container_exit_status_validated_count"] != 8
             or type(aggregate.get("resolved_container_zero_exit_count")) is not int
             or aggregate["resolved_container_zero_exit_count"] != 4
+            or type(aggregate.get("attempted_cell_count")) is not int
+            or aggregate["attempted_cell_count"] != 12
+            or type(aggregate.get("terminal_record_count")) is not int
+            or aggregate["terminal_record_count"] != 12
+            or type(aggregate.get("official_execution_count")) is not int
+            or aggregate["official_execution_count"] != 12
+            or type(aggregate.get("complete_execution_evidence_count")) is not int
+            or aggregate["complete_execution_evidence_count"] != 12
+            or type(aggregate.get("adapter_normalized_count")) is not int
+            or aggregate["adapter_normalized_count"] != 12
+            or type(aggregate.get("authoritative_cell_count")) is not int
+            or aggregate["authoritative_cell_count"] != 12
+            or type(aggregate.get("unattempted_cell_count")) is not int
+            or aggregate["unattempted_cell_count"] != 0
             or type(aggregate.get("api_calls")) is not int
             or aggregate["api_calls"] != 0
-            or type(aggregate.get("infrastructure_failure_count")) is not int
-            or aggregate["infrastructure_failure_count"] != 0
+            or any(
+                type(aggregate.get(field)) is not int
+                or aggregate[field] != 0
+                for field in SMOKE_FAILURE_TAXONOMY_FIELDS
+            )
             or aggregate.get("empty_patch_ids") != []
             or _canonical(aggregate.get("evidence_counts"))
             != _canonical(expected_evidence_counts)
@@ -224,7 +443,7 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
                 else 0
                 for field in SMOKE_ACCOUNTING_FIELDS
             })
-            or aggregate.get("image_lifecycle", {}).get("status") != "PASS"
+            or not _valid_smoke_image_lifecycle(aggregate.get("image_lifecycle"))
         ):
             raise PublicArtifactError("grader-smoke exact execution summary differs")
     required_approval = {
@@ -250,12 +469,15 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
 
 def package(aggregate_path: Path, output: Path) -> dict[str, Any]:
     aggregate = _verified_aggregate(aggregate_path)
+    outcomes = _public_outcome_projection(
+        aggregate["outcomes"], manifest=aggregate["manifest"]
+    )
     result = {
         "schema": "trimem/public-benchmark-artifact/1.0",
         "status": "PASS",
         "verified_aggregate_sha256": aggregate["aggregate_sha256"],
         "manifest": aggregate["manifest"],
-        "outcomes": aggregate["outcomes"],
+        "outcomes": outcomes,
         "stream_totals": aggregate.get("stream_totals", []),
         "approval_binding": aggregate["approval_binding"],
         "restricted_evidence": "ENCRYPTED_SEPARATE_ARTIFACT_NOT_PUBLIC",
@@ -273,7 +495,11 @@ def package(aggregate_path: Path, output: Path) -> dict[str, Any]:
             "container_exit_status_validated_count",
             "evidence_counts", "expected_target_count", "image_lifecycle",
             "host_prepare_sh_access_count",
-            "infrastructure_failure_count", "observed_target_count",
+            "attempted_cell_count", "terminal_record_count",
+            "official_execution_count",
+            "complete_execution_evidence_count", "adapter_normalized_count",
+            "authoritative_cell_count", "unattempted_cell_count",
+            *SMOKE_FAILURE_TAXONOMY_FIELDS, "observed_target_count",
             "patch_applied_count", "probe_counts", "resolved_counts",
             "resolved_container_zero_exit_count",
             "source_image_build_count", "submitted_patch_identity_count",

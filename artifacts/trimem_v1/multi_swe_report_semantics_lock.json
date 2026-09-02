@@ -1,0 +1,188 @@
+{
+  "contract_projection": {
+    "FINAL_RESOLVED": "REPORT_VALID AND ALL_FROZEN_EXPECTED_TRANSITION_KEYS_COVERED",
+    "REPORT_VALID": "LOCAL_TRANSITION_PREDICATE",
+    "final_report_acceptance": "official_final_report_resolved equals computed_resolved",
+    "final_report_target_identity": {
+      "format": "{org}/{repo}:pr-{number}",
+      "upstream_symbol": "PullRequestBase.id"
+    },
+    "noop_baseline_definition": "official_final_report_resolved is false",
+    "report_valid_is_not_final_resolved": true,
+    "stage_a_local_transition_predicate": {
+      "ordered_rules": [
+        {
+          "accept": "fix_patch_result contains at least one classified test",
+          "index": 1,
+          "reason_code": "NO_FIX_PATCH_TESTS"
+        },
+        {
+          "accept": "no test has test=PASS and fix=FAIL",
+          "index": 2,
+          "reason_code": "PASS_TO_FAIL_REGRESSION"
+        },
+        {
+          "accept": "at least one test has test!=PASS and fix=PASS",
+          "index": 3,
+          "reason_code": "NO_NON_PASS_TO_PASS_TRANSITION"
+        },
+        {
+          "accept": "no test has test in {NONE,SKIP}, fix=FAIL, and run=PASS",
+          "index": 4,
+          "reason_code": "ANOMALOUS_NONE_OR_SKIP_TO_FAIL_AFTER_RUN_PASS"
+        }
+      ],
+      "unobserved_stage_classification": "NONE",
+      "upstream_symbol": "Report.check()"
+    },
+    "stage_b_frozen_expected_transition_coverage": {
+      "category_order": [
+        "p2p_tests",
+        "f2p_tests",
+        "s2p_tests",
+        "n2p_tests"
+      ],
+      "exact_set_equality": false,
+      "operation": "each frozen expected category key is contained in the same observed Report category",
+      "performed_after_report_valid": true,
+      "upstream_symbol": "CliArgs.gen_eval_reports.safe_generate_report"
+    },
+    "test_result_strictness": {
+      "trimem_fail_closed_raw_input": {
+        "count_matches_raw_list_length": true,
+        "duplicate_ids_rejected_before_set_construction": true,
+        "pass_fail_skip_disjoint": true
+      },
+      "upstream_materialized_test_result": {
+        "count_matches_materialized_set_size": true,
+        "pass_fail_skip_sets_disjoint": true,
+        "raw_json_duplicates_unconditionally_rejected": false,
+        "required_collection_type": "set"
+      }
+    },
+    "valid_true_final_unresolved": {
+      "legal": true,
+      "required_condition": "missing_expected_transition_count is positive"
+    }
+  },
+  "contract_projection_sha256": "9671d6da70ad59c2ea9f47f3fac75b702c84fc43cda2e8d3defe825d90d529e0",
+  "exact_upstream_blobs": {
+    "multi_swe_bench/harness/dataset.py": {
+      "bytes": 2833,
+      "git_blob_oid": "19aeb4370fcfdaeccef99b3a47d06c5a572d468c",
+      "git_mode": "100644",
+      "line_count": 79,
+      "sha256": "dd49f55baf63b60fff309b6a5b2a1826697e2b85ad1a9bccff18321dcdc200fc"
+    },
+    "multi_swe_bench/harness/gen_report.py": {
+      "bytes": 21331,
+      "git_blob_oid": "251e8b01059a18a9af5ae176c696eb4be8950ae4",
+      "git_mode": "100644",
+      "line_count": 589,
+      "sha256": "02ebc8a5414898d12f4f5a9ba0c11a8f57c9f34a0bdc02c2311afac9f654847d"
+    },
+    "multi_swe_bench/harness/pull_request.py": {
+      "bytes": 6015,
+      "git_blob_oid": "0c2c99a4602bc6dc127cc0bb3ecaff56a6550d17",
+      "git_mode": "100644",
+      "line_count": 211,
+      "sha256": "32b49f48b39124f67727f408898bd96cce91c0a362faa716ac858dcb0b0b47c7"
+    },
+    "multi_swe_bench/harness/report.py": {
+      "bytes": 12942,
+      "git_blob_oid": "a0b23ab1bf3c2407e15338fd0e644c0138fd3d90",
+      "git_mode": "100644",
+      "line_count": 347,
+      "sha256": "5a025fd496d42c4b7377fc0702d64c6d0e356b117eaf2face47e73a52c29902f"
+    },
+    "multi_swe_bench/harness/test_result.py": {
+      "bytes": 5164,
+      "git_blob_oid": "bbdd5dc729582a1d06c79f416058bbc4d7db9c91",
+      "git_mode": "100644",
+      "line_count": 157,
+      "sha256": "5411af794920cf4b170fe9dbe8c21c12cc63e2bbe2280d6d82acb850f4808be3"
+    }
+  },
+  "implementation": {
+    "bytes": 31877,
+    "path": "scripts/trimem_multi_swe_report_semantics.py",
+    "public_result_schema": "trimem/multi-swe-report-semantics/1.0",
+    "sha256": "4132f7580edbabd2492ca65129575713ef3e74bb1929de4f8626552dfffda62d",
+    "validator": "validate_multi_swe_report_semantics"
+  },
+  "lock_sha256": "407fc0e383f5a2270bd586a61d5789c6a4f29619da15016f027eb086ea4850f6",
+  "privacy": {
+    "public_evidence": "counts, canonical category-domain digests, booleans, and reason code",
+    "public_raw_test_names": false,
+    "raw_test_names": "restricted evidence only"
+  },
+  "repository": "https://github.com/multi-swe-bench/multi-swe-bench",
+  "revision": "24f493f8a103e72312ded4f6b9c89f081d69cb09",
+  "revision_tree_oid": "741ce10a4ec220fec713112502850b381a6226b9",
+  "schema": "trimem/multi-swe-report-semantics-lock/1.0",
+  "scope": {
+    "docker_calls": 0,
+    "grader_calls": 0,
+    "model_api_calls": 0,
+    "paid_model_calls": 0,
+    "upstream_source_copied": false
+  },
+  "truth_table": [
+    {
+      "accept": true,
+      "computed_resolved": false,
+      "expected_coverage_complete": false,
+      "final_resolved": false,
+      "report_valid": false
+    },
+    {
+      "accept": false,
+      "computed_resolved": false,
+      "expected_coverage_complete": false,
+      "final_resolved": true,
+      "report_valid": false
+    },
+    {
+      "accept": true,
+      "computed_resolved": false,
+      "expected_coverage_complete": true,
+      "final_resolved": false,
+      "report_valid": false
+    },
+    {
+      "accept": false,
+      "computed_resolved": false,
+      "expected_coverage_complete": true,
+      "final_resolved": true,
+      "report_valid": false
+    },
+    {
+      "accept": true,
+      "computed_resolved": false,
+      "expected_coverage_complete": false,
+      "final_resolved": false,
+      "report_valid": true
+    },
+    {
+      "accept": false,
+      "computed_resolved": false,
+      "expected_coverage_complete": false,
+      "final_resolved": true,
+      "report_valid": true
+    },
+    {
+      "accept": false,
+      "computed_resolved": true,
+      "expected_coverage_complete": true,
+      "final_resolved": false,
+      "report_valid": true
+    },
+    {
+      "accept": true,
+      "computed_resolved": true,
+      "expected_coverage_complete": true,
+      "final_resolved": true,
+      "report_valid": true
+    }
+  ]
+}

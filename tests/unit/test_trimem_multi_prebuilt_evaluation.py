@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import trimem_official_grader as official_grader  # noqa: E402
 import trimem_grader_smoke as grader_smoke  # noqa: E402
+import trimem_multi_swe_report_semantics as report_semantics  # noqa: E402
 from enterprise_memory.trimem.workspace import WorkspaceGraderContext  # noqa: E402
 
 
@@ -170,13 +171,45 @@ def _multi_test_status() -> dict[str, object]:
         "org": "vuejs",
         "repo": "core",
         "number": 8911,
-        "valid": False,
-        "run_result": result(passed=["run"]),
-        "test_patch_result": result(passed=["test"]),
-        "fix_patch_result": result(failed=["test"]),
-        "fixed_tests": {},
+        "valid": True,
+        "error_msg": "",
+        "run_result": result(passed=["expected", "replacement"]),
+        "test_patch_result": result(failed=["expected", "replacement"]),
+        "fix_patch_result": result(passed=["replacement"], failed=["expected"]),
+        "fixed_tests": {
+            "replacement": {"run": "PASS", "test": "FAIL", "fix": "PASS"}
+        },
         "p2p_tests": {},
-        "f2p_tests": {},
+        "f2p_tests": {
+            "replacement": {"run": "PASS", "test": "FAIL", "fix": "PASS"}
+        },
+        "s2p_tests": {},
+        "n2p_tests": {},
+    }
+
+
+def _multi_source_row() -> dict[str, object]:
+    status = _multi_test_status()
+    return {
+        "org": "vuejs",
+        "repo": "core",
+        "number": 8911,
+        "base": {"sha": "a" * 40},
+        "run_result": status["run_result"],
+        "test_patch_result": status["test_patch_result"],
+        "fix_patch_result": {
+            "passed_count": 2,
+            "failed_count": 0,
+            "skipped_count": 0,
+            "passed_tests": ["expected", "replacement"],
+            "failed_tests": [],
+            "skipped_tests": [],
+        },
+        "p2p_tests": {},
+        "f2p_tests": {
+            name: {"run": "PASS", "test": "FAIL", "fix": "PASS"}
+            for name in ("expected", "replacement")
+        },
         "s2p_tests": {},
         "n2p_tests": {},
     }
@@ -427,7 +460,14 @@ def test_multi_prebuilt_profile_drives_pinned_human_path_without_source_build(
         runner=adapter_runner,
     )
     gateway._restricted_streams = lambda *_args, **_kwargs: {}
-    gateway._verify_and_tag(object(), 0, target.image, target.harness_image_tag, [])
+    gateway._verify_and_tag(
+        object(),
+        0,
+        target.image,
+        target.harness_image_tag,
+        [],
+        role="TARGET",
+    )
     assert adapter_runner.calls == [
         ("docker", "image", "inspect", "--format", "{{json .RepoDigests}}", target.image),
         ("docker", "image", "tag", target.image, target.harness_image_tag),
@@ -562,13 +602,7 @@ def _gateway_and_request(
     _SequentialGatewayRunnerSpy,
     _PinnedDockerUtilSpy,
 ]:
-    row = {
-        "org": "vuejs", "repo": "core", "number": 8911,
-        "base": {"sha": "a" * 40},
-    }
-    frozen_status = _multi_test_status()
-    for result_name in ("run_result", "test_patch_result", "fix_patch_result"):
-        row[result_name] = frozen_status[result_name]
+    row = _multi_source_row()
     target = _target("multi_swe_bench_mini", row)
     harness_root = tmp_path / "h"
     harness_root.mkdir()
@@ -678,26 +712,15 @@ def _container_exit_raw(
 
 
 def test_nonzero_container_exit_requires_complete_unresolved_test_domain() -> None:
-    row = {"org": "vuejs", "repo": "core", "number": 8911, "base": {"sha": "a" * 40}}
+    row = _multi_source_row()
     target = _target("multi_swe_bench_mini", row)
     patch = "diff --git a/a b/a\n"
-    complete = {
-        "schema": "trimem/official-test-status-summary/1.0",
-        "benchmark_id": target.benchmark_id,
-        "source": "MULTI_SWE_PER_INSTANCE_REPORT",
-        "resolved": False,
-        "expected_run_test_count": 0,
-        "classified_run_test_count": 0,
-        "expected_test_patch_test_count": 2,
-        "classified_test_patch_test_count": 2,
-        "expected_fix_test_count": 2,
-        "classified_fix_test_count": 2,
-        "expected_fix_test_domain_sha256": "d" * 64,
-        "fix_tests_classified": 2,
-        "fix_tests_passed": 0,
-        "fix_tests_failed": 2,
-        "fix_tests_skipped": 0,
-    }
+    complete = report_semantics.validate_multi_swe_report_semantics(
+        instance_id=target.instance_id,
+        source_row=row,
+        status=_multi_test_status(),
+        final_report=_multi_final_report(),
+    ).to_public_dict()
     summary = official_grader.validate_multi_swe_container_exit_status(
         target,
         raw=_container_exit_raw(target, patch, 17),
@@ -715,7 +738,7 @@ def test_nonzero_container_exit_requires_complete_unresolved_test_domain() -> No
             target,
             raw=_container_exit_raw(target, patch, 17),
             resolved=True,
-            test_summary={**complete, "resolved": True},
+            test_summary={**complete, "computed_resolved": True},
             expected_patch=patch,
         )
     with pytest.raises(official_grader.OfficialGraderError, match="full.*domain"):
@@ -723,7 +746,7 @@ def test_nonzero_container_exit_requires_complete_unresolved_test_domain() -> No
             target,
             raw=_container_exit_raw(target, patch, 17),
             resolved=False,
-            test_summary={**complete, "classified_fix_test_count": 1},
+            test_summary={**complete, "final_report_match": False},
             expected_patch=patch,
         )
 
@@ -781,14 +804,14 @@ def test_gateway_runs_instance_only_then_official_report_and_parses_final_report
         request.patch
     )
     assert grade.report["_trimem"]["report_invocation_status"] == "SUCCESS"
-    assert Path(grade.report["_trimem"]["report_path"]).as_posix() == "output/final_report.json"
-    assert grade.report["_trimem"]["test_evidence"]["summary"]["fix_tests_classified"] == 1
-    exit_reference = grade.report["_trimem"]["test_evidence"][
-        "container_exit_status"
-    ]
-    exit_summary = grade.report["_trimem"]["test_evidence"][
-        "container_exit_summary"
-    ]
+    assert grade.report["_trimem"]["restricted_raw_report"]["access"] == (
+        "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS"
+    )
+    assert grade.report["_trimem"]["semantic_normalization"][
+        "missing_expected_transition_count"
+    ] == 1
+    exit_reference = grade.report["_trimem"]["container_exit_status"]
+    exit_summary = grade.report["_trimem"]["container_exit_summary"]
     assert exit_reference["access"] == "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS"
     assert exit_summary["status_code"] == 0
     assert exit_summary["acceptance"] == "ZERO_EXIT"
@@ -807,7 +830,7 @@ def test_gateway_runs_instance_only_then_official_report_and_parses_final_report
         source_row=gateway.source_row,
         patch_raw=request.patch.encode("utf-8"),
     )
-    assert smoke_summary == grade.report["_trimem"]["test_evidence"]["summary"]
+    assert smoke_summary == grade.report["_trimem"]["semantic_normalization"]
     assert smoke_exit_reference is not None
     assert smoke_exit_reference["sha256"] == exit_reference["sha256"]
     assert smoke_exit_summary == exit_summary
@@ -851,6 +874,73 @@ def test_gateway_runs_instance_only_then_official_report_and_parses_final_report
         "source_image_build_calls": 0,
         "host_prepare_script_reads": 0,
     }
+
+
+def test_success_envelope_finalization_failure_retains_resolved_official_outcome(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original_status_builder = _multi_test_status
+    original_report_builder = _multi_final_report
+
+    def complete_status() -> dict[str, object]:
+        status = original_status_builder()
+        status["fix_patch_result"] = {
+            "passed_count": 2,
+            "failed_count": 0,
+            "skipped_count": 0,
+            "passed_tests": ["expected", "replacement"],
+            "failed_tests": [],
+            "skipped_tests": [],
+        }
+        status["fixed_tests"] = {
+            name: {"run": "PASS", "test": "FAIL", "fix": "PASS"}
+            for name in ("expected", "replacement")
+        }
+        status["f2p_tests"] = dict(status["fixed_tests"])
+        return status
+
+    def resolved_report() -> dict[str, object]:
+        report = original_report_builder()
+        canonical_id = "vuejs/core:pr-8911"
+        report["resolved_instances"] = 1
+        report["unresolved_instances"] = 0
+        report["resolved_ids"] = [canonical_id]
+        report["unresolved_ids"] = []
+        return report
+
+    monkeypatch.setattr(sys.modules[__name__], "_multi_test_status", complete_status)
+    monkeypatch.setattr(sys.modules[__name__], "_multi_final_report", resolved_report)
+    gateway, request, _runner, _docker_util = _gateway_and_request(
+        tmp_path, monkeypatch
+    )
+    original_envelope = gateway._evidence_envelope
+
+    def fail_success_envelope(*args: object, **kwargs: object) -> dict[str, object]:
+        if kwargs.get("adapter_status") == "SUCCESS":
+            raise OSError("injected success-envelope persistence boundary")
+        return original_envelope(*args, **kwargs)
+
+    monkeypatch.setattr(gateway, "_evidence_envelope", fail_success_envelope)
+
+    with pytest.raises(official_grader.GraderInvocationFailure) as caught:
+        gateway.grade(request)
+
+    envelope = caught.value.result.report["_trimem"]
+    assert envelope["adapter_primary_error"] == {
+        "stage": "adapter_evidence_finalization",
+        "status": "adapter_evidence_finalization_failed",
+        "reason": "OSError",
+    }
+    assert envelope["official_final_report_resolved"] is True
+    assert envelope["adapter_normalized"] is False
+    assert envelope["scientific_resolved"] is None
+    assert envelope["restricted_raw_report"] is not None
+    assert envelope["semantic_normalization"]["computed_resolved"] is True
+    assert any(
+        item.startswith("success_envelope_finalization: OSError:")
+        for item in envelope["adapter_secondary_evidence_failures"]
+    )
 
 
 def test_gateway_rejects_and_purges_materialized_patch_identity_drift(
@@ -946,9 +1036,9 @@ def test_gateway_sequence_fails_closed_and_retains_execution_contract(
         request.patch
     )
     if main_returncode:
-        assert result.report["report_invocation_status"] == "NOT_RUN"
+        assert result.report["_trimem"]["report_invocation_status"] == "NOT_RUN"
     else:
-        assert result.report["report_invocation_status"] == "EXIT_NONZERO"
+        assert result.report["_trimem"]["report_invocation_status"] == "EXIT_NONZERO"
 
 
 @pytest.mark.parametrize(

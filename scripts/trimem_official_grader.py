@@ -28,6 +28,13 @@ from enterprise_memory.trimem.grader import (  # noqa: E402
     GradeResult,
     GraderInvocationFailure,
 )
+from trimem_multi_swe_report_semantics import (  # noqa: E402
+    MultiSWEReportSemanticsError,
+    validate_multi_swe_final_report_outcome,
+    validate_multi_swe_report_semantics,
+    validate_public_semantics_summary,
+)
+from trimem_atomic_evidence import atomic_write_bytes  # noqa: E402
 
 
 SWE_HARNESS_REVISION = "7a21e05772954cc81471ae19d56f436cecf43c54"
@@ -64,6 +71,94 @@ class _MaterializedPatchEvidenceError(OfficialGraderError):
     def __init__(self, message: str, evidence: Mapping[str, Any]):
         super().__init__(message)
         self.evidence = dict(evidence)
+
+
+class _ActualTestEvidenceError(OfficialGraderError):
+    """Validation failure that retains every raw reference captured beforehand."""
+
+    def __init__(self, message: str, evidence: Mapping[str, Any]):
+        super().__init__(message)
+        self.evidence = dict(evidence)
+
+
+class _PrivateInputPurgeError(OfficialGraderError):
+    """Purge failure that retains identities captured before deletion failed."""
+
+    def __init__(self, message: str, evidence: Sequence[Mapping[str, Any]]):
+        super().__init__(message)
+        self.evidence = [dict(row) for row in evidence]
+
+
+OFFICIAL_EVIDENCE_SCHEMA = "trimem/official-grader-adapter-evidence/2.0"
+OFFICIAL_IMAGE_EVIDENCE_SCHEMA = "trimem/official-image-evidence/2.0"
+OFFICIAL_IMAGE_EVIDENCE_FIELDS = frozenset({
+    "schema",
+    "role",
+    "image",
+    "tag",
+    "expected",
+    "observed",
+    "inspect_argv",
+    "inspect_invocation_status",
+    "inspect_exit_code",
+    "inspect_restricted_raw_streams",
+    "tag_argv",
+    "tag_invocation_status",
+    "tag_exit_code",
+    "tag_restricted_raw_streams",
+})
+OFFICIAL_EVIDENCE_FIELDS = frozenset({
+    "schema",
+    "benchmark_id",
+    "dataset_revision",
+    "harness_revision",
+    "source_row_sha256",
+    "execution_contract",
+    "execution_control_evidence",
+    "image_evidence",
+    "invocation_argv",
+    "harness_invocation_status",
+    "report_invocation_argv",
+    "report_invocation_status",
+    "harness_restricted_raw_streams",
+    "report_restricted_raw_streams",
+    "materialized_private_inputs",
+    "materialized_patch_evidence",
+    "restricted_raw_report",
+    "test_output",
+    "official_test_status",
+    "container_exit_status",
+    "container_exit_summary",
+    "semantic_normalization",
+    "adapter_status",
+    "adapter_failure_stage",
+    "adapter_primary_error",
+    "adapter_secondary_evidence_failures",
+    "official_final_report_resolved",
+    "adapter_normalized",
+    "scientific_resolved",
+})
+
+
+def adapter_evidence_envelope_contract() -> dict[str, Any]:
+    """Canonical projection used to freeze the v2 evidence-envelope contract."""
+
+    return {
+        "schema": OFFICIAL_EVIDENCE_SCHEMA,
+        "top_level_fields": [
+            "_trimem", "failure_stage", "reason", "status", "task_id",
+        ],
+        "trimem_fields": sorted(OFFICIAL_EVIDENCE_FIELDS),
+        "canonical_root": "_trimem",
+        "compatibility_aliases": [],
+        "failure_outcome_policy": {
+            "adapter_normalized": False,
+            "grade_result_resolved_authoritative": False,
+            "scientific_resolved": None,
+            "official_final_report_resolved": "BOOLEAN_WHEN_CAPTURED_ELSE_NULL",
+        },
+        "primary_error_policy": "PRIMARY_PRESERVED_SECONDARY_EVIDENCE_ERRORS_SEPARATE",
+    }
 
 
 @dataclass(frozen=True)
@@ -114,7 +209,33 @@ class HarnessInvocation:
     container_exit_status_path: Path | None = None
 
 
-Runner = Callable[..., subprocess.CompletedProcess[str]]
+Runner = Callable[..., subprocess.CompletedProcess[Any]]
+
+
+class _RawBackedText(str):
+    """Decoded process text that still retains the exact captured bytes.
+
+    Production subprocesses are always launched with ``text=False``.  Keeping a
+    string facade avoids mixing bytes into public/redaction code, while raw
+    restricted evidence is written from ``raw_bytes`` without a decode/encode
+    round trip.  Test runners that return strings remain supported and acquire
+    the only byte representation they supplied: strict UTF-8.
+    """
+
+    raw_bytes: bytes
+
+    def __new__(cls, value: object = b"") -> "_RawBackedText":
+        if value is None:
+            raw = b""
+        elif isinstance(value, bytes):
+            raw = value
+        elif isinstance(value, str):
+            raw = value.encode("utf-8")
+        else:
+            raw = str(value).encode("utf-8")
+        instance = str.__new__(cls, raw.decode("utf-8", errors="replace"))
+        instance.raw_bytes = raw
+        return instance
 
 
 def canonical_row_hash(row: Mapping[str, Any]) -> str:
@@ -144,45 +265,6 @@ def _source_test_ids(row: Mapping[str, Any], name: str) -> list[str]:
     return _strict_string_list(value, f"source.{name}")
 
 
-def _test_result_summary(
-    value: Any,
-    name: str,
-) -> tuple[dict[str, int], dict[str, frozenset[str]], frozenset[str]]:
-    if not isinstance(value, Mapping):
-        raise OfficialGraderError(f"Multi-SWE test result {name} is missing")
-    required = {
-        "passed_count", "failed_count", "skipped_count",
-        "passed_tests", "failed_tests", "skipped_tests",
-    }
-    if set(value) != required:
-        raise OfficialGraderError(f"Multi-SWE test result {name} field set drift")
-    rows = {
-        kind: _strict_string_list(value[f"{kind}_tests"], f"{name}.{kind}_tests")
-        for kind in ("passed", "failed", "skipped")
-    }
-    for kind, items in rows.items():
-        count = value.get(f"{kind}_count")
-        if type(count) is not int or count < 0 or count != len(items):
-            raise OfficialGraderError(f"Multi-SWE test result {name}.{kind}_count mismatch")
-    if any(set(rows[left]) & set(rows[right]) for left, right in (
-        ("passed", "failed"), ("passed", "skipped"), ("failed", "skipped")
-    )):
-        raise OfficialGraderError(f"Multi-SWE test result {name} classifications overlap")
-    classifications = {
-        kind: frozenset(rows[kind]) for kind in ("passed", "failed", "skipped")
-    }
-    domain = frozenset(
-        test_name
-        for kind in ("passed", "failed", "skipped")
-        for test_name in rows[kind]
-    )
-    return (
-        {f"{kind}_count": len(rows[kind]) for kind in ("passed", "failed", "skipped")},
-        classifications,
-        domain,
-    )
-
-
 def validate_official_test_evidence(
     target: FrozenOfficialTarget,
     *,
@@ -190,6 +272,7 @@ def validate_official_test_evidence(
     test_output_raw: bytes,
     test_status_raw: bytes,
     resolved: bool,
+    final_report: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Validate actual harness test bytes/status; return only non-sensitive counts."""
 
@@ -263,69 +346,22 @@ def validate_official_test_evidence(
             "resolved": resolved,
         }
 
-    org, repo, number = _parse_instance_number(target.instance_id)
-    if (
-        status.get("org") != org
-        or status.get("repo") != repo
-        or str(status.get("number")) != number
-        or not isinstance(status.get("valid"), bool)
-        or status.get("valid") is not resolved
-    ):
-        raise OfficialGraderError("Multi-SWE official per-instance status identity/result mismatch")
-    result_names = ("run_result", "test_patch_result", "fix_patch_result")
-    expected_results = {
-        name: _test_result_summary(source_row.get(name), f"source.{name}")
-        for name in result_names
-    }
-    actual_results = {
-        name: _test_result_summary(status.get(name), name)
-        for name in result_names
-    }
-    if expected_results["test_patch_result"][2] != expected_results["fix_patch_result"][2]:
-        raise OfficialGraderError(
-            "Multi-SWE frozen test_patch_result/fix_patch_result domains differ"
+    if final_report is None:
+        raise OfficialGraderError("Multi-SWE final report is required for semantic normalization")
+    try:
+        semantics = validate_multi_swe_report_semantics(
+            instance_id=target.instance_id,
+            source_row=source_row,
+            status=status,
+            final_report=final_report,
         )
-    for name in ("run_result", "test_patch_result"):
-        if actual_results[name][1] != expected_results[name][1]:
-            raise OfficialGraderError(
-                f"Multi-SWE official {name} classifications differ from frozen source"
-            )
-    if actual_results["fix_patch_result"][2] != expected_results["fix_patch_result"][2]:
+    except MultiSWEReportSemanticsError as exc:
         raise OfficialGraderError(
-            "Multi-SWE official fix_patch_result classification domain mismatch"
-        )
-    summaries = {name: actual_results[name][0] for name in result_names}
-    fix = summaries["fix_patch_result"]
-    fix_total = sum(fix.values())
-    if fix_total <= 0:
-        raise OfficialGraderError("Multi-SWE official fix test output has no classified tests")
-    for name in ("fixed_tests", "p2p_tests", "f2p_tests", "s2p_tests", "n2p_tests"):
-        if not isinstance(status.get(name), Mapping):
-            raise OfficialGraderError(f"Multi-SWE official test status {name} is missing")
-    return {
-        "schema": "trimem/official-test-status-summary/1.0",
-        "benchmark_id": target.benchmark_id,
-        "source": "MULTI_SWE_PER_INSTANCE_REPORT",
-        "expected_run_test_count": len(expected_results["run_result"][2]),
-        "classified_run_test_count": sum(summaries["run_result"].values()),
-        "expected_test_patch_test_count": len(expected_results["test_patch_result"][2]),
-        "classified_test_patch_test_count": sum(summaries["test_patch_result"].values()),
-        "expected_fix_test_count": len(expected_results["fix_patch_result"][2]),
-        "classified_fix_test_count": fix_total,
-        "expected_fix_test_domain_sha256": hashlib.sha256(
-            json.dumps(
-                sorted(expected_results["fix_patch_result"][2]),
-                ensure_ascii=False,
-                sort_keys=True,
-                separators=(",", ":"),
-            ).encode("utf-8")
-        ).hexdigest(),
-        "fix_tests_classified": fix_total,
-        "fix_tests_passed": fix["passed_count"],
-        "fix_tests_failed": fix["failed_count"],
-        "fix_tests_skipped": fix["skipped_count"],
-        "resolved": resolved,
-    }
+            f"Multi-SWE two-stage report semantics failed [{exc.code}]: {exc}"
+        ) from None
+    if semantics.official_final_report_resolved is not resolved:
+        raise OfficialGraderError("Multi-SWE final report outcome binding mismatch")
+    return semantics.to_public_dict()
 
 
 def validate_multi_swe_container_exit_status(
@@ -382,72 +418,26 @@ def validate_multi_swe_container_exit_status(
         raise OfficialGraderError("Multi-SWE container exit status binding differs")
     if resolved and status_code != 0:
         raise OfficialGraderError("resolved Multi-SWE run has nonzero container exit status")
-    if status_code != 0:
-        required_summary = {
-            "schema",
-            "benchmark_id",
-            "source",
-            "expected_run_test_count",
-            "classified_run_test_count",
-            "expected_test_patch_test_count",
-            "classified_test_patch_test_count",
-            "expected_fix_test_count",
-            "classified_fix_test_count",
-            "expected_fix_test_domain_sha256",
-            "fix_tests_classified",
-            "fix_tests_passed",
-            "fix_tests_failed",
-            "fix_tests_skipped",
-            "resolved",
-        }
-        required_pairs = (
-            ("expected_run_test_count", "classified_run_test_count"),
-            ("expected_test_patch_test_count", "classified_test_patch_test_count"),
-            ("expected_fix_test_count", "classified_fix_test_count"),
+    try:
+        validated_test_summary = validate_public_semantics_summary(test_summary)
+    except MultiSWEReportSemanticsError as exc:
+        if status_code != 0:
+            raise OfficialGraderError(
+                "nonzero Multi-SWE exit lacks full-domain unresolved test "
+                f"evidence [{exc.code}]: {exc}"
+            ) from None
+        raise OfficialGraderError(
+            f"Multi-SWE semantic summary failed [{exc.code}]: {exc}"
+        ) from None
+    if validated_test_summary["computed_resolved"] is not resolved:
+        raise OfficialGraderError(
+            "Multi-SWE container exit/result semantic summary binding differs"
         )
+    if status_code != 0:
         if (
             resolved
-            or not isinstance(test_summary, Mapping)
-            or set(test_summary) != required_summary
-            or test_summary.get("schema")
-            != "trimem/official-test-status-summary/1.0"
-            or test_summary.get("benchmark_id") != target.benchmark_id
-            or test_summary.get("source") != "MULTI_SWE_PER_INSTANCE_REPORT"
-            or test_summary.get("resolved") is not False
-            or any(
-                type(test_summary.get(expected_name)) is not int
-                or test_summary.get(expected_name) < 0
-                or test_summary.get(expected_name) != test_summary.get(classified_name)
-                for expected_name, classified_name in required_pairs
-            )
-            or test_summary.get("expected_test_patch_test_count")
-            != test_summary.get("expected_fix_test_count")
-            or test_summary.get("expected_fix_test_count", 0) <= 0
-            or test_summary.get("fix_tests_classified")
-            != test_summary.get("classified_fix_test_count")
-            or any(
-                type(test_summary.get(field)) is not int
-                or test_summary.get(field) < 0
-                for field in (
-                    "fix_tests_passed",
-                    "fix_tests_failed",
-                    "fix_tests_skipped",
-                )
-            )
-            or sum(
-                test_summary.get(field, -1)
-                for field in (
-                    "fix_tests_passed",
-                    "fix_tests_failed",
-                    "fix_tests_skipped",
-                )
-            )
-            != test_summary.get("classified_fix_test_count")
-            or not isinstance(test_summary.get("expected_fix_test_domain_sha256"), str)
-            or re.fullmatch(
-                r"[0-9a-f]{64}", test_summary["expected_fix_test_domain_sha256"]
-            )
-            is None
+            or validated_test_summary["computed_resolved"] is not False
+            or validated_test_summary["official_final_report_resolved"] is not False
         ):
             raise OfficialGraderError(
                 "nonzero Multi-SWE exit lacks full-domain unresolved test evidence"
@@ -493,12 +483,11 @@ def redact_text(value: str, secret_values: Sequence[str]) -> str:
 
 
 def _write_json(path: Path, value: Any, *, lines: bool = False) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     if lines:
         raw = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
     else:
         raw = json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-    path.write_text(raw, encoding="utf-8", newline="\n")
+    atomic_write_bytes(path, raw.encode("utf-8"))
 
 
 def _parse_instance_number(instance_id: str) -> tuple[str, str, str]:
@@ -691,51 +680,15 @@ def parse_official_report(target: FrozenOfficialTarget, report: Mapping[str, Any
         if resolved | unresolved != {target.instance_id}:
             raise OfficialGraderError("SWE-bench report resolution target set mismatch")
         return target.instance_id in resolved
-    org, repo, number = _parse_instance_number(target.instance_id)
-    canonical_id = f"{org}/{repo}:pr-{number}"
-    list_fields = (
-        "submitted_ids", "completed_ids", "incomplete_ids", "resolved_ids",
-        "unresolved_ids", "empty_patch_ids", "error_ids",
-    )
-    rows: dict[str, list[str]] = {}
-    for name in list_fields:
-        rows[name] = _strict_string_list(report.get(name), f"summary.{name}")
-    count_pairs = {
-        "submitted_instances": "submitted_ids", "completed_instances": "completed_ids",
-        "incomplete_instances": "incomplete_ids", "resolved_instances": "resolved_ids",
-        "unresolved_instances": "unresolved_ids", "empty_patch_instances": "empty_patch_ids",
-        "error_instances": "error_ids",
-    }
-    if (
-        not _exact_int(report.get("total_instances"), 1)
-        or not _exact_int(report.get("submitted_instances"), 1)
-    ):
-        raise OfficialGraderError("Multi-SWE-bench report target count mismatch")
-    if rows["submitted_ids"] != [canonical_id]:
-        raise OfficialGraderError("Multi-SWE-bench report submitted ID mismatch")
-    for count_name, ids_name in count_pairs.items():
-        if not _exact_int(report.get(count_name), len(rows[ids_name])):
-            raise OfficialGraderError(f"Multi-SWE-bench report count mismatch: {count_name}")
-        if any(item != canonical_id for item in rows[ids_name]):
-            raise OfficialGraderError(f"Multi-SWE-bench report contains an unknown ID: {ids_name}")
-    if (
-        rows["completed_ids"] != [canonical_id]
-        or rows["incomplete_ids"]
-        or rows["empty_patch_ids"]
-        or rows["error_ids"]
-        or not _exact_int(report.get("completed_instances"), 1)
-        or not _exact_int(report.get("incomplete_instances"), 0)
-        or not _exact_int(report.get("empty_patch_instances"), 0)
-        or not _exact_int(report.get("error_instances"), 0)
-    ):
-        raise OfficialGraderError("Multi-SWE-bench report does not prove one completed non-empty-patch evaluation")
-    in_resolved = canonical_id in rows["resolved_ids"]
-    in_unresolved = canonical_id in rows["unresolved_ids"]
-    if in_resolved == in_unresolved:
-        raise OfficialGraderError("Multi-SWE-bench report does not uniquely classify the exact target")
-    if set(rows["resolved_ids"]) | set(rows["unresolved_ids"]) != {canonical_id}:
-        raise OfficialGraderError("Multi-SWE-bench report resolution target set mismatch")
-    return in_resolved
+    try:
+        return validate_multi_swe_final_report_outcome(
+            instance_id=target.instance_id,
+            final_report=report,
+        )
+    except MultiSWEReportSemanticsError as exc:
+        raise OfficialGraderError(
+            f"Multi-SWE FinalReport validation failed [{exc.code}]: {exc}"
+        ) from None
 
 
 class OfficialHarnessGraderGateway:
@@ -788,9 +741,27 @@ class OfficialHarnessGraderGateway:
         )
         self._restricted_root = self.output_root / "restricted-evidence"
 
-    def _run(self, argv: Sequence[str], *, cwd: Path | None = None, timeout: int = 60) -> subprocess.CompletedProcess[str]:
-        return self.runner(list(argv), cwd=cwd, env=dict(self.execution_env), capture_output=True,
-                           text=True, timeout=timeout, check=False)
+    def _run(
+        self, argv: Sequence[str], *, cwd: Path | None = None, timeout: int = 60
+    ) -> subprocess.CompletedProcess[str]:
+        completed = self.runner(
+            list(argv),
+            cwd=cwd,
+            env=dict(self.execution_env),
+            capture_output=True,
+            text=False,
+            timeout=timeout,
+            check=False,
+        )
+        # Never decode before the original byte streams have been retained.
+        # ``_RawBackedText`` lets existing public/redaction logic consume text
+        # while ``_restricted_streams`` writes the exact production bytes.
+        return subprocess.CompletedProcess(
+            completed.args,
+            completed.returncode,
+            stdout=_stream_text(completed.stdout),
+            stderr=_stream_text(completed.stderr),
+        )
 
     def _execution_contract(self, patch: str) -> dict[str, Any]:
         raw = patch.encode("utf-8")
@@ -925,14 +896,23 @@ class OfficialHarnessGraderGateway:
         safe_stage = re.sub(r"[^A-Za-z0-9_.-]", "_", stage)
         target = self._restricted_root / f"{safe_stage}-{kind}-{digest}.bin"
         target.parent.mkdir(parents=True, exist_ok=True)
-        if target.exists() and target.read_bytes() != raw:
+        if target.is_symlink():
+            raise OfficialGraderError("restricted evidence target must not be a symlink")
+        if target.exists() and (
+            not target.is_file() or target.read_bytes() != raw
+        ):
             raise OfficialGraderError("restricted evidence digest collision")
         if not target.exists():
-            target.write_bytes(raw)
             try:
-                target.chmod(0o600)
-            except OSError:
-                pass
+                atomic_write_bytes(target, raw)
+            except FileExistsError:
+                # Another same-process/thread publisher may have won after the
+                # existence check.  Content-addressing makes an exact match
+                # idempotent and rejects every other outcome.
+                if not target.is_file() or target.read_bytes() != raw:
+                    raise OfficialGraderError(
+                        "restricted evidence concurrent publication differs"
+                    ) from None
         return {
             "path": target.relative_to(self.output_root).as_posix(),
             "sha256": digest,
@@ -940,14 +920,131 @@ class OfficialHarnessGraderGateway:
             "access": "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS",
         }
 
-    def _restricted_streams(self, stage: str, stdout: str, stderr: str) -> dict[str, Any]:
+    def _restricted_streams(
+        self, stage: str, stdout: object, stderr: object
+    ) -> dict[str, Any]:
         return {
-            "stdout": self._restricted_blob(stage, "stdout", stdout.encode("utf-8", errors="replace")),
-            "stderr": self._restricted_blob(stage, "stderr", stderr.encode("utf-8", errors="replace")),
+            "stdout": self._restricted_blob(stage, "stdout", _stream_bytes(stdout)),
+            "stderr": self._restricted_blob(stage, "stderr", _stream_bytes(stderr)),
         }
 
     def _redact(self, value: str) -> str:
         return redact_text(value, self._secret_values)
+
+    def _compose_evidence_envelope(
+        self,
+        request: GradeRequest,
+        *,
+        execution_contract: Mapping[str, Any] | None,
+        execution_control_evidence: Mapping[str, Any] | None,
+        adapter_status: str,
+        adapter_failure_stage: str | None,
+        adapter_primary_error: Mapping[str, Any] | None,
+        adapter_secondary_evidence_failures: Sequence[str] = (),
+        image_evidence: Sequence[Mapping[str, Any]] = (),
+        extra: Mapping[str, Any] | None = None,
+        adapter_normalized: bool = False,
+        official_final_report_resolved: bool | None = None,
+        scientific_resolved: bool | None = None,
+    ) -> dict[str, Any]:
+        """Build the sole canonical adapter evidence root on every path."""
+
+        values = dict(extra or {})
+        envelope: dict[str, Any] = {
+            "schema": OFFICIAL_EVIDENCE_SCHEMA,
+            "benchmark_id": self.target.benchmark_id,
+            "dataset_revision": self.target.dataset_revision,
+            "harness_revision": self.target.harness_revision,
+            "source_row_sha256": self.target.source_row_sha256,
+            "execution_contract": (
+                dict(execution_contract) if execution_contract is not None else None
+            ),
+            "execution_control_evidence": (
+                dict(execution_control_evidence)
+                if execution_control_evidence is not None
+                else None
+            ),
+            "image_evidence": [dict(row) for row in image_evidence],
+            "invocation_argv": [],
+            "harness_invocation_status": "NOT_REACHED",
+            "report_invocation_argv": [],
+            "report_invocation_status": "NOT_REACHED",
+            "harness_restricted_raw_streams": None,
+            "report_restricted_raw_streams": None,
+            "materialized_private_inputs": [],
+            "materialized_patch_evidence": None,
+            "restricted_raw_report": None,
+            "test_output": None,
+            "official_test_status": None,
+            "container_exit_status": None,
+            "container_exit_summary": None,
+            "semantic_normalization": None,
+            "adapter_status": adapter_status,
+            "adapter_failure_stage": adapter_failure_stage,
+            "adapter_primary_error": (
+                dict(adapter_primary_error) if adapter_primary_error is not None else None
+            ),
+            "adapter_secondary_evidence_failures": list(
+                adapter_secondary_evidence_failures
+            ),
+            "official_final_report_resolved": official_final_report_resolved,
+            "adapter_normalized": adapter_normalized,
+            "scientific_resolved": scientific_resolved,
+        }
+        for name in (
+            "invocation_argv",
+            "harness_invocation_status",
+            "report_invocation_argv",
+            "report_invocation_status",
+            "harness_restricted_raw_streams",
+            "report_restricted_raw_streams",
+            "materialized_private_inputs",
+            "materialized_patch_evidence",
+            "restricted_raw_report",
+            "test_output",
+            "official_test_status",
+            "container_exit_status",
+            "container_exit_summary",
+            "semantic_normalization",
+        ):
+            if name in values:
+                envelope[name] = values[name]
+        if "image_evidence" in values:
+            envelope["image_evidence"] = values["image_evidence"]
+        if set(envelope) != OFFICIAL_EVIDENCE_FIELDS:
+            raise AssertionError("official adapter evidence envelope field drift")
+        return envelope
+
+    def _evidence_envelope(
+        self,
+        request: GradeRequest,
+        *,
+        adapter_status: str,
+        adapter_failure_stage: str | None,
+        adapter_primary_error: Mapping[str, Any] | None,
+        adapter_secondary_evidence_failures: Sequence[str] = (),
+        image_evidence: Sequence[Mapping[str, Any]] = (),
+        extra: Mapping[str, Any] | None = None,
+        adapter_normalized: bool = False,
+        official_final_report_resolved: bool | None = None,
+        scientific_resolved: bool | None = None,
+    ) -> dict[str, Any]:
+        """Build the sole canonical adapter evidence root on every path."""
+
+        return self._compose_evidence_envelope(
+            request,
+            execution_contract=self._execution_contract(request.patch),
+            execution_control_evidence=self._execution_control_evidence(),
+            adapter_status=adapter_status,
+            adapter_failure_stage=adapter_failure_stage,
+            adapter_primary_error=adapter_primary_error,
+            adapter_secondary_evidence_failures=adapter_secondary_evidence_failures,
+            image_evidence=image_evidence,
+            extra=extra,
+            adapter_normalized=adapter_normalized,
+            official_final_report_resolved=official_final_report_resolved,
+            scientific_resolved=scientific_resolved,
+        )
 
     def _purge_private_inputs(self, paths: Sequence[Path]) -> list[dict[str, Any]]:
         """Hash then delete gold/test-bearing grader inputs before handoff.
@@ -958,23 +1055,34 @@ class OfficialHarnessGraderGateway:
         logs; workflows treat the entire grader work directory as restricted.
         """
 
-        evidence = []
+        evidence: list[dict[str, Any]] = []
+        failures: list[str] = []
         for path in paths:
-            resolved = path.resolve()
-            if self.output_root not in resolved.parents:
-                raise OfficialGraderError("private grader input escaped output root")
-            if not resolved.is_file():
-                continue
-            raw = resolved.read_bytes()
-            evidence.append({
-                "name": resolved.name,
-                "sha256": hashlib.sha256(raw).hexdigest(),
-                "bytes": len(raw),
-                "retention": "PURGED_AFTER_HASH_BOUND_GRADING",
-            })
-            resolved.unlink()
-        if any(path.exists() for path in paths):
-            raise OfficialGraderError("private grader input purge failed")
+            try:
+                resolved = path.resolve()
+                if self.output_root not in resolved.parents:
+                    failures.append(f"{path.name}: escaped output root")
+                    continue
+                if not resolved.is_file():
+                    continue
+                raw = resolved.read_bytes()
+                evidence.append({
+                    "name": resolved.name,
+                    "sha256": hashlib.sha256(raw).hexdigest(),
+                    "bytes": len(raw),
+                    "retention": "PURGED_AFTER_HASH_BOUND_GRADING",
+                })
+                resolved.unlink()
+            except OSError as exc:
+                failures.append(f"{path.name}: {type(exc).__name__}: {exc}")
+        for path in paths:
+            try:
+                if path.exists():
+                    failures.append(f"{path.name}: remains after purge")
+            except OSError as exc:
+                failures.append(f"{path.name}: existence check failed: {type(exc).__name__}: {exc}")
+        if failures:
+            raise _PrivateInputPurgeError("; ".join(failures), evidence)
         return evidence
 
     def _actual_test_evidence(
@@ -982,60 +1090,190 @@ class OfficialHarnessGraderGateway:
         invocation: HarnessInvocation,
         *,
         resolved: bool,
+        final_report: Mapping[str, Any],
         expected_patch: str,
     ) -> dict[str, Any]:
-        captured: dict[str, dict[str, Any]] = {}
+        captured: dict[str, Any] = {}
         raw_values: dict[str, bytes] = {}
-        for name, path in (
+        try:
+            candidates: list[tuple[str, Path]] = [
+                ("test_output", invocation.test_output_path),
+                ("official_test_status", invocation.test_status_path),
+            ]
+            if self.target.benchmark_id != "swebench_verified":
+                if invocation.container_exit_status_path is None:
+                    raise OfficialGraderError(
+                        "Multi-SWE container exit-status path is missing"
+                    )
+                candidates.append(
+                    ("container_exit_status", invocation.container_exit_status_path)
+                )
+            elif invocation.container_exit_status_path is not None:
+                candidates.append(
+                    ("container_exit_status", invocation.container_exit_status_path)
+                )
+            for name, path in candidates:
+                resolved_path = path.resolve()
+                allowed_roots = (
+                    (self.output_root,)
+                    if name == "container_exit_status"
+                    else (self.harness_root, self.output_root)
+                )
+                if path.is_symlink() or not any(
+                    root in resolved_path.parents
+                    for root in allowed_roots
+                ):
+                    raise OfficialGraderError(
+                        f"official {name} path escaped the frozen harness roots"
+                    )
+                if not resolved_path.is_file():
+                    raise OfficialGraderError(f"official {name} file is missing")
+                raw = resolved_path.read_bytes()
+                if not raw or not raw.strip():
+                    raise OfficialGraderError(f"official {name} file is empty")
+                raw_values[name] = raw
+                captured[name] = self._restricted_blob("official-tests", name, raw)
+            summary = validate_official_test_evidence(
+                self.target,
+                source_row=self.source_row,
+                test_output_raw=raw_values["test_output"],
+                test_status_raw=raw_values["official_test_status"],
+                resolved=resolved,
+                final_report=final_report,
+            )
+            captured["semantic_normalization"] = summary
+            if self.target.benchmark_id != "swebench_verified":
+                captured["container_exit_summary"] = validate_multi_swe_container_exit_status(
+                    self.target,
+                    raw=raw_values["container_exit_status"],
+                    resolved=resolved,
+                    test_summary=summary,
+                    expected_patch=expected_patch,
+                )
+            elif invocation.container_exit_status_path is not None:
+                raise OfficialGraderError(
+                    "SWE-bench unexpectedly has Multi-SWE exit evidence"
+                )
+        except _ActualTestEvidenceError:
+            raise
+        except (OSError, UnicodeDecodeError, ValueError, OfficialGraderError) as exc:
+            raise _ActualTestEvidenceError(str(exc), captured) from None
+        return captured
+
+    def _capture_available_test_references(
+        self,
+        invocation: HarnessInvocation,
+        *,
+        secondary_evidence_failures: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Best-effort retain raw outputs without replacing an earlier failure."""
+
+        captured: dict[str, Any] = {}
+        candidates: list[tuple[str, Path]] = [
             ("test_output", invocation.test_output_path),
             ("official_test_status", invocation.test_status_path),
-        ):
+        ]
+        if invocation.container_exit_status_path is not None:
+            candidates.append(("container_exit_status", invocation.container_exit_status_path))
+        for name, path in candidates:
+            try:
+                resolved = path.resolve()
+                allowed = (
+                    self.output_root in resolved.parents
+                    or self.harness_root in resolved.parents
+                )
+                if path.is_symlink() or not allowed or not resolved.is_file():
+                    continue
+                raw = resolved.read_bytes()
+                if raw:
+                    captured[name] = self._restricted_blob("official-tests", name, raw)
+            except Exception as exc:
+                if secondary_evidence_failures is not None:
+                    secondary_evidence_failures.append(
+                        f"available_{name}_capture: {type(exc).__name__}: "
+                        + self._redact(str(exc))
+                    )
+        return captured
+
+    def _capture_available_report(
+        self,
+        invocation: HarnessInvocation,
+        *,
+        secondary_evidence_failures: list[str],
+    ) -> dict[str, Any]:
+        """Retain and, when possible, classify a report left by a failed command."""
+
+        path = invocation.report_path
+        captured: dict[str, Any] = {}
+        try:
             resolved_path = path.resolve()
-            if path.is_symlink() or not any(
-                root in resolved_path.parents for root in (self.harness_root, self.output_root)
-            ):
-                raise OfficialGraderError(f"official {name} path escaped the frozen harness roots")
-            if not resolved_path.is_file():
-                raise OfficialGraderError(f"official {name} file is missing")
-            raw = resolved_path.read_bytes()
-            if not raw or not raw.strip():
-                raise OfficialGraderError(f"official {name} file is empty")
-            raw_values[name] = raw
-            captured[name] = self._restricted_blob("official-tests", name, raw)
-        summary = validate_official_test_evidence(
-            self.target,
-            source_row=self.source_row,
-            test_output_raw=raw_values["test_output"],
-            test_status_raw=raw_values["official_test_status"],
-            resolved=resolved,
-        )
-        if self.target.benchmark_id != "swebench_verified":
-            exit_path = invocation.container_exit_status_path
-            if exit_path is None:
-                raise OfficialGraderError("Multi-SWE container exit-status path is missing")
-            resolved_exit_path = exit_path.resolve()
             if (
-                exit_path.is_symlink()
-                or self.output_root not in resolved_exit_path.parents
-                or not resolved_exit_path.is_file()
+                path.is_symlink()
+                or self.output_root not in resolved_path.parents
+                or not resolved_path.is_file()
             ):
-                raise OfficialGraderError("Multi-SWE container exit-status file is missing or escaped")
-            exit_raw = resolved_exit_path.read_bytes()
-            if not exit_raw or not exit_raw.strip():
-                raise OfficialGraderError("Multi-SWE container exit-status file is empty")
-            captured["container_exit_status"] = self._restricted_blob(
-                "official-tests", "container_exit_status", exit_raw
+                return captured
+            raw = resolved_path.read_bytes()
+            if not raw:
+                return captured
+            captured["restricted_raw_report"] = self._restricted_blob(
+                "official-report", "report", raw
             )
-            captured["container_exit_summary"] = validate_multi_swe_container_exit_status(
-                self.target,
-                raw=exit_raw,
-                resolved=resolved,
-                test_summary=summary,
-                expected_patch=expected_patch,
+            try:
+                value = strict_json_loads(raw)
+                if isinstance(value, Mapping):
+                    captured["official_final_report_resolved"] = (
+                        parse_official_report(self.target, value)
+                    )
+            except (UnicodeDecodeError, json.JSONDecodeError, ValueError, OfficialGraderError) as exc:
+                secondary_evidence_failures.append(
+                    "available_report_classification: "
+                    + type(exc).__name__
+                    + ": "
+                    + self._redact(str(exc))
+                )
+        except Exception as exc:
+            secondary_evidence_failures.append(
+                "available_report_capture: "
+                + type(exc).__name__
+                + ": "
+                + self._redact(str(exc))
             )
-        elif invocation.container_exit_status_path is not None:
-            raise OfficialGraderError("SWE-bench unexpectedly has Multi-SWE exit evidence")
-        return {**captured, "summary": summary}
+        return captured
+
+    def _capture_available_outputs(
+        self,
+        invocation: HarnessInvocation,
+        *,
+        secondary_evidence_failures: list[str],
+    ) -> dict[str, Any]:
+        """Best-effort capture every output already materialized by the harness."""
+
+        captured = self._capture_available_test_references(
+            invocation,
+            secondary_evidence_failures=secondary_evidence_failures,
+        )
+        report = self._capture_available_report(
+            invocation,
+            secondary_evidence_failures=secondary_evidence_failures,
+        )
+        overlap = set(captured) & set(report)
+        if overlap:
+            secondary_evidence_failures.append(
+                "available_output_capture: duplicate evidence fields "
+                + repr(sorted(overlap))
+            )
+        captured.update(report)
+        return captured
+
+    @staticmethod
+    def _container_start_proven(available: Mapping[str, Any]) -> bool:
+        """Conservatively count a container only from post-start artifacts."""
+
+        return any(
+            available.get(name) is not None
+            for name in ("container_exit_status", "test_output", "official_test_status")
+        )
 
     def _failure(
         self,
@@ -1045,40 +1283,105 @@ class OfficialHarnessGraderGateway:
         stage: str,
         status: str,
         reason: str,
-        stdout: str = "",
-        stderr: str = "",
+        stdout: object = "",
+        stderr: object = "",
         exit_code: int = -1,
         container_started: bool = False,
         evidence: Sequence[Mapping[str, Any]] = (),
         extra: Mapping[str, Any] | None = None,
+        secondary_evidence_failures: Sequence[str] = (),
     ) -> GraderInvocationFailure:
-        restricted = self._restricted_streams(stage, stdout, stderr)
+        # Freeze the primary descriptor before attempting any evidence I/O.
+        # A full disk, permission error, or even a contract-construction bug is
+        # secondary once the official failure has already occurred.
+        primary = {"stage": stage, "status": status, "reason": reason}
+        secondary = list(secondary_evidence_failures)
+        extra_values = dict(extra or {})
+        if "harness_invocation_status" not in extra_values:
+            extra_values["harness_invocation_status"] = {
+                "harness_timeout": "TIMEOUT",
+                "harness_launch_failed": "LAUNCH_FAILED",
+                "harness_exit_nonzero": "EXIT_NONZERO",
+            }.get(status, "NOT_REACHED")
+        official_outcome = extra_values.pop("official_final_report_resolved", None)
+        if (
+            stage == "official_harness"
+            and extra_values.get("harness_invocation_status")
+            in {"TIMEOUT", "LAUNCH_FAILED", "EXIT_NONZERO"}
+            and extra_values.get("harness_restricted_raw_streams") is None
+        ):
+            try:
+                extra_values["harness_restricted_raw_streams"] = (
+                    self._restricted_streams("official-harness", stdout, stderr)
+                )
+            except Exception as exc:  # evidence I/O must never mask the primary
+                secondary.append(
+                    "restricted_stream_capture: "
+                    + type(exc).__name__
+                    + ": "
+                    + self._redact(str(exc))
+                )
+        try:
+            envelope = self._evidence_envelope(
+                request,
+                adapter_status="FAILURE",
+                adapter_failure_stage=stage,
+                adapter_primary_error=primary,
+                adapter_secondary_evidence_failures=secondary,
+                image_evidence=evidence,
+                extra=extra_values,
+                adapter_normalized=False,
+                official_final_report_resolved=(
+                    official_outcome if isinstance(official_outcome, bool) else None
+                ),
+                scientific_resolved=None,
+            )
+        except Exception as exc:  # contract evidence is secondary to the primary
+            secondary.append(
+                "adapter_evidence_construction: "
+                + type(exc).__name__
+                + ": "
+                + self._redact(str(exc))
+            )
+            # The emergency envelope deliberately performs no filesystem or
+            # execution-contract lookup.  It still has the exact v2 field set
+            # and retains every already-captured field from ``extra_values``.
+            envelope = self._compose_evidence_envelope(
+                request,
+                execution_contract=None,
+                execution_control_evidence=None,
+                adapter_status="FAILURE",
+                adapter_failure_stage=stage,
+                adapter_primary_error=primary,
+                adapter_secondary_evidence_failures=secondary,
+                image_evidence=evidence,
+                extra=extra_values,
+                adapter_normalized=False,
+                official_final_report_resolved=(
+                    official_outcome if isinstance(official_outcome, bool) else None
+                ),
+                scientific_resolved=None,
+            )
         report = {
             "task_id": request.task_id,
-            "resolved": False,
+            "status": status,
             "failure_stage": stage,
             "reason": reason,
-            "image_evidence": list(evidence),
-            "restricted_raw_streams": restricted,
-            "public_stream_policy": "REDACTED; canonical raw bytes are restricted evidence",
+            "_trimem": envelope,
         }
-        extra_values = dict(extra or {})
-        report.update(extra_values)
-        trimem: dict[str, Any] = {
-            "execution_contract": self._execution_contract(request.patch),
-            "execution_control_evidence": self._execution_control_evidence(),
-        }
-        if isinstance(extra_values.get("materialized_patch_evidence"), Mapping):
-            trimem["materialized_patch_evidence"] = extra_values["materialized_patch_evidence"]
-        report["_trimem"] = trimem
-        return GraderInvocationFailure(GradeResult(
+        failure = GraderInvocationFailure(GradeResult(
             task_id=request.task_id, resolved=False, exit_code=exit_code,
-            stdout=self._redact(stdout), stderr=self._redact(stderr), report=report,
+            stdout=self._redact(_stream_text(stdout)),
+            stderr=self._redact(_stream_text(stderr)), report=report,
             grader_id=f"official-{self.target.benchmark_id}@{self.target.harness_revision}",
             container_digest=self.target.image, official=True,
             wall_time_ms=max(0, (time.perf_counter_ns() - started) // 1_000_000),
             container_started=container_started, status=status,
         ))
+        failure.args = (
+            f"{reason}; secondary_evidence_failures={secondary}",
+        )
+        return failure
 
     def _verify_and_tag(
         self,
@@ -1087,72 +1390,188 @@ class OfficialHarnessGraderGateway:
         image: str,
         tag: str,
         evidence: list[dict[str, Any]],
+        *,
+        role: str,
     ) -> dict[str, Any]:
+        if role not in {"TARGET", "SUPPORT"}:
+            raise ValueError("official image evidence role is invalid")
+        expected = image.rsplit("@", 1)[1]
+        inspect_argv = [
+            self.docker_binary,
+            "image",
+            "inspect",
+            "--format",
+            "{{json .RepoDigests}}",
+            image,
+        ]
+        current: dict[str, Any] = {
+            "schema": OFFICIAL_IMAGE_EVIDENCE_SCHEMA,
+            "role": role,
+            "image": image,
+            "tag": tag,
+            "expected": expected,
+            "observed": [],
+            "inspect_argv": inspect_argv,
+            "inspect_invocation_status": "NOT_REACHED",
+            "inspect_exit_code": None,
+            "inspect_restricted_raw_streams": None,
+            "tag_argv": [self.docker_binary, "image", "tag", image, tag],
+            "tag_invocation_status": "NOT_REACHED",
+            "tag_exit_code": None,
+            "tag_restricted_raw_streams": None,
+        }
+
+        def capture_stage(
+            name: str,
+            status: str,
+            stdout: object,
+            stderr: object,
+        ) -> list[str]:
+            current[f"{name}_invocation_status"] = status
+            try:
+                current[f"{name}_restricted_raw_streams"] = (
+                    self._restricted_streams(
+                        (
+                            f"image-{role.lower()}-{name}-"
+                            + hashlib.sha256(image.encode("utf-8")).hexdigest()[:16]
+                        ),
+                        stdout,
+                        stderr,
+                    )
+                )
+                return []
+            except Exception as exc:
+                return [
+                    f"image_{name}_stream_capture: "
+                    + type(exc).__name__
+                    + ": "
+                    + self._redact(str(exc))
+                ]
+
         try:
-            inspected = self._run(
-                [self.docker_binary, "image", "inspect", "--format", "{{json .RepoDigests}}", image]
-            )
+            inspected = self._run(inspect_argv)
         except subprocess.TimeoutExpired as exc:
+            secondary = capture_stage(
+                "inspect", "TIMEOUT", exc.stdout, exc.stderr
+            )
             raise self._failure(
                 request, started, stage="image_inspect", status="image_inspect_timeout", reason="timeout",
-                stdout=_stream_text(exc.stdout), stderr=_stream_text(exc.stderr), evidence=evidence,
+                stdout=exc.stdout, stderr=exc.stderr,
+                evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
             ) from None
         except OSError as exc:
+            secondary = capture_stage(
+                "inspect", "LAUNCH_FAILED", b"", f"{type(exc).__name__}: {exc}"
+            )
             raise self._failure(
                 request, started, stage="image_inspect", status="image_inspect_launch_failed",
-                reason="launch_failed", stderr=str(exc), evidence=evidence,
+                reason="launch_failed", stderr=str(exc),
+                evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
             ) from None
+        secondary = capture_stage(
+            "inspect",
+            "SUCCESS" if inspected.returncode == 0 else "EXIT_NONZERO",
+            inspected.stdout,
+            inspected.stderr,
+        )
+        current["inspect_exit_code"] = inspected.returncode
         if inspected.returncode != 0:
             raise self._failure(
                 request, started, stage="image_inspect", status="image_inspect_failed",
                 reason="image_unavailable", stdout=inspected.stdout, stderr=inspected.stderr,
-                exit_code=inspected.returncode, evidence=evidence,
+                exit_code=inspected.returncode, evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
             )
         try:
-            repo_digests = strict_json_loads(inspected.stdout.strip())
-        except json.JSONDecodeError:
+            repo_digests = strict_json_loads(_stream_bytes(inspected.stdout))
+            if (
+                not isinstance(repo_digests, list)
+                or not repo_digests
+                or any(
+                    type(value) is not str
+                    or not value
+                    or "@sha256:" not in value
+                    for value in repo_digests
+                )
+                or len(repo_digests) != len(set(repo_digests))
+            ):
+                raise ValueError("RepoDigests is not an exact nonempty string list")
+        except (UnicodeDecodeError, json.JSONDecodeError, ValueError, TypeError):
             raise self._failure(
                 request, started, stage="image_inspect", status="image_inspect_invalid",
                 reason="invalid_repo_digests", stdout=inspected.stdout, stderr=inspected.stderr,
-                exit_code=inspected.returncode, evidence=evidence,
+                exit_code=inspected.returncode, evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
             ) from None
-        expected = image.rsplit("@", 1)[1]
-        observed = sorted({str(value).rsplit("@", 1)[-1] for value in repo_digests or []})
-        current = {"image": image, "tag": tag, "expected": expected, "observed": observed,
-                   "inspect_stdout": self._redact(inspected.stdout),
-                   "inspect_stderr": self._redact(inspected.stderr),
-                   "inspect_restricted_raw_streams": self._restricted_streams(
-                       "image-inspect-" + expected, inspected.stdout, inspected.stderr
-                   )}
+        observed = sorted({value.rsplit("@", 1)[-1] for value in repo_digests})
+        current["observed"] = observed
         if observed != [expected]:
             raise self._failure(
                 request, started, stage="image_inspect", status="image_digest_mismatch",
                 reason="digest_mismatch", stdout=inspected.stdout, stderr=inspected.stderr,
                 exit_code=inspected.returncode, evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
+            )
+        if secondary:
+            raise self._failure(
+                request,
+                started,
+                stage="image_inspect_evidence",
+                status="image_stream_capture_failed",
+                reason="restricted_stream_capture_failed",
+                stdout=inspected.stdout,
+                stderr=inspected.stderr,
+                exit_code=inspected.returncode,
+                evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
             )
         try:
-            tagged = self._run([self.docker_binary, "image", "tag", image, tag])
+            tagged = self._run(current["tag_argv"])
         except subprocess.TimeoutExpired as exc:
+            secondary = capture_stage("tag", "TIMEOUT", exc.stdout, exc.stderr)
             raise self._failure(
                 request, started, stage="image_tag", status="image_tag_timeout", reason="timeout",
-                stdout=_stream_text(exc.stdout), stderr=_stream_text(exc.stderr), evidence=[*evidence, current],
+                stdout=exc.stdout, stderr=exc.stderr,
+                evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
             ) from None
         except OSError as exc:
+            secondary = capture_stage(
+                "tag", "LAUNCH_FAILED", b"", f"{type(exc).__name__}: {exc}"
+            )
             raise self._failure(
                 request, started, stage="image_tag", status="image_tag_launch_failed", reason="launch_failed",
                 stderr=str(exc), evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
             ) from None
-        current.update({
-            "tag_stdout": self._redact(tagged.stdout), "tag_stderr": self._redact(tagged.stderr),
-            "tag_restricted_raw_streams": self._restricted_streams(
-                "image-tag-" + expected, tagged.stdout, tagged.stderr
-            ),
-        })
+        secondary = capture_stage(
+            "tag",
+            "SUCCESS" if tagged.returncode == 0 else "EXIT_NONZERO",
+            tagged.stdout,
+            tagged.stderr,
+        )
+        current["tag_exit_code"] = tagged.returncode
         if tagged.returncode != 0:
             raise self._failure(
                 request, started, stage="image_tag", status="image_tag_failed", reason="tag_failed",
                 stdout=tagged.stdout, stderr=tagged.stderr, exit_code=tagged.returncode,
                 evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
+            )
+        if secondary:
+            raise self._failure(
+                request,
+                started,
+                stage="image_tag_evidence",
+                status="image_stream_capture_failed",
+                reason="restricted_stream_capture_failed",
+                stdout=tagged.stdout,
+                stderr=tagged.stderr,
+                exit_code=tagged.returncode,
+                evidence=[*evidence, current],
+                secondary_evidence_failures=secondary,
             )
         return current
 
@@ -1165,20 +1584,57 @@ class OfficialHarnessGraderGateway:
             raise ValueError("official grader refuses an empty patch before evaluator execution")
         started = time.perf_counter_ns()
         image_evidence: list[dict[str, Any]] = []
-        def purge(paths: Sequence[Path], *, container_started: bool) -> list[dict[str, Any]]:
+        def purge(
+            paths: Sequence[Path],
+            *,
+            container_started: bool,
+            preserve_primary: bool = False,
+            available_evidence: Mapping[str, Any] | None = None,
+            available_secondary: Sequence[str] = (),
+        ) -> tuple[list[dict[str, Any]], list[str]]:
             try:
-                return self._purge_private_inputs(paths)
+                return self._purge_private_inputs(paths), []
             except (OSError, OfficialGraderError) as exc:
+                retained = (
+                    list(exc.evidence)
+                    if isinstance(exc, _PrivateInputPurgeError)
+                    else []
+                )
+                secondary = [
+                    *available_secondary,
+                    "private_input_purge: " + type(exc).__name__ + ": " + str(exc)
+                ]
+                if preserve_primary:
+                    return retained, secondary
                 raise self._failure(
                     request, started, stage="private_input_purge",
                     status="private_input_purge_failed", reason=type(exc).__name__,
                     stderr=str(exc), container_started=container_started, evidence=image_evidence,
+                    extra={
+                        **dict(available_evidence or {}),
+                        "materialized_private_inputs": retained,
+                    },
+                    secondary_evidence_failures=secondary,
                 ) from None
         image_evidence.append(self._verify_and_tag(
-            request, started, self.target.image, self.target.harness_image_tag, image_evidence
+            request,
+            started,
+            self.target.image,
+            self.target.harness_image_tag,
+            image_evidence,
+            role="TARGET",
         ))
         for image, tag in self.support_images:
-            image_evidence.append(self._verify_and_tag(request, started, image, tag, image_evidence))
+            image_evidence.append(
+                self._verify_and_tag(
+                    request,
+                    started,
+                    image,
+                    tag,
+                    image_evidence,
+                    role="SUPPORT",
+                )
+            )
         task_root = self.output_root / self.target.target_id.replace("/", "_")
         try:
             invocation = build_harness_invocation(
@@ -1191,83 +1647,206 @@ class OfficialHarnessGraderGateway:
                     "dataset.json", "dataset.jsonl", "prediction.jsonl", "config.json"
                 )
             )
-            materialized = purge(partial_paths, container_started=False)
+            materialized, purge_secondary = purge(
+                partial_paths, container_started=False, preserve_primary=True
+            )
             raise self._failure(
                 request, started, stage="input_materialization", status="input_materialization_failed",
                 reason=type(exc).__name__, stderr=str(exc), evidence=image_evidence,
                 extra={"materialized_private_inputs": materialized},
+                secondary_evidence_failures=purge_secondary,
             ) from None
         private_paths = invocation.private_input_paths + (
             (invocation.materialized_patch_path,)
             if invocation.materialized_patch_path is not None else ()
         )
-        stale_candidates = [invocation.test_output_path, invocation.test_status_path]
+        stale_candidates = [
+            invocation.test_output_path,
+            invocation.test_status_path,
+            invocation.report_path,
+        ]
         if invocation.container_exit_status_path is not None:
             stale_candidates.append(invocation.container_exit_status_path)
         stale = [path for path in stale_candidates if path.exists()]
         if stale:
-            materialized = purge(private_paths, container_started=False)
+            materialized, purge_secondary = purge(
+                private_paths, container_started=False, preserve_primary=True
+            )
             raise self._failure(
                 request, started, stage="official_harness", status="stale_test_evidence",
                 reason="preexisting_test_evidence", evidence=image_evidence,
-                extra={"materialized_private_inputs": materialized,
+                extra={"invocation_argv": list(invocation.argv),
+                       "materialized_private_inputs": materialized,
                        "stale_test_evidence_names": [path.name for path in stale]},
+                secondary_evidence_failures=purge_secondary,
             )
+        materialized_patch_evidence: dict[str, Any] | None = None
+
+        def capture_patch_after_primary() -> list[str]:
+            """Best-effort patch capture that cannot replace an earlier error."""
+
+            nonlocal materialized_patch_evidence
+            path = invocation.materialized_patch_path
+            if path is None:
+                return []
+            try:
+                if not path.exists() and not path.is_symlink():
+                    return []
+                materialized_patch_evidence = self._capture_materialized_patch(
+                    path, request.patch
+                )
+                return []
+            except _MaterializedPatchEvidenceError as exc:
+                materialized_patch_evidence = dict(exc.evidence)
+                return [
+                    "materialized_patch_capture: "
+                    + type(exc).__name__
+                    + ": "
+                    + str(exc)
+                ]
+            except (OSError, ValueError, OfficialGraderError) as exc:
+                return [
+                    "materialized_patch_capture: "
+                    + type(exc).__name__
+                    + ": "
+                    + str(exc)
+                ]
+
         try:
             completed = self._run(invocation.argv, cwd=invocation.cwd, timeout=self.timeout_seconds)
         except subprocess.TimeoutExpired as exc:
-            materialized = purge(private_paths, container_started=True)
+            capture_secondary: list[str] = []
+            available_after_timeout = self._capture_available_outputs(
+                invocation, secondary_evidence_failures=capture_secondary
+            )
+            patch_secondary = capture_patch_after_primary()
+            container_started = self._container_start_proven(available_after_timeout)
+            materialized, purge_secondary = purge(
+                private_paths,
+                container_started=container_started,
+                preserve_primary=True,
+            )
+            timeout_extra: dict[str, Any] = {
+                "invocation_argv": list(invocation.argv),
+                "harness_invocation_status": "TIMEOUT",
+                "materialized_private_inputs": materialized,
+                **available_after_timeout,
+            }
+            if materialized_patch_evidence is not None:
+                timeout_extra["materialized_patch_evidence"] = (
+                    materialized_patch_evidence
+                )
             raise self._failure(
                 request, started, stage="official_harness", status="harness_timeout", reason="timeout",
-                stdout=_stream_text(exc.stdout), stderr=_stream_text(exc.stderr), container_started=True,
-                evidence=image_evidence, extra={"invocation_argv": list(invocation.argv),
-                                                "materialized_private_inputs": materialized},
+                stdout=exc.stdout, stderr=exc.stderr,
+                container_started=container_started,
+                evidence=image_evidence, extra=timeout_extra,
+                secondary_evidence_failures=[
+                    *capture_secondary, *patch_secondary, *purge_secondary,
+                ],
             ) from None
         except OSError as exc:
-            materialized = purge(private_paths, container_started=False)
+            materialized, purge_secondary = purge(
+                private_paths, container_started=False, preserve_primary=True
+            )
             raise self._failure(
                 request, started, stage="official_harness", status="harness_launch_failed", reason="launch_failed",
                 stderr=str(exc), container_started=False, evidence=image_evidence,
                 extra={"invocation_argv": list(invocation.argv),
+                       "harness_invocation_status": "LAUNCH_FAILED",
                        "materialized_private_inputs": materialized},
+                secondary_evidence_failures=purge_secondary,
             ) from None
-
-        materialized_patch_evidence: dict[str, Any] | None = None
 
         def command_evidence(
             materialized: Sequence[Mapping[str, Any]],
             report_completed: subprocess.CompletedProcess[str] | None = None,
             *,
+            harness_status: str = "SUCCESS",
             report_status: str = "NOT_RUN",
+            report_stdout: object = "",
+            report_stderr: object = "",
+            secondary_evidence_failures: list[str] | None = None,
         ) -> dict[str, Any]:
             evidence: dict[str, Any] = {
                 "image_evidence": image_evidence,
                 "invocation_argv": list(invocation.argv),
+                "harness_invocation_status": harness_status,
                 "report_path": str(invocation.report_path.relative_to(task_root)),
-                "harness_restricted_raw_streams": self._restricted_streams(
-                    "official-harness", completed.stdout, completed.stderr
-                ),
                 "public_stream_policy": "REDACTED; canonical raw bytes are restricted evidence",
                 "materialized_private_inputs": list(materialized),
             }
+            try:
+                evidence["harness_restricted_raw_streams"] = self._restricted_streams(
+                    "official-harness", completed.stdout, completed.stderr
+                )
+            except Exception as exc:
+                if secondary_evidence_failures is None:
+                    raise
+                secondary_evidence_failures.append(
+                    "harness_stream_capture: "
+                    + type(exc).__name__
+                    + ": "
+                    + self._redact(str(exc))
+                )
             if materialized_patch_evidence is not None:
                 evidence["materialized_patch_evidence"] = materialized_patch_evidence
             if invocation.report_argv:
                 evidence["report_invocation_argv"] = list(invocation.report_argv)
                 evidence["report_invocation_status"] = report_status
                 if report_completed is not None:
-                    evidence["report_restricted_raw_streams"] = self._restricted_streams(
-                        "official-report", report_completed.stdout, report_completed.stderr
-                    )
+                    report_stdout = report_completed.stdout
+                    report_stderr = report_completed.stderr
+                if report_completed is not None or report_status in {"TIMEOUT", "LAUNCH_FAILED"}:
+                    try:
+                        evidence["report_restricted_raw_streams"] = self._restricted_streams(
+                            "official-report", report_stdout, report_stderr
+                        )
+                    except Exception as exc:
+                        if secondary_evidence_failures is None:
+                            raise
+                        secondary_evidence_failures.append(
+                            "report_stream_capture: "
+                            + type(exc).__name__
+                            + ": "
+                            + self._redact(str(exc))
+                        )
+            else:
+                evidence["report_invocation_argv"] = []
+                evidence["report_invocation_status"] = "NOT_APPLICABLE"
+                evidence["report_restricted_raw_streams"] = None
             return evidence
 
+        capture_secondary = []
+        available_after_harness = self._capture_available_outputs(
+            invocation, secondary_evidence_failures=capture_secondary
+        )
+        container_started = self._container_start_proven(available_after_harness)
         if completed.returncode != 0:
-            materialized = purge(private_paths, container_started=True)
-            common = command_evidence(materialized)
+            patch_secondary = capture_patch_after_primary()
+            materialized, purge_secondary = purge(
+                private_paths,
+                container_started=container_started,
+                preserve_primary=True,
+            )
+            command_secondary: list[str] = []
+            common = command_evidence(
+                materialized,
+                harness_status="EXIT_NONZERO",
+                secondary_evidence_failures=command_secondary,
+            )
             raise self._failure(
                 request, started, stage="official_harness", status="harness_exit_nonzero",
                 reason="nonzero_exit", stdout=completed.stdout, stderr=completed.stderr,
-                exit_code=completed.returncode, container_started=True, evidence=image_evidence, extra=common,
+                exit_code=completed.returncode,
+                container_started=container_started, evidence=image_evidence,
+                extra={**common, **available_after_harness},
+                secondary_evidence_failures=[
+                    *capture_secondary,
+                    *patch_secondary,
+                    *purge_secondary,
+                    *command_secondary,
+                ],
             )
         if invocation.materialized_patch_path is not None:
             try:
@@ -1276,24 +1855,50 @@ class OfficialHarnessGraderGateway:
                 )
             except _MaterializedPatchEvidenceError as exc:
                 materialized_patch_evidence = dict(exc.evidence)
-                materialized = purge(private_paths, container_started=True)
-                common = command_evidence(materialized)
+                materialized, purge_secondary = purge(
+                    private_paths,
+                    container_started=container_started,
+                    preserve_primary=True,
+                )
+                command_secondary = []
+                common = command_evidence(
+                    materialized, secondary_evidence_failures=command_secondary
+                )
                 raise self._failure(
                     request, started, stage="submitted_patch_evidence",
                     status="materialized_patch_invalid", reason=str(exc),
                     stdout=completed.stdout, stderr=completed.stderr,
-                    exit_code=completed.returncode, container_started=True,
-                    evidence=image_evidence, extra=common,
+                    exit_code=completed.returncode,
+                    container_started=container_started,
+                    evidence=image_evidence, extra={**common, **available_after_harness},
+                    secondary_evidence_failures=[
+                        *capture_secondary,
+                        *purge_secondary,
+                        *command_secondary,
+                    ],
                 ) from None
             except (OSError, ValueError, OfficialGraderError) as exc:
-                materialized = purge(private_paths, container_started=True)
-                common = command_evidence(materialized)
+                materialized, purge_secondary = purge(
+                    private_paths,
+                    container_started=container_started,
+                    preserve_primary=True,
+                )
+                command_secondary = []
+                common = command_evidence(
+                    materialized, secondary_evidence_failures=command_secondary
+                )
                 raise self._failure(
                     request, started, stage="submitted_patch_evidence",
                     status="materialized_patch_invalid", reason=str(exc),
                     stdout=completed.stdout, stderr=completed.stderr,
-                    exit_code=completed.returncode, container_started=True,
-                    evidence=image_evidence, extra=common,
+                    exit_code=completed.returncode,
+                    container_started=container_started,
+                    evidence=image_evidence, extra={**common, **available_after_harness},
+                    secondary_evidence_failures=[
+                        *capture_secondary,
+                        *purge_secondary,
+                        *command_secondary,
+                    ],
                 ) from None
         report_completed: subprocess.CompletedProcess[str] | None = None
         if invocation.report_argv:
@@ -1302,122 +1907,423 @@ class OfficialHarnessGraderGateway:
                     invocation.report_argv, cwd=invocation.cwd, timeout=self.timeout_seconds
                 )
             except subprocess.TimeoutExpired as exc:
-                materialized = purge(private_paths, container_started=True)
-                common = command_evidence(materialized, report_status="TIMEOUT")
+                report_secondary: list[str] = []
+                available_report = self._capture_available_report(
+                    invocation,
+                    secondary_evidence_failures=report_secondary,
+                )
+                materialized, purge_secondary = purge(
+                    private_paths,
+                    container_started=container_started,
+                    preserve_primary=True,
+                )
+                command_secondary = []
+                common = command_evidence(
+                    materialized,
+                    report_status="TIMEOUT",
+                    report_stdout=exc.stdout,
+                    report_stderr=exc.stderr,
+                    secondary_evidence_failures=command_secondary,
+                )
                 raise self._failure(
                     request, started, stage="official_report", status="report_timeout", reason="timeout",
                     stdout=completed.stdout + _stream_text(exc.stdout),
-                    stderr=completed.stderr + _stream_text(exc.stderr), container_started=True,
-                    evidence=image_evidence, extra=common,
+                    stderr=completed.stderr + _stream_text(exc.stderr),
+                    container_started=container_started,
+                    evidence=image_evidence,
+                    extra={**common, **available_after_harness, **available_report},
+                    secondary_evidence_failures=[
+                        *capture_secondary,
+                        *report_secondary,
+                        *purge_secondary,
+                        *command_secondary,
+                    ],
                 ) from None
             except OSError as exc:
-                materialized = purge(private_paths, container_started=True)
-                common = command_evidence(materialized, report_status="LAUNCH_FAILED")
+                report_secondary = []
+                available_report = self._capture_available_report(
+                    invocation,
+                    secondary_evidence_failures=report_secondary,
+                )
+                materialized, purge_secondary = purge(
+                    private_paths,
+                    container_started=container_started,
+                    preserve_primary=True,
+                )
+                command_secondary = []
+                common = command_evidence(
+                    materialized,
+                    report_status="LAUNCH_FAILED",
+                    report_stderr=str(exc),
+                    secondary_evidence_failures=command_secondary,
+                )
                 raise self._failure(
                     request, started, stage="official_report", status="report_launch_failed",
                     reason="launch_failed", stdout=completed.stdout,
-                    stderr=completed.stderr + str(exc), container_started=True,
-                    evidence=image_evidence, extra=common,
+                    stderr=completed.stderr + str(exc),
+                    container_started=container_started,
+                    evidence=image_evidence,
+                    extra={**common, **available_after_harness, **available_report},
+                    secondary_evidence_failures=[
+                        *capture_secondary,
+                        *report_secondary,
+                        *purge_secondary,
+                        *command_secondary,
+                    ],
                 ) from None
             if report_completed.returncode != 0:
-                materialized = purge(private_paths, container_started=True)
+                report_secondary = []
+                available_report = self._capture_available_report(
+                    invocation,
+                    secondary_evidence_failures=report_secondary,
+                )
+                materialized, purge_secondary = purge(
+                    private_paths,
+                    container_started=container_started,
+                    preserve_primary=True,
+                )
+                command_secondary = []
                 common = command_evidence(
-                    materialized, report_completed, report_status="EXIT_NONZERO"
+                    materialized,
+                    report_completed,
+                    report_status="EXIT_NONZERO",
+                    secondary_evidence_failures=command_secondary,
                 )
                 raise self._failure(
                     request, started, stage="official_report", status="report_exit_nonzero",
                     reason="nonzero_exit", stdout=completed.stdout + report_completed.stdout,
                     stderr=completed.stderr + report_completed.stderr,
-                    exit_code=report_completed.returncode, container_started=True,
-                    evidence=image_evidence, extra=common,
+                    exit_code=report_completed.returncode,
+                    container_started=container_started,
+                    evidence=image_evidence,
+                    extra={**common, **available_after_harness, **available_report},
+                    secondary_evidence_failures=[
+                        *capture_secondary,
+                        *report_secondary,
+                        *purge_secondary,
+                        *command_secondary,
+                    ],
                 )
-        materialized = purge(private_paths, container_started=True)
-        common = command_evidence(
-            materialized,
-            report_completed,
-            report_status="SUCCESS" if report_completed is not None else "NOT_APPLICABLE",
+        available_capture_failures: list[str] = []
+        available_test_references = self._capture_available_test_references(
+            invocation,
+            secondary_evidence_failures=available_capture_failures,
         )
+        container_started = container_started or self._container_start_proven(
+            available_test_references
+        )
+        if available_capture_failures:
+            available_report_failures: list[str] = []
+            available_report = self._capture_available_report(
+                invocation,
+                secondary_evidence_failures=available_report_failures,
+            )
+            materialized, purge_secondary = purge(
+                private_paths,
+                container_started=container_started,
+                preserve_primary=True,
+            )
+            command_secondary: list[str] = []
+            common = command_evidence(
+                materialized,
+                report_completed,
+                report_status=(
+                    "SUCCESS" if report_completed is not None else "NOT_APPLICABLE"
+                ),
+                secondary_evidence_failures=command_secondary,
+            )
+            raise self._failure(
+                request,
+                started,
+                stage="adapter_evidence_capture",
+                status="adapter_evidence_capture_failed",
+                reason="available_test_evidence_capture_failed",
+                stdout=completed.stdout
+                + (report_completed.stdout if report_completed else ""),
+                stderr=completed.stderr
+                + (report_completed.stderr if report_completed else ""),
+                exit_code=completed.returncode,
+                container_started=container_started,
+                evidence=image_evidence,
+                extra={
+                    **common,
+                    **available_test_references,
+                    **available_report,
+                },
+                secondary_evidence_failures=[
+                    *capture_secondary,
+                    *available_capture_failures,
+                    *available_report_failures,
+                    *purge_secondary,
+                    *command_secondary,
+                ],
+            )
+        try:
+            available_command_evidence = command_evidence(
+                (),
+                report_completed,
+                report_status=(
+                    "SUCCESS" if report_completed is not None else "NOT_APPLICABLE"
+                ),
+            )
+        except Exception as exc:
+            available_report_failures = []
+            available_report = self._capture_available_report(
+                invocation,
+                secondary_evidence_failures=available_report_failures,
+            )
+            materialized, purge_secondary = purge(
+                private_paths,
+                container_started=container_started,
+                preserve_primary=True,
+            )
+            command_secondary = [
+                "initial_command_evidence_capture: "
+                + type(exc).__name__
+                + ": "
+                + self._redact(str(exc))
+            ]
+            common = command_evidence(
+                materialized,
+                report_completed,
+                report_status=(
+                    "SUCCESS" if report_completed is not None else "NOT_APPLICABLE"
+                ),
+                secondary_evidence_failures=command_secondary,
+            )
+            raise self._failure(
+                request,
+                started,
+                stage="adapter_evidence_capture",
+                status="adapter_evidence_capture_failed",
+                reason=type(exc).__name__,
+                stdout=completed.stdout + (report_completed.stdout if report_completed else ""),
+                stderr=completed.stderr + (report_completed.stderr if report_completed else "") + str(exc),
+                exit_code=completed.returncode,
+                container_started=container_started,
+                evidence=image_evidence,
+                extra={
+                    **common,
+                    **available_test_references,
+                    **available_report,
+                },
+                secondary_evidence_failures=[
+                    *capture_secondary,
+                    *available_report_failures,
+                    *purge_secondary,
+                    *command_secondary,
+                ],
+            ) from None
+        pre_purge_report_failures: list[str] = []
+        pre_purge_report = self._capture_available_report(
+            invocation,
+            secondary_evidence_failures=pre_purge_report_failures,
+        )
+        materialized, _purge_secondary = purge(
+            private_paths,
+            container_started=container_started,
+            available_evidence={
+                **available_command_evidence,
+                **available_test_references,
+                **pre_purge_report,
+            },
+            available_secondary=pre_purge_report_failures,
+        )
+        common = {
+            **available_command_evidence,
+            "materialized_private_inputs": materialized,
+        }
         combined_stdout = completed.stdout + (report_completed.stdout if report_completed else "")
         combined_stderr = completed.stderr + (report_completed.stderr if report_completed else "")
         if not invocation.report_path.is_file():
             raise self._failure(
-                request, started, stage="official_harness", status="missing_report", reason="missing_report",
+                request, started, stage="official_report", status="missing_report", reason="missing_report",
                 stdout=combined_stdout, stderr=combined_stderr, exit_code=completed.returncode,
-                container_started=True, evidence=image_evidence, extra=common,
+                container_started=container_started, evidence=image_evidence,
+                extra={**common, **available_test_references},
             )
-        report_raw = invocation.report_path.read_bytes()
+        try:
+            report_raw = invocation.report_path.read_bytes()
+            restricted_report = self._restricted_blob(
+                "official-report", "report", report_raw
+            )
+        except (OSError, OfficialGraderError) as exc:
+            raise self._failure(
+                request,
+                started,
+                stage="adapter_evidence_capture",
+                status="adapter_evidence_capture_failed",
+                reason=type(exc).__name__,
+                stdout=combined_stdout,
+                stderr=combined_stderr,
+                exit_code=completed.returncode,
+                container_started=container_started,
+                evidence=image_evidence,
+                extra={**common, **available_test_references},
+            ) from None
         try:
             report = strict_json_loads(report_raw)
-        except (UnicodeDecodeError, json.JSONDecodeError):
-            restricted_report = self._restricted_blob("official-harness", "report", report_raw)
+        except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
             raise self._failure(
-                request, started, stage="official_harness", status="invalid_report", reason="invalid_report",
+                request, started, stage="official_report", status="invalid_report", reason="invalid_report",
                 stdout=combined_stdout, stderr=combined_stderr, exit_code=completed.returncode,
-                container_started=True, evidence=image_evidence,
-                extra={**common, "restricted_raw_report": restricted_report},
+                container_started=container_started, evidence=image_evidence,
+                extra={
+                    **common,
+                    **available_test_references,
+                    "restricted_raw_report": restricted_report,
+                },
             ) from None
         if not isinstance(report, dict):
             raise self._failure(
-                request, started, stage="official_harness", status="report_schema_mismatch",
+                request, started, stage="official_report", status="report_schema_mismatch",
                 reason="report_root_not_object", stdout=combined_stdout, stderr=combined_stderr,
-                exit_code=completed.returncode, container_started=True, evidence=image_evidence, extra=common,
+                exit_code=completed.returncode,
+                container_started=container_started, evidence=image_evidence,
+                extra={
+                    **common,
+                    **available_test_references,
+                    "restricted_raw_report": restricted_report,
+                },
             )
         try:
             resolved = parse_official_report(self.target, report)
         except OfficialGraderError as exc:
             raise self._failure(
-                request, started, stage="official_harness", status="report_schema_mismatch",
+                request, started, stage="official_report", status="report_schema_mismatch",
                 reason=str(exc), stdout=combined_stdout, stderr=combined_stderr,
-                exit_code=completed.returncode, container_started=True, evidence=image_evidence,
-                extra={**common, "raw_report": report},
+                exit_code=completed.returncode,
+                container_started=container_started, evidence=image_evidence,
+                extra={
+                    **common,
+                    **available_test_references,
+                    "restricted_raw_report": restricted_report,
+                },
             ) from None
         try:
             test_evidence = self._actual_test_evidence(
                 invocation,
                 resolved=resolved,
+                final_report=report,
                 expected_patch=request.patch,
             )
+        except _ActualTestEvidenceError as exc:
+            raise self._failure(
+                request, started, stage="adapter_semantic_normalization",
+                status="adapter_contract_failed", reason=str(exc), stdout=combined_stdout,
+                stderr=combined_stderr, exit_code=completed.returncode,
+                container_started=container_started, evidence=image_evidence,
+                extra={
+                    **common,
+                    **exc.evidence,
+                    "restricted_raw_report": restricted_report,
+                    "official_final_report_resolved": resolved,
+                },
+            ) from None
         except (OSError, UnicodeDecodeError, ValueError, OfficialGraderError) as exc:
             raise self._failure(
                 request, started, stage="official_test_evidence",
                 status="test_evidence_invalid", reason=str(exc), stdout=combined_stdout,
                 stderr=combined_stderr, exit_code=completed.returncode,
-                container_started=True, evidence=image_evidence,
-                extra={**common, "raw_report": report},
+                container_started=container_started, evidence=image_evidence,
+                extra={
+                    **common,
+                    **available_test_references,
+                    "restricted_raw_report": restricted_report,
+                    "official_final_report_resolved": resolved,
+                },
             ) from None
-        report = dict(report)
-        report["_trimem"] = {
-            "benchmark_id": self.target.benchmark_id,
-            "dataset_revision": self.target.dataset_revision,
-            "execution_contract": self._execution_contract(request.patch),
-            "execution_control_evidence": self._execution_control_evidence(),
-            "harness_revision": self.target.harness_revision,
-            **common,
-            "source_row_sha256": self.target.source_row_sha256,
-            "test_evidence": test_evidence,
-        }
-        elapsed = max(0, (time.perf_counter_ns() - started) // 1_000_000)
-        return GradeResult(
-            task_id=request.task_id, resolved=resolved, exit_code=completed.returncode,
-            stdout=self._redact(combined_stdout), stderr=self._redact(combined_stderr), report=report,
-            grader_id=f"official-{self.target.benchmark_id}@{self.target.harness_revision}",
-            container_digest=self.target.image, official=True, wall_time_ms=elapsed,
-            container_started=True, status="success",
-        )
+        try:
+            public_report = {
+                "task_id": request.task_id,
+                "status": "success",
+                "failure_stage": None,
+                "reason": None,
+                "_trimem": self._evidence_envelope(
+                    request,
+                    adapter_status="SUCCESS",
+                    adapter_failure_stage=None,
+                    adapter_primary_error=None,
+                    image_evidence=image_evidence,
+                    extra={
+                        **common,
+                        **test_evidence,
+                        "restricted_raw_report": restricted_report,
+                    },
+                    adapter_normalized=True,
+                    official_final_report_resolved=resolved,
+                    scientific_resolved=resolved,
+                ),
+            }
+            elapsed = max(0, (time.perf_counter_ns() - started) // 1_000_000)
+            return GradeResult(
+                task_id=request.task_id,
+                resolved=resolved,
+                exit_code=completed.returncode,
+                stdout=self._redact(combined_stdout),
+                stderr=self._redact(combined_stderr),
+                report=public_report,
+                grader_id=(
+                    f"official-{self.target.benchmark_id}"
+                    f"@{self.target.harness_revision}"
+                ),
+                container_digest=self.target.image,
+                official=True,
+                wall_time_ms=elapsed,
+                container_started=container_started,
+                status="success",
+            )
+        except Exception as exc:
+            raise self._failure(
+                request,
+                started,
+                stage="adapter_evidence_finalization",
+                status="adapter_evidence_finalization_failed",
+                reason=type(exc).__name__,
+                stdout=combined_stdout,
+                stderr=combined_stderr,
+                exit_code=completed.returncode,
+                container_started=container_started,
+                evidence=image_evidence,
+                extra={
+                    **common,
+                    **test_evidence,
+                    "restricted_raw_report": restricted_report,
+                    "official_final_report_resolved": resolved,
+                },
+                secondary_evidence_failures=[
+                    "success_envelope_finalization: "
+                    + type(exc).__name__
+                    + ": "
+                    + self._redact(str(exc))
+                ],
+            ) from None
+
+
+def _stream_bytes(value: object) -> bytes:
+    if value is None:
+        return b""
+    raw = getattr(value, "raw_bytes", None)
+    if isinstance(raw, bytes):
+        return raw
+    if isinstance(value, bytes):
+        return value
+    if isinstance(value, str):
+        return value.encode("utf-8")
+    return str(value).encode("utf-8")
 
 
 def _stream_text(value: object) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, bytes):
-        return value.decode("utf-8", errors="replace")
-    return str(value)
+    return _RawBackedText(value)
 
 
 __all__ = [
     "FrozenOfficialTarget", "HarnessInvocation", "MULTI_FIX_PATCH_RUN_COMMAND",
-    "MULTI_SWE_PREBUILT_EVALUATION", "OfficialGraderError",
+    "MULTI_SWE_PREBUILT_EVALUATION", "OFFICIAL_EVIDENCE_FIELDS",
+    "OFFICIAL_EVIDENCE_SCHEMA", "OFFICIAL_IMAGE_EVIDENCE_FIELDS",
+    "OFFICIAL_IMAGE_EVIDENCE_SCHEMA", "OfficialGraderError",
     "OfficialHarnessGraderGateway", "build_harness_invocation", "canonical_row_hash",
-    "minimal_subprocess_env", "parse_official_report", "redact_text",
+    "adapter_evidence_envelope_contract", "minimal_subprocess_env",
+    "parse_official_report", "redact_text",
     "validate_multi_swe_container_exit_status", "validate_official_test_evidence",
 ]

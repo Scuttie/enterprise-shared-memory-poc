@@ -191,6 +191,7 @@ def _submitted_identity_fixture(
     }
     trimem: dict[str, object] = {
         "materialized_private_inputs": _private_input_rows(target, patch),
+        "materialized_patch_evidence": None,
     }
     if benchmark_id != "swebench_verified":
         digest = hashlib.sha256(patch).hexdigest()
@@ -268,6 +269,24 @@ def test_submitted_patch_identity_requires_prediction_and_materialized_bytes(
 
     report["_trimem"]["materialized_private_inputs"][1]["sha256"] = "0" * 64
     with pytest.raises(benchmark_matrix.MatrixError, match="prediction input"):
+        benchmark_matrix._validate_smoke_submitted_patch_identity(
+            result_file, target, patch, report, record
+        )
+
+
+def test_swe_total_envelope_accepts_only_null_materialized_patch_evidence(
+    tmp_path: Path,
+) -> None:
+    result_file, target, patch, report, record = _submitted_identity_fixture(
+        tmp_path, "swebench_verified"
+    )
+    assert report["_trimem"]["materialized_patch_evidence"] is None
+    assert benchmark_matrix._validate_smoke_submitted_patch_identity(
+        result_file, target, patch, report, record
+    )["submitted_patch_identity"] is True
+
+    report["_trimem"]["materialized_patch_evidence"] = {"unexpected": True}
+    with pytest.raises(benchmark_matrix.MatrixError, match="materialized host-patch"):
         benchmark_matrix._validate_smoke_submitted_patch_identity(
             result_file, target, patch, report, record
         )
@@ -399,7 +418,6 @@ def test_summary_does_not_infer_blanket_success_from_no_failures() -> None:
         targets,
         evidence,
         failures=[],
-        infrastructure_failures=[],
     )
 
     assert summary["patch_applied_count"] == 11
@@ -422,13 +440,39 @@ def test_summary_does_not_infer_blanket_success_from_no_failures() -> None:
         targets,
         evidence,
         failures=[],
-        infrastructure_failures=[],
     )
     assert accounting_failure["status"] == "FAIL"
     assert "ACTUAL_ACCOUNTING" in accounting_failure["failures"]
 
 
 def _sealed_public_aggregate() -> dict[str, object]:
+    def semantic_summary(resolved: bool) -> dict[str, object]:
+        missing = 0 if resolved else 1
+        return {
+            "schema": "trimem/multi-swe-report-semantics/1.0",
+            "report_valid_observed": True,
+            "report_valid_recomputed": True,
+            "report_valid_match": True,
+            "expected_coverage_complete": resolved,
+            "expected_p2p_count": 0,
+            "observed_expected_p2p_count": 0,
+            "expected_f2p_count": 1,
+            "observed_expected_f2p_count": 1 - missing,
+            "expected_s2p_count": 0,
+            "observed_expected_s2p_count": 0,
+            "expected_n2p_count": 0,
+            "observed_expected_n2p_count": 0,
+            "missing_expected_transition_count": missing,
+            "expected_transition_domain_sha256": "7" * 64,
+            "observed_expected_transition_domain_sha256": (
+                "7" * 64 if resolved else "8" * 64
+            ),
+            "computed_resolved": resolved,
+            "official_final_report_resolved": resolved,
+            "final_report_match": True,
+            "report_invalidity_reason": "NONE",
+        }
+
     outcomes = [
         {
             "target_id": f"target-{index}",
@@ -451,6 +495,9 @@ def _sealed_public_aggregate() -> dict[str, object]:
             "host_prepare_sh_access_count": 0,
             "source_image_build_count": 0,
             "api_calls": 0,
+            "semantic_normalization": (
+                None if index < 4 else semantic_summary(index % 2 == 0)
+            ),
             "container_exit_status_code": None if index < 4 else (0 if index % 2 == 0 else 1),
             "container_exit_acceptance": (
                 None
@@ -507,8 +554,27 @@ def _sealed_public_aggregate() -> dict[str, object]:
         "evidence_counts": evidence_counts,
         "expected_target_count": 12,
         "host_prepare_sh_access_count": 0,
-        "image_lifecycle": {"status": "PASS"},
-        "infrastructure_failure_count": 0,
+        "image_lifecycle": {
+            "actual": dict(public_artifact.SMOKE_IMAGE_LIFECYCLE_ACTUAL),
+            "event_count": 14,
+            "report_bytes": 1,
+            "report_sha256": "0" * 64,
+            "status": "PASS",
+        },
+        "attempted_cell_count": 12,
+        "terminal_record_count": 12,
+        "official_execution_count": 12,
+        "complete_execution_evidence_count": 12,
+        "adapter_normalized_count": 12,
+        "authoritative_cell_count": 12,
+        "unattempted_cell_count": 0,
+        "environment_failures": 0,
+        "infrastructure_failures": 0,
+        "image_lifecycle_failures": 0,
+        "official_harness_failures": 0,
+        "official_report_failures": 0,
+        "adapter_contract_failures": 0,
+        "aggregate_failures": 0,
         "observed_target_count": 12,
         "patch_applied_count": 12,
         "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
@@ -537,6 +603,66 @@ def test_public_artifact_requires_execution_contract_counters(tmp_path: Path) ->
     path.write_bytes(_canonical(aggregate))
     with pytest.raises(public_artifact.PublicArtifactError, match="summary differs"):
         public_artifact._verified_aggregate(path)
+
+
+@pytest.mark.parametrize(
+    "raw_key",
+    ["p2p_tests", "missing_f2p_tests", "raw_test_names"],
+)
+def test_public_artifact_rejects_resealed_extra_raw_outcome_field(
+    tmp_path: Path, raw_key: str
+) -> None:
+    aggregate = _sealed_public_aggregate()
+    aggregate["outcomes"][4][raw_key] = ["private::test-name"]
+    body = {key: value for key, value in aggregate.items() if key != "aggregate_sha256"}
+    aggregate["aggregate_sha256"] = hashlib.sha256(_canonical(body)).hexdigest()
+    path = tmp_path / "aggregate.json"
+    path.write_bytes(_canonical(aggregate))
+
+    with pytest.raises(public_artifact.PublicArtifactError, match="field set differs"):
+        public_artifact.package(path, tmp_path / "public.json")
+    assert not (tmp_path / "public.json").exists()
+
+
+@pytest.mark.parametrize("raw_key", ["n2p_tests", "missing_test_names"])
+def test_public_artifact_recursively_rejects_raw_multi_swe_name_keys(
+    tmp_path: Path, raw_key: str
+) -> None:
+    aggregate = _sealed_public_aggregate()
+    aggregate["manifest"] = "development"
+    aggregate["outcomes"] = []
+    aggregate["stream_totals"] = [{
+        "otherwise_allowed_container": {
+            raw_key: ["private::test-name"],
+        }
+    }]
+    primary = {"benchmark_id": "swebench_verified", "reporting_role": "PRIMARY"}
+    aggregate["benchmark_roles"] = []
+    aggregate["benchmark_totals"] = [primary]
+    aggregate["primary_endpoints"] = [primary]
+    aggregate["secondary_endpoints"] = []
+    body = {key: value for key, value in aggregate.items() if key != "aggregate_sha256"}
+    aggregate["aggregate_sha256"] = hashlib.sha256(_canonical(body)).hexdigest()
+    path = tmp_path / "aggregate.json"
+    path.write_bytes(_canonical(aggregate))
+
+    with pytest.raises(public_artifact.PublicArtifactError, match="forbidden keys"):
+        public_artifact.package(path, tmp_path / "public.json")
+    assert not (tmp_path / "public.json").exists()
+
+
+def test_public_artifact_reconstructs_exact_allowlisted_outcomes(tmp_path: Path) -> None:
+    aggregate = _sealed_public_aggregate()
+    path = tmp_path / "aggregate.json"
+    output = tmp_path / "public.json"
+    path.write_bytes(_canonical(aggregate))
+
+    public_artifact.package(path, output)
+    public = json.loads(output.read_text(encoding="utf-8"))
+    assert all(
+        set(row) == set(public_artifact.SMOKE_OUTCOME_FIELDS)
+        for row in public["outcomes"]
+    )
 
 
 @pytest.mark.parametrize("field", ZERO_SMOKE_ACCOUNTING_FIELDS)

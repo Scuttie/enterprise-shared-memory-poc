@@ -15,13 +15,34 @@ import re
 import subprocess
 from typing import Any, Sequence
 
+from trimem_multi_swe_report_semantics import (
+    FINAL_RESOLVED_PROJECTION,
+    PINNED_HARNESS_REVISION as SEMANTICS_PINNED_HARNESS_REVISION,
+    REPORT_CHECK_REASON_CODES,
+    REPORT_CHECK_RULES,
+    REPORT_VALID_PROJECTION,
+    SCHEMA as REPORT_SEMANTICS_SCHEMA,
+    report_semantics_truth_table,
+)
+
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK_PATH = ROOT / "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json"
 ENTRYPOINT_PATH = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
+REPORT_SEMANTICS_MODULE_PATH = ROOT / "scripts/trimem_multi_swe_report_semantics.py"
+REPORT_SEMANTICS_LOCK_PATH = (
+    ROOT / "artifacts/trimem_v1/multi_swe_report_semantics_lock.json"
+)
 PINNED_ORIGIN = "https://github.com/multi-swe-bench/multi-swe-bench"
 PINNED_REVISION = "24f493f8a103e72312ded4f6b9c89f081d69cb09"
 SHA256 = re.compile(r"[0-9a-f]{64}")
+REPORT_SEMANTICS_SOURCE_PATHS = (
+    "multi_swe_bench/harness/report.py",
+    "multi_swe_bench/harness/gen_report.py",
+    "multi_swe_bench/harness/dataset.py",
+    "multi_swe_bench/harness/test_result.py",
+    "multi_swe_bench/harness/pull_request.py",
+)
 LOCAL_VALIDATOR_ROLES = {
     "scripts/trimem_benchmark_matrix.py": "independent fail-closed aggregate revalidator",
     "scripts/trimem_grader_smoke.py": "per-cell evidence producer",
@@ -95,22 +116,26 @@ def _git(
     return result
 
 
-def _strict_lock() -> dict[str, Any]:
+def _strict_json_object(path: Path, label: str) -> dict[str, Any]:
     def object_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
         value: dict[str, Any] = {}
         for key, child in pairs:
-            _require(key not in value, f"duplicate contract-lock key: {key}")
+            _require(key not in value, f"duplicate {label} key: {key}")
             value[key] = child
         return value
 
     try:
         value = json.loads(
-            LOCK_PATH.read_bytes().decode("utf-8"), object_pairs_hook=object_pairs
+            path.read_bytes().decode("utf-8"), object_pairs_hook=object_pairs
         )
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise ContractError("Multi-SWE contract lock is not strict UTF-8 JSON") from exc
-    _require(isinstance(value, dict), "Multi-SWE contract lock root is not an object")
+        raise ContractError(f"{label} is not strict UTF-8 JSON") from exc
+    _require(isinstance(value, dict), f"{label} root is not an object")
     return value
+
+
+def _strict_lock() -> dict[str, Any]:
+    return _strict_json_object(LOCK_PATH, "Multi-SWE contract lock")
 
 
 def _canonical(value: Any) -> bytes:
@@ -163,11 +188,48 @@ def _calls(nodes: Sequence[ast.stmt]) -> list[ast.Call]:
     ]
 
 
+def _verify_pull_request_identity(tree: ast.Module) -> None:
+    """Bind the exact upstream identity consumed by ``FinalReport``."""
+
+    pull_request_base_classes = [
+        node
+        for node in tree.body
+        if isinstance(node, ast.ClassDef) and node.name == "PullRequestBase"
+    ]
+    _require(
+        len(pull_request_base_classes) == 1,
+        "pinned PullRequestBase class differs",
+    )
+    pull_request_base = pull_request_base_classes[0]
+    id_getter = _only_function(
+        pull_request_base, "id", label="PullRequestBase.id"
+    )
+    _require(
+        len(id_getter.decorator_list) == 1
+        and ast.unparse(id_getter.decorator_list[0]) == "property"
+        and len(id_getter.args.args) == 1
+        and id_getter.args.args[0].arg == "self"
+        and not id_getter.args.posonlyargs
+        and id_getter.args.vararg is None
+        and id_getter.args.kwonlyargs == []
+        and id_getter.args.kwarg is None
+        and id_getter.args.defaults == []
+        and len(id_getter.body) == 1
+        and isinstance(id_getter.body[0], ast.Return)
+        and ast.unparse(id_getter.body[0].value)
+        == "f'{self.org}/{self.repo}:pr-{self.number}'",
+        "pinned PullRequestBase.id format differs",
+    )
+
+
 def _verify_control_flow(blobs: dict[str, bytes]) -> None:
     run = _source_text(blobs, "multi_swe_bench/harness/run_evaluation.py")
     args_util = _source_text(blobs, "multi_swe_bench/utils/args_util.py")
     gen_report = _source_text(blobs, "multi_swe_bench/harness/gen_report.py")
     report = _source_text(blobs, "multi_swe_bench/harness/report.py")
+    dataset = _source_text(blobs, "multi_swe_bench/harness/dataset.py")
+    test_result = _source_text(blobs, "multi_swe_bench/harness/test_result.py")
+    pull_request = _source_text(blobs, "multi_swe_bench/harness/pull_request.py")
     session = _source_text(blobs, "multi_swe_bench/utils/session_util.py")
     docker_util = _source_text(blobs, "multi_swe_bench/utils/docker_util.py")
     image = _source_text(blobs, "multi_swe_bench/harness/image.py")
@@ -447,8 +509,106 @@ def _verify_control_flow(blobs: dict[str, bytes]) -> None:
             gen_report, filename="multi_swe_bench/harness/gen_report.py"
         )
         report_tree = ast.parse(report, filename="multi_swe_bench/harness/report.py")
+        dataset_tree = ast.parse(
+            dataset, filename="multi_swe_bench/harness/dataset.py"
+        )
+        test_result_tree = ast.parse(
+            test_result, filename="multi_swe_bench/harness/test_result.py"
+        )
+        pull_request_tree = ast.parse(
+            pull_request, filename="multi_swe_bench/harness/pull_request.py"
+        )
     except SyntaxError as exc:
         raise ContractError("pinned runtime-boundary source is not valid Python") from exc
+
+    # Report.check is an ordered local-transition predicate.  Lock all four
+    # gates, the upstream materialized-set TestResult checks that feed it, and
+    # the Dataset fields that supply the subsequent expected-key coverage.
+    report_classes = [
+        node
+        for node in report_tree.body
+        if isinstance(node, ast.ClassDef) and node.name == "Report"
+    ]
+    _require(
+        len(report_classes) == 1
+        and [ast.unparse(base) for base in report_classes[0].bases]
+        == ["PullRequestBase"],
+        "pinned Report identity inheritance differs",
+    )
+    report_check = _only_function(report_tree, "check", label="Report.check")
+    report_check_source = ast.unparse(report_check)
+    _ordered(
+        report_check_source,
+        (
+            "if self.fix_patch_result.all_count == 0:",
+            "if test.test == TestStatus.PASS and test.fix == TestStatus.FAIL:",
+            "fix_something = False",
+            "if test.test != TestStatus.PASS and test.fix == TestStatus.PASS:",
+            "if not fix_something:",
+            "if (test.test == TestStatus.NONE or test.test == TestStatus.SKIP) "
+            "and test.fix == TestStatus.FAIL and (test.run == TestStatus.PASS):",
+            "self.valid = True",
+        ),
+        label="Report.check four-stage predicate",
+    )
+    report_returns = [
+        node
+        for node in ast.walk(report_check)
+        if isinstance(node, ast.Return)
+        and ast.unparse(node.value) == "(self.valid, self.error_msg)"
+    ]
+    _require(
+        len(report_returns) == 6,
+        "pinned Report.check decision-return count differs",
+    )
+    test_result_post_init = _only_function(
+        test_result_tree, "__post_init__", label="TestResult.__post_init__"
+    )
+    test_result_checks = ast.unparse(test_result_post_init)
+    for required in (
+        "isinstance(self.passed_tests, set)",
+        "isinstance(self.failed_tests, set)",
+        "isinstance(self.skipped_tests, set)",
+        "len(self.passed_tests) != self.passed_count",
+        "len(self.failed_tests) != self.failed_count",
+        "len(self.skipped_tests) != self.skipped_count",
+        "self.passed_tests & self.failed_tests",
+        "self.passed_tests & self.skipped_tests",
+        "self.failed_tests & self.skipped_tests",
+    ):
+        _require(
+            required in test_result_checks,
+            "pinned TestResult materialized-set classification contract differs",
+        )
+    dataset_classes = [
+        node
+        for node in dataset_tree.body
+        if isinstance(node, ast.ClassDef) and node.name == "Dataset"
+    ]
+    _require(len(dataset_classes) == 1, "pinned Dataset class differs")
+    dataset_fields = {
+        node.target.id
+        for node in dataset_classes[0].body
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
+    }
+    _require(
+        {
+            "p2p_tests",
+            "f2p_tests",
+            "s2p_tests",
+            "n2p_tests",
+            "run_result",
+            "test_patch_result",
+            "fix_patch_result",
+        }
+        <= dataset_fields,
+        "pinned Dataset expected transition fields differ",
+    )
+
+    # FinalReport stores ``report.id``.  Bind the inherited identity property
+    # that defines the exact string compared by the local one-target
+    # normalizer; report.py alone does not contain this format.
+    _verify_pull_request_identity(pull_request_tree)
 
     from_env_calls = [
         node
@@ -1015,8 +1175,194 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
     return verified
 
 
+def validate_report_semantics_lock(root: Path = ROOT) -> dict[str, Any]:
+    """Validate the local semantics lock without network, Docker, or a grader."""
+
+    root = root.resolve(strict=True)
+    lock_path = root / REPORT_SEMANTICS_LOCK_PATH.relative_to(ROOT)
+    module_path = root / REPORT_SEMANTICS_MODULE_PATH.relative_to(ROOT)
+    evaluation_lock_path = root / LOCK_PATH.relative_to(ROOT)
+    lock = _strict_json_object(lock_path, "Multi-SWE report semantics lock")
+    _require(
+        lock.get("schema") == "trimem/multi-swe-report-semantics-lock/1.0",
+        "report semantics lock schema differs",
+    )
+    _require(
+        lock.get("repository") == PINNED_ORIGIN
+        and lock.get("revision") == PINNED_REVISION
+        and SEMANTICS_PINNED_HARNESS_REVISION == PINNED_REVISION,
+        "report semantics pinned source identity differs",
+    )
+    body = dict(lock)
+    self_hash = body.pop("lock_sha256", None)
+    _require(
+        isinstance(self_hash, str)
+        and SHA256.fullmatch(self_hash) is not None
+        and hashlib.sha256(_canonical(body)).hexdigest() == self_hash,
+        "report semantics self-lock differs",
+    )
+    projection = lock.get("contract_projection")
+    projection_hash = lock.get("contract_projection_sha256")
+    _require(
+        isinstance(projection, dict)
+        and isinstance(projection_hash, str)
+        and SHA256.fullmatch(projection_hash) is not None
+        and hashlib.sha256(_canonical(projection)).hexdigest() == projection_hash,
+        "report semantics projection hash differs",
+    )
+    _require(
+        projection.get("REPORT_VALID") == REPORT_VALID_PROJECTION
+        and projection.get("FINAL_RESOLVED") == FINAL_RESOLVED_PROJECTION
+        and projection.get("report_valid_is_not_final_resolved") is True
+        and projection.get("noop_baseline_definition")
+        == "official_final_report_resolved is false"
+        and projection.get("final_report_acceptance")
+        == "official_final_report_resolved equals computed_resolved",
+        "report semantics two-stage formula differs",
+    )
+    stage_a = projection.get("stage_a_local_transition_predicate")
+    _require(isinstance(stage_a, dict), "report semantics Stage A is missing")
+    ordered_rules = stage_a.get("ordered_rules")
+    expected_rules = [
+        {"accept": rule, "index": index, "reason_code": reason}
+        for index, (rule, reason) in enumerate(
+            zip(REPORT_CHECK_RULES, REPORT_CHECK_REASON_CODES, strict=True), start=1
+        )
+    ]
+    _require(
+        ordered_rules == expected_rules
+        and stage_a.get("unobserved_stage_classification") == "NONE"
+        and stage_a.get("upstream_symbol") == "Report.check()",
+        "report semantics Stage A projection differs",
+    )
+    stage_b = projection.get("stage_b_frozen_expected_transition_coverage")
+    _require(
+        stage_b
+        == {
+            "category_order": [
+                "p2p_tests",
+                "f2p_tests",
+                "s2p_tests",
+                "n2p_tests",
+            ],
+            "exact_set_equality": False,
+            "operation": (
+                "each frozen expected category key is contained in the same "
+                "observed Report category"
+            ),
+            "performed_after_report_valid": True,
+            "upstream_symbol": "CliArgs.gen_eval_reports.safe_generate_report",
+        },
+        "report semantics Stage B projection differs",
+    )
+    _require(
+        projection.get("valid_true_final_unresolved")
+        == {
+            "legal": True,
+            "required_condition": "missing_expected_transition_count is positive",
+        },
+        "valid unresolved semantics projection differs",
+    )
+    _require(
+        projection.get("final_report_target_identity")
+        == {
+            "format": "{org}/{repo}:pr-{number}",
+            "upstream_symbol": "PullRequestBase.id",
+        },
+        "report semantics final target identity differs",
+    )
+    _require(
+        projection.get("test_result_strictness")
+        == {
+            "trimem_fail_closed_raw_input": {
+                "count_matches_raw_list_length": True,
+                "duplicate_ids_rejected_before_set_construction": True,
+                "pass_fail_skip_disjoint": True,
+            },
+            "upstream_materialized_test_result": {
+                "count_matches_materialized_set_size": True,
+                "pass_fail_skip_sets_disjoint": True,
+                "raw_json_duplicates_unconditionally_rejected": False,
+                "required_collection_type": "set",
+            },
+        },
+        "report semantics TestResult strictness boundary differs",
+    )
+    _require(
+        lock.get("truth_table") == report_semantics_truth_table(),
+        "report semantics truth table differs",
+    )
+
+    implementation = lock.get("implementation")
+    try:
+        module_raw = module_path.read_bytes()
+        module_source = module_raw.decode("utf-8")
+        ast.parse(module_source, filename=str(module_path))
+    except (OSError, UnicodeDecodeError, SyntaxError) as exc:
+        raise ContractError("report semantics module is not valid UTF-8 Python") from exc
+    _require(
+        b"\r" not in module_raw
+        and implementation
+        == {
+            "bytes": len(module_raw),
+            "path": REPORT_SEMANTICS_MODULE_PATH.relative_to(ROOT).as_posix(),
+            "public_result_schema": REPORT_SEMANTICS_SCHEMA,
+            "sha256": hashlib.sha256(module_raw).hexdigest(),
+            "validator": "validate_multi_swe_report_semantics",
+        },
+        "report semantics implementation byte lock differs",
+    )
+    evaluation_lock = _strict_json_object(
+        evaluation_lock_path, "Multi-SWE contract lock"
+    )
+    _require(
+        lock.get("revision_tree_oid") == evaluation_lock.get("commit_tree_oid")
+        and isinstance(lock.get("revision_tree_oid"), str)
+        and re.fullmatch(r"[0-9a-f]{40}", lock["revision_tree_oid"]) is not None,
+        "report semantics revision tree differs",
+    )
+    source_blobs = evaluation_lock.get("source_blobs")
+    expected_blobs = lock.get("exact_upstream_blobs")
+    _require(
+        isinstance(source_blobs, dict)
+        and isinstance(expected_blobs, dict)
+        and set(expected_blobs) == set(REPORT_SEMANTICS_SOURCE_PATHS)
+        and expected_blobs
+        == {path: source_blobs.get(path) for path in REPORT_SEMANTICS_SOURCE_PATHS},
+        "report semantics exact upstream blob projection differs",
+    )
+    _require(
+        lock.get("scope")
+        == {
+            "docker_calls": 0,
+            "grader_calls": 0,
+            "model_api_calls": 0,
+            "paid_model_calls": 0,
+            "upstream_source_copied": False,
+        }
+        and lock.get("privacy")
+        == {
+            "public_evidence": (
+                "counts, canonical category-domain digests, booleans, and reason code"
+            ),
+            "public_raw_test_names": False,
+            "raw_test_names": "restricted evidence only",
+        },
+        "report semantics privacy or zero-call scope differs",
+    )
+    return {
+        "contract_projection_sha256": projection_hash,
+        "lock_sha256": self_hash,
+        "module_sha256": hashlib.sha256(module_raw).hexdigest(),
+        "schema": "trimem/multi-swe-report-semantics-lock-validation/1.0",
+        "source_blobs": len(expected_blobs),
+        "status": "PASS",
+    }
+
+
 def verify_checkout(repository: Path) -> dict[str, Any]:
     repository = repository.resolve(strict=True)
+    validate_report_semantics_lock(ROOT)
     lock = _strict_lock()
     _require(lock.get("repository") == PINNED_ORIGIN, "contract-lock origin differs")
     _require(lock.get("revision") == PINNED_REVISION, "contract-lock revision differs")
@@ -1053,7 +1399,7 @@ def verify_checkout(repository: Path) -> dict[str, Any]:
 
     source_rows = lock.get("source_blobs")
     _require(
-        isinstance(source_rows, dict) and len(source_rows) == 11,
+        isinstance(source_rows, dict) and len(source_rows) == 14,
         "source lock set differs",
     )
     blobs: dict[str, bytes] = {}
@@ -1096,7 +1442,7 @@ def verify_checkout(repository: Path) -> dict[str, Any]:
         "production_entrypoint": entrypoint,
         "repository": PINNED_ORIGIN,
         "revision": PINNED_REVISION,
-        "schema": "trimem/multi-swe-live-contract-verification/1.1",
+        "schema": "trimem/multi-swe-live-contract-verification/1.2",
         "source_blobs": verified,
         "status": "PASS",
         "upstream_source_copied": False,

@@ -9,9 +9,17 @@ from typing import Any, Iterator
 ROOT = Path(__file__).resolve().parents[2]
 LOCK_PATH = ROOT / "artifacts" / "trimem_v1" / "multi_swe_evaluation_contract_lock.json"
 REPORT_PATH = ROOT / "reports" / "TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md"
+SEMANTICS_REPORT_PATH = ROOT / "reports" / "TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md"
 
 REVISION = "24f493f8a103e72312ded4f6b9c89f081d69cb09"
 EXPECTED_SOURCE_BLOBS = {
+    "multi_swe_bench/harness/dataset.py": {
+        "bytes": 2833,
+        "git_blob_oid": "19aeb4370fcfdaeccef99b3a47d06c5a572d468c",
+        "git_mode": "100644",
+        "line_count": 79,
+        "sha256": "dd49f55baf63b60fff309b6a5b2a1826697e2b85ad1a9bccff18321dcdc200fc",
+    },
     "multi_swe_bench/harness/gen_report.py": {
         "bytes": 21331,
         "git_blob_oid": "251e8b01059a18a9af5ae176c696eb4be8950ae4",
@@ -26,12 +34,26 @@ EXPECTED_SOURCE_BLOBS = {
         "line_count": 210,
         "sha256": "86074812495b97026efb42c57acbf7738864b1f0167f99e3b9f9309458972ae9",
     },
+    "multi_swe_bench/harness/pull_request.py": {
+        "bytes": 6015,
+        "git_blob_oid": "0c2c99a4602bc6dc127cc0bb3ecaff56a6550d17",
+        "git_mode": "100644",
+        "line_count": 211,
+        "sha256": "32b49f48b39124f67727f408898bd96cce91c0a362faa716ac858dcb0b0b47c7",
+    },
     "multi_swe_bench/harness/report.py": {
         "bytes": 12942,
         "git_blob_oid": "a0b23ab1bf3c2407e15338fd0e644c0138fd3d90",
         "git_mode": "100644",
         "line_count": 347,
         "sha256": "5a025fd496d42c4b7377fc0702d64c6d0e356b117eaf2face47e73a52c29902f",
+    },
+    "multi_swe_bench/harness/test_result.py": {
+        "bytes": 5164,
+        "git_blob_oid": "bbdd5dc729582a1d06c79f416058bbc4d7db9c91",
+        "git_mode": "100644",
+        "line_count": 157,
+        "sha256": "5411af794920cf4b170fe9dbe8c21c12cc63e2bbe2280d6d82acb850f4808be3",
     },
     "multi_swe_bench/harness/repos/c/jqlang/jq.py": {
         "bytes": 6431,
@@ -92,14 +114,14 @@ EXPECTED_SOURCE_BLOBS = {
 }
 EXPECTED_LOCAL_VALIDATOR_FILES = {
     "scripts/trimem_benchmark_matrix.py": {
-        "bytes": 109830,
+        "bytes": 123286,
         "role": "independent fail-closed aggregate revalidator",
-        "sha256": "7a9b2d4b5faa26628a8bbc2b202547bce75526ca3d4404c156f54e4323c9cf36",
+        "sha256": "cf05654fa25c643ef9e2573f7e3f70b54236aa545669e353d886e80d9e710767",
     },
     "scripts/trimem_grader_smoke.py": {
-        "bytes": 67577,
+        "bytes": 135285,
         "role": "per-cell evidence producer",
-        "sha256": "88e5a6d54ac5dfbb9722a333e447f7d18d62a13ae7590583ca41e838f12d9295",
+        "sha256": "15b1bae4a14ac74f53de016882e20f6962d0b5e2818b6a158ab26373c7fb748a",
     },
     "scripts/trimem_multi_swe_entrypoint.py": {
         "bytes": 25035,
@@ -107,9 +129,9 @@ EXPECTED_LOCAL_VALIDATOR_FILES = {
         "sha256": "16c021ac3c0eb18bc78376164307b53cfb294ac0f206415d465a1b11f1ec63ac",
     },
     "scripts/trimem_official_grader.py": {
-        "bytes": 67489,
+        "bytes": 101093,
         "role": "exact frozen-domain and conditional-status validator",
-        "sha256": "84ed38f01ec2ef4dae63e3ed4ad6ac1880f61119afd7cf0c92ec8ea088a3f4ec",
+        "sha256": "fbd15718a88b4d733b313af83889aae8ef6ac7837529bba52f0bb4072f57b886",
     },
 }
 
@@ -151,7 +173,7 @@ def _walk(value: Any) -> Iterator[Any]:
 def test_contract_lock_is_self_sealed_and_pins_exact_git_blob_bytes() -> None:
     lock = _load_lock()
 
-    assert lock["schema"] == "trimem/multi-swe-evaluation-contract-lock/1.1"
+    assert lock["schema"] == "trimem/multi-swe-evaluation-contract-lock/1.2"
     assert lock["status"] == "PINNED_SOURCE_CONTRACT_LOCKED"
     assert lock["repository"] == "https://github.com/multi-swe-bench/multi-swe-bench"
     assert lock["revision"] == REVISION
@@ -159,13 +181,13 @@ def test_contract_lock_is_self_sealed_and_pins_exact_git_blob_bytes() -> None:
     assert lock["source_blobs"] == EXPECTED_SOURCE_BLOBS
 
     projection = hashlib.sha256(_canonical(lock["contracts"])).hexdigest()
-    assert projection == "429c9dc08b394e91f310cf4c31f1a911add0e3da5ae130b4c584e8fe239faf2b"
+    assert projection == "8f1957ac22fb823cf1540b2550ff2a5e9763e2e2db1e3f46665787f468105e6a"
     assert lock["contract_projection_sha256"] == projection
 
     body = dict(lock)
     observed_lock = body.pop("lock_sha256")
     assert observed_lock == hashlib.sha256(_canonical(body)).hexdigest()
-    assert observed_lock == "f9cea651d404e85ef0c592c29fb9365a4e09df723d92deeededb994061ec6683"
+    assert observed_lock == "26f406176510c745eac7c3bd6ddc2000cd534b5510db7bf18a1baf1869c878af"
 
     assert lock["evidence_basis"] == {
         "blob_reader": "git cat-file blob <revision>:<path>",
@@ -324,6 +346,9 @@ def test_pinned_docker_run_boundary_requires_local_no_pull_and_exit_guards() -> 
 def test_pinned_report_validity_and_coverage_map_invalid_to_unresolved() -> None:
     boundary = _load_lock()["contracts"]["evaluation_report_classification_boundary"]
 
+    assert boundary["computed_resolved"] == (
+        "REPORT_VALID AND ALL_FROZEN_EXPECTED_TRANSITION_KEYS_COVERED"
+    )
     assert boundary["invalid_before_coverage"] is True
     assert boundary["validity_gate"] == (
         "if not report.valid: return (report, False)"
@@ -341,6 +366,38 @@ def test_pinned_report_validity_and_coverage_map_invalid_to_unresolved() -> None
     assert boundary["final_report_mapping"] == {
         "invalid_reports": "unresolved_ids",
         "reports": "resolved_ids",
+    }
+    assert boundary["final_report_target_identity"] == {
+        "format": "{org}/{repo}:pr-{number}",
+        "upstream_symbol": "PullRequestBase.id",
+    }
+    assert boundary["report_valid_equals_final_resolved"] is False
+    assert boundary["valid_true_final_unresolved_is_legal"] is True
+    assert boundary["noop_definition"] == (
+        "FinalReport unresolved; Report.valid may be true or false"
+    )
+    assert boundary["report_check"] == {
+        "result": "REPORT_VALID",
+        "rules_in_order": [
+            "fix_patch_result contains at least one classified test",
+            "no test has test=PASS and fix=FAIL",
+            "at least one test has test!=PASS and fix=PASS",
+            "no test has test in {NONE,SKIP}, fix=FAIL, and run=PASS",
+        ],
+        "unobserved_stage_classification": "NONE",
+    }
+    assert boundary["test_result_validation"] == {
+        "trimem_fail_closed_raw_input": {
+            "count_matches_raw_list_length": True,
+            "duplicate_ids_rejected_before_set_construction": True,
+            "pass_fail_skip_disjoint": True,
+        },
+        "upstream_materialized_test_result": {
+            "count_matches_materialized_set_size": True,
+            "pass_fail_skip_sets_disjoint": True,
+            "raw_json_duplicates_unconditionally_rejected": False,
+            "required_collection_type": "set",
+        },
     }
 
     closure = _load_lock()["contracts"]["adapter_fail_closed_closure"]
@@ -653,7 +710,7 @@ def test_every_source_reference_is_bounded_by_its_locked_blob() -> None:
         and {"path", "start_line", "end_line", "symbol"} <= set(value)
     ]
 
-    assert len(evidence) == 30
+    assert len(evidence) == 34
     for reference in evidence:
         source = EXPECTED_SOURCE_BLOBS[reference["path"]]
         assert isinstance(reference["symbol"], str) and reference["symbol"]
@@ -662,7 +719,12 @@ def test_every_source_reference_is_bounded_by_its_locked_blob() -> None:
 
 def test_report_matches_lock_and_no_upstream_source_payload_is_vendored() -> None:
     lock = _load_lock()
-    report = REPORT_PATH.read_text(encoding="utf-8")
+    report = "\n".join(
+        (
+            REPORT_PATH.read_text(encoding="utf-8"),
+            SEMANTICS_REPORT_PATH.read_text(encoding="utf-8"),
+        )
+    )
 
     for value in (
         REVISION,

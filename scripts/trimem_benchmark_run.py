@@ -1153,7 +1153,11 @@ def observed_target_digest(grade: GradeResult) -> str:
     """Return the inspected digest, never the expected container field."""
     report = grade.report
     trimem = report.get("_trimem") if isinstance(report, Mapping) else None
-    evidence = trimem.get("image_evidence") if isinstance(trimem, Mapping) else report.get("image_evidence")
+    if not isinstance(trimem, Mapping):
+        raise BenchmarkExecutionError(
+            "official report has no canonical TriMem evidence envelope"
+        )
+    evidence = trimem.get("image_evidence")
     if not isinstance(evidence, list):
         raise BenchmarkExecutionError("official report has no image-inspect evidence")
     expected = grade.container_digest.rsplit("@", 1)[-1]

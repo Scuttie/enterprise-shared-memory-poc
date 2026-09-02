@@ -72,6 +72,9 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         trigger.MANIFEST_PATH,
         trigger.IMAGE_LOCK_PATH,
         trigger.CREDENTIAL_FREE_BUNDLE_PATH,
+        trigger.OFFICIAL_GRADER_PATH,
+        trigger.MULTI_SWE_ENTRYPOINT_PATH,
+        trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
     ):
         destination = repository / path
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -96,6 +99,9 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         trigger.MANIFEST_PATH,
         trigger.IMAGE_LOCK_PATH,
         trigger.CREDENTIAL_FREE_BUNDLE_PATH,
+        trigger.OFFICIAL_GRADER_PATH,
+        trigger.MULTI_SWE_ENTRYPOINT_PATH,
+        trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
         trigger.PREFLIGHT_PATH,
         trigger.INVENTORY_PATH,
         trigger.PROTOCOL_PATH,
@@ -238,12 +244,16 @@ def _git_contract_negative(
         before = _commit(repository, "pre-existing active sentinel")
         _write_active_sentinel(repository, source_head=before)
         after = _commit(repository, "modify active sentinel")
-    elif case in {"old_sentinel_touched", "sentinel_002_touched"}:
-        historical_path = (
-            trigger.HISTORICAL_SENTINEL_PATH
-            if case == "old_sentinel_touched"
-            else trigger.HISTORICAL_SENTINEL_002_PATH
-        )
+    elif case in {
+        "old_sentinel_touched",
+        "sentinel_002_touched",
+        "sentinel_003_touched",
+    }:
+        historical_path = {
+            "old_sentinel_touched": trigger.HISTORICAL_SENTINEL_PATH,
+            "sentinel_002_touched": trigger.HISTORICAL_SENTINEL_002_PATH,
+            "sentinel_003_touched": trigger.HISTORICAL_SENTINEL_003_PATH,
+        }[case]
         _write_active_sentinel(repository, source_head=before)
         historical = repository / historical_path
         historical.write_bytes(historical.read_bytes() + b"tampered\n")
@@ -296,11 +306,11 @@ def _git_contract_negative(
 
 def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> None:
     workflow = (ROOT / trigger.WORKFLOW_PATH).read_text(encoding="utf-8")
-    assert trigger.REQUEST_SCHEMA == "trimem/grader-smoke-branch-trigger/1.2"
-    assert trigger.REQUEST_ID == "TRIMEM_V1_GRADER_SMOKE_EXEC_003"
+    assert trigger.REQUEST_SCHEMA == "trimem/grader-smoke-branch-trigger/1.4"
+    assert trigger.REQUEST_ID == "TRIMEM_V1_GRADER_SMOKE_EXEC_004"
     assert (
         trigger.SENTINEL_PATH
-        == "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json"
+        == "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_004.json"
     )
     assert "workflow_dispatch:" in workflow
     assert "push:" in workflow
@@ -312,7 +322,7 @@ def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> Non
         flags=re.MULTILINE,
     )
     assert request_path_filters == [trigger.SENTINEL_PATH]
-    assert "group: trimem-v1-grader-smoke-exec-003" in workflow
+    assert "group: trimem-v1-grader-smoke-exec-004" in workflow
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert "needs.branch-trigger-preflight.result == 'success'" in workflow
@@ -331,7 +341,7 @@ def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> Non
 
 
 @pytest.mark.parametrize("historical_path,expected_sha256", trigger.HISTORICAL_SENTINELS)
-def test_both_historical_sentinels_are_byte_immutable(
+def test_all_historical_sentinels_are_byte_immutable(
     tmp_path: Path, historical_path: str, expected_sha256: str
 ) -> None:
     assert hashlib.sha256((ROOT / historical_path).read_bytes()).hexdigest() == expected_sha256
@@ -347,7 +357,7 @@ def test_both_historical_sentinels_are_byte_immutable(
         trigger.build_request_document(repository, source_head=changed)
 
 
-def test_correction_head_is_valid_while_active_003_sentinel_is_absent(
+def test_correction_head_is_valid_while_active_004_sentinel_is_absent(
     tmp_path: Path,
 ) -> None:
     repository = tmp_path / "repository"
@@ -357,7 +367,7 @@ def test_correction_head_is_valid_while_active_003_sentinel_is_absent(
         repository,
         source_head=correction_head,
     )
-    assert document["request_id"] == "TRIMEM_V1_GRADER_SMOKE_EXEC_003"
+    assert document["request_id"] == "TRIMEM_V1_GRADER_SMOKE_EXEC_004"
     assert document["source_head"] == correction_head
 
 
@@ -375,10 +385,12 @@ def test_actual_actions_payload_without_commit_file_arrays_passes(
     )
     assert report == {
         "actual_execution_authorized": False,
+        "api_calls": 0,
         "freeze_sha256": json.loads(
             (repository / trigger.SENTINEL_PATH).read_text(encoding="utf-8")
         )["freeze_sha256"],
         "grader_containers": 12,
+        "grader_executions": 12,
         "model_calls": 0,
         "paid_model_calls": 0,
         "phase": "GRADER_SMOKE",
@@ -427,6 +439,11 @@ def test_rerun_attempt_two_fails_closed(tmp_path: Path) -> None:
             "sentinel_002_touched",
             "sentinel|trigger commit",
             id="03b-sentinel-002-touched",
+        ),
+        pytest.param(
+            "sentinel_003_touched",
+            "sentinel|trigger commit",
+            id="03c-sentinel-003-touched",
         ),
         pytest.param(
             "two_commits_between", "one non-merge commit|parent", id="04-two-commits"
@@ -486,6 +503,17 @@ def test_request_hash_covers_exact_canonical_content(tmp_path: Path) -> None:
     )
     assert document["credential_free_bundle_sha256"] == trigger.sha256_prefixed(
         (repository / trigger.CREDENTIAL_FREE_BUNDLE_PATH).read_bytes()
+    )
+    assert document["adapter_sha256"] == trigger.sha256_prefixed(
+        (repository / trigger.OFFICIAL_GRADER_PATH).read_bytes()
+    )
+    assert document["multi_swe_entrypoint_sha256"] == trigger.sha256_prefixed(
+        (repository / trigger.MULTI_SWE_ENTRYPOINT_PATH).read_bytes()
+    )
+    assert document["multi_swe_evaluation_contract_lock_sha256"] == (
+        trigger.sha256_prefixed(
+            (repository / trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH).read_bytes()
+        )
     )
     assert document["noop_baseline_patch_sha256"] == hashlib.sha256(
         trigger.NOOP_BASELINE_PATCH
@@ -568,12 +596,14 @@ def test_write_request_renders_only_the_fixed_untracked_sentinel(tmp_path: Path)
     ("field", "value", "message"),
     [
         ("input_tokens", 1, "input_tokens must be integer zero"),
+        ("api_calls", 1, "api_calls must be integer zero"),
         ("model_calls", 1, "model_calls must be integer zero"),
         ("output_tokens", 1, "output_tokens must be integer zero"),
         ("paid_model_calls", 1, "paid_model_calls must be integer zero"),
         ("task_arm_runs", 1, "task_arm_runs must be integer zero"),
         ("total_usd", 0.01, "total_usd must be float zero"),
         ("grader_containers", 11, "grader_containers must equal"),
+        ("grader_executions", 11, "grader_executions must equal"),
     ],
 )
 def test_every_cost_authority_must_remain_zero(
@@ -698,6 +728,17 @@ def test_every_repository_binding_fails_closed_on_drift(tmp_path: Path) -> None:
         ("grader_smoke_manifest_sha256", "sha256:" + "0" * 64, "manifest raw hash mismatch"),
         ("grader_image_lock_sha256", "sha256:" + "0" * 64, "image-lock raw hash mismatch"),
         ("credential_free_bundle_sha256", "sha256:" + "0" * 64, "bundle raw hash mismatch"),
+        ("adapter_sha256", "sha256:" + "0" * 64, "adapter raw hash mismatch"),
+        (
+            "multi_swe_entrypoint_sha256",
+            "sha256:" + "0" * 64,
+            "entrypoint raw hash mismatch",
+        ),
+        (
+            "multi_swe_evaluation_contract_lock_sha256",
+            "sha256:" + "0" * 64,
+            "contract-lock raw hash mismatch",
+        ),
         ("matrix_kind", "parallel", "matrix kind mismatch"),
         ("matrix_order", list(reversed(original["matrix_order"])), "matrix order mismatch"),
         ("unique_instances", 7, "unique instance count mismatch"),

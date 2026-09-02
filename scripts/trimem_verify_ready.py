@@ -69,6 +69,7 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     FROZEN_REQUEST_PATH as GRADER_SMOKE_FROZEN_REQUEST_PATH,
     HISTORICAL_SENTINELS,
     IMAGE_LOCK_PATH as GRADER_SMOKE_IMAGE_LOCK_PATH,
+    MULTI_SWE_PREBUILT_EVALUATION_CONTRACT_AMENDMENT,
     PROTOCOL_PATH as GRADER_SMOKE_PROTOCOL_PATH,
     REQUEST_ID as GRADER_SMOKE_REQUEST_ID,
     REQUEST_SCHEMA as GRADER_SMOKE_REQUEST_SCHEMA,
@@ -1404,6 +1405,11 @@ def validate_targets() -> dict[str, list[dict[str, Any]]]:
         "P0.1.1 non-semantic execution-control amendment differs",
     )
     require(
+        smoke_manifest.get("multi_swe_prebuilt_evaluation_contract_amendment")
+        == MULTI_SWE_PREBUILT_EVALUATION_CONTRACT_AMENDMENT,
+        "P0.1.4 non-semantic Multi-SWE evaluation-contract amendment differs",
+    )
+    require(
         smoke_manifest.get("target_set_sha256") == BASELINE_TARGET_SET_SHA256,
         "P0.1.1 changed the frozen grader-smoke target set",
     )
@@ -1834,7 +1840,11 @@ def validate_smoke_environment_protection(environment: Mapping[str, Any]) -> Non
 
 
 def validate_workflows() -> None:
-    automatic = [ROOT / ".github/workflows/ci-trimem.yml", ROOT / ".github/workflows/ci-trimem-e2e.yml"]
+    automatic = [
+        ROOT / ".github/workflows/ci-trimem.yml",
+        ROOT / ".github/workflows/ci-trimem-e2e.yml",
+        ROOT / ".github/workflows/ci-trimem-multi-swe-contract.yml",
+    ]
     portability = ROOT / ".github/workflows/ci-trimem-harness-lock.yml"
     smoke_workflow = ROOT / ".github/workflows/trimem-grader-smoke.yml"
     benchmark_workflow = ROOT / ".github/workflows/trimem-benchmark.yml"
@@ -1854,6 +1864,36 @@ def validate_workflows() -> None:
     service = automatic[1].read_text(encoding="utf-8")
     require("test_real_services_e2e.py" in service and "postgres@sha256:" in service and "qdrant/qdrant@sha256:" in service, "real PostgreSQL/Qdrant CI is absent")
     require("postgres_bootstrap.py" in service and "TRIMEM_TEST_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@" in service and "TRIMEM_TEST_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@" in service, "real-service role/RLS boundary is not wired")
+    multi_swe_contract = automatic[2].read_text(encoding="utf-8")
+    require(
+        "scripts/trimem_multi_swe_contract.py" in multi_swe_contract
+        and "tests/unit/test_trimem_multi_*.py" in multi_swe_contract
+        and "24f493f8a103e72312ded4f6b9c89f081d69cb09" in multi_swe_contract,
+        "Multi-SWE pinned-contract live verifier/production-config rehearsal is absent",
+    )
+    require(
+        "environment:" not in multi_swe_contract
+        and "secrets." not in multi_swe_contract
+        and "trimem_grader_smoke.py" not in multi_swe_contract,
+        "Multi-SWE preexec/probe workflow is not credential-free and non-scientific",
+    )
+    require(
+        "workflow_dispatch:" not in multi_swe_contract
+        and "github.event_name == 'push'" in multi_swe_contract
+        and "github.ref == 'refs/heads/codex/trimem-coder-v1'"
+        in multi_swe_contract
+        and "github.run_attempt == 1" in multi_swe_contract
+        and "contains(github.event.head_commit.added," in multi_swe_contract
+        and "artifacts/trimem_v1/probe_requests/"
+        "MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json" in multi_swe_contract
+        and "scripts/trimem_multi_swe_probe_request.py" in multi_swe_contract
+        and '--event-path "$GITHUB_EVENT_PATH"' in multi_swe_contract
+        and "scripts/trimem_multi_swe_image_probe.py" in multi_swe_contract
+        and "always() && steps.image_probe.outcome != 'skipped'"
+        in multi_swe_contract
+        and "persist-credentials: false" in multi_swe_contract,
+        "exact Vue image probe lacks the one-time marker-only branch-push contract",
+    )
     portable = portability.read_text(encoding="utf-8")
     require(
         "pull_request:" in portable
@@ -1875,7 +1915,7 @@ def validate_workflows() -> None:
         "push:" in smoke
         and "      - codex/trimem-coder-v1" in smoke
         and f"      - {GRADER_SMOKE_SENTINEL_PATH}" in smoke
-        and "      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json" not in smoke,
+        and all(f"      - {path}" not in smoke for path, _ in HISTORICAL_SENTINELS),
         "smoke workflow exact branch-local sentinel trigger is absent",
     )
     require(
@@ -1885,7 +1925,7 @@ def validate_workflows() -> None:
         "smoke branch trigger is not fail-closed before the protected job",
     )
     require(
-        "concurrency:\n  group: trimem-v1-grader-smoke-exec-003\n"
+        "concurrency:\n  group: trimem-v1-grader-smoke-exec-004\n"
         "  cancel-in-progress: false" in smoke,
         "smoke recovery concurrency contract differs",
     )

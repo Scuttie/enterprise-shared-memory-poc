@@ -1,0 +1,403 @@
+{
+  "schema": "trimem/multi-swe-evaluation-contract-lock/1.0",
+  "status": "PINNED_SOURCE_CONTRACT_LOCKED",
+  "repository": "https://github.com/multi-swe-bench/multi-swe-bench",
+  "revision": "24f493f8a103e72312ded4f6b9c89f081d69cb09",
+  "commit_tree_oid": "741ce10a4ec220fec713112502850b381a6226b9",
+  "commit_timestamp": "2025-12-18T14:27:09+08:00",
+  "observed_at_utc": "2026-09-02T07:16:34Z",
+  "evidence_basis": {
+    "blob_reader": "git cat-file blob <revision>:<path>",
+    "commit_object_type": "commit",
+    "origin_verified": true,
+    "revision_verified": true,
+    "working_tree_bytes_used": false,
+    "upstream_source_vendored": false
+  },
+  "source_blobs": {
+    "multi_swe_bench/harness/gen_report.py": {
+      "bytes": 21331,
+      "git_blob_oid": "251e8b01059a18a9af5ae176c696eb4be8950ae4",
+      "git_mode": "100644",
+      "line_count": 589,
+      "sha256": "02ebc8a5414898d12f4f5a9ba0c11a8f57c9f34a0bdc02c2311afac9f654847d"
+    },
+    "multi_swe_bench/harness/image.py": {
+      "bytes": 5892,
+      "git_blob_oid": "da1c613d4e7074f46889ffe1c31c0582c3535d2f",
+      "git_mode": "100644",
+      "line_count": 210,
+      "sha256": "86074812495b97026efb42c57acbf7738864b1f0167f99e3b9f9309458972ae9"
+    },
+    "multi_swe_bench/harness/repos/typescript/vuejs/core.py": {
+      "bytes": 5967,
+      "git_blob_oid": "8562206faf6eb4fe739932f9a31ec578cc10af96",
+      "git_mode": "100644",
+      "line_count": 254,
+      "sha256": "f154469392f1c52a5d8756c8f5332be35347b8b3bf4dd739a443b5ad4a5f3ce5"
+    },
+    "multi_swe_bench/harness/run_evaluation.py": {
+      "bytes": 28647,
+      "git_blob_oid": "f2dfa70df095d434cc6e5fd47f9a7a1bb027b824",
+      "git_mode": "100644",
+      "line_count": 833,
+      "sha256": "b1a9b45022b9e79a5aa9a21908d9074b1258594c10d95f41938852d84ac38efb"
+    },
+    "multi_swe_bench/utils/session_util.py": {
+      "bytes": 17230,
+      "git_blob_oid": "3d95889dec9e9a7e630c9b6a9552a4ea0bcdbf64",
+      "git_mode": "100644",
+      "line_count": 457,
+      "sha256": "c4050c065520e35e7c0a7ad0f2ab2b124c3c692413f0c09a2591dd7dc30a3e8a"
+    }
+  },
+  "contracts": {
+    "adapter_safe_evaluation_route": {
+      "execution_phase": {
+        "config": {
+          "force_build": false,
+          "human_mode": true,
+          "mode": "instance_only",
+          "need_clone": false
+        },
+        "dispatch": "trimem_multi_swe_entrypoint.execute_pinned_instance_only -> pinned get_parser -> CliArgs.from_dict -> CliArgs.run -> run_mode_instance_only",
+        "evidence": [
+          {
+            "end_line": 815,
+            "path": "multi_swe_bench/harness/run_evaluation.py",
+            "start_line": 756,
+            "symbol": "CliArgs.run_mode_instance_only and CliArgs.run"
+          }
+        ],
+        "support_container_bootstrap_calls": 0,
+        "upstream_module_main_executed": false,
+        "structurally_excluded_calls": [
+          "run_evaluation.__main__.nix_swe_bootstrap",
+          "run_mode_image",
+          "check_commit_hashes",
+          "build_image",
+          "run_and_save_logs"
+        ]
+      },
+      "report_phase": {
+        "command_contract": "python -m multi_swe_bench.harness.gen_report --mode evaluation",
+        "evidence": [
+          {
+            "end_line": 542,
+            "path": "multi_swe_bench/harness/gen_report.py",
+            "start_line": 430,
+            "symbol": "CliArgs.gen_eval_reports and CliArgs.run_evaluation"
+          },
+          {
+            "end_line": 582,
+            "path": "multi_swe_bench/harness/gen_report.py",
+            "start_line": 572,
+            "symbol": "CliArgs.run"
+          }
+        ],
+        "input": "one frozen dataset row plus evaluation fix-patch-run.log",
+        "output": "output_dir/final_report.json"
+      },
+      "sequence": [
+        "invoke the byte-locked production entrypoint and import pinned run_evaluation as a library without executing its module __main__ block",
+        "construct the pinned CliArgs through the upstream get_parser config route",
+        "run pinned CliArgs in instance_only mode with zero nix_swe support-container bootstrap calls",
+        "require zero exit",
+        "verify generated host fix.patch equals the submitted request bytes",
+        "run pinned gen_report in evaluation mode",
+        "require zero exit and exact one-target final report",
+        "require non-empty official fix-test evidence"
+      ]
+    },
+    "argument_defaults": {
+      "force_build": {
+        "default": false,
+        "evidence": [
+          {
+            "end_line": 85,
+            "path": "multi_swe_bench/harness/run_evaluation.py",
+            "start_line": 79,
+            "symbol": "get_parser"
+          }
+        ]
+      },
+      "human_mode": {
+        "default": true,
+        "evidence": [
+          {
+            "end_line": 195,
+            "path": "multi_swe_bench/harness/run_evaluation.py",
+            "start_line": 189,
+            "symbol": "get_parser"
+          },
+          {
+            "end_line": 239,
+            "path": "multi_swe_bench/harness/run_evaluation.py",
+            "start_line": 218,
+            "symbol": "CliArgs"
+          }
+        ]
+      }
+    },
+    "existing_image_short_circuit": {
+      "condition": {
+        "docker_image_exists": true,
+        "force_build": false
+      },
+      "evidence": [
+        {
+          "end_line": 610,
+          "path": "multi_swe_bench/harness/run_evaluation.py",
+          "start_line": 573,
+          "symbol": "CliArgs.build_image"
+        }
+      ],
+      "actions_before_return": [
+        "docker_util.exists query",
+        "debug log"
+      ],
+      "filesystem_mutations_before_return": [],
+      "outcome": "RETURN_BEFORE_BUILD_WORKDIR_OR_FILE_MATERIALIZATION",
+      "skipped_operations": [
+        "build workdir creation",
+        "repository copy",
+        "Dockerfile materialization",
+        "image.files materialization",
+        "docker_util.build"
+      ]
+    },
+    "full_evaluation_source_build_risk": {
+      "derived_result": "mode=evaluation enters run_mode_image before instance execution; the dependency graph begins from children of external images, so a missing repository base image can be source-built even when the final pr-{number} target image is already tagged",
+      "evidence": [
+        {
+          "end_line": 683,
+          "path": "multi_swe_bench/harness/run_evaluation.py",
+          "start_line": 612,
+          "symbol": "CliArgs.run_mode_image"
+        },
+        {
+          "end_line": 813,
+          "path": "multi_swe_bench/harness/run_evaluation.py",
+          "start_line": 784,
+          "symbol": "CliArgs.run_mode_instance, CliArgs.run_mode_evaluation, and CliArgs.run"
+        },
+        {
+          "end_line": 189,
+          "path": "multi_swe_bench/harness/repos/typescript/vuejs/core.py",
+          "start_line": 9,
+          "symbol": "CoreImageBase and CoreImageDefault"
+        }
+      ],
+      "unsafe_for_prebuilt_only_contract": true
+    },
+    "human_mode_dispatch": {
+      "false_path": {
+        "callee": "multi_swe_bench.utils.session_util.run_and_save_logs",
+        "container_pull_policy": "never",
+        "evidence": [
+          {
+            "end_line": 748,
+            "path": "multi_swe_bench/harness/run_evaluation.py",
+            "start_line": 726,
+            "symbol": "CliArgs.run_instance"
+          },
+          {
+            "end_line": 256,
+            "path": "multi_swe_bench/utils/session_util.py",
+            "start_line": 177,
+            "symbol": "run_and_save_logs"
+          }
+        ],
+        "host_prepare_script_path": "{workdir}/{org}/{repo}/images/pr-{number}/prepare.sh",
+        "predicate": "human_mode is false",
+        "prepare_script_contract": {
+          "host_open_required": true,
+          "split_delimiter": "###ACTION_DELIMITER###",
+          "commands_replayed_in_container_session": true
+        }
+      },
+      "true_path": {
+        "callee": "docker_util.run",
+        "evidence": [
+          {
+            "end_line": 754,
+            "path": "multi_swe_bench/harness/run_evaluation.py",
+            "start_line": 706,
+            "symbol": "CliArgs.run_instance"
+          },
+          {
+            "end_line": 118,
+            "path": "multi_swe_bench/harness/image.py",
+            "start_line": 92,
+            "symbol": "Image"
+          }
+        ],
+        "patch_volume": {
+          "container_path": "/home/fix.patch",
+          "host_path": "{evaluation_instance_dir}/fix.patch",
+          "mode": "rw"
+        },
+        "predicate": "human_mode is true"
+      }
+    },
+    "prebuilt_non_human_failure_mechanism": {
+      "conditions": [
+        "force_build is false",
+        "target image already exists",
+        "human_mode is false",
+        "host build workdir does not already contain prepare.sh"
+      ],
+      "derived_result": "build_image returns without materializing image.files, then run_and_save_logs opens the required host prepare.sh and fails before valid evaluator test evidence",
+      "source_contract_status": "PROVEN_FROM_PINNED_CONTROL_FLOW"
+    },
+    "production_entrypoint": {
+      "bytes": 7752,
+      "invocation": "python scripts/trimem_multi_swe_entrypoint.py --harness-root <pinned-checkout> --config <one-row-config>",
+      "library_dispatch": "execute_pinned_instance_only -> pinned get_parser -> CliArgs.from_dict -> CliArgs.run -> run_mode_instance_only",
+      "path": "scripts/trimem_multi_swe_entrypoint.py",
+      "sha256": "88d3c3d4faa6bd31887c400355adbe3c43d980725b188cafb3c313e0271f038c",
+      "support_container_bootstrap_calls": 0,
+      "upstream_module": "multi_swe_bench.harness.run_evaluation",
+      "upstream_module_main_executed": false,
+      "upstream_revision": "24f493f8a103e72312ded4f6b9c89f081d69cb09"
+    },
+    "shared_image_contract": {
+      "dockerfile_name": "Dockerfile",
+      "evidence": [
+        {
+          "end_line": 121,
+          "path": "multi_swe_bench/harness/image.py",
+          "start_line": 89,
+          "symbol": "Image"
+        }
+      ],
+      "fix_patch_container_path": "/home/fix.patch",
+      "full_name_form": "{image_name}:{image_tag}",
+      "name_form": "mswebench/{org}_m_{repo}, lower-cased"
+    },
+    "upstream_module_main_bootstrap": {
+      "container_image": "mswebench/nix_swe:v1.0",
+      "container_name": "nix_swe",
+      "evidence": [
+        {
+          "end_line": 833,
+          "path": "multi_swe_bench/harness/run_evaluation.py",
+          "start_line": 818,
+          "symbol": "module __main__ nix_swe bootstrap and CLI dispatch"
+        }
+      ],
+      "execution_order": [
+        "docker.from_env",
+        "client.containers.get(nix_swe)",
+        "client.containers.run(mswebench/nix_swe:v1.0) when absent",
+        "get_parser",
+        "CliArgs.from_dict",
+        "CliArgs.run"
+      ],
+      "potential_support_container_creations": 1,
+      "production_route_bypasses_entire_block": true,
+      "runs_before_argument_parsing": true
+    },
+    "vuejs_core_image_recipe": {
+      "base_image": {
+        "class": "CoreImageBase",
+        "dependency": "node:20",
+        "dockerfile_steps": [
+          "set optional global environment",
+          "set /home as workdir",
+          "apt install git",
+          "npm install global pnpm",
+          "clone repository when need_clone is true, otherwise copy repository",
+          "clear configured environment"
+        ],
+        "evidence": [
+          {
+            "end_line": 57,
+            "path": "multi_swe_bench/harness/repos/typescript/vuejs/core.py",
+            "start_line": 9,
+            "symbol": "CoreImageBase"
+          }
+        ],
+        "image_tag": "base",
+        "workdir": "base"
+      },
+      "instance_image": {
+        "class": "CoreImageDefault",
+        "dependency": "CoreImageBase",
+        "dockerfile_steps": [
+          "use the repository base image",
+          "set optional global environment",
+          "copy all generated recipe files to /home",
+          "run /home/prepare.sh during image build",
+          "clear configured environment"
+        ],
+        "evidence": [
+          {
+            "end_line": 189,
+            "path": "multi_swe_bench/harness/repos/typescript/vuejs/core.py",
+            "start_line": 60,
+            "symbol": "CoreImageDefault"
+          }
+        ],
+        "generated_files": [
+          "fix.patch",
+          "test.patch",
+          "check_git_changes.sh",
+          "prepare.sh",
+          "run.sh",
+          "test-run.sh",
+          "fix-run.sh"
+        ],
+        "image_tag": "pr-{number}",
+        "prepare_actions": [
+          "change to /home/{repo}",
+          "git reset --hard",
+          "assert clean worktree",
+          "git checkout {base_sha}",
+          "assert clean worktree",
+          "pnpm install with failure tolerated"
+        ],
+        "workdir": "pr-{number}"
+      },
+      "registered_instance": {
+        "dependency": "CoreImageDefault",
+        "evidence": [
+          {
+            "end_line": 222,
+            "path": "multi_swe_bench/harness/repos/typescript/vuejs/core.py",
+            "start_line": 192,
+            "symbol": "Core"
+          }
+        ],
+        "fix_run": "apply test.patch and fix.patch, then run pnpm test-unit",
+        "registration": "vuejs/core"
+      }
+    }
+  },
+  "scope": {
+    "adapter_modified": true,
+    "docker_or_grader_executed": false,
+    "model_calls": 0,
+    "paid_model_calls": 0,
+    "upstream_source_copied_into_product": false,
+    "workflow_modified": true
+  },
+  "historical_failure": {
+    "authority": "DIAGNOSTIC_ONLY_NOT_PART_OF_AUTHORITATIVE_CAMPAIGN",
+    "endpoint": "TRIMEM_V1_GRADER_SMOKE_FAIL",
+    "observed_sequence": [
+      "mode=evaluation entered the image phase",
+      "the missing mswebench/vuejs_m_core:base image was source-built",
+      "the already-present mswebench/vuejs_m_core:pr-8911 target was skipped",
+      "human_mode=false entered run_and_save_logs",
+      "the required host images/pr-8911/prepare.sh was absent"
+    ],
+    "root_cause": "MULTI_SWE_PREBUILT_IMAGE_EVALUATION_MODE_MISMATCH",
+    "run_attempt": 1,
+    "run_id": 33594270929,
+    "source_image_builds_observed_before_failure": 1
+  },
+  "report": "reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md",
+  "contract_projection_sha256": "1cb00293db7bc45f4ef02b551b0d6d87ce3626fcc5b38c857eebe82081401b16",
+  "lock_sha256": "c5de60415a95a78969a433d95855b827d67cc5a4b65b9a9af3abd7c37ce9feeb"
+}

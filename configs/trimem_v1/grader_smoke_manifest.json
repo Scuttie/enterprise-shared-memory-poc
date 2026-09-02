@@ -12,6 +12,19 @@
     "scientific_inputs_changed": false
   },
   "execution_status": "PENDING_EXEC_APPROVAL",
+  "multi_swe_prebuilt_evaluation_contract_amendment": {
+    "classification": "NON_SEMANTIC_MULTI_SWE_PREBUILT_EVALUATION_CONTRACT_FIX",
+    "completed_cells_authoritative": false,
+    "completed_cells_diagnostic_only": 4,
+    "previous_failed_run": {
+      "head": "a0f8cf2bbc3e13690c583b86054aaae562dfe3fd",
+      "run_attempt": 1,
+      "run_id": 33594270929,
+      "scientific_or_evaluator_execution": true
+    },
+    "reason": "Correct the Multi-SWE digest-pinned prebuilt-image evaluation mode and submitted-patch mount contract; the four completed SWE-bench cells from the interrupted mixed-adapter campaign remain diagnostic only.",
+    "scientific_inputs_changed": false
+  },
   "matrix_kind": "single_serial_six_instance_gold_noop_campaign",
   "noop_baseline": {
     "changed_paths": [".trimem_grader_noop"],

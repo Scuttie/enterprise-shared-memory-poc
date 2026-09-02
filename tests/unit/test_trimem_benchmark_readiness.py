@@ -76,6 +76,25 @@ def test_p011_preserves_failed_trigger_and_records_nonsemantic_amendment() -> No
     current_manifest = _read(
         ROOT / "configs/trimem_v1/grader_smoke_manifest.json"
     )
+    assert current_manifest[
+        "multi_swe_prebuilt_evaluation_contract_amendment"
+    ] == {
+        "classification": "NON_SEMANTIC_MULTI_SWE_PREBUILT_EVALUATION_CONTRACT_FIX",
+        "completed_cells_authoritative": False,
+        "completed_cells_diagnostic_only": 4,
+        "previous_failed_run": {
+            "head": "a0f8cf2bbc3e13690c583b86054aaae562dfe3fd",
+            "run_attempt": 1,
+            "run_id": 33594270929,
+            "scientific_or_evaluator_execution": True,
+        },
+        "reason": (
+            "Correct the Multi-SWE digest-pinned prebuilt-image evaluation mode "
+            "and submitted-patch mount contract; the four completed SWE-bench "
+            "cells from the interrupted mixed-adapter campaign remain diagnostic only."
+        ),
+        "scientific_inputs_changed": False,
+    }
     scientific_fields = (
         "matrix_kind",
         "noop_baseline",
@@ -1407,6 +1426,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         ROOT / ".github/workflows/trimem-grader-smoke.yml",
         ROOT / ".github/workflows/trimem-benchmark.yml",
         ROOT / ".github/workflows/ci-trimem-harness-lock.yml",
+        ROOT / ".github/workflows/ci-trimem-multi-swe-contract.yml",
     ]
     for path in workflows:
         text = path.read_text(encoding="utf-8")
@@ -1426,13 +1446,37 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "python scripts/postgres_bootstrap.py" in service
     assert "TRIMEM_TEST_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@" in service
     assert "TRIMEM_TEST_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@" in service
+    multi_swe_contract = workflows[5].read_text(encoding="utf-8")
+    assert "pull_request:" in multi_swe_contract
+    assert "workflow_dispatch:" not in multi_swe_contract
+    assert "scripts/trimem_multi_swe_contract.py" in multi_swe_contract
+    assert "tests/unit/test_trimem_multi_*.py" in multi_swe_contract
+    assert "24f493f8a103e72312ded4f6b9c89f081d69cb09" in multi_swe_contract
+    assert "environment:" not in multi_swe_contract
+    assert "secrets." not in multi_swe_contract
+    assert "trimem_grader_smoke.py" not in multi_swe_contract
+    assert "github.event_name == 'push'" in multi_swe_contract
+    assert "github.ref == 'refs/heads/codex/trimem-coder-v1'" in multi_swe_contract
+    assert "github.run_attempt == 1" in multi_swe_contract
+    assert "contains(github.event.head_commit.added," in multi_swe_contract
+    assert (
+        "artifacts/trimem_v1/probe_requests/"
+        "MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json" in multi_swe_contract
+    )
+    assert "scripts/trimem_multi_swe_probe_request.py" in multi_swe_contract
+    assert '--event-path "$GITHUB_EVENT_PATH"' in multi_swe_contract
+    assert "scripts/trimem_multi_swe_image_probe.py" in multi_swe_contract
+    assert "always() && steps.image_probe.outcome != 'skipped'" in multi_swe_contract
+    assert "persist-credentials: false" in multi_swe_contract
     smoke = workflows[2].read_text(encoding="utf-8")
     assert "workflow_dispatch:" in smoke and "pull_request:" not in smoke
     assert "push:" in smoke
     assert "      - codex/trimem-coder-v1" in smoke
     assert f"      - {readiness.GRADER_SMOKE_SENTINEL_PATH}" in smoke
-    assert "      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json" not in smoke
-    assert "group: trimem-v1-grader-smoke-exec-003" in smoke
+    assert all(
+        f"      - {path}" not in smoke for path, _ in readiness.HISTORICAL_SENTINELS
+    )
+    assert "group: trimem-v1-grader-smoke-exec-004" in smoke
     assert "cancel-in-progress: false" in smoke
     assert "branch-trigger-preflight:" in smoke
     assert "environment: trimem-grader-smoke-exec" in smoke
@@ -2717,6 +2761,31 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
     harness_revision = official_grader.SWE_HARNESS_REVISION
     grader_id = f"official-{target['benchmark_id']}@{harness_revision}"
     image_digest = target["image"].rsplit("@", 1)[1]
+    patch_raw = smoke_protocol.NOOP_BASELINE_PATCH
+    execution_contract = grader_smoke._expected_execution_contract(target, patch_raw)
+    execution_contract_sha256 = hashlib.sha256(
+        _canonical(execution_contract)
+    ).hexdigest()
+    execution_control = grader_smoke._expected_execution_control(target)
+    execution_control_sha256 = hashlib.sha256(
+        _canonical(execution_control)
+    ).hexdigest()
+    dataset_raw = b"fixture single-row dataset\n"
+    prediction_raw = grader_smoke._prediction_input_bytes(target, patch_raw)
+    materialized_private_inputs = [
+        {
+            "name": "dataset.json",
+            "sha256": hashlib.sha256(dataset_raw).hexdigest(),
+            "bytes": len(dataset_raw),
+            "retention": "PURGED_AFTER_HASH_BOUND_GRADING",
+        },
+        {
+            "name": "prediction.jsonl",
+            "sha256": hashlib.sha256(prediction_raw).hexdigest(),
+            "bytes": len(prediction_raw),
+            "retention": "PURGED_AFTER_HASH_BOUND_GRADING",
+        },
+    ]
     container_doc = {
         "schema": "trimem/grader-smoke-container-evidence/1.0",
         "container_digest": target["image"], "container_started": True,
@@ -2754,6 +2823,9 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
             "dataset_revision": target["dataset_revision"],
             "harness_revision": harness_revision,
             "source_row_sha256": target["source_row_sha256"],
+            "execution_contract": execution_contract,
+            "execution_control_evidence": execution_control,
+            "materialized_private_inputs": materialized_private_inputs,
             "image_evidence": [{
                 "image": target["image"], "expected": image_digest,
                 "observed": [image_digest],
@@ -2777,6 +2849,45 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
             },
         },
     }
+    execution_contract_doc = {
+        "schema": "trimem/grader-smoke-execution-contract-evidence/1.0",
+        "target_id": target["target_id"],
+        "execution_contract_sha256": execution_contract_sha256,
+        "execution_contract": execution_contract,
+    }
+    execution_control_doc = {
+        "schema": "trimem/grader-smoke-execution-control-evidence/1.0",
+        "target_id": target["target_id"],
+        "execution_control_sha256": execution_control_sha256,
+        "execution_control": execution_control,
+    }
+    fixture_grade = grader_smoke.GradeResult(
+        task_id=target["target_id"],
+        resolved=False,
+        exit_code=0,
+        stdout="",
+        stderr="",
+        report=report_doc,
+        grader_id=grader_id,
+        container_digest=target["image"],
+        official=True,
+        wall_time_ms=0,
+        container_started=True,
+    )
+    submitted_patch_identity = grader_smoke._validated_submitted_patch_identity(
+        fixture_grade,
+        target=target,
+        patch_raw=patch_raw,
+        grader_root=task / "official-grader",
+        restricted_submitted_patch=applied,
+    )
+    submitted_patch_identity_sha256 = hashlib.sha256(
+        _canonical(submitted_patch_identity)
+    ).hexdigest()
+    submitted_patch_identity_doc = {
+        **submitted_patch_identity,
+        "identity_evidence_sha256": submitted_patch_identity_sha256,
+    }
     evidence = {
         "patch": _smoke_json_blob(task, "patch-evidence.json", patch_doc),
         "tests": _smoke_json_blob(task, "tests-evidence.json", tests_doc),
@@ -2784,6 +2895,17 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
         "evaluator": _smoke_json_blob(task, "evaluator-evidence.json", evaluator_doc),
         "report": _smoke_json_blob(task, "report.json", report_doc),
         "digest": _smoke_json_blob(task, "digest-evidence.json", digest_doc),
+        "execution_contract": _smoke_json_blob(
+            task, "execution-contract-evidence.json", execution_contract_doc
+        ),
+        "execution_control": _smoke_json_blob(
+            task, "execution-control-evidence.json", execution_control_doc
+        ),
+        "submitted_patch_identity": _smoke_json_blob(
+            task,
+            "submitted-patch-identity-evidence.json",
+            submitted_patch_identity_doc,
+        ),
         "stdout": _smoke_blob(task, "stdout.txt", b""),
         "stderr": _smoke_blob(task, "stderr.txt", b""),
         "applied_patch": applied,
@@ -2804,8 +2926,21 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
         "patch_bytes": len(smoke_protocol.NOOP_BASELINE_PATCH),
         "patch_sha256": smoke_protocol.NOOP_BASELINE_PATCH_SHA256,
         "expected_image_digest": image_digest, "observed_image_digest": image_digest,
+        "execution_contract_sha256": execution_contract_sha256,
+        "execution_control_sha256": execution_control_sha256,
+        "submitted_patch_identity_sha256": submitted_patch_identity_sha256,
+        "execution_evidence": {
+            "patch_applied": True,
+            "tests_executed": True,
+            "digest_match": True,
+            "submitted_patch_identity": True,
+            "host_prepare_sh_access_count": 0,
+            "source_image_build_count": 0,
+            "api_calls": 0,
+        },
         "actual_accounting": {
-            "model_gateway_calls": 0, "paid_model_calls": 0, "grader_calls": 1,
+            "model_gateway_calls": 0, "paid_model_calls": 0, "api_calls": 0,
+            "grader_calls": 1,
             "grader_containers": 1, "official_grader_runs": 1,
         },
         "evidence": evidence,
@@ -2963,6 +3098,31 @@ def _aggregate_count_fixture() -> tuple[list[dict], list[tuple[Path, dict]]]:
                 "expected_image_digest": "sha256:" + "d" * 64,
                 "observed_image_digest": "sha256:" + "d" * 64,
                 "resolved": resolved,
+                "actual_accounting": {
+                    "grader_calls": 1,
+                    "grader_containers": 1,
+                    "model_gateway_calls": 0,
+                    "official_grader_runs": 1,
+                    "paid_model_calls": 0,
+                    "api_calls": 0,
+                },
+                "evidence": {
+                    name: {}
+                    for name in (
+                        "patch",
+                        "tests",
+                        "container",
+                        "evaluator",
+                        "report",
+                        "digest",
+                        "execution_contract",
+                        "execution_control",
+                        "submitted_patch_identity",
+                        "applied_patch",
+                        "test_output",
+                        "official_test_status",
+                    )
+                },
             }))
     return targets, records
 
@@ -2993,12 +3153,29 @@ def test_smoke_aggregate_requires_exact_six_by_six_and_preserves_manifest_order(
             "applied_patch_sha256": "a" * 64,
             "official_test_output_sha256": "b" * 64,
             "official_test_status_sha256": "c" * 64,
+            "execution_contract_sha256": "d" * 64,
+            "execution_control_sha256": "e" * 64,
+            "submitted_patch_identity_sha256": "f" * 64,
+            "patch_applied": True,
+            "tests_executed": True,
+            "digest_match": True,
+            "submitted_patch_identity": True,
+            "host_prepare_sh_access_count": 0,
+            "source_image_build_count": 0,
+            "api_calls": 0,
         },
     )
     result = benchmark_matrix._aggregate_smoke(tmp_path)
     assert result["probe_counts"] == {"GOLD": 6, "NOOP_BASELINE": 6}
     assert result["resolved_counts"] == {"GOLD": 6, "NOOP_BASELINE": 0}
     assert result["unresolved_counts"] == {"GOLD": 0, "NOOP_BASELINE": 6}
+    assert result["patch_applied_count"] == 12
+    assert result["tests_executed_count"] == 12
+    assert result["digest_match_count"] == 12
+    assert result["submitted_patch_identity_count"] == 12
+    assert result["host_prepare_sh_access_count"] == 0
+    assert result["source_image_build_count"] == 0
+    assert result["api_calls"] == 0
     assert result["empty_patch_ids"] == []
     assert all(count == 12 for count in result["evidence_counts"].values())
     assert [row["target_id"] for row in result["outcomes"]] == [

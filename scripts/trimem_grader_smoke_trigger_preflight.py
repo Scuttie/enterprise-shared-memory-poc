@@ -41,12 +41,19 @@ HISTORICAL_SENTINEL_002_PATH = (
 HISTORICAL_SENTINEL_002_SHA256 = (
     "258900694f1584fcb0f04cde485c33ad4f4d4691154f5dfe598883ecdb03f48c"
 )
+HISTORICAL_SENTINEL_003_PATH = (
+    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json"
+)
+HISTORICAL_SENTINEL_003_SHA256 = (
+    "90bae24a2fba5e9ed88882fb06a47c8bb0113e1ffe6c2c121db990934bad0603"
+)
 HISTORICAL_SENTINELS = (
     (HISTORICAL_SENTINEL_PATH, HISTORICAL_SENTINEL_SHA256),
     (HISTORICAL_SENTINEL_002_PATH, HISTORICAL_SENTINEL_002_SHA256),
+    (HISTORICAL_SENTINEL_003_PATH, HISTORICAL_SENTINEL_003_SHA256),
 )
 SENTINEL_PATH = (
-    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json"
+    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_004.json"
 )
 FROZEN_REQUEST_PATH = "configs/trimem_v1/benchmark_exec_request.json"
 WORKFLOW_PATH = ".github/workflows/trimem-grader-smoke.yml"
@@ -59,8 +66,13 @@ CREDENTIAL_FREE_BUNDLE_PATH = (
 PREFLIGHT_PATH = "scripts/trimem_grader_smoke_trigger_preflight.py"
 INVENTORY_PATH = "scripts/trimem_evidence_inventory.py"
 PROTOCOL_PATH = "scripts/trimem_grader_smoke_protocol.py"
-REQUEST_ID = "TRIMEM_V1_GRADER_SMOKE_EXEC_003"
-REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.2"
+OFFICIAL_GRADER_PATH = "scripts/trimem_official_grader.py"
+MULTI_SWE_ENTRYPOINT_PATH = "scripts/trimem_multi_swe_entrypoint.py"
+MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH = (
+    "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json"
+)
+REQUEST_ID = "TRIMEM_V1_GRADER_SMOKE_EXEC_004"
+REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.4"
 EXPECTED_PHASE = "GRADER_SMOKE"
 AUTHORIZATION_SEMANTICS = "The sentinel alone does not authorize execution."
 BASELINE_FROZEN_REQUEST_SHA256 = (
@@ -96,10 +108,29 @@ EXECUTION_CONTROL_AMENDMENT = {
     ),
     "scientific_inputs_changed": False,
 }
+MULTI_SWE_PREBUILT_EVALUATION_CONTRACT_AMENDMENT = {
+    "classification": "NON_SEMANTIC_MULTI_SWE_PREBUILT_EVALUATION_CONTRACT_FIX",
+    "completed_cells_authoritative": False,
+    "completed_cells_diagnostic_only": 4,
+    "previous_failed_run": {
+        "head": "a0f8cf2bbc3e13690c583b86054aaae562dfe3fd",
+        "run_attempt": 1,
+        "run_id": 33594270929,
+        "scientific_or_evaluator_execution": True,
+    },
+    "reason": (
+        "Correct the Multi-SWE digest-pinned prebuilt-image evaluation mode "
+        "and submitted-patch mount contract; the four completed SWE-bench "
+        "cells from the interrupted mixed-adapter campaign remain diagnostic only."
+    ),
+    "scientific_inputs_changed": False,
+}
 EXPECTED_UNIQUE_INSTANCES = 6
 EXPECTED_MATRIX_ROWS = 12
 HARD_CAPS = {
+    "api_calls": 0,
     "grader_containers": 12,
+    "grader_executions": 12,
     "input_tokens": 0,
     "model_calls": 0,
     "output_tokens": 0,
@@ -110,6 +141,7 @@ HARD_CAPS = {
 REQUEST_FIELDS = frozenset(
     {
         "actual_execution_authorized",
+        "adapter_sha256",
         "authorization_semantics",
         "branch_ref",
         "credential_free_bundle_sha256",
@@ -123,6 +155,8 @@ REQUEST_FIELDS = frozenset(
         "matrix_order",
         "matrix_rows",
         "model_secret_required",
+        "multi_swe_entrypoint_sha256",
+        "multi_swe_evaluation_contract_lock_sha256",
         "noop_baseline_patch_sha256",
         "phase",
         "request_id",
@@ -246,6 +280,9 @@ def _raw_material(repository: Path, commit: str) -> dict[str, bytes]:
         MANIFEST_PATH,
         IMAGE_LOCK_PATH,
         CREDENTIAL_FREE_BUNDLE_PATH,
+        OFFICIAL_GRADER_PATH,
+        MULTI_SWE_ENTRYPOINT_PATH,
+        MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
     )
     return {path: _commit_bytes(repository, commit, path) for path in paths}
 
@@ -318,6 +355,9 @@ def _validate_frozen_material(
         MANIFEST_PATH,
         IMAGE_LOCK_PATH,
         CREDENTIAL_FREE_BUNDLE_PATH,
+        OFFICIAL_GRADER_PATH,
+        MULTI_SWE_ENTRYPOINT_PATH,
+        MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
         PREFLIGHT_PATH,
         INVENTORY_PATH,
         PROTOCOL_PATH,
@@ -342,6 +382,11 @@ def _validate_frozen_material(
     _require(
         amendment == EXECUTION_CONTROL_AMENDMENT,
         "P0.1.1 execution-control amendment is not exact",
+    )
+    _require(
+        manifest.get("multi_swe_prebuilt_evaluation_contract_amendment")
+        == MULTI_SWE_PREBUILT_EVALUATION_CONTRACT_AMENDMENT,
+        "P0.1.4 Multi-SWE prebuilt-evaluation amendment is not exact",
     )
     _require(
         manifest.get("status") == "FROZEN_TARGET_SET_EXECUTION_PENDING"
@@ -508,6 +553,7 @@ def build_request_document(
     )
     payload: dict[str, Any] = {
         "actual_execution_authorized": False,
+        "adapter_sha256": sha256_prefixed(raw[OFFICIAL_GRADER_PATH]),
         "authorization_semantics": AUTHORIZATION_SEMANTICS,
         "branch_ref": EXPECTED_REF,
         "credential_free_bundle_sha256": sha256_prefixed(
@@ -523,6 +569,12 @@ def build_request_document(
         "matrix_order": matrix_order,
         "matrix_rows": EXPECTED_MATRIX_ROWS,
         "model_secret_required": False,
+        "multi_swe_entrypoint_sha256": sha256_prefixed(
+            raw[MULTI_SWE_ENTRYPOINT_PATH]
+        ),
+        "multi_swe_evaluation_contract_lock_sha256": sha256_prefixed(
+            raw[MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH]
+        ),
         "noop_baseline_patch_sha256": NOOP_BASELINE_PATCH_SHA256,
         "phase": EXPECTED_PHASE,
         "request_id": REQUEST_ID,
@@ -667,7 +719,13 @@ def validate_request_document(
         isinstance(caps, dict) and set(caps) == set(HARD_CAPS),
         "grader-smoke hard-cap field set is not exact",
     )
-    for field in ("input_tokens", "model_calls", "output_tokens", "paid_model_calls"):
+    for field in (
+        "api_calls",
+        "input_tokens",
+        "model_calls",
+        "output_tokens",
+        "paid_model_calls",
+    ):
         _require(type(caps.get(field)) is int and caps[field] == 0, f"{field} must be integer zero")
     _require(
         type(caps.get("task_arm_runs")) is int and caps["task_arm_runs"] == 0,
@@ -677,6 +735,11 @@ def validate_request_document(
         type(caps.get("grader_containers")) is int
         and caps["grader_containers"] == EXPECTED_MATRIX_ROWS,
         "grader_containers must equal the 12-row smoke matrix",
+    )
+    _require(
+        type(caps.get("grader_executions")) is int
+        and caps["grader_executions"] == EXPECTED_MATRIX_ROWS,
+        "grader_executions must equal the 12-row smoke matrix",
     )
     _require(type(caps.get("total_usd")) is float and caps["total_usd"] == 0.0, "total_usd must be float zero")
     expected = build_request_document(
@@ -692,6 +755,12 @@ def validate_request_document(
         ("noop_baseline_patch_sha256", "NOOP_BASELINE patch hash"),
         ("grader_image_lock_sha256", "grader image-lock raw hash"),
         ("credential_free_bundle_sha256", "credential-free bundle raw hash"),
+        ("adapter_sha256", "official grader adapter raw hash"),
+        ("multi_swe_entrypoint_sha256", "Multi-SWE entrypoint raw hash"),
+        (
+            "multi_swe_evaluation_contract_lock_sha256",
+            "Multi-SWE evaluation contract-lock raw hash",
+        ),
         ("matrix_kind", "grader-smoke matrix kind"),
         ("matrix_order", "grader-smoke matrix order"),
         ("unique_instances", "grader-smoke unique instance count"),
@@ -739,6 +808,8 @@ def validate_branch_trigger(
         "actual_execution_authorized": False,
         "freeze_sha256": request["freeze_sha256"],
         "grader_containers": EXPECTED_MATRIX_ROWS,
+        "grader_executions": EXPECTED_MATRIX_ROWS,
+        "api_calls": 0,
         "model_calls": 0,
         "paid_model_calls": 0,
         "phase": EXPECTED_PHASE,

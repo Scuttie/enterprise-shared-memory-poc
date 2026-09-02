@@ -416,13 +416,17 @@ def test_004_builder_requires_evidence_head_and_binds_full_closure(
             trigger.TriggerPreflightError, match="image-probe evidence is not closed"
         ):
             trigger.build_request_document(repository, source_head=premature_head)
-    document = trigger.build_request_document(repository, source_head=evidence_head)
+    follow_up = repository / "post-probe-ci-correction.txt"
+    follow_up.write_text("unrelated correction\n", encoding="utf-8")
+    source_head = _commit(repository, "post-probe CI correction")
+    document = trigger.build_request_document(repository, source_head=source_head)
     expected = evidence.validate_committed_evidence(
         repository, evidence_head=evidence_head
     )
     assert document["schema"] == "trimem/grader-smoke-branch-trigger/1.5"
-    assert document["source_head"] == evidence_head
+    assert document["source_head"] == source_head
     assert document["multi_swe_probe_evidence"] == expected
+    assert document["multi_swe_probe_evidence"]["evidence_head"] == evidence_head
     assert document["multi_swe_probe_evidence"]["workflow_run"]["attempt"] == 1
     assert document["multi_swe_probe_evidence"]["accounting"] == evidence.ACCOUNTING
 

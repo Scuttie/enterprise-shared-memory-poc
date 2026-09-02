@@ -26,6 +26,9 @@ from trimem_grader_smoke_protocol import (
     validate_serial_targets,
 )
 from trimem_multi_swe_probe_evidence import (
+    PROBE_REQUEST_PATH,
+    PROBE_RECEIPT_PATH,
+    PROBE_RESULT_PATH,
     ProbeEvidenceError,
     validate_committed_evidence,
 )
@@ -546,10 +549,67 @@ def _validate_frozen_material(
     return raw, manifest, matrix_order
 
 
+def _resolve_probe_evidence_head(repository: Path, *, source_head: str) -> str:
+    """Resolve one immutable probe-evidence introduction on full Git history."""
+
+    _require(
+        HEX40.fullmatch(source_head) is not None,
+        "source_head is not a commit SHA",
+    )
+    shallow = str(
+        _run_git(repository, "rev-parse", "--is-shallow-repository")
+    ).strip()
+    _require(
+        shallow == "false",
+        "probe evidence resolution requires complete Git history",
+    )
+    introduction_heads: list[str] = []
+    for path in (PROBE_RESULT_PATH, PROBE_RECEIPT_PATH):
+        introductions = str(
+            _run_git(
+                repository,
+                "log",
+                "--format=%H",
+                "--diff-filter=A",
+                source_head,
+                "--",
+                path,
+            )
+        ).splitlines()
+        _require(
+            len(introductions) == 1
+            and HEX40.fullmatch(introductions[0]) is not None,
+            f"probe evidence path must have one introduction commit: {path}",
+        )
+        introduction_heads.append(introductions[0])
+    _require(
+        introduction_heads[0] == introduction_heads[1],
+        "probe result and receipt were introduced by different commits",
+    )
+    evidence_head = introduction_heads[0]
+    later_touches = str(
+        _run_git(
+            repository,
+            "log",
+            "--format=%H",
+            f"{evidence_head}..{source_head}",
+            "--",
+            PROBE_REQUEST_PATH,
+            PROBE_RESULT_PATH,
+            PROBE_RECEIPT_PATH,
+        )
+    ).splitlines()
+    _require(
+        not later_touches,
+        "probe request, result, or receipt was touched after the evidence commit",
+    )
+    return evidence_head
+
+
 def build_request_document(
     repository: Path, *, source_head: str, commit: str | None = None
 ) -> dict[str, Any]:
-    """Return the sole sentinel for a committed, closed probe-evidence HEAD."""
+    """Return the sole sentinel for a source with closed ancestor probe evidence."""
 
     _require(HEX40.fullmatch(source_head) is not None, "source_head is not a commit SHA")
     material_commit = source_head if commit is None else commit
@@ -561,10 +621,13 @@ def build_request_document(
         repository, material_commit
     )
     try:
-        probe_evidence = validate_committed_evidence(
-            repository, evidence_head=source_head
+        evidence_head = _resolve_probe_evidence_head(
+            repository, source_head=source_head
         )
-    except ProbeEvidenceError as exc:
+        probe_evidence = validate_committed_evidence(
+            repository, evidence_head=evidence_head
+        )
+    except (ProbeEvidenceError, TriggerPreflightError) as exc:
         raise TriggerPreflightError(
             f"Multi-SWE image-probe evidence is not closed: {exc}"
         ) from exc

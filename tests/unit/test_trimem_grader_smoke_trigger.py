@@ -21,6 +21,9 @@ import trimem_evidence_inventory as inventory  # noqa: E402
 import trimem_multi_swe_probe_evidence as probe_evidence  # noqa: E402
 
 
+_REAL_RESOLVE_PROBE_EVIDENCE_HEAD = trigger._resolve_probe_evidence_head
+
+
 def _closed_probe_binding(evidence_head: str) -> dict[str, object]:
     return {
         "accounting": dict(probe_evidence.ACCOUNTING),
@@ -42,6 +45,11 @@ def _stub_probe_evidence_for_unrelated_trigger_contract_tests(
         trigger,
         "validate_committed_evidence",
         lambda _repository, *, evidence_head: _closed_probe_binding(evidence_head),
+    )
+    monkeypatch.setattr(
+        trigger,
+        "_resolve_probe_evidence_head",
+        lambda _repository, *, source_head: source_head,
     )
 
 
@@ -393,10 +401,107 @@ def test_correction_head_cannot_build_004_before_probe_evidence(
     monkeypatch.setattr(
         trigger, "validate_committed_evidence", probe_evidence.validate_committed_evidence
     )
+    monkeypatch.setattr(
+        trigger,
+        "_resolve_probe_evidence_head",
+        _REAL_RESOLVE_PROBE_EVIDENCE_HEAD,
+    )
     with pytest.raises(
         trigger.TriggerPreflightError, match="image-probe evidence is not closed"
     ):
         trigger.build_request_document(repository, source_head=correction_head)
+
+
+def test_probe_evidence_resolution_accepts_only_one_immutable_ancestor(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "repository"
+    _initialize(repository)
+    _write_json(
+        repository / probe_evidence.PROBE_REQUEST_PATH,
+        {"path": probe_evidence.PROBE_REQUEST_PATH},
+    )
+    _commit(repository, "add probe request")
+    for path in (probe_evidence.PROBE_RESULT_PATH, probe_evidence.PROBE_RECEIPT_PATH):
+        _write_json(repository / path, {"path": path})
+    evidence_head = _commit(repository, "add probe evidence")
+    (repository / "unrelated.txt").write_text("follow-up\n", encoding="utf-8")
+    source_head = _commit(repository, "unrelated follow-up")
+
+    assert (
+        _REAL_RESOLVE_PROBE_EVIDENCE_HEAD(repository, source_head=source_head)
+        == evidence_head
+    )
+    monkeypatch.setattr(
+        trigger,
+        "_resolve_probe_evidence_head",
+        _REAL_RESOLVE_PROBE_EVIDENCE_HEAD,
+    )
+    document = trigger.build_request_document(repository, source_head=source_head)
+    assert document["source_head"] == source_head
+    assert document["multi_swe_probe_evidence"]["evidence_head"] == evidence_head
+
+    original = (repository / probe_evidence.PROBE_RESULT_PATH).read_bytes()
+    _write_json(
+        repository / probe_evidence.PROBE_RESULT_PATH,
+        {"path": probe_evidence.PROBE_RESULT_PATH, "tampered": True},
+    )
+    _commit(repository, "tamper probe result")
+    (repository / probe_evidence.PROBE_RESULT_PATH).write_bytes(original)
+    drift_head = _commit(repository, "revert probe result bytes")
+    with pytest.raises(
+        trigger.TriggerPreflightError,
+        match="touched after the evidence commit",
+    ):
+        _REAL_RESOLVE_PROBE_EVIDENCE_HEAD(repository, source_head=drift_head)
+
+
+def test_probe_evidence_resolution_rejects_later_marker_touch(
+    tmp_path: Path,
+) -> None:
+    repository = tmp_path / "repository"
+    _initialize(repository)
+    _write_json(
+        repository / probe_evidence.PROBE_REQUEST_PATH,
+        {"path": probe_evidence.PROBE_REQUEST_PATH},
+    )
+    _commit(repository, "add probe request")
+    for path in (probe_evidence.PROBE_RESULT_PATH, probe_evidence.PROBE_RECEIPT_PATH):
+        _write_json(repository / path, {"path": path})
+    _commit(repository, "add probe evidence")
+    _write_json(
+        repository / probe_evidence.PROBE_REQUEST_PATH,
+        {"path": probe_evidence.PROBE_REQUEST_PATH, "tampered": True},
+    )
+    source_head = _commit(repository, "touch probe request")
+
+    with pytest.raises(
+        trigger.TriggerPreflightError,
+        match="touched after the evidence commit",
+    ):
+        _REAL_RESOLVE_PROBE_EVIDENCE_HEAD(repository, source_head=source_head)
+
+
+def test_probe_evidence_resolution_rejects_shallow_history(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "repository"
+    source_head = _initialize(repository)
+    real_run_git = trigger._run_git
+
+    def shallow_run_git(
+        target: Path, *args: str, text: bool = True
+    ) -> str | bytes:
+        if args == ("rev-parse", "--is-shallow-repository"):
+            return "true\n"
+        return real_run_git(target, *args, text=text)
+
+    monkeypatch.setattr(trigger, "_run_git", shallow_run_git)
+    with pytest.raises(
+        trigger.TriggerPreflightError,
+        match="requires complete Git history",
+    ):
+        _REAL_RESOLVE_PROBE_EVIDENCE_HEAD(repository, source_head=source_head)
 
 
 def test_actual_actions_payload_without_commit_file_arrays_passes(

@@ -35,6 +35,26 @@ MANIFESTS = {
 }
 
 
+class _RawBackedText(str):
+    """Text-compatible process output that retains the exact captured bytes."""
+
+    def __new__(cls, raw: bytes) -> "_RawBackedText":
+        value = super().__new__(cls, raw.decode("utf-8", errors="replace"))
+        value.raw_bytes = raw
+        return value
+
+
+def _stream_bytes(value: object) -> bytes:
+    if value is None:
+        return b""
+    raw = getattr(value, "raw_bytes", None)
+    if isinstance(raw, bytes):
+        return raw
+    if isinstance(value, bytes):
+        return value
+    return str(value).encode("utf-8")
+
+
 def _stream_text(value: object) -> str:
     if value is None:
         return ""
@@ -44,15 +64,15 @@ def _stream_text(value: object) -> str:
 
 
 def _save_raw(
-    root: Path, index: int, stage: str, *, argv: list[str], stdout: str,
-    stderr: str, status: str, returncode: int | None,
+    root: Path, index: int, stage: str, *, argv: list[str], stdout: object,
+    stderr: object, status: str, returncode: int | None,
 ) -> dict[str, Any]:
     stage_root = root / f"{index:03d}-{stage}"
     stage_root.mkdir(parents=True, exist_ok=True)
     refs = {}
     for name, value in (("stdout", stdout), ("stderr", stderr)):
         path = stage_root / f"{name}.txt"
-        path.write_text(value, encoding="utf-8", newline="\n")
+        path.write_bytes(_stream_bytes(value))
         try:
             path.chmod(0o600)
         except OSError:
@@ -71,28 +91,69 @@ def _run(
 ) -> tuple[subprocess.CompletedProcess[str], dict[str, Any]]:
     try:
         completed = subprocess.run(
-            argv, capture_output=True, text=True, check=False, timeout=3600
+            argv, capture_output=True, text=False, check=False, timeout=3600
         )
     except subprocess.TimeoutExpired as exc:
-        refs = _save_raw(
-            root, index, stage, argv=argv,
-            stdout=_stream_text(exc.stdout), stderr=_stream_text(exc.stderr),
-            status="TIMEOUT", returncode=None,
-        )
-        raise BenchmarkExecutionError(f"Docker {stage} timed out after 3600 seconds") from exc
+        message = f"Docker {stage} timed out after 3600 seconds"
+        primary = BenchmarkExecutionError(message)
+        try:
+            _save_raw(
+                root, index, stage, argv=argv,
+                stdout=exc.stdout, stderr=exc.stderr,
+                status="TIMEOUT", returncode=None,
+            )
+        except BaseException as evidence_exc:
+            secondary = (
+                "image stage evidence persistence failed: "
+                f"{type(evidence_exc).__name__}: {evidence_exc}"
+            )
+            primary.args = (message + "; secondary_evidence_failures=[" + secondary + "]",)
+            if hasattr(primary, "add_note"):
+                primary.add_note(secondary)
+        raise primary from exc
     except OSError as exc:
+        message = f"Docker {stage} could not be launched"
+        primary = BenchmarkExecutionError(message)
+        try:
+            _save_raw(
+                root, index, stage, argv=argv, stdout=b"",
+                stderr=f"{type(exc).__name__}: {exc}", status="LAUNCH_FAILURE",
+                returncode=None,
+            )
+        except BaseException as evidence_exc:
+            secondary = (
+                "image stage evidence persistence failed: "
+                f"{type(evidence_exc).__name__}: {evidence_exc}"
+            )
+            primary.args = (message + "; secondary_evidence_failures=[" + secondary + "]",)
+            if hasattr(primary, "add_note"):
+                primary.add_note(secondary)
+        raise primary from exc
+    status = "PASS" if completed.returncode == 0 else "NONZERO"
+    try:
         refs = _save_raw(
-            root, index, stage, argv=argv, stdout="",
-            stderr=f"{type(exc).__name__}: {exc}", status="LAUNCH_FAILURE",
-            returncode=None,
+            root, index, stage, argv=argv, stdout=completed.stdout,
+            stderr=completed.stderr, status=status,
+            returncode=completed.returncode,
         )
-        raise BenchmarkExecutionError(f"Docker {stage} could not be launched") from exc
-    refs = _save_raw(
-        root, index, stage, argv=argv, stdout=completed.stdout,
-        stderr=completed.stderr, status="PASS" if completed.returncode == 0 else "NONZERO",
+    except BaseException as evidence_exc:
+        if completed.returncode != 0:
+            raise BenchmarkExecutionError(
+                f"Docker {stage} exited nonzero; secondary_evidence_failures=["
+                "image stage evidence persistence failed: "
+                f"{type(evidence_exc).__name__}: {evidence_exc}]"
+            ) from evidence_exc
+        raise BenchmarkExecutionError(
+            f"Docker {stage} succeeded but exact stage evidence persistence failed: "
+            f"{type(evidence_exc).__name__}: {evidence_exc}"
+        ) from evidence_exc
+    text_completed = subprocess.CompletedProcess(
+        args=completed.args,
         returncode=completed.returncode,
+        stdout=_RawBackedText(_stream_bytes(completed.stdout)),
+        stderr=_RawBackedText(_stream_bytes(completed.stderr)),
     )
-    return completed, refs
+    return text_completed, refs
 
 
 def selected_images(phase: str) -> list[str]:
@@ -137,13 +198,25 @@ def pull_and_observe_image(
     if inspected.returncode != 0:
         raise BenchmarkExecutionError(f"Docker image inspect failed: {image}")
     try:
-        repo_digests = strict_json_loads(inspected.stdout.strip())
-    except (json.JSONDecodeError, ValueError) as exc:
+        repo_digests = strict_json_loads(_stream_bytes(inspected.stdout))
+        if (
+            not isinstance(repo_digests, list)
+            or not repo_digests
+            or any(
+                type(value) is not str
+                or not value
+                or "@sha256:" not in value
+                for value in repo_digests
+            )
+            or len(repo_digests) != len(set(repo_digests))
+        ):
+            raise ValueError("RepoDigests is not an exact nonempty string list")
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, TypeError) as exc:
         raise BenchmarkExecutionError(
             f"Docker image inspect returned invalid JSON: {image}"
         ) from exc
     observed = sorted(
-        {str(value).rsplit("@", 1)[-1] for value in repo_digests or []}
+        {value.rsplit("@", 1)[-1] for value in repo_digests}
     )
     if expected not in observed:
         raise BenchmarkExecutionError(f"observed image digest mismatch: {image}")

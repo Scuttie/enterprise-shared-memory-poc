@@ -109,6 +109,9 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         trigger.MULTI_SWE_ENTRYPOINT_PATH,
         trigger.MULTI_SWE_PROBE_EVIDENCE_PATH,
         trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
+        trigger.MULTI_SWE_REPORT_SEMANTICS_PATH,
+        trigger.MULTI_SWE_REPORT_SEMANTICS_LOCK_PATH,
+        trigger.ADAPTER_FAILURE_ENVELOPE_CONTRACT_PATH,
     ):
         destination = repository / path
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -137,6 +140,9 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         trigger.MULTI_SWE_ENTRYPOINT_PATH,
         trigger.MULTI_SWE_PROBE_EVIDENCE_PATH,
         trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
+        trigger.MULTI_SWE_REPORT_SEMANTICS_PATH,
+        trigger.MULTI_SWE_REPORT_SEMANTICS_LOCK_PATH,
+        trigger.ADAPTER_FAILURE_ENVELOPE_CONTRACT_PATH,
         trigger.PREFLIGHT_PATH,
         trigger.INVENTORY_PATH,
         trigger.PROTOCOL_PATH,
@@ -283,11 +289,13 @@ def _git_contract_negative(
         "old_sentinel_touched",
         "sentinel_002_touched",
         "sentinel_003_touched",
+        "sentinel_004_touched",
     }:
         historical_path = {
             "old_sentinel_touched": trigger.HISTORICAL_SENTINEL_PATH,
             "sentinel_002_touched": trigger.HISTORICAL_SENTINEL_002_PATH,
             "sentinel_003_touched": trigger.HISTORICAL_SENTINEL_003_PATH,
+            "sentinel_004_touched": trigger.HISTORICAL_SENTINEL_004_PATH,
         }[case]
         _write_active_sentinel(repository, source_head=before)
         historical = repository / historical_path
@@ -341,11 +349,11 @@ def _git_contract_negative(
 
 def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> None:
     workflow = (ROOT / trigger.WORKFLOW_PATH).read_text(encoding="utf-8")
-    assert trigger.REQUEST_SCHEMA == "trimem/grader-smoke-branch-trigger/1.5"
-    assert trigger.REQUEST_ID == "TRIMEM_V1_GRADER_SMOKE_EXEC_004"
+    assert trigger.REQUEST_SCHEMA == "trimem/grader-smoke-branch-trigger/1.6"
+    assert trigger.REQUEST_ID == "TRIMEM_V1_GRADER_SMOKE_EXEC_005"
     assert (
         trigger.SENTINEL_PATH
-        == "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_004.json"
+        == "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_005.json"
     )
     assert "workflow_dispatch:" in workflow
     assert "push:" in workflow
@@ -357,7 +365,7 @@ def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> Non
         flags=re.MULTILINE,
     )
     assert request_path_filters == [trigger.SENTINEL_PATH]
-    assert "group: trimem-v1-grader-smoke-exec-004" in workflow
+    assert "group: trimem-v1-grader-smoke-exec-005" in workflow
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert "needs.branch-trigger-preflight.result == 'success'" in workflow
@@ -365,11 +373,70 @@ def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> Non
     assert "environment: trimem-grader-smoke-exec" in workflow
     assert "ref: ${{ github.sha }}" in workflow
     assert "OPENAI_API_KEY" not in workflow
-    assert workflow.index("trimem_evidence_inventory.py") < workflow.index(
-        "openssl enc -aes-256-cbc"
+    ordered_steps = (
+        "Remove only frozen smoke image references",
+        "Recover or revoke terminal authority after any campaign failure",
+        "Inventory every restricted evidence file",
+        "Build namespaced exec-005 campaign failure closure",
+        "Encrypt complete restricted evidence",
+        "Upload namespaced exec-005 failure closure",
+        "Upload non-sensitive restricted evidence inventory",
+        "Upload encrypted restricted evidence",
+        "Remove plaintext and temporary EXEC material before signing",
+        "Attest exact uploaded and cleaned official smoke subject",
+        "Upload public smoke result",
+        "Upload official smoke attestation bundle",
     )
-    assert "trimem-grader-smoke-evidence-inventory" in workflow
+    positions = []
+    for label in ordered_steps:
+        marker = f"- name: {label}"
+        assert workflow.count(marker) == 1
+        positions.append(workflow.index(marker))
+    assert positions == sorted(positions)
+    assert workflow.count("python scripts/trimem_evidence_inventory.py") == 1
+    assert workflow.count("python scripts/trimem_grader_smoke_authority.py") == 1
+    assert "steps.run_smoke.outcome != 'skipped'" in workflow
+    assert "steps.run_smoke.outcome != 'success'" in workflow
+    assert "--recover-interrupted" in workflow
+    inventory = workflow.index("- name: Inventory every restricted evidence file")
+    failure_closure = workflow.index(
+        "- name: Build namespaced exec-005 campaign failure closure"
+    )
+    encrypt = workflow.index("- name: Encrypt complete restricted evidence")
+    attestation = workflow.index(
+        "- name: Build deterministic official smoke attestation subject"
+    )
+    inventory_block = workflow[inventory:failure_closure]
+    closure_block = workflow[failure_closure:encrypt]
+    encryption_block = workflow[encrypt:attestation]
+    assert "steps.approval_materialization.outcome != 'skipped'" in inventory_block
+    assert "campaign_authority_rollback" not in inventory_block
+    assert "steps.campaign_authority_rollback.outcome == 'success'" in closure_block
+    assert "steps.campaign_authority_rollback.outcome == 'skipped'" in closure_block
+    assert "steps.evidence_inventory.outcome == 'success'" in closure_block
+    assert "steps.approval_materialization.outcome != 'skipped'" in encryption_block
+    assert 'inventory_args=()' in encryption_block
+    assert '"${inventory_args[@]}"' in encryption_block
+    assert "steps.evidence_inventory.outcome == 'success'" not in encryption_block
+    assert workflow.count("openssl enc -aes-256-cbc") == 1
+    assert "name: trimem-grader-smoke-exec-005-public" in workflow
+    assert "name: trimem-grader-smoke-exec-005-evidence-inventory" in workflow
+    assert "name: trimem-grader-smoke-exec-005-restricted-encrypted" in workflow
+    assert "name: trimem-grader-smoke-exec-005-attestation-bundle" in workflow
     assert "rm -f -- \"$RUNNER_TEMP/trimem-grader-smoke-evidence-inventory.json\"" in workflow
+    cleanup = workflow.index(
+        "- name: Remove plaintext and temporary EXEC material before signing"
+    )
+    signing = workflow.index(
+        "- name: Attest exact uploaded and cleaned official smoke subject"
+    )
+    cleanup_block = workflow[cleanup:signing]
+    assert (
+        "RESTRICTED_UPLOAD_OUTCOME: ${{ steps.restricted_upload.outcome }}"
+        in cleanup_block
+    )
+    assert 'if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ]; then' in cleanup_block
+    assert "preserving plaintext and ciphertext" in cleanup_block
     assert set(
         re.findall(r"\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)", workflow)
     ) == trigger.ALLOWED_WORKFLOW_SECRETS
@@ -392,7 +459,7 @@ def test_all_historical_sentinels_are_byte_immutable(
         trigger.build_request_document(repository, source_head=changed)
 
 
-def test_correction_head_cannot_build_004_before_probe_evidence(
+def test_correction_head_cannot_build_005_before_probe_evidence(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     repository = tmp_path / "repository"
@@ -580,6 +647,11 @@ def test_rerun_attempt_two_fails_closed(tmp_path: Path) -> None:
             id="03c-sentinel-003-touched",
         ),
         pytest.param(
+            "sentinel_004_touched",
+            "sentinel|trigger commit",
+            id="03d-sentinel-004-touched",
+        ),
+        pytest.param(
             "two_commits_between", "one non-merge commit|parent", id="04-two-commits"
         ),
         pytest.param("merge_commit", "one non-merge commit|merge", id="05-merge"),
@@ -623,6 +695,9 @@ def test_request_hash_covers_exact_canonical_content(tmp_path: Path) -> None:
     assert document["actual_execution_authorized"] is False
     assert document["requires_external_approval"] is True
     assert document["authorization_semantics"] == trigger.AUTHORIZATION_SEMANTICS
+    assert document["required_external_authorization"] == (
+        "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_EXEC_APPROVED_ONCE"
+    )
     assert document["frozen_request_sha256"] == trigger.sha256_prefixed(
         (repository / trigger.FROZEN_REQUEST_PATH).read_bytes()
     )
@@ -641,12 +716,25 @@ def test_request_hash_covers_exact_canonical_content(tmp_path: Path) -> None:
     assert document["adapter_sha256"] == trigger.sha256_prefixed(
         (repository / trigger.OFFICIAL_GRADER_PATH).read_bytes()
     )
+    assert document["adapter_failure_envelope_contract_sha256"] == (
+        trigger.sha256_prefixed(
+            (repository / trigger.ADAPTER_FAILURE_ENVELOPE_CONTRACT_PATH).read_bytes()
+        )
+    )
     assert document["multi_swe_entrypoint_sha256"] == trigger.sha256_prefixed(
         (repository / trigger.MULTI_SWE_ENTRYPOINT_PATH).read_bytes()
     )
     assert document["multi_swe_evaluation_contract_lock_sha256"] == (
         trigger.sha256_prefixed(
             (repository / trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH).read_bytes()
+        )
+    )
+    assert document["multi_swe_report_semantics_sha256"] == trigger.sha256_prefixed(
+        (repository / trigger.MULTI_SWE_REPORT_SEMANTICS_PATH).read_bytes()
+    )
+    assert document["multi_swe_report_semantics_lock_sha256"] == (
+        trigger.sha256_prefixed(
+            (repository / trigger.MULTI_SWE_REPORT_SEMANTICS_LOCK_PATH).read_bytes()
         )
     )
     assert document["multi_swe_probe_evidence"] == _closed_probe_binding(source_head)
@@ -865,10 +953,20 @@ def test_every_repository_binding_fails_closed_on_drift(tmp_path: Path) -> None:
         ("branch_ref", "refs/heads/main", "request branch mismatch"),
         ("workflow_path", "wrong.yml", "workflow path mismatch"),
         ("authorization_semantics", "ambiguous", "authorization semantics mismatch"),
+        (
+            "required_external_authorization",
+            "WRONG_APPROVAL",
+            "external authorization identity mismatch",
+        ),
         ("grader_smoke_manifest_sha256", "sha256:" + "0" * 64, "manifest raw hash mismatch"),
         ("grader_image_lock_sha256", "sha256:" + "0" * 64, "image-lock raw hash mismatch"),
         ("credential_free_bundle_sha256", "sha256:" + "0" * 64, "bundle raw hash mismatch"),
         ("adapter_sha256", "sha256:" + "0" * 64, "adapter raw hash mismatch"),
+        (
+            "adapter_failure_envelope_contract_sha256",
+            "sha256:" + "0" * 64,
+            "failure-envelope contract raw hash mismatch",
+        ),
         (
             "multi_swe_entrypoint_sha256",
             "sha256:" + "0" * 64,
@@ -878,6 +976,16 @@ def test_every_repository_binding_fails_closed_on_drift(tmp_path: Path) -> None:
             "multi_swe_evaluation_contract_lock_sha256",
             "sha256:" + "0" * 64,
             "contract-lock raw hash mismatch",
+        ),
+        (
+            "multi_swe_report_semantics_sha256",
+            "sha256:" + "0" * 64,
+            "report-semantics helper raw hash mismatch",
+        ),
+        (
+            "multi_swe_report_semantics_lock_sha256",
+            "sha256:" + "0" * 64,
+            "report-semantics lock raw hash mismatch",
         ),
         (
             "multi_swe_probe_evidence",

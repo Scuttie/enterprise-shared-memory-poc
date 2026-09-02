@@ -50,6 +50,7 @@ from trimem_freeze import (  # noqa: E402
     OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
     OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
     OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+    OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
     OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
     check_freeze,
 )
@@ -60,9 +61,39 @@ from trimem_grader_smoke_protocol import (  # noqa: E402
 )
 from trimem_grader_smoke_failure_evidence import (  # noqa: E402
     ENDPOINT as SMOKE_FAILURE_ENDPOINT,
-    EVIDENCE_INVENTORY_PATH as SMOKE_FAILURE_INVENTORY_PATH,
-    FAILURE_RECEIPT_PATH as SMOKE_FAILURE_RECEIPT_PATH,
+    EVIDENCE_INVENTORY_PATH as P014_FAILURE_INVENTORY_PATH,
+    FAILURE_RECEIPT_PATH as P014_FAILURE_RECEIPT_PATH,
     validate_committed_failure_evidence,
+)
+from trimem_grader_smoke_failure_closure import (  # noqa: E402
+    ADAPTER_ENDPOINT as P015_ADAPTER_FAILURE_ENDPOINT,
+    ENDPOINTS as P015_FAILURE_ENDPOINTS,
+    FailureClosureError,
+    INCOMPLETE_ENDPOINT as P015_INCOMPLETE_ENDPOINT,
+    SCHEMA as P015_FAILURE_CLOSURE_SCHEMA,
+    SCIENTIFIC_ENDPOINT as P015_SCIENTIFIC_FAILURE_ENDPOINT,
+    validate_failure_closure,
+)
+from trimem_grader_smoke_authority import (  # noqa: E402
+    CAUSE_TAXONOMY as AUTHORITY_ROLLBACK_CAUSE_TAXONOMY,
+    PROMOTION_TRANSACTION_MARKER as AUTHORITY_PROMOTION_TRANSACTION_MARKER,
+    RECOVERY_EVIDENCE_SCHEMA as AUTHORITY_RECOVERY_EVIDENCE_SCHEMA,
+    ROLLBACK_TRANSACTION_MARKER as AUTHORITY_ROLLBACK_TRANSACTION_MARKER,
+    ROLLBACK_EVIDENCE_SCHEMA as AUTHORITY_ROLLBACK_EVIDENCE_SCHEMA,
+)
+from trimem_grader_smoke_finalization import (  # noqa: E402
+    AUTHORITY_PROMOTION_COMMITTED as FINALIZATION_AUTHORITY_COMMITTED,
+    AUTHORITY_PROMOTION_STARTED as FINALIZATION_AUTHORITY_STARTED,
+    EXPECTED_TERMINAL_RECORD_COUNT as FINALIZATION_TERMINAL_COUNT,
+    RELATIVE_PATH as FINALIZATION_JOURNAL_RELATIVE_PATH,
+    SCHEMA as FINALIZATION_JOURNAL_SCHEMA,
+    SCIENTIFIC_AGGREGATE_REJECTED as FINALIZATION_SCIENTIFIC_REJECTED,
+)
+from trimem_grader_smoke_stage_evidence import (  # noqa: E402
+    SCHEMA as PRE_CELL_FAILURE_SCHEMA,
+    STAGE_TAXONOMY as PRE_CELL_STAGE_TAXONOMY,
+    ZERO_EXECUTION as PRE_CELL_ZERO_EXECUTION,
+    write_pre_cell_failure_evidence,
 )
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256,
@@ -87,6 +118,17 @@ from trimem_harness_lock import (  # noqa: E402
     HASH_BASIS as HARNESS_DEPENDENCY_HASH_BASIS,
     validate_harness_lock_configuration,
 )
+from trimem_multi_swe_contract import validate_report_semantics_lock  # noqa: E402
+from trimem_multi_swe_report_semantics import validate_public_summary  # noqa: E402
+from trimem_official_grader import adapter_evidence_envelope_contract  # noqa: E402
+from trimem_grader_smoke import (  # noqa: E402
+    FAILURE_TAXONOMY_RULES as GRADER_SMOKE_FAILURE_TAXONOMY_RULES,
+    FAILURE_TAXONOMY_FIELDS as GRADER_SMOKE_FAILURE_TAXONOMY_FIELDS,
+    TERMINAL_CELL_FIELDS,
+    TERMINAL_LIFECYCLE_FIELDS,
+    TERMINAL_CELL_SCHEMA,
+)
+from trimem_public_artifact import SMOKE_OUTCOME_FIELDS  # noqa: E402
 from trimem_smoke_attestation import (  # noqa: E402
     EXPECTED_REPOSITORY as SMOKE_ATTESTATION_REPOSITORY,
     HOSTED_RUNNER as SMOKE_ATTESTATION_RUNNER,
@@ -112,15 +154,20 @@ SMOKE_RESULT_COMMON_FIELDS = {
 }
 SMOKE_AGGREGATE_BODY_FIELDS = {
     "actual_accounting", "api_calls", "approval_binding",
+    "adapter_normalized_count", "attempted_cell_count",
+    "authoritative_cell_count",
+    "complete_execution_evidence_count",
     "container_exit_status_captured_count",
     "container_exit_status_validated_count", "digest_match_count",
     "empty_patch_ids", "evidence_counts", "expected_target_count",
     "host_prepare_sh_access_count", "image_lifecycle",
-    "infrastructure_failure_count", "manifest",
+    "manifest",
     "observed_target_count", "outcomes", "patch_applied_count",
-    "probe_counts", "resolved_container_zero_exit_count", "resolved_counts",
+    "official_execution_count", "probe_counts",
+    "resolved_container_zero_exit_count", "resolved_counts",
     "source_image_build_count", "status", "submitted_patch_identity_count",
-    "tests_executed_count", "unresolved_counts",
+    "terminal_record_count", "tests_executed_count", "unattempted_cell_count",
+    "unresolved_counts", *GRADER_SMOKE_FAILURE_TAXONOMY_FIELDS,
 }
 SMOKE_ACCOUNTING_FIELDS = (
     "api_calls",
@@ -161,6 +208,32 @@ SMOKE_FAILURE_EVIDENCE_FIELDS = {
     "evidence_inventory_path", "evidence_inventory_raw_sha256",
     "approval_binding",
 }
+SMOKE_RECOVERY_STATUS = "CORRECTION_READY_FOR_EXECUTION"
+SMOKE_RECOVERY_ENDPOINT = (
+    "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_READY"
+)
+SMOKE_RECOVERY_SCOPE = "P0.1.5_CORRECTION_BEFORE_EXEC_005"
+SMOKE_RECOVERY_ACTUAL_EXECUTION = {
+    "api_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "model_gateway_calls": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "support_image_pulls": 0,
+    "target_image_pulls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0,
+}
+P015_FAILURE_RESULT_SCHEMA = "trimem/grader-smoke-result/1.2"
+P014_FAILURE_RECEIPT_RAW_SHA256 = (
+    "fe9f98a07be06d7c5ee56110b0bc2058e9271f26ef0086b2232332aa7da42978"
+)
+P014_EVIDENCE_INVENTORY_RAW_SHA256 = (
+    "c61ffdff2ab8857e8ebd212df9d8190b9424ebafd0c3a092b91de3a311108004"
+)
 SMOKE_ATTESTATION_POLICY_PATH = "configs/trimem_v1/smoke_attestation_policy.json"
 SMOKE_TRUSTED_ROOT_PATH = "configs/trimem_v1/sigstore_trusted_root.jsonl"
 SMOKE_ATTESTATION_ACTION = (
@@ -1059,8 +1132,23 @@ def _validate_official_smoke_pass(
         and public["resolved_container_zero_exit_count"] == 4
         and type(public.get("api_calls")) is int
         and public["api_calls"] == 0
-        and type(public.get("infrastructure_failure_count")) is int
-        and public["infrastructure_failure_count"] == 0
+        and all(
+            type(public.get(field)) is int and public[field] == 12
+            for field in (
+                "adapter_normalized_count",
+                "attempted_cell_count",
+                "authoritative_cell_count",
+                "complete_execution_evidence_count",
+                "official_execution_count",
+                "terminal_record_count",
+            )
+        )
+        and type(public.get("unattempted_cell_count")) is int
+        and public["unattempted_cell_count"] == 0
+        and all(
+            type(public.get(field)) is int and public[field] == 0
+            for field in GRADER_SMOKE_FAILURE_TAXONOMY_FIELDS
+        )
         and isinstance(lifecycle, dict)
         and set(lifecycle)
         == {"actual", "event_count", "report_bytes", "report_sha256", "status"}
@@ -1093,15 +1181,20 @@ def _validate_official_smoke_pass(
         "digest_match", "submitted_patch_identity",
         "host_prepare_sh_access_count", "source_image_build_count", "api_calls",
         "container_exit_status_code", "container_exit_acceptance",
+        "semantic_normalization",
     }
     for index, (target, outcome) in enumerate(zip(targets, outcomes)):
         if not isinstance(target, dict) or not isinstance(outcome, dict):
             container_exit_valid = False
+            semantic_normalization_valid = False
         elif target.get("benchmark_id") == "swebench_verified":
             container_exit_valid = (
                 outcome.get("container_exit_status_code") is None
                 and outcome.get("container_exit_acceptance") is None
                 and outcome.get("container_exit_status_sha256") is None
+            )
+            semantic_normalization_valid = (
+                outcome.get("semantic_normalization") is None
             )
         else:
             container_exit_valid = (
@@ -1121,6 +1214,16 @@ def _validate_official_smoke_pass(
                     target.get("expected_resolved") is not True
                     or outcome["container_exit_status_code"] == 0
                 )
+            )
+            semantic_summary = validate_public_summary(
+                outcome.get("semantic_normalization")
+            )
+            semantic_normalization_valid = (
+                semantic_summary["computed_resolved"]
+                is outcome.get("resolved")
+                and semantic_summary["official_final_report_resolved"]
+                is outcome.get("resolved")
+                and semantic_summary["final_report_match"] is True
             )
         require(
             isinstance(target, dict)
@@ -1156,7 +1259,8 @@ def _validate_official_smoke_pass(
                     "api_calls",
                 )
             )
-            and container_exit_valid,
+            and container_exit_valid
+            and semantic_normalization_valid,
             f"official public smoke outcome {index} differs from frozen target",
         )
 
@@ -1281,7 +1385,7 @@ def _validate_official_smoke_pass(
         "official smoke lifecycle report inventory binding differs",
     )
     summary = {
-        "schema": "trimem/grader-smoke-execution/1.0",
+        "schema": "trimem/grader-smoke-execution/2.0",
         "expected_target_count": 12,
         "observed_target_count": 12,
         "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
@@ -1312,7 +1416,19 @@ def _validate_official_smoke_pass(
         "container_exit_status_captured_count": 8,
         "container_exit_status_validated_count": 8,
         "resolved_container_zero_exit_count": 4,
-        "infrastructure_failure_count": 0,
+        "attempted_cell_count": 12,
+        "official_execution_count": 12,
+        "complete_execution_evidence_count": 12,
+        "adapter_normalized_count": 12,
+        "authoritative_cell_count": 12,
+        "unattempted_cell_count": 0,
+        "environment_failures": 0,
+        "infrastructure_failures": 0,
+        "image_lifecycle_failures": 0,
+        "official_harness_failures": 0,
+        "official_report_failures": 0,
+        "adapter_contract_failures": 0,
+        "aggregate_failures": 0,
         "status": "PASS",
     }
     _require_inventory_raw(
@@ -1335,16 +1451,262 @@ def _validate_official_smoke_pass(
     )
 
 
+def _validated_p015_failure_inventory(
+    raw: bytes,
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    """Validate a fresh exec-005 restricted-evidence inventory by derivation."""
+
+    inventory = _strict_json_bytes(
+        raw, label=OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
+    )
+    require(
+        canonical(inventory) + b"\n" == raw,
+        "exec-005 failure inventory bytes are not canonical",
+    )
+    require(
+        set(inventory)
+        == {
+            "files",
+            "inventory_sha256",
+            "root",
+            "schema",
+            "total_bytes",
+            "total_files",
+        }
+        and inventory.get("schema")
+        == "trimem/restricted-evidence-inventory/1.0"
+        and inventory.get("root") == "grader_smoke_exec",
+        "exec-005 failure inventory identity differs",
+    )
+    rows = inventory.get("files")
+    require(isinstance(rows, list) and rows, "exec-005 failure inventory is empty")
+    indexed: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        require(
+            isinstance(row, dict)
+            and set(row) == {"bytes", "path", "sha256"},
+            "exec-005 failure inventory row fields differ",
+        )
+        path = row.get("path")
+        digest = row.get("sha256")
+        size = row.get("bytes")
+        require(
+            isinstance(path, str)
+            and path
+            and "\\" not in path
+            and not Path(path).is_absolute()
+            and ".." not in Path(path).parts
+            and path not in indexed
+            and isinstance(digest, str)
+            and HEX64.fullmatch(digest) is not None
+            and type(size) is int
+            and size >= 0,
+            "exec-005 failure inventory row is malformed or duplicated",
+        )
+        indexed[path] = row
+    payload = {
+        "files": rows,
+        "root": inventory["root"],
+        "schema": inventory["schema"],
+        "total_bytes": sum(row["bytes"] for row in rows),
+        "total_files": len(rows),
+    }
+    require(
+        inventory.get("total_files") == len(rows)
+        and inventory.get("total_bytes") == payload["total_bytes"]
+        and inventory.get("inventory_sha256")
+        == hashlib.sha256(canonical(payload)).hexdigest(),
+        "exec-005 failure inventory totals or seal differ",
+    )
+    return inventory, indexed
+
+
+def _validated_p015_failure_closure(
+    receipt_raw: bytes, inventory_raw: bytes
+) -> dict[str, Any]:
+    """Validate one namespaced, evidence-derived exec-005 failure closure."""
+
+    request_path = ROOT / GRADER_SMOKE_SENTINEL_PATH
+    request_raw = request_path.read_bytes()
+    request = _strict_json_bytes(request_raw, label=GRADER_SMOKE_SENTINEL_PATH)
+    request_source_head = request.get("source_head")
+    require(
+        isinstance(request_source_head, str)
+        and HEX40.fullmatch(request_source_head) is not None,
+        "exec-005 failure request source head differs",
+    )
+    try:
+        validate_request_document(
+            ROOT,
+            request_raw,
+            expected_source_head=request_source_head,
+            material_commit=request_source_head,
+        )
+        return validate_failure_closure(
+            receipt_raw,
+            inventory_raw,
+            request_raw=request_raw,
+        )
+    except (OSError, ValueError, TriggerPreflightError, FailureClosureError) as exc:
+        raise ReadinessError(f"exec-005 failure closure did not validate: {exc}") from exc
+
+
+def _validated_p014_historical_execution() -> dict[str, Any]:
+    """Return the one exact, immutable P0.1.4 diagnostic execution record."""
+
+    receipt_path = ROOT / P014_FAILURE_RECEIPT_PATH
+    inventory_path = ROOT / P014_FAILURE_INVENTORY_PATH
+    receipt_raw = receipt_path.read_bytes()
+    inventory_raw = inventory_path.read_bytes()
+    require(
+        hashlib.sha256(receipt_raw).hexdigest()
+        == P014_FAILURE_RECEIPT_RAW_SHA256
+        and hashlib.sha256(inventory_raw).hexdigest()
+        == P014_EVIDENCE_INVENTORY_RAW_SHA256,
+        "P0.1.4 historical failure evidence bytes differ",
+    )
+    receipt = validate_committed_failure_evidence(ROOT)
+    accounting = receipt.get("execution_accounting")
+    require(
+        accounting
+        == {
+            "api_calls": 0,
+            "cached_input_tokens": 0,
+            "decomposition_calls": 0,
+            "docker_pulls": 4,
+            "extraction_calls": 0,
+            "grader_calls": 6,
+            "grader_containers": 6,
+            "input_tokens": 0,
+            "model_calls": 0,
+            "model_gateway_calls": 0,
+            "official_grader_runs": 6,
+            "output_tokens": 0,
+            "paid_model_calls": 0,
+            "reasoning_tokens": 0,
+            "solve_calls": 0,
+            "task_arm_runs": 0,
+            "total_usd": 0,
+        },
+        "P0.1.4 historical execution accounting differs",
+    )
+    campaign = receipt.get("authoritative_campaign")
+    diagnostic = receipt.get("diagnostic_progress")
+    forensic = (
+        diagnostic.get("evidence_counts", {}).get("forensic_executed_outcomes")
+        if isinstance(diagnostic, dict)
+        else None
+    )
+    require(
+        isinstance(campaign, dict)
+        and campaign.get("expected_cells") == 12
+        and campaign.get("forensic_executed_outcomes") == 6
+        and campaign.get("formal_result_rows") == 5
+        and campaign.get("authoritative_result_rows") == 0
+        and campaign.get("scientific_result") == "NOT_AGGREGATED"
+        and isinstance(forensic, dict)
+        and forensic.get("patch_applied") == 6
+        and forensic.get("tests_executed") == 6
+        and forensic.get("digest_match") == 6
+        and forensic.get("submitted_patch_identity") == 6,
+        "P0.1.4 historical campaign/evidence accounting differs",
+    )
+    analysis = receipt.get("failure_analysis")
+    require(
+        isinstance(analysis, dict)
+        and analysis.get("classification") == "ADAPTER_EVIDENCE_CONTRACT_FAILURE"
+        and analysis.get("primary", {}).get("code")
+        == "MULTI_SWE_VALID_RESOLVED_CONFLATION"
+        and analysis.get("secondary", {}).get("code")
+        == "FAILURE_REPORT_IDENTITY_LOCATION_MASKING",
+        "P0.1.4 historical failure classification differs",
+    )
+    lifecycle = receipt.get("image_lifecycle")
+    require(
+        isinstance(lifecycle, dict)
+        and lifecycle.get("support_image_pulls") == 1
+        and lifecycle.get("target_image_pulls") == 3
+        and lifecycle.get("host_prepare_sh_access_count", 0) == 0,
+        "P0.1.4 historical image accounting differs",
+    )
+    taxonomy = {
+        "adapter_contract_failures": 1,
+        "aggregate_failures": 0,
+        "environment_failures": 0,
+        "image_lifecycle_failures": 0,
+        "infrastructure_failures": 0,
+        "official_harness_failures": 0,
+        "official_report_failures": 0,
+    }
+    require(
+        set(taxonomy) == set(GRADER_SMOKE_FAILURE_TAXONOMY_FIELDS),
+        "P0.1.4 historical failure taxonomy field set differs",
+    )
+    approval = receipt.get("approval_binding")
+    workflow = receipt.get("workflow_run")
+    require(
+        isinstance(approval, dict)
+        and isinstance(workflow, dict)
+        and workflow.get("id") == 33630256522
+        and workflow.get("run_attempt") == 1
+        and approval.get("git_head") == "0e9ed55196da922dcebf1fb33b73940873007180",
+        "P0.1.4 historical workflow identity differs",
+    )
+    return {
+        "approval_binding": approval,
+        "campaign": {
+            "adapter_normalized_cell_count": 5,
+            "attempted_cell_count": 6,
+            "authoritative_cell_count": 0,
+            "complete_execution_evidence_count": 6,
+            "official_execution_count": 6,
+            "required_cell_count": 12,
+            "unattempted_cell_count": 6,
+        },
+        "endpoint": SMOKE_FAILURE_ENDPOINT,
+        "evidence": {
+            "evidence_inventory_path": P014_FAILURE_INVENTORY_PATH,
+            "evidence_inventory_raw_sha256": P014_EVIDENCE_INVENTORY_RAW_SHA256,
+            "failure_receipt_path": P014_FAILURE_RECEIPT_PATH,
+            "failure_receipt_raw_sha256": P014_FAILURE_RECEIPT_RAW_SHA256,
+        },
+        "execution_accounting": accounting,
+        "failure_taxonomy": taxonomy,
+        "git_head": approval["git_head"],
+        "image_lifecycle": {
+            "host_prepare_sh_access_count": 0,
+            "source_image_build_count": 0,
+            "support_image_pulls": 1,
+            "target_image_pulls": 3,
+        },
+        "scientific_result": "NOT_AGGREGATED",
+        "status": "DIAGNOSTIC_HISTORY_ONLY",
+        "workflow_run_attempt": 1,
+        "workflow_run_id": 33630256522,
+    }
+
+
 def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
     status = smoke.get("status")
-    pending = status == "CORRECTION_IN_PROGRESS"
+    recovery_ready = status == SMOKE_RECOVERY_STATUS
     failed = status == "FAIL"
-    if pending:
-        expected_fields = SMOKE_RESULT_COMMON_FIELDS
+    passed = status == "PASS"
+    require(
+        recovery_ready or failed or passed,
+        "grader smoke result status is unknown",
+    )
+    if recovery_ready:
+        expected_fields = {
+            *SMOKE_RESULT_COMMON_FIELDS,
+            "actual_execution_scope",
+            "endpoint",
+            "historical_execution",
+        }
     elif failed:
         expected_fields = {
             *SMOKE_RESULT_COMMON_FIELDS,
             "endpoint",
+            "historical_execution",
             "official_execution_failure_evidence",
         }
     else:
@@ -1355,9 +1717,11 @@ def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
     require(
         smoke.get("schema")
         == (
-            "trimem/grader-smoke-result/1.1"
-            if failed
-            else "trimem/grader-smoke-result/1.0"
+            P015_FAILURE_RESULT_SCHEMA
+            if recovery_ready or failed
+            else (
+                "trimem/grader-smoke-result/1.0"
+            )
         )
         and smoke.get("trimem_system_implementation") == "CREDENTIAL_FREE_GREEN"
         and smoke.get("performance") == "NOT_MEASURED"
@@ -1367,7 +1731,7 @@ def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
         == {"GOLD": 6, "NOOP_BASELINE": 6},
         "grader smoke result static contract differs",
     )
-    pre_smoke_actual = {
+    legacy_pre_smoke_actual = {
         "docker_pulls": 0,
         "grader_containers": 0,
         "input_tokens": 0,
@@ -1378,16 +1742,10 @@ def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
         "total_usd": 0,
     }
     passed_smoke_actual = {
-        **pre_smoke_actual,
+        **legacy_pre_smoke_actual,
         "docker_pulls": 7,
         "grader_containers": 12,
         "official_grader_runs": 12,
-    }
-    failed_smoke_actual = {
-        **pre_smoke_actual,
-        "docker_pulls": 4,
-        "grader_containers": 6,
-        "official_grader_runs": 6,
     }
     actual = smoke.get("actual_execution")
     require(
@@ -1398,22 +1756,33 @@ def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
         smoke.get("status"), smoke.get("grader_exec_package"),
         smoke.get("official_grader_viability"),
     )
-    if pending:
+    if recovery_ready:
         require(
             state
             == (
-                "CORRECTION_IN_PROGRESS", "CORRECTION_IN_PROGRESS",
+                SMOKE_RECOVERY_STATUS, SMOKE_RECOVERY_STATUS,
                 "NOT_YET_ESTABLISHED",
             )
-            and actual == pre_smoke_actual,
-            "pre-exec grader smoke state/counter contract is invalid",
+            and smoke.get("endpoint") == SMOKE_RECOVERY_ENDPOINT
+            and smoke.get("actual_execution_scope") == SMOKE_RECOVERY_SCOPE
+            and actual == SMOKE_RECOVERY_ACTUAL_EXECUTION,
+            "P0.1.5 recovery-ready state/correction-delta contract is invalid",
+        )
+        require(
+            smoke.get("historical_execution")
+            == _validated_p014_historical_execution(),
+            "P0.1.4 diagnostic history binding differs",
         )
     elif failed:
         require(
             state == ("FAIL", "FAIL", "NOT_YET_ESTABLISHED")
-            and actual == failed_smoke_actual
-            and smoke.get("endpoint") == SMOKE_FAILURE_ENDPOINT,
+            and smoke.get("endpoint") in P015_FAILURE_ENDPOINTS,
             "failed grader smoke state/counter contract is invalid",
+        )
+        require(
+            smoke.get("historical_execution")
+            == _validated_p014_historical_execution(),
+            "P0.1.4 diagnostic history binding differs after exec-005 failure",
         )
         evidence = smoke.get("official_execution_failure_evidence")
         require(
@@ -1421,47 +1790,30 @@ def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
             and set(evidence) == SMOKE_FAILURE_EVIDENCE_FIELDS,
             "failed grader smoke evidence field set differs",
         )
-        receipt_path = ROOT / SMOKE_FAILURE_RECEIPT_PATH
-        inventory_path = ROOT / SMOKE_FAILURE_INVENTORY_PATH
+        receipt_path = ROOT / OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH
+        inventory_path = ROOT / OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
         receipt_raw = receipt_path.read_bytes()
         inventory_raw = inventory_path.read_bytes()
         require(
-            evidence.get("failure_receipt_path") == SMOKE_FAILURE_RECEIPT_PATH
+            evidence.get("failure_receipt_path")
+            == OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH
             and evidence.get("failure_receipt_raw_sha256")
             == hashlib.sha256(receipt_raw).hexdigest()
             and evidence.get("evidence_inventory_path")
-            == SMOKE_FAILURE_INVENTORY_PATH
+            == OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
             and evidence.get("evidence_inventory_raw_sha256")
             == hashlib.sha256(inventory_raw).hexdigest(),
             "failed grader smoke evidence path/raw hash binding differs",
         )
-        receipt = validate_committed_failure_evidence(ROOT)
+        receipt = _validated_p015_failure_closure(receipt_raw, inventory_raw)
         require(
-            evidence.get("approval_binding") == receipt.get("approval_binding"),
+            evidence.get("approval_binding") == receipt.get("approval_binding")
+            and smoke.get("endpoint") == receipt.get("endpoint"),
             "failed grader smoke approval binding differs",
         )
-        receipt_accounting = receipt.get("execution_accounting")
         require(
-            isinstance(receipt_accounting, dict)
-            and all(
-                receipt_accounting.get(field) == value
-                for field, value in actual.items()
-            ),
+            actual == receipt.get("actual_execution"),
             "failed grader smoke receipt accounting differs",
-        )
-        campaign = receipt.get("authoritative_campaign")
-        require(
-            isinstance(campaign, dict)
-            and campaign.get("expected_cells") == 12
-            and campaign.get("formal_result_rows") == 5
-            and campaign.get("forensic_executed_outcomes") == 6
-            and campaign.get("authoritative_result_rows") == 0
-            and campaign.get("aggregate_created") is False
-            and campaign.get("public_result_created") is False
-            and campaign.get("attestation_created") is False
-            and campaign.get("scientific_result") == "NOT_AGGREGATED"
-            and receipt.get("development_approval_allowed") is False,
-            "failed grader smoke terminal campaign contract differs",
         )
     else:
         require(
@@ -1753,7 +2105,7 @@ def validate_model_cost_environment() -> None:
     require(model.get("actual_execution") == {"model_gateway_calls": 0, "paid_model_calls": 0}, "pre-EXEC model counters are nonzero")
 
     cost = read_json(CONFIG / "cost_plan.json")
-    require(cost.get("schema") == "trimem/cost-plan/1.1", "cost plan schema is stale")
+    require(cost.get("schema") == "trimem/cost-plan/1.2", "cost plan schema is stale")
     counts = cost.get("run_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_physical_task_arm_runs")) == (72, 81, 153), "physical run counts do not include four-candidate tuning")
     expected, hard = cost.get("expected_cost", {}), cost.get("proposed_hard_cap", {})
@@ -1776,7 +2128,29 @@ def validate_model_cost_environment() -> None:
             "task_arm_runs": 0,
             "task_instances": 0,
         },
-        "post-smoke actual-to-date accounting differs",
+        "cumulative post-smoke actual-to-date accounting differs",
+    )
+    require(
+        cost.get("actual_to_date_scope")
+        == "CUMULATIVE_INCLUDES_P0.1.4_DIAGNOSTIC_HISTORY"
+        and cost.get("accounting_windows")
+        == {
+            "p014_diagnostic_history": {
+                "grader_containers": 6,
+                "model_api_calls": 0,
+                "official_grader_runs": 6,
+                "paid_model_calls": 0,
+                "scope": "IMMUTABLE_DIAGNOSTIC_HISTORY_ONLY",
+                "total_usd": 0,
+                "workflow_run_attempt": 1,
+                "workflow_run_id": 33630256522,
+            },
+            "p015_correction_pre_exec_005": {
+                **SMOKE_RECOVERY_ACTUAL_EXECUTION,
+                "scope": SMOKE_RECOVERY_SCOPE,
+            },
+        },
+        "historical/current correction accounting windows differ",
     )
 
     environment = read_json(CONFIG / "benchmark_environment_lock.json")
@@ -1803,9 +2177,303 @@ def validate_model_cost_environment() -> None:
     require(environment.get("embedding_execution", {}).get("benchmark_hash_embedder_allowed") is False, "benchmark environment allows the fixture embedder")
 
 
+def validate_p015_semantics_and_envelope_contracts() -> dict[str, Any]:
+    """Bind readiness to the production semantic/envelope implementations."""
+
+    semantics = validate_report_semantics_lock(ROOT)
+    require(
+        semantics.get("schema")
+        == "trimem/multi-swe-report-semantics-lock-validation/1.0"
+        and semantics.get("status") == "PASS"
+        and semantics.get("source_blobs") == 5,
+        "Multi-SWE report-semantics production lock validation differs",
+    )
+
+    contract = read_json(ARTIFACT / "adapter_failure_envelope_contract.json")
+    require(
+        set(contract)
+        == {
+            "adapter_evidence",
+            "authority_recovery",
+            "authority_rollback",
+            "campaign_finalization_journal",
+            "failure_contract",
+            "failure_taxonomy_fields",
+            "failure_taxonomy_rules",
+            "historical_p014_classification",
+            "official_outcome_contract",
+            "pre_cell_failure",
+            "public_privacy",
+            "scope",
+            "schema",
+            "status",
+            "terminal_accounting",
+            "terminal_cell",
+        }
+        and contract.get("schema")
+        == "trimem/adapter-failure-envelope-contract/1.0"
+        and contract.get("status") == "FROZEN_PRE_EXEC"
+        and contract.get("scope")
+        == {
+            "docker_calls": 0,
+            "grader_calls": 0,
+            "model_api_calls": 0,
+            "paid_model_calls": 0,
+        },
+        "adapter failure-envelope outer contract differs",
+    )
+    production = adapter_evidence_envelope_contract()
+    adapter = contract.get("adapter_evidence")
+    require(
+        isinstance(adapter, dict)
+        and adapter.get("canonical_root") == production["canonical_root"]
+        and adapter.get("compatibility_aliases")
+        == production["compatibility_aliases"]
+        and adapter.get("evidence_schema") == production["schema"]
+        and set(adapter.get("evidence_fields", ()))
+        == set(production["trimem_fields"])
+        and set(adapter.get("top_level_fields", ()))
+        == set(production["top_level_fields"])
+        and adapter.get("top_level_policy")
+        == "NON_TRIMEM_TOP_LEVEL_IS_PUBLIC_SUMMARY; _trimem_IS_RESTRICTED_ADAPTER_EVIDENCE",
+        "adapter evidence artifact differs from production envelope projection",
+    )
+    failure = contract.get("failure_contract")
+    require(
+        isinstance(failure, dict)
+        and failure.get("original_primary_error_preserved") is True
+        and failure.get("secondary_evidence_failures")
+        == "SEPARATE_ORDERED_LIST_NEVER_REPLACES_PRIMARY"
+        and failure.get("evidence_preservation_pipeline")
+        == {
+            "encrypted_upload": "ALWAYS_WHEN_ENCRYPTION_SUCCEEDS",
+            "encryption": (
+                "ALWAYS_AFTER_APPROVAL_MATERIALIZATION; "
+                "INCLUDES_INVENTORY_WHEN_AVAILABLE"
+            ),
+            "failure_closure": (
+                "REQUIRES_INVENTORY_SUCCESS_AND_AUTHORITY_RECOVERY_SUCCESS_OR_SKIP"
+            ),
+            "failure_closure_upload": "ALWAYS_WHEN_FAILURE_CLOSURE_SUCCEEDS",
+            "inventory": (
+                "ALWAYS_AFTER_APPROVAL_MATERIALIZATION; "
+                "INDEPENDENT_OF_AUTHORITY_RECOVERY_OUTCOME"
+            ),
+            "inventory_upload": "ALWAYS_WHEN_INVENTORY_SUCCEEDS",
+            "plaintext_cleanup": (
+                "REQUIRES_ENCRYPTED_UPLOAD_SUCCESS; "
+                "OTHERWISE_PRESERVE_PLAINTEXT_AND_CIPHERTEXT_AND_FAIL"
+            ),
+        }
+        and production.get("primary_error_policy")
+        == "PRIMARY_PRESERVED_SECONDARY_EVIDENCE_ERRORS_SEPARATE"
+        and failure.get("adapter_failure", {}).get("adapter_normalized") is False
+        and failure.get("adapter_failure", {}).get("scientific_resolved") is None
+        and production.get("failure_outcome_policy", {}).get(
+            "grade_result_resolved_authoritative"
+        )
+        is False,
+        "adapter failure/error-preservation contract differs from production",
+    )
+    official_outcome = contract.get("official_outcome_contract")
+    require(
+        isinstance(official_outcome, dict)
+        and official_outcome
+        == {
+            "adapter_failure_after_final_report": {
+                "adapter_normalized": False,
+                "official_final_report_resolved": "PRESERVE_OBSERVED_BOOLEAN",
+                "scientific_resolved": None,
+            },
+            "aggregate_authority_predicate": (
+                "status == success AND adapter_normalized == true"
+            ),
+            "success": {
+                "adapter_normalized": True,
+                "official_final_report_resolved": "EQUALS_SCIENTIFIC_RESOLVED",
+                "scientific_resolved": "BOOLEAN",
+            },
+        },
+        "underlying official-outcome authority contract differs",
+    )
+    terminal = contract.get("terminal_cell")
+    require(
+        isinstance(terminal, dict)
+        and terminal.get("schema") == TERMINAL_CELL_SCHEMA
+        and terminal.get("exactly_one_per_attempted_cell") is True
+        and set(terminal.get("required_lifecycle_fields", ()))
+        == set(TERMINAL_LIFECYCLE_FIELDS)
+        and set(terminal.get("record_fields", ())) == set(TERMINAL_CELL_FIELDS)
+        and set(contract.get("failure_taxonomy_fields", ()))
+        == set(GRADER_SMOKE_FAILURE_TAXONOMY_FIELDS),
+        "terminal-cell/failure-taxonomy artifact differs from production",
+    )
+    taxonomy_projection = [
+        {
+            "counter": rule["counter"],
+            "exact_stages": list(rule["exact_stages"]),
+            "fallback": rule["fallback"],
+            "stage_prefixes": list(rule["stage_prefixes"]),
+        }
+        for rule in GRADER_SMOKE_FAILURE_TAXONOMY_RULES
+    ]
+    require(
+        contract.get("failure_taxonomy_rules") == taxonomy_projection
+        and [rule["counter"] for rule in taxonomy_projection]
+        == [
+            "image_lifecycle_failures",
+            "official_harness_failures",
+            "official_report_failures",
+            "environment_failures",
+            "infrastructure_failures",
+            "aggregate_failures",
+            "adapter_contract_failures",
+        ]
+        and taxonomy_projection[-1]["fallback"] is True
+        and all(rule["fallback"] is False for rule in taxonomy_projection[:-1]),
+        "ordered failure-taxonomy production rules differ",
+    )
+    pre_cell = contract.get("pre_cell_failure")
+    require(
+        pre_cell
+        == {
+            "actual_execution": PRE_CELL_ZERO_EXECUTION,
+            "schema": PRE_CELL_FAILURE_SCHEMA,
+            "stage_taxonomy": PRE_CELL_STAGE_TAXONOMY,
+            "terminal_record_count": 0,
+        },
+        "pre-cell failure contract differs from production",
+    )
+    authority = contract.get("authority_rollback")
+    require(
+        authority
+        == {
+            "cause_taxonomy": AUTHORITY_ROLLBACK_CAUSE_TAXONOMY,
+            "grant_capability": False,
+            "release_authority_additional_requirements": [
+                "exact successful GitHub workflow run attempt",
+                "restricted evidence inventory and encrypted upload",
+                "cleaned plaintext",
+                "verified attestation subject and bundle",
+            ],
+            "schema": AUTHORITY_ROLLBACK_EVIDENCE_SCHEMA,
+            "scientific_authority_scope": (
+                "authoritative_cell is cell-level scientific authority; final campaign "
+                "eligibility additionally requires the exact successful signed workflow attempt"
+            ),
+            "transition": {"after": False, "before": True},
+        },
+        "authority rollback/release contract differs from production",
+    )
+    authority_recovery = contract.get("authority_recovery")
+    require(
+        authority_recovery
+        == {
+            "canonical_state_after": "FALSE",
+            "canonical_states_before": [
+                "ABSENT",
+                "FALSE",
+                "INCOMPLETE",
+                "MIXED",
+                "TRUE",
+            ],
+            "cause_taxonomy": AUTHORITY_ROLLBACK_CAUSE_TAXONOMY,
+            "failure_closure_requires_recovery_success_or_skip": True,
+            "finalization_journal_required_for_run_smoke_authority_qualification": True,
+            "grant_capability": False,
+            "recovery_sources": [
+                "canonical_false",
+                "promotion_original",
+                "rollback_replacement",
+            ],
+            "schema": AUTHORITY_RECOVERY_EVIDENCE_SCHEMA,
+            "transaction_markers": [
+                AUTHORITY_PROMOTION_TRANSACTION_MARKER,
+                AUTHORITY_ROLLBACK_TRANSACTION_MARKER,
+            ],
+        },
+        "authority interrupted-transaction recovery contract differs from production",
+    )
+    finalization_journal = contract.get("campaign_finalization_journal")
+    require(
+        finalization_journal
+        == {
+            "expected_terminal_record_count": FINALIZATION_TERMINAL_COUNT,
+            "path": FINALIZATION_JOURNAL_RELATIVE_PATH.as_posix(),
+            "schema": FINALIZATION_JOURNAL_SCHEMA,
+            "status_taxonomy": {
+                FINALIZATION_AUTHORITY_COMMITTED: None,
+                FINALIZATION_AUTHORITY_STARTED: "infrastructure_failures",
+                FINALIZATION_SCIENTIFIC_REJECTED: "aggregate_failures",
+            },
+            "required_before_authority_promotion": True,
+            "required_for_scientific_aggregate_rejection": True,
+            "required_to_qualify_false_tree_run_smoke_failure": True,
+            "terminal_bytes_content_bound": True,
+            "transition": [
+                FINALIZATION_AUTHORITY_STARTED,
+                FINALIZATION_AUTHORITY_COMMITTED,
+            ],
+        },
+        "campaign-finalization journal contract differs from production",
+    )
+    privacy = contract.get("public_privacy")
+    require(
+        privacy
+        == {
+            "adapter_trimem_root": "RESTRICTED_EVIDENCE_NOT_THE_PUBLIC_ARTIFACT",
+            "private_failure_reasons": (
+                "DIGEST_AND_BYTE_COUNT_ONLY_IN_PUBLIC_FAILURE_CLOSURE"
+            ),
+            "public_outcome_fields": list(SMOKE_OUTCOME_FIELDS),
+            "raw_test_names_published": False,
+        },
+        "public adapter/failure evidence privacy contract differs",
+    )
+    historical = contract.get("historical_p014_classification")
+    expected_historical = _validated_p014_historical_execution()
+    require(
+        isinstance(historical, dict)
+        and historical.get("run_id") == expected_historical["workflow_run_id"]
+        and historical.get("run_attempt")
+        == expected_historical["workflow_run_attempt"]
+        and {
+            key: historical.get(key)
+            for key in GRADER_SMOKE_FAILURE_TAXONOMY_FIELDS
+        }
+        == expected_historical["failure_taxonomy"],
+        "adapter contract P0.1.4 failure taxonomy differs",
+    )
+    terminal_accounting = contract.get("terminal_accounting")
+    require(
+        terminal_accounting
+        == {
+            "adapter_normalized_count": "sum(adapter_normalized is true)",
+            "attempted_cell_count": "count(exact terminal records)",
+            "authoritative_cell_count": "sum(authoritative_cell is true)",
+            "complete_execution_evidence_count": (
+                "sum(complete execution lifecycle evidence is true)"
+            ),
+            "historical_six_five_fixture": expected_historical["campaign"],
+            "official_execution_count": "sum(container_started is true)",
+            "terminal_record_count": "count(exact terminal records)",
+            "unattempted_cell_count": (
+                "max(0, expected_cell_count - attempted_cell_count)"
+            ),
+        },
+        "terminal accounting formulas/fixture differ from production evidence",
+    )
+    return {
+        **semantics,
+        "adapter_failure_envelope_contract_sha256": hashlib.sha256(
+            (ARTIFACT / "adapter_failure_envelope_contract.json").read_bytes()
+        ).hexdigest(),
+    }
+
+
 def validate_readiness_plan(targets: Mapping[str, list[dict[str, Any]]]) -> None:
     plan = read_json(ARTIFACT / "readiness_requirements.json")
-    require(plan.get("schema") == "trimem/readiness-requirements/1.2", "readiness requirements are stale")
+    require(plan.get("schema") == "trimem/readiness-requirements/1.3", "readiness requirements are stale")
     service_boundary = str(plan.get("credential_free_service_ci_boundary", ""))
     require(
         "ALLOWED_PRE_EXEC" in service_boundary
@@ -1830,14 +2498,18 @@ def validate_readiness_plan(targets: Mapping[str, list[dict[str, Any]]]) -> None
     )
     pending = plan.get("explicitly_allowed_pending_at_pre_exec_ready", {})
     require(
-        "NO_RERUN_AUTHORIZED" in str(pending.get("official_grader_smoke"))
-        and "_005 NOT_AUTHORIZED" in str(pending.get("official_grader_smoke"))
+        "CORRECTION_READY_FOR_EXECUTION"
+        in str(pending.get("official_grader_smoke"))
+        and "_005" in str(pending.get("official_grader_smoke"))
+        and "attempt-1" in str(pending.get("official_grader_smoke"))
+        and "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_EXEC_APPROVED_ONCE"
+        in str(pending.get("official_grader_smoke"))
         and str(pending.get("external_hard_cap_approval", "")).startswith(
             "NO_ACTIVE_APPROVAL"
         )
         and "run 33630256522 attempt 1"
         in str(pending.get("external_hard_cap_approval")),
-        "terminal smoke authorization state is absent",
+        "P0.1.5 recovery authorization boundary is absent",
     )
     require("PRE_DEVELOPMENT" in str(pending.get("selected_m2_checkpoint")), "pre-EXEC checkpoint state is circular")
     counts = plan.get("frozen_counts", {})
@@ -1850,83 +2522,49 @@ def validate_readiness_plan(targets: Mapping[str, list[dict[str, Any]]]) -> None
         plan.get("current_status")
         == {
             "DEV_APPROVAL_ALLOWED": "NO",
-            "ENDPOINT": SMOKE_FAILURE_ENDPOINT,
-            "GRADER_EXEC_PACKAGE": "FAIL",
+            "ENDPOINT": SMOKE_RECOVERY_ENDPOINT,
+            "GRADER_EXEC_PACKAGE": SMOKE_RECOVERY_STATUS,
             "OFFICIAL_GRADER_VIABILITY": "NOT_YET_ESTABLISHED",
             "PERFORMANCE": "NOT_MEASURED",
             "SCIENTIFIC_RESULT": "NOT_AGGREGATED",
             "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN",
         },
-        "readiness terminal status differs",
+        "readiness recovery-ready status differs",
     )
     expected_execution_counters = {
         "api_calls": 0,
-        "docker_pulls": 4,
-        "grader_containers": 6,
+        "grader_containers": 0,
         "input_tokens": 0,
+        "model_calls": 0,
         "model_gateway_calls": 0,
-        "official_grader_runs": 6,
+        "official_grader_runs": 0,
         "output_tokens": 0,
         "paid_model_calls": 0,
+        "support_image_pulls": 0,
+        "target_image_pulls": 0,
         "task_arm_runs": 0,
         "total_usd": 0,
     }
     require(
-        plan.get("execution_counters") == expected_execution_counters,
-        "readiness terminal execution counters differ",
+        plan.get("execution_counter_scope") == SMOKE_RECOVERY_SCOPE
+        and plan.get("execution_counters") == expected_execution_counters,
+        "readiness P0.1.5 correction-delta counters differ",
     )
-    terminal = plan.get("grader_smoke_terminal_execution")
-    receipt = validate_committed_failure_evidence(ROOT)
     require(
-        isinstance(terminal, dict)
-        and terminal.get("endpoint") == SMOKE_FAILURE_ENDPOINT
-        and terminal.get("git_head")
-        == receipt.get("approval_binding", {}).get("git_head")
-        and terminal.get("workflow_run_id")
-        == receipt.get("workflow_run", {}).get("id")
-        and terminal.get("workflow_run_attempt")
-        == receipt.get("workflow_run", {}).get("run_attempt")
-        and terminal.get("authorization")
+        plan.get("grader_smoke_exec_005_failure_closure")
         == {
-            "request_005": "NOT_AUTHORIZED",
-            "rerun": "NO_RERUN_AUTHORIZED",
-            "status": "CONSUMED",
-        }
-        and terminal.get("campaign")
-        == {
-            "adapter_normalized_cells": 5,
-            "executed_cells": 6,
-            "gold_executed": 3,
-            "gold_normalized": 3,
-            "noop_baseline_executed": 3,
-            "noop_baseline_normalized": 2,
-            "required_cells": 12,
-            "unattempted_cells": 6,
-        }
-        and terminal.get("prebuilt_evaluation_contract")
-        == {
-            "force_build": False,
-            "host_prepare_sh_accesses": 0,
-            "human_mode": True,
-            "mode": "MULTI_SWE_PREBUILT_EVALUATION",
-            "need_clone": False,
-            "source_image_builds": 0,
-            "status": "PASS",
-            "submitted_patch_bind_mount": "/home/fix.patch",
+            "evidence_inventory_path": OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+            "failure_receipt_path": OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
+            "historical_p014_paths_reused": False,
+            "schema": P015_FAILURE_CLOSURE_SCHEMA,
+            "status": "PENDING_EXECUTION",
         },
-        "readiness terminal grader-smoke record differs",
+        "readiness exec-005 failure-closure namespace differs",
     )
-    terminal_accounting = terminal.get("accounting")
-    receipt_accounting = receipt.get("execution_accounting")
     require(
-        isinstance(terminal_accounting, dict)
-        and isinstance(receipt_accounting, dict)
-        and all(
-            receipt_accounting.get(field) == value
-            for field, value in terminal_accounting.items()
-        )
-        and all(value == 0 for value in terminal_accounting.values()),
-        "readiness zero-model accounting differs from failure receipt",
+        plan.get("historical_grader_smoke_execution")
+        == _validated_p014_historical_execution(),
+        "readiness P0.1.4 immutable diagnostic history differs",
     )
 
 
@@ -2231,7 +2869,7 @@ def validate_workflows() -> None:
         "smoke branch trigger is not fail-closed before the protected job",
     )
     require(
-        "concurrency:\n  group: trimem-v1-grader-smoke-exec-004\n"
+        "concurrency:\n  group: trimem-v1-grader-smoke-exec-005\n"
         "  cancel-in-progress: false" in smoke,
         "smoke recovery concurrency contract differs",
     )
@@ -2250,35 +2888,189 @@ def validate_workflows() -> None:
         in smoke
         and "trimem_smoke_attestation.py" in smoke
         and "trimem-grader-smoke-attestation-bundle.json" in smoke
-        and "name: trimem-grader-smoke-attestation-bundle" in smoke,
+        and "name: trimem-grader-smoke-exec-005-attestation-bundle" in smoke
+        and "name: trimem-grader-smoke-exec-005-public" in smoke
+        and "name: trimem-grader-smoke-exec-005-failure-closure" in smoke
+        and "name: trimem-grader-smoke-exec-005-evidence-inventory" in smoke
+        and "name: trimem-grader-smoke-exec-005-restricted-encrypted" in smoke
+        and "trimem_grader_smoke_failure_closure.py" in smoke
+        and "--request artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_005.json"
+        in smoke
+        and "$RUNNER_TEMP/trimem-grader-smoke-exec-005-failure-receipt.json"
+        in smoke,
         "smoke GitHub-hosted attestation action/permissions/artifact path differs",
     )
-    upload_public = smoke.find("- name: Upload public smoke result")
-    upload_inventory = smoke.find(
-        "- name: Upload non-sensitive restricted evidence inventory"
+    smoke_step_labels = (
+        "Remove only frozen smoke image references",
+        "Recover or revoke terminal authority after any campaign failure",
+        "Inventory every restricted evidence file",
+        "Build namespaced exec-005 campaign failure closure",
+        "Encrypt complete restricted evidence",
+        "Build deterministic official smoke attestation subject",
+        "Upload namespaced exec-005 failure closure",
+        "Upload non-sensitive restricted evidence inventory",
+        "Upload encrypted restricted evidence",
+        "Remove plaintext and temporary EXEC material before signing",
+        "Attest exact uploaded and cleaned official smoke subject",
+        "Materialize fixed attestation bundle name",
+        "Upload public smoke result",
+        "Upload official smoke attestation bundle",
+        "Remove staged attestation material",
     )
-    upload_encrypted = smoke.find("- name: Upload encrypted restricted evidence")
-    cleanup_before_signing = smoke.find(
-        "- name: Remove plaintext and temporary EXEC material before signing"
-    )
-    attest = smoke.find(
-        "- name: Attest exact uploaded and cleaned official smoke subject"
-    )
-    upload_bundle = smoke.find("- name: Upload official smoke attestation bundle")
+    smoke_step_positions: dict[str, int] = {}
+    for label in smoke_step_labels:
+        marker = f"- name: {label}"
+        require(
+            smoke.count(marker) == 1,
+            f"smoke workflow requires exactly one {label!r} step",
+        )
+        smoke_step_positions[label] = smoke.index(marker)
+
+    image_cleanup = smoke_step_positions[smoke_step_labels[0]]
+    revoke_authority = smoke_step_positions[smoke_step_labels[1]]
+    evidence_inventory = smoke_step_positions[smoke_step_labels[2]]
+    build_failure = smoke_step_positions[smoke_step_labels[3]]
+    encrypt_evidence = smoke_step_positions[smoke_step_labels[4]]
+    build_attestation_subject = smoke_step_positions[smoke_step_labels[5]]
+    upload_failure = smoke_step_positions[smoke_step_labels[6]]
+    upload_inventory = smoke_step_positions[smoke_step_labels[7]]
+    upload_encrypted = smoke_step_positions[smoke_step_labels[8]]
+    cleanup_before_signing = smoke_step_positions[smoke_step_labels[9]]
+    attest = smoke_step_positions[smoke_step_labels[10]]
+    materialize_bundle = smoke_step_positions[smoke_step_labels[11]]
+    upload_public = smoke_step_positions[smoke_step_labels[12]]
+    upload_bundle = smoke_step_positions[smoke_step_labels[13]]
+    cleanup_staged_attestation = smoke_step_positions[smoke_step_labels[14]]
     require(
-        -1
-        not in {
-            upload_public, upload_inventory, upload_encrypted,
-            cleanup_before_signing, attest, upload_bundle,
-        }
-        and upload_public
+        image_cleanup
+        < revoke_authority
+        < evidence_inventory
+        < build_failure
+        < encrypt_evidence
+        < build_attestation_subject
+        < upload_failure
         < upload_inventory
         < upload_encrypted
         < cleanup_before_signing
         < attest
+        < materialize_bundle
+        < upload_public
         < upload_bundle
-        and "if: always()" not in smoke[attest:upload_bundle],
-        "smoke upload/cleanup/signing order can attest an incomplete or red execution",
+        < cleanup_staged_attestation,
+        "smoke cleanup/rollback/inventory/encryption/upload/signing order differs",
+    )
+    authority_resolution_block = smoke[revoke_authority:evidence_inventory]
+    require(
+        "steps.exec_gate.outcome == 'success'" in authority_resolution_block
+        and "steps.run_smoke.outcome != 'skipped'" in authority_resolution_block
+        and "steps.run_smoke.outcome != 'success'" in authority_resolution_block
+        and "steps.aggregate.outcome != 'success'" in authority_resolution_block
+        and "steps.public_result.outcome != 'success'" in authority_resolution_block
+        and "steps.workflow_image_cleanup.outcome != 'success'"
+        in authority_resolution_block
+        and "--recover-interrupted" in authority_resolution_block
+        and 'cause_stage="authority_finalization"' in authority_resolution_block
+        and 'failure_taxonomy="infrastructure_failures"'
+        in authority_resolution_block,
+        "smoke authority recovery is not total over run/downstream failure",
+    )
+    inventory_block = smoke[evidence_inventory:build_failure]
+    require(
+        "if: >-" in inventory_block
+        and "always() &&" in inventory_block
+        and "steps.approval_materialization.outcome != 'skipped'"
+        in inventory_block
+        and "campaign_authority_rollback" not in inventory_block,
+        "restricted inventory is not independent of authority recovery",
+    )
+    failure_closure_block = smoke[build_failure:encrypt_evidence]
+    require(
+        "steps.evidence_inventory.outcome == 'success'"
+        in failure_closure_block
+        and "steps.campaign_authority_rollback.outcome == 'success'"
+        in failure_closure_block
+        and "steps.campaign_authority_rollback.outcome == 'skipped'"
+        in failure_closure_block,
+        "failure closure is not gated on stable authority and inventory evidence",
+    )
+    encryption_block = smoke[encrypt_evidence:build_attestation_subject]
+    require(
+        "always() &&" in encryption_block
+        and "steps.approval_materialization.outcome != 'skipped'"
+        in encryption_block
+        and 'inventory_args=()' in encryption_block
+        and '"${inventory_args[@]}"' in encryption_block,
+        "restricted encryption is not independent of optional inventory evidence",
+    )
+    failure_upload_block = smoke[upload_failure:upload_inventory]
+    inventory_upload_block = smoke[upload_inventory:upload_encrypted]
+    encrypted_upload_block = smoke[upload_encrypted:cleanup_before_signing]
+    public_upload_block = smoke[upload_public:upload_bundle]
+    bundle_upload_block = smoke[upload_bundle:cleanup_staged_attestation]
+    cleanup_block = smoke[cleanup_before_signing:attest]
+    require(
+        "if: always() && steps.failure_closure.outcome == 'success'"
+        in failure_upload_block
+        and "if: always() && steps.evidence_inventory.outcome == 'success'"
+        in inventory_upload_block
+        and "if: always() && steps.encrypt_evidence.outcome == 'success'"
+        in encrypted_upload_block
+        and "if: success()" in public_upload_block
+        and "if: success()" in bundle_upload_block
+        and "RESTRICTED_UPLOAD_OUTCOME: ${{ steps.restricted_upload.outcome }}"
+        in cleanup_block
+        and 'if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ]; then'
+        in cleanup_block
+        and "preserving plaintext and ciphertext" in cleanup_block
+        and "if: always()" not in smoke[attest:cleanup_staged_attestation]
+        and ">(tee" not in smoke
+        and "workflow-stages/run-smoke/stdout.txt" in smoke
+        and "workflow-stages/run-smoke/stderr.txt" in smoke
+        and "workflow-stages/authority-rollback/stdout.txt" in smoke
+        and "workflow-stages/authority-rollback/stderr.txt" in smoke,
+        "smoke uploads/signing are not outcome-gated after evidence preservation",
+    )
+    restricted_root = "artifacts/trimem_v1/grader_smoke_exec"
+    immutable_phase = smoke[build_failure:cleanup_before_signing]
+    immutable_root_lines = [
+        line.strip()
+        for line in immutable_phase.splitlines()
+        if restricted_root in line
+    ]
+    expected_read_only_root_lines = [
+        f"--restricted-root {restricted_root} \\",
+        f"-C {restricted_root} . \\",
+        f"--public-result {restricted_root}/public-results.json \\",
+        (
+            'python -c "import os,pathlib,shutil; '
+            f"source=pathlib.Path('{restricted_root}/public-results.json'); "
+            "target=pathlib.Path(os.environ['RUNNER_TEMP'],"
+            "'trimem-grader-smoke-public-results.json'); "
+            "assert source.is_file() and not target.exists(); "
+            "shutil.copyfile(source,target); "
+            'assert source.read_bytes() == target.read_bytes()"'
+        ),
+    ]
+    require(
+        immutable_root_lines == expected_read_only_root_lines,
+        "restricted evidence root is not immutable between inventory and deletion",
+    )
+    require(
+        smoke.count("python scripts/trimem_evidence_inventory.py") == 1
+        and smoke.count("openssl enc -aes-256-cbc") == 1
+        and smoke.count("python scripts/trimem_grader_smoke_authority.py") == 1
+        and smoke.count("python scripts/trimem_grader_smoke_failure_closure.py") == 1
+        and smoke.count("python scripts/trimem_cleanup_exec.py --phase grader-smoke") == 1
+        and smoke.count("id: evidence_inventory") == 1
+        and smoke.count("id: failure_closure") == 1
+        and smoke.count("id: encrypt_evidence") == 1
+        and smoke.count("id: smoke-attestation") == 1
+        and "delivery_authority_rollback" not in smoke
+        and "--pre-cell-failure-output "
+        "artifacts/trimem_v1/grader_smoke_exec/results" in smoke
+        and "workflow-stages/exec-gate/stdout.txt" in smoke
+        and "workflow-stages/exec-gate/stderr.txt" in smoke,
+        "smoke single-inventory/rollback and EXEC-gate evidence contract differs",
     )
     smoke_secrets = set(
         re.findall(r"\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)", smoke)
@@ -2377,6 +3169,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     validate_images(targets)
     validate_noop_baseline_audit(targets)
     validate_model_cost_environment()
+    contracts = validate_p015_semantics_and_envelope_contracts()
     validate_runtime_and_candidates()
     validate_workflows()
     credential = verify_bundle(ARTIFACT / "credential_free_e2e")
@@ -2419,6 +3212,11 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "dev_approval_allowed": smoke.get("status") == "PASS",
         "official_grader_viability": smoke["official_grader_viability"],
         "performance": smoke["performance"],
+        "multi_swe_report_semantics_sha256": contracts["module_sha256"],
+        "multi_swe_report_semantics_lock_sha256": contracts["lock_sha256"],
+        "adapter_failure_envelope_contract_sha256": contracts[
+            "adapter_failure_envelope_contract_sha256"
+        ],
     }
 
 
@@ -2438,6 +3236,8 @@ def preapproval_blockers() -> list[str]:
                 "terminal grader-smoke adapter-contract failure; rerun and "
                 "further phase approval are not authorized"
             )
+        elif smoke.get("status") not in {SMOKE_RECOVERY_STATUS, "PASS"}:
+            blockers.append("grader-smoke recovery state is not approval-ready")
     request = read_json(CONFIG / "benchmark_exec_request.json")
     if request.get("approval_state") != "PENDING_EXEC_APPROVAL":
         blockers.append("committed external approval request is not pending")
@@ -2464,6 +3264,11 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
             "terminal grader-smoke adapter-contract failure; rerun, DEV, and "
             "HELDOUT execution are not authorized"
         ], name
+    if name == "grader-smoke" and smoke.get("status") != SMOKE_RECOVERY_STATUS:
+        return [
+            "fresh grader-smoke execution requires the exact P0.1.5 "
+            "recovery-ready state"
+        ], name
     if name in {"development", "heldout"}:
         if smoke.get("status") != "PASS":
             return ["official GOLD+NOOP_BASELINE smoke PASS is required before benchmark execution"], name
@@ -2487,8 +3292,56 @@ def main() -> int:
     parser.add_argument("--level", choices=("static", "benchmark-approval", "grader-smoke-exec", "benchmark-exec"), default="static")
     parser.add_argument("--require-git-tracked", action="store_true")
     parser.add_argument("--approval-file", type=Path)
+    parser.add_argument("--pre-cell-failure-output", type=Path)
     args = parser.parse_args()
+    if args.pre_cell_failure_output is not None and (
+        args.level != "grader-smoke-exec" or args.approval_file is None
+    ):
+        parser.error(
+            "--pre-cell-failure-output requires grader-smoke-exec and --approval-file"
+        )
+    validated_approval_binding: dict[str, Any] | None = None
+
+    def record_exec_gate_failure(reason: str) -> None:
+        if (
+            args.pre_cell_failure_output is None
+            or validated_approval_binding is None
+        ):
+            return
+        try:
+            write_pre_cell_failure_evidence(
+                args.pre_cell_failure_output.resolve(),
+                approval_binding={
+                    name: validated_approval_binding[name]
+                    for name in (
+                        "approval_artifact_sha256",
+                        "approved_request_sha256",
+                        "approved_workflow_run_id",
+                        "approved_workflow_run_attempt",
+                        "freeze_sha256",
+                        "git_head",
+                        "phase",
+                    )
+                },
+                stage="EXEC_GATE",
+                reason=reason.strip(),
+            )
+        except (OSError, ValueError):
+            # Evidence persistence is secondary to the original gate failure.
+            # The workflow still retains the gate's direct raw streams.
+            return
+
     try:
+        # Establish the approval binding before the broader static gate.  A
+        # malformed/unbound secret never earns an approval-bound failure
+        # record; any later gate failure does.
+        if args.pre_cell_failure_output is not None:
+            try:
+                validated_approval_binding = validate_exec_approval(
+                    "grader-smoke", args.approval_file.resolve()
+                )
+            except (OSError, ValueError):
+                validated_approval_binding = None
         # Every approval or execution endpoint must prove that the entire
         # frozen closure is committed.  The flag remains useful for strict
         # local static checks, but cannot weaken an approval-level gate when
@@ -2526,9 +3379,12 @@ def main() -> int:
             "status": "PASS" if not blockers else "FAIL_CLOSED",
             "trimem_system_implementation": "CREDENTIAL_FREE_GREEN",
         }
+        if blockers:
+            record_exec_gate_failure("; ".join(blockers))
         print(json.dumps(report, ensure_ascii=False, sort_keys=True))
         return 0 if not blockers else 1
     except (OSError, ValueError, json.JSONDecodeError, subprocess.SubprocessError) as exc:
+        record_exec_gate_failure(str(exc).strip() or type(exc).__name__)
         print(json.dumps({"error": str(exc), "level": args.level, "status": "FAIL"}, ensure_ascii=False, sort_keys=True))
         return 1
 

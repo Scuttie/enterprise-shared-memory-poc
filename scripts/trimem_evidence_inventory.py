@@ -9,6 +9,8 @@ from pathlib import Path
 import stat
 from typing import Any
 
+from trimem_atomic_evidence import atomic_write_bytes
+
 
 SCHEMA = "trimem/restricted-evidence-inventory/1.0"
 
@@ -104,10 +106,7 @@ def write_inventory(root: Path, output: Path, *, root_label: str) -> dict[str, A
     value = build_inventory(root, root_label=root_label)
     raw = _canonical(value) + b"\n"
     try:
-        with output_resolved.open("xb") as stream:
-            stream.write(raw)
-            stream.flush()
-            os.fsync(stream.fileno())
+        atomic_write_bytes(output_resolved, raw)
     except FileExistsError as exc:
         raise EvidenceInventoryError("refusing to overwrite evidence inventory") from exc
     return value

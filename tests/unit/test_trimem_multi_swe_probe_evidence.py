@@ -386,7 +386,7 @@ def test_freeze_probe_phase_is_absent_marker_only_or_exact_trio(tmp_path: Path) 
     )
 
 
-def test_004_builder_requires_evidence_head_and_binds_full_closure(
+def test_005_builder_requires_evidence_head_and_binds_full_closure(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     repository, correction, marker, evidence_head, _ = _closed_repository(tmp_path)
@@ -400,6 +400,9 @@ def test_004_builder_requires_evidence_head_and_binds_full_closure(
         trigger.MULTI_SWE_ENTRYPOINT_PATH: b"entrypoint",
         trigger.MULTI_SWE_PROBE_EVIDENCE_PATH: b"evidence-verifier",
         trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH: b"contract-lock",
+        trigger.MULTI_SWE_REPORT_SEMANTICS_PATH: b"report-semantics",
+        trigger.MULTI_SWE_REPORT_SEMANTICS_LOCK_PATH: b"report-semantics-lock",
+        trigger.ADAPTER_FAILURE_ENVELOPE_CONTRACT_PATH: b"failure-envelope-contract",
     }
     matrix_order = [f"target-{index}" for index in range(12)]
     monkeypatch.setattr(
@@ -423,7 +426,7 @@ def test_004_builder_requires_evidence_head_and_binds_full_closure(
     expected = evidence.validate_committed_evidence(
         repository, evidence_head=evidence_head
     )
-    assert document["schema"] == "trimem/grader-smoke-branch-trigger/1.5"
+    assert document["schema"] == "trimem/grader-smoke-branch-trigger/1.6"
     assert document["source_head"] == source_head
     assert document["multi_swe_probe_evidence"] == expected
     assert document["multi_swe_probe_evidence"]["evidence_head"] == evidence_head

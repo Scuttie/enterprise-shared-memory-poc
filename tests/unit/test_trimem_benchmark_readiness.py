@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+from typing import Mapping
 
 import pytest
 
@@ -24,7 +25,13 @@ import trimem_benchmark_matrix as benchmark_matrix  # noqa: E402
 import trimem_cleanup_exec as cleanup_exec  # noqa: E402
 import trimem_freeze as freeze  # noqa: E402
 import trimem_grader_smoke as grader_smoke  # noqa: E402
+import trimem_grader_smoke_authority as smoke_authority  # noqa: E402
+import trimem_grader_smoke_failure_closure as failure_closure  # noqa: E402
+import trimem_grader_smoke_finalization as finalization_journal  # noqa: E402
+import trimem_grader_smoke_stage_evidence as stage_evidence  # noqa: E402
 import trimem_grader_smoke_protocol as smoke_protocol  # noqa: E402
+import trimem_grader_smoke_trigger_preflight as smoke_trigger  # noqa: E402
+import trimem_evidence_inventory as evidence_inventory  # noqa: E402
 import trimem_exec_approval as exec_approval  # noqa: E402
 import trimem_m2_candidates as candidates  # noqa: E402
 import trimem_official_grader as official_grader  # noqa: E402
@@ -48,6 +55,35 @@ def _smoke_accounting(grader_count: int) -> dict[str, int]:
         else 0
         for field in readiness.SMOKE_ACCOUNTING_FIELDS
     }
+
+
+def _public_multi_semantics_summary(resolved: bool) -> dict[str, object]:
+    missing = 0 if resolved else 1
+    summary: dict[str, object] = {
+        "schema": "trimem/multi-swe-report-semantics/1.0",
+        "report_valid_observed": True,
+        "report_valid_recomputed": True,
+        "report_valid_match": True,
+        "expected_coverage_complete": resolved,
+        "expected_p2p_count": 0,
+        "observed_expected_p2p_count": 0,
+        "expected_f2p_count": 1,
+        "observed_expected_f2p_count": 1 - missing,
+        "expected_s2p_count": 0,
+        "observed_expected_s2p_count": 0,
+        "expected_n2p_count": 0,
+        "observed_expected_n2p_count": 0,
+        "missing_expected_transition_count": missing,
+        "expected_transition_domain_sha256": "a" * 64,
+        "observed_expected_transition_domain_sha256": (
+            "a" * 64 if resolved else "b" * 64
+        ),
+        "computed_resolved": resolved,
+        "official_final_report_resolved": resolved,
+        "final_report_match": True,
+        "report_invalidity_reason": "NONE",
+    }
+    return readiness.validate_public_summary(summary)
 
 
 ZERO_SMOKE_ACCOUNTING_FIELDS = tuple(
@@ -291,18 +327,41 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
     assert cost["run_counts"]["development_physical_task_arm_runs"] == 72
     assert cost["run_counts"]["heldout_physical_task_arm_runs"] == 81
     assert cost["run_counts"]["total_physical_task_arm_runs"] == 153
+    assert cost["actual_to_date_scope"] == (
+        "CUMULATIVE_INCLUDES_P0.1.4_DIAGNOSTIC_HISTORY"
+    )
+    assert cost["accounting_windows"]["p014_diagnostic_history"] == {
+        "grader_containers": 6,
+        "model_api_calls": 0,
+        "official_grader_runs": 6,
+        "paid_model_calls": 0,
+        "scope": "IMMUTABLE_DIAGNOSTIC_HISTORY_ONLY",
+        "total_usd": 0,
+        "workflow_run_attempt": 1,
+        "workflow_run_id": 33630256522,
+    }
+    assert cost["accounting_windows"]["p015_correction_pre_exec_005"] == {
+        **readiness.SMOKE_RECOVERY_ACTUAL_EXECUTION,
+        "scope": readiness.SMOKE_RECOVERY_SCOPE,
+    }
     requirements = _read(ROOT / "artifacts/trimem_v1/readiness_requirements.json")
     assert requirements["current_status"] == {
         "DEV_APPROVAL_ALLOWED": "NO",
-        "ENDPOINT": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
-        "GRADER_EXEC_PACKAGE": "FAIL",
+        "ENDPOINT": "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_READY",
+        "GRADER_EXEC_PACKAGE": "CORRECTION_READY_FOR_EXECUTION",
         "OFFICIAL_GRADER_VIABILITY": "NOT_YET_ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
         "SCIENTIFIC_RESULT": "NOT_AGGREGATED",
         "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN",
     }
     pending = requirements["explicitly_allowed_pending_at_pre_exec_ready"]
-    assert "NO_RERUN_AUTHORIZED" in pending["official_grader_smoke"]
+    assert "CORRECTION_READY_FOR_EXECUTION" in pending["official_grader_smoke"]
+    assert "_005" in pending["official_grader_smoke"]
+    assert "attempt-1" in pending["official_grader_smoke"]
+    assert (
+        "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_EXEC_APPROVED_ONCE"
+        in pending["official_grader_smoke"]
+    )
     assert "PRE_DEVELOPMENT" in pending["selected_m2_checkpoint"]
     service_boundary = requirements["credential_free_service_ci_boundary"]
     assert "ALLOWED_PRE_EXEC" in service_boundary
@@ -316,15 +375,48 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
     assert "Docker image pull or run" not in request["prohibited_before_approval"]
     assert requirements["execution_counters"] == {
         "api_calls": 0,
-        "docker_pulls": 4,
-        "grader_containers": 6,
+        "grader_containers": 0,
         "input_tokens": 0,
+        "model_calls": 0,
         "model_gateway_calls": 0,
-        "official_grader_runs": 6,
+        "official_grader_runs": 0,
         "output_tokens": 0,
         "paid_model_calls": 0,
+        "support_image_pulls": 0,
+        "target_image_pulls": 0,
         "task_arm_runs": 0,
         "total_usd": 0,
+    }
+    assert requirements["execution_counter_scope"] == readiness.SMOKE_RECOVERY_SCOPE
+    assert requirements["grader_smoke_exec_005_failure_closure"] == {
+        "evidence_inventory_path": freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+        "failure_receipt_path": freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
+        "historical_p014_paths_reused": False,
+        "schema": readiness.P015_FAILURE_CLOSURE_SCHEMA,
+        "status": "PENDING_EXECUTION",
+    }
+    history = requirements["historical_grader_smoke_execution"]
+    assert history == readiness._validated_p014_historical_execution()
+    assert history["evidence"]["failure_receipt_path"] == (
+        freeze.P014_FAILURE_RECEIPT_PATH
+    )
+    assert history["evidence"]["evidence_inventory_path"] == (
+        freeze.P014_EVIDENCE_INVENTORY_PATH
+    )
+    assert freeze.P014_FAILURE_RECEIPT_PATH != (
+        freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH
+    )
+    assert freeze.P014_EVIDENCE_INVENTORY_PATH != (
+        freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
+    )
+    assert history["failure_taxonomy"] == {
+        "adapter_contract_failures": 1,
+        "aggregate_failures": 0,
+        "environment_failures": 0,
+        "image_lifecycle_failures": 0,
+        "infrastructure_failures": 0,
+        "official_harness_failures": 0,
+        "official_report_failures": 0,
     }
     protection = _read(
         ROOT / "artifacts/trimem_v1/grader_smoke_environment_protection.json"
@@ -429,7 +521,7 @@ def test_pre_exec_grader_gate_keeps_not_yet_established_status(
         readiness,
         "validate_static",
         lambda require_git_tracked: {
-            "grader_exec_package": "CORRECTION_IN_PROGRESS",
+            "grader_exec_package": "CORRECTION_READY_FOR_EXECUTION",
             "official_grader_viability": "NOT_YET_ESTABLISHED",
             "performance": "NOT_MEASURED",
         },
@@ -442,8 +534,62 @@ def test_pre_exec_grader_gate_keeps_not_yet_established_status(
     assert readiness.main() == 1
     report = json.loads(capsys.readouterr().out)
     assert report["status"] == "FAIL_CLOSED"
-    assert report["grader_exec_package"] == "CORRECTION_IN_PROGRESS"
+    assert report["grader_exec_package"] == "CORRECTION_READY_FOR_EXECUTION"
     assert report["official_grader_viability"] == "NOT_YET_ESTABLISHED"
+
+
+def test_grader_smoke_exec_gate_accepts_only_validated_005_recovery_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    approval_path = tmp_path / "approval.json"
+    approval_path.write_text(
+        json.dumps({"approval": {"approved_phase": "GRADER_SMOKE"}}),
+        encoding="utf-8",
+    )
+    calls: list[tuple[str, Path]] = []
+    monkeypatch.setattr(
+        readiness,
+        "validate_exec_approval",
+        lambda split, path: calls.append((split, path)) or {"validated": True},
+    )
+    monkeypatch.setattr(
+        readiness,
+        "validate_selected_m2",
+        lambda require_frozen: {"status": "PRE_DEVELOPMENT"},
+    )
+
+    blockers, phase = readiness.execution_blockers(approval_path)
+    assert blockers == []
+    assert phase == "grader-smoke"
+    assert calls == [("grader-smoke", approval_path)]
+    assert readiness.GRADER_SMOKE_REQUEST_ID == "TRIMEM_V1_GRADER_SMOKE_EXEC_005"
+
+
+def test_grader_smoke_exec_gate_rejects_repeat_after_pass(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    approval_path = tmp_path / "approval.json"
+    approval_path.write_text(
+        json.dumps({"approval": {"approved_phase": "GRADER_SMOKE"}}),
+        encoding="utf-8",
+    )
+    original_read_json = readiness.read_json
+
+    def fake_read_json(path: Path) -> dict:
+        if path == readiness.ARTIFACT / "grader_smoke_result.json":
+            return {"status": "PASS"}
+        return original_read_json(path)
+
+    monkeypatch.setattr(readiness, "read_json", fake_read_json)
+    monkeypatch.setattr(readiness, "validate_exec_approval", lambda *_args: {})
+    monkeypatch.setattr(readiness, "validate_grader_smoke_result", lambda _smoke: {})
+
+    blockers, phase = readiness.execution_blockers(approval_path)
+    assert phase == "grader-smoke"
+    assert blockers == [
+        "fresh grader-smoke execution requires the exact P0.1.5 "
+        "recovery-ready state"
+    ]
 
 
 def _inventory_bytes(value: dict) -> bytes:
@@ -466,7 +612,7 @@ def _official_smoke_pass_fixture(
     repository = tmp_path / "repository"
     config = repository / "configs/trimem_v1"
     artifact = repository / "artifacts/trimem_v1"
-    official = artifact / "grader_smoke_official"
+    official = artifact / "grader_smoke_official/exec-005"
     config.mkdir(parents=True)
     official.mkdir(parents=True)
     manifest = _read(ROOT / "configs/trimem_v1/grader_smoke_manifest.json")
@@ -537,6 +683,11 @@ def _official_smoke_pass_fixture(
             "tests_executed": True,
             "digest_match": True,
             "submitted_patch_identity": True,
+            "semantic_normalization": (
+                None
+                if target["benchmark_id"] == "swebench_verified"
+                else _public_multi_semantics_summary(target["expected_resolved"])
+            ),
             "host_prepare_sh_access_count": 0,
             "source_image_build_count": 0,
             "api_calls": 0,
@@ -602,7 +753,14 @@ def _official_smoke_pass_fixture(
         "expected_target_count": 12,
         "host_prepare_sh_access_count": 0,
         "image_lifecycle": lifecycle,
-        "infrastructure_failure_count": 0,
+        "attempted_cell_count": 12,
+        "terminal_record_count": 12,
+        "complete_execution_evidence_count": 12,
+        "adapter_normalized_count": 12,
+        "authoritative_cell_count": 12,
+        "official_execution_count": 12,
+        "unattempted_cell_count": 0,
+        **{field: 0 for field in grader_smoke.FAILURE_TAXONOMY_FIELDS},
         "observed_target_count": 12,
         "patch_applied_count": 12,
         "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
@@ -625,7 +783,7 @@ def _official_smoke_pass_fixture(
     )
     public_raw = readiness._pretty_json(public)
     summary = {
-        "schema": "trimem/grader-smoke-execution/1.0",
+        "schema": "trimem/grader-smoke-execution/2.0",
         "expected_target_count": 12,
         "observed_target_count": 12,
         "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
@@ -641,7 +799,13 @@ def _official_smoke_pass_fixture(
         "container_exit_status_captured_count": 8,
         "container_exit_status_validated_count": 8,
         "resolved_container_zero_exit_count": 4,
-        "infrastructure_failure_count": 0,
+        "attempted_cell_count": 12,
+        "official_execution_count": 12,
+        "complete_execution_evidence_count": 12,
+        "adapter_normalized_count": 12,
+        "authoritative_cell_count": 12,
+        "unattempted_cell_count": 0,
+        **{field: 0 for field in grader_smoke.FAILURE_TAXONOMY_FIELDS},
         "status": "PASS",
     }
     inventory_rows = [
@@ -870,33 +1034,1147 @@ def test_self_asserted_smoke_pass_without_official_artifacts_is_rejected() -> No
         readiness.validate_grader_smoke_result(smoke)
 
 
-def test_committed_terminal_smoke_failure_is_hash_bound_and_blocks_approval() -> None:
+def test_committed_recovery_ready_smoke_has_zero_delta_and_preserves_history() -> None:
     smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
     actual = readiness.validate_grader_smoke_result(smoke)
 
-    assert smoke["status"] == "FAIL"
-    assert smoke["endpoint"] == readiness.SMOKE_FAILURE_ENDPOINT
-    assert actual == {
-        "docker_pulls": 4,
-        "grader_containers": 6,
-        "input_tokens": 0,
-        "model_calls": 0,
-        "official_grader_runs": 6,
-        "output_tokens": 0,
-        "paid_model_calls": 0,
-        "total_usd": 0,
+    assert smoke["status"] == readiness.SMOKE_RECOVERY_STATUS
+    assert smoke["endpoint"] == readiness.SMOKE_RECOVERY_ENDPOINT
+    assert actual == readiness.SMOKE_RECOVERY_ACTUAL_EXECUTION
+    history = smoke["historical_execution"]
+    assert history == readiness._validated_p014_historical_execution()
+    assert history["campaign"] == {
+        "adapter_normalized_cell_count": 5,
+        "attempted_cell_count": 6,
+        "authoritative_cell_count": 0,
+        "complete_execution_evidence_count": 6,
+        "official_execution_count": 6,
+        "required_cell_count": 12,
+        "unattempted_cell_count": 6,
     }
-    blockers = readiness.preapproval_blockers()
-    assert any("terminal grader-smoke adapter-contract failure" in row for row in blockers)
+    assert readiness.preapproval_blockers() == []
 
 
-def test_terminal_smoke_failure_rejects_rebound_receipt_hash() -> None:
+def test_recovery_ready_history_rejects_rebound_receipt_hash() -> None:
     smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
-    smoke["official_execution_failure_evidence"][
+    smoke["historical_execution"]["evidence"][
         "failure_receipt_raw_sha256"
     ] = "f" * 64
 
-    with pytest.raises(readiness.ReadinessError, match="path/raw hash binding"):
+    with pytest.raises(readiness.ReadinessError, match="diagnostic history binding"):
+        readiness.validate_grader_smoke_result(smoke)
+
+
+def _obsolete_minimal_exec_005_failure_fixture(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    attempted: int = 6,
+    normalized: int = 5,
+    taxonomy_field: str = "adapter_contract_failures",
+) -> tuple[dict, dict, bytes, bytes]:
+    source_head = "a" * 40
+    execution_head = "b" * 40
+    matrix_order = [
+        f"fixture--instance-{index // 2}--"
+        f"{'gold' if index % 2 == 0 else 'noop-baseline'}"
+        for index in range(12)
+    ]
+    request = {
+        "request_id": readiness.GRADER_SMOKE_REQUEST_ID,
+        "schema": readiness.GRADER_SMOKE_REQUEST_SCHEMA,
+        "source_head": source_head,
+    }
+    request_raw = _canonical(request)
+    request_path = tmp_path / readiness.GRADER_SMOKE_SENTINEL_PATH
+    request_path.parent.mkdir(parents=True)
+    request_path.write_bytes(request_raw)
+    monkeypatch.setattr(readiness, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        readiness,
+        "validate_request_document",
+        lambda *_args, **_kwargs: {
+            "matrix_order": matrix_order,
+            "request_id": readiness.GRADER_SMOKE_REQUEST_ID,
+        },
+    )
+
+    records: list[dict] = []
+    inventory_rows: list[dict] = []
+    for index in range(attempted):
+        target_id = matrix_order[index]
+        safe = re.sub(r"[^A-Za-z0-9_.-]", "_", target_id)
+        terminal_raw = f"terminal-{index}".encode("ascii")
+        terminal_reference = {
+            "bytes": len(terminal_raw),
+            "path": f"results/{index:03d}-{safe}/{safe}.result.json",
+            "sha256": hashlib.sha256(terminal_raw).hexdigest(),
+        }
+        inventory_rows.append(terminal_reference)
+        records.append({
+            "target_id": target_id,
+            "order_index": index,
+            "probe": "GOLD" if index % 2 == 0 else "NOOP_BASELINE",
+            "grader_invoked": True,
+            "container_started": True,
+            "official_tests_executed": True,
+            "raw_test_evidence_captured": True,
+            "adapter_normalized": index < normalized,
+            "primary_failure_taxonomy": (
+                taxonomy_field
+                if index == attempted - 1
+                and taxonomy_field != "aggregate_failures"
+                else None
+            ),
+            "restricted_terminal_record": terminal_reference,
+        })
+    lifecycle_raw = b"synthetic lifecycle evidence"
+    lifecycle_reference = {
+        "bytes": len(lifecycle_raw),
+        "path": "image-materialization/image-lifecycle-report.json",
+        "sha256": hashlib.sha256(lifecycle_raw).hexdigest(),
+    }
+    inventory_rows.append(lifecycle_reference)
+    inventory_rows.sort(key=lambda row: row["path"])
+    inventory_payload = {
+        "files": inventory_rows,
+        "root": "grader_smoke_exec",
+        "schema": "trimem/restricted-evidence-inventory/1.0",
+        "total_bytes": sum(row["bytes"] for row in inventory_rows),
+        "total_files": len(inventory_rows),
+    }
+    inventory = {
+        **inventory_payload,
+        "inventory_sha256": hashlib.sha256(
+            _canonical(inventory_payload)
+        ).hexdigest(),
+    }
+    inventory_raw = _canonical(inventory) + b"\n"
+    inventory_path = tmp_path / freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
+    inventory_path.parent.mkdir(parents=True, exist_ok=True)
+    inventory_path.write_bytes(inventory_raw)
+
+    approval = {
+        "approval_artifact_sha256": "c" * 64,
+        "approved_request_sha256": hashlib.sha256(request_raw).hexdigest(),
+        "approved_workflow_run_attempt": "1",
+        "approved_workflow_run_id": "987654321",
+        "freeze_sha256": "d" * 64,
+        "git_head": execution_head,
+        "phase": "GRADER_SMOKE",
+    }
+    taxonomy = {
+        field: int(field == taxonomy_field)
+        for field in grader_smoke.FAILURE_TAXONOMY_FIELDS
+    }
+    endpoint = (
+        readiness.SMOKE_FAILURE_ENDPOINT
+        if taxonomy_field == "adapter_contract_failures"
+        else (
+            readiness.P015_SCIENTIFIC_FAILURE_ENDPOINT
+            if taxonomy_field == "aggregate_failures"
+            else readiness.P015_INCOMPLETE_ENDPOINT
+        )
+    )
+    target_pulls = min(6, (attempted + 1) // 2)
+    support_pulls = int(attempted > 4)
+    actual = {
+        **readiness.SMOKE_RECOVERY_ACTUAL_EXECUTION,
+        "grader_containers": attempted,
+        "official_grader_runs": attempted,
+        "support_image_pulls": support_pulls,
+        "target_image_pulls": target_pulls,
+    }
+    receipt_payload = {
+        "schema": readiness.P015_FAILURE_CLOSURE_SCHEMA,
+        "status": "FAIL",
+        "endpoint": endpoint,
+        "development_approval_allowed": False,
+        "scientific_result": "NOT_AGGREGATED",
+        "request_binding": {
+            "path": readiness.GRADER_SMOKE_SENTINEL_PATH,
+            "request_id": readiness.GRADER_SMOKE_REQUEST_ID,
+            "schema": readiness.GRADER_SMOKE_REQUEST_SCHEMA,
+            "raw_sha256": hashlib.sha256(request_raw).hexdigest(),
+            "source_head": source_head,
+        },
+        "approval_binding": approval,
+        "workflow_run": {
+            "id": approval["approved_workflow_run_id"],
+            "run_attempt": 1,
+            "head_sha": execution_head,
+            "conclusion": "failure",
+        },
+        "terminal_summary": {
+            "attempted_cell_count": attempted,
+            "terminal_record_count": attempted,
+            "official_execution_count": attempted,
+            "complete_execution_evidence_count": attempted,
+            "adapter_normalized_count": normalized,
+            "authoritative_cell_count": 0,
+            "unattempted_cell_count": 12 - attempted,
+        },
+        "terminal_records": records,
+        "failure_taxonomy": taxonomy,
+        "actual_execution": actual,
+        "image_lifecycle": {
+            "target_image_pulls": target_pulls,
+            "support_image_pulls": support_pulls,
+            "restricted_report": lifecycle_reference,
+        },
+        "evidence_inventory": {
+            "path": freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+            "raw_sha256": hashlib.sha256(inventory_raw).hexdigest(),
+            "inventory_sha256": inventory["inventory_sha256"],
+            "total_files": inventory["total_files"],
+            "total_bytes": inventory["total_bytes"],
+        },
+    }
+    receipt = {
+        **receipt_payload,
+        "receipt_payload_sha256": hashlib.sha256(
+            _canonical(receipt_payload)
+        ).hexdigest(),
+    }
+    receipt_raw = readiness._pretty_json(receipt)
+    receipt_path = tmp_path / freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH
+    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+    receipt_path.write_bytes(receipt_raw)
+    smoke = {
+        "schema": readiness.P015_FAILURE_RESULT_SCHEMA,
+        "status": "FAIL",
+        "trimem_system_implementation": "CREDENTIAL_FREE_GREEN",
+        "grader_exec_package": "FAIL",
+        "official_grader_viability": "NOT_YET_ESTABLISHED",
+        "performance": "NOT_MEASURED",
+        "expected_unique_instances": 6,
+        "expected_target_count": 12,
+        "expected_condition_rows": {"GOLD": 6, "NOOP_BASELINE": 6},
+        "actual_execution": actual,
+        "endpoint": endpoint,
+        "historical_execution": {},
+        "official_execution_failure_evidence": {
+            "failure_receipt_path": freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
+            "failure_receipt_raw_sha256": hashlib.sha256(receipt_raw).hexdigest(),
+            "evidence_inventory_path": freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+            "evidence_inventory_raw_sha256": hashlib.sha256(inventory_raw).hexdigest(),
+            "approval_binding": approval,
+        },
+    }
+    return smoke, receipt, receipt_raw, inventory_raw
+
+
+def _fresh_exec_005_failure_fixture(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    attempted: int = 6,
+    normalized: int = 5,
+    taxonomy_field: str = "adapter_contract_failures",
+    last_container_started: bool = True,
+    failure_reason: str = "synthetic adapter contract failure",
+    secondary_failures: tuple[str, ...] = (),
+    lifecycle_error: str = "synthetic",
+) -> tuple[dict, dict, bytes, bytes]:
+    source_head = "a" * 40
+    execution_head = "b" * 40
+    matrix_order = [
+        f"fixture--instance-{index // 2}--"
+        f"{'gold' if index % 2 == 0 else 'noop-baseline'}"
+        for index in range(12)
+    ]
+    if taxonomy_field == "aggregate_failures":
+        attempted = 12
+        normalized = 12
+    frozen_material = {
+        path: ("fixture:" + path).encode("utf-8")
+        for path in (
+            smoke_trigger.OFFICIAL_GRADER_PATH,
+            smoke_trigger.ADAPTER_FAILURE_ENVELOPE_CONTRACT_PATH,
+            smoke_trigger.CREDENTIAL_FREE_BUNDLE_PATH,
+            smoke_trigger.FREEZE_PATH,
+            smoke_trigger.FROZEN_REQUEST_PATH,
+            smoke_trigger.IMAGE_LOCK_PATH,
+            smoke_trigger.MANIFEST_PATH,
+            smoke_trigger.MULTI_SWE_ENTRYPOINT_PATH,
+            smoke_trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
+            smoke_trigger.MULTI_SWE_REPORT_SEMANTICS_LOCK_PATH,
+            smoke_trigger.MULTI_SWE_REPORT_SEMANTICS_PATH,
+            smoke_trigger.MULTI_SWE_PROBE_EVIDENCE_PATH,
+        )
+    }
+    monkeypatch.setattr(
+        smoke_trigger,
+        "_validate_frozen_material",
+        lambda *_args, **_kwargs: (
+            frozen_material,
+            {"target_set_sha256": "e" * 64},
+            matrix_order,
+        ),
+    )
+    monkeypatch.setattr(
+        smoke_trigger, "_resolve_probe_evidence_head", lambda *_args, **_kwargs: "f" * 40
+    )
+    monkeypatch.setattr(
+        smoke_trigger,
+        "validate_committed_evidence",
+        lambda *_args, **_kwargs: {"schema": "fixture/probe-evidence/1.0", "status": "PASS"},
+    )
+    request = smoke_trigger.build_request_document(
+        tmp_path, source_head=source_head
+    )
+    request_raw = _canonical(request)
+    request_path = tmp_path / readiness.GRADER_SMOKE_SENTINEL_PATH
+    request_path.parent.mkdir(parents=True)
+    request_path.write_bytes(request_raw)
+    monkeypatch.setattr(readiness, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        readiness,
+        "validate_request_document",
+        lambda *_args, **_kwargs: {
+            "matrix_order": matrix_order,
+            "request_id": failure_closure.REQUEST_ID,
+        },
+    )
+
+    approval = {
+        "approval_artifact_sha256": "c" * 64,
+        "approved_request_sha256": hashlib.sha256(request_raw).hexdigest(),
+        "approved_workflow_run_attempt": "1",
+        "approved_workflow_run_id": "987654321",
+        "freeze_sha256": "d" * 64,
+        "git_head": execution_head,
+        "phase": "GRADER_SMOKE",
+    }
+    restricted_root = tmp_path / "restricted"
+    results_root = restricted_root / "results"
+    results_root.mkdir(parents=True)
+    (results_root / "external-approval-evidence.json").write_bytes(
+        readiness._pretty_json(approval)
+    )
+
+    failure_shapes = {
+        "adapter_contract_failures": {
+            "stage": "adapter_semantic_normalization",
+            "status": "adapter_contract_failed",
+            "reason": failure_reason,
+        },
+        "image_lifecycle_failures": {
+            "stage": "image_materialization",
+            "status": "image_pull_failed",
+            "reason": "synthetic image lifecycle failure",
+        },
+        "infrastructure_failures": {
+            "stage": "official_grader_invocation",
+            "status": "harness_timeout",
+            "reason": "synthetic infrastructure failure",
+        },
+        "official_harness_failures": {
+            "stage": "official_harness",
+            "status": "official_harness_failed",
+            "reason": "synthetic harness failure",
+        },
+        "official_report_failures": {
+            "stage": "official_report",
+            "status": "official_report_failed",
+            "reason": "synthetic report failure",
+        },
+    }
+    for index in range(attempted):
+        target_id = matrix_order[index]
+        safe = re.sub(r"[^A-Za-z0-9_.-]", "_", target_id)
+        task_root = results_root / f"{index:03d}-{safe}"
+        task_root.mkdir()
+
+        def retained(relative: str, raw: bytes) -> dict[str, object]:
+            path = task_root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(raw)
+            return {
+                "bytes": len(raw),
+                "path": relative,
+                "sha256": hashlib.sha256(raw).hexdigest(),
+            }
+
+        applied_patch = retained("restricted-input/applied.patch", b"fixture patch\n")
+        stdout = retained("stdout.txt", b"fixture stdout\n")
+        stderr = retained("stderr.txt", b"")
+        restricted_values = {
+            "restricted_raw_report": retained(
+                "official-grader/restricted-evidence/r.bin",
+                b"{}\n",
+            ),
+            "test_output": retained(
+                "official-grader/restricted-evidence/o.bin",
+                b"fixture test output\n",
+            ),
+            "official_test_status": retained(
+                "official-grader/restricted-evidence/s.bin",
+                b"{}\n",
+            ),
+        }
+
+        def nested(reference: Mapping[str, object]) -> dict[str, object]:
+            return {
+                **reference,
+                "path": str(reference["path"]).removeprefix("official-grader/"),
+                "access": "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS",
+            }
+
+        report = retained(
+            "report.json",
+            readiness._pretty_json(
+                {
+                    "_trimem": {
+                        name: nested(reference)
+                        for name, reference in restricted_values.items()
+                    }
+                }
+            ),
+        )
+        normalized_cell = index < normalized
+        primary = (
+            failure_shapes[taxonomy_field]
+            if taxonomy_field != "aggregate_failures"
+            and index == attempted - 1
+            else None
+        )
+        official_outcome = index % 2 == 0
+        container_started = last_container_started or index != attempted - 1
+        if taxonomy_field == "aggregate_failures" and index == attempted - 1:
+            official_outcome = True
+        terminal = {
+            "schema": grader_smoke.TERMINAL_CELL_SCHEMA,
+            "target_id": target_id,
+            "order_index": index,
+            "probe": "GOLD" if index % 2 == 0 else "NOOP_BASELINE",
+            "grader_invoked": True,
+            "container_started": container_started,
+            "harness_completed": True,
+            "final_report_generated": True,
+            "official_tests_executed": True,
+            "raw_test_evidence_captured": True,
+            "submitted_patch_identity_verified": True,
+            "digest_verified": True,
+            "adapter_normalized": normalized_cell,
+            "authoritative_cell": False,
+            "official_final_report_resolved": official_outcome,
+            "scientific_resolved": official_outcome if primary is None else None,
+            "primary_failure": primary,
+            "secondary_evidence_failures": list(secondary_failures),
+            "execution_status": "SUCCESS" if primary is None else "FAILURE",
+            "actual_accounting": {
+                **_smoke_accounting(1),
+                "grader_containers": int(container_started),
+                "official_grader_runs": int(container_started),
+            },
+            "execution_evidence": {
+                "patch_applied": normalized_cell,
+                "tests_executed": normalized_cell,
+                "digest_match": True,
+                "submitted_patch_identity": True,
+                "host_prepare_sh_access_count": 0,
+                "source_image_build_count": 0,
+                "api_calls": 0,
+                "container_exit_status_code": None,
+                "container_exit_acceptance": None,
+                "container_exit_status_sha256": None,
+            },
+            "evidence": {
+                "applied_patch": applied_patch,
+                "stdout": stdout,
+                "stderr": stderr,
+                "report": report,
+                "restricted_grader_raw": sorted(
+                    restricted_values.values(), key=lambda value: str(value["path"])
+                ),
+            },
+        }
+        (task_root / f"{safe}.result.json").write_bytes(
+            readiness._pretty_json(terminal)
+        )
+
+    lifecycle = {
+        "schema": "trimem/grader-smoke-image-lifecycle/1.0",
+        "status": "FAILED",
+        "phase": "GRADER_SMOKE",
+        "approval_artifact_sha256": approval["approval_artifact_sha256"],
+        "git_head": execution_head,
+        "expected": {
+            "target_image_pulls": 6,
+            "support_image_pulls": 1,
+            "exact_image_removals": 7,
+            "max_resident_target_images": 1,
+            "max_resident_support_images": 1,
+        },
+        "actual": {
+            "target_image_pulls": 0,
+            "support_image_pulls": 0,
+            "exact_image_removals": 0,
+            "max_resident_target_images": 0,
+            "max_resident_support_images": 0,
+            "resident_target_images": 0,
+            "resident_support_images": 0,
+        },
+        "failure": {"error_type": "FixtureFailure", "error": lifecycle_error},
+        "events": [],
+    }
+    lifecycle_path = (
+        restricted_root / "image-materialization/image-lifecycle-report.json"
+    )
+    lifecycle_path.parent.mkdir()
+    lifecycle_path.write_bytes(readiness._pretty_json(lifecycle))
+
+    inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    inventory_raw = _canonical(inventory) + b"\n"
+    inventory_path = tmp_path / freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
+    inventory_path.parent.mkdir(parents=True, exist_ok=True)
+    inventory_path.write_bytes(inventory_raw)
+    workflow = {
+        "id": approval["approved_workflow_run_id"],
+        "run_attempt": 1,
+        "head_sha": execution_head,
+        "conclusion": "failure",
+    }
+    receipt = failure_closure.build_failure_closure(
+        restricted_root=restricted_root,
+        inventory_raw=inventory_raw,
+        request_raw=request_raw,
+        approval_binding=approval,
+        workflow_run=workflow,
+    )
+    receipt_raw = readiness._pretty_json(receipt)
+    receipt_path = tmp_path / freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH
+    receipt_path.write_bytes(receipt_raw)
+    smoke = {
+        "schema": readiness.P015_FAILURE_RESULT_SCHEMA,
+        "status": "FAIL",
+        "trimem_system_implementation": "CREDENTIAL_FREE_GREEN",
+        "grader_exec_package": "FAIL",
+        "official_grader_viability": "NOT_YET_ESTABLISHED",
+        "performance": "NOT_MEASURED",
+        "expected_unique_instances": 6,
+        "expected_target_count": 12,
+        "expected_condition_rows": {"GOLD": 6, "NOOP_BASELINE": 6},
+        "actual_execution": receipt["actual_execution"],
+        "endpoint": receipt["endpoint"],
+        "historical_execution": {},
+        "official_execution_failure_evidence": {
+            "failure_receipt_path": freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
+            "failure_receipt_raw_sha256": hashlib.sha256(receipt_raw).hexdigest(),
+            "evidence_inventory_path": freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+            "evidence_inventory_raw_sha256": hashlib.sha256(inventory_raw).hexdigest(),
+            "approval_binding": approval,
+        },
+    }
+    return smoke, receipt, receipt_raw, inventory_raw
+
+
+def test_fresh_exec_005_failure_closure_is_namespaced_and_evidence_derived(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    history = readiness._validated_p014_historical_execution()
+    smoke, receipt, _receipt_raw, _inventory_raw = _fresh_exec_005_failure_fixture(
+        tmp_path, monkeypatch
+    )
+    smoke["historical_execution"] = history
+    monkeypatch.setattr(
+        readiness, "_validated_p014_historical_execution", lambda: history
+    )
+
+    assert readiness.validate_grader_smoke_result(smoke) == (
+        receipt["actual_execution"]
+    )
+    assert receipt["terminal_summary"] == {
+        "attempted_cell_count": 6,
+        "terminal_record_count": 6,
+        "official_execution_count": 6,
+        "complete_execution_evidence_count": 6,
+        "adapter_normalized_count": 5,
+        "authoritative_cell_count": 0,
+        "unattempted_cell_count": 6,
+    }
+    assert smoke["official_execution_failure_evidence"][
+        "failure_receipt_path"
+    ] == freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH
+    assert smoke["official_execution_failure_evidence"][
+        "evidence_inventory_path"
+    ] == freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
+
+
+def test_failure_closure_accepts_non_authoritative_scientific_mismatch_terminal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _fresh_exec_005_failure_fixture(tmp_path, monkeypatch)
+    terminal_path = sorted(
+        (tmp_path / "restricted/results").rglob("*.result.json")
+    )[-1]
+    terminal = json.loads(terminal_path.read_text(encoding="utf-8"))
+    terminal["adapter_normalized"] = True
+    terminal["official_final_report_resolved"] = False
+    terminal["scientific_resolved"] = False
+    terminal["authoritative_cell"] = False
+    terminal["execution_status"] = "FAILURE"
+    terminal["primary_failure"] = {
+        "stage": "scientific_outcome",
+        "status": "expected_outcome_mismatch",
+        "reason": "official final outcome differs from the frozen GOLD/NOOP expectation",
+    }
+
+    validated = failure_closure._terminal_record(
+        terminal,
+        index=terminal["order_index"],
+        target_id=terminal["target_id"],
+    )
+
+    assert validated["adapter_normalized"] is True
+    assert validated["scientific_resolved"] is False
+    assert validated["primary_failure"]["stage"] == "scientific_outcome"
+
+
+def test_failure_closure_rejects_unproven_failed_adapter_phase_claims(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _fresh_exec_005_failure_fixture(tmp_path, monkeypatch)
+    terminal_path = sorted(
+        (tmp_path / "restricted/results").rglob("*.result.json")
+    )[-1]
+    terminal = json.loads(terminal_path.read_text(encoding="utf-8"))
+    assert terminal["adapter_normalized"] is False
+    terminal["execution_evidence"]["patch_applied"] = True
+    terminal["execution_evidence"]["tests_executed"] = True
+
+    with pytest.raises(
+        failure_closure.FailureClosureError,
+        match="execution evidence differs",
+    ):
+        failure_closure._terminal_record(
+            terminal,
+            index=terminal["order_index"],
+            target_id=terminal["target_id"],
+        )
+
+
+def test_exec_005_failure_closure_rejects_non_derived_terminal_summary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _smoke, receipt, _receipt_raw, inventory_raw = _fresh_exec_005_failure_fixture(
+        tmp_path, monkeypatch
+    )
+    receipt["terminal_summary"]["adapter_normalized_count"] = 6
+    payload = {
+        key: value for key, value in receipt.items()
+        if key != "receipt_payload_sha256"
+    }
+    receipt["receipt_payload_sha256"] = hashlib.sha256(_canonical(payload)).hexdigest()
+    with pytest.raises(readiness.ReadinessError, match="evidence-derived"):
+        readiness._validated_p015_failure_closure(
+            readiness._pretty_json(receipt), inventory_raw
+        )
+
+
+def test_exec_005_official_execution_count_uses_container_start(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _smoke, receipt, _receipt_raw, _inventory_raw = _fresh_exec_005_failure_fixture(
+        tmp_path,
+        monkeypatch,
+        last_container_started=False,
+    )
+
+    assert receipt["terminal_summary"]["attempted_cell_count"] == 6
+    assert receipt["terminal_summary"]["official_execution_count"] == 5
+    assert receipt["actual_execution"]["grader_containers"] == 5
+    assert receipt["actual_execution"]["official_grader_runs"] == 5
+
+
+def test_exec_005_failure_closure_rejects_missing_terminal_raw_evidence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _smoke, receipt, _receipt_raw, _inventory_raw = _fresh_exec_005_failure_fixture(
+        tmp_path, monkeypatch
+    )
+    restricted_root = tmp_path / "restricted"
+    missing = sorted(
+        restricted_root.rglob(
+            "official-grader/restricted-evidence/s.bin"
+        )
+    )[-1]
+    missing.unlink()
+    inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    inventory_raw = _canonical(inventory) + b"\n"
+    request_raw = (tmp_path / readiness.GRADER_SMOKE_SENTINEL_PATH).read_bytes()
+
+    with pytest.raises(
+        failure_closure.FailureClosureError,
+        match="terminal restricted grader evidence.*not inventory-bound",
+    ):
+        failure_closure.build_failure_closure(
+            restricted_root=restricted_root,
+            inventory_raw=inventory_raw,
+            request_raw=request_raw,
+            approval_binding=receipt["approval_binding"],
+            workflow_run=receipt["workflow_run"],
+        )
+
+
+def test_failure_closure_validates_all_bytes_behind_provisional_terminal(
+    tmp_path: Path,
+) -> None:
+    restricted_root = tmp_path / "restricted"
+    task_prefix = "results/000-target"
+    applied_relative = f"{task_prefix}/restricted-input/applied.patch"
+    grader_relative = (
+        f"{task_prefix}/official-grader/restricted-evidence/partial.bin"
+    )
+    rows: dict[str, dict[str, object]] = {}
+    for relative, raw in (
+        (applied_relative, b"patch\n"),
+        (grader_relative, b"partial grader bytes\n"),
+    ):
+        path = restricted_root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(raw)
+        rows[relative] = {
+            "path": relative,
+            "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        }
+    record = {
+        "grader_invoked": True,
+        "container_started": False,
+        "harness_completed": False,
+        "final_report_generated": False,
+        "official_tests_executed": False,
+        "raw_test_evidence_captured": False,
+        "submitted_patch_identity_verified": False,
+        "digest_verified": False,
+        "adapter_normalized": False,
+        "authoritative_cell": False,
+        "official_final_report_resolved": None,
+        "scientific_resolved": None,
+        "primary_failure": {
+            "stage": "official_grader_invocation",
+            "status": "grader_invocation_incomplete",
+            "reason": "runner did not durably observe a return",
+        },
+        "evidence": {
+            "applied_patch": {
+                **rows[applied_relative],
+                "path": "restricted-input/applied.patch",
+            },
+            "restricted_grader_raw": [],
+        },
+    }
+
+    failure_closure._terminal_evidence_bytes(
+        restricted_root=restricted_root,
+        inventory_rows=rows,
+        terminal_path=f"{task_prefix}/target.result.json",
+        record=record,
+    )
+
+    (restricted_root / grader_relative).write_bytes(b"tampered\n")
+    with pytest.raises(
+        failure_closure.FailureClosureError,
+        match="provisional terminal retained evidence.*differ",
+    ):
+        failure_closure._terminal_evidence_bytes(
+            restricted_root=restricted_root,
+            inventory_rows=rows,
+            terminal_path=f"{task_prefix}/target.result.json",
+            record=record,
+        )
+
+
+def test_exec_005_public_failure_receipt_hashes_restricted_failure_text(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    primary_secret = "SECRET_TEST_NAME::private/path/test_hidden.py"
+    secondary_secret = "TOKEN_LIKE_VALUE::do-not-publish"
+    lifecycle_secret = "C:/private/runner/work/repository"
+    _smoke, receipt, receipt_raw, _inventory_raw = _fresh_exec_005_failure_fixture(
+        tmp_path,
+        monkeypatch,
+        failure_reason=primary_secret,
+        secondary_failures=(secondary_secret,),
+        lifecycle_error=lifecycle_secret,
+    )
+
+    assert primary_secret.encode() not in receipt_raw
+    assert secondary_secret.encode() not in receipt_raw
+    assert lifecycle_secret.encode() not in receipt_raw
+    terminal = receipt["terminal_records"][-1]
+    assert terminal["primary_failure_summary"]["reason"] == {
+        "bytes": len(primary_secret.encode()),
+        "sha256": hashlib.sha256(primary_secret.encode()).hexdigest(),
+    }
+    assert terminal["secondary_evidence_failure_summary"]["count"] == 1
+    assert receipt["image_lifecycle"]["failure_summary"]["present"] is True
+
+
+@pytest.mark.parametrize(
+    ("stage", "taxonomy"),
+    [
+        ("EXEC_GATE", "environment_failures"),
+        ("BENCHMARK_ENVIRONMENT_VALIDATION", "environment_failures"),
+        ("HARNESS_PREPARATION", "infrastructure_failures"),
+        ("CELL_PREPARATION", "infrastructure_failures"),
+        ("IMAGE_LIFECYCLE_INITIALIZATION", "image_lifecycle_failures"),
+    ],
+)
+def test_exec_005_pre_cell_failure_closes_from_explicit_stage_evidence(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    stage: str,
+    taxonomy: str,
+) -> None:
+    seed_root = tmp_path / "seed"
+    _smoke, seed_receipt, _raw, _inventory = _fresh_exec_005_failure_fixture(
+        seed_root, monkeypatch
+    )
+    request_raw = (
+        seed_root / readiness.GRADER_SMOKE_SENTINEL_PATH
+    ).read_bytes()
+    approval = seed_receipt["approval_binding"]
+    restricted_root = tmp_path / "pre-cell"
+    results_root = restricted_root / "results"
+    stage_evidence.write_pre_cell_failure_evidence(
+        results_root,
+        approval_binding=approval,
+        stage=stage,
+        reason="synthetic caught pre-cell failure",
+    )
+    inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    inventory_raw = _canonical(inventory) + b"\n"
+
+    receipt = failure_closure.build_failure_closure(
+        restricted_root=restricted_root,
+        inventory_raw=inventory_raw,
+        request_raw=request_raw,
+        approval_binding=approval,
+        workflow_run=seed_receipt["workflow_run"],
+    )
+    validated = failure_closure.validate_failure_closure(
+        readiness._pretty_json(receipt),
+        inventory_raw,
+        request_raw=request_raw,
+        restricted_root=restricted_root,
+    )
+
+    assert validated["endpoint"] == readiness.P015_INCOMPLETE_ENDPOINT
+    assert validated["terminal_summary"] == {
+        "attempted_cell_count": 0,
+        "terminal_record_count": 0,
+        "official_execution_count": 0,
+        "complete_execution_evidence_count": 0,
+        "adapter_normalized_count": 0,
+        "authoritative_cell_count": 0,
+        "unattempted_cell_count": 12,
+    }
+    assert validated["failure_taxonomy"][taxonomy] == 1
+    assert sum(validated["failure_taxonomy"].values()) == 1
+    assert validated["actual_execution"] == stage_evidence.ZERO_EXECUTION
+    assert validated["image_lifecycle"]["status"] == "NOT_STARTED"
+
+
+def test_runner_prepare_harness_failure_writes_valid_pre_cell_evidence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    approval_raw = b"fixture protected approval bytes"
+    approval_path = tmp_path / "approval.json"
+    approval_path.write_bytes(approval_raw)
+    approval = {
+        "approval_artifact_sha256": hashlib.sha256(approval_raw).hexdigest(),
+        "approved_request_sha256": "a" * 64,
+        "approved_workflow_run_attempt": "1",
+        "approved_workflow_run_id": "123456789",
+        "freeze_sha256": "b" * 64,
+        "git_head": "c" * 40,
+        "phase": "GRADER_SMOKE",
+    }
+    monkeypatch.setattr(
+        grader_smoke,
+        "validate_exec_approval",
+        lambda *_args, **_kwargs: dict(approval),
+    )
+    monkeypatch.setattr(grader_smoke, "validate_benchmark_environment", lambda: None)
+    monkeypatch.setattr(grader_smoke, "read_json", lambda _path: {"targets": []})
+    monkeypatch.setattr(grader_smoke, "_smoke_targets", lambda _manifest: [])
+    monkeypatch.setattr(grader_smoke, "_rows_for_targets", lambda *_args: {})
+    monkeypatch.setattr(grader_smoke, "image_entries", lambda **_kwargs: ({}, []))
+
+    def fail_prepare(_root: Path) -> object:
+        raise grader_smoke.BenchmarkExecutionError("fixture harness lock failure")
+
+    monkeypatch.setattr(grader_smoke, "prepare_harnesses", fail_prepare)
+    results_root = tmp_path / "restricted/results"
+    with pytest.raises(
+        grader_smoke.BenchmarkExecutionError, match="fixture harness lock failure"
+    ):
+        grader_smoke._run_smoke_impl(
+            approval_path,
+            results_root,
+            tmp_path / "restricted/image-materialization",
+            [],
+            [],
+        )
+
+    evidence_path = results_root / "pre-cell-failure-evidence.json"
+    assert evidence_path.is_file()
+    evidence = stage_evidence.validate_pre_cell_failure_evidence(
+        json.loads(evidence_path.read_text(encoding="utf-8"))
+    )
+    assert evidence["stage"] == "HARNESS_PREPARATION"
+    assert evidence["failure_taxonomy"] == "infrastructure_failures"
+    assert evidence["actual_execution"] == stage_evidence.ZERO_EXECUTION
+
+
+def test_exec_005_failed_image_pull_counts_attempt_not_materialization(
+    tmp_path: Path,
+) -> None:
+    restricted_root = tmp_path / "restricted"
+    image_root = restricted_root / "image-materialization"
+    stage_root = image_root / "000-pull"
+    stage_root.mkdir(parents=True)
+    image = "registry.example/target@sha256:" + "a" * 64
+    stdout_raw = b""
+    stderr_raw = b"pull failed\n"
+    (stage_root / "stdout.txt").write_bytes(stdout_raw)
+    (stage_root / "stderr.txt").write_bytes(stderr_raw)
+    stage_record = {
+        "argv": ["docker", "pull", image],
+        "returncode": 1,
+        "stage": "pull",
+        "status": "NONZERO",
+        "stdout": {
+            "path": "000-pull/stdout.txt",
+            "bytes": len(stdout_raw),
+            "sha256": hashlib.sha256(stdout_raw).hexdigest(),
+        },
+        "stderr": {
+            "path": "000-pull/stderr.txt",
+            "bytes": len(stderr_raw),
+            "sha256": hashlib.sha256(stderr_raw).hexdigest(),
+        },
+    }
+    (stage_root / "stage.json").write_bytes(readiness._pretty_json(stage_record))
+    approval = {
+        "approval_artifact_sha256": "a" * 64,
+        "approved_request_sha256": "b" * 64,
+        "approved_workflow_run_attempt": "1",
+        "approved_workflow_run_id": "123",
+        "freeze_sha256": "c" * 64,
+        "git_head": "d" * 40,
+        "phase": "GRADER_SMOKE",
+    }
+    lifecycle = {
+        "schema": "trimem/grader-smoke-image-lifecycle/1.0",
+        "status": "FAILED",
+        "phase": "GRADER_SMOKE",
+        "approval_artifact_sha256": approval["approval_artifact_sha256"],
+        "git_head": approval["git_head"],
+        "expected": {
+            "target_image_pulls": 6,
+            "support_image_pulls": 1,
+            "exact_image_removals": 7,
+            "max_resident_target_images": 1,
+            "max_resident_support_images": 1,
+        },
+        "actual": {
+            "target_image_pulls": 0,
+            "support_image_pulls": 0,
+            "exact_image_removals": 0,
+            "max_resident_target_images": 1,
+            "max_resident_support_images": 0,
+            "resident_target_images": 1,
+            "resident_support_images": 0,
+        },
+        "failure": {"error_type": "BenchmarkExecutionError", "error": "pull failed"},
+        "events": [
+            {
+                "action": "PULL_TARGET_FAILED",
+                "identity": "fixture-target",
+                "image": image,
+                "pull_materialized": False,
+                "failure_stage": "PULL",
+                "error_type": "BenchmarkExecutionError",
+                "error": "pull failed",
+            }
+        ],
+    }
+    lifecycle_path = image_root / "image-lifecycle-report.json"
+    lifecycle_path.write_bytes(readiness._pretty_json(lifecycle))
+    inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    rows = {row["path"]: row for row in inventory["files"]}
+
+    projected = failure_closure._lifecycle_projection(
+        lifecycle_path.read_bytes(),
+        reference=rows["image-materialization/image-lifecycle-report.json"],
+        approval=approval,
+        restricted_root=restricted_root,
+        inventory_rows=rows,
+    )
+
+    assert projected["target_image_pulls"] == 1
+    assert projected["target_image_materialized_count"] == 0
+    assert projected["pull_attempts"][0]["pull_status"] == "NONZERO"
+    assert projected["pull_attempts"][0]["outcome"] == "PULL_NONZERO"
+
+
+def test_exec_005_pass_lifecycle_public_projection_validates_without_private_failure() -> None:
+    digest = "registry.example/image@sha256:" + "a" * 64
+    stage = {"bytes": 1, "path": "image-stage", "sha256": "b" * 64}
+    attempts = [
+        {
+            "action": "PULL_TARGET",
+            "image": digest,
+            "outcome": "SUCCESS",
+            "image_materialized": True,
+            "pull_status": "PASS",
+            "pull_returncode": 0,
+            "restricted_pull_stage": stage,
+            "inspect_status": "PASS",
+            "inspect_returncode": 0,
+            "restricted_inspect_stage": stage,
+        }
+        for _ in range(6)
+    ]
+    attempts.append(
+        {
+            "action": "PULL_SUPPORT",
+            "image": digest,
+            "outcome": "SUCCESS",
+            "image_materialized": True,
+            "pull_status": "PASS",
+            "pull_returncode": 0,
+            "restricted_pull_stage": stage,
+            "inspect_status": "PASS",
+            "inspect_returncode": 0,
+            "restricted_inspect_stage": stage,
+        }
+    )
+    projection = {
+        "status": "PASS",
+        "target_image_pulls": 6,
+        "support_image_pulls": 1,
+        "target_image_materialized_count": 6,
+        "support_image_materialized_count": 1,
+        "exact_image_removals": 7,
+        "max_resident_target_images": 1,
+        "max_resident_support_images": 1,
+        "resident_target_images": 0,
+        "resident_support_images": 0,
+        "failure_summary": {"present": False, "bytes": 0, "sha256": None},
+        "pull_attempts": attempts,
+        "restricted_report": {
+            "bytes": 1,
+            "path": "image-materialization/image-lifecycle-report.json",
+            "sha256": "c" * 64,
+        },
+    }
+
+    assert failure_closure._validate_lifecycle_projection(projection) == projection
+
+
+def test_exec_005_failure_closure_rejects_taxonomy_endpoint_mismatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _smoke, receipt, _receipt_raw, inventory_raw = _fresh_exec_005_failure_fixture(
+        tmp_path, monkeypatch
+    )
+    receipt["endpoint"] = readiness.P015_INCOMPLETE_ENDPOINT
+    payload = {
+        key: value for key, value in receipt.items()
+        if key != "receipt_payload_sha256"
+    }
+    receipt["receipt_payload_sha256"] = hashlib.sha256(_canonical(payload)).hexdigest()
+    with pytest.raises(readiness.ReadinessError, match="endpoint|evidence-derived"):
+        readiness._validated_p015_failure_closure(
+            readiness._pretty_json(receipt), inventory_raw
+        )
+
+
+def test_p014_and_exec_005_failure_evidence_are_not_cross_acceptable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _smoke, _receipt, fresh_receipt_raw, fresh_inventory_raw = (
+        _fresh_exec_005_failure_fixture(tmp_path, monkeypatch)
+    )
+    legacy_receipt_raw = (ROOT / freeze.P014_FAILURE_RECEIPT_PATH).read_bytes()
+    legacy_inventory_raw = (ROOT / freeze.P014_EVIDENCE_INVENTORY_PATH).read_bytes()
+    with pytest.raises(readiness.ReadinessError, match="field set"):
+        readiness._validated_p015_failure_closure(
+            legacy_receipt_raw, legacy_inventory_raw
+        )
+
+    legacy_root = tmp_path / "legacy-rebound"
+    legacy_receipt = legacy_root / freeze.P014_FAILURE_RECEIPT_PATH
+    legacy_inventory = legacy_root / freeze.P014_EVIDENCE_INVENTORY_PATH
+    legacy_receipt.parent.mkdir(parents=True)
+    legacy_receipt.write_bytes(fresh_receipt_raw)
+    legacy_inventory.write_bytes(fresh_inventory_raw)
+    with pytest.raises(ValueError, match="exact payload|byte count"):
+        readiness.validate_committed_failure_evidence(legacy_root)
+
+
+def test_p015_contract_artifacts_are_bound_to_production_projections() -> None:
+    validated = readiness.validate_p015_semantics_and_envelope_contracts()
+    semantics_path = (
+        ROOT / "artifacts/trimem_v1/multi_swe_report_semantics_lock.json"
+    )
+    envelope_path = (
+        ROOT / "artifacts/trimem_v1/adapter_failure_envelope_contract.json"
+    )
+    semantics = _read(semantics_path)
+    envelope = _read(envelope_path)
+
+    assert validated["status"] == "PASS"
+    assert validated["source_blobs"] == 5
+    assert validated["module_sha256"] == semantics["implementation"]["sha256"]
+    assert validated["lock_sha256"] == semantics["lock_sha256"]
+    assert validated["adapter_failure_envelope_contract_sha256"] == (
+        hashlib.sha256(envelope_path.read_bytes()).hexdigest()
+    )
+    assert set(envelope["failure_taxonomy_fields"]) == set(
+        grader_smoke.FAILURE_TAXONOMY_FIELDS
+    )
+    assert envelope["terminal_cell"]["schema"] == grader_smoke.TERMINAL_CELL_SCHEMA
+    assert set(envelope["terminal_cell"]["required_lifecycle_fields"]) == set(
+        grader_smoke.TERMINAL_LIFECYCLE_FIELDS
+    )
+    assert set(envelope["terminal_cell"]["record_fields"]) == set(
+        grader_smoke.TERMINAL_CELL_FIELDS
+    )
+    assert envelope["failure_taxonomy_rules"] == [
+        {
+            "counter": rule["counter"],
+            "exact_stages": list(rule["exact_stages"]),
+            "fallback": rule["fallback"],
+            "stage_prefixes": list(rule["stage_prefixes"]),
+        }
+        for rule in grader_smoke.FAILURE_TAXONOMY_RULES
+    ]
+    assert envelope["terminal_accounting"]["official_execution_count"] == (
+        "sum(container_started is true)"
+    )
+    assert envelope["terminal_accounting"]["historical_six_five_fixture"] == (
+        readiness._validated_p014_historical_execution()["campaign"]
+    )
+
+
+def test_smoke_result_unknown_status_fails_closed() -> None:
+    smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
+    smoke["status"] = "PENDINGISH"
+    with pytest.raises(readiness.ReadinessError, match="status is unknown"):
         readiness.validate_grader_smoke_result(smoke)
 
 
@@ -1014,8 +2292,8 @@ def test_fail_state_adds_only_exact_failure_artifacts_to_dynamic_freeze(
     monkeypatch.setattr(freeze, "referenced_blob_paths", lambda root: ())
     smoke_path = tmp_path / "artifacts/trimem_v1/grader_smoke_result.json"
     selected_path = tmp_path / "configs/trimem_v1/selected_m2.json"
-    receipt_path = tmp_path / freeze.FAILURE_RECEIPT_PATH
-    inventory_path = tmp_path / freeze.EVIDENCE_INVENTORY_PATH
+    receipt_path = tmp_path / freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH
+    inventory_path = tmp_path / freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
     smoke_path.parent.mkdir(parents=True)
     selected_path.parent.mkdir(parents=True)
     receipt_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1025,14 +2303,14 @@ def test_fail_state_adds_only_exact_failure_artifacts_to_dynamic_freeze(
     smoke_path.write_text(json.dumps({
         "status": "FAIL",
         "official_execution_failure_evidence": {
-            "failure_receipt_path": freeze.FAILURE_RECEIPT_PATH,
-            "evidence_inventory_path": freeze.EVIDENCE_INVENTORY_PATH,
+            "failure_receipt_path": freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
+            "evidence_inventory_path": freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
         },
     }), encoding="utf-8")
 
     assert set(freeze.frozen_paths(tmp_path)) == {
-        freeze.FAILURE_RECEIPT_PATH,
-        freeze.EVIDENCE_INVENTORY_PATH,
+        freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
+        freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
     }
 
 
@@ -1560,6 +2838,9 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
+    assert "P0.1.5 recovery-ready closure" in static
+    assert "--level benchmark-approval --require-git-tracked" in static
+    assert "grader-smoke execution unexpectedly passed" in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service
     assert "python scripts/postgres_bootstrap.py" in service
@@ -1599,7 +2880,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert all(
         f"      - {path}" not in smoke for path, _ in readiness.HISTORICAL_SENTINELS
     )
-    assert "group: trimem-v1-grader-smoke-exec-004" in smoke
+    assert "group: trimem-v1-grader-smoke-exec-005" in smoke
     assert "cancel-in-progress: false" in smoke
     assert "branch-trigger-preflight:" in smoke
     assert "environment: trimem-grader-smoke-exec" in smoke
@@ -1610,11 +2891,103 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "subject-path: ${{ runner.temp }}/attestation-subject.json" in smoke
     assert "trimem_smoke_attestation.py" in smoke
     assert "trimem-grader-smoke-attestation-bundle.json" in smoke
+    assert "name: trimem-grader-smoke-exec-005-public" in smoke
+    assert "name: trimem-grader-smoke-exec-005-evidence-inventory" in smoke
+    assert "name: trimem-grader-smoke-exec-005-restricted-encrypted" in smoke
+    assert "name: trimem-grader-smoke-exec-005-attestation-bundle" in smoke
     assert "bounded-disk exact GOLD and NOOP_BASELINE pairs" in smoke
+    assert "id: exec_gate" in smoke
+    assert "id: run_smoke" in smoke
+    assert "id: aggregate" in smoke
+    assert "id: public_result" in smoke
+    assert "id: workflow_image_cleanup" in smoke
     assert smoke.count(
         "--image-evidence-dir artifacts/trimem_v1/grader_smoke_exec/image-materialization"
     ) == 2
     assert "--cleanup-grader-smoke" in smoke
+    assert ">(tee" not in smoke
+    for stage in (
+        "exec-gate",
+        "run-smoke",
+        "aggregate",
+        "public-result",
+        "image-cleanup",
+        "authority-rollback",
+    ):
+        assert f"workflow-stages/{stage}/stdout.txt" in smoke
+        assert f"workflow-stages/{stage}/stderr.txt" in smoke
+    revoke_authority = smoke.index(
+        "- name: Recover or revoke terminal authority after any campaign failure"
+    )
+    evidence_inventory = smoke.index("- name: Inventory every restricted evidence file")
+    encrypt_evidence = smoke.index("- name: Encrypt complete restricted evidence")
+    image_cleanup = smoke.index("- name: Remove only frozen smoke image references")
+    failure_closure = smoke.index(
+        "- name: Build namespaced exec-005 campaign failure closure"
+    )
+    attestation_subject = smoke.index(
+        "- name: Build deterministic official smoke attestation subject"
+    )
+    upload_encrypted = smoke.index("- name: Upload encrypted restricted evidence")
+    upload_failure_closure = smoke.index(
+        "- name: Upload namespaced exec-005 failure closure"
+    )
+    cleanup_plaintext = smoke.index(
+        "- name: Remove plaintext and temporary EXEC material before signing"
+    )
+    assert (
+        image_cleanup
+        < revoke_authority
+        < evidence_inventory
+        < failure_closure
+        < encrypt_evidence
+        < attestation_subject
+        < upload_failure_closure
+        < upload_encrypted
+        < cleanup_plaintext
+    )
+    rollback_block = smoke[revoke_authority:evidence_inventory]
+    assert "steps.exec_gate.outcome == 'success'" in rollback_block
+    assert "steps.run_smoke.outcome != 'skipped'" in rollback_block
+    assert "steps.run_smoke.outcome != 'success'" in rollback_block
+    assert "steps.aggregate.outcome != 'success'" in rollback_block
+    assert "steps.public_result.outcome != 'success'" in rollback_block
+    assert "steps.workflow_image_cleanup.outcome != 'success'" in rollback_block
+    assert "scripts/trimem_grader_smoke_authority.py" in rollback_block
+    assert "--recover-interrupted" in rollback_block
+    assert 'cause_stage="authority_finalization"' in rollback_block
+    assert 'failure_taxonomy="infrastructure_failures"' in rollback_block
+    assert "--cause-stage \"$cause_stage\"" in rollback_block
+    assert "--failure-taxonomy \"$failure_taxonomy\"" in rollback_block
+    assert "--reason-file \"$RUNNER_TEMP/trimem-authority-rollback-reason.txt\"" in rollback_block
+    inventory_block = smoke[evidence_inventory:failure_closure]
+    assert "steps.approval_materialization.outcome != 'skipped'" in inventory_block
+    assert "campaign_authority_rollback" not in inventory_block
+    closure_block = smoke[failure_closure:upload_failure_closure]
+    assert "steps.evidence_inventory.outcome == 'success'" in closure_block
+    assert "steps.campaign_authority_rollback.outcome == 'success'" in closure_block
+    assert "steps.campaign_authority_rollback.outcome == 'skipped'" in closure_block
+    assert "steps.exec_gate.outcome != 'success'" in closure_block
+    for step_id in (
+        "run_smoke",
+        "aggregate",
+        "public_result",
+        "workflow_image_cleanup",
+    ):
+        assert f"steps.{step_id}.outcome != 'success'" in closure_block
+    assert "scripts/trimem_grader_smoke_failure_closure.py" in closure_block
+    assert "--workflow-conclusion \"${{ job.status }}\"" in closure_block
+    failure_upload_block = smoke[upload_failure_closure:cleanup_plaintext]
+    assert "steps.failure_closure.outcome == 'success'" in failure_upload_block
+    encryption_block = smoke[encrypt_evidence:attestation_subject]
+    assert "steps.approval_materialization.outcome != 'skipped'" in encryption_block
+    assert "steps.evidence_inventory.outcome == 'success'" not in encryption_block
+    assert "inventory_args=()" in encryption_block
+    assert '"${inventory_args[@]}"' in encryption_block
+    assert (
+        "rm -f -- \"$RUNNER_TEMP/trimem-authority-rollback-reason.txt\""
+        in smoke
+    )
     upload_public = smoke.index("- name: Upload public smoke result")
     upload_inventory = smoke.index(
         "- name: Upload non-sensitive restricted evidence inventory"
@@ -1624,15 +2997,79 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         "- name: Remove plaintext and temporary EXEC material before signing"
     )
     attest = smoke.index("- name: Attest exact uploaded and cleaned official smoke subject")
+    materialize_bundle = smoke.index("- name: Materialize fixed attestation bundle name")
     upload_bundle = smoke.index("- name: Upload official smoke attestation bundle")
+    cleanup_staged = smoke.index("- name: Remove staged attestation material")
     assert (
-        upload_public
+        failure_closure
+        < encrypt_evidence
+        < attestation_subject
         < upload_inventory
         < upload_encrypted
         < cleanup_before_signing
         < attest
+        < materialize_bundle
+        < upload_public
         < upload_bundle
+        < cleanup_staged
     )
+    cleanup_block = smoke[cleanup_before_signing:attest]
+    assert (
+        "RESTRICTED_UPLOAD_OUTCOME: ${{ steps.restricted_upload.outcome }}"
+        in cleanup_block
+    )
+    assert 'if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ]; then' in cleanup_block
+    assert "preserving plaintext and ciphertext" in cleanup_block
+    for label in (
+        "Remove only frozen smoke image references",
+        "Recover or revoke terminal authority after any campaign failure",
+        "Inventory every restricted evidence file",
+        "Build namespaced exec-005 campaign failure closure",
+        "Encrypt complete restricted evidence",
+        "Build deterministic official smoke attestation subject",
+        "Upload namespaced exec-005 failure closure",
+        "Upload non-sensitive restricted evidence inventory",
+        "Upload encrypted restricted evidence",
+        "Remove plaintext and temporary EXEC material before signing",
+        "Attest exact uploaded and cleaned official smoke subject",
+        "Materialize fixed attestation bundle name",
+        "Upload public smoke result",
+        "Upload official smoke attestation bundle",
+        "Remove staged attestation material",
+    ):
+        assert smoke.count(f"- name: {label}") == 1
+    restricted_root = "artifacts/trimem_v1/grader_smoke_exec"
+    immutable_phase = smoke[failure_closure:cleanup_before_signing]
+    immutable_root_lines = [
+        line.strip()
+        for line in immutable_phase.splitlines()
+        if restricted_root in line
+    ]
+    assert immutable_root_lines == [
+        f"--restricted-root {restricted_root} \\",
+        f"-C {restricted_root} . \\",
+        f"--public-result {restricted_root}/public-results.json \\",
+        (
+            'python -c "import os,pathlib,shutil; '
+            f"source=pathlib.Path('{restricted_root}/public-results.json'); "
+            "target=pathlib.Path(os.environ['RUNNER_TEMP'],"
+            "'trimem-grader-smoke-public-results.json'); "
+            "assert source.is_file() and not target.exists(); "
+            "shutil.copyfile(source,target); "
+            'assert source.read_bytes() == target.read_bytes()"'
+        ),
+    ]
+    assert smoke.count("python scripts/trimem_evidence_inventory.py") == 1
+    assert smoke.count("openssl enc -aes-256-cbc") == 1
+    assert smoke.count("python scripts/trimem_grader_smoke_authority.py") == 1
+    assert smoke.count("python scripts/trimem_grader_smoke_failure_closure.py") == 1
+    assert smoke.count("python scripts/trimem_cleanup_exec.py --phase grader-smoke") == 1
+    assert smoke.count("id: evidence_inventory") == 1
+    assert smoke.count("id: failure_closure") == 1
+    assert smoke.count("id: encrypt_evidence") == 1
+    assert smoke.count("id: smoke-attestation") == 1
+    assert "delivery_authority_rollback" not in smoke
+    assert "--pre-cell-failure-output artifacts/trimem_v1/grader_smoke_exec/results" in smoke
     attest_block = smoke[attest:upload_bundle]
     assert "if: always()" not in attest_block
     benchmark = workflows[3].read_text(encoding="utf-8")
@@ -1656,6 +3093,145 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "TRIMEM_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@" in benchmark
     assert "TRIMEM_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@" in benchmark
     assert "trimem_cleanup_exec.py --phase grader-smoke" in workflows[2].read_text(encoding="utf-8")
+
+
+def _patch_smoke_workflow_text(
+    monkeypatch: pytest.MonkeyPatch,
+    replacement: str,
+) -> None:
+    smoke_path = (ROOT / ".github/workflows/trimem-grader-smoke.yml").resolve()
+    original_read_text = Path.read_text
+
+    def patched_read_text(path: Path, *args, **kwargs) -> str:
+        if path.resolve() == smoke_path:
+            return replacement
+        return original_read_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", patched_read_text)
+
+
+def test_workflow_validator_rejects_cleanup_after_authority_rollback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    smoke_path = ROOT / ".github/workflows/trimem-grader-smoke.yml"
+    smoke = smoke_path.read_text(encoding="utf-8")
+    image_cleanup = "- name: Remove only frozen smoke image references"
+    rollback = "- name: Recover or revoke terminal authority after any campaign failure"
+    placeholder = "- name: TEMPORARY ORDER PLACEHOLDER"
+    tampered = smoke.replace(image_cleanup, placeholder, 1)
+    tampered = tampered.replace(rollback, image_cleanup, 1)
+    tampered = tampered.replace(placeholder, rollback, 1)
+    _patch_smoke_workflow_text(monkeypatch, tampered)
+
+    with pytest.raises(
+        readiness.ReadinessError,
+        match="cleanup/rollback/inventory/encryption/upload/signing order differs",
+    ):
+        readiness.validate_workflows()
+
+
+def test_workflow_validator_rejects_incomplete_authority_recovery_gate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    smoke_path = ROOT / ".github/workflows/trimem-grader-smoke.yml"
+    smoke = smoke_path.read_text(encoding="utf-8")
+    tampered = smoke.replace(
+        "          steps.exec_gate.outcome == 'success' &&\n"
+        "          steps.run_smoke.outcome != 'skipped' &&\n"
+        "          (steps.run_smoke.outcome != 'success' ||\n",
+        "          steps.exec_gate.outcome == 'success' &&\n"
+        "          steps.run_smoke.outcome == 'success' &&\n"
+        "          (steps.run_smoke.outcome != 'success' ||\n",
+        1,
+    )
+    _patch_smoke_workflow_text(monkeypatch, tampered)
+
+    with pytest.raises(
+        readiness.ReadinessError,
+        match="authority recovery is not total",
+    ):
+        readiness.validate_workflows()
+
+
+def test_workflow_validator_rejects_inventory_gated_on_authority_recovery(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    smoke_path = ROOT / ".github/workflows/trimem-grader-smoke.yml"
+    smoke = smoke_path.read_text(encoding="utf-8")
+    tampered = smoke.replace(
+        "          steps.approval_materialization.outcome != 'skipped'\n",
+        "          (steps.campaign_authority_rollback.outcome == 'success' ||\n"
+        "           steps.campaign_authority_rollback.outcome == 'skipped')\n",
+        1,
+    )
+    _patch_smoke_workflow_text(monkeypatch, tampered)
+
+    with pytest.raises(
+        readiness.ReadinessError,
+        match="inventory is not independent of authority recovery",
+    ):
+        readiness.validate_workflows()
+
+
+def test_workflow_validator_rejects_encryption_gated_on_inventory(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    smoke_path = ROOT / ".github/workflows/trimem-grader-smoke.yml"
+    smoke = smoke_path.read_text(encoding="utf-8")
+    encrypt_marker = "      - name: Encrypt complete restricted evidence"
+    encrypt_at = smoke.index(encrypt_marker)
+    before, block = smoke[:encrypt_at], smoke[encrypt_at:]
+    block = block.replace(
+        "          steps.approval_materialization.outcome != 'skipped'\n",
+        "          steps.evidence_inventory.outcome == 'success'\n",
+        1,
+    )
+    _patch_smoke_workflow_text(monkeypatch, before + block)
+
+    with pytest.raises(
+        readiness.ReadinessError,
+        match="encryption is not independent of optional inventory evidence",
+    ):
+        readiness.validate_workflows()
+
+
+def test_workflow_validator_rejects_cleanup_without_uploaded_ciphertext(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    smoke_path = ROOT / ".github/workflows/trimem-grader-smoke.yml"
+    smoke = smoke_path.read_text(encoding="utf-8")
+    tampered = smoke.replace(
+        '          if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ]; then\n',
+        '          if [ "$RESTRICTED_UPLOAD_OUTCOME" = "success" ]; then\n',
+        1,
+    )
+    _patch_smoke_workflow_text(monkeypatch, tampered)
+
+    with pytest.raises(
+        readiness.ReadinessError,
+        match="uploads/signing are not outcome-gated after evidence preservation",
+    ):
+        readiness.validate_workflows()
+
+
+def test_workflow_validator_rejects_restricted_root_mutation_after_inventory(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    smoke_path = ROOT / ".github/workflows/trimem-grader-smoke.yml"
+    smoke = smoke_path.read_text(encoding="utf-8")
+    encryption = "      - name: Encrypt complete restricted evidence"
+    late_mutation = (
+        "      - name: Synthetic forbidden post-inventory write\n"
+        "        run: mkdir -p artifacts/trimem_v1/grader_smoke_exec/late-write\n"
+    )
+    tampered = smoke.replace(encryption, late_mutation + encryption, 1)
+    _patch_smoke_workflow_text(monkeypatch, tampered)
+
+    with pytest.raises(
+        readiness.ReadinessError,
+        match="restricted evidence root is not immutable between inventory and deletion",
+    ):
+        readiness.validate_workflows()
 
 
 def test_same_attempt_driver_retries_exactly_once_and_propagates_final_status(
@@ -1721,6 +3297,34 @@ def test_image_pull_timeout_preserves_partial_stdout_and_stderr(
     assert stage["status"] == "TIMEOUT" and stage["returncode"] is None
     assert (tmp_path / "000-pull/stdout.txt").read_text(encoding="utf-8") == "partial-out"
     assert (tmp_path / "000-pull/stderr.txt").read_text(encoding="utf-8") == "partial-err"
+
+
+def test_image_pull_preserves_non_utf8_process_streams_byte_exact(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    observed_kwargs: dict = {}
+
+    def completed(argv, **kwargs):
+        observed_kwargs.update(kwargs)
+        return subprocess.CompletedProcess(
+            argv,
+            0,
+            stdout=b"raw-out-\xff\r\n",
+            stderr=b"raw-err-\xfe\r\n",
+        )
+
+    monkeypatch.setattr(image_pull.subprocess, "run", completed)
+    result, refs = image_pull._run(
+        ["docker", "pull", "repo@sha256:" + "a" * 64],
+        tmp_path,
+        0,
+        "pull",
+    )
+
+    assert observed_kwargs["text"] is False
+    assert result.returncode == 0
+    assert (tmp_path / refs["stdout"]["path"]).read_bytes() == b"raw-out-\xff\r\n"
+    assert (tmp_path / refs["stderr"]["path"]).read_bytes() == b"raw-err-\xfe\r\n"
 
 
 def test_bounded_disk_image_helpers_pull_inspect_and_remove_only_exact_refs(
@@ -1864,7 +3468,11 @@ def test_smoke_image_lifecycle_cleans_pull_success_inspect_failure(
 
     def fake_run(argv, root, index, stage):
         stages.append(stage)
-        stdout = "[]" if stage == "inspect" else ""
+        stdout = (
+            json.dumps(["example.invalid/image@sha256:" + "e" * 64])
+            if stage == "inspect"
+            else ""
+        )
         completed = type(
             "Completed", (), {"returncode": 0, "stdout": stdout, "stderr": ""}
         )()
@@ -1981,9 +3589,11 @@ def test_smoke_aggregate_seals_exact_image_lifecycle_and_raw_stages(
         encoding="utf-8",
     )
 
-    def streams(index: int, stage: str) -> dict:
+    def streams(
+        index: int, stage: str, argv: list[str], stdout_raw: bytes
+    ) -> dict:
         value = {}
-        for stream, raw in (("stdout", f"{stage}\n".encode()), ("stderr", b"")):
+        for stream, raw in (("stdout", stdout_raw), ("stderr", b"")):
             path = image_root / f"{index:03d}-{stage}/{stream}.txt"
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(raw)
@@ -1992,6 +3602,15 @@ def test_smoke_aggregate_seals_exact_image_lifecycle_and_raw_stages(
                 "sha256": hashlib.sha256(raw).hexdigest(),
                 "bytes": len(raw),
             }
+        stage_path = image_root / f"{index:03d}-{stage}/stage.json"
+        stage_path.write_bytes(_canonical({
+            "argv": argv,
+            "returncode": 0,
+            "stage": stage,
+            "status": "PASS",
+            "stdout": value["stdout"],
+            "stderr": value["stderr"],
+        }))
         return value
 
     def fake_pull(image: str, evidence_root: Path, index: int) -> dict:
@@ -2000,15 +3619,30 @@ def test_smoke_aggregate_seals_exact_image_lifecycle_and_raw_stages(
             "image": image,
             "expected_digest": digest,
             "observed_digests": [digest],
-            "pull": streams(index, "pull"),
-            "inspect": streams(index, "inspect"),
+            "pull": streams(
+                index, "pull", ["docker", "pull", image], b"pull\n"
+            ),
+            "inspect": streams(
+                index,
+                "inspect",
+                [
+                    "docker", "image", "inspect", "--format",
+                    "{{json .RepoDigests}}", image,
+                ],
+                _canonical([image]),
+            ),
         }
 
     def fake_remove(image: str, tags: list[str], evidence_root: Path, index: int) -> dict:
         return {
             "image": image,
             "references": [*tags, image],
-            "remove": streams(index, "remove"),
+            "remove": streams(
+                index,
+                "remove",
+                ["docker", "image", "rm", "--force", *tags, image],
+                b"remove\n",
+            ),
             "status": "PASS",
         }
 
@@ -2450,6 +4084,8 @@ def _sealed_public_aggregate(tmp_path: Path) -> Path:
         "outcomes": [{
             "target_id": "t",
             "arm": "M0",
+            "benchmark_id": "swebench_verified",
+            "benchmark_role": "PRIMARY",
             "resolved": False,
             "actual_accounting": {"task_wall_time_ms": 17},
             "actual_memory_metrics": {"recall_attempts": 0},
@@ -2631,7 +4267,7 @@ def test_official_gateway_requires_exact_singleton_image_digest() -> None:
     )
     with pytest.raises(official_grader.OfficialGraderError, match="digest_mismatch"):
         gateway._verify_and_tag(
-            object(), 0, target.image, target.harness_image_tag, []
+            object(), 0, target.image, target.harness_image_tag, [], role="TARGET"
         )
     assert calls == [[
         "docker", "image", "inspect", "--format", "{{json .RepoDigests}}", target.image,
@@ -2759,19 +4395,60 @@ def _multi_result(
 
 
 def _multi_source_and_noop_status() -> tuple[dict, dict]:
+    stable = {"run": "PASS", "test": "PASS", "fix": "PASS"}
+    repaired = {"run": "NONE", "test": "FAIL", "fix": "PASS"}
     source = {
+        "org": "vuejs",
+        "repo": "core",
+        "number": 8911,
         "run_result": _multi_result(passed=("stable",)),
-        "test_patch_result": _multi_result(passed=("stable",), failed=("target",)),
-        "fix_patch_result": _multi_result(passed=("stable", "target")),
+        "test_patch_result": _multi_result(
+            passed=("stable",), failed=("target", "missing")
+        ),
+        "fix_patch_result": _multi_result(passed=("stable", "target", "missing")),
+        "p2p_tests": {"stable": stable},
+        "f2p_tests": {"target": repaired, "missing": repaired},
+        "s2p_tests": {},
+        "n2p_tests": {},
     }
     status = {
-        "org": "vuejs", "repo": "core", "number": 8911, "valid": False,
+        "org": "vuejs", "repo": "core", "number": 8911, "valid": True,
+        "error_msg": "",
         "run_result": _multi_result(passed=("stable",)),
-        "test_patch_result": _multi_result(passed=("stable",), failed=("target",)),
-        "fix_patch_result": _multi_result(passed=("stable",), failed=("target",)),
-        "fixed_tests": {}, "p2p_tests": {}, "f2p_tests": {}, "s2p_tests": {}, "n2p_tests": {},
+        "test_patch_result": _multi_result(
+            passed=("stable",), failed=("target", "missing")
+        ),
+        "fix_patch_result": _multi_result(
+            passed=("stable", "target"), failed=("missing",)
+        ),
+        "fixed_tests": {"target": repaired},
+        "p2p_tests": {"stable": stable},
+        "f2p_tests": {"target": repaired},
+        "s2p_tests": {},
+        "n2p_tests": {},
     }
     return source, status
+
+
+def _multi_final_report(resolved: bool) -> dict:
+    canonical_id = "vuejs/core:pr-8911"
+    return {
+        "total_instances": 1,
+        "submitted_instances": 1,
+        "completed_instances": 1,
+        "incomplete_instances": 0,
+        "resolved_instances": int(resolved),
+        "unresolved_instances": int(not resolved),
+        "empty_patch_instances": 0,
+        "error_instances": 0,
+        "submitted_ids": [canonical_id],
+        "completed_ids": [canonical_id],
+        "incomplete_ids": [],
+        "resolved_ids": [canonical_id] if resolved else [],
+        "unresolved_ids": [] if resolved else [canonical_id],
+        "empty_patch_ids": [],
+        "error_ids": [],
+    }
 
 
 def test_multi_unresolved_noop_requires_and_accepts_each_full_frozen_test_domain() -> None:
@@ -2783,17 +4460,16 @@ def test_multi_unresolved_noop_requires_and_accepts_each_full_frozen_test_domain
         test_output_raw=b"actual multi test output\n",
         test_status_raw=_canonical(status),
         resolved=False,
+        final_report=_multi_final_report(False),
     )
-    assert summary["expected_run_test_count"] == summary["classified_run_test_count"] == 1
-    assert (
-        summary["expected_test_patch_test_count"]
-        == summary["classified_test_patch_test_count"]
-        == 2
-    )
-    assert summary["expected_fix_test_count"] == summary["classified_fix_test_count"] == 2
-    assert summary["expected_fix_test_domain_sha256"] == hashlib.sha256(
-        _canonical(["stable", "target"])
-    ).hexdigest()
+    assert summary["report_valid_observed"] is True
+    assert summary["report_valid_recomputed"] is True
+    assert summary["expected_coverage_complete"] is False
+    assert summary["expected_f2p_count"] == 2
+    assert summary["observed_expected_f2p_count"] == 1
+    assert summary["missing_expected_transition_count"] == 1
+    assert summary["computed_resolved"] is False
+    assert summary["official_final_report_resolved"] is False
     assert all(
         "stable" not in str(value) and "target" not in str(value)
         for key, value in summary.items()
@@ -2805,7 +4481,6 @@ def test_multi_unresolved_noop_requires_and_accepts_each_full_frozen_test_domain
     "tamper",
     (
         "one_test",
-        "extra",
         "overlap",
         "duplicate",
         "run_reclassified",
@@ -2821,11 +4496,7 @@ def test_multi_unresolved_results_reject_incomplete_or_invalid_test_domains(
     fix = status["fix_patch_result"]
     if tamper == "one_test":
         status["fix_patch_result"] = _multi_result(failed=("target",))
-        match = "classification domain mismatch"
-    elif tamper == "extra":
-        fix["failed_tests"].append("rogue")
-        fix["failed_count"] += 1
-        match = "classification domain mismatch"
+        match = "observed fixed transitions differ"
     elif tamper == "overlap":
         fix["failed_tests"].append("stable")
         fix["failed_count"] += 1
@@ -2833,16 +4504,18 @@ def test_multi_unresolved_results_reject_incomplete_or_invalid_test_domains(
     elif tamper == "duplicate":
         fix["passed_tests"].append("stable")
         fix["passed_count"] += 1
-        match = "duplicated"
+        match = "duplicate test identifiers"
     elif tamper == "run_reclassified":
         status["run_result"] = _multi_result(failed=("stable",))
         match = "classifications differ from frozen source"
     elif tamper == "test_reclassified":
-        status["test_patch_result"] = _multi_result(failed=("stable", "target"))
+        status["test_patch_result"] = _multi_result(
+            failed=("stable", "target", "missing")
+        )
         match = "classifications differ from frozen source"
     else:
         source["fix_patch_result"] = _multi_result(passed=("stable", "target", "drift"))
-        match = "frozen test_patch_result/fix_patch_result domains differ"
+        match = "frozen f2p_tests differs"
     with pytest.raises(official_grader.OfficialGraderError, match=match):
         official_grader.validate_official_test_evidence(
             target,
@@ -2850,7 +4523,29 @@ def test_multi_unresolved_results_reject_incomplete_or_invalid_test_domains(
             test_output_raw=b"actual multi test output\n",
             test_status_raw=_canonical(status),
             resolved=False,
+            final_report=_multi_final_report(False),
         )
+
+
+def test_multi_unresolved_accepts_nonexpected_candidate_fix_result_member() -> None:
+    """Pinned Report permits candidate-only result members outside expected keys."""
+
+    target = _frozen_official_target("multi_swe_bench_mini")
+    source, status = _multi_source_and_noop_status()
+    fix = status["fix_patch_result"]
+    fix["failed_tests"].append("rogue")
+    fix["failed_count"] += 1
+    summary = official_grader.validate_official_test_evidence(
+        target,
+        source_row=source,
+        test_output_raw=b"actual multi test output\n",
+        test_status_raw=_canonical(status),
+        resolved=False,
+        final_report=_multi_final_report(False),
+    )
+    assert summary["report_valid_recomputed"] is True
+    assert summary["expected_coverage_complete"] is False
+    assert summary["computed_resolved"] is False
 
 
 def test_matrix_revalidation_rejects_tampered_multi_unresolved_test_domain() -> None:
@@ -2866,9 +4561,10 @@ def test_matrix_revalidation_rejects_tampered_multi_unresolved_test_domain() -> 
         test_output_raw=b"actual multi test output\n",
         test_status_raw=_canonical(status),
         resolved=False,
+        final_report=_multi_final_report(False),
     )
     status["fix_patch_result"] = _multi_result(failed=("target",))
-    with pytest.raises(benchmark_matrix.MatrixError, match="classification domain mismatch"):
+    with pytest.raises(benchmark_matrix.MatrixError, match="observed fixed transitions differ"):
         benchmark_matrix._validate_smoke_test_status(
             Path("multi-noop.result.json"),
             target,
@@ -2876,6 +4572,7 @@ def test_matrix_revalidation_rejects_tampered_multi_unresolved_test_domain() -> 
             summary,
             resolved=False,
             source_row=source,
+            final_report=_multi_final_report(False),
         )
 
 
@@ -2975,7 +4672,9 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
     manifest = _read(ROOT / "configs/trimem_v1/grader_smoke_manifest.json")
     target = {
         **manifest["targets"][1],
-        "image": "example.invalid/grader@sha256:" + "d" * 64,
+        "image": benchmark_matrix._locked_images()[
+            manifest["targets"][1]["instance_id"]
+        ],
     }
     source_row = {"FAIL_TO_PASS": ["f2p"], "PASS_TO_PASS": ["p2p"]}
     applied = _smoke_blob(
@@ -3000,8 +4699,9 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
     status = _smoke_blob(
         task, "official-grader/restricted-evidence/status.bin", status_raw
     )
+    inspect_raw = _canonical([target["image"]])
     inspect_stdout = _smoke_blob(
-        task, "official-grader/restricted-evidence/inspect-stdout.bin", b"inspect\n"
+        task, "official-grader/restricted-evidence/inspect-stdout.bin", inspect_raw
     )
     inspect_stderr = _smoke_blob(
         task, "official-grader/restricted-evidence/inspect-stderr.bin", b""
@@ -3059,6 +4759,9 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
     harness_revision = official_grader.SWE_HARNESS_REVISION
     grader_id = f"official-{target['benchmark_id']}@{harness_revision}"
     image_digest = target["image"].rsplit("@", 1)[1]
+    harness_image_tag = benchmark_matrix._locked_smoke_harness_tag(
+        target["instance_id"]
+    )
     patch_raw = smoke_protocol.NOOP_BASELINE_PATCH
     execution_contract = grader_smoke._expected_execution_contract(target, patch_raw)
     execution_contract_sha256 = hashlib.sha256(
@@ -3108,7 +4811,7 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
         "observed_image_digest": image_digest,
         "target_id": target["target_id"],
     }
-    report_doc = {
+    final_report = {
         "schema_version": 2,
         "total_instances": 1, "submitted_instances": 1, "completed_instances": 1,
         "resolved_instances": 0, "unresolved_instances": 1,
@@ -3118,7 +4821,28 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
         "incomplete_ids": [], "resolved_ids": [], "unresolved_ids": [target["instance_id"]],
         "empty_patch_ids": [], "error_ids": [], "infra_failure_ids": [],
         "ambiguous_failure_ids": [],
+    }
+    restricted_raw_report = _smoke_json_blob(
+        task,
+        "official-grader/restricted-evidence/final-report.bin",
+        final_report,
+    )
+
+    def grader_raw_reference(reference: dict) -> dict:
+        return {
+            "path": str(reference["path"]).removeprefix("official-grader/"),
+            "sha256": reference["sha256"],
+            "bytes": reference["bytes"],
+            "access": "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS",
+        }
+
+    report_doc = {
+        "task_id": target["target_id"],
+        "status": "success",
+        "failure_stage": None,
+        "reason": None,
         "_trimem": {
+            "schema": official_grader.OFFICIAL_EVIDENCE_SCHEMA,
             "benchmark_id": target["benchmark_id"],
             "dataset_revision": target["dataset_revision"],
             "harness_revision": harness_revision,
@@ -3126,27 +4850,56 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
             "execution_contract": execution_contract,
             "execution_control_evidence": execution_control,
             "materialized_private_inputs": materialized_private_inputs,
+            "materialized_patch_evidence": None,
+            "invocation_argv": ["python", "-m", "swebench.harness.run_evaluation"],
+            "harness_invocation_status": "SUCCESS",
+            "report_invocation_argv": [],
+            "report_invocation_status": "NOT_APPLICABLE",
             "image_evidence": [{
-                "image": target["image"], "expected": image_digest,
+                "schema": official_grader.OFFICIAL_IMAGE_EVIDENCE_SCHEMA,
+                "role": "TARGET",
+                "image": target["image"],
+                "tag": harness_image_tag,
+                "expected": image_digest,
                 "observed": [image_digest],
+                "inspect_argv": [
+                    "docker", "image", "inspect", "--format",
+                    "{{json .RepoDigests}}", target["image"],
+                ],
+                "inspect_invocation_status": "SUCCESS",
+                "inspect_exit_code": 0,
                 "inspect_restricted_raw_streams": {
-                    "stdout": {**inspect_stdout, "path": "restricted-evidence/inspect-stdout.bin"},
-                    "stderr": {**inspect_stderr, "path": "restricted-evidence/inspect-stderr.bin"},
+                    "stdout": grader_raw_reference(inspect_stdout),
+                    "stderr": grader_raw_reference(inspect_stderr),
                 },
+                "tag_argv": [
+                    "docker", "image", "tag", target["image"], harness_image_tag,
+                ],
+                "tag_invocation_status": "SUCCESS",
+                "tag_exit_code": 0,
                 "tag_restricted_raw_streams": {
-                    "stdout": {**tag_stdout, "path": "restricted-evidence/tag-stdout.bin"},
-                    "stderr": {**tag_stderr, "path": "restricted-evidence/tag-stderr.bin"},
+                    "stdout": grader_raw_reference(tag_stdout),
+                    "stderr": grader_raw_reference(tag_stderr),
                 },
             }],
             "harness_restricted_raw_streams": {
-                "stdout": {**harness_stdout, "path": "restricted-evidence/harness-stdout.bin"},
-                "stderr": {**harness_stderr, "path": "restricted-evidence/harness-stderr.bin"},
+                "stdout": grader_raw_reference(harness_stdout),
+                "stderr": grader_raw_reference(harness_stderr),
             },
-            "test_evidence": {
-                "test_output": {**test_output, "path": "restricted-evidence/test.bin"},
-                "official_test_status": {**status, "path": "restricted-evidence/status.bin"},
-                "summary": summary,
-            },
+            "report_restricted_raw_streams": None,
+            "restricted_raw_report": grader_raw_reference(restricted_raw_report),
+            "test_output": grader_raw_reference(test_output),
+            "official_test_status": grader_raw_reference(status),
+            "container_exit_status": None,
+            "container_exit_summary": None,
+            "semantic_normalization": summary,
+            "adapter_status": "SUCCESS",
+            "adapter_failure_stage": None,
+            "adapter_primary_error": None,
+            "adapter_secondary_evidence_failures": [],
+            "official_final_report_resolved": False,
+            "adapter_normalized": True,
+            "scientific_resolved": False,
         },
     }
     execution_contract_doc = {
@@ -3213,7 +4966,7 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
         "official_test_status": status,
         "restricted_grader_raw": [
             harness_stderr, harness_stdout, inspect_stderr, inspect_stdout,
-            status, tag_stderr, tag_stdout, test_output,
+            restricted_raw_report, status, tag_stderr, tag_stdout, test_output,
         ],
     }
     record = {
@@ -3257,10 +5010,100 @@ def test_smoke_evidence_validator_binds_all_required_actual_evidence(tmp_path: P
         result_file, record, target, source, official_grader.SWE_HARNESS_REVISION
     )
     assert sealed["applied_patch_sha256"] == smoke_protocol.NOOP_BASELINE_PATCH_SHA256
-    assert benchmark_matrix._report_image_digest(result_file, record, target["image"]) == (
-        "sha256:" + "d" * 64
+    assert benchmark_matrix._report_image_digest(
+        result_file, record, target["image"]
+    ) == target["image"].rsplit("@", 1)[1]
+    benchmark_matrix._restricted_evidence(result_file, record, target)
+
+
+def test_smoke_restricted_image_evidence_recomputes_digest_from_raw_inspect(
+    tmp_path: Path,
+) -> None:
+    result_file, record, target, _source = _baseline_smoke_evidence_fixture(
+        tmp_path
     )
-    benchmark_matrix._restricted_evidence(result_file, record)
+    report_ref = record["evidence"]["report"]
+    report_path = result_file.parent / report_ref["path"]
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    inspect_ref = report["_trimem"]["image_evidence"][0][
+        "inspect_restricted_raw_streams"
+    ]["stdout"]
+    outer_path = "official-grader/" + inspect_ref["path"]
+    updated = _smoke_blob(
+        result_file.parent,
+        outer_path,
+        b'{"forged":"sha256:' + b"f" * 64 + b'"}',
+    )
+    report["_trimem"]["image_evidence"][0][
+        "inspect_restricted_raw_streams"
+    ]["stdout"] = {
+        **updated,
+        "path": updated["path"].removeprefix("official-grader/"),
+        "access": "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS",
+    }
+    record["evidence"]["restricted_grader_raw"] = [
+        updated if row["path"] == outer_path else row
+        for row in record["evidence"]["restricted_grader_raw"]
+    ]
+    record["evidence"]["report"] = _smoke_json_blob(
+        result_file.parent, report_ref["path"], report
+    )
+
+    with pytest.raises(
+        benchmark_matrix.MatrixError,
+        match="raw inspect digest binding differs",
+    ):
+        benchmark_matrix._restricted_evidence(result_file, record, target)
+
+
+def test_smoke_restricted_image_stream_references_cannot_be_reused(
+    tmp_path: Path,
+) -> None:
+    result_file, record, target, _source = _baseline_smoke_evidence_fixture(
+        tmp_path
+    )
+    report_ref = record["evidence"]["report"]
+    report_path = result_file.parent / report_ref["path"]
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    streams = report["_trimem"]["image_evidence"][0][
+        "tag_restricted_raw_streams"
+    ]
+    removed_path = "official-grader/" + streams["stderr"]["path"]
+    streams["stderr"] = dict(streams["stdout"])
+    record["evidence"]["restricted_grader_raw"] = [
+        row
+        for row in record["evidence"]["restricted_grader_raw"]
+        if row["path"] != removed_path
+    ]
+    record["evidence"]["report"] = _smoke_json_blob(
+        result_file.parent, report_ref["path"], report
+    )
+
+    with pytest.raises(benchmark_matrix.MatrixError, match="reference is reused"):
+        benchmark_matrix._restricted_evidence(result_file, record, target)
+
+
+def test_expected_multi_image_rows_bind_target_then_exact_support_lock() -> None:
+    manifest = _read(ROOT / "configs/trimem_v1/grader_smoke_manifest.json")
+    target = next(
+        row
+        for row in manifest["targets"]
+        if row["benchmark_id"].startswith("multi_swe_bench")
+    )
+    target = {
+        **target,
+        "image": benchmark_matrix._locked_images()[target["instance_id"]],
+    }
+    rows = benchmark_matrix._expected_official_image_rows(target)
+    lock = _read(ROOT / "artifacts/trimem_v1/grader_image_lock.json")
+
+    assert [row["role"] for row in rows] == ["TARGET", "SUPPORT"]
+    assert rows[1] == {
+        "role": "SUPPORT",
+        "image": lock["support_images"][0]["image"],
+        "tag": lock["support_images"][0]["harness_image_tag"],
+        "expected": lock["support_images"][0]["expected_digest"],
+    }
 
 
 @pytest.mark.parametrize("field", ZERO_SMOKE_ACCOUNTING_FIELDS)
@@ -3291,21 +5134,26 @@ def test_matrix_independently_revalidates_multi_container_exit_patch_and_status(
         "image": "mswebench/vuejs_m_core@sha256:" + "d" * 64,
     }
     summary = {
-        "schema": "trimem/official-test-status-summary/1.0",
-        "benchmark_id": "multi_swe_bench_mini",
-        "source": "MULTI_SWE_PER_INSTANCE_REPORT",
-        "expected_run_test_count": 0,
-        "classified_run_test_count": 0,
-        "expected_test_patch_test_count": 1,
-        "classified_test_patch_test_count": 1,
-        "expected_fix_test_count": 1,
-        "classified_fix_test_count": 1,
-        "expected_fix_test_domain_sha256": "e" * 64,
-        "fix_tests_classified": 1,
-        "fix_tests_passed": 0,
-        "fix_tests_failed": 1,
-        "fix_tests_skipped": 0,
-        "resolved": False,
+        "schema": "trimem/multi-swe-report-semantics/1.0",
+        "report_valid_observed": False,
+        "report_valid_recomputed": False,
+        "report_valid_match": True,
+        "expected_coverage_complete": True,
+        "expected_p2p_count": 0,
+        "observed_expected_p2p_count": 0,
+        "expected_f2p_count": 1,
+        "observed_expected_f2p_count": 1,
+        "expected_s2p_count": 0,
+        "observed_expected_s2p_count": 0,
+        "expected_n2p_count": 0,
+        "observed_expected_n2p_count": 0,
+        "missing_expected_transition_count": 0,
+        "expected_transition_domain_sha256": "e" * 64,
+        "observed_expected_transition_domain_sha256": "e" * 64,
+        "computed_resolved": False,
+        "official_final_report_resolved": False,
+        "final_report_match": True,
+        "report_invalidity_reason": "NO_NON_PASS_TO_PASS_TRANSITION",
     }
     status = {
         "executed_image": target["image"],
@@ -3393,7 +5241,7 @@ def test_matrix_independently_revalidates_multi_container_exit_patch_and_status(
 def test_smoke_restricted_raw_evidence_cannot_remove_report_group_and_files(
     tmp_path: Path,
 ) -> None:
-    result_file, record, _target, _source = _baseline_smoke_evidence_fixture(tmp_path)
+    result_file, record, target, _source = _baseline_smoke_evidence_fixture(tmp_path)
     report_ref = record["evidence"]["report"]
     report_path = result_file.parent / report_ref["path"]
     report = json.loads(report_path.read_text(encoding="utf-8"))
@@ -3407,7 +5255,7 @@ def test_smoke_restricted_raw_evidence_cannot_remove_report_group_and_files(
         if "harness-" not in reference["path"]
     ]
     with pytest.raises(benchmark_matrix.MatrixError, match="official harness raw stream"):
-        benchmark_matrix._restricted_evidence(result_file, record)
+        benchmark_matrix._restricted_evidence(result_file, record, target)
 
 
 @pytest.mark.parametrize(
@@ -3429,7 +5277,32 @@ def test_smoke_evidence_validator_rejects_semantic_tampering(
     reference = record["evidence"][evidence_name]
     evidence_path = result_file.parent / reference["path"]
     document = json.loads(evidence_path.read_text(encoding="utf-8"))
-    document[field] = value
+    if evidence_name == "report" and field == "empty_patch_ids":
+        raw_reference = document["_trimem"]["restricted_raw_report"]
+        raw_path = (
+            result_file.parent / "official-grader" / raw_reference["path"]
+        )
+        final_report = json.loads(raw_path.read_text(encoding="utf-8"))
+        final_report[field] = value
+        updated_raw_reference = _smoke_json_blob(
+            result_file.parent,
+            "official-grader/" + raw_reference["path"],
+            final_report,
+        )
+        document["_trimem"]["restricted_raw_report"] = {
+            "path": raw_reference["path"],
+            "sha256": updated_raw_reference["sha256"],
+            "bytes": updated_raw_reference["bytes"],
+            "access": "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS",
+        }
+        record["evidence"]["restricted_grader_raw"] = [
+            updated_raw_reference
+            if row["path"] == updated_raw_reference["path"]
+            else row
+            for row in record["evidence"]["restricted_grader_raw"]
+        ]
+    else:
+        document[field] = value
     record["evidence"][evidence_name] = _smoke_json_blob(
         result_file.parent, reference["path"], document
     )
@@ -3521,11 +5394,25 @@ def _aggregate_count_fixture() -> tuple[list[dict], list[tuple[Path, dict]]]:
             }
             targets.append(target)
             records.append((Path(f"{order:02d}.result.json"), {
+                "schema": "trimem/grader-smoke-terminal-cell/2.0",
                 "target_id": target_id,
                 "execution_status": "SUCCESS",
                 "grader_exit_code": 0,
                 "grader_status": "success",
+                "grader_invoked": True,
                 "container_started": True,
+                "harness_completed": True,
+                "final_report_generated": True,
+                "official_tests_executed": True,
+                "raw_test_evidence_captured": True,
+                "submitted_patch_identity_verified": True,
+                "digest_verified": True,
+                "adapter_normalized": True,
+                "authoritative_cell": True,
+                "official_final_report_resolved": resolved,
+                "scientific_resolved": resolved,
+                "primary_failure": None,
+                "secondary_evidence_failures": [],
                 "official_grader": True,
                 "expected_image_digest": "sha256:" + "d" * 64,
                 "observed_image_digest": "sha256:" + "d" * 64,
@@ -3628,6 +5515,14 @@ def test_smoke_aggregate_requires_exact_six_by_six_and_preserves_manifest_order(
     assert result["container_exit_status_validated_count"] == 8
     assert result["resolved_container_zero_exit_count"] == 4
     assert result["api_calls"] == 0
+    assert result["attempted_cell_count"] == 12
+    assert result["terminal_record_count"] == 12
+    assert result["official_execution_count"] == 12
+    assert result["complete_execution_evidence_count"] == 12
+    assert result["adapter_normalized_count"] == 12
+    assert result["authoritative_cell_count"] == 12
+    assert result["unattempted_cell_count"] == 0
+    assert all(result[field] == 0 for field in grader_smoke.FAILURE_TAXONOMY_FIELDS)
     assert result["empty_patch_ids"] == []
     assert result["evidence_counts"]["container_exit_status"] == 8
     assert all(
@@ -3642,5 +5537,467 @@ def test_smoke_aggregate_requires_exact_six_by_six_and_preserves_manifest_order(
     targets[-1]["probe"] = "GOLD"
     targets[-1]["expected_resolved"] = True
     records[-1][1]["resolved"] = True
+    records[-1][1]["official_final_report_resolved"] = True
+    records[-1][1]["scientific_resolved"] = True
     with pytest.raises(benchmark_matrix.MatrixError, match="exact 6/6"):
         benchmark_matrix._aggregate_smoke(tmp_path)
+
+
+def test_exec_005_downstream_failure_rollback_drives_exact_closure_layer(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    seed_root = tmp_path / "rollback-closure"
+    _smoke, seed_receipt, _receipt_raw, _inventory_raw = (
+        _fresh_exec_005_failure_fixture(
+            seed_root,
+            monkeypatch,
+            taxonomy_field="aggregate_failures",
+        )
+    )
+    restricted_root = seed_root / "restricted"
+    results_root = restricted_root / "results"
+    terminal_paths = sorted(results_root.rglob("*.result.json"))
+    assert len(terminal_paths) == 12
+    for index, path in enumerate(terminal_paths):
+        terminal = json.loads(path.read_text(encoding="utf-8"))
+        terminal["authoritative_cell"] = True
+        expected = index % 2 == 0
+        terminal["official_final_report_resolved"] = expected
+        terminal["scientific_resolved"] = expected
+        path.write_bytes(readiness._pretty_json(terminal))
+
+    private_reason = "cleanup failed at C:/private/runner/secret-path"
+    rollback = smoke_authority.rollback_authoritative_terminal_records(
+        results_root,
+        cause_stage="image_cleanup",
+        failure_taxonomy="image_lifecycle_failures",
+        reason=private_reason,
+    )
+    inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    inventory_raw = _canonical(inventory) + b"\n"
+    request_raw = (
+        seed_root / readiness.GRADER_SMOKE_SENTINEL_PATH
+    ).read_bytes()
+    receipt = failure_closure.build_failure_closure(
+        restricted_root=restricted_root,
+        inventory_raw=inventory_raw,
+        request_raw=request_raw,
+        approval_binding=seed_receipt["approval_binding"],
+        workflow_run=seed_receipt["workflow_run"],
+    )
+    receipt_raw = readiness._pretty_json(receipt)
+    validated = failure_closure.validate_failure_closure(
+        receipt_raw,
+        inventory_raw,
+        request_raw=request_raw,
+        restricted_root=restricted_root,
+    )
+
+    assert validated["terminal_summary"]["authoritative_cell_count"] == 0
+    assert validated["failure_taxonomy"]["image_lifecycle_failures"] == 1
+    assert sum(validated["failure_taxonomy"].values()) == 1
+    assert validated["endpoint"] == readiness.P015_INCOMPLETE_ENDPOINT
+    assert validated["scientific_result"] == "NOT_AGGREGATED"
+    assert validated["authority_rollback"]["payload_sha256"] == rollback[
+        "payload_sha256"
+    ]
+    assert private_reason.encode() not in receipt_raw
+
+
+def test_exec_005_interrupted_authority_finalization_has_one_infrastructure_layer(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    seed_root = tmp_path / "authority-recovery-closure"
+    _smoke, seed_receipt, _receipt_raw, _inventory_raw = (
+        _fresh_exec_005_failure_fixture(
+            seed_root,
+            monkeypatch,
+            taxonomy_field="aggregate_failures",
+        )
+    )
+    restricted_root = seed_root / "restricted"
+    results_root = restricted_root / "results"
+    terminal_paths = sorted(results_root.rglob("*.result.json"))
+    assert len(terminal_paths) == 12
+    for index, path in enumerate(terminal_paths):
+        terminal = json.loads(path.read_text(encoding="utf-8"))
+        expected = index % 2 == 0
+        terminal["official_final_report_resolved"] = expected
+        terminal["scientific_resolved"] = expected
+        terminal["authoritative_cell"] = False
+        path.write_bytes(readiness._pretty_json(terminal))
+    (results_root / "smoke-execution-summary.json").unlink(missing_ok=True)
+    journal = finalization_journal.write_finalization_journal(
+        results_root,
+        status=finalization_journal.AUTHORITY_PROMOTION_STARTED,
+    )
+
+    private_reason = "authority commit failed at C:/private/runner/transaction"
+    recovery = smoke_authority.recover_interrupted_authority_transaction(
+        results_root,
+        cause_stage="authority_finalization",
+        failure_taxonomy="infrastructure_failures",
+        reason=private_reason,
+    )
+    assert recovery is not None
+    inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    inventory_raw = _canonical(inventory) + b"\n"
+    request_raw = (
+        seed_root / readiness.GRADER_SMOKE_SENTINEL_PATH
+    ).read_bytes()
+    receipt = failure_closure.build_failure_closure(
+        restricted_root=restricted_root,
+        inventory_raw=inventory_raw,
+        request_raw=request_raw,
+        approval_binding=seed_receipt["approval_binding"],
+        workflow_run=seed_receipt["workflow_run"],
+    )
+    receipt_raw = readiness._pretty_json(receipt)
+    validated = failure_closure.validate_failure_closure(
+        receipt_raw,
+        inventory_raw,
+        request_raw=request_raw,
+        restricted_root=restricted_root,
+    )
+
+    assert validated["terminal_summary"]["authoritative_cell_count"] == 0
+    assert validated["failure_taxonomy"]["infrastructure_failures"] == 1
+    assert sum(validated["failure_taxonomy"].values()) == 1
+    assert validated["endpoint"] == readiness.P015_INCOMPLETE_ENDPOINT
+    assert validated["scientific_result"] == "NOT_AGGREGATED"
+    assert validated["authority_rollback"]["schema"] == (
+        smoke_authority.RECOVERY_EVIDENCE_SCHEMA
+    )
+    assert validated["authority_rollback"]["payload_sha256"] == recovery[
+        "payload_sha256"
+    ]
+    assert validated["authority_rollback"]["finalization_journal"] == {
+        "bytes": (
+            results_root / finalization_journal.RELATIVE_PATH
+        ).stat().st_size,
+        "path": "results/" + finalization_journal.RELATIVE_PATH.as_posix(),
+        "payload_sha256": journal["payload_sha256"],
+        "sha256": hashlib.sha256(
+            (results_root / finalization_journal.RELATIVE_PATH).read_bytes()
+        ).hexdigest(),
+        "status": finalization_journal.AUTHORITY_PROMOTION_STARTED,
+    }
+    assert private_reason.encode() not in receipt_raw
+
+    journal_path = results_root / finalization_journal.RELATIVE_PATH
+    journal_path.write_bytes(journal_path.read_bytes() + b"tampered")
+    tampered_inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    with pytest.raises(
+        failure_closure.FailureClosureError,
+        match="finalization journal is not inventory-bound",
+    ):
+        failure_closure.build_failure_closure(
+            restricted_root=restricted_root,
+            inventory_raw=_canonical(tampered_inventory) + b"\n",
+            request_raw=request_raw,
+            approval_binding=seed_receipt["approval_binding"],
+            workflow_run=seed_receipt["workflow_run"],
+        )
+
+
+@pytest.mark.parametrize(
+    ("boundary", "private_reason"),
+    (
+        (
+            "12th-after_target",
+            "after_target failed at C:/private/runner/remove-final-image",
+        ),
+        (
+            "finish",
+            "finish failed at C:/private/runner/lifecycle-finalization",
+        ),
+    ),
+)
+def test_exec_005_complete_false_tree_lifecycle_boundary_keeps_image_primary(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    boundary: str,
+    private_reason: str,
+) -> None:
+    seed_root = tmp_path / boundary
+    _smoke, seed_receipt, _receipt_raw, _inventory_raw = (
+        _fresh_exec_005_failure_fixture(
+            seed_root,
+            monkeypatch,
+            taxonomy_field="aggregate_failures",
+        )
+    )
+    restricted_root = seed_root / "restricted"
+    results_root = restricted_root / "results"
+    terminal_paths = sorted(results_root.rglob("*.result.json"))
+    assert len(terminal_paths) == 12
+    for index, path in enumerate(terminal_paths):
+        terminal = json.loads(path.read_text(encoding="utf-8"))
+        expected = index % 2 == 0
+        terminal["official_final_report_resolved"] = expected
+        terminal["scientific_resolved"] = expected
+        terminal["primary_failure"] = None
+        terminal["execution_status"] = "SUCCESS"
+        terminal["authoritative_cell"] = False
+        path.write_bytes(readiness._pretty_json(terminal))
+
+    (results_root / "smoke-execution-summary.json").unlink(missing_ok=True)
+    journal_path = results_root / finalization_journal.RELATIVE_PATH
+    assert not journal_path.exists()
+    lifecycle_path = (
+        restricted_root / "image-materialization/image-lifecycle-report.json"
+    )
+    lifecycle = json.loads(lifecycle_path.read_text(encoding="utf-8"))
+    lifecycle["status"] = "FAILED"
+    lifecycle["failure"] = {
+        "error_type": "SyntheticLifecycleBoundaryFailure",
+        "error": private_reason,
+    }
+    lifecycle_path.write_bytes(readiness._pretty_json(lifecycle))
+
+    recovery = smoke_authority.recover_interrupted_authority_transaction(
+        results_root,
+        cause_stage="authority_finalization",
+        failure_taxonomy="infrastructure_failures",
+        reason="run_smoke did not succeed",
+    )
+    assert recovery is None
+    assert not (
+        results_root / smoke_authority.DEFAULT_RECOVERY_EVIDENCE_RELATIVE_PATH
+    ).exists()
+
+    inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    inventory_raw = _canonical(inventory) + b"\n"
+    request_raw = (
+        seed_root / readiness.GRADER_SMOKE_SENTINEL_PATH
+    ).read_bytes()
+    receipt = failure_closure.build_failure_closure(
+        restricted_root=restricted_root,
+        inventory_raw=inventory_raw,
+        request_raw=request_raw,
+        approval_binding=seed_receipt["approval_binding"],
+        workflow_run=seed_receipt["workflow_run"],
+    )
+    receipt_raw = readiness._pretty_json(receipt)
+    validated = failure_closure.validate_failure_closure(
+        receipt_raw,
+        inventory_raw,
+        request_raw=request_raw,
+        restricted_root=restricted_root,
+    )
+
+    assert validated["terminal_summary"]["terminal_record_count"] == 12
+    assert validated["terminal_summary"]["adapter_normalized_count"] == 12
+    assert validated["terminal_summary"]["authoritative_cell_count"] == 0
+    assert validated["authority_rollback"] is None
+    assert validated["failure_taxonomy"]["image_lifecycle_failures"] == 1
+    assert sum(validated["failure_taxonomy"].values()) == 1
+    assert validated["scientific_result"] == "NOT_AGGREGATED"
+    assert validated["endpoint"] == readiness.P015_INCOMPLETE_ENDPOINT
+    assert private_reason.encode() not in receipt_raw
+
+
+def test_failed_closure_never_allows_an_empty_primary_taxonomy() -> None:
+    summary, taxonomy, actual, endpoint, scientific = failure_closure._derive(
+        [],
+        {
+            "status": "IN_PROGRESS",
+            "support_image_pulls": 0,
+            "target_image_pulls": 0,
+        },
+        None,
+        None,
+    )
+
+    assert summary["terminal_record_count"] == 0
+    assert taxonomy["infrastructure_failures"] == 1
+    assert sum(taxonomy.values()) == 1
+    assert actual["grader_containers"] == 0
+    assert endpoint == readiness.P015_INCOMPLETE_ENDPOINT
+    assert scientific == "NOT_AGGREGATED"
+
+
+@pytest.mark.parametrize(
+    ("failure_mode", "expected_outcome", "expected_failure_stage"),
+    (
+        ("nonzero", "INSPECT_NONZERO", "INSPECT"),
+        ("timeout", "INSPECT_TIMEOUT", "INSPECT"),
+        ("invalid", "INSPECT_OUTPUT_INVALID", "INSPECT_OUTPUT"),
+        ("digest_mismatch", "DIGEST_MISMATCH", "DIGEST_VERIFICATION"),
+    ),
+)
+def test_pull_pass_inspect_failure_is_materialized_and_stage_truthful(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    failure_mode: str,
+    expected_outcome: str,
+    expected_failure_stage: str,
+) -> None:
+    """Exercise the production pull, lifecycle, inventory, and closure path."""
+
+    manifest = _read(ROOT / "configs/trimem_v1/grader_smoke_manifest.json")
+    images, support = benchmark_run.image_entries(require_benchmark=False)
+    target = manifest["targets"][0]
+    image = images[target["instance_id"]]["image"]
+    other = "registry.example/other@sha256:" + "f" * 64
+    restricted_root = tmp_path / "restricted"
+    image_root = restricted_root / "image-materialization"
+
+    def fake_subprocess_run(argv: list[str], **_kwargs: object):
+        if argv[:2] == ["docker", "pull"]:
+            return subprocess.CompletedProcess(
+                argv, 0, stdout=b"pull complete\xff\n", stderr=b""
+            )
+        if argv[:3] == ["docker", "image", "inspect"]:
+            if failure_mode == "nonzero":
+                return subprocess.CompletedProcess(
+                    argv, 42, stdout=b"", stderr=b"inspect failed\xfe\n"
+                )
+            if failure_mode == "timeout":
+                raise subprocess.TimeoutExpired(
+                    cmd=argv,
+                    timeout=3600,
+                    output=b"partial inspect\xff",
+                    stderr=b"timeout detail\xfe",
+                )
+            if failure_mode == "invalid":
+                stdout = b'{"not":"a RepoDigests list"}\xff'
+            else:
+                stdout = json.dumps([other]).encode("utf-8")
+            return subprocess.CompletedProcess(argv, 0, stdout=stdout, stderr=b"")
+        if argv[:4] == ["docker", "image", "rm", "--force"]:
+            return subprocess.CompletedProcess(
+                argv, 0, stdout=b"removed\n", stderr=b""
+            )
+        raise AssertionError(f"unexpected command: {argv!r}")
+
+    monkeypatch.setattr(image_pull.subprocess, "run", fake_subprocess_run)
+    approval = {
+        "phase": "GRADER_SMOKE",
+        "approval_artifact_sha256": "a" * 64,
+        "git_head": "b" * 40,
+    }
+    lifecycle = grader_smoke._SerialImageLifecycle(
+        approval=approval,
+        evidence_root=image_root,
+        targets=manifest["targets"],
+        images=images,
+        support=support,
+    )
+
+    with pytest.raises(benchmark_run.BenchmarkExecutionError) as captured:
+        lifecycle.before_target(0, target)
+    primary_type = type(captured.value).__name__
+    primary_message = str(captured.value)
+    lifecycle.abort(captured.value)
+
+    report_path = image_root / "image-lifecycle-report.json"
+    report = _read(report_path)
+    failed_event = report["events"][0]
+    assert report["status"] == "FAILED"
+    assert report["actual"]["target_image_pulls"] == 1
+    assert report["actual"]["resident_target_images"] == 0
+    assert failed_event["action"] == "PULL_TARGET_FAILED"
+    assert failed_event["pull_materialized"] is True
+    assert failed_event["failure_stage"] == expected_failure_stage
+    assert failed_event["error_type"] == primary_type
+    assert failed_event["error"] == primary_message
+    assert report["failure"]["error_type"] == primary_type
+    assert report["failure"]["error"] == primary_message
+
+    inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    rows = {row["path"]: row for row in inventory["files"]}
+    projection = failure_closure._lifecycle_projection(
+        report_path.read_bytes(),
+        reference=rows["image-materialization/image-lifecycle-report.json"],
+        approval=approval,
+        restricted_root=restricted_root,
+        inventory_rows=rows,
+    )
+    validated = failure_closure._validate_lifecycle_projection(projection)
+    attempt = validated["pull_attempts"][0]
+    assert validated["target_image_pulls"] == 1
+    assert validated["target_image_materialized_count"] == 1
+    assert attempt["outcome"] == expected_outcome
+    assert attempt["image_materialized"] is True
+    assert attempt["pull_status"] == "PASS"
+    assert attempt["pull_returncode"] == 0
+    assert attempt["inspect_status"] == (
+        "NONZERO"
+        if failure_mode == "nonzero"
+        else "TIMEOUT"
+        if failure_mode == "timeout"
+        else "PASS"
+    )
+    assert attempt["restricted_pull_stage"] == rows[
+        "image-materialization/000-pull/stage.json"
+    ]
+    assert attempt["restricted_inspect_stage"] == rows[
+        "image-materialization/000-inspect/stage.json"
+    ]
+
+
+def test_pull_pass_inspect_failure_requires_inventory_bound_inspect_raw(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manifest = _read(ROOT / "configs/trimem_v1/grader_smoke_manifest.json")
+    images, support = benchmark_run.image_entries(require_benchmark=False)
+    target = manifest["targets"][0]
+    restricted_root = tmp_path / "restricted"
+    image_root = restricted_root / "image-materialization"
+
+    def fake_subprocess_run(argv: list[str], **_kwargs: object):
+        if argv[:2] == ["docker", "pull"]:
+            return subprocess.CompletedProcess(argv, 0, stdout=b"", stderr=b"")
+        if argv[:3] == ["docker", "image", "inspect"]:
+            return subprocess.CompletedProcess(
+                argv, 9, stdout=b"", stderr=b"failed"
+            )
+        if argv[:4] == ["docker", "image", "rm", "--force"]:
+            return subprocess.CompletedProcess(argv, 0, stdout=b"", stderr=b"")
+        raise AssertionError(f"unexpected command: {argv!r}")
+
+    monkeypatch.setattr(image_pull.subprocess, "run", fake_subprocess_run)
+    approval = {
+        "phase": "GRADER_SMOKE",
+        "approval_artifact_sha256": "a" * 64,
+        "git_head": "b" * 40,
+    }
+    lifecycle = grader_smoke._SerialImageLifecycle(
+        approval=approval,
+        evidence_root=image_root,
+        targets=manifest["targets"],
+        images=images,
+        support=support,
+    )
+    with pytest.raises(benchmark_run.BenchmarkExecutionError) as captured:
+        lifecycle.before_target(0, target)
+    lifecycle.abort(captured.value)
+    report_path = image_root / "image-lifecycle-report.json"
+    inventory = evidence_inventory.build_inventory(
+        restricted_root, root_label="grader_smoke_exec"
+    )
+    rows = {row["path"]: row for row in inventory["files"]}
+    del rows["image-materialization/000-inspect/stderr.txt"]
+
+    with pytest.raises(
+        failure_closure.FailureClosureError,
+        match="image inspect stderr is not inventory-bound",
+    ):
+        failure_closure._lifecycle_projection(
+            report_path.read_bytes(),
+            reference=rows["image-materialization/image-lifecycle-report.json"],
+            approval=approval,
+            restricted_root=restricted_root,
+            inventory_rows=rows,
+        )

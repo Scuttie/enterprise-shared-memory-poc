@@ -54,13 +54,20 @@ HISTORICAL_SENTINEL_003_PATH = (
 HISTORICAL_SENTINEL_003_SHA256 = (
     "90bae24a2fba5e9ed88882fb06a47c8bb0113e1ffe6c2c121db990934bad0603"
 )
+HISTORICAL_SENTINEL_004_PATH = (
+    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_004.json"
+)
+HISTORICAL_SENTINEL_004_SHA256 = (
+    "1cd2d983f9f140392c6c989a9a395c48d5ddc2176cb009b30a98a167c95218ef"
+)
 HISTORICAL_SENTINELS = (
     (HISTORICAL_SENTINEL_PATH, HISTORICAL_SENTINEL_SHA256),
     (HISTORICAL_SENTINEL_002_PATH, HISTORICAL_SENTINEL_002_SHA256),
     (HISTORICAL_SENTINEL_003_PATH, HISTORICAL_SENTINEL_003_SHA256),
+    (HISTORICAL_SENTINEL_004_PATH, HISTORICAL_SENTINEL_004_SHA256),
 )
 SENTINEL_PATH = (
-    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_004.json"
+    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_005.json"
 )
 FROZEN_REQUEST_PATH = "configs/trimem_v1/benchmark_exec_request.json"
 WORKFLOW_PATH = ".github/workflows/trimem-grader-smoke.yml"
@@ -79,10 +86,20 @@ MULTI_SWE_PROBE_EVIDENCE_PATH = "scripts/trimem_multi_swe_probe_evidence.py"
 MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH = (
     "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json"
 )
-REQUEST_ID = "TRIMEM_V1_GRADER_SMOKE_EXEC_004"
-REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.5"
+MULTI_SWE_REPORT_SEMANTICS_PATH = "scripts/trimem_multi_swe_report_semantics.py"
+MULTI_SWE_REPORT_SEMANTICS_LOCK_PATH = (
+    "artifacts/trimem_v1/multi_swe_report_semantics_lock.json"
+)
+ADAPTER_FAILURE_ENVELOPE_CONTRACT_PATH = (
+    "artifacts/trimem_v1/adapter_failure_envelope_contract.json"
+)
+REQUEST_ID = "TRIMEM_V1_GRADER_SMOKE_EXEC_005"
+REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.6"
 EXPECTED_PHASE = "GRADER_SMOKE"
 AUTHORIZATION_SEMANTICS = "The sentinel alone does not authorize execution."
+REQUIRED_EXTERNAL_AUTHORIZATION = (
+    "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_EXEC_APPROVED_ONCE"
+)
 BASELINE_FROZEN_REQUEST_SHA256 = (
     "05e19aeec6630f2362c481a86eb66d0e630041794866a638c3ebbf07e5ccbba4"
 )
@@ -100,6 +117,9 @@ BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256 = (
 )
 BASELINE_PROTOCOL_SHA256 = (
     "f73d7da715b3cc6a2d15e3bc39c355cfeccf585ab2014a1834c9b275839fc7b8"
+)
+BASELINE_MULTI_SWE_ENTRYPOINT_SHA256 = (
+    "16c021ac3c0eb18bc78376164307b53cfb294ac0f206415d465a1b11f1ec63ac"
 )
 EXECUTION_CONTROL_AMENDMENT = {
     "benchmark_result_existed_when_amended": False,
@@ -150,6 +170,7 @@ REQUEST_FIELDS = frozenset(
     {
         "actual_execution_authorized",
         "adapter_sha256",
+        "adapter_failure_envelope_contract_sha256",
         "authorization_semantics",
         "branch_ref",
         "credential_free_bundle_sha256",
@@ -165,6 +186,8 @@ REQUEST_FIELDS = frozenset(
         "model_secret_required",
         "multi_swe_entrypoint_sha256",
         "multi_swe_evaluation_contract_lock_sha256",
+        "multi_swe_report_semantics_lock_sha256",
+        "multi_swe_report_semantics_sha256",
         "multi_swe_probe_evidence",
         "multi_swe_probe_evidence_verifier_sha256",
         "noop_baseline_patch_sha256",
@@ -172,6 +195,7 @@ REQUEST_FIELDS = frozenset(
         "request_id",
         "request_path",
         "request_sha256",
+        "required_external_authorization",
         "requires_external_approval",
         "schema",
         "source_head",
@@ -294,6 +318,9 @@ def _raw_material(repository: Path, commit: str) -> dict[str, bytes]:
         MULTI_SWE_ENTRYPOINT_PATH,
         MULTI_SWE_PROBE_EVIDENCE_PATH,
         MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
+        MULTI_SWE_REPORT_SEMANTICS_PATH,
+        MULTI_SWE_REPORT_SEMANTICS_LOCK_PATH,
+        ADAPTER_FAILURE_ENVELOPE_CONTRACT_PATH,
     )
     return {path: _commit_bytes(repository, commit, path) for path in paths}
 
@@ -320,6 +347,11 @@ def _validate_frozen_material(
             CREDENTIAL_FREE_BUNDLE_PATH,
             BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256,
             "credential-free bundle",
+        ),
+        (
+            MULTI_SWE_ENTRYPOINT_PATH,
+            BASELINE_MULTI_SWE_ENTRYPOINT_SHA256,
+            "Multi-SWE prebuilt entrypoint",
         ),
     ):
         _require(
@@ -370,6 +402,9 @@ def _validate_frozen_material(
         MULTI_SWE_ENTRYPOINT_PATH,
         MULTI_SWE_PROBE_EVIDENCE_PATH,
         MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
+        MULTI_SWE_REPORT_SEMANTICS_PATH,
+        MULTI_SWE_REPORT_SEMANTICS_LOCK_PATH,
+        ADAPTER_FAILURE_ENVELOPE_CONTRACT_PATH,
         PREFLIGHT_PATH,
         INVENTORY_PATH,
         PROTOCOL_PATH,
@@ -634,6 +669,9 @@ def build_request_document(
     payload: dict[str, Any] = {
         "actual_execution_authorized": False,
         "adapter_sha256": sha256_prefixed(raw[OFFICIAL_GRADER_PATH]),
+        "adapter_failure_envelope_contract_sha256": sha256_prefixed(
+            raw[ADAPTER_FAILURE_ENVELOPE_CONTRACT_PATH]
+        ),
         "authorization_semantics": AUTHORIZATION_SEMANTICS,
         "branch_ref": EXPECTED_REF,
         "credential_free_bundle_sha256": sha256_prefixed(
@@ -655,6 +693,12 @@ def build_request_document(
         "multi_swe_evaluation_contract_lock_sha256": sha256_prefixed(
             raw[MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH]
         ),
+        "multi_swe_report_semantics_lock_sha256": sha256_prefixed(
+            raw[MULTI_SWE_REPORT_SEMANTICS_LOCK_PATH]
+        ),
+        "multi_swe_report_semantics_sha256": sha256_prefixed(
+            raw[MULTI_SWE_REPORT_SEMANTICS_PATH]
+        ),
         "multi_swe_probe_evidence": probe_evidence,
         "multi_swe_probe_evidence_verifier_sha256": sha256_prefixed(
             raw[MULTI_SWE_PROBE_EVIDENCE_PATH]
@@ -663,6 +707,7 @@ def build_request_document(
         "phase": EXPECTED_PHASE,
         "request_id": REQUEST_ID,
         "request_path": SENTINEL_PATH,
+        "required_external_authorization": REQUIRED_EXTERNAL_AUTHORIZATION,
         "requires_external_approval": True,
         "schema": REQUEST_SCHEMA,
         "source_head": source_head,
@@ -797,6 +842,11 @@ def validate_request_document(
         value.get("authorization_semantics") == AUTHORIZATION_SEMANTICS,
         "sentinel authorization semantics mismatch",
     )
+    _require(
+        value.get("required_external_authorization")
+        == REQUIRED_EXTERNAL_AUTHORIZATION,
+        "sentinel external authorization identity mismatch",
+    )
     _require(value.get("model_secret_required") is False, "sentinel must not require a model secret")
     caps = value.get("hard_caps")
     _require(
@@ -840,10 +890,22 @@ def validate_request_document(
         ("grader_image_lock_sha256", "grader image-lock raw hash"),
         ("credential_free_bundle_sha256", "credential-free bundle raw hash"),
         ("adapter_sha256", "official grader adapter raw hash"),
+        (
+            "adapter_failure_envelope_contract_sha256",
+            "adapter failure-envelope contract raw hash",
+        ),
         ("multi_swe_entrypoint_sha256", "Multi-SWE entrypoint raw hash"),
         (
             "multi_swe_evaluation_contract_lock_sha256",
             "Multi-SWE evaluation contract-lock raw hash",
+        ),
+        (
+            "multi_swe_report_semantics_lock_sha256",
+            "Multi-SWE report-semantics lock raw hash",
+        ),
+        (
+            "multi_swe_report_semantics_sha256",
+            "Multi-SWE report-semantics helper raw hash",
         ),
         ("multi_swe_probe_evidence", "Multi-SWE image-probe evidence binding"),
         (

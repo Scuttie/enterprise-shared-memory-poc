@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "commit": "4ca2bdd516b859601d7f2bee963920f7affddb83",
+  "commit": "bb3ab5ed4c88d7b5098cb3a7ff8df36fcd84907b",
   "manifest_scope": "PRODUCT_HANDOFF_ONLY_NOT_TRIMEM_RESEARCH_STATE",
   "hash_basis": "git ls-files -z (tracked files only; newline-normalized content)",
   "trimem_research_state_authority": "artifacts/trimem_v1/freeze.json",
@@ -8,7 +8,7 @@
   "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) — NOT COMPANY-STAGING-CERTIFIED",
   "source_tree_sha256": "5b4e423c6579a4e39bcbe5c9c9abf23a8677688ade3ca5d1e8a81983cc261b82",
   "source_files": 131,
-  "docs_tree_sha256": "d392eff4ee37425f67cb37fb4f47afab6f84d6a86494fd4da86c8152b77fb71f",
+  "docs_tree_sha256": "9b99ac5a5c02825017214c3e82a28f3a9ff57476fb804b882e9312d4cd69d6aa",
   "docs_files": 57,
   "examples_tree_sha256": "dc62d76eb3fa73cf1df33236bea8257306ef108d5d7d12fc3488597f05dfd922",
   "examples_files": 7,
@@ -22,7 +22,7 @@
     "artifacts/p6/governance_thresholds.json": "994487fbd0f3d64880668c14429096d103a5365475a9fbb9c9c43d6c8c45351e",
     "examples/company_harness/tool_schema.json": "52b94c50ceca84740192f6b4022df762d09c62cb0d5c0822b42a66a4101ce240",
     "README.md": "40217c15e297bbc6eec179b16129d39de55b439d2b66f2b801cc3125e695b28c",
-    "docs/STATUS.yaml": "01f95ecc5d715d675276e389e3f87cc7e9770a18b0818744a5f63c612d73c838",
+    "docs/STATUS.yaml": "5b99ec90a342a9e3548f1567396db744b9ae900d6082137a6851ef4bf4c5a52e",
     "THIRD_PARTY_RESEARCH_REFERENCES.json": "42523b999b509f37605dd3460e4b117a8effff7b726a38b8766a6423b48220ec"
   },
   "rejected_if_tracked": [
@@ -44,5 +44,5 @@
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "8d86ecd11a38f09a15669738d231ce69d543d6aab2c7001db0f2c0964f39df65"
+  "manifest_hash": "5a85f44de4951210b406248d7ec55f6f07d349af6577b6a912d511bf0fc37d8f"
 }

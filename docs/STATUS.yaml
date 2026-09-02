@@ -12,7 +12,7 @@ company_handoff_status: READY          # fresh-clone + offline demo pass; NOT st
 production_certification_status: NOT_CLAIMED
 
 migration_head: "0015"                 # structural tree inventory; not a TriMem benchmark result
-workflow_count: 71                     # structural tree inventory; research readiness is separately sealed
+workflow_count: 72                     # structural tree inventory; research readiness is separately sealed
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)

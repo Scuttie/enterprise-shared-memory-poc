@@ -162,7 +162,12 @@ def execute_pinned_instance_only(
         raise MultiSWEEntrypointError("Multi-SWE module escaped the pinned checkout")
 
     parser = module.get_parser()
-    parsed = parser.parse_args(["--config", str(config_path)])
+    # The pinned harness subclasses argparse with ``use_config`` as its first
+    # positional parameter.  Supplying the argv list positionally would bind
+    # that list to ``use_config`` and make argparse consume this wrapper's
+    # process argv instead.  Bind argparse's ``args`` parameter by name so the
+    # exact config is both selected and loaded.
+    parsed = parser.parse_args(args=["--config", str(config_path)])
     cli = module.CliArgs.from_dict(vars(parsed))
     if (
         cli.mode != "instance_only"

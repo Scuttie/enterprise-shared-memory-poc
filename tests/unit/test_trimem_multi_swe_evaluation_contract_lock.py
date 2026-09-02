@@ -40,6 +40,13 @@ EXPECTED_SOURCE_BLOBS = {
         "line_count": 833,
         "sha256": "b1a9b45022b9e79a5aa9a21908d9074b1258594c10d95f41938852d84ac38efb",
     },
+    "multi_swe_bench/utils/args_util.py": {
+        "bytes": 3277,
+        "git_blob_oid": "24ed488f3a68927f517dca67a32e8dfbc6dc867a",
+        "git_mode": "100644",
+        "line_count": 97,
+        "sha256": "26835412d5093091c771c7f99fe45a4ff141433decae23705b714b0ae2b250af",
+    },
     "multi_swe_bench/utils/session_util.py": {
         "bytes": 17230,
         "git_blob_oid": "3d95889dec9e9a7e630c9b6a9552a4ea0bcdbf64",
@@ -95,13 +102,13 @@ def test_contract_lock_is_self_sealed_and_pins_exact_git_blob_bytes() -> None:
     assert lock["source_blobs"] == EXPECTED_SOURCE_BLOBS
 
     projection = hashlib.sha256(_canonical(lock["contracts"])).hexdigest()
-    assert projection == "1cb00293db7bc45f4ef02b551b0d6d87ce3626fcc5b38c857eebe82081401b16"
+    assert projection == "44e96161278e7030565ecb035fdbd90fc578a906fbcffd8d6fd054b07fe012ed"
     assert lock["contract_projection_sha256"] == projection
 
     body = dict(lock)
     observed_lock = body.pop("lock_sha256")
     assert observed_lock == hashlib.sha256(_canonical(body)).hexdigest()
-    assert observed_lock == "c5de60415a95a78969a433d95855b827d67cc5a4b65b9a9af3abd7c37ce9feeb"
+    assert observed_lock == "539abc2394a60dc006297c949b71eb9c594ad94fa4eb8ccc830ea8da6062eee6"
 
     assert lock["evidence_basis"] == {
         "blob_reader": "git cat-file blob <revision>:<path>",
@@ -137,6 +144,34 @@ def test_default_and_existing_image_early_return_contract_is_exact() -> None:
         "image.files materialization",
         "docker_util.build",
     ]
+
+
+def test_pinned_argument_parser_signature_requires_named_args_binding() -> None:
+    parser = _load_lock()["contracts"]["argument_parser_config_dispatch"]
+    assert parser == {
+        "argparse_forwarding": "super().parse_args(*args, **kwargs)",
+        "config_load_order": [
+            "parse argparse arguments",
+            "load config file when use_config and args.config are truthy",
+            "load environment variables",
+            "return namespace",
+        ],
+        "evidence": [
+            {
+                "end_line": 47,
+                "path": "multi_swe_bench/utils/args_util.py",
+                "start_line": 25,
+                "symbol": "ArgumentParser.__init__ and ArgumentParser.parse_args",
+            }
+        ],
+        "first_positional_parameter_after_self": "use_config",
+        "positional_argv_hazard": (
+            "a positional argv list binds to use_config, leaving argparse to "
+            "consume process argv"
+        ),
+        "signature": "parse_args(self, use_config=True, *args, **kwargs)",
+        "wrapper_required_call": "parser.parse_args(args=[--config, config_path])",
+    }
 
 
 def test_human_mode_paths_lock_host_prepare_and_patch_volume_contracts() -> None:
@@ -335,7 +370,7 @@ def test_every_source_reference_is_bounded_by_its_locked_blob() -> None:
         and {"path", "start_line", "end_line", "symbol"} <= set(value)
     ]
 
-    assert len(evidence) == 19
+    assert len(evidence) == 20
     for reference in evidence:
         source = EXPECTED_SOURCE_BLOBS[reference["path"]]
         assert isinstance(reference["symbol"], str) and reference["symbol"]

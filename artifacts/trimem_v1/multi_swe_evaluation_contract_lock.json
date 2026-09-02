@@ -43,6 +43,13 @@
       "line_count": 833,
       "sha256": "b1a9b45022b9e79a5aa9a21908d9074b1258594c10d95f41938852d84ac38efb"
     },
+    "multi_swe_bench/utils/args_util.py": {
+      "bytes": 3277,
+      "git_blob_oid": "24ed488f3a68927f517dca67a32e8dfbc6dc867a",
+      "git_mode": "100644",
+      "line_count": 97,
+      "sha256": "26835412d5093091c771c7f99fe45a4ff141433decae23705b714b0ae2b250af"
+    },
     "multi_swe_bench/utils/session_util.py": {
       "bytes": 17230,
       "git_blob_oid": "3d95889dec9e9a7e630c9b6a9552a4ea0bcdbf64",
@@ -108,6 +115,27 @@
         "require zero exit and exact one-target final report",
         "require non-empty official fix-test evidence"
       ]
+    },
+    "argument_parser_config_dispatch": {
+      "argparse_forwarding": "super().parse_args(*args, **kwargs)",
+      "config_load_order": [
+        "parse argparse arguments",
+        "load config file when use_config and args.config are truthy",
+        "load environment variables",
+        "return namespace"
+      ],
+      "evidence": [
+        {
+          "end_line": 47,
+          "path": "multi_swe_bench/utils/args_util.py",
+          "start_line": 25,
+          "symbol": "ArgumentParser.__init__ and ArgumentParser.parse_args"
+        }
+      ],
+      "first_positional_parameter_after_self": "use_config",
+      "positional_argv_hazard": "a positional argv list binds to use_config, leaving argparse to consume process argv",
+      "signature": "parse_args(self, use_config=True, *args, **kwargs)",
+      "wrapper_required_call": "parser.parse_args(args=[--config, config_path])"
     },
     "argument_defaults": {
       "force_build": {
@@ -251,11 +279,11 @@
       "source_contract_status": "PROVEN_FROM_PINNED_CONTROL_FLOW"
     },
     "production_entrypoint": {
-      "bytes": 7752,
+      "bytes": 8114,
       "invocation": "python scripts/trimem_multi_swe_entrypoint.py --harness-root <pinned-checkout> --config <one-row-config>",
       "library_dispatch": "execute_pinned_instance_only -> pinned get_parser -> CliArgs.from_dict -> CliArgs.run -> run_mode_instance_only",
       "path": "scripts/trimem_multi_swe_entrypoint.py",
-      "sha256": "88d3c3d4faa6bd31887c400355adbe3c43d980725b188cafb3c313e0271f038c",
+      "sha256": "34554ec6fc39d9f1697244fa278fe37bc51cfe9991ba3950ef6fffff8a467866",
       "support_container_bootstrap_calls": 0,
       "upstream_module": "multi_swe_bench.harness.run_evaluation",
       "upstream_module_main_executed": false,
@@ -398,6 +426,6 @@
     "source_image_builds_observed_before_failure": 1
   },
   "report": "reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md",
-  "contract_projection_sha256": "1cb00293db7bc45f4ef02b551b0d6d87ce3626fcc5b38c857eebe82081401b16",
-  "lock_sha256": "c5de60415a95a78969a433d95855b827d67cc5a4b65b9a9af3abd7c37ce9feeb"
+  "contract_projection_sha256": "44e96161278e7030565ecb035fdbd90fc578a906fbcffd8d6fd054b07fe012ed",
+  "lock_sha256": "539abc2394a60dc006297c949b71eb9c594ad94fa4eb8ccc830ea8da6062eee6"
 }

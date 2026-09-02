@@ -55,6 +55,7 @@ normalization.
 |---|---:|---:|---|
 | `multi_swe_bench/harness/gen_report.py` | `251e8b01059a18a9af5ae176c696eb4be8950ae4` | 21,331 | `02ebc8a5414898d12f4f5a9ba0c11a8f57c9f34a0bdc02c2311afac9f654847d` |
 | `multi_swe_bench/harness/run_evaluation.py` | `f2dfa70df095d434cc6e5fd47f9a7a1bb027b824` | 28,647 | `b1a9b45022b9e79a5aa9a21908d9074b1258594c10d95f41938852d84ac38efb` |
+| `multi_swe_bench/utils/args_util.py` | `24ed488f3a68927f517dca67a32e8dfbc6dc867a` | 3,277 | `26835412d5093091c771c7f99fe45a4ff141433decae23705b714b0ae2b250af` |
 | `multi_swe_bench/utils/session_util.py` | `3d95889dec9e9a7e630c9b6a9552a4ea0bcdbf64` | 17,230 | `c4050c065520e35e7c0a7ad0f2ab2b124c3c692413f0c09a2591dd7dc30a3e8a` |
 | `multi_swe_bench/harness/image.py` | `da1c613d4e7074f46889ffe1c31c0582c3535d2f` | 5,892 | `86074812495b97026efb42c57acbf7738864b1f0167f99e3b9f9309458972ae9` |
 | `multi_swe_bench/harness/repos/typescript/vuejs/core.py` | `8562206faf6eb4fe739932f9a31ec578cc10af96` | 5,967 | `f154469392f1c52a5d8756c8f5332be35347b8b3bf4dd739a443b5ad4a5f3ce5` |
@@ -62,16 +63,30 @@ normalization.
 The machine-readable lock is
 [`artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json`](../artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json).
 Its contract projection SHA-256 is
-`1cb00293db7bc45f4ef02b551b0d6d87ce3626fcc5b38c857eebe82081401b16`,
+`44e96161278e7030565ecb035fdbd90fc578a906fbcffd8d6fd054b07fe012ed`,
 and its self-lock SHA-256 is
-`c5de60415a95a78969a433d95855b827d67cc5a4b65b9a9af3abd7c37ce9feeb`.
+`539abc2394a60dc006297c949b71eb9c594ad94fa4eb8ccc830ea8da6062eee6`.
 
-The production entrypoint itself is 7,752 bytes with SHA-256
-`88d3c3d4faa6bd31887c400355adbe3c43d980725b188cafb3c313e0271f038c`.
-That identity is part of the contract projection and is also bound directly by
-the one-time `_004` request.
+The production entrypoint itself is 8,114 bytes with SHA-256
+`34554ec6fc39d9f1697244fa278fe37bc51cfe9991ba3950ef6fffff8a467866`.
+That identity is part of the contract projection and must also be bound
+directly by the one-time `_004` request.
 
 ## Exact control-flow evidence
+
+### Pinned config-parser calling convention
+
+At
+[`args_util.py` lines 25–47](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/utils/args_util.py#L25-L47),
+the upstream `ArgumentParser` signature is
+`parse_args(self, use_config=True, *args, **kwargs)`. Therefore an argv list
+passed as the first positional argument binds to `use_config`; the delegated
+`argparse.ArgumentParser.parse_args()` receives no argv and consumes process
+arguments instead. The production wrapper must call
+`parser.parse_args(args=["--config", str(config_path)])`. The verifier locks
+both the upstream signature/config-loading order and the wrapper AST call
+shape, and the regression test demonstrates that the former positional form
+fails while the named-`args` form loads the pinned config.
 
 ### Defaults and image short circuit
 

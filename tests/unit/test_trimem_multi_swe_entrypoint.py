@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import argparse
 from copy import deepcopy
+import inspect
 import json
+import os
 from pathlib import Path
 import sys
 import types
@@ -13,6 +16,81 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_multi_swe_entrypoint as entrypoint  # noqa: E402
+
+
+class _PinnedArgumentParser(argparse.ArgumentParser):
+    """Minimal faithful form of pinned args_util.ArgumentParser.
+
+    Its unusual ``use_config`` first positional parameter is the regression
+    boundary under test.  The config/environment loading order and strict
+    default-only replacement match the pinned upstream implementation.
+    """
+
+    def __init__(self, use_config: bool = True, *args: object, **kwargs: object):
+        super().__init__(*args, **kwargs)
+        if use_config:
+            self.add_argument("--config", type=Path, default=None)
+
+    def parse_args(
+        self, use_config: bool = True, *args: object, **kwargs: object
+    ) -> argparse.Namespace:
+        parsed = super().parse_args(*args, **kwargs)
+        if use_config:
+            if parsed.config:
+                self.load_from_config_file(parsed, parsed.config)
+            self.load_from_env_variables(parsed)
+        return parsed
+
+    def load_from_config_file(
+        self, parsed: argparse.Namespace, file_path: Path, strict: bool = True
+    ) -> None:
+        config = json.loads(file_path.read_text(encoding="utf-8"))
+        for key, value in config.items():
+            if strict and not hasattr(parsed, key):
+                raise ValueError(f"invalid config key: {key}")
+            if getattr(parsed, key) == self.get_default(key):
+                setattr(parsed, key, value)
+
+    def load_from_env_variables(self, parsed: argparse.Namespace) -> None:
+        for key in vars(parsed):
+            env_value = os.getenv(key.replace("-", "_").upper())
+            if env_value is not None and getattr(parsed, key) == self.get_default(key):
+                setattr(parsed, key, env_value)
+
+
+def _configure_pinned_parser(
+    parser: _PinnedArgumentParser,
+) -> _PinnedArgumentParser:
+    defaults: dict[str, object] = {
+        "clear_env": True,
+        "dataset_files": None,
+        "fix_patch_run_cmd": "",
+        "force_build": False,
+        "global_env": None,
+        "human_mode": True,
+        "log_dir": None,
+        "log_level": "INFO",
+        "log_to_console": True,
+        "max_workers": 8,
+        "max_workers_build_image": 8,
+        "max_workers_run_instance": 8,
+        "mode": "evaluation",
+        "need_clone": True,
+        "output_dir": None,
+        "patch_files": None,
+        "repo_dir": None,
+        "skips": None,
+        "specifics": None,
+        "stop_on_error": True,
+        "workdir": None,
+    }
+    for name, default in defaults.items():
+        parser.add_argument(f"--{name}", default=default)
+    return parser
+
+
+def _pinned_parser() -> _PinnedArgumentParser:
+    return _configure_pinned_parser(_PinnedArgumentParser())
 
 
 def _config(root: Path) -> dict[str, object]:
@@ -46,6 +124,31 @@ def _write_config(path: Path, value: object) -> None:
         encoding="utf-8",
         newline="",
     )
+
+
+def test_pinned_argument_parser_requires_argv_bound_by_keyword(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    signature = inspect.signature(_PinnedArgumentParser.parse_args)
+    assert tuple(signature.parameters) == ("self", "use_config", "args", "kwargs")
+    assert signature.parameters["use_config"].default is True
+    assert signature.parameters["args"].kind is inspect.Parameter.VAR_POSITIONAL
+    assert signature.parameters["kwargs"].kind is inspect.Parameter.VAR_KEYWORD
+
+    config_path = tmp_path / "config.json"
+    _write_config(config_path, {"mode": "instance_only"})
+    monkeypatch.setattr(sys, "argv", ["wrapper", "--wrapper-only-option"])
+
+    with pytest.raises(SystemExit):
+        # This is the former bug: the list binds to ``use_config`` rather than
+        # argparse's ``args`` and process argv is consumed instead.
+        _pinned_parser().parse_args(["--config", str(config_path)])
+
+    parsed = _pinned_parser().parse_args(
+        args=["--config", str(config_path)]
+    )
+    assert parsed.config == config_path
+    assert parsed.mode == "instance_only"
 
 
 @pytest.mark.parametrize(
@@ -102,12 +205,12 @@ def test_wrapper_calls_exact_pinned_cli_without_upstream_main(
 
     calls: list[str] = []
 
-    class Parser:
-        @staticmethod
-        def parse_args(argv: list[str]) -> types.SimpleNamespace:
-            assert argv == ["--config", str(config_path)]
+    class RecordingParser(_PinnedArgumentParser):
+        def parse_args(
+            self, use_config: bool = True, *args: object, **kwargs: object
+        ) -> argparse.Namespace:
             calls.append("get_parser.parse_args")
-            return types.SimpleNamespace(config=config_path)
+            return super().parse_args(use_config, *args, **kwargs)
 
     class Cli:
         mode = "instance_only"
@@ -139,14 +242,16 @@ def test_wrapper_calls_exact_pinned_cli_without_upstream_main(
     class CliArgs:
         @staticmethod
         def from_dict(values: dict[str, object]) -> Cli:
-            assert values == {"config": config_path}
+            assert values["config"] == config_path
+            assert values["fix_patch_run_cmd"] == ""
+            assert {key: values[key] for key in config} == config
             calls.append("CliArgs.from_dict")
             return Cli()
 
     upstream_main_calls: list[str] = []
     module = types.SimpleNamespace(
         __file__=str(module_path),
-        get_parser=lambda: Parser(),
+        get_parser=lambda: _configure_pinned_parser(RecordingParser()),
         CliArgs=CliArgs,
         upstream_main=lambda: upstream_main_calls.append("nix_swe_bootstrap"),
     )
@@ -210,7 +315,7 @@ def test_parsed_cli_runtime_drift_fails_before_run(
     module = types.SimpleNamespace(
         __file__=str(module_path),
         get_parser=lambda: types.SimpleNamespace(
-            parse_args=lambda _argv: types.SimpleNamespace(config=config_path)
+            parse_args=lambda *, args: types.SimpleNamespace(config=config_path)
         ),
         CliArgs=types.SimpleNamespace(from_dict=lambda _values: cli),
     )

@@ -101,6 +101,7 @@ def _ordered(text: str, fragments: Sequence[str], *, label: str) -> None:
 
 def _verify_control_flow(blobs: dict[str, bytes]) -> None:
     run = _source_text(blobs, "multi_swe_bench/harness/run_evaluation.py")
+    args_util = _source_text(blobs, "multi_swe_bench/utils/args_util.py")
     report = _source_text(blobs, "multi_swe_bench/harness/gen_report.py")
     session = _source_text(blobs, "multi_swe_bench/utils/session_util.py")
     image = _source_text(blobs, "multi_swe_bench/harness/image.py")
@@ -123,6 +124,27 @@ def _verify_control_flow(blobs: dict[str, bytes]) -> None:
     _require(
         re.search(r'--force_build[\s\S]{0,260}?default=False', run) is not None,
         "pinned force_build parser default is not false",
+    )
+    _require(
+        re.search(
+            r"def parse_args\(\s*self, use_config: bool = True, \*args, \*\*kwargs\s*\)"
+            r"\s*-> argparse\.Namespace:",
+            args_util,
+        )
+        is not None,
+        "pinned ArgumentParser.parse_args signature differs",
+    )
+    _ordered(
+        args_util,
+        (
+            "args = super().parse_args(*args, **kwargs)",
+            "if use_config:",
+            "if args.config:",
+            "self.load_from_config_file(args, args.config)",
+            "self.load_from_env_variables(args)",
+            "return args",
+        ),
+        label="ArgumentParser config dispatch",
     )
     _ordered(
         run,
@@ -329,6 +351,22 @@ def _verify_production_entrypoint(contracts: dict[str, Any]) -> dict[str, Any]:
             forbidden not in calls,
             f"production entrypoint unexpectedly executes upstream bootstrap: {forbidden}",
         )
+    parse_calls = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and _call_name(node) == "parser.parse_args"
+        and any(keyword.arg == "args" for keyword in node.keywords)
+    ]
+    _require(
+        len(parse_calls) == 1
+        and parse_calls[0].args == []
+        and len(parse_calls[0].keywords) == 1
+        and parse_calls[0].keywords[0].arg == "args"
+        and ast.unparse(parse_calls[0].keywords[0].value)
+        == "['--config', str(config_path)]",
+        "production entrypoint does not bind pinned parse_args args by keyword",
+    )
     _require(
         PINNED_REVISION in source
         and 'cli.mode != "instance_only"' in source
@@ -377,7 +415,7 @@ def verify_checkout(repository: Path) -> dict[str, Any]:
     _require(tree.stdout.strip() == lock.get("commit_tree_oid"), "pinned tree differs")
 
     source_rows = lock.get("source_blobs")
-    _require(isinstance(source_rows, dict) and len(source_rows) == 5, "source lock set differs")
+    _require(isinstance(source_rows, dict) and len(source_rows) == 6, "source lock set differs")
     blobs: dict[str, bytes] = {}
     verified: list[dict[str, Any]] = []
     for path in sorted(source_rows):

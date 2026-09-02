@@ -26,6 +26,34 @@ EXPECTED_SOURCE_BLOBS = {
         "line_count": 210,
         "sha256": "86074812495b97026efb42c57acbf7738864b1f0167f99e3b9f9309458972ae9",
     },
+    "multi_swe_bench/harness/report.py": {
+        "bytes": 12942,
+        "git_blob_oid": "a0b23ab1bf3c2407e15338fd0e644c0138fd3d90",
+        "git_mode": "100644",
+        "line_count": 347,
+        "sha256": "5a025fd496d42c4b7377fc0702d64c6d0e356b117eaf2face47e73a52c29902f",
+    },
+    "multi_swe_bench/harness/repos/c/jqlang/jq.py": {
+        "bytes": 6431,
+        "git_blob_oid": "9328e7683d5f269a6247292b388a7c7cb6592420",
+        "git_mode": "100644",
+        "line_count": 275,
+        "sha256": "e523664fcf8a1b728f5d4d77caeebc7cecd34c575f295fdb66a441b910e3a8b0",
+    },
+    "multi_swe_bench/harness/repos/javascript/expressjs/express.py": {
+        "bytes": 10209,
+        "git_blob_oid": "15a98c72f2218925a31319dbb1a498b020a78f66",
+        "git_mode": "100644",
+        "line_count": 388,
+        "sha256": "a673518e3b4d9e9e2396f97aacdc5c803d7e2298ce07dfd748cbb9f67ce36291",
+    },
+    "multi_swe_bench/harness/repos/python/django/django.py": {
+        "bytes": 4392,
+        "git_blob_oid": "98dd428523768d4c35ff119cc50dc453675ab5c7",
+        "git_mode": "100644",
+        "line_count": 100,
+        "sha256": "9b9fbcfa6e165d42b39c589e2bdd657ec0ab5df1caec8fbace683314e21bd9a8",
+    },
     "multi_swe_bench/harness/repos/typescript/vuejs/core.py": {
         "bytes": 5967,
         "git_blob_oid": "8562206faf6eb4fe739932f9a31ec578cc10af96",
@@ -47,12 +75,41 @@ EXPECTED_SOURCE_BLOBS = {
         "line_count": 97,
         "sha256": "26835412d5093091c771c7f99fe45a4ff141433decae23705b714b0ae2b250af",
     },
+    "multi_swe_bench/utils/docker_util.py": {
+        "bytes": 3395,
+        "git_blob_oid": "f3b89d736a82fbf1dd31e303b0e8fe353380170a",
+        "git_mode": "100644",
+        "line_count": 108,
+        "sha256": "dd5929ee952763ec11a22646f2725b306b573ddbc86dc8ffc7a6d9dfa53f493d",
+    },
     "multi_swe_bench/utils/session_util.py": {
         "bytes": 17230,
         "git_blob_oid": "3d95889dec9e9a7e630c9b6a9552a4ea0bcdbf64",
         "git_mode": "100644",
         "line_count": 457,
         "sha256": "c4050c065520e35e7c0a7ad0f2ab2b124c3c692413f0c09a2591dd7dc30a3e8a",
+    },
+}
+EXPECTED_LOCAL_VALIDATOR_FILES = {
+    "scripts/trimem_benchmark_matrix.py": {
+        "bytes": 109830,
+        "role": "independent fail-closed aggregate revalidator",
+        "sha256": "7a9b2d4b5faa26628a8bbc2b202547bce75526ca3d4404c156f54e4323c9cf36",
+    },
+    "scripts/trimem_grader_smoke.py": {
+        "bytes": 67577,
+        "role": "per-cell evidence producer",
+        "sha256": "88e5a6d54ac5dfbb9722a333e447f7d18d62a13ae7590583ca41e838f12d9295",
+    },
+    "scripts/trimem_multi_swe_entrypoint.py": {
+        "bytes": 25035,
+        "role": "immutable-image and container-status execution guard",
+        "sha256": "16c021ac3c0eb18bc78376164307b53cfb294ac0f206415d465a1b11f1ec63ac",
+    },
+    "scripts/trimem_official_grader.py": {
+        "bytes": 67489,
+        "role": "exact frozen-domain and conditional-status validator",
+        "sha256": "84ed38f01ec2ef4dae63e3ed4ad6ac1880f61119afd7cf0c92ec8ea088a3f4ec",
     },
 }
 
@@ -94,7 +151,7 @@ def _walk(value: Any) -> Iterator[Any]:
 def test_contract_lock_is_self_sealed_and_pins_exact_git_blob_bytes() -> None:
     lock = _load_lock()
 
-    assert lock["schema"] == "trimem/multi-swe-evaluation-contract-lock/1.0"
+    assert lock["schema"] == "trimem/multi-swe-evaluation-contract-lock/1.1"
     assert lock["status"] == "PINNED_SOURCE_CONTRACT_LOCKED"
     assert lock["repository"] == "https://github.com/multi-swe-bench/multi-swe-bench"
     assert lock["revision"] == REVISION
@@ -102,21 +159,78 @@ def test_contract_lock_is_self_sealed_and_pins_exact_git_blob_bytes() -> None:
     assert lock["source_blobs"] == EXPECTED_SOURCE_BLOBS
 
     projection = hashlib.sha256(_canonical(lock["contracts"])).hexdigest()
-    assert projection == "44e96161278e7030565ecb035fdbd90fc578a906fbcffd8d6fd054b07fe012ed"
+    assert projection == "429c9dc08b394e91f310cf4c31f1a911add0e3da5ae130b4c584e8fe239faf2b"
     assert lock["contract_projection_sha256"] == projection
 
     body = dict(lock)
     observed_lock = body.pop("lock_sha256")
     assert observed_lock == hashlib.sha256(_canonical(body)).hexdigest()
-    assert observed_lock == "539abc2394a60dc006297c949b71eb9c594ad94fa4eb8ccc830ea8da6062eee6"
+    assert observed_lock == "f9cea651d404e85ef0c592c29fb9365a4e09df723d92deeededb994061ec6683"
 
     assert lock["evidence_basis"] == {
         "blob_reader": "git cat-file blob <revision>:<path>",
         "commit_object_type": "commit",
+        "local_validator_eol_attribute": "lf",
+        "local_validator_reader": (
+            "working tree raw bytes plus git cat-file blob HEAD:<path>"
+        ),
+        "local_validator_working_tree_equals_head_blob": True,
         "origin_verified": True,
         "revision_verified": True,
+        "upstream_working_tree_bytes_used": False,
         "working_tree_bytes_used": False,
         "upstream_source_vendored": False,
+    }
+
+
+def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -> None:
+    projection = _load_lock()["contracts"]["local_validator_projection"]
+
+    assert projection["files"] == EXPECTED_LOCAL_VALIDATOR_FILES
+    for path, expected in EXPECTED_LOCAL_VALIDATOR_FILES.items():
+        raw = (ROOT / path).read_bytes()
+        assert b"\r" not in raw
+        assert len(raw) == expected["bytes"]
+        assert hashlib.sha256(raw).hexdigest() == expected["sha256"]
+
+    assert projection["line_endings"] == {
+        "gitattributes_pattern": "scripts/trimem_*.py",
+        "required_eol": "lf",
+        "tracked_head_blob_equality_required": True,
+        "working_tree_raw_bytes_hashed": True,
+    }
+    attributes = (ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
+    assert "scripts/trimem_*.py text eol=lf" in attributes
+
+    invariants = projection["invariants"]
+    assert invariants["conditional_inner_status"] == {
+        "evidence_schema": "trimem/multi-swe-container-exit-status/1.0",
+        "fix_patch_run_command": "bash -e /home/fix-run.sh",
+        "resolved_rule": "inner StatusCode must equal zero",
+        "unresolved_rule": (
+            "a nonzero inner StatusCode is admissible only after exact complete "
+            "frozen test-domain evidence validates"
+        ),
+        "universal_zero_required": False,
+    }
+    assert invariants["exact_frozen_test_domain"] == {
+        "fix_patch_result": "exact frozen test-name domain",
+        "run_result": "exact frozen classifications",
+        "test_patch_result": "exact frozen classifications",
+        "validated_before_accepting": ["resolved", "unresolved"],
+    }
+    assert invariants["independent_aggregate_revalidation"] == {
+        "aggregate_consumer": "scripts/trimem_benchmark_matrix.py",
+        "expected_set_source": "committed grader-smoke manifest matrix",
+        "per_cell_producer": "scripts/trimem_grader_smoke.py",
+        "raw_status_evidence": (
+            "copied into the cell evidence tree and bound by bytes and SHA-256"
+        ),
+        "required_set_checks": ["missing", "duplicate", "unknown"],
+        "requirement": (
+            "the aggregate reloads frozen source rows and independently validates "
+            "the raw inner-status sidecar, exact test domain, and published summary"
+        ),
     }
 
 
@@ -144,6 +258,103 @@ def test_default_and_existing_image_early_return_contract_is_exact() -> None:
         "image.files materialization",
         "docker_util.build",
     ]
+
+
+def test_pinned_docker_run_boundary_requires_local_no_pull_and_exit_guards() -> None:
+    contracts = _load_lock()["contracts"]
+    boundary = contracts["docker_run_runtime_boundary"]
+
+    assert boundary["client_initialization"] == {
+        "at_module_import": True,
+        "callee": "docker.from_env",
+        "evidence": [
+            {
+                "end_line": 19,
+                "path": "multi_swe_bench/utils/docker_util.py",
+                "start_line": 17,
+                "symbol": "module docker client initialization",
+            }
+        ],
+    }
+    assert boundary["container_start"] == {
+        "callee": "docker_client.containers.run",
+        "detach": True,
+        "explicit_pull_argument": False,
+        "image_argument": "image_full_name",
+        "immutable_digest_preflight": False,
+        "local_image_only_guard": False,
+        "remove": False,
+    }
+    assert boundary["output_path_branch"] == {
+        "container_wait_calls": 0,
+        "log_stream": {"follow": True, "stream": True},
+        "nonzero_exit_propagated": False,
+        "status_code_checks": 0,
+    }
+    assert boundary["no_output_path_branch"] == {
+        "container_wait_calls": 1,
+        "nonzero_exit_propagated": False,
+        "status_code_checks": 0,
+        "wait_result_consumed": False,
+    }
+    assert len(boundary["derived_risks"]) == 3
+    assert "immutable-digest preflight" in boundary["derived_risks"][0]
+    assert "StatusCode" in boundary["derived_risks"][1]
+
+    closure = contracts["adapter_fail_closed_closure"]
+    assert closure["status"] == "ENFORCED_BY_TRIMEM_LOCAL_ADAPTER"
+    assert closure["immutable_digest_no_pull_guard"]["adapter_requirement"] == (
+        "require one local RepoDigest equal to the frozen immutable digest, create "
+        "only the exact harness alias from that verified object, and forbid image "
+        "pull or source-build operations inside the execution wrapper"
+    )
+    exit_guard = closure["container_exit_guard"]
+    assert exit_guard["command_guard"] == (
+        "fix_patch_run_cmd=bash -e /home/fix-run.sh"
+    )
+    assert "one integer StatusCode" in exit_guard["adapter_requirement"]
+    assert "require zero for a resolved result" in exit_guard["adapter_requirement"]
+    assert "nonzero unresolved result" in exit_guard["adapter_requirement"]
+    assert "exact full-domain test evidence" in exit_guard["adapter_requirement"]
+    assert "patch-application failure exits before tests" in exit_guard[
+        "command_guard_effect"
+    ]
+
+
+def test_pinned_report_validity_and_coverage_map_invalid_to_unresolved() -> None:
+    boundary = _load_lock()["contracts"]["evaluation_report_classification_boundary"]
+
+    assert boundary["invalid_before_coverage"] is True
+    assert boundary["validity_gate"] == (
+        "if not report.valid: return (report, False)"
+    )
+    assert boundary["invalid_collection"] == "invalid_reports"
+    assert boundary["coverage_check"] == {
+        "domain_order": ["p2p_tests", "f2p_tests", "s2p_tests", "n2p_tests"],
+        "exact_domain_equality": False,
+        "failure_result": "(report, False)",
+        "operation": (
+            "require each frozen category member to appear in the same "
+            "generated-report category"
+        ),
+    }
+    assert boundary["final_report_mapping"] == {
+        "invalid_reports": "unresolved_ids",
+        "reports": "resolved_ids",
+    }
+
+    closure = _load_lock()["contracts"]["adapter_fail_closed_closure"]
+    assert closure["frozen_test_domain_guard"] == {
+        "adapter_requirement": (
+            "require exact run_result and test_patch_result classifications from "
+            "the frozen row and exact fix_patch_result test-name domain before "
+            "accepting resolved or unresolved"
+        ),
+        "upstream_gap": (
+            "gen_eval_reports checks expected category members but does not reject "
+            "additional test names"
+        ),
+    }
 
 
 def test_pinned_argument_parser_signature_requires_named_args_binding() -> None:
@@ -216,6 +427,7 @@ def test_safe_route_bypasses_all_image_builds_then_runs_the_pinned_reporter() ->
     route = contracts["adapter_safe_evaluation_route"]
     execution = route["execution_phase"]
     assert execution["config"] == {
+        "fix_patch_run_cmd": "bash -e /home/fix-run.sh",
         "force_build": False,
         "human_mode": True,
         "mode": "instance_only",
@@ -251,7 +463,10 @@ def test_safe_route_bypasses_all_image_builds_then_runs_the_pinned_reporter() ->
         "bytes": len(entrypoint_raw),
         "invocation": (
             "python scripts/trimem_multi_swe_entrypoint.py "
-            "--harness-root <pinned-checkout> --config <one-row-config>"
+            "--harness-root <pinned-checkout> --config <one-row-config> "
+            "--expected-image <immutable-digest> "
+            "--expected-tag <frozen-harness-tag> "
+            "--exit-status-output <exclusive-status-path>"
         ),
         "library_dispatch": (
             "execute_pinned_instance_only -> pinned get_parser -> "
@@ -264,6 +479,16 @@ def test_safe_route_bypasses_all_image_builds_then_runs_the_pinned_reporter() ->
         "upstream_module_main_executed": False,
         "upstream_revision": REVISION,
     }
+    entrypoint_source = entrypoint_raw.decode("utf-8")
+    for required_flag in (
+        "--harness-root",
+        "--config",
+        "--expected-image",
+        "--expected-tag",
+        "--exit-status-output",
+    ):
+        assert f'parser.add_argument("{required_flag}"' in entrypoint_source
+    assert "containers.run = original_container_run" in entrypoint_source
 
     bootstrap = contracts["upstream_module_main_bootstrap"]
     assert bootstrap == {
@@ -361,6 +586,64 @@ def test_vue_core_recipe_components_and_preparation_are_exact() -> None:
     }
 
 
+def test_all_multi_smoke_targets_accept_fail_closed_patch_command() -> None:
+    contract = _load_lock()["contracts"]["multi_smoke_target_patch_execution"]
+    override = contract["adapter_override"]
+    assert override["command"] == "bash -e /home/fix-run.sh"
+    assert override["invariant"] == (
+        "each registered target accepts fix_patch_run_cmd and returns it "
+        "unchanged before its default command"
+    )
+    assert "patch application fail before the test command" in override["reason"]
+    assert contract["frozen_cells"] == {
+        "arms": ["GOLD", "NOOP_BASELINE"],
+        "cell_count": 8,
+        "target_count": 4,
+    }
+
+    targets = contract["targets"]
+    assert set(targets) == {
+        "django/django",
+        "expressjs/express",
+        "jqlang/jq",
+        "vuejs/core",
+    }
+    for row in targets.values():
+        assert row["override_accepted"] is True
+        assert row["default_fix_patch_run"] == "bash /home/fix-run.sh"
+        assert row["baked_fix_patch_apply"].endswith("/home/fix.patch")
+
+    django = targets["django/django"]
+    assert django["dependency"] == "SWEImageDefault"
+    assert django["baked_shell_options"] == "set -uxo pipefail"
+    assert django["embedded_errexit"] is False
+    assert django["adapter_bash_e_required"] is True
+    assert django["baked_fix_patch_apply"] == (
+        "git apply --whitespace=nowarn /home/fix.patch"
+    )
+
+    expected = {
+        "expressjs/express": (
+            "ImageDefault",
+            "git apply --whitespace=nowarn /home/test.patch /home/fix.patch",
+        ),
+        "jqlang/jq": (
+            "ImageDefault",
+            "git apply --whitespace=nowarn /home/test.patch /home/fix.patch",
+        ),
+        "vuejs/core": (
+            "CoreImageDefault",
+            "git apply /home/test.patch /home/fix.patch",
+        ),
+    }
+    for name, (dependency, apply_command) in expected.items():
+        assert targets[name]["dependency"] == dependency
+        assert targets[name]["baked_shell_options"] == "set -e"
+        assert targets[name]["embedded_errexit"] is True
+        assert targets[name]["adapter_bash_e_required"] is False
+        assert targets[name]["baked_fix_patch_apply"] == apply_command
+
+
 def test_every_source_reference_is_bounded_by_its_locked_blob() -> None:
     lock = _load_lock()
     evidence = [
@@ -370,7 +653,7 @@ def test_every_source_reference_is_bounded_by_its_locked_blob() -> None:
         and {"path", "start_line", "end_line", "symbol"} <= set(value)
     ]
 
-    assert len(evidence) == 20
+    assert len(evidence) == 30
     for reference in evidence:
         source = EXPECTED_SOURCE_BLOBS[reference["path"]]
         assert isinstance(reference["symbol"], str) and reference["symbol"]
@@ -397,6 +680,12 @@ def test_report_matches_lock_and_no_upstream_source_payload_is_vendored() -> Non
     assert "force_build=false" in report
     assert "nix_swe" in report
     assert "trimem_multi_swe_entrypoint.py" in report
+    assert "docker_util.py" in report
+    assert "report.py" in report
+    assert "StatusCode" in report
+    assert "bash -e /home/fix-run.sh" in report
+    assert "invalid_reports" in report
+    assert "exact frozen" in report
     assert "Docker or either grader" in report
 
     forbidden_payload_keys = {"content", "source_bytes", "source_text", "source_snippet"}

@@ -27,11 +27,38 @@ explicit `mode=instance_only`, `force_build=false`, `human_mode=true`, and
 block. The resulting dispatch goes directly to `run_mode_instance_only()` and
 structurally excludes the `nix_swe` support-container bootstrap,
 `run_mode_image()`, `check_commit_hashes()`, `build_image()`, and
-`run_and_save_logs()`. Only after a zero exit and an exact submitted-patch
-materialization check does it invoke pinned
+`run_and_save_logs()`. Only after a zero wrapper exit following exact terminal
+status capture and an exact submitted-patch materialization check does the
+gateway invoke pinned
 `multi_swe_bench.harness.gen_report --mode evaluation`. The adapter requires a
 zero report exit, an exact one-target final report, and non-empty official test
 evidence. This section is a source-and-adapter contract, not a grader result.
+
+The pin also exposes two boundaries that the local adapter closes explicitly.
+First, upstream `docker_util.run()` starts a detached container through the
+Docker SDK without an explicit local-only pull guard. If the supplied mutable
+tag is absent, the SDK's `containers.run()` path may fall back to a pull. Its
+`output_path` branch streams logs with `follow=true` but neither calls `wait()`
+nor observes a `StatusCode`; its other branch calls `wait()` but discards the
+returned status.
+The local wrapper therefore verifies the frozen immutable RepoDigest before
+creating the exact harness alias, forbids pull and source-build operations in
+the execution wrapper, and captures one exact integer terminal `StatusCode`
+from the container it started. It invokes the image with
+`fix_patch_run_cmd=bash -e /home/fix-run.sh`, so patch-application failure exits
+before tests rather than masquerading as an ordinary unresolved result. A
+resolved GOLD result requires status zero. A nonzero unresolved result is
+admissible only when the complete exact frozen test domain was nevertheless
+observed and validated.
+
+Second, pinned report generation checks `report.valid` before it checks the
+four expected category memberships. Either failure is collected as an invalid
+report, and `FinalReport.from_reports()` maps invalid reports to unresolved
+IDs. Those upstream category loops prove expected-member coverage but do not
+reject extra test names. The local result parser closes that asymmetry by
+requiring exact frozen `run_result` and `test_patch_result` classifications and
+the exact frozen `fix_patch_result` test-name domain before accepting either a
+resolved or unresolved result.
 
 The historical run `33594270929`, attempt 1, used full `mode=evaluation` and
 `human_mode=false`. Its retained diagnostic evidence records one source build
@@ -54,23 +81,55 @@ normalization.
 | Pinned path | Git blob object | Bytes | SHA-256 |
 |---|---:|---:|---|
 | `multi_swe_bench/harness/gen_report.py` | `251e8b01059a18a9af5ae176c696eb4be8950ae4` | 21,331 | `02ebc8a5414898d12f4f5a9ba0c11a8f57c9f34a0bdc02c2311afac9f654847d` |
+| `multi_swe_bench/harness/image.py` | `da1c613d4e7074f46889ffe1c31c0582c3535d2f` | 5,892 | `86074812495b97026efb42c57acbf7738864b1f0167f99e3b9f9309458972ae9` |
+| `multi_swe_bench/harness/report.py` | `a0b23ab1bf3c2407e15338fd0e644c0138fd3d90` | 12,942 | `5a025fd496d42c4b7377fc0702d64c6d0e356b117eaf2face47e73a52c29902f` |
+| `multi_swe_bench/harness/repos/c/jqlang/jq.py` | `9328e7683d5f269a6247292b388a7c7cb6592420` | 6,431 | `e523664fcf8a1b728f5d4d77caeebc7cecd34c575f295fdb66a441b910e3a8b0` |
+| `multi_swe_bench/harness/repos/javascript/expressjs/express.py` | `15a98c72f2218925a31319dbb1a498b020a78f66` | 10,209 | `a673518e3b4d9e9e2396f97aacdc5c803d7e2298ce07dfd748cbb9f67ce36291` |
+| `multi_swe_bench/harness/repos/python/django/django.py` | `98dd428523768d4c35ff119cc50dc453675ab5c7` | 4,392 | `9b9fbcfa6e165d42b39c589e2bdd657ec0ab5df1caec8fbace683314e21bd9a8` |
+| `multi_swe_bench/harness/repos/typescript/vuejs/core.py` | `8562206faf6eb4fe739932f9a31ec578cc10af96` | 5,967 | `f154469392f1c52a5d8756c8f5332be35347b8b3bf4dd739a443b5ad4a5f3ce5` |
 | `multi_swe_bench/harness/run_evaluation.py` | `f2dfa70df095d434cc6e5fd47f9a7a1bb027b824` | 28,647 | `b1a9b45022b9e79a5aa9a21908d9074b1258594c10d95f41938852d84ac38efb` |
 | `multi_swe_bench/utils/args_util.py` | `24ed488f3a68927f517dca67a32e8dfbc6dc867a` | 3,277 | `26835412d5093091c771c7f99fe45a4ff141433decae23705b714b0ae2b250af` |
+| `multi_swe_bench/utils/docker_util.py` | `f3b89d736a82fbf1dd31e303b0e8fe353380170a` | 3,395 | `dd5929ee952763ec11a22646f2725b306b573ddbc86dc8ffc7a6d9dfa53f493d` |
 | `multi_swe_bench/utils/session_util.py` | `3d95889dec9e9a7e630c9b6a9552a4ea0bcdbf64` | 17,230 | `c4050c065520e35e7c0a7ad0f2ab2b124c3c692413f0c09a2591dd7dc30a3e8a` |
-| `multi_swe_bench/harness/image.py` | `da1c613d4e7074f46889ffe1c31c0582c3535d2f` | 5,892 | `86074812495b97026efb42c57acbf7738864b1f0167f99e3b9f9309458972ae9` |
-| `multi_swe_bench/harness/repos/typescript/vuejs/core.py` | `8562206faf6eb4fe739932f9a31ec578cc10af96` | 5,967 | `f154469392f1c52a5d8756c8f5332be35347b8b3bf4dd739a443b5ad4a5f3ce5` |
 
 The machine-readable lock is
 [`artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json`](../artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json).
 Its contract projection SHA-256 is
-`44e96161278e7030565ecb035fdbd90fc578a906fbcffd8d6fd054b07fe012ed`,
+`429c9dc08b394e91f310cf4c31f1a911add0e3da5ae130b4c584e8fe239faf2b`,
 and its self-lock SHA-256 is
-`539abc2394a60dc006297c949b71eb9c594ad94fa4eb8ccc830ea8da6062eee6`.
+`f9cea651d404e85ef0c592c29fb9365a4e09df723d92deeededb994061ec6683`.
 
-The production entrypoint itself is 8,114 bytes with SHA-256
-`34554ec6fc39d9f1697244fa278fe37bc51cfe9991ba3950ef6fffff8a467866`.
+The production entrypoint itself is 25,035 bytes with SHA-256
+`16c021ac3c0eb18bc78376164307b53cfb294ac0f206415d465a1b11f1ec63ac`.
 That identity is part of the contract projection and must also be bound
 directly by the one-time `_004` request.
+
+Its exact command surface requires `--harness-root <pinned-checkout>`,
+`--config <one-row-config>`, `--expected-image <immutable-digest>`,
+`--expected-tag <frozen-harness-tag>`, and
+`--exit-status-output <exclusive-status-path>`. The official adapter binds all
+five values, including the immutable image, its frozen harness tag, and the
+exclusive raw status destination, explicitly.
+
+The same projection byte-locks the complete local validation chain:
+`scripts/trimem_multi_swe_entrypoint.py`,
+`scripts/trimem_official_grader.py`, `scripts/trimem_grader_smoke.py`, and
+`scripts/trimem_benchmark_matrix.py`. The first two guard execution and
+per-result interpretation; the smoke runner copies and revalidates the raw
+container-status sidecar into each cell's evidence; and the aggregate reloads
+the committed matrix and frozen source row to validate that raw evidence and
+published summary independently. The repository's `.gitattributes` fixes
+`scripts/trimem_*.py` to `eol=lf`. Live contract verification requires every
+projected file's working bytes to equal its tracked `HEAD` Git blob before it
+checks the raw byte length and SHA-256, so checkout newline conversion cannot
+silently alter the contract.
+
+| Local validator | Role | Bytes | Raw SHA-256 |
+|---|---|---:|---|
+| `scripts/trimem_multi_swe_entrypoint.py` | immutable-image and container-status execution guard | 25,035 | `16c021ac3c0eb18bc78376164307b53cfb294ac0f206415d465a1b11f1ec63ac` |
+| `scripts/trimem_official_grader.py` | exact frozen-domain and conditional-status validator | 67,489 | `84ed38f01ec2ef4dae63e3ed4ad6ac1880f61119afd7cf0c92ec8ea088a3f4ec` |
+| `scripts/trimem_grader_smoke.py` | per-cell evidence producer | 67,577 | `88e5a6d54ac5dfbb9722a333e447f7d18d62a13ae7590583ca41e838f12d9295` |
+| `scripts/trimem_benchmark_matrix.py` | independent fail-closed aggregate revalidator | 109,830 | `7a9b2d4b5faa26628a8bbc2b202547bce75526ca3d4404c156f54e4323c9cf36` |
 
 ## Exact control-flow evidence
 
@@ -139,6 +198,85 @@ the true branch uses `docker_util.run()`. It binds the per-evaluation host
 identity as `{image_name}:{image_tag}` in
 [`image.py` lines 89–121](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/image.py#L89-L121).
 This default path does not read a host-side `prepare.sh`.
+
+### Pinned Docker run boundary and local closure
+
+At
+[`docker_util.py` lines 17–19](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/utils/docker_util.py#L17-L19),
+the pinned helper creates its Docker client at module import. Its `run()` path
+at
+[`docker_util.py` lines 71–108](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/utils/docker_util.py#L71-L108)
+passes the image string directly to `docker_client.containers.run()` with no
+`pull` argument and no helper-owned local digest preflight. In the
+`output_path` branch used by evaluation, it drains
+`container.logs(stream=true, follow=true)` and returns the text without a
+`container.wait()` or `StatusCode` check. The other branch waits but discards
+the returned mapping, so neither branch propagates nonzero status.
+
+The byte-locked local wrapper closes both gaps around this unchanged upstream
+function. It requires the frozen immutable digest and the generated harness
+tag to resolve to the same local image ID, replaces the SDK pull surface with a
+fail-closed tripwire during execution, verifies the upstream request uses the
+exact frozen harness tag, substitutes the immutable digest into direct
+`containers.create()`, and proxies that exact container to retain one integer
+terminal status. The status is evidence, not a universal
+zero-only gate: resolved GOLD requires zero, while unresolved NOOP may be
+nonzero only after exact complete frozen-domain evidence validates. The fixed
+command is `bash -e /home/fix-run.sh`; therefore a patch-application error
+cannot continue into the test command and fabricate a complete unresolved test
+domain.
+
+### Pinned report classification boundary
+
+Within
+[`gen_report.py` lines 430–524](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/gen_report.py#L430-L524),
+`safe_generate_report()` first rejects `not report.valid`. It then checks the
+frozen `p2p_tests`, `f2p_tests`, `s2p_tests`, and `n2p_tests` categories in that
+order; any missing expected member also returns `(report, false)`. Both kinds
+of rejection enter `invalid_reports`. At
+[`report.py` lines 309–347](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/report.py#L309-L347),
+`FinalReport.from_reports()` maps `reports` to `resolved_ids` and
+`invalid_reports` to `unresolved_ids`.
+
+This upstream check is expected-member coverage, not exact set equality. The
+local official-result parser additionally compares the actual run and
+test-patch classifications against the frozen row and requires exact equality
+of the fix-stage test-name domain. It applies that check before accepting
+either final classification, including a nonzero-status unresolved NOOP.
+
+### All frozen Multi-SWE smoke target adapters
+
+The Multi-SWE smoke set is not Vue-only. The pinned repository adapters for
+`django/django`, `expressjs/express`, `jqlang/jq`, and `vuejs/core` all expose
+the same decisive override: `fix_patch_run(fix_patch_run_cmd)` returns a
+non-empty supplied command unchanged before falling back to
+`bash /home/fix-run.sh`. Pinned `run_instance()` passes the frozen config's
+override into that method. Thus all eight Multi-SWE GOLD/NOOP cells execute
+the local contract command `bash -e /home/fix-run.sh`, while their baked
+scripts still consume the bind-mounted `/home/fix.patch`:
+
+- Django's adapter is locked at
+  [`django.py` lines 9–29](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/repos/python/django/django.py#L9-L29).
+  It delegates to the generic `SWEImageDefault` recipe at
+  [`image.py` lines 124–198](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/image.py#L124-L198).
+  That baked script uses `set -uxo pipefail`, which does not itself enable
+  errexit, before `git apply --whitespace=nowarn /home/fix.patch`. The
+  adapter-level `bash -e` is therefore mandatory for fail-closed patch
+  application.
+- Express locks its image script and override at
+  [`express.py` lines 67–226](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/repos/javascript/expressjs/express.py#L67-L226).
+  Its baked `fix-run.sh` already sets `-e` and applies
+  `/home/test.patch /home/fix.patch` together.
+- JQ has the equivalent `set -e` and two-patch apply contract at
+  [`jq.py` lines 67–237](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/repos/c/jqlang/jq.py#L67-L237).
+- Vue Core likewise sets `-e`, applies the test patch and mounted fix patch,
+  and accepts the command override at
+  [`core.py` lines 60–222](https://github.com/multi-swe-bench/multi-swe-bench/blob/24f493f8a103e72312ded4f6b9c89f081d69cb09/multi_swe_bench/harness/repos/typescript/vuejs/core.py#L60-L222).
+
+The uniform outer command remains intentional even where the baked script has
+its own `set -e`: it gives every frozen target one execution contract, and it
+closes the Django-specific omission without changing upstream source or image
+contents.
 
 ### Safe production dispatch and separate report
 

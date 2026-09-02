@@ -1865,6 +1865,9 @@ def validate_workflows() -> None:
     require("test_real_services_e2e.py" in service and "postgres@sha256:" in service and "qdrant/qdrant@sha256:" in service, "real PostgreSQL/Qdrant CI is absent")
     require("postgres_bootstrap.py" in service and "TRIMEM_TEST_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@" in service and "TRIMEM_TEST_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@" in service, "real-service role/RLS boundary is not wired")
     multi_swe_contract = automatic[2].read_text(encoding="utf-8")
+    multi_swe_probe_gate = (
+        ROOT / "scripts/trimem_multi_swe_probe_request.py"
+    ).read_text(encoding="utf-8")
     require(
         "scripts/trimem_multi_swe_contract.py" in multi_swe_contract
         and "tests/unit/test_trimem_multi_*.py" in multi_swe_contract
@@ -1882,17 +1885,22 @@ def validate_workflows() -> None:
         and "github.event_name == 'push'" in multi_swe_contract
         and "github.ref == 'refs/heads/codex/trimem-coder-v1'"
         in multi_swe_contract
-        and "github.run_attempt == 1" in multi_swe_contract
-        and "contains(github.event.head_commit.added," in multi_swe_contract
-        and "artifacts/trimem_v1/probe_requests/"
-        "MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json" in multi_swe_contract
+        and "github.event.head_commit.added" not in multi_swe_contract
+        and "contains(github.event" not in multi_swe_contract
         and "scripts/trimem_multi_swe_probe_request.py" in multi_swe_contract
         and '--event-path "$GITHUB_EVENT_PATH"' in multi_swe_contract
         and "scripts/trimem_multi_swe_image_probe.py" in multi_swe_contract
         and "always() && steps.image_probe.outcome != 'skipped'"
         in multi_swe_contract
+        and 'test "$IMAGE_PROBE_OUTCOME" = "success"' in multi_swe_contract
         and "persist-credentials: false" in multi_swe_contract,
         "exact Vue image probe lacks the one-time marker-only branch-push contract",
+    )
+    require(
+        'environment.get("GITHUB_RUN_ATTEMPT") == "1"' in multi_swe_probe_gate
+        and "artifacts/trimem_v1/probe_requests/" in multi_swe_probe_gate
+        and "MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json" in multi_swe_probe_gate,
+        "checked-out Git probe gate lacks the exact marker/rerun contract",
     )
     portable = portability.read_text(encoding="utf-8")
     require(

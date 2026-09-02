@@ -72,11 +72,9 @@ jobs:
   exact-vue-image-contract-probe:
     name: One-time marker-bound exact Vue image contract probe
     if: >-
+      always() &&
       github.event_name == 'push' &&
-      github.ref == 'refs/heads/codex/trimem-coder-v1' &&
-      github.run_attempt == 1 &&
-      contains(github.event.head_commit.added,
-      'artifacts/trimem_v1/probe_requests/MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json')
+      github.ref == 'refs/heads/codex/trimem-coder-v1'
     needs: pinned-contract-preexec
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -91,17 +89,32 @@ jobs:
         with:
           python-version: 3.11.10
           cache: ""
-      - name: Validate one-time marker-only push and correction-HEAD binding
+      - name: Classify checked-out Git push and validate an exact marker request
+        id: probe_gate
         run: >-
           python scripts/trimem_multi_swe_probe_request.py
           --repository .
           --event-path "$GITHUB_EVENT_PATH"
+          --gate-report "$RUNNER_TEMP/multi_swe_vue_image_probe_gate.json"
+          --github-output "$GITHUB_OUTPUT"
+      - name: Preserve sanitized probe-gate evidence
+        if: ${{ always() && steps.probe_gate.outcome != 'skipped' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-multi-swe-vue-image-probe-gate
+          path: ${{ runner.temp }}/multi_swe_vue_image_probe_gate.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Pull, observe, inspect metadata, and remove the exact Vue image
         id: image_probe
+        if: >-
+          needs.pinned-contract-preexec.result == 'success' &&
+          steps.probe_gate.outputs.decision == 'EXECUTE'
         run: >-
           python scripts/trimem_multi_swe_image_probe.py
           --output "$RUNNER_TEMP/multi_swe_vue_image_probe.json"
       - name: Preserve only the sanitized probe result on pass or failure
+        id: probe_artifact
         if: ${{ always() && steps.image_probe.outcome != 'skipped' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -109,3 +122,11 @@ jobs:
           path: ${{ runner.temp }}/multi_swe_vue_image_probe.json
           if-no-files-found: error
           retention-days: 30
+      - name: Fail closed if an exact request did not reach the image probe
+        if: ${{ always() && steps.probe_gate.outputs.decision == 'EXECUTE' }}
+        env:
+          IMAGE_PROBE_OUTCOME: ${{ steps.image_probe.outcome }}
+          PREEXEC_OUTCOME: ${{ needs.pinned-contract-preexec.result }}
+        run: |
+          test "$PREEXEC_OUTCOME" = "success"
+          test "$IMAGE_PROBE_OUTCOME" = "success"

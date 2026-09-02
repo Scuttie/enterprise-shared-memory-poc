@@ -1,10 +1,10 @@
 """Build and validate the one-time branch-push request for the Vue image probe.
 
 GitHub does not dispatch a new workflow that is absent from the default branch.
-The probe therefore uses one unique, non-merge commit on the research branch.
-That commit may add only the canonical request below.  The request is bound to
-its sole parent (the fully checked correction HEAD), and rerun attempts fail
-closed before Docker is reached.
+The probe therefore classifies every research-branch push from checked-out Git
+objects.  Ordinary pushes skip the probe.  One unique, non-merge commit may add
+only the canonical request below; it is bound to its sole parent (the fully
+checked correction HEAD), and malformed or rerun requests fail before Docker.
 """
 from __future__ import annotations
 
@@ -36,10 +36,19 @@ REQUEST_PATH = (
 )
 REQUEST_ID = "TRIMEM_MULTI_SWE_VUE_IMAGE_PROBE_EXEC_001"
 REQUEST_SCHEMA = "trimem/multi-swe-vue-image-probe-request/1.0"
+GATE_SCHEMA = "trimem/multi-swe-vue-image-probe-gate/1.0"
+GATE_EXECUTE = "EXECUTE"
+GATE_SKIP = "SKIP"
+GATE_FAIL = "FAIL_CLOSED"
 EXPECTED_PHASE = "MULTI_SWE_PREBUILT_IMAGE_CONTRACT_PROBE"
 WORKFLOW_PATH = ".github/workflows/ci-trimem-multi-swe-contract.yml"
 PREFLIGHT_PATH = "scripts/trimem_multi_swe_probe_request.py"
 PROBE_PATH = "scripts/trimem_multi_swe_image_probe.py"
+PROBE_EVIDENCE_PATH = "scripts/trimem_multi_swe_probe_evidence.py"
+MULTI_SWE_ENTRYPOINT_PATH = "scripts/trimem_multi_swe_entrypoint.py"
+MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH = (
+    "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json"
+)
 FREEZE_PATH = "artifacts/trimem_v1/freeze.json"
 MANIFEST_PATH = "configs/trimem_v1/grader_smoke_manifest.json"
 IMAGE_LOCK_PATH = "artifacts/trimem_v1/grader_image_lock.json"
@@ -75,6 +84,9 @@ MATERIAL_PATHS = (
     WORKFLOW_PATH,
     PREFLIGHT_PATH,
     PROBE_PATH,
+    PROBE_EVIDENCE_PATH,
+    MULTI_SWE_ENTRYPOINT_PATH,
+    MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
 )
 FORBIDDEN_SECRET_NAMES = frozenset(
     {
@@ -279,8 +291,13 @@ def build_request_document(repository: Path, *, correction_head: str) -> dict[st
             "freeze_sha256": _sha256(raw[FREEZE_PATH]),
             "grader_image_lock_sha256": _sha256(raw[IMAGE_LOCK_PATH]),
             "grader_smoke_manifest_sha256": _sha256(raw[MANIFEST_PATH]),
+            "multi_swe_entrypoint_sha256": _sha256(raw[MULTI_SWE_ENTRYPOINT_PATH]),
+            "multi_swe_evaluation_contract_lock_sha256": _sha256(
+                raw[MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH]
+            ),
             "preflight_sha256": _sha256(raw[PREFLIGHT_PATH]),
             "probe_sha256": _sha256(raw[PROBE_PATH]),
+            "probe_evidence_sha256": _sha256(raw[PROBE_EVIDENCE_PATH]),
             "target_set_sha256": TARGET_SET_SHA256,
             "workflow_sha256": _sha256(raw[WORKFLOW_PATH]),
         },
@@ -338,11 +355,10 @@ def validate_request_document(
     return value
 
 
-def _validate_event(
+def _validate_event_identity(
     event: Mapping[str, Any], environ: Mapping[str, str]
 ) -> tuple[str, str]:
     _require(environ.get("GITHUB_EVENT_NAME") == EXPECTED_EVENT, "event is not push")
-    _require(environ.get("GITHUB_RUN_ATTEMPT") == "1", "probe rerun attempt is forbidden")
     _require(environ.get("GITHUB_REF") == EXPECTED_REF, "GITHUB_REF differs")
     _require(environ.get("GITHUB_REPOSITORY") == EXPECTED_REPOSITORY, "repository differs")
     _require(event.get("ref") == EXPECTED_REF, "push ref differs")
@@ -360,28 +376,70 @@ def _validate_event(
     )
     _require(before != after, "before and after SHAs must differ")
     _require(environ.get("GITHUB_SHA") == after, "GITHUB_SHA differs from push after")
-    _require(
-        event.get("size") == 1 and event.get("distinct_size") == 1,
-        "push must contain one commit",
-    )
-    head = event.get("head_commit")
-    _require(isinstance(head, dict) and head.get("id") == after, "head_commit differs")
-    _require(head.get("added") == [REQUEST_PATH], "head_commit must add only the probe request")
-    _require(
-        head.get("modified") == [] and head.get("removed") == [],
-        "head_commit changed another path",
-    )
-    commits = event.get("commits")
-    _require(isinstance(commits, list) and len(commits) == 1, "push commit list differs")
-    _require(
-        isinstance(commits[0], dict)
-        and commits[0].get("id") == after
-        and commits[0].get("added") == [REQUEST_PATH]
-        and commits[0].get("modified") == []
-        and commits[0].get("removed") == [],
-        "push commit payload is not marker-only",
-    )
     return before, after
+
+
+def _pushed_commits(repository: Path, before: str, after: str) -> tuple[str, ...]:
+    """Return the checked-out Git range after proving its event identities.
+
+    GitHub's Actions event file does not reliably retain the webhook-only file
+    arrays.  Commit count and changed-path authority therefore come only from
+    the fetched Git objects.
+    """
+
+    top = str(_run_git(repository, "rev-parse", "--show-toplevel")).strip()
+    _require(
+        Path(top).resolve() == repository.resolve(),
+        "repository is not the Git top level",
+    )
+    head = str(_run_git(repository, "rev-parse", "HEAD")).strip()
+    _require(head == after, "checked-out HEAD differs from push after")
+    for label, commit in (("before", before), ("after", after)):
+        kind = str(_run_git(repository, "cat-file", "-t", commit)).strip()
+        _require(kind == "commit", f"push {label} identity is not a Git commit")
+    merge_base = str(_run_git(repository, "merge-base", before, after)).strip()
+    _require(merge_base == before, "push before is not an ancestor of push after")
+    commits = tuple(
+        line
+        for line in str(
+            _run_git(repository, "rev-list", "--reverse", f"{before}..{after}")
+        ).splitlines()
+        if line
+    )
+    _require(
+        bool(commits)
+        and after in commits
+        and all(HEX40.fullmatch(commit) is not None for commit in commits),
+        "checked-out push commit range is invalid",
+    )
+    return commits
+
+
+def _marker_touched_in_commits(repository: Path, commits: tuple[str, ...]) -> bool:
+    """Detect every marker touch, including an add/remove hidden by net diff."""
+
+    for commit in commits:
+        changed = str(
+            _run_git(
+                repository,
+                "diff-tree",
+                "--no-commit-id",
+                "--name-only",
+                "-r",
+                "-m",
+                "--no-renames",
+                commit,
+                "--",
+                REQUEST_PATH,
+            )
+        ).splitlines()
+        if changed:
+            _require(
+                changed == [REQUEST_PATH],
+                "Git returned an ambiguous probe request path change",
+            )
+            return True
+    return False
 
 
 def _validate_marker_commit(repository: Path, before: str, after: str) -> bytes:
@@ -429,7 +487,7 @@ def _validate_zero_secret_surface(
     _require("trimem_grader_smoke.py" not in workflow, "probe workflow references the grader")
 
 
-def validate_branch_trigger(
+def classify_branch_trigger(
     repository: Path,
     event_path: Path,
     *,
@@ -438,7 +496,21 @@ def validate_branch_trigger(
     repository = repository.resolve(strict=True)
     event = strict_json_object(event_path.resolve(strict=True).read_bytes(), label="push event")
     environment = os.environ if environ is None else environ
-    before, after = _validate_event(event, environment)
+    before, after = _validate_event_identity(event, environment)
+    pushed_commits = _pushed_commits(repository, before, after)
+    if not _marker_touched_in_commits(repository, pushed_commits):
+        return {
+            "decision": GATE_SKIP,
+            "push_before": before,
+            "push_head": after,
+            "reason": "PROBE_REQUEST_PATH_UNCHANGED",
+            "schema": GATE_SCHEMA,
+            "status": "NOT_REQUESTED",
+        }
+    _require(
+        environment.get("GITHUB_RUN_ATTEMPT") == "1",
+        "probe rerun attempt is forbidden",
+    )
     request_raw = _validate_marker_commit(repository, before, after)
     _validate_zero_secret_surface(repository, after, environment)
     request = validate_request_document(
@@ -449,6 +521,7 @@ def validate_branch_trigger(
     return {
         "api_calls": 0,
         "correction_head": before,
+        "decision": GATE_EXECUTE,
         "grader_executions": 0,
         "image_contract_probe_containers": 1,
         "model_calls": 0,
@@ -456,9 +529,51 @@ def validate_branch_trigger(
         "patch_applications": 0,
         "request_id": REQUEST_ID,
         "request_sha256": request["request_sha256"],
-        "status": "PASS",
+        "schema": GATE_SCHEMA,
+        "status": "REQUEST_VALIDATED",
         "trigger_commit": after,
     }
+
+
+def validate_branch_trigger(
+    repository: Path,
+    event_path: Path,
+    *,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    """Backward-compatible name for the branch-push classifier and validator."""
+
+    return classify_branch_trigger(repository, event_path, environ=environ)
+
+
+def _gate_failure_report(exc: BaseException) -> dict[str, Any]:
+    return {
+        "decision": GATE_FAIL,
+        "reason": str(exc),
+        "schema": GATE_SCHEMA,
+        "status": GATE_FAIL,
+    }
+
+
+def write_gate_evidence(
+    report: Mapping[str, Any],
+    *,
+    report_path: Path,
+    github_output_path: Path,
+) -> None:
+    """Persist a sanitized gate report and an exact workflow decision."""
+
+    decision = report.get("decision")
+    _require(
+        decision in {GATE_EXECUTE, GATE_SKIP, GATE_FAIL},
+        "gate decision is invalid",
+    )
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_bytes(canonical_bytes(dict(report), trailing_lf=True))
+    with github_output_path.open("ab") as stream:
+        stream.write(f"decision={decision}\n".encode("ascii"))
+        stream.flush()
+        os.fsync(stream.fileno())
 
 
 def write_request(repository: Path) -> dict[str, Any]:
@@ -505,18 +620,40 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--event-path", type=Path)
     mode.add_argument("--write-request", action="store_true")
+    parser.add_argument("--gate-report", type=Path)
+    parser.add_argument("--github-output", type=Path)
     args = parser.parse_args()
+    exit_code = 0
     try:
         if args.write_request:
+            _require(
+                args.gate_report is None and args.github_output is None,
+                "gate outputs are invalid while writing a request",
+            )
             report = write_request(args.repository)
         else:
             assert args.event_path is not None
-            report = validate_branch_trigger(args.repository, args.event_path)
+            _require(args.gate_report is not None, "--gate-report is required")
+            _require(args.github_output is not None, "--github-output is required")
+            report = classify_branch_trigger(args.repository, args.event_path)
     except (OSError, ProbeRequestError) as exc:
-        print(json.dumps({"error": str(exc), "status": "FAIL_CLOSED"}, sort_keys=True))
-        return 1
+        exit_code = 1
+        report = _gate_failure_report(exc) if not args.write_request else {
+            "error": str(exc),
+            "status": GATE_FAIL,
+        }
+    if not args.write_request and args.gate_report is not None and args.github_output is not None:
+        try:
+            write_gate_evidence(
+                report,
+                report_path=args.gate_report,
+                github_output_path=args.github_output,
+            )
+        except (OSError, ProbeRequestError) as exc:
+            print(json.dumps(_gate_failure_report(exc), sort_keys=True))
+            return 1
     print(json.dumps(report, sort_keys=True))
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":

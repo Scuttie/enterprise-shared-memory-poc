@@ -25,6 +25,10 @@ from trimem_grader_smoke_protocol import (
     SmokeProtocolError,
     validate_serial_targets,
 )
+from trimem_multi_swe_probe_evidence import (
+    ProbeEvidenceError,
+    validate_committed_evidence,
+)
 
 
 EXPECTED_EVENT = "push"
@@ -68,11 +72,12 @@ INVENTORY_PATH = "scripts/trimem_evidence_inventory.py"
 PROTOCOL_PATH = "scripts/trimem_grader_smoke_protocol.py"
 OFFICIAL_GRADER_PATH = "scripts/trimem_official_grader.py"
 MULTI_SWE_ENTRYPOINT_PATH = "scripts/trimem_multi_swe_entrypoint.py"
+MULTI_SWE_PROBE_EVIDENCE_PATH = "scripts/trimem_multi_swe_probe_evidence.py"
 MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH = (
     "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json"
 )
 REQUEST_ID = "TRIMEM_V1_GRADER_SMOKE_EXEC_004"
-REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.4"
+REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.5"
 EXPECTED_PHASE = "GRADER_SMOKE"
 AUTHORIZATION_SEMANTICS = "The sentinel alone does not authorize execution."
 BASELINE_FROZEN_REQUEST_SHA256 = (
@@ -157,6 +162,8 @@ REQUEST_FIELDS = frozenset(
         "model_secret_required",
         "multi_swe_entrypoint_sha256",
         "multi_swe_evaluation_contract_lock_sha256",
+        "multi_swe_probe_evidence",
+        "multi_swe_probe_evidence_verifier_sha256",
         "noop_baseline_patch_sha256",
         "phase",
         "request_id",
@@ -282,6 +289,7 @@ def _raw_material(repository: Path, commit: str) -> dict[str, bytes]:
         CREDENTIAL_FREE_BUNDLE_PATH,
         OFFICIAL_GRADER_PATH,
         MULTI_SWE_ENTRYPOINT_PATH,
+        MULTI_SWE_PROBE_EVIDENCE_PATH,
         MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
     )
     return {path: _commit_bytes(repository, commit, path) for path in paths}
@@ -357,6 +365,7 @@ def _validate_frozen_material(
         CREDENTIAL_FREE_BUNDLE_PATH,
         OFFICIAL_GRADER_PATH,
         MULTI_SWE_ENTRYPOINT_PATH,
+        MULTI_SWE_PROBE_EVIDENCE_PATH,
         MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
         PREFLIGHT_PATH,
         INVENTORY_PATH,
@@ -540,7 +549,7 @@ def _validate_frozen_material(
 def build_request_document(
     repository: Path, *, source_head: str, commit: str | None = None
 ) -> dict[str, Any]:
-    """Return the sole valid sentinel document for a committed correction HEAD."""
+    """Return the sole sentinel for a committed, closed probe-evidence HEAD."""
 
     _require(HEX40.fullmatch(source_head) is not None, "source_head is not a commit SHA")
     material_commit = source_head if commit is None else commit
@@ -551,6 +560,14 @@ def build_request_document(
     raw, manifest, matrix_order = _validate_frozen_material(
         repository, material_commit
     )
+    try:
+        probe_evidence = validate_committed_evidence(
+            repository, evidence_head=source_head
+        )
+    except ProbeEvidenceError as exc:
+        raise TriggerPreflightError(
+            f"Multi-SWE image-probe evidence is not closed: {exc}"
+        ) from exc
     payload: dict[str, Any] = {
         "actual_execution_authorized": False,
         "adapter_sha256": sha256_prefixed(raw[OFFICIAL_GRADER_PATH]),
@@ -574,6 +591,10 @@ def build_request_document(
         ),
         "multi_swe_evaluation_contract_lock_sha256": sha256_prefixed(
             raw[MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH]
+        ),
+        "multi_swe_probe_evidence": probe_evidence,
+        "multi_swe_probe_evidence_verifier_sha256": sha256_prefixed(
+            raw[MULTI_SWE_PROBE_EVIDENCE_PATH]
         ),
         "noop_baseline_patch_sha256": NOOP_BASELINE_PATCH_SHA256,
         "phase": EXPECTED_PHASE,
@@ -699,7 +720,7 @@ def validate_request_document(
     _require(value.get("workflow_path") == WORKFLOW_PATH, "trigger workflow path mismatch")
     _require(
         value.get("source_head") == expected_source_head,
-        "trigger source_head differs from expected correction HEAD",
+        "trigger source_head differs from expected probe-evidence HEAD",
     )
     _require(
         value.get("requires_external_approval") is True,
@@ -761,6 +782,11 @@ def validate_request_document(
             "multi_swe_evaluation_contract_lock_sha256",
             "Multi-SWE evaluation contract-lock raw hash",
         ),
+        ("multi_swe_probe_evidence", "Multi-SWE image-probe evidence binding"),
+        (
+            "multi_swe_probe_evidence_verifier_sha256",
+            "Multi-SWE image-probe evidence verifier raw hash",
+        ),
         ("matrix_kind", "grader-smoke matrix kind"),
         ("matrix_order", "grader-smoke matrix order"),
         ("unique_instances", "grader-smoke unique instance count"),
@@ -817,6 +843,7 @@ def validate_branch_trigger(
         "request_sha256": request["request_sha256"],
         "requires_external_approval": True,
         "source_head": before,
+        "multi_swe_probe_evidence": request["multi_swe_probe_evidence"],
         "status": "PASS",
         "trigger_commit": after,
     }

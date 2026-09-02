@@ -18,6 +18,31 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_grader_smoke_trigger_preflight as trigger  # noqa: E402
 import trimem_evidence_inventory as inventory  # noqa: E402
+import trimem_multi_swe_probe_evidence as probe_evidence  # noqa: E402
+
+
+def _closed_probe_binding(evidence_head: str) -> dict[str, object]:
+    return {
+        "accounting": dict(probe_evidence.ACCOUNTING),
+        "correction_head": "a" * 40,
+        "evidence_head": evidence_head,
+        "marker_head": "b" * 40,
+        "schema": probe_evidence.BINDING_SCHEMA,
+        "status": "PASS",
+    }
+
+
+@pytest.fixture(autouse=True)
+def _stub_probe_evidence_for_unrelated_trigger_contract_tests(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Keep legacy trigger tests focused; dedicated tests exercise the real closure."""
+
+    monkeypatch.setattr(
+        trigger,
+        "validate_committed_evidence",
+        lambda _repository, *, evidence_head: _closed_probe_binding(evidence_head),
+    )
 
 
 def _git(repository: Path, *args: str) -> str:
@@ -74,6 +99,7 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         trigger.CREDENTIAL_FREE_BUNDLE_PATH,
         trigger.OFFICIAL_GRADER_PATH,
         trigger.MULTI_SWE_ENTRYPOINT_PATH,
+        trigger.MULTI_SWE_PROBE_EVIDENCE_PATH,
         trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
     ):
         destination = repository / path
@@ -101,6 +127,7 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         trigger.CREDENTIAL_FREE_BUNDLE_PATH,
         trigger.OFFICIAL_GRADER_PATH,
         trigger.MULTI_SWE_ENTRYPOINT_PATH,
+        trigger.MULTI_SWE_PROBE_EVIDENCE_PATH,
         trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH,
         trigger.PREFLIGHT_PATH,
         trigger.INVENTORY_PATH,
@@ -306,7 +333,7 @@ def _git_contract_negative(
 
 def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> None:
     workflow = (ROOT / trigger.WORKFLOW_PATH).read_text(encoding="utf-8")
-    assert trigger.REQUEST_SCHEMA == "trimem/grader-smoke-branch-trigger/1.4"
+    assert trigger.REQUEST_SCHEMA == "trimem/grader-smoke-branch-trigger/1.5"
     assert trigger.REQUEST_ID == "TRIMEM_V1_GRADER_SMOKE_EXEC_004"
     assert (
         trigger.SENTINEL_PATH
@@ -357,18 +384,19 @@ def test_all_historical_sentinels_are_byte_immutable(
         trigger.build_request_document(repository, source_head=changed)
 
 
-def test_correction_head_is_valid_while_active_004_sentinel_is_absent(
-    tmp_path: Path,
+def test_correction_head_cannot_build_004_before_probe_evidence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     repository = tmp_path / "repository"
     correction_head = _initialize(repository)
     assert not (repository / trigger.SENTINEL_PATH).exists()
-    document = trigger.build_request_document(
-        repository,
-        source_head=correction_head,
+    monkeypatch.setattr(
+        trigger, "validate_committed_evidence", probe_evidence.validate_committed_evidence
     )
-    assert document["request_id"] == "TRIMEM_V1_GRADER_SMOKE_EXEC_004"
-    assert document["source_head"] == correction_head
+    with pytest.raises(
+        trigger.TriggerPreflightError, match="image-probe evidence is not closed"
+    ):
+        trigger.build_request_document(repository, source_head=correction_head)
 
 
 def test_actual_actions_payload_without_commit_file_arrays_passes(
@@ -400,6 +428,7 @@ def test_actual_actions_payload_without_commit_file_arrays_passes(
         )["request_sha256"],
         "requires_external_approval": True,
         "source_head": before,
+        "multi_swe_probe_evidence": _closed_probe_binding(before),
         "status": "PASS",
         "trigger_commit": after,
     }
@@ -515,6 +544,12 @@ def test_request_hash_covers_exact_canonical_content(tmp_path: Path) -> None:
             (repository / trigger.MULTI_SWE_EVALUATION_CONTRACT_LOCK_PATH).read_bytes()
         )
     )
+    assert document["multi_swe_probe_evidence"] == _closed_probe_binding(source_head)
+    assert document["multi_swe_probe_evidence_verifier_sha256"] == (
+        trigger.sha256_prefixed(
+            (repository / trigger.MULTI_SWE_PROBE_EVIDENCE_PATH).read_bytes()
+        )
+    )
     assert document["noop_baseline_patch_sha256"] == hashlib.sha256(
         trigger.NOOP_BASELINE_PATCH
     ).hexdigest()
@@ -562,7 +597,7 @@ def test_event_independent_validator_reuses_the_full_contract(tmp_path: Path) ->
     )
     assert value["request_id"] == trigger.REQUEST_ID
     assert value["source_head"] == before
-    with pytest.raises(trigger.TriggerPreflightError, match="expected correction HEAD"):
+    with pytest.raises(trigger.TriggerPreflightError, match="expected probe-evidence HEAD"):
         trigger.validate_request_document(
             repository,
             raw,
@@ -738,6 +773,16 @@ def test_every_repository_binding_fails_closed_on_drift(tmp_path: Path) -> None:
             "multi_swe_evaluation_contract_lock_sha256",
             "sha256:" + "0" * 64,
             "contract-lock raw hash mismatch",
+        ),
+        (
+            "multi_swe_probe_evidence",
+            {"status": "fabricated"},
+            "image-probe evidence binding mismatch",
+        ),
+        (
+            "multi_swe_probe_evidence_verifier_sha256",
+            "sha256:" + "0" * 64,
+            "evidence verifier raw hash mismatch",
         ),
         ("matrix_kind", "parallel", "matrix kind mismatch"),
         ("matrix_order", list(reversed(original["matrix_order"])), "matrix order mismatch"),

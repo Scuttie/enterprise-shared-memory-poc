@@ -263,7 +263,7 @@ def run_probe() -> dict[str, Any]:
         pull_attempted = True
         _run(["docker", "pull", contract["image"]])
         observed = _observed_digests(contract["image"])
-        if contract["expected_digest"] not in observed:
+        if observed != [contract["expected_digest"]]:
             raise ImageProbeError("observed Vue image digest differs")
         _run(["docker", "tag", contract["image"], contract["tag"]], timeout=120)
         paths, repository_checkout, repository_head = _inside_image(contract["tag"])

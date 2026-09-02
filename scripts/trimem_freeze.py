@@ -15,6 +15,12 @@ import subprocess
 import tempfile
 from typing import Any
 
+from trimem_multi_swe_probe_evidence import (
+    PROBE_RECEIPT_PATH,
+    PROBE_REQUEST_PATH,
+    PROBE_RESULT_PATH,
+)
+
 
 FREEZE_PATH = Path("artifacts/trimem_v1/freeze.json")
 OFFICIAL_SMOKE_PUBLIC_RESULT_PATH = (
@@ -90,6 +96,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_multi_swe_contract.py",
     "scripts/trimem_multi_swe_entrypoint.py",
     "scripts/trimem_multi_swe_image_probe.py",
+    "scripts/trimem_multi_swe_probe_evidence.py",
     "scripts/trimem_multi_swe_probe_request.py",
     "scripts/trimem_multi_swe_preexec.py",
     "scripts/trimem_official_grader.py",
@@ -191,6 +198,7 @@ TEST_PATHS = (
     "tests/unit/test_trimem_multi_swe_entrypoint.py",
     "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
     "tests/unit/test_trimem_multi_swe_image_probe.py",
+    "tests/unit/test_trimem_multi_swe_probe_evidence.py",
     "tests/unit/test_trimem_multi_swe_probe_request.py",
     "tests/unit/test_trimem_multi_swe_preexec.py",
     "tests/unit/test_trimem_git_workspace.py",
@@ -338,10 +346,40 @@ def referenced_blob_paths(root: Path) -> tuple[str, ...]:
     return tuple(sorted(references))
 
 
+def conditional_probe_evidence_paths(root: Path) -> tuple[str, ...]:
+    """Return the all-or-none post-probe freeze extension.
+
+    The correction commit has no marker and the marker-only child deliberately
+    keeps the correction freeze byte-for-byte.  Once a result or receipt is
+    present, all three regular files are mandatory and become freeze inputs.
+    """
+
+    paths = (PROBE_REQUEST_PATH, PROBE_RESULT_PATH, PROBE_RECEIPT_PATH)
+    present = tuple(
+        (root / relative).exists() or (root / relative).is_symlink()
+        for relative in paths
+    )
+    if present == (False, False, False) or present == (True, False, False):
+        if present[0]:
+            _safe_file(root, PROBE_REQUEST_PATH)
+        return ()
+    if present != (True, True, True):
+        raise ValueError(
+            "probe evidence freeze phase must be absent, marker-only, or the exact trio"
+        )
+    for relative in paths:
+        _safe_file(root, relative)
+    return paths
+
+
 def frozen_paths(root: Path) -> tuple[str, ...]:
     """Return the closed allowlist for the current pre/post-development phase."""
 
-    paths = [*FROZEN_PATHS, *referenced_blob_paths(root)]
+    paths = [
+        *FROZEN_PATHS,
+        *referenced_blob_paths(root),
+        *conditional_probe_evidence_paths(root),
+    ]
     smoke_path = root / "artifacts/trimem_v1/grader_smoke_result.json"
     smoke = strict_json(
         smoke_path.read_text(encoding="utf-8"), label=smoke_path.as_posix()
@@ -390,7 +428,10 @@ def build_freeze(root: Path) -> dict[str, Any]:
     return {
         "files": files,
         "hash_algorithm": "sha256",
-        "path_policy": "explicit_allowlist_plus_hash_bound_event_blob_references_no_tree_walk",
+        "path_policy": (
+            "explicit_allowlist_plus_hash_bound_event_blob_references_plus_"
+            "conditional_probe_evidence_triad_no_tree_walk"
+        ),
         "schema": "trimem/freeze/1.0",
     }
 

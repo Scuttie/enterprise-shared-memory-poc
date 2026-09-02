@@ -163,6 +163,50 @@ def test_probe_fails_closed_on_digest_mismatch_and_still_removes_exact_refs(
     assert not any(argv[:3] == ["docker", "run", "--rm"] for argv in calls)
 
 
+def test_probe_fails_closed_when_expected_digest_is_not_the_only_observed_digest(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    expected_digest = probe.EXPECTED_IMAGE.rsplit("@", 1)[1]
+    extra_digest = "sha256:" + "0" * 64
+    removed = False
+
+    def fake_run(argv: list[str], **_: object) -> subprocess.CompletedProcess[str]:
+        nonlocal removed
+        if argv[:3] == ["docker", "image", "inspect"] and "--format" in argv:
+            return _completed(
+                argv,
+                stdout=json.dumps(
+                    [
+                        f"mswebench/vuejs_m_core@{expected_digest}",
+                        f"mswebench/vuejs_m_core@{extra_digest}",
+                    ]
+                )
+                + "\n",
+            )
+        if argv[:3] == ["docker", "image", "inspect"]:
+            return (
+                _completed(argv, returncode=1, stderr="No such image\n")
+                if removed
+                else _completed(argv, stdout="[]\n")
+            )
+        if argv[:3] == ["docker", "image", "rm"]:
+            removed = True
+            return _completed(argv)
+        return _completed(argv)
+
+    monkeypatch.setattr(probe.subprocess, "run", fake_run)
+    with pytest.raises(
+        probe.ImageProbeError, match="observed Vue image digest differs"
+    ) as captured:
+        probe.run_probe()
+
+    report = captured.value.report
+    assert report is not None
+    assert report["status"] == "FAIL"
+    assert report["observed_digests"] == sorted([expected_digest, extra_digest])
+    assert report["removal_evidence"]["removal_established"] is True
+
+
 def test_main_persists_sanitized_failure_evidence(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

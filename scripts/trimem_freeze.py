@@ -20,6 +20,10 @@ from trimem_multi_swe_probe_evidence import (
     PROBE_REQUEST_PATH,
     PROBE_RESULT_PATH,
 )
+from trimem_grader_smoke_failure_evidence import (
+    EVIDENCE_INVENTORY_PATH,
+    FAILURE_RECEIPT_PATH,
+)
 
 
 FREEZE_PATH = Path("artifacts/trimem_v1/freeze.json")
@@ -89,6 +93,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_exec_approval.py",
     "scripts/trimem_freeze.py",
     "scripts/trimem_grader_smoke.py",
+    "scripts/trimem_grader_smoke_failure_evidence.py",
     "scripts/trimem_grader_smoke_protocol.py",
     "scripts/trimem_grader_smoke_trigger_preflight.py",
     "scripts/trimem_harness_lock.py",
@@ -193,6 +198,7 @@ TEST_PATHS = (
     "tests/unit/test_trimem_benchmark_readiness.py",
     "tests/unit/test_trimem_grader_smoke_trigger.py",
     "tests/unit/test_trimem_grader_smoke_execution_accounting.py",
+    "tests/unit/test_trimem_grader_smoke_failure_evidence.py",
     "tests/unit/test_trimem_harness_lock.py",
     "tests/unit/test_trimem_multi_prebuilt_evaluation.py",
     "tests/unit/test_trimem_multi_swe_entrypoint.py",
@@ -230,6 +236,7 @@ FROZEN_PATHS = (
     "alembic.ini",
     "DEPENDENCY_PROVENANCE.json",
     "docs/TRIMEM_V1_SYSTEM.md",
+    "reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md",
     "reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md",
     "pyproject.toml",
     "requirements.lock",
@@ -257,6 +264,10 @@ OFFICIAL_SMOKE_EVIDENCE_PATH_FIELDS = {
     "attestation_subject_path": OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
     "public_result_path": OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
     "evidence_inventory_path": OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+}
+OFFICIAL_SMOKE_FAILURE_EVIDENCE_PATH_FIELDS = {
+    "failure_receipt_path": FAILURE_RECEIPT_PATH,
+    "evidence_inventory_path": EVIDENCE_INVENTORY_PATH,
 }
 EVIDENCE_EVENT_PATHS = (
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/events.ndjson",
@@ -388,6 +399,10 @@ def frozen_paths(root: Path) -> tuple[str, ...]:
         raise ValueError("grader smoke result root is not an object")
     smoke_status = smoke.get("status")
     if smoke_status == "PASS":
+        if "official_execution_failure_evidence" in smoke:
+            raise ValueError(
+                "passed grader smoke cannot claim official execution failure evidence"
+            )
         evidence = smoke.get("official_execution_evidence")
         if not isinstance(evidence, dict):
             raise ValueError("passed grader smoke lacks official execution evidence")
@@ -395,8 +410,33 @@ def frozen_paths(root: Path) -> tuple[str, ...]:
             if evidence.get(field) != expected_path:
                 raise ValueError(f"passed grader smoke has noncanonical {field}")
             paths.append(expected_path)
-    elif smoke_status == "CORRECTION_IN_PROGRESS":
+    elif smoke_status == "FAIL":
         if "official_execution_evidence" in smoke:
+            raise ValueError(
+                "failed grader smoke cannot claim passed official execution evidence"
+            )
+        evidence = smoke.get("official_execution_failure_evidence")
+        if not isinstance(evidence, dict):
+            raise ValueError("failed grader smoke lacks official execution failure evidence")
+        for field, expected_path in OFFICIAL_SMOKE_FAILURE_EVIDENCE_PATH_FIELDS.items():
+            if evidence.get(field) != expected_path:
+                raise ValueError(f"failed grader smoke has noncanonical {field}")
+            paths.append(expected_path)
+        for relative in (
+            OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
+            OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
+            OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
+        ):
+            target = root / relative
+            if target.exists() or target.is_symlink():
+                raise ValueError(
+                    f"failed grader smoke cannot retain passed execution artifact: {relative}"
+                )
+    elif smoke_status == "CORRECTION_IN_PROGRESS":
+        if (
+            "official_execution_evidence" in smoke
+            or "official_execution_failure_evidence" in smoke
+        ):
             raise ValueError(
                 "pre-exec grader smoke cannot claim official execution evidence"
             )

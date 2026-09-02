@@ -13,21 +13,80 @@
     "public benchmark evaluation scope and no-redistribution policy documented; SWE-bench Verified dataset license remains undeclared and the EXEC actor must accept applicable source/project terms"
   ],
   "current_status": {
-    "GRADER_EXEC_PACKAGE": "CORRECTION_IN_PROGRESS",
+    "DEV_APPROVAL_ALLOWED": "NO",
+    "ENDPOINT": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
+    "GRADER_EXEC_PACKAGE": "FAIL",
     "OFFICIAL_GRADER_VIABILITY": "NOT_YET_ESTABLISHED",
     "PERFORMANCE": "NOT_MEASURED",
+    "SCIENTIFIC_RESULT": "NOT_AGGREGATED",
     "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN"
   },
   "execution_counters": {
-    "grader_containers": 0,
+    "api_calls": 0,
+    "docker_pulls": 4,
+    "grader_containers": 6,
+    "input_tokens": 0,
     "model_gateway_calls": 0,
-    "official_grader_runs": 0,
-    "paid_model_calls": 0
+    "official_grader_runs": 6,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0
   },
   "explicitly_allowed_pending_at_pre_exec_ready": {
-    "external_hard_cap_approval": "PENDING_EXEC_APPROVAL",
-    "official_grader_smoke": "PENDING_EXEC_APPROVAL; viability NOT_YET_ESTABLISHED",
+    "external_hard_cap_approval": "NO_ACTIVE_APPROVAL; the P0.1.4 one-time authorization was consumed by run 33630256522 attempt 1",
+    "official_grader_smoke": "TERMINAL_ADAPTER_CONTRACT_NOT_READY; NO_RERUN_AUTHORIZED; viability NOT_YET_ESTABLISHED; _005 NOT_AUTHORIZED",
     "selected_m2_checkpoint": "PRE_DEVELOPMENT; produced only after approved development execution"
+  },
+  "grader_smoke_terminal_execution": {
+    "accounting": {
+      "api_calls": 0,
+      "cached_input_tokens": 0,
+      "decomposition_calls": 0,
+      "extraction_calls": 0,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "model_gateway_calls": 0,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "reasoning_tokens": 0,
+      "solve_calls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0
+    },
+    "authorization": {
+      "request_005": "NOT_AUTHORIZED",
+      "rerun": "NO_RERUN_AUTHORIZED",
+      "status": "CONSUMED"
+    },
+    "campaign": {
+      "adapter_normalized_cells": 5,
+      "executed_cells": 6,
+      "gold_executed": 3,
+      "gold_normalized": 3,
+      "noop_baseline_executed": 3,
+      "noop_baseline_normalized": 2,
+      "required_cells": 12,
+      "unattempted_cells": 6
+    },
+    "endpoint": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
+    "failure_layers": {
+      "masking": "Failure evidence retained materialized_private_inputs at the top level, while the caller read only _trimem.materialized_private_inputs and surfaced official grader private-input identity set differs.",
+      "primary": "The adapter incorrectly required Multi-SWE per-instance Report.valid to equal the final resolved value and rejected the valid=true plus final unresolved Vue NOOP_BASELINE result as Multi-SWE official per-instance status identity/result mismatch."
+    },
+    "git_head": "0e9ed55196da922dcebf1fb33b73940873007180",
+    "prebuilt_evaluation_contract": {
+      "force_build": false,
+      "host_prepare_sh_accesses": 0,
+      "human_mode": true,
+      "mode": "MULTI_SWE_PREBUILT_EVALUATION",
+      "need_clone": false,
+      "source_image_builds": 0,
+      "status": "PASS",
+      "submitted_patch_bind_mount": "/home/fix.patch"
+    },
+    "workflow_run_attempt": 1,
+    "workflow_run_id": 33630256522
   },
   "frozen_counts": {
     "development_instances": 12,
@@ -45,7 +104,7 @@
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
   ],
-  "schema": "trimem/readiness-requirements/1.1",
+  "schema": "trimem/readiness-requirements/1.2",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
   "static_ci_meaning": "Static CI and credential-free E2E establish implementation and execution-plan readiness only. They do not claim official grader, paid model, benchmark, causal, performance, full-suite, or leaderboard viability.",

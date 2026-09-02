@@ -58,6 +58,12 @@ from trimem_grader_smoke_protocol import (  # noqa: E402
     NOOP_BASELINE_LOCK,
     NOOP_BASELINE_PATH,
 )
+from trimem_grader_smoke_failure_evidence import (  # noqa: E402
+    ENDPOINT as SMOKE_FAILURE_ENDPOINT,
+    EVIDENCE_INVENTORY_PATH as SMOKE_FAILURE_INVENTORY_PATH,
+    FAILURE_RECEIPT_PATH as SMOKE_FAILURE_RECEIPT_PATH,
+    validate_committed_failure_evidence,
+)
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256,
     BASELINE_FROZEN_REQUEST_SHA256,
@@ -149,6 +155,11 @@ SMOKE_EVIDENCE_FIELDS = {
     "verified_aggregate_sha256", "aggregate_raw_sha256", "approval_binding",
     "attestation_subject_path", "attestation_subject_raw_sha256",
     "attestation_bundle_path", "attestation_bundle_raw_sha256",
+}
+SMOKE_FAILURE_EVIDENCE_FIELDS = {
+    "failure_receipt_path", "failure_receipt_raw_sha256",
+    "evidence_inventory_path", "evidence_inventory_raw_sha256",
+    "approval_binding",
 }
 SMOKE_ATTESTATION_POLICY_PATH = "configs/trimem_v1/smoke_attestation_policy.json"
 SMOKE_TRUSTED_ROOT_PATH = "configs/trimem_v1/sigstore_trusted_root.jsonl"
@@ -1325,13 +1336,29 @@ def _validate_official_smoke_pass(
 
 
 def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
-    pending = smoke.get("status") == "CORRECTION_IN_PROGRESS"
-    expected_fields = SMOKE_RESULT_COMMON_FIELDS if pending else {
-        *SMOKE_RESULT_COMMON_FIELDS, "official_execution_evidence",
-    }
+    status = smoke.get("status")
+    pending = status == "CORRECTION_IN_PROGRESS"
+    failed = status == "FAIL"
+    if pending:
+        expected_fields = SMOKE_RESULT_COMMON_FIELDS
+    elif failed:
+        expected_fields = {
+            *SMOKE_RESULT_COMMON_FIELDS,
+            "endpoint",
+            "official_execution_failure_evidence",
+        }
+    else:
+        expected_fields = {
+            *SMOKE_RESULT_COMMON_FIELDS, "official_execution_evidence",
+        }
     require(set(smoke) == expected_fields, "grader smoke result field set differs")
     require(
-        smoke.get("schema") == "trimem/grader-smoke-result/1.0"
+        smoke.get("schema")
+        == (
+            "trimem/grader-smoke-result/1.1"
+            if failed
+            else "trimem/grader-smoke-result/1.0"
+        )
         and smoke.get("trimem_system_implementation") == "CREDENTIAL_FREE_GREEN"
         and smoke.get("performance") == "NOT_MEASURED"
         and smoke.get("expected_unique_instances") == 6
@@ -1356,6 +1383,12 @@ def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
         "grader_containers": 12,
         "official_grader_runs": 12,
     }
+    failed_smoke_actual = {
+        **pre_smoke_actual,
+        "docker_pulls": 4,
+        "grader_containers": 6,
+        "official_grader_runs": 6,
+    }
     actual = smoke.get("actual_execution")
     require(
         isinstance(actual, dict) and all(type(value) is int for value in actual.values()),
@@ -1374,6 +1407,61 @@ def validate_grader_smoke_result(smoke: dict[str, Any]) -> dict[str, int]:
             )
             and actual == pre_smoke_actual,
             "pre-exec grader smoke state/counter contract is invalid",
+        )
+    elif failed:
+        require(
+            state == ("FAIL", "FAIL", "NOT_YET_ESTABLISHED")
+            and actual == failed_smoke_actual
+            and smoke.get("endpoint") == SMOKE_FAILURE_ENDPOINT,
+            "failed grader smoke state/counter contract is invalid",
+        )
+        evidence = smoke.get("official_execution_failure_evidence")
+        require(
+            isinstance(evidence, dict)
+            and set(evidence) == SMOKE_FAILURE_EVIDENCE_FIELDS,
+            "failed grader smoke evidence field set differs",
+        )
+        receipt_path = ROOT / SMOKE_FAILURE_RECEIPT_PATH
+        inventory_path = ROOT / SMOKE_FAILURE_INVENTORY_PATH
+        receipt_raw = receipt_path.read_bytes()
+        inventory_raw = inventory_path.read_bytes()
+        require(
+            evidence.get("failure_receipt_path") == SMOKE_FAILURE_RECEIPT_PATH
+            and evidence.get("failure_receipt_raw_sha256")
+            == hashlib.sha256(receipt_raw).hexdigest()
+            and evidence.get("evidence_inventory_path")
+            == SMOKE_FAILURE_INVENTORY_PATH
+            and evidence.get("evidence_inventory_raw_sha256")
+            == hashlib.sha256(inventory_raw).hexdigest(),
+            "failed grader smoke evidence path/raw hash binding differs",
+        )
+        receipt = validate_committed_failure_evidence(ROOT)
+        require(
+            evidence.get("approval_binding") == receipt.get("approval_binding"),
+            "failed grader smoke approval binding differs",
+        )
+        receipt_accounting = receipt.get("execution_accounting")
+        require(
+            isinstance(receipt_accounting, dict)
+            and all(
+                receipt_accounting.get(field) == value
+                for field, value in actual.items()
+            ),
+            "failed grader smoke receipt accounting differs",
+        )
+        campaign = receipt.get("authoritative_campaign")
+        require(
+            isinstance(campaign, dict)
+            and campaign.get("expected_cells") == 12
+            and campaign.get("formal_result_rows") == 5
+            and campaign.get("forensic_executed_outcomes") == 6
+            and campaign.get("authoritative_result_rows") == 0
+            and campaign.get("aggregate_created") is False
+            and campaign.get("public_result_created") is False
+            and campaign.get("attestation_created") is False
+            and campaign.get("scientific_result") == "NOT_AGGREGATED"
+            and receipt.get("development_approval_allowed") is False,
+            "failed grader smoke terminal campaign contract differs",
         )
     else:
         require(
@@ -1673,7 +1761,23 @@ def validate_model_cost_environment() -> None:
     require((hard.get("model_calls"), hard.get("input_tokens"), hard.get("output_tokens"), hard.get("total_usd")) == (3978, 76500000, 8068608, 320.0), "proposed hard-cap arithmetic drift")
     phases = cost.get("phase_hard_caps", {})
     require(phases.get("DEVELOPMENT_TUNING", {}).get("task_arm_runs") == 72 and phases.get("HELDOUT_BENCHMARK", {}).get("task_arm_runs") == 81 and phases.get("GRADER_SMOKE", {}).get("benchmark_grader_containers") == 12, "phase hard caps are incomplete")
-    require(all(value == 0 for value in cost.get("actual_to_date", {}).values()), "pre-EXEC cost counters are nonzero")
+    require(
+        cost.get("actual_to_date")
+        == {
+            "decomposition_calls": 0,
+            "extraction_calls": 0,
+            "grader_containers": 6,
+            "input_tokens": 0,
+            "model_calls": 0,
+            "official_grader_runs": 6,
+            "output_tokens": 0,
+            "paid_model_calls": 0,
+            "solve_calls": 0,
+            "task_arm_runs": 0,
+            "task_instances": 0,
+        },
+        "post-smoke actual-to-date accounting differs",
+    )
 
     environment = read_json(CONFIG / "benchmark_environment_lock.json")
     dependency = environment.get("dependency_lock", {})
@@ -1701,7 +1805,7 @@ def validate_model_cost_environment() -> None:
 
 def validate_readiness_plan(targets: Mapping[str, list[dict[str, Any]]]) -> None:
     plan = read_json(ARTIFACT / "readiness_requirements.json")
-    require(plan.get("schema") == "trimem/readiness-requirements/1.1", "readiness requirements are stale")
+    require(plan.get("schema") == "trimem/readiness-requirements/1.2", "readiness requirements are stale")
     service_boundary = str(plan.get("credential_free_service_ci_boundary", ""))
     require(
         "ALLOWED_PRE_EXEC" in service_boundary
@@ -1725,7 +1829,16 @@ def validate_readiness_plan(targets: Mapping[str, list[dict[str, Any]]]) -> None
         "primary/secondary per-benchmark aggregation readiness requirement is absent",
     )
     pending = plan.get("explicitly_allowed_pending_at_pre_exec_ready", {})
-    require("PENDING_EXEC_APPROVAL" in str(pending.get("official_grader_smoke")), "pre-EXEC smoke pending state is absent")
+    require(
+        "NO_RERUN_AUTHORIZED" in str(pending.get("official_grader_smoke"))
+        and "_005 NOT_AUTHORIZED" in str(pending.get("official_grader_smoke"))
+        and str(pending.get("external_hard_cap_approval", "")).startswith(
+            "NO_ACTIVE_APPROVAL"
+        )
+        and "run 33630256522 attempt 1"
+        in str(pending.get("external_hard_cap_approval")),
+        "terminal smoke authorization state is absent",
+    )
     require("PRE_DEVELOPMENT" in str(pending.get("selected_m2_checkpoint")), "pre-EXEC checkpoint state is circular")
     counts = plan.get("frozen_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_benchmark_physical_task_arm_runs")) == (72, 81, 153), "readiness physical-run counts drift")
@@ -1733,7 +1846,88 @@ def validate_readiness_plan(targets: Mapping[str, list[dict[str, Any]]]) -> None
     for name, key in (("development", "development"), ("heldout", "heldout"), ("grader-smoke", "grader_smoke")):
         expected = hashlib.sha256(canonical(targets[name])).hexdigest()
         require(digests.get(key) == expected, f"readiness target-set binding drift: {name}")
-    require(all(value == 0 for value in plan.get("execution_counters", {}).values()), "readiness execution counters are nonzero")
+    require(
+        plan.get("current_status")
+        == {
+            "DEV_APPROVAL_ALLOWED": "NO",
+            "ENDPOINT": SMOKE_FAILURE_ENDPOINT,
+            "GRADER_EXEC_PACKAGE": "FAIL",
+            "OFFICIAL_GRADER_VIABILITY": "NOT_YET_ESTABLISHED",
+            "PERFORMANCE": "NOT_MEASURED",
+            "SCIENTIFIC_RESULT": "NOT_AGGREGATED",
+            "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN",
+        },
+        "readiness terminal status differs",
+    )
+    expected_execution_counters = {
+        "api_calls": 0,
+        "docker_pulls": 4,
+        "grader_containers": 6,
+        "input_tokens": 0,
+        "model_gateway_calls": 0,
+        "official_grader_runs": 6,
+        "output_tokens": 0,
+        "paid_model_calls": 0,
+        "task_arm_runs": 0,
+        "total_usd": 0,
+    }
+    require(
+        plan.get("execution_counters") == expected_execution_counters,
+        "readiness terminal execution counters differ",
+    )
+    terminal = plan.get("grader_smoke_terminal_execution")
+    receipt = validate_committed_failure_evidence(ROOT)
+    require(
+        isinstance(terminal, dict)
+        and terminal.get("endpoint") == SMOKE_FAILURE_ENDPOINT
+        and terminal.get("git_head")
+        == receipt.get("approval_binding", {}).get("git_head")
+        and terminal.get("workflow_run_id")
+        == receipt.get("workflow_run", {}).get("id")
+        and terminal.get("workflow_run_attempt")
+        == receipt.get("workflow_run", {}).get("run_attempt")
+        and terminal.get("authorization")
+        == {
+            "request_005": "NOT_AUTHORIZED",
+            "rerun": "NO_RERUN_AUTHORIZED",
+            "status": "CONSUMED",
+        }
+        and terminal.get("campaign")
+        == {
+            "adapter_normalized_cells": 5,
+            "executed_cells": 6,
+            "gold_executed": 3,
+            "gold_normalized": 3,
+            "noop_baseline_executed": 3,
+            "noop_baseline_normalized": 2,
+            "required_cells": 12,
+            "unattempted_cells": 6,
+        }
+        and terminal.get("prebuilt_evaluation_contract")
+        == {
+            "force_build": False,
+            "host_prepare_sh_accesses": 0,
+            "human_mode": True,
+            "mode": "MULTI_SWE_PREBUILT_EVALUATION",
+            "need_clone": False,
+            "source_image_builds": 0,
+            "status": "PASS",
+            "submitted_patch_bind_mount": "/home/fix.patch",
+        },
+        "readiness terminal grader-smoke record differs",
+    )
+    terminal_accounting = terminal.get("accounting")
+    receipt_accounting = receipt.get("execution_accounting")
+    require(
+        isinstance(terminal_accounting, dict)
+        and isinstance(receipt_accounting, dict)
+        and all(
+            receipt_accounting.get(field) == value
+            for field, value in terminal_accounting.items()
+        )
+        and all(value == 0 for value in terminal_accounting.values()),
+        "readiness zero-model accounting differs from failure receipt",
+    )
 
 
 def validate_runtime_and_candidates() -> None:
@@ -2145,6 +2339,7 @@ def validate_eol_policy() -> None:
         ".gitattributes", ".gitignore", "alembic.ini", "DEPENDENCY_PROVENANCE.json", "requirements.lock",
         "pyproject.toml", "configs/trimem_v1/model_lock.json", "scripts/trimem_freeze.py",
         "scripts/check_migration_head.py", "docs/TRIMEM_V1_SYSTEM.md",
+        "reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md",
         ".github/workflows/ci-trimem.yml", "migrations/env.py",
         "migrations/sql/0001_up.sql", "migrations/versions/0001_initial_production_schema.py",
         "src/enterprise_memory/providers/openai_responses.py",
@@ -2220,6 +2415,8 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "official_grader_runs": smoke_actual["official_grader_runs"],
         "paid_model_calls": smoke_actual["paid_model_calls"],
         "grader_exec_package": smoke["grader_exec_package"],
+        "endpoint": smoke.get("endpoint"),
+        "dev_approval_allowed": smoke.get("status") == "PASS",
         "official_grader_viability": smoke["official_grader_viability"],
         "performance": smoke["performance"],
     }
@@ -2235,6 +2432,12 @@ def preapproval_blockers() -> list[str]:
         validate_grader_smoke_result(smoke)
     except (OSError, ValueError) as exc:
         blockers.append(f"grader-smoke evidence validation failed: {exc}")
+    else:
+        if smoke.get("status") == "FAIL":
+            blockers.append(
+                "terminal grader-smoke adapter-contract failure; rerun and "
+                "further phase approval are not authorized"
+            )
     request = read_json(CONFIG / "benchmark_exec_request.json")
     if request.get("approval_state") != "PENDING_EXEC_APPROVAL":
         blockers.append("committed external approval request is not pending")
@@ -2252,11 +2455,16 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
     except (OSError, ValueError) as exc:
         return [str(exc)], None
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
+    try:
+        validate_grader_smoke_result(smoke)
+    except (OSError, ValueError) as exc:
+        return [f"official grader smoke evidence is invalid: {exc}"], name
+    if smoke.get("status") == "FAIL":
+        return [
+            "terminal grader-smoke adapter-contract failure; rerun, DEV, and "
+            "HELDOUT execution are not authorized"
+        ], name
     if name in {"development", "heldout"}:
-        try:
-            validate_grader_smoke_result(smoke)
-        except (OSError, ValueError) as exc:
-            return [f"official grader smoke evidence is invalid: {exc}"], name
         if smoke.get("status") != "PASS":
             return ["official GOLD+NOOP_BASELINE smoke PASS is required before benchmark execution"], name
         try:

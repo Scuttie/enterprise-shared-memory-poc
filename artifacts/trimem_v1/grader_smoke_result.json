@@ -1,24 +1,40 @@
 {
   "actual_execution": {
-    "docker_pulls": 0,
-    "grader_containers": 0,
+    "docker_pulls": 4,
+    "grader_containers": 6,
     "input_tokens": 0,
     "model_calls": 0,
-    "official_grader_runs": 0,
+    "official_grader_runs": 6,
     "output_tokens": 0,
     "paid_model_calls": 0,
     "total_usd": 0
   },
-  "grader_exec_package": "CORRECTION_IN_PROGRESS",
+  "endpoint": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
   "expected_condition_rows": {
     "GOLD": 6,
     "NOOP_BASELINE": 6
   },
   "expected_target_count": 12,
   "expected_unique_instances": 6,
+  "grader_exec_package": "FAIL",
+  "official_execution_failure_evidence": {
+    "approval_binding": {
+      "approval_artifact_sha256": "26d65d462b09d2db6988bbe6842244278f49c58b559750a4b6455ceb1559c392",
+      "approved_request_sha256": "1cd2d983f9f140392c6c989a9a395c48d5ddc2176cb009b30a98a167c95218ef",
+      "approved_workflow_run_attempt": "1",
+      "approved_workflow_run_id": "33630256522",
+      "freeze_sha256": "583b8cf815ef78a1c29eb1f4c6cf25c01b0014cb511bd440e131e982e341eca1",
+      "git_head": "0e9ed55196da922dcebf1fb33b73940873007180",
+      "phase": "GRADER_SMOKE"
+    },
+    "evidence_inventory_path": "artifacts/trimem_v1/grader_smoke_official/evidence-inventory.json",
+    "evidence_inventory_raw_sha256": "c61ffdff2ab8857e8ebd212df9d8190b9424ebafd0c3a092b91de3a311108004",
+    "failure_receipt_path": "artifacts/trimem_v1/grader_smoke_official/failure-receipt.json",
+    "failure_receipt_raw_sha256": "fe9f98a07be06d7c5ee56110b0bc2058e9271f26ef0086b2232332aa7da42978"
+  },
   "official_grader_viability": "NOT_YET_ESTABLISHED",
   "performance": "NOT_MEASURED",
-  "schema": "trimem/grader-smoke-result/1.0",
-  "status": "CORRECTION_IN_PROGRESS",
+  "schema": "trimem/grader-smoke-result/1.1",
+  "status": "FAIL",
   "trimem_system_implementation": "CREDENTIAL_FREE_GREEN"
 }

@@ -34,7 +34,11 @@ jobs:
       - name: Run credential-free unit boundaries without skips
         run: |
           python scripts/trimem_pytest_no_skip.py tests/unit/test_trimem_*.py tests/trimem/e2e/test_full_replay.py
-      - name: Verify committed freeze and pre-EXEC readiness
+      - name: Verify committed freeze and terminal smoke failure closure
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
-          python scripts/trimem_verify_ready.py --level benchmark-approval --require-git-tracked
+          python scripts/trimem_verify_ready.py --level static --require-git-tracked
+          if python scripts/trimem_verify_ready.py --level benchmark-approval --require-git-tracked; then
+            echo "terminal grader-smoke failure unexpectedly allowed benchmark approval" >&2
+            exit 1
+          fi

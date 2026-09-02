@@ -293,13 +293,16 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
     assert cost["run_counts"]["total_physical_task_arm_runs"] == 153
     requirements = _read(ROOT / "artifacts/trimem_v1/readiness_requirements.json")
     assert requirements["current_status"] == {
-        "GRADER_EXEC_PACKAGE": "CORRECTION_IN_PROGRESS",
+        "DEV_APPROVAL_ALLOWED": "NO",
+        "ENDPOINT": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
+        "GRADER_EXEC_PACKAGE": "FAIL",
         "OFFICIAL_GRADER_VIABILITY": "NOT_YET_ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
+        "SCIENTIFIC_RESULT": "NOT_AGGREGATED",
         "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN",
     }
     pending = requirements["explicitly_allowed_pending_at_pre_exec_ready"]
-    assert "PENDING_EXEC_APPROVAL" in pending["official_grader_smoke"]
+    assert "NO_RERUN_AUTHORIZED" in pending["official_grader_smoke"]
     assert "PRE_DEVELOPMENT" in pending["selected_m2_checkpoint"]
     service_boundary = requirements["credential_free_service_ci_boundary"]
     assert "ALLOWED_PRE_EXEC" in service_boundary
@@ -312,10 +315,16 @@ def test_cost_and_pre_exec_readiness_are_two_phase_and_non_circular() -> None:
     assert "official grader/benchmark target image pull or run" in request["prohibited_before_approval"]
     assert "Docker image pull or run" not in request["prohibited_before_approval"]
     assert requirements["execution_counters"] == {
-        "grader_containers": 0,
+        "api_calls": 0,
+        "docker_pulls": 4,
+        "grader_containers": 6,
+        "input_tokens": 0,
         "model_gateway_calls": 0,
-        "official_grader_runs": 0,
+        "official_grader_runs": 6,
+        "output_tokens": 0,
         "paid_model_calls": 0,
+        "task_arm_runs": 0,
+        "total_usd": 0,
     }
     protection = _read(
         ROOT / "artifacts/trimem_v1/grader_smoke_environment_protection.json"
@@ -861,6 +870,36 @@ def test_self_asserted_smoke_pass_without_official_artifacts_is_rejected() -> No
         readiness.validate_grader_smoke_result(smoke)
 
 
+def test_committed_terminal_smoke_failure_is_hash_bound_and_blocks_approval() -> None:
+    smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
+    actual = readiness.validate_grader_smoke_result(smoke)
+
+    assert smoke["status"] == "FAIL"
+    assert smoke["endpoint"] == readiness.SMOKE_FAILURE_ENDPOINT
+    assert actual == {
+        "docker_pulls": 4,
+        "grader_containers": 6,
+        "input_tokens": 0,
+        "model_calls": 0,
+        "official_grader_runs": 6,
+        "output_tokens": 0,
+        "paid_model_calls": 0,
+        "total_usd": 0,
+    }
+    blockers = readiness.preapproval_blockers()
+    assert any("terminal grader-smoke adapter-contract failure" in row for row in blockers)
+
+
+def test_terminal_smoke_failure_rejects_rebound_receipt_hash() -> None:
+    smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
+    smoke["official_execution_failure_evidence"][
+        "failure_receipt_raw_sha256"
+    ] = "f" * 64
+
+    with pytest.raises(readiness.ReadinessError, match="path/raw hash binding"):
+        readiness.validate_grader_smoke_result(smoke)
+
+
 def test_official_smoke_pass_requires_cross_bound_public_inventory_and_history(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -965,6 +1004,35 @@ def test_pass_state_adds_exact_public_artifacts_to_dynamic_freeze(
         freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
         freeze.OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
         freeze.OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
+    }
+
+
+def test_fail_state_adds_only_exact_failure_artifacts_to_dynamic_freeze(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(freeze, "FROZEN_PATHS", ())
+    monkeypatch.setattr(freeze, "referenced_blob_paths", lambda root: ())
+    smoke_path = tmp_path / "artifacts/trimem_v1/grader_smoke_result.json"
+    selected_path = tmp_path / "configs/trimem_v1/selected_m2.json"
+    receipt_path = tmp_path / freeze.FAILURE_RECEIPT_PATH
+    inventory_path = tmp_path / freeze.EVIDENCE_INVENTORY_PATH
+    smoke_path.parent.mkdir(parents=True)
+    selected_path.parent.mkdir(parents=True)
+    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+    selected_path.write_text('{"status":"PRE_DEVELOPMENT"}', encoding="utf-8")
+    receipt_path.write_text("{}", encoding="utf-8")
+    inventory_path.write_text("{}", encoding="utf-8")
+    smoke_path.write_text(json.dumps({
+        "status": "FAIL",
+        "official_execution_failure_evidence": {
+            "failure_receipt_path": freeze.FAILURE_RECEIPT_PATH,
+            "evidence_inventory_path": freeze.EVIDENCE_INVENTORY_PATH,
+        },
+    }), encoding="utf-8")
+
+    assert set(freeze.frozen_paths(tmp_path)) == {
+        freeze.FAILURE_RECEIPT_PATH,
+        freeze.EVIDENCE_INVENTORY_PATH,
     }
 
 

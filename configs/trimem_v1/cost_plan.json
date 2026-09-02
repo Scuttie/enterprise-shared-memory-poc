@@ -2,10 +2,10 @@
   "actual_to_date": {
     "decomposition_calls": 0,
     "extraction_calls": 0,
-    "grader_containers": 0,
+    "grader_containers": 6,
     "input_tokens": 0,
     "model_calls": 0,
-    "official_grader_runs": 0,
+    "official_grader_runs": 6,
     "output_tokens": 0,
     "paid_model_calls": 0,
     "solve_calls": 0,

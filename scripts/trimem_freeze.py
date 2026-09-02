@@ -21,23 +21,24 @@ from trimem_multi_swe_probe_evidence import (
     PROBE_RESULT_PATH,
 )
 from trimem_grader_smoke_failure_evidence import (
-    EVIDENCE_INVENTORY_PATH,
-    FAILURE_RECEIPT_PATH,
+    EVIDENCE_INVENTORY_PATH as P014_EVIDENCE_INVENTORY_PATH,
+    FAILURE_RECEIPT_PATH as P014_FAILURE_RECEIPT_PATH,
+)
+from trimem_grader_smoke_failure_closure import (
+    EVIDENCE_INVENTORY_PATH as OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+    FAILURE_RECEIPT_PATH as OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
 )
 
 
 FREEZE_PATH = Path("artifacts/trimem_v1/freeze.json")
 OFFICIAL_SMOKE_PUBLIC_RESULT_PATH = (
-    "artifacts/trimem_v1/grader_smoke_official/public-results.json"
-)
-OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH = (
-    "artifacts/trimem_v1/grader_smoke_official/evidence-inventory.json"
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/public-results.json"
 )
 OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH = (
-    "artifacts/trimem_v1/grader_smoke_official/attestation-subject.json"
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-subject.json"
 )
 OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH = (
-    "artifacts/trimem_v1/grader_smoke_official/attestation-bundle.json"
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-bundle.json"
 )
 CONFIG_PATHS = (
     "configs/trimem_v1/arms.json",
@@ -67,6 +68,7 @@ ARTIFACT_PATHS = (
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json",
+    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_004.json",
     "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json",
     "artifacts/trimem_v1/credential_free_e2e/dqn_frozen_checkpoint.json",
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/checkpoints/source-json-extension-M2.json",
@@ -77,6 +79,10 @@ ARTIFACT_PATHS = (
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/events.ndjson",
     "artifacts/trimem_v1/grader_image_lock.json",
     "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json",
+    "artifacts/trimem_v1/multi_swe_report_semantics_lock.json",
+    "artifacts/trimem_v1/adapter_failure_envelope_contract.json",
+    P014_FAILURE_RECEIPT_PATH,
+    P014_EVIDENCE_INVENTORY_PATH,
     "artifacts/trimem_v1/grader_smoke_environment_protection.json",
     "artifacts/trimem_v1/grader_smoke_result.json",
     "artifacts/trimem_v1/noop_baseline_six_commit_audit.json",
@@ -85,6 +91,7 @@ ARTIFACT_PATHS = (
 )
 SCRIPT_PATHS = (
     "scripts/run_trimem_replay_e2e.py",
+    "scripts/trimem_atomic_evidence.py",
     "scripts/trimem_approved_phase.py",
     "scripts/trimem_benchmark_matrix.py",
     "scripts/trimem_benchmark_run.py",
@@ -93,7 +100,11 @@ SCRIPT_PATHS = (
     "scripts/trimem_exec_approval.py",
     "scripts/trimem_freeze.py",
     "scripts/trimem_grader_smoke.py",
+    "scripts/trimem_grader_smoke_authority.py",
+    "scripts/trimem_grader_smoke_failure_closure.py",
     "scripts/trimem_grader_smoke_failure_evidence.py",
+    "scripts/trimem_grader_smoke_finalization.py",
+    "scripts/trimem_grader_smoke_stage_evidence.py",
     "scripts/trimem_grader_smoke_protocol.py",
     "scripts/trimem_grader_smoke_trigger_preflight.py",
     "scripts/trimem_harness_lock.py",
@@ -104,6 +115,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_multi_swe_probe_evidence.py",
     "scripts/trimem_multi_swe_probe_request.py",
     "scripts/trimem_multi_swe_preexec.py",
+    "scripts/trimem_multi_swe_report_semantics.py",
     "scripts/trimem_official_grader.py",
     "scripts/trimem_public_artifact.py",
     "scripts/trimem_pull_locked_images.py",
@@ -193,12 +205,15 @@ MIGRATION_PATHS = (
 TEST_PATHS = (
     "tests/trimem/e2e/test_full_replay.py",
     "tests/trimem/test_real_services_e2e.py",
+    "tests/unit/test_trimem_atomic_evidence.py",
     "tests/unit/test_trimem_accounting_checkpoint.py",
     "tests/unit/test_trimem_benchmark_checkpoint_recovery.py",
     "tests/unit/test_trimem_benchmark_readiness.py",
     "tests/unit/test_trimem_grader_smoke_trigger.py",
+    "tests/unit/test_trimem_grader_smoke_authority.py",
     "tests/unit/test_trimem_grader_smoke_execution_accounting.py",
     "tests/unit/test_trimem_grader_smoke_failure_evidence.py",
+    "tests/unit/test_trimem_grader_terminal_evidence.py",
     "tests/unit/test_trimem_harness_lock.py",
     "tests/unit/test_trimem_multi_prebuilt_evaluation.py",
     "tests/unit/test_trimem_multi_swe_entrypoint.py",
@@ -207,6 +222,8 @@ TEST_PATHS = (
     "tests/unit/test_trimem_multi_swe_probe_evidence.py",
     "tests/unit/test_trimem_multi_swe_probe_request.py",
     "tests/unit/test_trimem_multi_swe_preexec.py",
+    "tests/unit/test_trimem_multi_swe_report_semantics.py",
+    "tests/unit/test_trimem_p015_production_semantics_path.py",
     "tests/unit/test_trimem_git_workspace.py",
     "tests/unit/test_trimem_m1_postwrite_recovery.py",
     "tests/unit/test_trimem_policy_consolidation.py",
@@ -238,6 +255,7 @@ FROZEN_PATHS = (
     "docs/TRIMEM_V1_SYSTEM.md",
     "reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md",
     "reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md",
+    "reports/TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md",
     "pyproject.toml",
     "requirements.lock",
     "scripts/check_migration_head.py",
@@ -266,8 +284,8 @@ OFFICIAL_SMOKE_EVIDENCE_PATH_FIELDS = {
     "evidence_inventory_path": OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
 }
 OFFICIAL_SMOKE_FAILURE_EVIDENCE_PATH_FIELDS = {
-    "failure_receipt_path": FAILURE_RECEIPT_PATH,
-    "evidence_inventory_path": EVIDENCE_INVENTORY_PATH,
+    "failure_receipt_path": OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
+    "evidence_inventory_path": OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
 }
 EVIDENCE_EVENT_PATHS = (
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/events.ndjson",
@@ -421,7 +439,8 @@ def frozen_paths(root: Path) -> tuple[str, ...]:
         for field, expected_path in OFFICIAL_SMOKE_FAILURE_EVIDENCE_PATH_FIELDS.items():
             if evidence.get(field) != expected_path:
                 raise ValueError(f"failed grader smoke has noncanonical {field}")
-            paths.append(expected_path)
+            if expected_path not in paths:
+                paths.append(expected_path)
         for relative in (
             OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
             OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
@@ -432,7 +451,10 @@ def frozen_paths(root: Path) -> tuple[str, ...]:
                 raise ValueError(
                     f"failed grader smoke cannot retain passed execution artifact: {relative}"
                 )
-    elif smoke_status == "CORRECTION_IN_PROGRESS":
+    elif smoke_status in {
+        "CORRECTION_IN_PROGRESS",
+        "CORRECTION_READY_FOR_EXECUTION",
+    }:
         if (
             "official_execution_evidence" in smoke
             or "official_execution_failure_evidence" in smoke

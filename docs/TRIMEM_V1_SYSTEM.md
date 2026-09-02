@@ -210,13 +210,12 @@ benchmark result existed when this event-contract amendment was made, and the
 six identities, twelve GOLD/NOOP_BASELINE rows, image digests, target-set hash,
 and NOOP patch are unchanged.
 
-P0.1.3 reserves the new one-time active path
+P0.1.3 historically reserved the one-time path
 `artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json`, schema
 `trimem/grader-smoke-branch-trigger/1.2`, and concurrency group
 `trimem-v1-grader-smoke-exec-003`. Both earlier request files are immutable
-historical inputs. A correction commit cannot trigger the grader; only a later
-one-parent commit adding `_003` and no other path can create the new run, which
-still requires a fresh run-bound approval at the protected environment.
+historical inputs. That authorization and path are no longer active; the
+corresponding historical trigger and execution evidence remain immutable.
 
 The six-instance smoke is also storage-bounded: for each frozen identity it
 pulls and inspects one target digest, executes GOLD then NOOP_BASELINE, and
@@ -255,12 +254,47 @@ official grading, GOLD/NOOP execution, or any model/API call. Passing them is
 portability evidence only; it does not establish official-grader viability and
 cannot authorize a grader run.
 
-Until the real smoke succeeds, the executable status is
+The immutable P0.1.4 diagnostic campaign is run `33630256522` attempt 1 at
+`0e9ed55196da922dcebf1fb33b73940873007180`: six cells were attempted, six
+official containers ran, six complete execution-evidence rows were captured,
+five cells were adapter-normalized, zero cells became authoritative, and six
+cells remained unattempted. Its four target-image pulls (three target plus one
+support), six grader calls/runs, and one adapter-contract failure belong only to
+that historical window; all model/API/token/USD and task-arm counters were zero.
+
+P0.1.5 freezes Multi-SWE result interpretation as two distinct stages:
+`REPORT_VALID=LOCAL_TRANSITION_PREDICATE`, followed by
+`FINAL_RESOLVED=REPORT_VALID AND ALL_FROZEN_EXPECTED_TRANSITION_KEYS_COVERED`.
+Thus a valid local report with incomplete expected-category coverage is a legal
+final unresolved result, and NOOP is defined by that final result rather than
+by local validity. Success and failure now use one restricted `_trimem`
+evidence envelope; any observed official outcome survives a later adapter
+failure while `scientific_resolved` remains null. Each invoked cell gets one
+terminal record. Campaign authority is finalized through a content-bound
+journal, and an interrupted promotion or rollback is recovered to a canonical
+non-authoritative tree. Inventory and encryption are independent of the
+authority-recovery outcome, while failure closure requires recovery success or
+skip. Plaintext is deleted only after encrypted evidence uploads successfully;
+an upload failure preserves plaintext and ciphertext and fails the workflow.
+
+The current P0.1.5 pre-`_005` correction status is
 `TRIMEM_SYSTEM_IMPLEMENTATION=CREDENTIAL_FREE_GREEN`,
-`GRADER_EXEC_PACKAGE=CORRECTION_IN_PROGRESS`,
+`GRADER_EXEC_PACKAGE=CORRECTION_READY_FOR_EXECUTION`,
+`ENDPOINT=TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_READY`,
 `OFFICIAL_GRADER_VIABILITY=NOT_YET_ESTABLISHED`, and
-`PERFORMANCE=NOT_MEASURED`, with `DEV_APPROVAL_ALLOWED=NO`. The P0.1.3 starting
-counters remain image pulls = 0, grader containers = 0, official grader runs =
-0, GOLD/NOOP cells = 0, model/API calls = 0, input/output tokens = 0, and total
-USD = 0. Credential-free green is not an official-grader or
-benchmark-readiness result.
+`PERFORMANCE=NOT_MEASURED`, with `DEV_APPROVAL_ALLOWED=NO`. In this distinct
+P0.1.5 correction window, target/support image pulls, grader containers,
+official grader runs, GOLD/NOOP cells, task-arm runs, model/API calls,
+input/output tokens, and USD are all zero. Credential-free green and
+correction-ready status do not establish official-grader viability or a
+benchmark result. Only the exact later `_005` sentinel-only child and a fresh
+run/attempt-bound protected approval may start the one authorized smoke.
+`TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_READY` is a non-terminal
+pre-execution state and becomes accurate only after every local and affected
+remote credential-free correction gate is green. The user authorization
+identity for the subsequent one-time approval is exactly
+`TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_EXEC_APPROVED_ONCE`. It permits
+only the sentinel-only `_005` child, one protected attempt-1 workflow run, one
+manual environment approval, and the twelve frozen zero-model GOLD/NOOP cells.
+It does not permit a rerun, `_006`, a model/API call, DEV, HELDOUT, ablation,
+target replacement, merge, tag, or release.

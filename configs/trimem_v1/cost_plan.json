@@ -12,6 +12,34 @@
     "task_arm_runs": 0,
     "task_instances": 0
   },
+  "actual_to_date_scope": "CUMULATIVE_INCLUDES_P0.1.4_DIAGNOSTIC_HISTORY",
+  "accounting_windows": {
+    "p014_diagnostic_history": {
+      "grader_containers": 6,
+      "model_api_calls": 0,
+      "official_grader_runs": 6,
+      "paid_model_calls": 0,
+      "scope": "IMMUTABLE_DIAGNOSTIC_HISTORY_ONLY",
+      "total_usd": 0,
+      "workflow_run_attempt": 1,
+      "workflow_run_id": 33630256522
+    },
+    "p015_correction_pre_exec_005": {
+      "api_calls": 0,
+      "grader_containers": 0,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "model_gateway_calls": 0,
+      "official_grader_runs": 0,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "scope": "P0.1.5_CORRECTION_BEFORE_EXEC_005",
+      "support_image_pulls": 0,
+      "target_image_pulls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0
+    }
+  },
   "calculation_contract": {
     "development_physical_runs": "4 preregistered M2 candidate bundles * 12 targets + selected-prompt M0 and M1 * 12 targets = 72; candidate results are tuning evidence, not component ablations",
     "decomposition_calls": "task_arm_runs * exactly one decomposition call",
@@ -146,6 +174,6 @@
     "heldout_unique_instances": 27,
     "total_physical_task_arm_runs": 153
   },
-  "schema": "trimem/cost-plan/1.1",
+  "schema": "trimem/cost-plan/1.2",
   "status": "FROZEN_FOR_BENCHMARK_APPROVAL"
 }

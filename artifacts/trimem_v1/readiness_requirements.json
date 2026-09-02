@@ -9,84 +9,39 @@
     "exact gpt-5.4-2026-03-05 pricing and request schema plus immutable all-MiniLM-L6-v2 embedding revision",
     "expected cost separated from proposed hard caps for 72 development and 81 held-out task-arm runs plus 12 grader-smoke containers",
     "fail-closed per-arm/per-benchmark n, resolved, and Pass@1 aggregation with SWE-bench Verified primary, Multi-SWE-bench secondary, and pooled totals descriptive only",
+    "one shared pinned Multi-SWE two-stage report-semantics helper and one total v2 adapter evidence envelope",
+    "exactly one terminal record per attempted smoke cell with independent seven-layer failure taxonomy, mandatory content-bound campaign-finalization journal, fail-closed interrupted-authority recovery, authority-independent evidence inventory/encryption, durable upload before plaintext cleanup, and plaintext preservation on upload failure",
     "phase-specific single-use external approval plan bound to an already committed Git HEAD, freeze digest, workflow run ID, and run attempt",
     "public benchmark evaluation scope and no-redistribution policy documented; SWE-bench Verified dataset license remains undeclared and the EXEC actor must accept applicable source/project terms"
   ],
   "current_status": {
     "DEV_APPROVAL_ALLOWED": "NO",
-    "ENDPOINT": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
-    "GRADER_EXEC_PACKAGE": "FAIL",
+    "ENDPOINT": "TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_READY",
+    "GRADER_EXEC_PACKAGE": "CORRECTION_READY_FOR_EXECUTION",
     "OFFICIAL_GRADER_VIABILITY": "NOT_YET_ESTABLISHED",
     "PERFORMANCE": "NOT_MEASURED",
     "SCIENTIFIC_RESULT": "NOT_AGGREGATED",
     "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN"
   },
+  "execution_counter_scope": "P0.1.5_CORRECTION_BEFORE_EXEC_005",
   "execution_counters": {
     "api_calls": 0,
-    "docker_pulls": 4,
-    "grader_containers": 6,
+    "grader_containers": 0,
     "input_tokens": 0,
+    "model_calls": 0,
     "model_gateway_calls": 0,
-    "official_grader_runs": 6,
+    "official_grader_runs": 0,
     "output_tokens": 0,
     "paid_model_calls": 0,
+    "support_image_pulls": 0,
+    "target_image_pulls": 0,
     "task_arm_runs": 0,
     "total_usd": 0
   },
   "explicitly_allowed_pending_at_pre_exec_ready": {
-    "external_hard_cap_approval": "NO_ACTIVE_APPROVAL; the P0.1.4 one-time authorization was consumed by run 33630256522 attempt 1",
-    "official_grader_smoke": "TERMINAL_ADAPTER_CONTRACT_NOT_READY; NO_RERUN_AUTHORIZED; viability NOT_YET_ESTABLISHED; _005 NOT_AUTHORIZED",
+    "external_hard_cap_approval": "NO_ACTIVE_APPROVAL; the P0.1.4 one-time authorization was consumed by run 33630256522 attempt 1; a fresh exact _005 approval is required",
+    "official_grader_smoke": "CORRECTION_READY_FOR_EXECUTION; only the exact _005 sentinel-only child plus a fresh protected attempt-1 approval carrying TRIMEM_GRADER_SMOKE_REPORT_SEMANTICS_RECOVERY_EXEC_APPROVED_ONCE may execute; viability remains NOT_YET_ESTABLISHED",
     "selected_m2_checkpoint": "PRE_DEVELOPMENT; produced only after approved development execution"
-  },
-  "grader_smoke_terminal_execution": {
-    "accounting": {
-      "api_calls": 0,
-      "cached_input_tokens": 0,
-      "decomposition_calls": 0,
-      "extraction_calls": 0,
-      "input_tokens": 0,
-      "model_calls": 0,
-      "model_gateway_calls": 0,
-      "output_tokens": 0,
-      "paid_model_calls": 0,
-      "reasoning_tokens": 0,
-      "solve_calls": 0,
-      "task_arm_runs": 0,
-      "total_usd": 0
-    },
-    "authorization": {
-      "request_005": "NOT_AUTHORIZED",
-      "rerun": "NO_RERUN_AUTHORIZED",
-      "status": "CONSUMED"
-    },
-    "campaign": {
-      "adapter_normalized_cells": 5,
-      "executed_cells": 6,
-      "gold_executed": 3,
-      "gold_normalized": 3,
-      "noop_baseline_executed": 3,
-      "noop_baseline_normalized": 2,
-      "required_cells": 12,
-      "unattempted_cells": 6
-    },
-    "endpoint": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
-    "failure_layers": {
-      "masking": "Failure evidence retained materialized_private_inputs at the top level, while the caller read only _trimem.materialized_private_inputs and surfaced official grader private-input identity set differs.",
-      "primary": "The adapter incorrectly required Multi-SWE per-instance Report.valid to equal the final resolved value and rejected the valid=true plus final unresolved Vue NOOP_BASELINE result as Multi-SWE official per-instance status identity/result mismatch."
-    },
-    "git_head": "0e9ed55196da922dcebf1fb33b73940873007180",
-    "prebuilt_evaluation_contract": {
-      "force_build": false,
-      "host_prepare_sh_accesses": 0,
-      "human_mode": true,
-      "mode": "MULTI_SWE_PREBUILT_EVALUATION",
-      "need_clone": false,
-      "source_image_builds": 0,
-      "status": "PASS",
-      "submitted_patch_bind_mount": "/home/fix.patch"
-    },
-    "workflow_run_attempt": 1,
-    "workflow_run_id": 33630256522
   },
   "frozen_counts": {
     "development_instances": 12,
@@ -97,17 +52,90 @@
     "heldout_physical_task_arm_runs": 81,
     "total_benchmark_physical_task_arm_runs": 153
   },
+  "grader_smoke_exec_005_failure_closure": {
+    "evidence_inventory_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/evidence-inventory.json",
+    "failure_receipt_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/failure-receipt.json",
+    "historical_p014_paths_reused": false,
+    "schema": "trimem/grader-smoke-failure-closure/2.0",
+    "status": "PENDING_EXECUTION"
+  },
+  "historical_grader_smoke_execution": {
+    "approval_binding": {
+      "approval_artifact_sha256": "26d65d462b09d2db6988bbe6842244278f49c58b559750a4b6455ceb1559c392",
+      "approved_request_sha256": "1cd2d983f9f140392c6c989a9a395c48d5ddc2176cb009b30a98a167c95218ef",
+      "approved_workflow_run_attempt": "1",
+      "approved_workflow_run_id": "33630256522",
+      "freeze_sha256": "583b8cf815ef78a1c29eb1f4c6cf25c01b0014cb511bd440e131e982e341eca1",
+      "git_head": "0e9ed55196da922dcebf1fb33b73940873007180",
+      "phase": "GRADER_SMOKE"
+    },
+    "campaign": {
+      "adapter_normalized_cell_count": 5,
+      "attempted_cell_count": 6,
+      "authoritative_cell_count": 0,
+      "complete_execution_evidence_count": 6,
+      "official_execution_count": 6,
+      "required_cell_count": 12,
+      "unattempted_cell_count": 6
+    },
+    "endpoint": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
+    "evidence": {
+      "evidence_inventory_path": "artifacts/trimem_v1/grader_smoke_official/evidence-inventory.json",
+      "evidence_inventory_raw_sha256": "c61ffdff2ab8857e8ebd212df9d8190b9424ebafd0c3a092b91de3a311108004",
+      "failure_receipt_path": "artifacts/trimem_v1/grader_smoke_official/failure-receipt.json",
+      "failure_receipt_raw_sha256": "fe9f98a07be06d7c5ee56110b0bc2058e9271f26ef0086b2232332aa7da42978"
+    },
+    "execution_accounting": {
+      "api_calls": 0,
+      "cached_input_tokens": 0,
+      "decomposition_calls": 0,
+      "docker_pulls": 4,
+      "extraction_calls": 0,
+      "grader_calls": 6,
+      "grader_containers": 6,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "model_gateway_calls": 0,
+      "official_grader_runs": 6,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "reasoning_tokens": 0,
+      "solve_calls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0
+    },
+    "failure_taxonomy": {
+      "adapter_contract_failures": 1,
+      "aggregate_failures": 0,
+      "environment_failures": 0,
+      "image_lifecycle_failures": 0,
+      "infrastructure_failures": 0,
+      "official_harness_failures": 0,
+      "official_report_failures": 0
+    },
+    "git_head": "0e9ed55196da922dcebf1fb33b73940873007180",
+    "image_lifecycle": {
+      "host_prepare_sh_access_count": 0,
+      "source_image_build_count": 0,
+      "support_image_pulls": 1,
+      "target_image_pulls": 3
+    },
+    "scientific_result": "NOT_AGGREGATED",
+    "status": "DIAGNOSTIC_HISTORY_ONLY",
+    "workflow_run_attempt": 1,
+    "workflow_run_id": 33630256522
+  },
   "post_approval_gates": [
-    "GRADER_SMOKE approval, digest-only pull and observed digest verification, then official GOLD+NOOP_BASELINE PASS",
+    "one fresh exact _005 GRADER_SMOKE attempt-1 approval, digest-only pull and observed digest verification, then official GOLD+NOOP_BASELINE PASS",
     "new committed smoke result and freeze before DEVELOPMENT_TUNING approval",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
   ],
-  "schema": "trimem/readiness-requirements/1.2",
+  "schema": "trimem/readiness-requirements/1.3",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
-  "static_ci_meaning": "Static CI and credential-free E2E establish implementation and execution-plan readiness only. They do not claim official grader, paid model, benchmark, causal, performance, full-suite, or leaderboard viability.",
+  "static_ci_meaning": "Static CI and credential-free E2E establish implementation and report-semantics recovery readiness only. They do not claim official grader, paid model, benchmark, causal, performance, full-suite, or leaderboard viability.",
   "target_set_sha256": {
     "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
     "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",

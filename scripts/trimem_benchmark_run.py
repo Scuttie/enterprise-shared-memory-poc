@@ -386,6 +386,10 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
         raise BenchmarkExecutionError("exact GITHUB_RUN_ID is required for single-dispatch approval binding")
     if not workflow_run_attempt or re.fullmatch(r"[1-9][0-9]*", workflow_run_attempt) is None:
         raise BenchmarkExecutionError("exact GITHUB_RUN_ATTEMPT is required for single-attempt approval binding")
+    if split == "grader-smoke" and workflow_run_attempt != "1":
+        raise BenchmarkExecutionError(
+            "grader-smoke one-time recovery requires workflow run attempt 1"
+        )
     if str(approval.get("approved_workflow_run_id")) != workflow_run_id:
         raise BenchmarkExecutionError("approval workflow run ID differs from this dispatch")
     if str(approval.get("approved_workflow_run_attempt")) != workflow_run_attempt:

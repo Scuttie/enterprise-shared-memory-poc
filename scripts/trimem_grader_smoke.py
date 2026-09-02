@@ -47,15 +47,35 @@ from trimem_pull_locked_images import (  # noqa: E402
 )
 from trimem_official_grader import (  # noqa: E402
     FrozenOfficialTarget,
+    MULTI_FIX_PATCH_RUN_COMMAND,
     MULTI_HARNESS_REVISION,
     SWE_HARNESS_REVISION,
     OfficialGraderError,
     parse_official_report,
+    validate_multi_swe_container_exit_status,
     validate_official_test_evidence,
 )
 
 
 EMPTY_PATCH_SHA256 = sha256_bytes(b"")
+SMOKE_ACCOUNTING_FIELDS = (
+    "api_calls",
+    "cached_input_tokens",
+    "decomposition_calls",
+    "extraction_calls",
+    "grader_calls",
+    "grader_containers",
+    "input_tokens",
+    "model_calls",
+    "model_gateway_calls",
+    "official_grader_runs",
+    "output_tokens",
+    "paid_model_calls",
+    "reasoning_tokens",
+    "solve_calls",
+    "task_arm_runs",
+    "total_usd",
+)
 
 _EXECUTION_CONTRACT_FIELDS = {
     "schema",
@@ -110,6 +130,11 @@ def _expected_execution_contract(
             "human_mode": True,
             "force_build": False,
             "need_clone": False,
+            "fix_patch_run_cmd": MULTI_FIX_PATCH_RUN_COMMAND,
+            "container_image_execution": "IMMUTABLE_DIGEST",
+            "tag_digest_same_image_id_required": True,
+            "docker_pull_fallback_allowed": False,
+            "container_exit_status": "CAPTURED_AND_FULL_DOMAIN_VALIDATED",
             "report_module": "multi_swe_bench.harness.gen_report",
             "report_mode": "evaluation",
             "patch_transport": {
@@ -128,12 +153,12 @@ def _validated_execution_contract(
 
     trimem = grade.report.get("_trimem") if isinstance(grade.report, Mapping) else None
     raw_contract = trimem.get("execution_contract") if isinstance(trimem, Mapping) else None
-    if not isinstance(raw_contract, Mapping) or set(raw_contract) != _EXECUTION_CONTRACT_FIELDS:
+    expected = _expected_execution_contract(target, patch_raw)
+    if not isinstance(raw_contract, Mapping) or set(raw_contract) != set(expected):
         raise BenchmarkExecutionError(
             "official grader report has no exact execution-contract evidence"
         )
     contract = dict(raw_contract)
-    expected = _expected_execution_contract(target, patch_raw)
     try:
         equal = canonical_bytes(contract) == canonical_bytes(expected)
     except (TypeError, ValueError) as exc:
@@ -426,8 +451,6 @@ def _smoke_execution_summary(
     *,
     failures: list[str],
     infrastructure_failures: list[str],
-    grader_containers: int,
-    official_grader_runs: int,
 ) -> dict[str, Any]:
     """Summarize explicit per-cell proofs; absence of failures is not evidence."""
 
@@ -440,9 +463,45 @@ def _smoke_execution_summary(
         "host_prepare_sh_access_count",
         "source_image_build_count",
         "api_calls",
+        "container_exit_status_code",
+        "container_exit_acceptance",
+        "container_exit_status_sha256",
+        "actual_accounting",
     }
+    accounting_fields = set(SMOKE_ACCOUNTING_FIELDS)
     target_ids = [str(target.get("target_id")) for target in targets]
     evidence_ids = [row.get("target_id") for row in cell_evidence]
+    targets_by_id = {
+        str(target.get("target_id")): target
+        for target in targets
+        if isinstance(target.get("target_id"), str)
+    }
+
+    def invalid_container_exit(row: Mapping[str, Any]) -> bool:
+        target = targets_by_id.get(str(row.get("target_id")))
+        if target is None:
+            return True
+        status_code = row.get("container_exit_status_code")
+        acceptance = row.get("container_exit_acceptance")
+        status_sha256 = row.get("container_exit_status_sha256")
+        if target.get("benchmark_id") == "swebench_verified":
+            return any(
+                value is not None
+                for value in (status_code, acceptance, status_sha256)
+            )
+        return (
+            type(status_code) is not int
+            or not 0 <= status_code <= 255
+            or acceptance
+            not in {
+                "ZERO_EXIT",
+                "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION",
+            }
+            or not isinstance(status_sha256, str)
+            or re.fullmatch(r"[0-9a-f]{64}", status_sha256) is None
+            or (target.get("expected_resolved") is True and status_code != 0)
+        )
+
     malformed = [
         str(row.get("target_id"))
         for row in cell_evidence
@@ -464,6 +523,15 @@ def _smoke_execution_summary(
                 "api_calls",
             )
         )
+        or invalid_container_exit(row)
+        or not isinstance(row.get("actual_accounting"), Mapping)
+        or set(row.get("actual_accounting", {})) != accounting_fields
+        or any(
+            type(value) is not int or value < 0
+            for value in row.get("actual_accounting", {}).values()
+        )
+        or row.get("actual_accounting", {}).get("api_calls")
+        != row.get("api_calls")
     ]
     summary_failures = list(failures)
     if malformed or evidence_ids != target_ids:
@@ -486,9 +554,47 @@ def _smoke_execution_summary(
         "submitted_patch_identity_count": true_count("submitted_patch_identity"),
         "host_prepare_sh_access_count": integer_total("host_prepare_sh_access_count"),
         "source_image_build_count": integer_total("source_image_build_count"),
+        "container_exit_status_captured_count": sum(
+            row.get("container_exit_status_sha256") is not None
+            for row in cell_evidence
+        ),
+        "container_exit_status_validated_count": sum(
+            row.get("container_exit_acceptance")
+            in {
+                "ZERO_EXIT",
+                "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION",
+            }
+            for row in cell_evidence
+        ),
+        "resolved_container_zero_exit_count": sum(
+            targets_by_id.get(str(row.get("target_id")), {}).get(
+                "expected_resolved"
+            )
+            is True
+            and targets_by_id.get(str(row.get("target_id")), {}).get(
+                "benchmark_id"
+            )
+            != "swebench_verified"
+            and row.get("container_exit_status_code") == 0
+            for row in cell_evidence
+        ),
         "api_calls": integer_total("api_calls"),
     }
     expected_count = len(targets)
+    accounting_totals = {
+        field: sum(
+            row.get("actual_accounting", {}).get(field, 0)
+            for row in cell_evidence
+            if type(row.get("actual_accounting", {}).get(field, 0)) is int
+        )
+        for field in SMOKE_ACCOUNTING_FIELDS
+    }
+    expected_accounting = {
+        field: expected_count
+        if field in {"grader_calls", "grader_containers", "official_grader_runs"}
+        else 0
+        for field in SMOKE_ACCOUNTING_FIELDS
+    }
     for field in (
         "patch_applied_count",
         "tests_executed_count",
@@ -504,10 +610,24 @@ def _smoke_execution_summary(
     ):
         if counts[field] != 0:
             summary_failures.append(field.upper())
-    if grader_containers != expected_count:
-        summary_failures.append("GRADER_CONTAINER_COUNT")
-    if official_grader_runs != expected_count:
-        summary_failures.append("OFFICIAL_GRADER_RUN_COUNT")
+    expected_multi_count = sum(
+        target.get("benchmark_id") != "swebench_verified" for target in targets
+    )
+    expected_resolved_multi_count = sum(
+        target.get("benchmark_id") != "swebench_verified"
+        and target.get("expected_resolved") is True
+        for target in targets
+    )
+    for field in (
+        "container_exit_status_captured_count",
+        "container_exit_status_validated_count",
+    ):
+        if counts[field] != expected_multi_count:
+            summary_failures.append(field.upper())
+    if counts["resolved_container_zero_exit_count"] != expected_resolved_multi_count:
+        summary_failures.append("RESOLVED_CONTAINER_ZERO_EXIT_COUNT")
+    if accounting_totals != expected_accounting:
+        summary_failures.append("ACTUAL_ACCOUNTING")
     distinct_failures = sorted(set(summary_failures))
     distinct_infrastructure = sorted(set(infrastructure_failures))
     return {
@@ -520,12 +640,9 @@ def _smoke_execution_summary(
         },
         "empty_patch_ids": [],
         "failures": distinct_failures,
-        "grader_containers": grader_containers,
-        "official_grader_runs": official_grader_runs,
+        **accounting_totals,
         **counts,
         "infrastructure_failure_count": len(distinct_infrastructure),
-        "model_gateway_calls": 0,
-        "paid_model_calls": 0,
         "status": "PASS" if not distinct_failures else "FAIL",
     }
 
@@ -974,7 +1091,15 @@ def _grader_test_evidence(
     grader_root: Path,
     target: FrozenOfficialTarget,
     source_row: Mapping[str, Any],
-) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, bool]]:
+    patch_raw: bytes,
+) -> tuple[
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, bool],
+    dict[str, Any] | None,
+    dict[str, Any] | None,
+]:
     trimem = grade.report.get("_trimem") if isinstance(grade.report, Mapping) else None
     test_evidence = trimem.get("test_evidence") if isinstance(trimem, Mapping) else None
     if not isinstance(test_evidence, Mapping):
@@ -1024,10 +1149,60 @@ def _grader_test_evidence(
         raise BenchmarkExecutionError(
             "official grader test status/report summary binding drift"
         )
-    return result[0], result[1], validated_summary, {
-        "patch_applied": True,
-        "tests_executed": True,
-    }
+    container_exit_ref: dict[str, Any] | None = None
+    validated_exit_summary: dict[str, Any] | None = None
+    if target.benchmark_id != "swebench_verified":
+        source_reference = test_evidence.get("container_exit_status")
+        source_summary = test_evidence.get("container_exit_summary")
+        if not isinstance(source_reference, Mapping) or not isinstance(source_summary, Mapping):
+            raise BenchmarkExecutionError(
+                "official grader returned no Multi-SWE container exit evidence"
+            )
+        relative = source_reference.get("path")
+        if not isinstance(relative, str) or Path(relative).is_absolute() or ".." in Path(relative).parts:
+            raise BenchmarkExecutionError(
+                "official grader returned unsafe Multi-SWE container exit reference"
+            )
+        source = (grader_root / relative).resolve()
+        if grader_root.resolve() not in source.parents or not source.is_file():
+            raise BenchmarkExecutionError("official grader container exit evidence is missing")
+        container_exit_ref = evidence_reference(task_dir, source)
+        exit_raw = source.read_bytes()
+        if (
+            container_exit_ref.get("sha256") != source_reference.get("sha256")
+            or container_exit_ref.get("bytes") != source_reference.get("bytes")
+            or container_exit_ref.get("bytes", 0) <= 0
+            or not exit_raw.strip()
+        ):
+            raise BenchmarkExecutionError(
+                "official grader container exit evidence digest/size mismatch"
+            )
+        try:
+            validated_exit_summary = validate_multi_swe_container_exit_status(
+                target,
+                raw=exit_raw,
+                resolved=grade.resolved,
+                test_summary=validated_summary,
+                expected_patch=patch_raw.decode("utf-8"),
+            )
+        except (UnicodeDecodeError, OfficialGraderError) as exc:
+            raise BenchmarkExecutionError(
+                f"official grader container exit evidence did not validate: {exc}"
+            ) from exc
+        if canonical_bytes(dict(source_summary)) != canonical_bytes(validated_exit_summary):
+            raise BenchmarkExecutionError(
+                "official grader container exit summary binding drift"
+            )
+    elif "container_exit_status" in test_evidence or "container_exit_summary" in test_evidence:
+        raise BenchmarkExecutionError("SWE-bench unexpectedly returned Multi-SWE exit evidence")
+    return (
+        result[0],
+        result[1],
+        validated_summary,
+        {"patch_applied": True, "tests_executed": True},
+        container_exit_ref,
+        validated_exit_summary,
+    )
 
 
 def _run_smoke_impl(
@@ -1192,13 +1367,21 @@ def _run_smoke_impl(
             observed = "UNPROVEN"
             failures.append(target["target_id"])
             infrastructure_failures.append(target["target_id"])
-        test_output_ref, test_status_ref, test_summary, test_execution = (
+        (
+            test_output_ref,
+            test_status_ref,
+            test_summary,
+            test_execution,
+            container_exit_ref,
+            container_exit_summary,
+        ) = (
             _grader_test_evidence(
                 grade,
                 task_dir=task_dir,
                 grader_root=grader_root,
                 target=grader_target,
                 source_row=source,
+                patch_raw=patch_raw,
             )
         )
         trimem_report = grade.report.get("_trimem") if isinstance(grade.report, Mapping) else None
@@ -1210,6 +1393,15 @@ def _run_smoke_impl(
             "official_test_status": {
                 "bytes": test_status_ref["bytes"], "sha256": test_status_ref["sha256"],
             },
+            "container_exit_status": (
+                {
+                    "bytes": container_exit_ref["bytes"],
+                    "sha256": container_exit_ref["sha256"],
+                }
+                if container_exit_ref is not None
+                else None
+            ),
+            "container_exit_summary": container_exit_summary,
             "probe": target["probe"],
             "summary": test_summary,
             "target_id": target["target_id"],
@@ -1222,6 +1414,14 @@ def _run_smoke_impl(
             "schema": "trimem/grader-smoke-container-evidence/1.0",
             "container_digest": grade.container_digest,
             "container_started": grade.container_started,
+            "container_exit_status_code": (
+                container_exit_summary["status_code"]
+                if container_exit_summary is not None
+                else None
+            ),
+            "container_exit_status_sha256": (
+                container_exit_ref["sha256"] if container_exit_ref is not None else None
+            ),
             "exit_code": grade.exit_code,
             "official": grade.official,
             "status": grade.status,
@@ -1260,6 +1460,39 @@ def _run_smoke_impl(
                 "source_image_build_calls"
             ],
             "api_calls": execution_contract["api_calls"],
+            "container_exit_status_code": (
+                container_exit_summary["status_code"]
+                if container_exit_summary is not None
+                else None
+            ),
+            "container_exit_acceptance": (
+                container_exit_summary["acceptance"]
+                if container_exit_summary is not None
+                else None
+            ),
+            "container_exit_status_sha256": (
+                container_exit_ref["sha256"]
+                if container_exit_ref is not None
+                else None
+            ),
+        }
+        actual_accounting = {
+            "api_calls": 0,
+            "cached_input_tokens": 0,
+            "decomposition_calls": 0,
+            "extraction_calls": 0,
+            "grader_calls": 1,
+            "grader_containers": int(grade.container_started),
+            "input_tokens": 0,
+            "model_calls": 0,
+            "model_gateway_calls": 0,
+            "official_grader_runs": int(grade.official and grade.container_started),
+            "output_tokens": 0,
+            "paid_model_calls": 0,
+            "reasoning_tokens": 0,
+            "solve_calls": 0,
+            "task_arm_runs": 0,
+            "total_usd": 0,
         }
         record = {
             "target_id": target["target_id"],
@@ -1273,6 +1506,14 @@ def _run_smoke_impl(
             "grader_status": grade.status,
             "grader_container_digest": grade.container_digest,
             "container_started": grade.container_started,
+            "container_exit_status_code": (
+                container_exit_summary["status_code"]
+                if container_exit_summary is not None
+                else None
+            ),
+            "container_exit_status_sha256": (
+                container_exit_ref["sha256"] if container_exit_ref is not None else None
+            ),
             "official_grader": grade.official,
             "resolved": grade.resolved,
             "patch_bytes": len(patch_raw),
@@ -1283,11 +1524,7 @@ def _run_smoke_impl(
             "execution_control_sha256": execution_control_sha256,
             "submitted_patch_identity_sha256": submitted_patch_identity_sha256,
             "execution_evidence": row_execution_evidence,
-            "actual_accounting": {
-                "model_gateway_calls": 0, "paid_model_calls": 0, "api_calls": 0,
-                "grader_calls": 1, "grader_containers": int(grade.container_started),
-                "official_grader_runs": int(grade.official and grade.container_started),
-            },
+            "actual_accounting": actual_accounting,
             "evidence": {
                 "patch": evidence_reference(task_dir, patch_path),
                 "tests": evidence_reference(task_dir, tests_path),
@@ -1309,32 +1546,31 @@ def _run_smoke_impl(
                 "applied_patch": applied_patch_ref,
                 "test_output": test_output_ref,
                 "official_test_status": test_status_ref,
+                **(
+                    {"container_exit_status": container_exit_ref}
+                    if container_exit_ref is not None
+                    else {}
+                ),
                 "restricted_grader_raw": restricted_evidence_references(
                     task_dir, grader_root
                 ),
             },
         }
         write_json(task_dir / f"{safe}.result.json", record)
-        cell_evidence.append({"target_id": target["target_id"], **row_execution_evidence})
+        cell_evidence.append({
+            "target_id": target["target_id"],
+            **row_execution_evidence,
+            "actual_accounting": actual_accounting,
+        })
         if grade.resolved is not target["expected_resolved"]:
             failures.append(target["target_id"])
         lifecycle.after_target(index, target)
     lifecycle.finish()
-    official_runs = sum(
-        read_json(path)["actual_accounting"]["official_grader_runs"]
-        for path in output_root.rglob("*.result.json")
-    )
-    grader_containers = sum(
-        read_json(path)["actual_accounting"]["grader_containers"]
-        for path in output_root.rglob("*.result.json")
-    )
     report = _smoke_execution_summary(
         targets,
         cell_evidence,
         failures=failures,
         infrastructure_failures=infrastructure_failures,
-        grader_containers=grader_containers,
-        official_grader_runs=official_runs,
     )
     write_json(output_root / "smoke-execution-summary.json", report)
     if report["failures"]:

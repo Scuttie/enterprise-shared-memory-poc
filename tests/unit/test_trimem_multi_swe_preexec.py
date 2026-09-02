@@ -72,6 +72,8 @@ def _install_frozen_fixture(
             "baked_fixture_patch_sha256": "1" * 64,
             "build_image_existing_tag_probe_calls": 1,
             "docker_client_factory_calls_mocked": 1,
+            "docker_container_create_calls": 1,
+            "docker_container_start_calls": 1,
             "host_prepare_script_reads": 0,
             "effective_submitted_patch_sha256": (
                 "0f4fb705a73dd7e804773b35e2ab0e4e2f17248c571e69333e9b8de7c2025775"
@@ -120,6 +122,7 @@ def test_live_row_rehearsal_uses_production_builder_and_publishes_no_payload(
         "trimem_official_grader.build_harness_invocation"
     )
     assert report["exact_config"] == {
+        "fix_patch_run_cmd": "bash -e /home/fix-run.sh",
         "force_build": False,
         "human_mode": True,
         "mode": "instance_only",
@@ -164,7 +167,7 @@ def test_live_row_rehearsal_uses_production_builder_and_publishes_no_payload(
     assert report["submitted_or_gold_payload_published"] is False
     assert "trimem grader discrimination noop" not in public
     assert "test_patch" not in public
-    assert "fix_patch" not in public
+    assert '"fix_patch":' not in public
     assert len(report["adapter_execution_contract_sha256"]) == 64
 
 
@@ -233,6 +236,7 @@ def test_pinned_control_flow_imports_with_docker_factory_stub_and_restores_spies
         {
             "clear_env": True,
             "dataset_files": [str(run_root / "dataset.jsonl")],
+            "fix_patch_run_cmd": preexec.FIX_PATCH_RUN_COMMAND,
             "force_build": False,
             "global_env": [],
             "human_mode": True,
@@ -259,12 +263,26 @@ def test_pinned_control_flow_imports_with_docker_factory_stub_and_restores_spies
         def image_full_name() -> str:
             return preexec.EXPECTED_TAG
 
+        @staticmethod
+        def fix_patch_path() -> str:
+            return "/home/fix.patch"
+
+        @staticmethod
+        def workdir() -> str:
+            return "pr-8911"
+
     class Instance:
-        pr = types.SimpleNamespace(id="vuejs/core:pr-8911")
+        pr = types.SimpleNamespace(
+            id="vuejs/core:pr-8911", org="vuejs", repo="core"
+        )
 
         @staticmethod
         def dependency() -> Dependency:
             return Dependency()
+
+        @staticmethod
+        def name() -> str:
+            return preexec.EXPECTED_TAG
 
     original_run = object()
     original_exists = object()
@@ -293,7 +311,7 @@ def test_pinned_control_flow_imports_with_docker_factory_stub_and_restores_spies
             self.max_workers = config["max_workers"]
             self.max_workers_build_image = config["max_workers_build_image"]
             self.max_workers_run_instance = config["max_workers_run_instance"]
-            self.fix_patch_run_cmd = ""
+            self.fix_patch_run_cmd = config["fix_patch_run_cmd"]
             self.patch_files = config["patch_files"]
             self.dataset_files = config["dataset_files"]
             self.specifics = set(config["specifics"])
@@ -302,13 +320,18 @@ def test_pinned_control_flow_imports_with_docker_factory_stub_and_restores_spies
             self.repo_dir = Path(config["repo_dir"])
             self.log_dir = Path(config["log_dir"])
             self.instances = [Instance()]
+            self.patches = {
+                "vuejs/core:pr-8911": types.SimpleNamespace(
+                    fix_patch=preexec.NOOP_BASELINE_PATCH.decode("utf-8")
+                )
+            }
 
         def run(self) -> None:
             docker_util.run(
                 preexec.EXPECTED_TAG,
-                "bash /home/fix-run.sh",
+                preexec.FIX_PATCH_RUN_COMMAND,
                 output_path=self.config_path.parent
-                / "output/vuejs/core/evals/pr-8911/fix-patch-run.log",
+                / "work/vuejs/core/evals/pr-8911/fix-patch-run.log",
                 global_env=[],
                 volumes={
                     self.config_path.parent
@@ -355,6 +378,7 @@ def test_pinned_control_flow_imports_with_docker_factory_stub_and_restores_spies
             # The pinned module constructs its Docker client at import time.
             if not run_module_imported:
                 imported_factory_results.append(docker_module.from_env())
+                docker_util.docker_client = imported_factory_results[-1]
                 run_module_imported = True
             return run_module
         if name == "multi_swe_bench.utils.session_util":
@@ -376,16 +400,26 @@ def test_pinned_control_flow_imports_with_docker_factory_stub_and_restores_spies
     assert type(imported_factory_results[0]).__name__ == "_NoDockerClient"
     assert proof == {
         "baked_patch_trusted_as_submission": False,
-        "baked_fixture_patch_sha256": (
+            "baked_fixture_patch_sha256": (
             "12e1b4f57f5b5d6cee7b7bf188bc2bc9dc54fcdb9a2364b20e055ca9ee5b8a37"
-        ),
+            ),
+            "actual_container_image": preexec.EXPECTED_IMAGE,
         "build_image_existing_tag_probe_calls": 1,
-        "docker_client_factory_calls_mocked": 1,
+            "docker_client_factory_calls_mocked": 1,
+            "docker_container_create_calls": 1,
+            "docker_container_start_calls": 1,
+            "container_exit_status": 0,
+            "container_exit_status_captured": True,
         "host_prepare_script_reads": 0,
         "effective_submitted_patch_sha256": hashlib.sha256(
             preexec.NOOP_BASELINE_PATCH
         ).hexdigest(),
-        "image_exists_queries": 1,
+            "image_exists_queries": 1,
+            "image_pull_fallback_calls": 0,
+            "immutable_image_get_queries": [
+                preexec.EXPECTED_IMAGE,
+                preexec.EXPECTED_TAG,
+            ],
         "mocked_docker_run_calls": 1,
         "mounted_patch_bytes": len(preexec.NOOP_BASELINE_PATCH),
         "mounted_patch_sha256": hashlib.sha256(

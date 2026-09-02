@@ -33,11 +33,13 @@ from enterprise_memory.trimem.grader import (  # noqa: E402
 SWE_HARNESS_REVISION = "7a21e05772954cc81471ae19d56f436cecf43c54"
 MULTI_HARNESS_REVISION = "24f493f8a103e72312ded4f6b9c89f081d69cb09"
 MULTI_ENTRYPOINT = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
+MULTI_FIX_PATCH_RUN_COMMAND = "bash -e /home/fix-run.sh"
 MULTI_SWE_PREBUILT_EVALUATION: Mapping[str, object] = MappingProxyType({
     "mode": "instance_only",
     "force_build": False,
     "human_mode": True,
     "need_clone": False,
+    "fix_patch_run_cmd": MULTI_FIX_PATCH_RUN_COMMAND,
 })
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 DIGEST_IMAGE = re.compile(r"^[a-z0-9][a-z0-9._/-]*@sha256:[0-9a-f]{64}$")
@@ -109,6 +111,7 @@ class HarnessInvocation:
     test_status_path: Path
     report_argv: tuple[str, ...] = ()
     materialized_patch_path: Path | None = None
+    container_exit_status_path: Path | None = None
 
 
 Runner = Callable[..., subprocess.CompletedProcess[str]]
@@ -325,6 +328,146 @@ def validate_official_test_evidence(
     }
 
 
+def validate_multi_swe_container_exit_status(
+    target: FrozenOfficialTarget,
+    *,
+    raw: bytes,
+    resolved: bool,
+    test_summary: Mapping[str, Any],
+    expected_patch: str,
+) -> dict[str, Any]:
+    """Bind the inner Docker StatusCode to exact full-domain test evidence.
+
+    A nonzero test command is expected for some valid NOOP evaluations.  It is
+    accepted only after the pinned report/test validator has proven complete
+    source-row test-domain coverage and an unresolved result.  A resolved run
+    must have exited zero.  Missing, malformed, or unbound status evidence is
+    always fatal.
+    """
+
+    if target.benchmark_id == "swebench_verified":
+        raise OfficialGraderError("Multi-SWE container exit evidence used for SWE-bench")
+    try:
+        value = strict_json_loads(raw)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise OfficialGraderError("Multi-SWE container exit status is invalid JSON") from exc
+    required = {
+        "executed_image",
+        "expected_image",
+        "expected_tag",
+        "image_id",
+        "run_command",
+        "schema",
+        "status_code",
+        "submitted_patch_bytes",
+        "submitted_patch_sha256",
+    }
+    if not isinstance(value, Mapping) or set(value) != required:
+        raise OfficialGraderError("Multi-SWE container exit status field set drift")
+    status_code = value.get("status_code")
+    patch_raw = expected_patch.encode("utf-8")
+    if (
+        value.get("schema") != "trimem/multi-swe-container-exit-status/1.0"
+        or value.get("expected_image") != target.image
+        or value.get("executed_image") != target.image
+        or value.get("expected_tag") != target.harness_image_tag
+        or value.get("run_command") != MULTI_FIX_PATCH_RUN_COMMAND
+        or not isinstance(value.get("image_id"), str)
+        or re.fullmatch(r"sha256:[0-9a-f]{64}", str(value.get("image_id"))) is None
+        or type(status_code) is not int
+        or not 0 <= status_code <= 255
+        or value.get("submitted_patch_bytes") != len(patch_raw)
+        or value.get("submitted_patch_sha256") != hashlib.sha256(patch_raw).hexdigest()
+    ):
+        raise OfficialGraderError("Multi-SWE container exit status binding differs")
+    if resolved and status_code != 0:
+        raise OfficialGraderError("resolved Multi-SWE run has nonzero container exit status")
+    if status_code != 0:
+        required_summary = {
+            "schema",
+            "benchmark_id",
+            "source",
+            "expected_run_test_count",
+            "classified_run_test_count",
+            "expected_test_patch_test_count",
+            "classified_test_patch_test_count",
+            "expected_fix_test_count",
+            "classified_fix_test_count",
+            "expected_fix_test_domain_sha256",
+            "fix_tests_classified",
+            "fix_tests_passed",
+            "fix_tests_failed",
+            "fix_tests_skipped",
+            "resolved",
+        }
+        required_pairs = (
+            ("expected_run_test_count", "classified_run_test_count"),
+            ("expected_test_patch_test_count", "classified_test_patch_test_count"),
+            ("expected_fix_test_count", "classified_fix_test_count"),
+        )
+        if (
+            resolved
+            or not isinstance(test_summary, Mapping)
+            or set(test_summary) != required_summary
+            or test_summary.get("schema")
+            != "trimem/official-test-status-summary/1.0"
+            or test_summary.get("benchmark_id") != target.benchmark_id
+            or test_summary.get("source") != "MULTI_SWE_PER_INSTANCE_REPORT"
+            or test_summary.get("resolved") is not False
+            or any(
+                type(test_summary.get(expected_name)) is not int
+                or test_summary.get(expected_name) < 0
+                or test_summary.get(expected_name) != test_summary.get(classified_name)
+                for expected_name, classified_name in required_pairs
+            )
+            or test_summary.get("expected_test_patch_test_count")
+            != test_summary.get("expected_fix_test_count")
+            or test_summary.get("expected_fix_test_count", 0) <= 0
+            or test_summary.get("fix_tests_classified")
+            != test_summary.get("classified_fix_test_count")
+            or any(
+                type(test_summary.get(field)) is not int
+                or test_summary.get(field) < 0
+                for field in (
+                    "fix_tests_passed",
+                    "fix_tests_failed",
+                    "fix_tests_skipped",
+                )
+            )
+            or sum(
+                test_summary.get(field, -1)
+                for field in (
+                    "fix_tests_passed",
+                    "fix_tests_failed",
+                    "fix_tests_skipped",
+                )
+            )
+            != test_summary.get("classified_fix_test_count")
+            or not isinstance(test_summary.get("expected_fix_test_domain_sha256"), str)
+            or re.fullmatch(
+                r"[0-9a-f]{64}", test_summary["expected_fix_test_domain_sha256"]
+            )
+            is None
+        ):
+            raise OfficialGraderError(
+                "nonzero Multi-SWE exit lacks full-domain unresolved test evidence"
+            )
+        acceptance = "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION"
+    else:
+        acceptance = "ZERO_EXIT"
+    return {
+        "schema": "trimem/multi-swe-container-exit-summary/1.0",
+        "acceptance": acceptance,
+        "executed_image": target.image,
+        "expected_tag": target.harness_image_tag,
+        "image_id": value["image_id"],
+        "run_command": MULTI_FIX_PATCH_RUN_COMMAND,
+        "status_code": status_code,
+        "submitted_patch_bytes": len(patch_raw),
+        "submitted_patch_sha256": hashlib.sha256(patch_raw).hexdigest(),
+    }
+
+
 def minimal_subprocess_env(source: Mapping[str, str]) -> dict[str, str]:
     """Return only non-secret OS/Docker process prerequisites.
 
@@ -372,6 +515,7 @@ def _validated_multi_swe_prebuilt_evaluation() -> dict[str, object]:
         "force_build": False,
         "human_mode": True,
         "need_clone": False,
+        "fix_patch_run_cmd": MULTI_FIX_PATCH_RUN_COMMAND,
     }
     try:
         observed = dict(MULTI_SWE_PREBUILT_EVALUATION)
@@ -462,6 +606,7 @@ def build_harness_invocation(
         **prebuilt_evaluation,
     }
     config_path = run_root / "config.json"
+    container_exit_status_path = run_root / "container-exit-status.json"
     _write_json(config_path, config)
     return HarnessInvocation(
         argv=(
@@ -471,6 +616,12 @@ def build_harness_invocation(
             str(harness_root),
             "--config",
             str(config_path),
+            "--expected-image",
+            target.image,
+            "--expected-tag",
+            target.harness_image_tag,
+            "--exit-status-output",
+            str(container_exit_status_path),
         ),
         cwd=harness_root,
         report_path=output_dir / "final_report.json",
@@ -488,6 +639,7 @@ def build_harness_invocation(
         materialized_patch_path=(
             workdir / org / repo / "evals" / f"pr-{number}" / "fix.patch"
         ),
+        container_exit_status_path=container_exit_status_path,
     )
 
 
@@ -659,6 +811,11 @@ class OfficialHarnessGraderGateway:
                 "human_mode": flags["human_mode"],
                 "force_build": flags["force_build"],
                 "need_clone": flags["need_clone"],
+                "fix_patch_run_cmd": flags["fix_patch_run_cmd"],
+                "container_image_execution": "IMMUTABLE_DIGEST",
+                "tag_digest_same_image_id_required": True,
+                "docker_pull_fallback_allowed": False,
+                "container_exit_status": "CAPTURED_AND_FULL_DOMAIN_VALIDATED",
                 "report_module": "multi_swe_bench.harness.gen_report",
                 "report_mode": "evaluation",
                 "patch_transport": {
@@ -825,6 +982,7 @@ class OfficialHarnessGraderGateway:
         invocation: HarnessInvocation,
         *,
         resolved: bool,
+        expected_patch: str,
     ) -> dict[str, Any]:
         captured: dict[str, dict[str, Any]] = {}
         raw_values: dict[str, bytes] = {}
@@ -851,6 +1009,32 @@ class OfficialHarnessGraderGateway:
             test_status_raw=raw_values["official_test_status"],
             resolved=resolved,
         )
+        if self.target.benchmark_id != "swebench_verified":
+            exit_path = invocation.container_exit_status_path
+            if exit_path is None:
+                raise OfficialGraderError("Multi-SWE container exit-status path is missing")
+            resolved_exit_path = exit_path.resolve()
+            if (
+                exit_path.is_symlink()
+                or self.output_root not in resolved_exit_path.parents
+                or not resolved_exit_path.is_file()
+            ):
+                raise OfficialGraderError("Multi-SWE container exit-status file is missing or escaped")
+            exit_raw = resolved_exit_path.read_bytes()
+            if not exit_raw or not exit_raw.strip():
+                raise OfficialGraderError("Multi-SWE container exit-status file is empty")
+            captured["container_exit_status"] = self._restricted_blob(
+                "official-tests", "container_exit_status", exit_raw
+            )
+            captured["container_exit_summary"] = validate_multi_swe_container_exit_status(
+                self.target,
+                raw=exit_raw,
+                resolved=resolved,
+                test_summary=summary,
+                expected_patch=expected_patch,
+            )
+        elif invocation.container_exit_status_path is not None:
+            raise OfficialGraderError("SWE-bench unexpectedly has Multi-SWE exit evidence")
         return {**captured, "summary": summary}
 
     def _failure(
@@ -1017,10 +1201,10 @@ class OfficialHarnessGraderGateway:
             (invocation.materialized_patch_path,)
             if invocation.materialized_patch_path is not None else ()
         )
-        stale = [
-            path for path in (invocation.test_output_path, invocation.test_status_path)
-            if path.exists()
-        ]
+        stale_candidates = [invocation.test_output_path, invocation.test_status_path]
+        if invocation.container_exit_status_path is not None:
+            stale_candidates.append(invocation.container_exit_status_path)
+        stale = [path for path in stale_candidates if path.exists()]
         if stale:
             materialized = purge(private_paths, container_started=False)
             raise self._failure(
@@ -1188,7 +1372,11 @@ class OfficialHarnessGraderGateway:
                 extra={**common, "raw_report": report},
             ) from None
         try:
-            test_evidence = self._actual_test_evidence(invocation, resolved=resolved)
+            test_evidence = self._actual_test_evidence(
+                invocation,
+                resolved=resolved,
+                expected_patch=request.patch,
+            )
         except (OSError, UnicodeDecodeError, ValueError, OfficialGraderError) as exc:
             raise self._failure(
                 request, started, stage="official_test_evidence",
@@ -1227,8 +1415,9 @@ def _stream_text(value: object) -> str:
 
 
 __all__ = [
-    "FrozenOfficialTarget", "HarnessInvocation", "MULTI_SWE_PREBUILT_EVALUATION", "OfficialGraderError",
+    "FrozenOfficialTarget", "HarnessInvocation", "MULTI_FIX_PATCH_RUN_COMMAND",
+    "MULTI_SWE_PREBUILT_EVALUATION", "OfficialGraderError",
     "OfficialHarnessGraderGateway", "build_harness_invocation", "canonical_row_hash",
     "minimal_subprocess_env", "parse_official_report", "redact_text",
-    "validate_official_test_evidence",
+    "validate_multi_swe_container_exit_status", "validate_official_test_evidence",
 ]

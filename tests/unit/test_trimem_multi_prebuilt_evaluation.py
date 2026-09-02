@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "src"))
 
 import trimem_official_grader as official_grader  # noqa: E402
+import trimem_grader_smoke as grader_smoke  # noqa: E402
 from enterprise_memory.trimem.workspace import WorkspaceGraderContext  # noqa: E402
 
 
@@ -31,7 +32,11 @@ def _target(benchmark_id: str, row: dict[str, object]) -> official_grader.Frozen
         base_commit="a" * 40,
         dataset_revision="b" * 40,
         source_row_sha256=official_grader.canonical_row_hash(row),
-        image="example.invalid/grader@sha256:" + "d" * 64,
+        image=(
+            "example.invalid/grader@sha256:" + "d" * 64
+            if swe
+            else "mswebench/vuejs_m_core@sha256:" + "d" * 64
+        ),
         harness_image_tag=(
             "example.invalid/grader:locked"
             if swe
@@ -168,7 +173,7 @@ def _multi_test_status() -> dict[str, object]:
         "valid": False,
         "run_result": result(passed=["run"]),
         "test_patch_result": result(passed=["test"]),
-        "fix_patch_result": result(failed=["fix"]),
+        "fix_patch_result": result(failed=["test"]),
         "fixed_tests": {},
         "p2p_tests": {},
         "f2p_tests": {},
@@ -248,6 +253,28 @@ class _SequentialGatewayRunnerSpy(_AdapterImageRunnerSpy):
             )
             if self.materialized_patch_override is not None:
                 materialized_patch.write_bytes(self.materialized_patch_override)
+            exit_status_path = Path(call[call.index("--exit-status-output") + 1])
+            submitted_raw = str(self.prediction["fix_patch"]).encode("utf-8")
+            exit_status_path.write_text(
+                json.dumps(
+                    {
+                        "executed_image": self.target.image,
+                        "expected_image": self.target.image,
+                        "expected_tag": self.target.harness_image_tag,
+                        "image_id": "sha256:" + "e" * 64,
+                        "run_command": official_grader.MULTI_FIX_PATCH_RUN_COMMAND,
+                        "schema": "trimem/multi-swe-container-exit-status/1.0",
+                        "status_code": 0,
+                        "submitted_patch_bytes": len(submitted_raw),
+                        "submitted_patch_sha256": hashlib.sha256(submitted_raw).hexdigest(),
+                    },
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                + "\n",
+                encoding="utf-8",
+                newline="\n",
+            )
             status_path = Path(str(self.config["workdir"])) / "vuejs/core/evals/pr-8911/report.json"
             status_path.write_text(
                 json.dumps(_multi_test_status(), sort_keys=True), encoding="utf-8", newline="\n"
@@ -342,7 +369,7 @@ class _PinnedMultiHarnessSpy:
             return
         self.docker_util.run(
             image_name,
-            "bash /home/fix-run.sh",
+            str(self.config["fix_patch_run_cmd"]),
             output_path,
             self.global_env,
             volumes={
@@ -364,6 +391,7 @@ def test_multi_prebuilt_profile_drives_pinned_human_path_without_source_build(
         "force_build": False,
         "human_mode": True,
         "need_clone": False,
+        "fix_patch_run_cmd": "bash -e /home/fix-run.sh",
     }
     with pytest.raises(TypeError):
         official_grader.MULTI_SWE_PREBUILT_EVALUATION["human_mode"] = False  # type: ignore[index]
@@ -436,6 +464,12 @@ def test_multi_prebuilt_profile_drives_pinned_human_path_without_source_build(
         str(harness_root),
         "--config",
         str(tmp_path / "run/config.json"),
+        "--expected-image",
+        target.image,
+        "--expected-tag",
+        target.harness_image_tag,
+        "--exit-status-output",
+        str(tmp_path / "run/container-exit-status.json"),
     )
     assert invocation.report_argv == (
         "python",
@@ -532,6 +566,9 @@ def _gateway_and_request(
         "org": "vuejs", "repo": "core", "number": 8911,
         "base": {"sha": "a" * 40},
     }
+    frozen_status = _multi_test_status()
+    for result_name in ("run_result", "test_patch_result", "fix_patch_result"):
+        row[result_name] = frozen_status[result_name]
     target = _target("multi_swe_bench_mini", row)
     harness_root = tmp_path / "h"
     harness_root.mkdir()
@@ -560,8 +597,12 @@ def _gateway_and_request(
     )
 
     def restricted_blob(stage: str, kind: str, raw: bytes) -> dict[str, object]:
+        relative = f"restricted-evidence/{stage}-{kind}.bin"
+        path = gateway.output_root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(raw)
         return {
-            "path": f"restricted-evidence/{stage}-{kind}.bin",
+            "path": relative,
             "sha256": hashlib.sha256(raw).hexdigest(),
             "bytes": len(raw),
             "access": "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS",
@@ -591,6 +632,11 @@ def _expected_multi_contract(patch: str) -> dict[str, object]:
         "human_mode": True,
         "force_build": False,
         "need_clone": False,
+        "fix_patch_run_cmd": "bash -e /home/fix-run.sh",
+        "container_image_execution": "IMMUTABLE_DIGEST",
+        "tag_digest_same_image_id_required": True,
+        "docker_pull_fallback_allowed": False,
+        "container_exit_status": "CAPTURED_AND_FULL_DOMAIN_VALIDATED",
         "report_module": "multi_swe_bench.harness.gen_report",
         "report_mode": "evaluation",
         "source_image_build_calls": 0,
@@ -603,6 +649,96 @@ def _expected_multi_contract(patch: str) -> dict[str, object]:
             "mode": "rw",
         },
     }
+
+
+def _container_exit_raw(
+    target: official_grader.FrozenOfficialTarget,
+    patch: str,
+    status_code: int,
+) -> bytes:
+    patch_raw = patch.encode("utf-8")
+    return (
+        json.dumps(
+            {
+                "executed_image": target.image,
+                "expected_image": target.image,
+                "expected_tag": target.harness_image_tag,
+                "image_id": "sha256:" + "e" * 64,
+                "run_command": official_grader.MULTI_FIX_PATCH_RUN_COMMAND,
+                "schema": "trimem/multi-swe-container-exit-status/1.0",
+                "status_code": status_code,
+                "submitted_patch_bytes": len(patch_raw),
+                "submitted_patch_sha256": hashlib.sha256(patch_raw).hexdigest(),
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        + b"\n"
+    )
+
+
+def test_nonzero_container_exit_requires_complete_unresolved_test_domain() -> None:
+    row = {"org": "vuejs", "repo": "core", "number": 8911, "base": {"sha": "a" * 40}}
+    target = _target("multi_swe_bench_mini", row)
+    patch = "diff --git a/a b/a\n"
+    complete = {
+        "schema": "trimem/official-test-status-summary/1.0",
+        "benchmark_id": target.benchmark_id,
+        "source": "MULTI_SWE_PER_INSTANCE_REPORT",
+        "resolved": False,
+        "expected_run_test_count": 0,
+        "classified_run_test_count": 0,
+        "expected_test_patch_test_count": 2,
+        "classified_test_patch_test_count": 2,
+        "expected_fix_test_count": 2,
+        "classified_fix_test_count": 2,
+        "expected_fix_test_domain_sha256": "d" * 64,
+        "fix_tests_classified": 2,
+        "fix_tests_passed": 0,
+        "fix_tests_failed": 2,
+        "fix_tests_skipped": 0,
+    }
+    summary = official_grader.validate_multi_swe_container_exit_status(
+        target,
+        raw=_container_exit_raw(target, patch, 17),
+        resolved=False,
+        test_summary=complete,
+        expected_patch=patch,
+    )
+    assert summary["status_code"] == 17
+    assert summary["acceptance"] == (
+        "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION"
+    )
+
+    with pytest.raises(official_grader.OfficialGraderError, match="resolved.*nonzero"):
+        official_grader.validate_multi_swe_container_exit_status(
+            target,
+            raw=_container_exit_raw(target, patch, 17),
+            resolved=True,
+            test_summary={**complete, "resolved": True},
+            expected_patch=patch,
+        )
+    with pytest.raises(official_grader.OfficialGraderError, match="full.*domain"):
+        official_grader.validate_multi_swe_container_exit_status(
+            target,
+            raw=_container_exit_raw(target, patch, 17),
+            resolved=False,
+            test_summary={**complete, "classified_fix_test_count": 1},
+            expected_patch=patch,
+        )
+
+
+def test_container_exit_status_binds_exact_submitted_patch() -> None:
+    row = {"org": "vuejs", "repo": "core", "number": 8911, "base": {"sha": "a" * 40}}
+    target = _target("multi_swe_bench_mini", row)
+    with pytest.raises(official_grader.OfficialGraderError, match="binding differs"):
+        official_grader.validate_multi_swe_container_exit_status(
+            target,
+            raw=_container_exit_raw(target, "first\n", 0),
+            resolved=False,
+            test_summary={},
+            expected_patch="different\n",
+        )
 
 
 def test_gateway_runs_instance_only_then_official_report_and_parses_final_report(
@@ -647,6 +783,34 @@ def test_gateway_runs_instance_only_then_official_report_and_parses_final_report
     assert grade.report["_trimem"]["report_invocation_status"] == "SUCCESS"
     assert Path(grade.report["_trimem"]["report_path"]).as_posix() == "output/final_report.json"
     assert grade.report["_trimem"]["test_evidence"]["summary"]["fix_tests_classified"] == 1
+    exit_reference = grade.report["_trimem"]["test_evidence"][
+        "container_exit_status"
+    ]
+    exit_summary = grade.report["_trimem"]["test_evidence"][
+        "container_exit_summary"
+    ]
+    assert exit_reference["access"] == "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS"
+    assert exit_summary["status_code"] == 0
+    assert exit_summary["acceptance"] == "ZERO_EXIT"
+    (
+        _test_output_ref,
+        _test_status_ref,
+        smoke_summary,
+        _execution,
+        smoke_exit_reference,
+        smoke_exit_summary,
+    ) = grader_smoke._grader_test_evidence(
+        grade,
+        task_dir=tmp_path,
+        grader_root=gateway.output_root,
+        target=gateway.target,
+        source_row=gateway.source_row,
+        patch_raw=request.patch.encode("utf-8"),
+    )
+    assert smoke_summary == grade.report["_trimem"]["test_evidence"]["summary"]
+    assert smoke_exit_reference is not None
+    assert smoke_exit_reference["sha256"] == exit_reference["sha256"]
+    assert smoke_exit_summary == exit_summary
     materialized = grade.report["_trimem"]["materialized_patch_evidence"]
     expected_raw = request.patch.encode("utf-8")
     assert materialized == {

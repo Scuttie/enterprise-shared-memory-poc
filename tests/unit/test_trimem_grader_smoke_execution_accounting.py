@@ -24,6 +24,22 @@ def _canonical(value: object) -> bytes:
     ).encode("utf-8")
 
 
+def _smoke_accounting(grader_count: int) -> dict[str, int]:
+    return {
+        field: grader_count
+        if field in {"grader_calls", "grader_containers", "official_grader_runs"}
+        else 0
+        for field in grader_smoke.SMOKE_ACCOUNTING_FIELDS
+    }
+
+
+ZERO_SMOKE_ACCOUNTING_FIELDS = tuple(
+    field
+    for field in grader_smoke.SMOKE_ACCOUNTING_FIELDS
+    if field not in {"grader_calls", "grader_containers", "official_grader_runs"}
+)
+
+
 def _target(benchmark_id: str = "multi_swe_bench_mini") -> dict[str, object]:
     return {
         "target_id": f"{benchmark_id}--fixture--gold",
@@ -343,7 +359,14 @@ def test_execution_control_is_direct_and_matches_contract(tmp_path: Path) -> Non
 
 def test_summary_does_not_infer_blanket_success_from_no_failures() -> None:
     targets = [
-        {"target_id": f"target-{index}", "probe": "GOLD" if index < 6 else "NOOP_BASELINE"}
+        {
+            "target_id": f"target-{index}",
+            "benchmark_id": (
+                "swebench_verified" if index < 4 else "multi_swe_bench_mini"
+            ),
+            "probe": "GOLD" if index % 2 == 0 else "NOOP_BASELINE",
+            "expected_resolved": index % 2 == 0,
+        }
         for index in range(12)
     ]
     evidence = [
@@ -356,6 +379,18 @@ def test_summary_does_not_infer_blanket_success_from_no_failures() -> None:
             "host_prepare_sh_access_count": 0,
             "source_image_build_count": 0,
             "api_calls": 0,
+            "container_exit_status_code": None if index < 4 else (0 if index % 2 == 0 else 1),
+            "container_exit_acceptance": (
+                None
+                if index < 4
+                else (
+                    "ZERO_EXIT"
+                    if index % 2 == 0
+                    else "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION"
+                )
+            ),
+            "container_exit_status_sha256": None if index < 4 else "f" * 64,
+            "actual_accounting": _smoke_accounting(1),
         }
         for index, target in enumerate(targets)
     ]
@@ -365,8 +400,6 @@ def test_summary_does_not_infer_blanket_success_from_no_failures() -> None:
         evidence,
         failures=[],
         infrastructure_failures=[],
-        grader_containers=12,
-        official_grader_runs=12,
     )
 
     assert summary["patch_applied_count"] == 11
@@ -374,15 +407,34 @@ def test_summary_does_not_infer_blanket_success_from_no_failures() -> None:
     assert summary["host_prepare_sh_access_count"] == 0
     assert summary["source_image_build_count"] == 0
     assert summary["api_calls"] == 0
+    assert summary["container_exit_status_captured_count"] == 8
+    assert summary["container_exit_status_validated_count"] == 8
+    assert summary["resolved_container_zero_exit_count"] == 4
+    assert {field: summary[field] for field in grader_smoke.SMOKE_ACCOUNTING_FIELDS} == (
+        _smoke_accounting(12)
+    )
     assert summary["status"] == "FAIL"
     assert "PATCH_APPLIED_COUNT" in summary["failures"]
+
+    evidence[0]["patch_applied"] = True
+    evidence[0]["actual_accounting"]["input_tokens"] = 1
+    accounting_failure = grader_smoke._smoke_execution_summary(
+        targets,
+        evidence,
+        failures=[],
+        infrastructure_failures=[],
+    )
+    assert accounting_failure["status"] == "FAIL"
+    assert "ACTUAL_ACCOUNTING" in accounting_failure["failures"]
 
 
 def _sealed_public_aggregate() -> dict[str, object]:
     outcomes = [
         {
             "target_id": f"target-{index}",
-            "benchmark_id": "swebench_verified",
+            "benchmark_id": (
+                "swebench_verified" if index < 4 else "multi_swe_bench_mini"
+            ),
             "order_index": index,
             "probe": "GOLD" if index % 2 == 0 else "NOOP_BASELINE",
             "resolved": index % 2 == 0,
@@ -399,6 +451,17 @@ def _sealed_public_aggregate() -> dict[str, object]:
             "host_prepare_sh_access_count": 0,
             "source_image_build_count": 0,
             "api_calls": 0,
+            "container_exit_status_code": None if index < 4 else (0 if index % 2 == 0 else 1),
+            "container_exit_acceptance": (
+                None
+                if index < 4
+                else (
+                    "ZERO_EXIT"
+                    if index % 2 == 0
+                    else "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION"
+                )
+            ),
+            "container_exit_status_sha256": None if index < 4 else "9" * 64,
         }
         for index in range(12)
     ]
@@ -419,6 +482,7 @@ def _sealed_public_aggregate() -> dict[str, object]:
             "official_test_status",
         )
     }
+    evidence_counts["container_exit_status"] = 8
     body: dict[str, object] = {
         "schema": "trimem/verified-aggregate/1.0",
         "status": "PASS",
@@ -434,16 +498,11 @@ def _sealed_public_aggregate() -> dict[str, object]:
             "git_head": "4" * 40,
             "phase": "GRADER_SMOKE",
         },
-        "actual_accounting": {
-            "grader_calls": 12,
-            "grader_containers": 12,
-            "model_gateway_calls": 0,
-            "official_grader_runs": 12,
-            "paid_model_calls": 0,
-            "api_calls": 0,
-        },
+        "actual_accounting": _smoke_accounting(12),
         "api_calls": 0,
         "digest_match_count": 12,
+        "container_exit_status_captured_count": 8,
+        "container_exit_status_validated_count": 8,
         "empty_patch_ids": [],
         "evidence_counts": evidence_counts,
         "expected_target_count": 12,
@@ -454,6 +513,7 @@ def _sealed_public_aggregate() -> dict[str, object]:
         "patch_applied_count": 12,
         "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
         "resolved_counts": {"GOLD": 6, "NOOP_BASELINE": 0},
+        "resolved_container_zero_exit_count": 4,
         "source_image_build_count": 0,
         "submitted_patch_identity_count": 12,
         "tests_executed_count": 12,
@@ -474,6 +534,20 @@ def test_public_artifact_requires_execution_contract_counters(tmp_path: Path) ->
     aggregate["submitted_patch_identity_count"] = 11
     body = {key: value for key, value in aggregate.items() if key != "aggregate_sha256"}
     aggregate["aggregate_sha256"] = hashlib.sha256(_canonical(body)).hexdigest()
+    path.write_bytes(_canonical(aggregate))
+    with pytest.raises(public_artifact.PublicArtifactError, match="summary differs"):
+        public_artifact._verified_aggregate(path)
+
+
+@pytest.mark.parametrize("field", ZERO_SMOKE_ACCOUNTING_FIELDS)
+def test_public_artifact_rejects_resealed_nonzero_zero_accounting(
+    tmp_path: Path, field: str
+) -> None:
+    aggregate = _sealed_public_aggregate()
+    aggregate["actual_accounting"][field] = 1
+    body = {key: value for key, value in aggregate.items() if key != "aggregate_sha256"}
+    aggregate["aggregate_sha256"] = hashlib.sha256(_canonical(body)).hexdigest()
+    path = tmp_path / "aggregate.json"
     path.write_bytes(_canonical(aggregate))
     with pytest.raises(public_artifact.PublicArtifactError, match="summary differs"):
         public_artifact._verified_aggregate(path)

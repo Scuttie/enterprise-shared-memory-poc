@@ -14,6 +14,24 @@ FORBIDDEN_KEYS = {
     "source_row", "repository_files", "raw_report", "restricted_raw_report",
 }
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
+SMOKE_ACCOUNTING_FIELDS = (
+    "api_calls",
+    "cached_input_tokens",
+    "decomposition_calls",
+    "extraction_calls",
+    "grader_calls",
+    "grader_containers",
+    "input_tokens",
+    "model_calls",
+    "model_gateway_calls",
+    "official_grader_runs",
+    "output_tokens",
+    "paid_model_calls",
+    "reasoning_tokens",
+    "solve_calls",
+    "task_arm_runs",
+    "total_usd",
+)
 
 
 class PublicArtifactError(ValueError):
@@ -110,6 +128,7 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
                 "official_test_status",
             )
         }
+        expected_evidence_counts["container_exit_status"] = 8
         smoke_target_ids = [
             row.get("target_id") for row in outcomes if isinstance(row, dict)
         ]
@@ -137,6 +156,32 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
                 and isinstance(row.get("submitted_patch_identity_sha256"), str)
                 and SHA256.fullmatch(row["submitted_patch_identity_sha256"])
                 is not None
+                and (
+                    (
+                        row.get("benchmark_id") == "swebench_verified"
+                        and row.get("container_exit_status_code") is None
+                        and row.get("container_exit_status_sha256") is None
+                        and row.get("container_exit_acceptance") is None
+                    )
+                    or (
+                        row.get("benchmark_id")
+                        in {"multi_swe_bench_mini", "multi_swe_bench_flash"}
+                        and type(row.get("container_exit_status_code")) is int
+                        and 0 <= row["container_exit_status_code"] <= 255
+                        and isinstance(row.get("container_exit_status_sha256"), str)
+                        and SHA256.fullmatch(row["container_exit_status_sha256"])
+                        is not None
+                        and row.get("container_exit_acceptance")
+                        in {
+                            "ZERO_EXIT",
+                            "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION",
+                        }
+                        and (
+                            row.get("resolved") is not True
+                            or row["container_exit_status_code"] == 0
+                        )
+                    )
+                )
                 for row in outcomes
             )
         )
@@ -156,6 +201,12 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
             or aggregate["host_prepare_sh_access_count"] != 0
             or type(aggregate.get("source_image_build_count")) is not int
             or aggregate["source_image_build_count"] != 0
+            or type(aggregate.get("container_exit_status_captured_count")) is not int
+            or aggregate["container_exit_status_captured_count"] != 8
+            or type(aggregate.get("container_exit_status_validated_count")) is not int
+            or aggregate["container_exit_status_validated_count"] != 8
+            or type(aggregate.get("resolved_container_zero_exit_count")) is not int
+            or aggregate["resolved_container_zero_exit_count"] != 4
             or type(aggregate.get("api_calls")) is not int
             or aggregate["api_calls"] != 0
             or type(aggregate.get("infrastructure_failure_count")) is not int
@@ -166,12 +217,12 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
             or not smoke_outcomes_valid
             or _canonical(aggregate.get("actual_accounting"))
             != _canonical({
-                "grader_calls": 12,
-                "grader_containers": 12,
-                "model_gateway_calls": 0,
-                "official_grader_runs": 12,
-                "paid_model_calls": 0,
-                "api_calls": 0,
+                field: 12
+                if field in {
+                    "grader_calls", "grader_containers", "official_grader_runs"
+                }
+                else 0
+                for field in SMOKE_ACCOUNTING_FIELDS
             })
             or aggregate.get("image_lifecycle", {}).get("status") != "PASS"
         ):
@@ -218,10 +269,13 @@ def package(aggregate_path: Path, output: Path) -> dict[str, Any]:
     if aggregate["manifest"] == "grader-smoke":
         for field in (
             "actual_accounting", "api_calls", "digest_match_count", "empty_patch_ids",
+            "container_exit_status_captured_count",
+            "container_exit_status_validated_count",
             "evidence_counts", "expected_target_count", "image_lifecycle",
             "host_prepare_sh_access_count",
             "infrastructure_failure_count", "observed_target_count",
             "patch_applied_count", "probe_counts", "resolved_counts",
+            "resolved_container_zero_exit_count",
             "source_image_build_count", "submitted_patch_identity_count",
             "tests_executed_count", "unresolved_counts",
         ):

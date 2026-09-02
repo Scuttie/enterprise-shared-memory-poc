@@ -16,7 +16,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-from typing import Any
+from typing import Any, Mapping
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -47,6 +47,12 @@ from trimem_select_targets import (  # noqa: E402
     load_sources,
     row_hash,
 )
+from trimem_official_grader import (  # noqa: E402
+    FrozenOfficialTarget,
+    MULTI_FIX_PATCH_RUN_COMMAND,
+    OfficialGraderError,
+    validate_multi_swe_container_exit_status,
+)
 ALLOWED_MANIFESTS = {
     "development": Path("configs/trimem_v1/development_manifest.json"),
     "heldout": Path("configs/trimem_v1/heldout_manifest.json"),
@@ -59,6 +65,7 @@ SHA256 = re.compile(r"^[0-9a-f]{64}$")
 OCI_DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 IMAGE = re.compile(r"^[a-z0-9][a-z0-9._/-]*@sha256:[0-9a-f]{64}$")
+TAGGED_IMAGE = re.compile(r"^[a-z0-9][a-z0-9._/-]*:[A-Za-z0-9._-]+$")
 SMOKE_EXECUTION_CONTRACT_FIELDS = {
     "schema",
     "profile",
@@ -82,6 +89,24 @@ ACCOUNTING_FIELDS = (
     "task_wall_time_ms",
     "model_gateway_calls", "paid_model_calls", "grader_calls", "grader_containers",
     "official_grader_runs",
+)
+SMOKE_ACCOUNTING_FIELDS = (
+    "api_calls",
+    "cached_input_tokens",
+    "decomposition_calls",
+    "extraction_calls",
+    "grader_calls",
+    "grader_containers",
+    "input_tokens",
+    "model_calls",
+    "model_gateway_calls",
+    "official_grader_runs",
+    "output_tokens",
+    "paid_model_calls",
+    "reasoning_tokens",
+    "solve_calls",
+    "task_arm_runs",
+    "total_usd",
 )
 MEMORY_FIELDS = (
     "recall_attempts", "injected_records", "episodic_injections",
@@ -312,6 +337,23 @@ def _locked_images(*, benchmark: bool = False) -> dict[str, str]:
             raise MatrixError(f"duplicate image lock for {instance_id}")
         result[instance_id] = image
     return result
+
+
+def _locked_smoke_harness_tag(instance_id: str) -> str:
+    value = _load(ROOT / IMAGE_LOCK)
+    rows = value.get("targets")
+    matches = [
+        row.get("harness_image_tag")
+        for row in rows
+        if isinstance(row, dict) and row.get("instance_id") == instance_id
+    ] if isinstance(rows, list) else []
+    if (
+        len(matches) != 1
+        or not isinstance(matches[0], str)
+        or TAGGED_IMAGE.fullmatch(matches[0]) is None
+    ):
+        raise MatrixError(f"frozen harness tag differs for {instance_id}")
+    return matches[0]
 
 
 def _locked_harness_revisions() -> dict[str, str]:
@@ -790,6 +832,11 @@ def _expected_smoke_execution_contract(
             "human_mode": True,
             "force_build": False,
             "need_clone": False,
+            "fix_patch_run_cmd": MULTI_FIX_PATCH_RUN_COMMAND,
+            "container_image_execution": "IMMUTABLE_DIGEST",
+            "tag_digest_same_image_id_required": True,
+            "docker_pull_fallback_allowed": False,
+            "container_exit_status": "CAPTURED_AND_FULL_DOMAIN_VALIDATED",
             "report_module": "multi_swe_bench.harness.gen_report",
             "report_mode": "evaluation",
             "patch_transport": {
@@ -814,14 +861,11 @@ def _validate_smoke_execution_contract(
     report_contract = (
         trimem.get("execution_contract") if isinstance(trimem, dict) else None
     )
-    if (
-        not isinstance(report_contract, dict)
-        or set(report_contract) != SMOKE_EXECUTION_CONTRACT_FIELDS
-    ):
+    expected = _expected_smoke_execution_contract(target, raw_patch)
+    if not isinstance(report_contract, dict) or set(report_contract) != set(expected):
         raise MatrixError(
             f"{result_file.name}: official report execution-contract evidence is missing"
         )
-    expected = _expected_smoke_execution_contract(target, raw_patch)
     if _canonical(report_contract) != _canonical(expected):
         raise MatrixError(
             f"{result_file.name}: official report execution-contract evidence drift"
@@ -1148,6 +1192,69 @@ def _validate_smoke_submitted_patch_identity(
     }
 
 
+def _validate_smoke_container_exit(
+    result_file: Path,
+    record: Mapping[str, Any],
+    target: Mapping[str, Any],
+    *,
+    raw_patch: bytes,
+    test_summary: Mapping[str, Any],
+    expected_harness_revision: str,
+    tests_evidence: Mapping[str, Any],
+) -> tuple[bytes | None, dict[str, Any] | None]:
+    evidence = record.get("evidence")
+    is_multi = str(target.get("benchmark_id", "")).startswith("multi_swe_bench_")
+    if not is_multi:
+        if (
+            tests_evidence.get("container_exit_status") is not None
+            or tests_evidence.get("container_exit_summary") is not None
+            or (isinstance(evidence, Mapping) and "container_exit_status" in evidence)
+        ):
+            raise MatrixError(f"{result_file.name}: SWE cell has Multi-SWE exit evidence")
+        return None, None
+
+    container_exit_raw = _evidence_file(
+        result_file, record, "container_exit_status"
+    )
+    expected_exit_reference = {
+        "bytes": len(container_exit_raw),
+        "sha256": hashlib.sha256(container_exit_raw).hexdigest(),
+    }
+    if tests_evidence.get("container_exit_status") != expected_exit_reference:
+        raise MatrixError(
+            f"{result_file.name}: container exit tests-evidence binding mismatch"
+        )
+    try:
+        frozen_target = FrozenOfficialTarget(
+            target_id=target["target_id"],
+            benchmark_id=target["benchmark_id"],
+            instance_id=target["instance_id"],
+            repository=target["repository"],
+            base_commit=target["base_commit"],
+            dataset_revision=target["dataset_revision"],
+            source_row_sha256=target["source_row_sha256"],
+            image=target["image"],
+            harness_image_tag=_locked_smoke_harness_tag(target["instance_id"]),
+            harness_revision=expected_harness_revision,
+        )
+        container_exit_summary = validate_multi_swe_container_exit_status(
+            frozen_target,
+            raw=container_exit_raw,
+            resolved=record["resolved"],
+            test_summary=test_summary,
+            expected_patch=raw_patch.decode("utf-8"),
+        )
+    except (KeyError, UnicodeDecodeError, ValueError, OfficialGraderError) as exc:
+        raise MatrixError(
+            f"{result_file.name}: container exit evidence did not independently validate: {exc}"
+        ) from exc
+    if tests_evidence.get("container_exit_summary") != container_exit_summary:
+        raise MatrixError(
+            f"{result_file.name}: container exit tests summary binding mismatch"
+        )
+    return container_exit_raw, container_exit_summary
+
+
 def _validate_smoke_evidence(
     result_file: Path,
     record: dict[str, Any],
@@ -1228,7 +1335,8 @@ def _validate_smoke_evidence(
 
     tests = _json_evidence(result_file, record, "tests")
     if set(tests) != {
-        "schema", "official_test_status", "probe", "summary", "target_id", "test_output"
+        "schema", "official_test_status", "container_exit_status",
+        "container_exit_summary", "probe", "summary", "target_id", "test_output"
     }:
         raise MatrixError(f"{result_file.name}: tests evidence field set drift")
     summary = tests.get("summary")
@@ -1250,6 +1358,16 @@ def _validate_smoke_evidence(
         resolved=record["resolved"], source_row=source_row,
     )
 
+    container_exit_raw, container_exit_summary = _validate_smoke_container_exit(
+        result_file,
+        record,
+        target,
+        raw_patch=raw_patch,
+        test_summary=summary,
+        expected_harness_revision=expected_harness_revision,
+        tests_evidence=tests,
+    )
+
     report = _json_evidence(result_file, record, "report")
     _validate_smoke_completion_report(
         result_file, target, report, resolved=record["resolved"]
@@ -1266,15 +1384,38 @@ def _validate_smoke_evidence(
             or reference.get("sha256") != hashlib.sha256(raw).hexdigest()
         ):
             raise MatrixError(f"{result_file.name}: report/{name} evidence binding mismatch")
+    if container_exit_raw is not None:
+        report_exit_reference = report_tests.get("container_exit_status")
+        if (
+            not isinstance(report_exit_reference, dict)
+            or report_exit_reference.get("bytes") != len(container_exit_raw)
+            or report_exit_reference.get("sha256")
+            != hashlib.sha256(container_exit_raw).hexdigest()
+            or report_tests.get("container_exit_summary") != container_exit_summary
+        ):
+            raise MatrixError(
+                f"{result_file.name}: report/container exit evidence binding mismatch"
+            )
     execution_contract_validation = _validate_smoke_execution_contract(
         result_file, target, raw_patch, report, record
     )
 
     container = _json_evidence(result_file, record, "container")
+    expected_exit_sha = (
+        hashlib.sha256(container_exit_raw).hexdigest()
+        if container_exit_raw is not None
+        else None
+    )
     expected_container = {
         "schema": "trimem/grader-smoke-container-evidence/1.0",
         "container_digest": target["image"],
         "container_started": True,
+        "container_exit_status_code": (
+            container_exit_summary["status_code"]
+            if container_exit_summary is not None
+            else None
+        ),
+        "container_exit_status_sha256": expected_exit_sha,
         "exit_code": 0,
         "official": True,
         "status": "success",
@@ -1345,6 +1486,21 @@ def _validate_smoke_evidence(
         "api_calls": execution_contract_validation["execution_contract"][
             "api_calls"
         ],
+        "container_exit_status_code": (
+            container_exit_summary["status_code"]
+            if container_exit_summary is not None
+            else None
+        ),
+        "container_exit_acceptance": (
+            container_exit_summary["acceptance"]
+            if container_exit_summary is not None
+            else None
+        ),
+        "container_exit_status_sha256": (
+            hashlib.sha256(container_exit_raw).hexdigest()
+            if container_exit_raw is not None
+            else None
+        ),
     }
     if _canonical(record.get("execution_evidence")) != _canonical(execution_evidence):
         raise MatrixError(
@@ -1352,29 +1508,36 @@ def _validate_smoke_evidence(
         )
 
     accounting = record.get("actual_accounting")
+    expected_accounting = {
+        field: 1
+        if field in {"grader_calls", "grader_containers", "official_grader_runs"}
+        else 0
+        for field in SMOKE_ACCOUNTING_FIELDS
+    }
     if (
         not isinstance(accounting, dict)
+        or set(accounting) != set(SMOKE_ACCOUNTING_FIELDS)
         or any(type(value) is not int for value in accounting.values())
-        or accounting != {
-        "model_gateway_calls": 0,
-        "paid_model_calls": 0,
-        "api_calls": 0,
-        "grader_calls": 1,
-        "grader_containers": 1,
-        "official_grader_runs": 1,
-        }
+        or accounting != expected_accounting
     ):
-        raise MatrixError(f"{result_file.name}: smoke call/container accounting mismatch")
+        raise MatrixError(f"{result_file.name}: smoke exact accounting mismatch")
     if (
         record.get("grader_container_digest") != target["image"]
         or record.get("expected_image_digest") != locked_digest
         or record.get("observed_image_digest") != locked_digest
     ):
         raise MatrixError(f"{result_file.name}: smoke record image/digest binding mismatch")
+    if (
+        record.get("container_exit_status_code")
+        != execution_evidence["container_exit_status_code"]
+        or record.get("container_exit_status_sha256") != expected_exit_sha
+    ):
+        raise MatrixError(f"{result_file.name}: smoke record container-exit binding mismatch")
     return {
         "applied_patch_sha256": patch_sha,
         "official_test_output_sha256": hashlib.sha256(test_output).hexdigest(),
         "official_test_status_sha256": hashlib.sha256(status_raw).hexdigest(),
+        "container_exit_status_sha256": expected_exit_sha,
         "execution_contract_sha256": execution_contract_validation[
             "execution_contract_sha256"
         ],
@@ -1731,6 +1894,28 @@ def _aggregate_smoke(results_dir: Path) -> dict[str, Any]:
         "source_image_build_count": sum(
             int(row["source_image_build_count"]) for row in outcomes
         ),
+        "container_exit_status_captured_count": sum(
+            row["benchmark_id"] != "swebench_verified"
+            and isinstance(row.get("container_exit_status_sha256"), str)
+            and SHA256.fullmatch(row["container_exit_status_sha256"]) is not None
+            for row in outcomes
+        ),
+        "container_exit_status_validated_count": sum(
+            row["benchmark_id"] != "swebench_verified"
+            and type(row.get("container_exit_status_code")) is int
+            and row.get("container_exit_acceptance")
+            in {
+                "ZERO_EXIT",
+                "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION",
+            }
+            for row in outcomes
+        ),
+        "resolved_container_zero_exit_count": sum(
+            row["benchmark_id"] != "swebench_verified"
+            and row["resolved"] is True
+            and row.get("container_exit_status_code") == 0
+            for row in outcomes
+        ),
         "api_calls": sum(int(row["api_calls"]) for row in outcomes),
     }
     required_proof_counts = {
@@ -1740,31 +1925,24 @@ def _aggregate_smoke(results_dir: Path) -> dict[str, Any]:
         "submitted_patch_identity_count": 12,
         "host_prepare_sh_access_count": 0,
         "source_image_build_count": 0,
+        "container_exit_status_captured_count": 8,
+        "container_exit_status_validated_count": 8,
+        "resolved_container_zero_exit_count": 4,
         "api_calls": 0,
     }
     if proof_counts != required_proof_counts:
         raise MatrixError(
             f"grader-smoke execution proof counts differ: {proof_counts}"
         )
-    accounting_fields = (
-        "grader_calls",
-        "grader_containers",
-        "model_gateway_calls",
-        "official_grader_runs",
-        "paid_model_calls",
-        "api_calls",
-    )
     actual_accounting = {
         field: sum(int(value["actual_accounting"][field]) for _, value in records)
-        for field in accounting_fields
+        for field in SMOKE_ACCOUNTING_FIELDS
     }
     expected_accounting = {
-        "grader_calls": 12,
-        "grader_containers": 12,
-        "model_gateway_calls": 0,
-        "official_grader_runs": 12,
-        "paid_model_calls": 0,
-        "api_calls": 0,
+        field: 12
+        if field in {"grader_calls", "grader_containers", "official_grader_runs"}
+        else 0
+        for field in SMOKE_ACCOUNTING_FIELDS
     }
     if actual_accounting != expected_accounting:
         raise MatrixError(
@@ -1792,13 +1970,27 @@ def _aggregate_smoke(results_dir: Path) -> dict[str, Any]:
         )
         for name in evidence_names
     }
-    if any(count != len(records) for count in evidence_counts.values()):
+    evidence_counts["container_exit_status"] = sum(
+        isinstance(value.get("evidence"), dict)
+        and "container_exit_status" in value["evidence"]
+        for _, value in records
+    )
+    if (
+        any(evidence_counts[name] != len(records) for name in evidence_names)
+        or evidence_counts["container_exit_status"] != 8
+    ):
         raise MatrixError(
             f"grader-smoke direct evidence coverage differs: {evidence_counts}"
         )
     return {
         "actual_accounting": actual_accounting,
         "api_calls": proof_counts["api_calls"],
+        "container_exit_status_captured_count": proof_counts[
+            "container_exit_status_captured_count"
+        ],
+        "container_exit_status_validated_count": proof_counts[
+            "container_exit_status_validated_count"
+        ],
         "digest_match_count": proof_counts["digest_match_count"],
         "empty_patch_ids": [],
         "evidence_counts": evidence_counts,
@@ -1815,6 +2007,9 @@ def _aggregate_smoke(results_dir: Path) -> dict[str, Any]:
         "patch_applied_count": proof_counts["patch_applied_count"],
         "probe_counts": dict(probe_counts),
         "resolved_counts": {"GOLD": 6, "NOOP_BASELINE": 0},
+        "resolved_container_zero_exit_count": proof_counts[
+            "resolved_container_zero_exit_count"
+        ],
         "source_image_build_count": proof_counts["source_image_build_count"],
         "submitted_patch_identity_count": proof_counts[
             "submitted_patch_identity_count"

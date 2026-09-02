@@ -133,6 +133,10 @@ def validate_external_approval_document(
         "exact positive workflow run ID/attempt is required",
     )
     _require(
+        phase != "GRADER_SMOKE" or workflow_run_attempt == "1",
+        "grader-smoke one-time recovery requires workflow run attempt 1",
+    )
+    _require(
         str(approval.get("approved_workflow_run_id")) == workflow_run_id,
         "approval workflow run ID differs from this dispatch",
     )

@@ -105,13 +105,35 @@ SMOKE_RESULT_COMMON_FIELDS = {
     "expected_target_count", "expected_condition_rows", "actual_execution",
 }
 SMOKE_AGGREGATE_BODY_FIELDS = {
-    "actual_accounting", "approval_binding", "digest_match_count",
+    "actual_accounting", "api_calls", "approval_binding",
+    "container_exit_status_captured_count",
+    "container_exit_status_validated_count", "digest_match_count",
     "empty_patch_ids", "evidence_counts", "expected_target_count",
-    "image_lifecycle", "infrastructure_failure_count", "manifest",
+    "host_prepare_sh_access_count", "image_lifecycle",
+    "infrastructure_failure_count", "manifest",
     "observed_target_count", "outcomes", "patch_applied_count",
-    "probe_counts", "resolved_counts", "status", "tests_executed_count",
-    "unresolved_counts",
+    "probe_counts", "resolved_container_zero_exit_count", "resolved_counts",
+    "source_image_build_count", "status", "submitted_patch_identity_count",
+    "tests_executed_count", "unresolved_counts",
 }
+SMOKE_ACCOUNTING_FIELDS = (
+    "api_calls",
+    "cached_input_tokens",
+    "decomposition_calls",
+    "extraction_calls",
+    "grader_calls",
+    "grader_containers",
+    "input_tokens",
+    "model_calls",
+    "model_gateway_calls",
+    "official_grader_runs",
+    "output_tokens",
+    "paid_model_calls",
+    "reasoning_tokens",
+    "solve_calls",
+    "task_arm_runs",
+    "total_usd",
+)
 SMOKE_PUBLIC_ONLY_FIELDS = {
     "dataset_rows_or_gold_test_payloads", "restricted_evidence", "stream_totals",
     "verified_aggregate_sha256",
@@ -970,19 +992,21 @@ def _validate_official_smoke_pass(
     )
 
     actual_accounting = {
-        "grader_calls": 12,
-        "grader_containers": 12,
-        "model_gateway_calls": 0,
-        "official_grader_runs": 12,
-        "paid_model_calls": 0,
+        field: 12
+        if field in {"grader_calls", "grader_containers", "official_grader_runs"}
+        else 0
+        for field in SMOKE_ACCOUNTING_FIELDS
     }
     evidence_counts = {
         name: 12
         for name in (
             "patch", "tests", "container", "evaluator", "report", "digest",
-            "applied_patch", "test_output", "official_test_status",
+            "execution_contract", "execution_control",
+            "submitted_patch_identity", "applied_patch", "test_output",
+            "official_test_status",
         )
     }
+    evidence_counts["container_exit_status"] = 8
     lifecycle_actual = {
         "target_image_pulls": 6,
         "support_image_pulls": 1,
@@ -1010,6 +1034,20 @@ def _validate_official_smoke_pass(
         and public["tests_executed_count"] == 12
         and type(public.get("digest_match_count")) is int
         and public["digest_match_count"] == 12
+        and type(public.get("submitted_patch_identity_count")) is int
+        and public["submitted_patch_identity_count"] == 12
+        and type(public.get("host_prepare_sh_access_count")) is int
+        and public["host_prepare_sh_access_count"] == 0
+        and type(public.get("source_image_build_count")) is int
+        and public["source_image_build_count"] == 0
+        and type(public.get("container_exit_status_captured_count")) is int
+        and public["container_exit_status_captured_count"] == 8
+        and type(public.get("container_exit_status_validated_count")) is int
+        and public["container_exit_status_validated_count"] == 8
+        and type(public.get("resolved_container_zero_exit_count")) is int
+        and public["resolved_container_zero_exit_count"] == 4
+        and type(public.get("api_calls")) is int
+        and public["api_calls"] == 0
         and type(public.get("infrastructure_failure_count")) is int
         and public["infrastructure_failure_count"] == 0
         and isinstance(lifecycle, dict)
@@ -1038,9 +1076,41 @@ def _validate_official_smoke_pass(
     outcome_fields = {
         "benchmark_id", "order_index", "probe", "resolved", "target_id",
         "applied_patch_sha256", "official_test_output_sha256",
-        "official_test_status_sha256",
+        "official_test_status_sha256", "container_exit_status_sha256",
+        "execution_contract_sha256", "execution_control_sha256",
+        "submitted_patch_identity_sha256", "patch_applied", "tests_executed",
+        "digest_match", "submitted_patch_identity",
+        "host_prepare_sh_access_count", "source_image_build_count", "api_calls",
+        "container_exit_status_code", "container_exit_acceptance",
     }
     for index, (target, outcome) in enumerate(zip(targets, outcomes)):
+        if not isinstance(target, dict) or not isinstance(outcome, dict):
+            container_exit_valid = False
+        elif target.get("benchmark_id") == "swebench_verified":
+            container_exit_valid = (
+                outcome.get("container_exit_status_code") is None
+                and outcome.get("container_exit_acceptance") is None
+                and outcome.get("container_exit_status_sha256") is None
+            )
+        else:
+            container_exit_valid = (
+                target.get("benchmark_id")
+                in {"multi_swe_bench_mini", "multi_swe_bench_flash"}
+                and type(outcome.get("container_exit_status_code")) is int
+                and 0 <= outcome["container_exit_status_code"] <= 255
+                and outcome.get("container_exit_acceptance")
+                in {
+                    "ZERO_EXIT",
+                    "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION",
+                }
+                and isinstance(outcome.get("container_exit_status_sha256"), str)
+                and HEX64.fullmatch(outcome["container_exit_status_sha256"])
+                is not None
+                and (
+                    target.get("expected_resolved") is not True
+                    or outcome["container_exit_status_code"] == 0
+                )
+            )
         require(
             isinstance(target, dict)
             and isinstance(outcome, dict)
@@ -1057,9 +1127,25 @@ def _validate_official_smoke_pass(
                 and HEX64.fullmatch(outcome[field]) is not None
                 for field in (
                     "applied_patch_sha256", "official_test_output_sha256",
-                    "official_test_status_sha256",
+                    "official_test_status_sha256", "execution_contract_sha256",
+                    "execution_control_sha256", "submitted_patch_identity_sha256",
                 )
-            ),
+            )
+            and all(
+                outcome.get(field) is True
+                for field in (
+                    "patch_applied", "tests_executed", "digest_match",
+                    "submitted_patch_identity",
+                )
+            )
+            and all(
+                type(outcome.get(field)) is int and outcome[field] == 0
+                for field in (
+                    "host_prepare_sh_access_count", "source_image_build_count",
+                    "api_calls",
+                )
+            )
+            and container_exit_valid,
             f"official public smoke outcome {index} differs from frozen target",
         )
 
@@ -1190,14 +1276,32 @@ def _validate_official_smoke_pass(
         "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
         "empty_patch_ids": [],
         "failures": [],
+        "api_calls": 0,
+        "cached_input_tokens": 0,
+        "decomposition_calls": 0,
+        "extraction_calls": 0,
+        "grader_calls": 12,
         "grader_containers": 12,
+        "input_tokens": 0,
+        "model_calls": 0,
+        "model_gateway_calls": 0,
         "official_grader_runs": 12,
+        "output_tokens": 0,
+        "paid_model_calls": 0,
+        "reasoning_tokens": 0,
+        "solve_calls": 0,
+        "task_arm_runs": 0,
+        "total_usd": 0,
         "patch_applied_count": 12,
         "tests_executed_count": 12,
         "digest_match_count": 12,
+        "submitted_patch_identity_count": 12,
+        "host_prepare_sh_access_count": 0,
+        "source_image_build_count": 0,
+        "container_exit_status_captured_count": 8,
+        "container_exit_status_validated_count": 8,
+        "resolved_container_zero_exit_count": 4,
         "infrastructure_failure_count": 0,
-        "model_gateway_calls": 0,
-        "paid_model_calls": 0,
         "status": "PASS",
     }
     _require_inventory_raw(

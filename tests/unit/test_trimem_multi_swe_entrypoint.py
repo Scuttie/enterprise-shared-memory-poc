@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from copy import deepcopy
+import hashlib
 import inspect
 import json
 import os
@@ -16,6 +17,10 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_multi_swe_entrypoint as entrypoint  # noqa: E402
+
+
+EXPECTED_IMAGE = "mswebench/vuejs_m_core@sha256:" + "1" * 64
+EXPECTED_TAG = "mswebench/vuejs_m_core:pr-8911"
 
 
 class _PinnedArgumentParser(argparse.ArgumentParser):
@@ -97,6 +102,7 @@ def _config(root: Path) -> dict[str, object]:
     return {
         "clear_env": True,
         "dataset_files": [str(root / "dataset.jsonl")],
+        "fix_patch_run_cmd": entrypoint.FIX_PATCH_RUN_COMMAND,
         "force_build": False,
         "global_env": [],
         "human_mode": True,
@@ -159,6 +165,7 @@ def test_pinned_argument_parser_requires_argv_bound_by_keyword(
         ("human_mode", False),
         ("need_clone", True),
         ("max_workers_run_instance", 2),
+        ("fix_patch_run_cmd", "bash /home/fix-run.sh"),
         ("patch_files", []),
     ],
 )
@@ -226,7 +233,7 @@ def test_wrapper_calls_exact_pinned_cli_without_upstream_main(
         max_workers = 1
         max_workers_build_image = 1
         max_workers_run_instance = 1
-        fix_patch_run_cmd = ""
+        fix_patch_run_cmd = entrypoint.FIX_PATCH_RUN_COMMAND
         patch_files = config["patch_files"]
         dataset_files = config["dataset_files"]
         specifics = set(config["specifics"])
@@ -243,7 +250,7 @@ def test_wrapper_calls_exact_pinned_cli_without_upstream_main(
         @staticmethod
         def from_dict(values: dict[str, object]) -> Cli:
             assert values["config"] == config_path
-            assert values["fix_patch_run_cmd"] == ""
+            assert values["fix_patch_run_cmd"] == entrypoint.FIX_PATCH_RUN_COMMAND
             assert {key: values[key] for key in config} == config
             calls.append("CliArgs.from_dict")
             return Cli()
@@ -265,13 +272,33 @@ def test_wrapper_calls_exact_pinned_cli_without_upstream_main(
         if name == entrypoint.UPSTREAM_MODULE
         else (_ for _ in ()).throw(AssertionError(name)),
     )
+    guarded: list[tuple[str, str, Path]] = []
+
+    def execute_guard(
+        _module: object,
+        guarded_cli: Cli,
+        *,
+        expected_image: str,
+        expected_tag: str,
+        exit_status_path: Path,
+    ) -> None:
+        guarded.append((expected_image, expected_tag, exit_status_path))
+        guarded_cli.run()
+
+    monkeypatch.setattr(entrypoint, "_execute_guarded_cli", execute_guard)
+    status_path = tmp_path / "container-exit-status.json"
 
     returned = entrypoint.execute_pinned_instance_only(
-        harness_root=harness_root, config_path=config_path
+        harness_root=harness_root,
+        config_path=config_path,
+        expected_image=EXPECTED_IMAGE,
+        expected_tag=EXPECTED_TAG,
+        exit_status_path=status_path,
     )
 
     assert isinstance(returned, Cli)
     assert calls == ["get_parser.parse_args", "CliArgs.from_dict", "CliArgs.run"]
+    assert guarded == [(EXPECTED_IMAGE, EXPECTED_TAG, status_path)]
     assert upstream_main_calls == []
 
 
@@ -301,7 +328,7 @@ def test_parsed_cli_runtime_drift_fails_before_run(
         max_workers=1,
         max_workers_build_image=1,
         max_workers_run_instance=1,
-        fix_patch_run_cmd="",
+        fix_patch_run_cmd=entrypoint.FIX_PATCH_RUN_COMMAND,
         patch_files=config["patch_files"],
         dataset_files=config["dataset_files"],
         specifics=set(config["specifics"]),
@@ -326,6 +353,474 @@ def test_parsed_cli_runtime_drift_fails_before_run(
 
     with pytest.raises(entrypoint.MultiSWEEntrypointError, match="CLI contract differs"):
         entrypoint.execute_pinned_instance_only(
-            harness_root=harness_root, config_path=config_path
+            harness_root=harness_root,
+            config_path=config_path,
+            expected_image=EXPECTED_IMAGE,
+            expected_tag=EXPECTED_TAG,
+            exit_status_path=tmp_path / "container-exit-status.json",
         )
     assert ran == []
+
+
+class _ImageCollection:
+    def __init__(self, *, tag_present: bool = True, same_id: bool = True) -> None:
+        self.tag_present = tag_present
+        self.same_id = same_id
+        self.get_calls: list[str] = []
+        self.pull_calls = 0
+
+    def get(self, reference: str) -> object:
+        self.get_calls.append(reference)
+        if reference == EXPECTED_TAG and not self.tag_present:
+            raise LookupError(reference)
+        suffix = "2" if reference == EXPECTED_IMAGE or self.same_id else "3"
+        return types.SimpleNamespace(id="sha256:" + suffix * 64)
+
+    def pull(self, *_args: object, **_kwargs: object) -> object:
+        self.pull_calls += 1
+        raise AssertionError("pull must never be called")
+
+
+class _RawContainer:
+    def __init__(
+        self,
+        status_code: int,
+        wait_error: object = None,
+        start_error: Exception | None = None,
+    ) -> None:
+        self.status_code = status_code
+        self.wait_error = wait_error
+        self.start_error = start_error
+        self.removed = False
+        self.started = False
+
+    def start(self) -> None:
+        if self.start_error is not None:
+            raise self.start_error
+        self.started = True
+
+    def logs(self, *, stream: bool = False, follow: bool = False) -> object:
+        assert stream is True and follow is True
+        return iter([b"complete mocked test output\n"])
+
+    def wait(self) -> dict[str, object]:
+        result: dict[str, object] = {"StatusCode": self.status_code}
+        if self.wait_error is not None:
+            result["Error"] = self.wait_error
+        return result
+
+    def remove(self, *, force: bool) -> None:
+        assert force is True
+        self.removed = True
+
+
+class _ContainerCollection:
+    def __init__(
+        self,
+        status_code: int,
+        wait_error: object = None,
+        start_error: Exception | None = None,
+    ) -> None:
+        self.status_code = status_code
+        self.wait_error = wait_error
+        self.start_error = start_error
+        self.calls: list[dict[str, object]] = []
+        self.created: list[_RawContainer] = []
+
+    def create(self, **kwargs: object) -> _RawContainer:
+        self.calls.append(dict(kwargs))
+        container = _RawContainer(
+            self.status_code,
+            self.wait_error,
+            self.start_error,
+        )
+        self.created.append(container)
+        return container
+
+    def run(self, **_kwargs: object) -> _RawContainer:
+        raise AssertionError("ContainerCollection.run auto-pull surface must not be called")
+
+
+def _guard_fixture(
+    tmp_path: Path,
+    *,
+    status_code: int = 0,
+    tag_present: bool = True,
+    same_id: bool = True,
+    wait_error: object = None,
+    start_error: Exception | None = None,
+    command: str = entrypoint.FIX_PATCH_RUN_COMMAND,
+    mount_destination: str = "/home/fix.patch",
+    mounted_patch: str = "diff --git a/a b/a\n",
+) -> tuple[object, object, Path, _ImageCollection, _ContainerCollection]:
+    images = _ImageCollection(tag_present=tag_present, same_id=same_id)
+    containers = _ContainerCollection(status_code, wait_error, start_error)
+    client = types.SimpleNamespace(images=images, containers=containers)
+    docker_util = types.SimpleNamespace(docker_client=client)
+
+    def original_run(
+        image_full_name: str,
+        run_command: str,
+        output_path: Path | None = None,
+        global_env: list[str] | None = None,
+        volumes: dict[Path, dict[str, str]] | None = None,
+    ) -> str:
+        container = docker_util.docker_client.containers.run(
+            image=image_full_name,
+            command=run_command,
+            remove=False,
+            detach=True,
+            stdout=True,
+            stderr=True,
+            environment=global_env,
+            volumes=volumes,
+        )
+        output = ""
+        try:
+            assert output_path is not None
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            with output_path.open("w", encoding="utf-8", newline="\n") as stream:
+                for raw in container.logs(stream=True, follow=True):
+                    decoded = raw.decode("utf-8")
+                    stream.write(decoded)
+                    output += decoded
+            return output
+        finally:
+            container.remove(force=True)
+
+    docker_util.run = original_run
+    docker_util.exists = lambda _image: True
+    docker_util.build = lambda *_args, **_kwargs: None
+
+    workdir = tmp_path / "work"
+    output_dir = tmp_path / "output"
+    dependency = types.SimpleNamespace(
+        image_full_name=lambda: EXPECTED_TAG,
+        fix_patch_path=lambda: "/home/fix.patch",
+        workdir=lambda: "pr-8911",
+    )
+    instance = types.SimpleNamespace(
+        pr=types.SimpleNamespace(org="vuejs", repo="core", id="vuejs/core:pr-8911"),
+        dependency=lambda: dependency,
+        name=lambda: EXPECTED_TAG,
+    )
+    expected_patch = "diff --git a/a b/a\n"
+    cli = types.SimpleNamespace(
+        output_dir=output_dir,
+        workdir=workdir,
+        instances=[instance],
+        patches={instance.pr.id: types.SimpleNamespace(fix_patch=expected_patch)},
+    )
+
+    def run() -> None:
+        patch_path = workdir / "vuejs/core/evals/pr-8911/fix.patch"
+        patch_path.parent.mkdir(parents=True, exist_ok=True)
+        patch_path.write_text(mounted_patch, encoding="utf-8", newline="\n")
+        docker_util.run(
+            EXPECTED_TAG,
+            command,
+            workdir / "vuejs/core/evals/pr-8911/fix-patch-run.log",
+            [],
+            volumes={patch_path: {"bind": mount_destination, "mode": "rw"}},
+        )
+
+    cli.run = run
+    return (
+        types.SimpleNamespace(docker_util=docker_util),
+        cli,
+        tmp_path / "container-exit-status.json",
+        images,
+        containers,
+    )
+
+
+def test_runtime_guard_executes_digest_and_records_zero_status(tmp_path: Path) -> None:
+    module, cli, status_path, images, containers = _guard_fixture(tmp_path)
+
+    entrypoint._execute_guarded_cli(
+        module,
+        cli,
+        expected_image=EXPECTED_IMAGE,
+        expected_tag=EXPECTED_TAG,
+        exit_status_path=status_path,
+    )
+
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    assert status == {
+        "executed_image": EXPECTED_IMAGE,
+        "expected_image": EXPECTED_IMAGE,
+        "expected_tag": EXPECTED_TAG,
+        "image_id": "sha256:" + "2" * 64,
+        "run_command": "bash -e /home/fix-run.sh",
+        "schema": "trimem/multi-swe-container-exit-status/1.0",
+        "status_code": 0,
+        "submitted_patch_bytes": len("diff --git a/a b/a\n".encode()),
+        "submitted_patch_sha256": hashlib.sha256(b"diff --git a/a b/a\n").hexdigest(),
+    }
+    assert images.get_calls == [EXPECTED_IMAGE, EXPECTED_TAG]
+    assert images.pull_calls == 0
+    assert len(containers.calls) == 1
+    assert len(containers.created) == 1
+    assert containers.created[0].started is True
+    assert containers.calls[0]["image"] == EXPECTED_IMAGE
+    assert containers.calls[0]["command"] == "bash -e /home/fix-run.sh"
+    assert set(containers.calls[0]) == {"image", "command", "environment", "volumes"}
+
+
+def test_runtime_guard_restores_original_container_run_after_success(
+    tmp_path: Path,
+) -> None:
+    module, cli, status_path, _images, containers = _guard_fixture(tmp_path)
+    original_client = module.docker_util.docker_client
+    original_container_run = containers.run
+
+    entrypoint._execute_guarded_cli(
+        module,
+        cli,
+        expected_image=EXPECTED_IMAGE,
+        expected_tag=EXPECTED_TAG,
+        exit_status_path=status_path,
+    )
+
+    assert module.docker_util.docker_client is original_client
+    assert containers.run == original_container_run
+
+
+def test_runtime_guard_restores_original_container_run_after_failure(
+    tmp_path: Path,
+) -> None:
+    module, cli, status_path, _images, containers = _guard_fixture(
+        tmp_path, same_id=False
+    )
+    original_client = module.docker_util.docker_client
+    original_container_run = containers.run
+
+    with pytest.raises(entrypoint.MultiSWEEntrypointError, match="different image IDs"):
+        entrypoint._execute_guarded_cli(
+            module,
+            cli,
+            expected_image=EXPECTED_IMAGE,
+            expected_tag=EXPECTED_TAG,
+            exit_status_path=status_path,
+        )
+
+    assert module.docker_util.docker_client is original_client
+    assert containers.run == original_container_run
+
+
+def test_runtime_guard_records_nonzero_for_later_full_domain_validation(
+    tmp_path: Path,
+) -> None:
+    module, cli, status_path, _images, _containers = _guard_fixture(
+        tmp_path, status_code=1
+    )
+    entrypoint._execute_guarded_cli(
+        module,
+        cli,
+        expected_image=EXPECTED_IMAGE,
+        expected_tag=EXPECTED_TAG,
+        exit_status_path=status_path,
+    )
+    assert json.loads(status_path.read_text(encoding="utf-8"))["status_code"] == 1
+
+
+def test_runtime_guard_missing_tag_fails_without_pull(tmp_path: Path) -> None:
+    module, cli, status_path, images, containers = _guard_fixture(
+        tmp_path, tag_present=False
+    )
+    with pytest.raises(entrypoint.MultiSWEEntrypointError, match="image is missing"):
+        entrypoint._execute_guarded_cli(
+            module,
+            cli,
+            expected_image=EXPECTED_IMAGE,
+            expected_tag=EXPECTED_TAG,
+            exit_status_path=status_path,
+        )
+    assert images.pull_calls == 0
+    assert containers.calls == []
+    assert not status_path.exists()
+
+
+def test_runtime_guard_rejects_tag_digest_image_id_mismatch(tmp_path: Path) -> None:
+    module, cli, status_path, _images, containers = _guard_fixture(
+        tmp_path, same_id=False
+    )
+    with pytest.raises(entrypoint.MultiSWEEntrypointError, match="different image IDs"):
+        entrypoint._execute_guarded_cli(
+            module,
+            cli,
+            expected_image=EXPECTED_IMAGE,
+            expected_tag=EXPECTED_TAG,
+            exit_status_path=status_path,
+        )
+    assert containers.calls == []
+
+
+@pytest.mark.parametrize(
+    ("command", "destination", "patch", "message"),
+    [
+        ("bash /home/fix-run.sh", "/home/fix.patch", "diff --git a/a b/a\n", "run contract"),
+        (entrypoint.FIX_PATCH_RUN_COMMAND, "/tmp/fix.patch", "diff --git a/a b/a\n", "mount contract"),
+        (entrypoint.FIX_PATCH_RUN_COMMAND, "/home/fix.patch", "changed\n", "mount bytes differ"),
+    ],
+)
+def test_runtime_guard_rejects_command_mount_and_patch_drift(
+    tmp_path: Path,
+    command: str,
+    destination: str,
+    patch: str,
+    message: str,
+) -> None:
+    module, cli, status_path, _images, containers = _guard_fixture(
+        tmp_path,
+        command=command,
+        mount_destination=destination,
+        mounted_patch=patch,
+    )
+    with pytest.raises(entrypoint.MultiSWEEntrypointError, match=message):
+        entrypoint._execute_guarded_cli(
+            module,
+            cli,
+            expected_image=EXPECTED_IMAGE,
+            expected_tag=EXPECTED_TAG,
+            exit_status_path=status_path,
+        )
+    assert containers.calls == []
+    assert not status_path.exists()
+
+
+def test_runtime_guard_accepts_empty_optional_wait_error(tmp_path: Path) -> None:
+    module, cli, status_path, _images, _containers = _guard_fixture(
+        tmp_path, wait_error={"Message": ""}
+    )
+    entrypoint._execute_guarded_cli(
+        module,
+        cli,
+        expected_image=EXPECTED_IMAGE,
+        expected_tag=EXPECTED_TAG,
+        exit_status_path=status_path,
+    )
+    assert status_path.is_file()
+
+
+def test_runtime_guard_rejects_engine_wait_error(tmp_path: Path) -> None:
+    module, cli, status_path, _images, _containers = _guard_fixture(
+        tmp_path, wait_error={"Message": "daemon wait failed"}
+    )
+    with pytest.raises(entrypoint.MultiSWEEntrypointError, match="engine error"):
+        entrypoint._execute_guarded_cli(
+            module,
+            cli,
+            expected_image=EXPECTED_IMAGE,
+            expected_tag=EXPECTED_TAG,
+            exit_status_path=status_path,
+        )
+    assert not status_path.exists()
+
+
+def test_runtime_guard_rechecks_patch_bytes_immediately_before_create(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module, cli, status_path, _images, containers = _guard_fixture(tmp_path)
+    original_read_bytes = Path.read_bytes
+    patch_reads = 0
+
+    def changing_read_bytes(path: Path) -> bytes:
+        nonlocal patch_reads
+        raw = original_read_bytes(path)
+        if path.name == "fix.patch":
+            patch_reads += 1
+            if patch_reads == 2:
+                return b"changed after upstream guard\n"
+        return raw
+
+    monkeypatch.setattr(Path, "read_bytes", changing_read_bytes)
+    with pytest.raises(entrypoint.MultiSWEEntrypointError, match="changed before container create"):
+        entrypoint._execute_guarded_cli(
+            module,
+            cli,
+            expected_image=EXPECTED_IMAGE,
+            expected_tag=EXPECTED_TAG,
+            exit_status_path=status_path,
+        )
+    assert patch_reads == 2
+    assert containers.calls == []
+    assert not status_path.exists()
+
+
+def test_runtime_guard_removes_created_container_when_start_fails(
+    tmp_path: Path,
+) -> None:
+    start_error = RuntimeError("mocked Docker start failure")
+    module, cli, status_path, images, containers = _guard_fixture(
+        tmp_path,
+        start_error=start_error,
+    )
+    with pytest.raises(RuntimeError, match="mocked Docker start failure"):
+        entrypoint._execute_guarded_cli(
+            module,
+            cli,
+            expected_image=EXPECTED_IMAGE,
+            expected_tag=EXPECTED_TAG,
+            exit_status_path=status_path,
+        )
+    assert images.pull_calls == 0
+    assert len(containers.calls) == 1
+    assert len(containers.created) == 1
+    assert containers.created[0].started is False
+    assert containers.created[0].removed is True
+    assert not status_path.exists()
+
+
+def test_runtime_guard_cannot_be_bypassed_by_fresh_docker_collections(
+    tmp_path: Path,
+) -> None:
+    module, cli, status_path, _images, _containers = _guard_fixture(tmp_path)
+    backing_images = _ImageCollection()
+    backing_containers = _ContainerCollection(0)
+
+    class FreshImages:
+        def get(self, reference: str) -> object:
+            return backing_images.get(reference)
+
+        def pull(self, *args: object, **kwargs: object) -> object:
+            return backing_images.pull(*args, **kwargs)
+
+    class FreshContainers:
+        def create(self, **kwargs: object) -> _RawContainer:
+            return backing_containers.create(**kwargs)
+
+        def run(self, **kwargs: object) -> _RawContainer:
+            return backing_containers.run(**kwargs)
+
+    class FreshDockerClient:
+        image_collection_accesses = 0
+        container_collection_accesses = 0
+
+        @property
+        def images(self) -> FreshImages:
+            self.image_collection_accesses += 1
+            return FreshImages()
+
+        @property
+        def containers(self) -> FreshContainers:
+            self.container_collection_accesses += 1
+            return FreshContainers()
+
+    client = FreshDockerClient()
+    module.docker_util.docker_client = client
+
+    entrypoint._execute_guarded_cli(
+        module,
+        cli,
+        expected_image=EXPECTED_IMAGE,
+        expected_tag=EXPECTED_TAG,
+        exit_status_path=status_path,
+    )
+
+    assert client.image_collection_accesses == 1
+    assert client.container_collection_accesses == 1
+    assert backing_images.pull_calls == 0
+    assert len(backing_containers.calls) == 1
+    assert backing_containers.calls[0]["image"] == EXPECTED_IMAGE
+    assert backing_containers.created[0].started is True

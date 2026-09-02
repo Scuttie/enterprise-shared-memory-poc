@@ -25,6 +25,7 @@ import trimem_cleanup_exec as cleanup_exec  # noqa: E402
 import trimem_freeze as freeze  # noqa: E402
 import trimem_grader_smoke as grader_smoke  # noqa: E402
 import trimem_grader_smoke_protocol as smoke_protocol  # noqa: E402
+import trimem_exec_approval as exec_approval  # noqa: E402
 import trimem_m2_candidates as candidates  # noqa: E402
 import trimem_official_grader as official_grader  # noqa: E402
 import trimem_public_artifact as public_artifact  # noqa: E402
@@ -38,6 +39,22 @@ from enterprise_memory.trimem.workspace import WorkspaceGraderContext  # noqa: E
 
 def _read(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _smoke_accounting(grader_count: int) -> dict[str, int]:
+    return {
+        field: grader_count
+        if field in {"grader_calls", "grader_containers", "official_grader_runs"}
+        else 0
+        for field in readiness.SMOKE_ACCOUNTING_FIELDS
+    }
+
+
+ZERO_SMOKE_ACCOUNTING_FIELDS = tuple(
+    field
+    for field in readiness.SMOKE_ACCOUNTING_FIELDS
+    if field not in {"grader_calls", "grader_containers", "official_grader_runs"}
+)
 
 
 def test_p011_preserves_failed_trigger_and_records_nonsemantic_amendment() -> None:
@@ -504,6 +521,33 @@ def _official_smoke_pass_fixture(
             "applied_patch_sha256": "c" * 64,
             "official_test_output_sha256": "d" * 64,
             "official_test_status_sha256": "e" * 64,
+            "execution_contract_sha256": "6" * 64,
+            "execution_control_sha256": "7" * 64,
+            "submitted_patch_identity_sha256": "8" * 64,
+            "patch_applied": True,
+            "tests_executed": True,
+            "digest_match": True,
+            "submitted_patch_identity": True,
+            "host_prepare_sh_access_count": 0,
+            "source_image_build_count": 0,
+            "api_calls": 0,
+            "container_exit_status_code": (
+                None
+                if target["benchmark_id"] == "swebench_verified"
+                else (0 if target["expected_resolved"] else 1)
+            ),
+            "container_exit_acceptance": (
+                None
+                if target["benchmark_id"] == "swebench_verified"
+                else (
+                    "ZERO_EXIT"
+                    if target["expected_resolved"]
+                    else "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION"
+                )
+            ),
+            "container_exit_status_sha256": (
+                None if target["benchmark_id"] == "swebench_verified" else "9" * 64
+            ),
         }
         for index, target in enumerate(manifest["targets"])
     ]
@@ -532,31 +576,35 @@ def _official_smoke_pass_fixture(
         "approval_binding": approval,
         "restricted_evidence": "ENCRYPTED_SEPARATE_ARTIFACT_NOT_PUBLIC",
         "dataset_rows_or_gold_test_payloads": "EXCLUDED_AND_EPHEMERAL_INPUTS_PURGED",
-        "actual_accounting": {
-            "grader_calls": 12,
-            "grader_containers": 12,
-            "model_gateway_calls": 0,
-            "official_grader_runs": 12,
-            "paid_model_calls": 0,
-        },
+        "actual_accounting": _smoke_accounting(12),
+        "api_calls": 0,
+        "container_exit_status_captured_count": 8,
+        "container_exit_status_validated_count": 8,
         "digest_match_count": 12,
         "empty_patch_ids": [],
         "evidence_counts": {
             name: 12 for name in (
                 "patch", "tests", "container", "evaluator", "report", "digest",
-                "applied_patch", "test_output", "official_test_status",
+                "execution_contract", "execution_control",
+                "submitted_patch_identity", "applied_patch", "test_output",
+                "official_test_status",
             )
         },
         "expected_target_count": 12,
+        "host_prepare_sh_access_count": 0,
         "image_lifecycle": lifecycle,
         "infrastructure_failure_count": 0,
         "observed_target_count": 12,
         "patch_applied_count": 12,
         "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
+        "resolved_container_zero_exit_count": 4,
         "resolved_counts": {"GOLD": 6, "NOOP_BASELINE": 0},
+        "source_image_build_count": 0,
+        "submitted_patch_identity_count": 12,
         "tests_executed_count": 12,
         "unresolved_counts": {"GOLD": 0, "NOOP_BASELINE": 6},
     }
+    public["evidence_counts"]["container_exit_status"] = 8
     aggregate_body = {
         field: public[field] for field in readiness.SMOKE_AGGREGATE_BODY_FIELDS
     }
@@ -574,14 +622,17 @@ def _official_smoke_pass_fixture(
         "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
         "empty_patch_ids": [],
         "failures": [],
-        "grader_containers": 12,
-        "official_grader_runs": 12,
+        **_smoke_accounting(12),
         "patch_applied_count": 12,
         "tests_executed_count": 12,
         "digest_match_count": 12,
+        "submitted_patch_identity_count": 12,
+        "host_prepare_sh_access_count": 0,
+        "source_image_build_count": 0,
+        "container_exit_status_captured_count": 8,
+        "container_exit_status_validated_count": 8,
+        "resolved_container_zero_exit_count": 4,
         "infrastructure_failure_count": 0,
-        "model_gateway_calls": 0,
-        "paid_model_calls": 0,
         "status": "PASS",
     }
     inventory_rows = [
@@ -1976,10 +2027,51 @@ def test_external_approval_is_bound_to_single_workflow_dispatch_and_attempt(
     monkeypatch.setenv("GITHUB_RUN_ID", "8123456789")
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
     assert benchmark_run.validate_exec_approval("grader-smoke", path)["approved_workflow_run_id"] == "8123456789"
+
+    attempt_two_document = deepcopy(document)
+    attempt_two_document["approval"]["approved_workflow_run_attempt"] = "2"
+    path.write_text(json.dumps(attempt_two_document), encoding="utf-8")
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "2")
-    with pytest.raises(benchmark_run.BenchmarkExecutionError, match="run attempt"):
+    with pytest.raises(
+        benchmark_run.BenchmarkExecutionError,
+        match="one-time recovery requires workflow run attempt 1",
+    ):
         benchmark_run.validate_exec_approval("grader-smoke", path)
+
+    validation_args = {
+        "request": sentinel,
+        "policy_request": request,
+        "hard_cap": hard,
+        "request_sha256": hashlib.sha256(sentinel_path.read_bytes()).hexdigest(),
+        "freeze_sha256": hashlib.sha256(freeze_path.read_bytes()).hexdigest(),
+        "git_head": "c" * 40,
+        "workflow_run_id": "8123456789",
+        "workflow_run_attempt": "2",
+        "now": datetime.now(timezone.utc),
+    }
+    with pytest.raises(
+        exec_approval.ApprovalValidationError,
+        match="one-time recovery requires workflow run attempt 1",
+    ):
+        exec_approval.validate_external_approval_document(
+            attempt_two_document,
+            phase="GRADER_SMOKE",
+            **validation_args,
+        )
+
+    other_phase_document = deepcopy(attempt_two_document)
+    other_phase_document["approval"]["approved_phase"] = "DEVELOPMENT_TUNING"
+    assert exec_approval.validate_external_approval_document(
+        other_phase_document,
+        phase="DEVELOPMENT_TUNING",
+        **validation_args,
+    )["approved_workflow_run_attempt"] == "2"
+
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
+    path.write_text(json.dumps(attempt_two_document), encoding="utf-8")
+    with pytest.raises(benchmark_run.BenchmarkExecutionError, match="differs from this attempt"):
+        benchmark_run.validate_exec_approval("grader-smoke", path)
+    document["approval"]["approved_workflow_run_attempt"] = "1"
     document["approval"]["approved_task_arm_runs"] = False
     path.write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(benchmark_run.BenchmarkExecutionError, match="approved_task_arm_runs"):
@@ -2133,7 +2225,7 @@ def test_aggregate_revalidates_exact_workflow_approval_binding(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.setenv("GITHUB_RUN_ID", "8123456789")
-    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "3")
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
     head = "b" * 40
     repository = tmp_path / "repository"
     sentinel = repository / readiness.GRADER_SMOKE_SENTINEL_PATH
@@ -2179,7 +2271,7 @@ def test_aggregate_revalidates_exact_workflow_approval_binding(
             "approved_currency_hard_cap": hard["total_usd"],
             "approved_grader_containers": hard["benchmark_grader_containers"],
             "approved_workflow_run_id": "8123456789",
-            "approved_workflow_run_attempt": "3",
+            "approved_workflow_run_attempt": "1",
             "approved_legal_terms_acceptance": True,
             "approval_actor": "benchmark-owner",
             "approval_timestamp": (
@@ -2192,7 +2284,7 @@ def test_aggregate_revalidates_exact_workflow_approval_binding(
         "approval_artifact_sha256": hashlib.sha256(approval_raw).hexdigest(),
         "approved_request_sha256": request_digest,
         "approved_workflow_run_id": "8123456789",
-        "approved_workflow_run_attempt": "3",
+        "approved_workflow_run_attempt": "1",
         "freeze_sha256": freeze_digest,
         "git_head": head,
         "phase": "GRADER_SMOKE",
@@ -2889,6 +2981,8 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
     tests_doc = {
         "schema": "trimem/grader-smoke-tests-evidence/1.0",
         "official_test_status": {"bytes": len(status_raw), "sha256": status["sha256"]},
+        "container_exit_status": None,
+        "container_exit_summary": None,
         "probe": "NOOP_BASELINE",
         "summary": summary,
         "target_id": target["target_id"],
@@ -2925,6 +3019,8 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
     container_doc = {
         "schema": "trimem/grader-smoke-container-evidence/1.0",
         "container_digest": target["image"], "container_started": True,
+        "container_exit_status_code": None,
+        "container_exit_status_sha256": None,
         "exit_code": 0, "official": True, "status": "success",
         "target_id": target["target_id"],
     }
@@ -3058,6 +3154,8 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
         "probe": "NOOP_BASELINE", "execution_status": "SUCCESS", "grader_exit_code": 0,
         "grader_id": grader_id, "grader_status": "success",
         "grader_container_digest": target["image"], "container_started": True,
+        "container_exit_status_code": None,
+        "container_exit_status_sha256": None,
         "official_grader": True, "resolved": False,
         "patch_bytes": len(smoke_protocol.NOOP_BASELINE_PATCH),
         "patch_sha256": smoke_protocol.NOOP_BASELINE_PATCH_SHA256,
@@ -3073,12 +3171,11 @@ def _baseline_smoke_evidence_fixture(tmp_path: Path) -> tuple[Path, dict, dict, 
             "host_prepare_sh_access_count": 0,
             "source_image_build_count": 0,
             "api_calls": 0,
+            "container_exit_status_code": None,
+            "container_exit_acceptance": None,
+            "container_exit_status_sha256": None,
         },
-        "actual_accounting": {
-            "model_gateway_calls": 0, "paid_model_calls": 0, "api_calls": 0,
-            "grader_calls": 1,
-            "grader_containers": 1, "official_grader_runs": 1,
-        },
+        "actual_accounting": _smoke_accounting(1),
         "evidence": evidence,
     }
     result_file = task / f"{target['target_id']}.result.json"
@@ -3096,6 +3193,133 @@ def test_smoke_evidence_validator_binds_all_required_actual_evidence(tmp_path: P
         "sha256:" + "d" * 64
     )
     benchmark_matrix._restricted_evidence(result_file, record)
+
+
+@pytest.mark.parametrize("field", ZERO_SMOKE_ACCOUNTING_FIELDS)
+def test_smoke_evidence_validator_rejects_nonzero_zero_accounting(
+    tmp_path: Path, field: str
+) -> None:
+    result_file, record, target, source = _baseline_smoke_evidence_fixture(tmp_path)
+    record["actual_accounting"][field] = 1
+    with pytest.raises(benchmark_matrix.MatrixError, match="exact accounting mismatch"):
+        benchmark_matrix._validate_smoke_evidence(
+            result_file, record, target, source, official_grader.SWE_HARNESS_REVISION
+        )
+
+
+def test_matrix_independently_revalidates_multi_container_exit_patch_and_status(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    patch_raw = b"diff --git a/a b/a\n"
+    expected_tag = "mswebench/vuejs_m_core:pr-8911"
+    target = {
+        "target_id": "multi_swe_bench_mini--vuejs__core-8911--noop-baseline",
+        "benchmark_id": "multi_swe_bench_mini",
+        "instance_id": "vuejs__core-8911",
+        "repository": "vuejs/core",
+        "base_commit": "a" * 40,
+        "dataset_revision": "b" * 40,
+        "source_row_sha256": "c" * 64,
+        "image": "mswebench/vuejs_m_core@sha256:" + "d" * 64,
+    }
+    summary = {
+        "schema": "trimem/official-test-status-summary/1.0",
+        "benchmark_id": "multi_swe_bench_mini",
+        "source": "MULTI_SWE_PER_INSTANCE_REPORT",
+        "expected_run_test_count": 0,
+        "classified_run_test_count": 0,
+        "expected_test_patch_test_count": 1,
+        "classified_test_patch_test_count": 1,
+        "expected_fix_test_count": 1,
+        "classified_fix_test_count": 1,
+        "expected_fix_test_domain_sha256": "e" * 64,
+        "fix_tests_classified": 1,
+        "fix_tests_passed": 0,
+        "fix_tests_failed": 1,
+        "fix_tests_skipped": 0,
+        "resolved": False,
+    }
+    status = {
+        "executed_image": target["image"],
+        "expected_image": target["image"],
+        "expected_tag": expected_tag,
+        "image_id": "sha256:" + "f" * 64,
+        "run_command": official_grader.MULTI_FIX_PATCH_RUN_COMMAND,
+        "schema": "trimem/multi-swe-container-exit-status/1.0",
+        "status_code": 1,
+        "submitted_patch_bytes": len(patch_raw),
+        "submitted_patch_sha256": hashlib.sha256(patch_raw).hexdigest(),
+    }
+    raw = json.dumps(status, sort_keys=True, separators=(",", ":")).encode() + b"\n"
+    evidence_path = tmp_path / "restricted/container-exit-status.json"
+    evidence_path.parent.mkdir()
+    evidence_path.write_bytes(raw)
+    result_file = tmp_path / "cell.result.json"
+    record = {
+        "resolved": False,
+        "evidence": {
+            "container_exit_status": {
+                "path": "restricted/container-exit-status.json",
+                "bytes": len(raw),
+                "sha256": hashlib.sha256(raw).hexdigest(),
+            }
+        },
+    }
+    frozen = official_grader.FrozenOfficialTarget(
+        **target,
+        harness_image_tag=expected_tag,
+        harness_revision=official_grader.MULTI_HARNESS_REVISION,
+    )
+    expected_summary = official_grader.validate_multi_swe_container_exit_status(
+        frozen,
+        raw=raw,
+        resolved=False,
+        test_summary=summary,
+        expected_patch=patch_raw.decode(),
+    )
+    tests_evidence = {
+        "container_exit_status": {
+            "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        },
+        "container_exit_summary": expected_summary,
+    }
+    monkeypatch.setattr(
+        benchmark_matrix, "_locked_smoke_harness_tag", lambda _instance: expected_tag
+    )
+
+    observed_raw, observed_summary = benchmark_matrix._validate_smoke_container_exit(
+        result_file,
+        record,
+        target,
+        raw_patch=patch_raw,
+        test_summary=summary,
+        expected_harness_revision=official_grader.MULTI_HARNESS_REVISION,
+        tests_evidence=tests_evidence,
+    )
+    assert observed_raw == raw
+    assert observed_summary == expected_summary
+
+    status["submitted_patch_sha256"] = "0" * 64
+    tampered = json.dumps(status, sort_keys=True, separators=(",", ":")).encode() + b"\n"
+    evidence_path.write_bytes(tampered)
+    record["evidence"]["container_exit_status"].update(
+        bytes=len(tampered), sha256=hashlib.sha256(tampered).hexdigest()
+    )
+    tests_evidence["container_exit_status"] = {
+        "bytes": len(tampered),
+        "sha256": hashlib.sha256(tampered).hexdigest(),
+    }
+    with pytest.raises(benchmark_matrix.MatrixError, match="independently validate"):
+        benchmark_matrix._validate_smoke_container_exit(
+            result_file,
+            record,
+            target,
+            raw_patch=patch_raw,
+            test_summary=summary,
+            expected_harness_revision=official_grader.MULTI_HARNESS_REVISION,
+            tests_evidence=tests_evidence,
+        )
 
 
 def test_smoke_restricted_raw_evidence_cannot_remove_report_group_and_files(
@@ -3216,7 +3440,11 @@ def _aggregate_count_fixture() -> tuple[list[dict], list[tuple[Path, dict]]]:
             target_id = f"benchmark--instance-{identity}--{probe.lower().replace('_', '-')}"
             target = {
                 "target_id": target_id,
-                "benchmark_id": "swebench_verified",
+                "benchmark_id": (
+                    "swebench_verified"
+                    if identity < 2
+                    else "multi_swe_bench_mini"
+                ),
                 "instance_id": f"org__repo-{identity}",
                 "probe": probe,
                 "expected_resolved": resolved,
@@ -3234,14 +3462,7 @@ def _aggregate_count_fixture() -> tuple[list[dict], list[tuple[Path, dict]]]:
                 "expected_image_digest": "sha256:" + "d" * 64,
                 "observed_image_digest": "sha256:" + "d" * 64,
                 "resolved": resolved,
-                "actual_accounting": {
-                    "grader_calls": 1,
-                    "grader_containers": 1,
-                    "model_gateway_calls": 0,
-                    "official_grader_runs": 1,
-                    "paid_model_calls": 0,
-                    "api_calls": 0,
-                },
+                "actual_accounting": _smoke_accounting(1),
                 "evidence": {
                     name: {}
                     for name in (
@@ -3260,6 +3481,8 @@ def _aggregate_count_fixture() -> tuple[list[dict], list[tuple[Path, dict]]]:
                     )
                 },
             }))
+            if identity >= 2:
+                records[-1][1]["evidence"]["container_exit_status"] = {}
     return targets, records
 
 
@@ -3273,7 +3496,10 @@ def test_smoke_aggregate_requires_exact_six_by_six_and_preserves_manifest_order(
     )
     monkeypatch.setattr(
         benchmark_matrix, "_locked_harness_revisions",
-        lambda: {"swebench_verified": official_grader.SWE_HARNESS_REVISION},
+        lambda: {
+            "swebench_verified": official_grader.SWE_HARNESS_REVISION,
+            "multi_swe_bench_mini": official_grader.MULTI_HARNESS_REVISION,
+        },
     )
     monkeypatch.setattr(benchmark_matrix, "_result_records", lambda root: records)
     monkeypatch.setattr(
@@ -3289,6 +3515,11 @@ def test_smoke_aggregate_requires_exact_six_by_six_and_preserves_manifest_order(
             "applied_patch_sha256": "a" * 64,
             "official_test_output_sha256": "b" * 64,
             "official_test_status_sha256": "c" * 64,
+            "container_exit_status_sha256": (
+                None
+                if target["benchmark_id"] == "swebench_verified"
+                else "9" * 64
+            ),
             "execution_contract_sha256": "d" * 64,
             "execution_control_sha256": "e" * 64,
             "submitted_patch_identity_sha256": "f" * 64,
@@ -3299,6 +3530,20 @@ def test_smoke_aggregate_requires_exact_six_by_six_and_preserves_manifest_order(
             "host_prepare_sh_access_count": 0,
             "source_image_build_count": 0,
             "api_calls": 0,
+            "container_exit_status_code": (
+                None
+                if target["benchmark_id"] == "swebench_verified"
+                else (0 if target["expected_resolved"] else 1)
+            ),
+            "container_exit_acceptance": (
+                None
+                if target["benchmark_id"] == "swebench_verified"
+                else (
+                    "ZERO_EXIT"
+                    if target["expected_resolved"]
+                    else "NONZERO_ACCEPTED_AFTER_FULL_DOMAIN_UNRESOLVED_VALIDATION"
+                )
+            ),
         },
     )
     result = benchmark_matrix._aggregate_smoke(tmp_path)
@@ -3311,9 +3556,17 @@ def test_smoke_aggregate_requires_exact_six_by_six_and_preserves_manifest_order(
     assert result["submitted_patch_identity_count"] == 12
     assert result["host_prepare_sh_access_count"] == 0
     assert result["source_image_build_count"] == 0
+    assert result["container_exit_status_captured_count"] == 8
+    assert result["container_exit_status_validated_count"] == 8
+    assert result["resolved_container_zero_exit_count"] == 4
     assert result["api_calls"] == 0
     assert result["empty_patch_ids"] == []
-    assert all(count == 12 for count in result["evidence_counts"].values())
+    assert result["evidence_counts"]["container_exit_status"] == 8
+    assert all(
+        count == 12
+        for name, count in result["evidence_counts"].items()
+        if name != "container_exit_status"
+    )
     assert [row["target_id"] for row in result["outcomes"]] == [
         row["target_id"] for row in targets
     ]

@@ -32,7 +32,10 @@ from trimem_grader_smoke_protocol import (  # noqa: E402
     NOOP_BASELINE_PATCH,
     validate_serial_targets,
 )
-from trimem_multi_swe_entrypoint import execute_pinned_instance_only  # noqa: E402
+from trimem_multi_swe_entrypoint import (  # noqa: E402
+    FIX_PATCH_RUN_COMMAND,
+    execute_pinned_instance_only,
+)
 from trimem_official_grader import (  # noqa: E402
     MULTI_HARNESS_REVISION,
     MULTI_SWE_PREBUILT_EVALUATION,
@@ -206,8 +209,60 @@ def _exercise_pinned_control_flow(
     harness_root = harness_root.resolve(strict=True)
     import docker
 
+    image_get_calls: list[str] = []
+    image_pull_calls = 0
+    container_create_calls: list[dict[str, Any]] = []
+    container_start_calls = 0
+    container_wait_calls = 0
+
+    class _MockImage:
+        id = "sha256:" + "a" * 64
+
+    class _MockImages:
+        def get(self, reference: str) -> _MockImage:
+            image_get_calls.append(reference)
+            if reference not in {EXPECTED_IMAGE, EXPECTED_TAG}:
+                raise PreexecError("rehearsal requested an unfrozen Docker image")
+            return _MockImage()
+
+        def pull(self, *_args: object, **_kwargs: object) -> None:
+            nonlocal image_pull_calls
+            image_pull_calls += 1
+            raise PreexecError("rehearsal attempted a Docker image pull")
+
+    class _MockContainer:
+        def start(self) -> None:
+            nonlocal container_start_calls
+            container_start_calls += 1
+
+        def logs(self, *, stream: bool, follow: bool) -> Any:
+            if stream is not True or follow is not True:
+                raise PreexecError("rehearsal Docker log contract differs")
+            return iter([b"credential-free mocked container output\n"])
+
+        def wait(self) -> dict[str, int]:
+            nonlocal container_wait_calls
+            container_wait_calls += 1
+            return {"StatusCode": 0}
+
+        @staticmethod
+        def remove(*, force: bool) -> None:
+            if force is not True:
+                raise PreexecError("rehearsal Docker cleanup contract differs")
+
+    class _MockContainers:
+        def create(self, **kwargs: Any) -> _MockContainer:
+            container_create_calls.append(dict(kwargs))
+            return _MockContainer()
+
+        @staticmethod
+        def run(**_kwargs: Any) -> _MockContainer:
+            raise PreexecError("ContainerCollection.run auto-pull surface was called")
+
     class _NoDockerClient:
-        pass
+        def __init__(self) -> None:
+            self.images = _MockImages()
+            self.containers = _MockContainers()
 
     docker_factory_calls = 0
     original_from_env = docker.from_env
@@ -282,12 +337,26 @@ def _exercise_pinned_control_flow(
         mounted = host_path.read_bytes()
         mounted_over_baked_fixture = binding.get("bind") == "/home/fix.patch"
         effective = mounted if mounted_over_baked_fixture else baked_fixture_patch
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(
-            "credential-free mocked container output\n",
-            encoding="utf-8",
-            newline="\n",
+        container = docker_util.docker_client.containers.run(
+            image=image_name,
+            command=run_command,
+            remove=False,
+            detach=True,
+            stdout=True,
+            stderr=True,
+            environment=list(global_env or []),
+            volumes=volumes,
         )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output = ""
+        try:
+            with output_path.open("w", encoding="utf-8", newline="\n") as stream:
+                for raw in container.logs(stream=True, follow=True):
+                    decoded = raw.decode("utf-8")
+                    stream.write(decoded)
+                    output += decoded
+        finally:
+            container.remove(force=True)
         run_calls.append(
             {
                 "image_name": image_name,
@@ -301,7 +370,7 @@ def _exercise_pinned_control_flow(
                 "mounted": mounted,
             }
         )
-        return "credential-free mocked container output\n"
+        return output
 
     async def forbidden_session(*_args: object, **_kwargs: object) -> None:
         nonlocal session_calls
@@ -325,8 +394,13 @@ def _exercise_pinned_control_flow(
     session_module.run_and_save_logs = forbidden_session
     builtins.open = guarded_open
     try:
+        exit_status_path = config_path.parent / "container-exit-status.json"
         cli = execute_pinned_instance_only(
-            harness_root=harness_root, config_path=config_path
+            harness_root=harness_root,
+            config_path=config_path,
+            expected_image=EXPECTED_IMAGE,
+            expected_tag=EXPECTED_TAG,
+            exit_status_path=exit_status_path,
         )
         instances = cli.instances
         if len(instances) != 1 or instances[0].pr.id != "vuejs/core:pr-8911":
@@ -353,8 +427,8 @@ def _exercise_pinned_control_flow(
         config_path.parent / "work/vuejs/core/evals/pr-8911/fix.patch"
     ).resolve()
     if (
-        call["image_name"] != EXPECTED_TAG
-        or call["run_command"] != "bash /home/fix-run.sh"
+        call["image_name"] != EXPECTED_IMAGE
+        or call["run_command"] != FIX_PATCH_RUN_COMMAND
         or call["host_path"] != expected_host
         or call["binding"] != {"bind": "/home/fix.patch", "mode": "rw"}
         or call["mounted"] != expected_patch
@@ -363,9 +437,31 @@ def _exercise_pinned_control_flow(
         or call["baked_fixture_used"] is not False
     ):
         raise PreexecError("pinned submitted-patch mount contract differs")
+    try:
+        exit_status = _strict_object(exit_status_path)
+    except (OSError, ValueError) as exc:
+        raise PreexecError("pinned runtime exit-status evidence is missing") from exc
+    if (
+        exit_status.get("schema") != "trimem/multi-swe-container-exit-status/1.0"
+        or exit_status.get("executed_image") != EXPECTED_IMAGE
+        or exit_status.get("expected_image") != EXPECTED_IMAGE
+        or exit_status.get("expected_tag") != EXPECTED_TAG
+        or exit_status.get("run_command") != FIX_PATCH_RUN_COMMAND
+        or exit_status.get("status_code") != 0
+        or exit_status.get("submitted_patch_bytes") != len(expected_patch)
+        or exit_status.get("submitted_patch_sha256")
+        != hashlib.sha256(expected_patch).hexdigest()
+    ):
+        raise PreexecError("pinned runtime exit-status evidence differs")
     if (
         docker_factory_calls != 1
         or exists_calls != [EXPECTED_TAG]
+        or image_get_calls != [EXPECTED_IMAGE, EXPECTED_TAG]
+        or image_pull_calls != 0
+        or len(container_create_calls) != 1
+        or container_create_calls[0].get("image") != EXPECTED_IMAGE
+        or container_start_calls != 1
+        or container_wait_calls != 1
         or source_build_calls != 0
         or session_calls != 0
         or host_prepare_reads != 0
@@ -378,6 +474,13 @@ def _exercise_pinned_control_flow(
         "docker_client_factory_calls_mocked": docker_factory_calls,
         "host_prepare_script_reads": host_prepare_reads,
         "image_exists_queries": len(exists_calls),
+        "immutable_image_get_queries": image_get_calls,
+        "image_pull_fallback_calls": image_pull_calls,
+        "actual_container_image": container_create_calls[0]["image"],
+        "container_exit_status": exit_status["status_code"],
+        "container_exit_status_captured": True,
+        "docker_container_create_calls": len(container_create_calls),
+        "docker_container_start_calls": container_start_calls,
         "mocked_docker_run_calls": len(run_calls),
         "effective_submitted_patch_sha256": hashlib.sha256(
             call["effective"]
@@ -451,6 +554,7 @@ def run_rehearsal(*, cache_dir: Path, harness_root: Path) -> dict[str, Any]:
         expected_config = {
             "clear_env": True,
             "dataset_files": [str(scratch / "one-row-rehearsal/dataset.jsonl")],
+            "fix_patch_run_cmd": FIX_PATCH_RUN_COMMAND,
             "force_build": False,
             "global_env": [],
             "human_mode": True,
@@ -484,6 +588,12 @@ def run_rehearsal(*, cache_dir: Path, harness_root: Path) -> dict[str, Any]:
             str(harness_root),
             "--config",
             str(config_path),
+            "--expected-image",
+            EXPECTED_IMAGE,
+            "--expected-tag",
+            EXPECTED_TAG,
+            "--exit-status-output",
+            str(scratch / "one-row-rehearsal/container-exit-status.json"),
         )
         expected_report = (
             sys.executable,
@@ -568,6 +678,7 @@ def run_rehearsal(*, cache_dir: Path, harness_root: Path) -> dict[str, Any]:
         },
         "docker_calls": 0,
         "exact_config": {
+            "fix_patch_run_cmd": FIX_PATCH_RUN_COMMAND,
             "force_build": False,
             "human_mode": True,
             "mode": "instance_only",

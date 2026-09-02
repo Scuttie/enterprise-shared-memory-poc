@@ -28,21 +28,43 @@
     "all_distributions_hash_locked": true,
     "resolved_distribution_count": 140
   },
+  "harness_dependency_hash_basis": "PINNED_GIT_BLOB_BYTES_AT_REVISION",
+  "harness_dependency_lock": {
+    "basis": "PINNED_GIT_BLOB_BYTES_AT_REVISION",
+    "dependency_count": 3,
+    "portable_projection_sha256": "042c8cfb2478f5515541a387575c7124312095df7e82d4e30798c7d82926df39"
+  },
   "harness_source_environment": [
     {
       "benchmark_ids": ["swebench_verified"],
+      "checkout_key": "swebench_verified",
       "repository": "https://github.com/SWE-bench/SWE-bench",
       "revision": "7a21e05772954cc81471ae19d56f436cecf43c54",
-      "dependency_declaration": "pyproject.toml",
-      "dependency_declaration_sha256": "f4b0f6bb53c20bcef82f254312f6157e44594399d64070f78421c109c54175ba",
-      "upstream_uv_lock_sha256": "7ebe0cf66af30d518441cbaba44678abbf9cf536e6ae66144acc508611d9492c"
+      "dependency_declarations": [
+        {
+          "bytes": 2131,
+          "git_blob_sha256": "a28097ccddef94f8a22d9ca4037ab066ac37462e95547f3136bf4059109aaac9",
+          "path": "pyproject.toml"
+        },
+        {
+          "bytes": 861799,
+          "git_blob_sha256": "66ada0bfcc5177def68d5307e0c6fdaf5b91b5659258faa1fb2cc4862809d39e",
+          "path": "uv.lock"
+        }
+      ]
     },
     {
       "benchmark_ids": ["multi_swe_bench_mini", "multi_swe_bench_flash"],
+      "checkout_key": "multi",
       "repository": "https://github.com/multi-swe-bench/multi-swe-bench",
       "revision": "24f493f8a103e72312ded4f6b9c89f081d69cb09",
-      "dependency_declaration": "setup.py",
-      "dependency_declaration_sha256": "889875791d98a7157552188a1ee46e8874255917f2915315a69f086a6ba2ed00"
+      "dependency_declarations": [
+        {
+          "bytes": 921,
+          "git_blob_sha256": "7a19f0081d9feee2fa2262e215080b4daa91c452db36d6c2ddf54dfcfb971c40",
+          "path": "setup.py"
+        }
+      ]
     }
   ],
   "critical_versions": {

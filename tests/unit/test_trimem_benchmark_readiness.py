@@ -1406,6 +1406,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         ROOT / ".github/workflows/ci-trimem-e2e.yml",
         ROOT / ".github/workflows/trimem-grader-smoke.yml",
         ROOT / ".github/workflows/trimem-benchmark.yml",
+        ROOT / ".github/workflows/ci-trimem-harness-lock.yml",
     ]
     for path in workflows:
         text = path.read_text(encoding="utf-8")
@@ -1431,7 +1432,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in smoke
     assert f"      - {readiness.GRADER_SMOKE_SENTINEL_PATH}" in smoke
     assert "      - artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json" not in smoke
-    assert "group: trimem-v1-grader-smoke-exec-002" in smoke
+    assert "group: trimem-v1-grader-smoke-exec-003" in smoke
     assert "cancel-in-progress: false" in smoke
     assert "branch-trigger-preflight:" in smoke
     assert "environment: trimem-grader-smoke-exec" in smoke
@@ -1470,7 +1471,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     benchmark = workflows[3].read_text(encoding="utf-8")
     assert "workflow_dispatch:" in benchmark
     assert all(trigger not in benchmark for trigger in ("pull_request:", "push:", "schedule:"))
-    for path in workflows[2:]:
+    for path in workflows[2:4]:
         text = path.read_text(encoding="utf-8")
         assert "openssl enc -aes-256-cbc" in text
         assert "restricted-encrypted" in text
@@ -1879,11 +1880,11 @@ def test_external_approval_is_bound_to_single_workflow_dispatch_and_attempt(
     hard = _read(ROOT / "configs/trimem_v1/cost_plan.json")["phase_hard_caps"]["GRADER_SMOKE"]
     request_path = config / "benchmark_exec_request.json"
     request_path.write_text(json.dumps(request), encoding="utf-8")
-    sentinel_path = artifact / "exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json"
+    sentinel_path = repository / readiness.GRADER_SMOKE_SENTINEL_PATH
     sentinel_path.parent.mkdir(parents=True)
     sentinel = {
         "schema": readiness.GRADER_SMOKE_REQUEST_SCHEMA,
-        "request_id": "TRIMEM_V1_GRADER_SMOKE_EXEC_002",
+        "request_id": readiness.GRADER_SMOKE_REQUEST_ID,
         "phase": "GRADER_SMOKE",
         "frozen_request_sha256": "sha256:"
         + hashlib.sha256(request_path.read_bytes()).hexdigest(),
@@ -2093,7 +2094,7 @@ def test_aggregate_revalidates_exact_workflow_approval_binding(
     sentinel.parent.mkdir(parents=True)
     frozen.parent.mkdir(parents=True, exist_ok=True)
     config.mkdir(parents=True)
-    request_id = "TRIMEM_V1_GRADER_SMOKE_EXEC_002"
+    request_id = readiness.GRADER_SMOKE_REQUEST_ID
     sentinel.write_text(
         json.dumps({"request_id": request_id, "request": "exact-sentinel"}) + "\n",
         encoding="utf-8",

@@ -67,6 +67,7 @@ from enterprise_memory.trimem.production_v03_lifecycle import (  # noqa: E402
 from enterprise_memory.trimem.runtime_lock import RuntimeLock  # noqa: E402
 from enterprise_memory.trimem.schema import canonical_hash  # noqa: E402
 from trimem_benchmark_matrix import sequence_sha256  # noqa: E402
+from trimem_harness_lock import prepare_harnesses  # noqa: E402
 from trimem_m2_candidates import (  # noqa: E402
     CANDIDATE_IDS,
     candidate_row,
@@ -1097,45 +1098,6 @@ def prepare_checkouts(
     if factory.production_capable is not True or type(factory) is not GitCheckoutWorkspaceFactory:
         raise BenchmarkExecutionError("benchmark workspace is not the frozen Git checkout factory")
     return factory, evidence
-
-
-def prepare_harnesses(root: Path) -> dict[str, Path]:
-    grader = read_json(ROOT / "configs/trimem_v1/grader_lock.json")
-    environment = read_json(ROOT / "configs/trimem_v1/benchmark_environment_lock.json")
-    environment_rows = {
-        benchmark_id: row
-        for row in environment.get("harness_source_environment", ())
-        for benchmark_id in row.get("benchmark_ids", ())
-    }
-    result = {}
-    for lock in grader.get("harnesses", ()):
-        revision, repository = lock.get("revision"), lock.get("repository")
-        if not HEX40.fullmatch(str(revision)) or not str(repository).startswith("https://github.com/"):
-            raise BenchmarkExecutionError("official harness lock is invalid")
-        key = "swebench_verified" if lock.get("benchmark_ids") == ["swebench_verified"] else "multi"
-        target = root / key
-        if not target.exists():
-            _run_command(["git", "clone", "--no-checkout", repository, str(target)])
-            _run_command(["git", "-C", str(target), "checkout", "--detach", revision])
-        head = _run_command(["git", "-C", str(target), "rev-parse", "HEAD"]).stdout.strip()
-        status = _run_command(["git", "-C", str(target), "status", "--porcelain=v1"]).stdout
-        if head != revision or status:
-            raise BenchmarkExecutionError("official harness checkout is not exact and clean")
-        for benchmark_id in lock["benchmark_ids"]:
-            environment_row = environment_rows.get(benchmark_id)
-            if not isinstance(environment_row, Mapping) or environment_row.get("revision") != revision:
-                raise BenchmarkExecutionError("harness environment/source revision mismatch")
-            declaration = target / str(environment_row.get("dependency_declaration", ""))
-            if (not declaration.is_file() or
-                    sha256_bytes(declaration.read_bytes()) != environment_row.get("dependency_declaration_sha256")):
-                raise BenchmarkExecutionError("harness dependency declaration hash mismatch")
-            if benchmark_id == "swebench_verified":
-                upstream_lock = target / "uv.lock"
-                if (not upstream_lock.is_file() or
-                        sha256_bytes(upstream_lock.read_bytes()) != environment_row.get("upstream_uv_lock_sha256")):
-                    raise BenchmarkExecutionError("SWE-bench upstream uv.lock hash mismatch")
-            result[benchmark_id] = target
-    return result
 
 
 def image_entries(*, require_benchmark: bool) -> tuple[dict[str, dict[str, Any]], list[tuple[str, str]]]:

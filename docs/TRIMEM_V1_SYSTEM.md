@@ -189,16 +189,16 @@ approval prohibition applies specifically to official grader/benchmark target
 image pull or run, official grader invocation, benchmark task execution, and
 paid model calls.
 
-The branch-local P0.1.1 grader-smoke workflow may additionally start only when a
-commit on `codex/trimem-coder-v1` changes exactly
-`artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json`. The job is
-held at the protected `trimem-grader-smoke-exec` environment before any secret
-or execution step is available. Its external approval is bound to that exact
-commit, freeze, request bytes, workflow run ID and attempt, and zero-model caps.
-Ordinary source, configuration, documentation, or workflow pushes cannot start
-the grader. The retained `workflow_dispatch` path is disabled for this feature
-branch and is eligible only on `refs/heads/main` after a later merge; it is not
-an alternate P0.1 trigger.
+The historical branch-local P0.1.1 grader-smoke trigger admitted only a commit
+on `codex/trimem-coder-v1` that changed exactly
+`artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json`. The job
+was held at the protected `trimem-grader-smoke-exec` environment before any
+secret or execution step was available. Its external approval was bound to that
+exact commit, freeze, request bytes, workflow run ID and attempt, and zero-model
+caps. Ordinary source, configuration, documentation, or workflow pushes could
+not start the grader. The retained `workflow_dispatch` path was disabled for
+this feature branch and was eligible only on `refs/heads/main` after a later
+merge; it was not an alternate P0.1 trigger.
 
 The `_002` recovery amendment is classified
 `NON_SEMANTIC_EXECUTION_CONTROL_FIX`: GitHub Actions omits commit
@@ -210,6 +210,14 @@ benchmark result existed when this event-contract amendment was made, and the
 six identities, twelve GOLD/NOOP_BASELINE rows, image digests, target-set hash,
 and NOOP patch are unchanged.
 
+P0.1.3 reserves the new one-time active path
+`artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json`, schema
+`trimem/grader-smoke-branch-trigger/1.2`, and concurrency group
+`trimem-v1-grader-smoke-exec-003`. Both earlier request files are immutable
+historical inputs. A correction commit cannot trigger the grader; only a later
+one-parent commit adding `_003` and no other path can create the new run, which
+still requires a fresh run-bound approval at the protected environment.
+
 The six-instance smoke is also storage-bounded: for each frozen identity it
 pulls and inspects one target digest, executes GOLD then NOOP_BASELINE, and
 removes only that exact digest and harness tag before advancing. The frozen
@@ -217,9 +225,42 @@ Multi-SWE support image may remain resident only across the contiguous Multi
 pairs and is then removed. This preserves one serial campaign while avoiding a
 pull-all image cache as an execution prerequisite.
 
+Run `33480195643` attempt 2 proved that approval materialisation, the protected
+environment, and the EXEC gate worked. It then stopped in `prepare_harnesses`
+before any target image pull or grader execution. The dependency declaration
+locks had been computed from a Windows CRLF checkout, while GitHub's Linux
+checkout exposed the upstream LF bytes. This is classified as
+`TRIMEM_GRADER_SMOKE_HARNESS_LOCK_PORTABILITY_FAILURE`, not as an evaluator,
+scientific, grader-viability, or performance result. The P0.1.2 approval
+encoding recovery remains valid; strict Base64 decoding remains fail closed.
+
+P0.1.3 locks every upstream harness dependency declaration to the bytes of its
+regular Git blob at the exact pinned revision. The single shared reader resolves
+the requested path with Git and reads the object database; it never hashes the
+platform-dependent working-tree file. A generic declaration list covers all
+locked dependency files rather than special-casing the three declarations that
+exposed the fault. Production harness preparation and the credential-free
+rehearsal call the same validation path.
+
+The exact Linux pre-execution rehearsal uses fresh full checkouts of the pinned
+upstream repositories and invokes the production `prepare_harnesses` path to
+validate repository origin, commit, cleanliness, Git-blob identity, blob byte
+count, and the portable aggregate lock. The Windows row validates the identical
+committed objects without materialising Multi-SWE-bench's case-colliding full
+tree, which NTFS cannot represent. This object-only row specifically proves the
+lock is independent of Windows checkout line-ending conversion; it is not
+described as a runnable Windows harness. Both boundaries end before dataset
+materialisation, target selection, target-image pull, container creation,
+official grading, GOLD/NOOP execution, or any model/API call. Passing them is
+portability evidence only; it does not establish official-grader viability and
+cannot authorize a grader run.
+
 Until the real smoke succeeds, the executable status is
 `TRIMEM_SYSTEM_IMPLEMENTATION=CREDENTIAL_FREE_GREEN`,
 `GRADER_EXEC_PACKAGE=CORRECTION_IN_PROGRESS`,
 `OFFICIAL_GRADER_VIABILITY=NOT_YET_ESTABLISHED`, and
-`PERFORMANCE=NOT_MEASURED`. Credential-free green is not an official-grader or
+`PERFORMANCE=NOT_MEASURED`, with `DEV_APPROVAL_ALLOWED=NO`. The P0.1.3 starting
+counters remain image pulls = 0, grader containers = 0, official grader runs =
+0, GOLD/NOOP cells = 0, model/API calls = 0, input/output tokens = 0, and total
+USD = 0. Credential-free green is not an official-grader or
 benchmark-readiness result.

@@ -67,14 +67,18 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     CREDENTIAL_FREE_BUNDLE_PATH as GRADER_SMOKE_CREDENTIAL_BUNDLE_PATH,
     EXECUTION_CONTROL_AMENDMENT,
     FROZEN_REQUEST_PATH as GRADER_SMOKE_FROZEN_REQUEST_PATH,
-    HISTORICAL_SENTINEL_PATH,
-    HISTORICAL_SENTINEL_SHA256,
+    HISTORICAL_SENTINELS,
     IMAGE_LOCK_PATH as GRADER_SMOKE_IMAGE_LOCK_PATH,
     PROTOCOL_PATH as GRADER_SMOKE_PROTOCOL_PATH,
+    REQUEST_ID as GRADER_SMOKE_REQUEST_ID,
     REQUEST_SCHEMA as GRADER_SMOKE_REQUEST_SCHEMA,
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
     TriggerPreflightError,
     validate_request_document,
+)
+from trimem_harness_lock import (  # noqa: E402
+    HASH_BASIS as HARNESS_DEPENDENCY_HASH_BASIS,
+    validate_harness_lock_configuration,
 )
 from trimem_smoke_attestation import (  # noqa: E402
     EXPECTED_REPOSITORY as SMOKE_ATTESTATION_REPOSITORY,
@@ -1404,7 +1408,7 @@ def validate_targets() -> dict[str, list[dict[str, Any]]]:
         "P0.1.1 changed the frozen grader-smoke target set",
     )
     for relative, expected_sha256 in (
-        (HISTORICAL_SENTINEL_PATH, HISTORICAL_SENTINEL_SHA256),
+        *HISTORICAL_SENTINELS,
         (GRADER_SMOKE_FROZEN_REQUEST_PATH, BASELINE_FROZEN_REQUEST_SHA256),
         (GRADER_SMOKE_IMAGE_LOCK_PATH, BASELINE_IMAGE_LOCK_SHA256),
         (
@@ -1567,6 +1571,21 @@ def validate_model_cost_environment() -> None:
         require(hashlib.sha256(path.read_bytes()).hexdigest() == dependency.get(field), f"benchmark environment {field} mismatch")
     runner = environment.get("runner", {})
     require(runner.get("benchmark_exec_runner_labels") == ["self-hosted", "linux", "x64", "ubuntu-24.04", "trimem-benchmark"] and runner.get("benchmark_exec_max_job_minutes") == 7200, "long-running protected benchmark runner is not frozen")
+    harness_lock = validate_harness_lock_configuration()
+    require(
+        harness_lock
+        == {
+            "benchmark_ids": [
+                "multi_swe_bench_flash",
+                "multi_swe_bench_mini",
+                "swebench_verified",
+            ],
+            "dependency_count": 3,
+            "hash_basis": HARNESS_DEPENDENCY_HASH_BASIS,
+            "portable_projection_sha256": "042c8cfb2478f5515541a387575c7124312095df7e82d4e30798c7d82926df39",
+        },
+        "pinned harness Git-blob dependency lock is not exact",
+    )
     require(environment.get("embedding_execution", {}).get("benchmark_hash_embedder_allowed") is False, "benchmark environment allows the fixture embedder")
 
 
@@ -1816,10 +1835,11 @@ def validate_smoke_environment_protection(environment: Mapping[str, Any]) -> Non
 
 def validate_workflows() -> None:
     automatic = [ROOT / ".github/workflows/ci-trimem.yml", ROOT / ".github/workflows/ci-trimem-e2e.yml"]
+    portability = ROOT / ".github/workflows/ci-trimem-harness-lock.yml"
     smoke_workflow = ROOT / ".github/workflows/trimem-grader-smoke.yml"
     benchmark_workflow = ROOT / ".github/workflows/trimem-benchmark.yml"
     manual = [smoke_workflow, benchmark_workflow]
-    for path in [*automatic, *manual]:
+    for path in [*automatic, portability, *manual]:
         text = path.read_text(encoding="utf-8")
         for forbidden in ("continue-on-error", "|| true", ":latest"):
             require(forbidden not in text, f"forbidden workflow construct {forbidden}: {path.name}")
@@ -1834,6 +1854,19 @@ def validate_workflows() -> None:
     service = automatic[1].read_text(encoding="utf-8")
     require("test_real_services_e2e.py" in service and "postgres@sha256:" in service and "qdrant/qdrant@sha256:" in service, "real PostgreSQL/Qdrant CI is absent")
     require("postgres_bootstrap.py" in service and "TRIMEM_TEST_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@" in service and "TRIMEM_TEST_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@" in service, "real-service role/RLS boundary is not wired")
+    portable = portability.read_text(encoding="utf-8")
+    require(
+        "pull_request:" in portable
+        and "runner: ubuntu-24.04" in portable
+        and "runner: windows-2025" in portable
+        and "core_autocrlf: input" in portable
+        and 'core_autocrlf: "true"' in portable
+        and "rehearsal_arg: --blob-only" in portable
+        and "trimem_harness_lock.py" in portable
+        and "environment:" not in portable
+        and "secrets." not in portable,
+        "cross-platform credential-free harness-lock rehearsal differs",
+    )
     smoke = smoke_workflow.read_text(encoding="utf-8")
     require("workflow_dispatch:" in smoke and "pull_request:" not in smoke and "schedule:" not in smoke, "smoke workflow has an unauthorized trigger")
     require(
@@ -1850,7 +1883,7 @@ def validate_workflows() -> None:
         "smoke branch trigger is not fail-closed before the protected job",
     )
     require(
-        "concurrency:\n  group: trimem-v1-grader-smoke-exec-002\n"
+        "concurrency:\n  group: trimem-v1-grader-smoke-exec-003\n"
         "  cancel-in-progress: false" in smoke,
         "smoke recovery concurrency contract differs",
     )

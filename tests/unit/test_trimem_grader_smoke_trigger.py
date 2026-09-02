@@ -76,8 +76,8 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         destination = repository / path
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes((ROOT / path).read_bytes())
-    historical_sentinel_path = getattr(trigger, "HISTORICAL_SENTINEL_PATH", None)
-    if historical_sentinel_path is not None:
+    historical_sentinel_paths = [path for path, _ in trigger.HISTORICAL_SENTINELS]
+    for historical_sentinel_path in historical_sentinel_paths:
         historical = repository / historical_sentinel_path
         historical.parent.mkdir(parents=True, exist_ok=True)
         historical.write_bytes((ROOT / historical_sentinel_path).read_bytes())
@@ -100,8 +100,7 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
         trigger.INVENTORY_PATH,
         trigger.PROTOCOL_PATH,
     ]
-    if historical_sentinel_path is not None:
-        closure_paths.append(historical_sentinel_path)
+    closure_paths.extend(historical_sentinel_paths)
     for path in closure_paths:
         raw = (repository / path).read_bytes()
         closure[path] = {
@@ -239,8 +238,12 @@ def _git_contract_negative(
         before = _commit(repository, "pre-existing active sentinel")
         _write_active_sentinel(repository, source_head=before)
         after = _commit(repository, "modify active sentinel")
-    elif case == "old_sentinel_touched":
-        historical_path = trigger.HISTORICAL_SENTINEL_PATH
+    elif case in {"old_sentinel_touched", "sentinel_002_touched"}:
+        historical_path = (
+            trigger.HISTORICAL_SENTINEL_PATH
+            if case == "old_sentinel_touched"
+            else trigger.HISTORICAL_SENTINEL_002_PATH
+        )
         _write_active_sentinel(repository, source_head=before)
         historical = repository / historical_path
         historical.write_bytes(historical.read_bytes() + b"tampered\n")
@@ -293,10 +296,23 @@ def _git_contract_negative(
 
 def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> None:
     workflow = (ROOT / trigger.WORKFLOW_PATH).read_text(encoding="utf-8")
+    assert trigger.REQUEST_SCHEMA == "trimem/grader-smoke-branch-trigger/1.2"
+    assert trigger.REQUEST_ID == "TRIMEM_V1_GRADER_SMOKE_EXEC_003"
+    assert (
+        trigger.SENTINEL_PATH
+        == "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json"
+    )
     assert "workflow_dispatch:" in workflow
     assert "push:" in workflow
     assert "      - codex/trimem-coder-v1" in workflow
     assert f"      - {trigger.SENTINEL_PATH}" in workflow
+    request_path_filters = re.findall(
+        r"^\s+- (artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST(?:_\d+)?\.json)$",
+        workflow,
+        flags=re.MULTILINE,
+    )
+    assert request_path_filters == [trigger.SENTINEL_PATH]
+    assert "group: trimem-v1-grader-smoke-exec-003" in workflow
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert "needs.branch-trigger-preflight.result == 'success'" in workflow
@@ -312,6 +328,37 @@ def test_workflow_has_exact_branch_sentinel_trigger_and_no_model_secret() -> Non
     assert set(
         re.findall(r"\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)", workflow)
     ) == trigger.ALLOWED_WORKFLOW_SECRETS
+
+
+@pytest.mark.parametrize("historical_path,expected_sha256", trigger.HISTORICAL_SENTINELS)
+def test_both_historical_sentinels_are_byte_immutable(
+    tmp_path: Path, historical_path: str, expected_sha256: str
+) -> None:
+    assert hashlib.sha256((ROOT / historical_path).read_bytes()).hexdigest() == expected_sha256
+    repository = tmp_path / "repository"
+    _initialize(repository)
+    historical = repository / historical_path
+    historical.write_bytes(historical.read_bytes() + b"tampered\n")
+    changed = _commit(repository, "tamper historical sentinel")
+    with pytest.raises(
+        trigger.TriggerPreflightError,
+        match="historical failed-trigger sentinel bytes changed",
+    ):
+        trigger.build_request_document(repository, source_head=changed)
+
+
+def test_correction_head_is_valid_while_active_003_sentinel_is_absent(
+    tmp_path: Path,
+) -> None:
+    repository = tmp_path / "repository"
+    correction_head = _initialize(repository)
+    assert not (repository / trigger.SENTINEL_PATH).exists()
+    document = trigger.build_request_document(
+        repository,
+        source_head=correction_head,
+    )
+    assert document["request_id"] == "TRIMEM_V1_GRADER_SMOKE_EXEC_003"
+    assert document["source_head"] == correction_head
 
 
 def test_actual_actions_payload_without_commit_file_arrays_passes(
@@ -375,6 +422,11 @@ def test_rerun_attempt_two_fails_closed(tmp_path: Path) -> None:
         ),
         pytest.param(
             "old_sentinel_touched", "sentinel|trigger commit", id="03-old-sentinel-touched"
+        ),
+        pytest.param(
+            "sentinel_002_touched",
+            "sentinel|trigger commit",
+            id="03b-sentinel-002-touched",
         ),
         pytest.param(
             "two_commits_between", "one non-merge commit|parent", id="04-two-commits"

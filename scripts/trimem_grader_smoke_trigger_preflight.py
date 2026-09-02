@@ -35,8 +35,18 @@ HISTORICAL_SENTINEL_PATH = (
 HISTORICAL_SENTINEL_SHA256 = (
     "03207843e241bef409d64d0181596f4cec4c83fe157dfc22670d429bc14f91f0"
 )
-SENTINEL_PATH = (
+HISTORICAL_SENTINEL_002_PATH = (
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json"
+)
+HISTORICAL_SENTINEL_002_SHA256 = (
+    "258900694f1584fcb0f04cde485c33ad4f4d4691154f5dfe598883ecdb03f48c"
+)
+HISTORICAL_SENTINELS = (
+    (HISTORICAL_SENTINEL_PATH, HISTORICAL_SENTINEL_SHA256),
+    (HISTORICAL_SENTINEL_002_PATH, HISTORICAL_SENTINEL_002_SHA256),
+)
+SENTINEL_PATH = (
+    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json"
 )
 FROZEN_REQUEST_PATH = "configs/trimem_v1/benchmark_exec_request.json"
 WORKFLOW_PATH = ".github/workflows/trimem-grader-smoke.yml"
@@ -49,8 +59,8 @@ CREDENTIAL_FREE_BUNDLE_PATH = (
 PREFLIGHT_PATH = "scripts/trimem_grader_smoke_trigger_preflight.py"
 INVENTORY_PATH = "scripts/trimem_evidence_inventory.py"
 PROTOCOL_PATH = "scripts/trimem_grader_smoke_protocol.py"
-REQUEST_ID = "TRIMEM_V1_GRADER_SMOKE_EXEC_002"
-REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.1"
+REQUEST_ID = "TRIMEM_V1_GRADER_SMOKE_EXEC_003"
+REQUEST_SCHEMA = "trimem/grader-smoke-branch-trigger/1.2"
 EXPECTED_PHASE = "GRADER_SMOKE"
 AUTHORIZATION_SEMANTICS = "The sentinel alone does not authorize execution."
 BASELINE_FROZEN_REQUEST_SHA256 = (
@@ -230,7 +240,7 @@ def _strict_artifact(raw: bytes, path: str) -> dict[str, Any]:
 
 def _raw_material(repository: Path, commit: str) -> dict[str, bytes]:
     paths = (
-        HISTORICAL_SENTINEL_PATH,
+        *(path for path, _ in HISTORICAL_SENTINELS),
         FROZEN_REQUEST_PATH,
         FREEZE_PATH,
         MANIFEST_PATH,
@@ -246,11 +256,11 @@ def _validate_frozen_material(
     """Validate and return every committed byte string bound by the sentinel."""
 
     raw = _raw_material(repository, commit)
-    _require(
-        hashlib.sha256(raw[HISTORICAL_SENTINEL_PATH]).hexdigest()
-        == HISTORICAL_SENTINEL_SHA256,
-        "historical failed-trigger sentinel bytes changed",
-    )
+    for path, expected_sha256 in HISTORICAL_SENTINELS:
+        _require(
+            hashlib.sha256(raw[path]).hexdigest() == expected_sha256,
+            f"historical failed-trigger sentinel bytes changed: {path}",
+        )
     for path, expected_sha256, label in (
         (
             FROZEN_REQUEST_PATH,
@@ -302,7 +312,7 @@ def _validate_frozen_material(
     freeze_files = freeze.get("files")
     _require(isinstance(freeze_files, dict), "freeze file inventory is missing")
     closure_paths = (
-        HISTORICAL_SENTINEL_PATH,
+        *(path for path, _ in HISTORICAL_SENTINELS),
         WORKFLOW_PATH,
         FROZEN_REQUEST_PATH,
         MANIFEST_PATH,

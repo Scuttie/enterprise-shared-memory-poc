@@ -55,6 +55,7 @@ CONFIG_PATHS = (
 )
 ARTIFACT_PATHS = (
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json",
+    "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json",
     "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json",
     "artifacts/trimem_v1/credential_free_e2e/dqn_frozen_checkpoint.json",
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/checkpoints/source-json-extension-M2.json",
@@ -82,6 +83,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_grader_smoke.py",
     "scripts/trimem_grader_smoke_protocol.py",
     "scripts/trimem_grader_smoke_trigger_preflight.py",
+    "scripts/trimem_harness_lock.py",
     "scripts/trimem_m2_candidates.py",
     "scripts/trimem_official_grader.py",
     "scripts/trimem_public_artifact.py",
@@ -176,6 +178,7 @@ TEST_PATHS = (
     "tests/unit/test_trimem_benchmark_checkpoint_recovery.py",
     "tests/unit/test_trimem_benchmark_readiness.py",
     "tests/unit/test_trimem_grader_smoke_trigger.py",
+    "tests/unit/test_trimem_harness_lock.py",
     "tests/unit/test_trimem_git_workspace.py",
     "tests/unit/test_trimem_m1_postwrite_recovery.py",
     "tests/unit/test_trimem_policy_consolidation.py",
@@ -194,6 +197,7 @@ TEST_PATHS = (
 WORKFLOW_PATHS = (
     ".github/workflows/ci-trimem.yml",
     ".github/workflows/ci-trimem-e2e.yml",
+    ".github/workflows/ci-trimem-harness-lock.yml",
     ".github/workflows/trimem-benchmark.yml",
     ".github/workflows/trimem-grader-smoke.yml",
 )

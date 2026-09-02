@@ -1457,17 +1457,21 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "trimem_grader_smoke.py" not in multi_swe_contract
     assert "github.event_name == 'push'" in multi_swe_contract
     assert "github.ref == 'refs/heads/codex/trimem-coder-v1'" in multi_swe_contract
-    assert "github.run_attempt == 1" in multi_swe_contract
-    assert "contains(github.event.head_commit.added," in multi_swe_contract
-    assert (
-        "artifacts/trimem_v1/probe_requests/"
-        "MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json" in multi_swe_contract
-    )
+    assert "github.run_attempt == 1" not in multi_swe_contract
+    assert "github.event.head_commit.added" not in multi_swe_contract
+    assert "contains(github.event" not in multi_swe_contract
     assert "scripts/trimem_multi_swe_probe_request.py" in multi_swe_contract
     assert '--event-path "$GITHUB_EVENT_PATH"' in multi_swe_contract
     assert "scripts/trimem_multi_swe_image_probe.py" in multi_swe_contract
     assert "always() && steps.image_probe.outcome != 'skipped'" in multi_swe_contract
+    assert 'test "$IMAGE_PROBE_OUTCOME" = "success"' in multi_swe_contract
     assert "persist-credentials: false" in multi_swe_contract
+    probe_gate = (ROOT / "scripts/trimem_multi_swe_probe_request.py").read_text(
+        encoding="utf-8"
+    )
+    assert 'environment.get("GITHUB_RUN_ATTEMPT") == "1"' in probe_gate
+    assert "artifacts/trimem_v1/probe_requests/" in probe_gate
+    assert "MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json" in probe_gate
     smoke = workflows[2].read_text(encoding="utf-8")
     assert "workflow_dispatch:" in smoke and "pull_request:" not in smoke
     assert "push:" in smoke
@@ -2439,6 +2443,41 @@ def test_official_gateway_rejects_empty_patch_before_image_or_evaluator() -> Non
     assert calls == []
 
 
+def test_official_gateway_requires_exact_singleton_image_digest() -> None:
+    target = _frozen_official_target("swebench_verified")
+    gateway = object.__new__(official_grader.OfficialHarnessGraderGateway)
+    gateway.docker_binary = "docker"
+    gateway._redact = lambda value: value
+    gateway._restricted_streams = lambda *_args, **_kwargs: {}
+    calls: list[list[str]] = []
+    expected = target.image.rsplit("@", 1)[1]
+    extra = "sha256:" + "e" * 64
+
+    def run(argv: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        calls.append(argv)
+        return subprocess.CompletedProcess(
+            argv,
+            0,
+            stdout=json.dumps([
+                "example.invalid/grader@" + expected,
+                "example.invalid/other@" + extra,
+            ]),
+            stderr="",
+        )
+
+    gateway._run = run
+    gateway._failure = lambda *_args, **kwargs: official_grader.OfficialGraderError(
+        str(kwargs["reason"])
+    )
+    with pytest.raises(official_grader.OfficialGraderError, match="digest_mismatch"):
+        gateway._verify_and_tag(
+            object(), 0, target.image, target.harness_image_tag, []
+        )
+    assert calls == [[
+        "docker", "image", "inspect", "--format", "{{json .RepoDigests}}", target.image,
+    ]]
+
+
 def test_noop_baseline_patch_applies_as_one_file_only_index_change(tmp_path: Path) -> None:
     repository = tmp_path / "repository"
     subprocess.run(["git", "init", str(repository)], check=True, capture_output=True)
@@ -2543,43 +2582,140 @@ def test_swe_actual_test_evidence_requires_complete_f2p_and_zero_regressions() -
             )
 
 
-def _multi_result(*, passed: tuple[str, ...] = (), failed: tuple[str, ...] = ()) -> dict:
+def _multi_result(
+    *,
+    passed: tuple[str, ...] = (),
+    failed: tuple[str, ...] = (),
+    skipped: tuple[str, ...] = (),
+) -> dict:
     return {
         "passed_count": len(passed),
         "failed_count": len(failed),
-        "skipped_count": 0,
+        "skipped_count": len(skipped),
         "passed_tests": list(passed),
         "failed_tests": list(failed),
-        "skipped_tests": [],
+        "skipped_tests": list(skipped),
     }
 
 
-def test_multi_actual_test_evidence_requires_nonempty_official_classification() -> None:
-    target = _frozen_official_target("multi_swe_bench_mini")
+def _multi_source_and_noop_status() -> tuple[dict, dict]:
+    source = {
+        "run_result": _multi_result(passed=("stable",)),
+        "test_patch_result": _multi_result(passed=("stable",), failed=("target",)),
+        "fix_patch_result": _multi_result(passed=("stable", "target")),
+    }
     status = {
         "org": "vuejs", "repo": "core", "number": 8911, "valid": False,
-        "run_result": _multi_result(passed=("run",)),
-        "test_patch_result": _multi_result(passed=("test",)),
-        "fix_patch_result": _multi_result(failed=("fix",)),
+        "run_result": _multi_result(passed=("stable",)),
+        "test_patch_result": _multi_result(passed=("stable",), failed=("target",)),
+        "fix_patch_result": _multi_result(passed=("stable",), failed=("target",)),
         "fixed_tests": {}, "p2p_tests": {}, "f2p_tests": {}, "s2p_tests": {}, "n2p_tests": {},
     }
+    return source, status
+
+
+def test_multi_unresolved_noop_requires_and_accepts_each_full_frozen_test_domain() -> None:
+    target = _frozen_official_target("multi_swe_bench_mini")
+    source, status = _multi_source_and_noop_status()
     summary = official_grader.validate_official_test_evidence(
         target,
-        source_row={},
+        source_row=source,
         test_output_raw=b"actual multi test output\n",
         test_status_raw=_canonical(status),
         resolved=False,
     )
-    assert summary["fix_tests_classified"] == 1
-    empty = deepcopy(status)
-    empty["fix_patch_result"] = _multi_result()
-    with pytest.raises(official_grader.OfficialGraderError, match="no classified tests"):
+    assert summary["expected_run_test_count"] == summary["classified_run_test_count"] == 1
+    assert (
+        summary["expected_test_patch_test_count"]
+        == summary["classified_test_patch_test_count"]
+        == 2
+    )
+    assert summary["expected_fix_test_count"] == summary["classified_fix_test_count"] == 2
+    assert summary["expected_fix_test_domain_sha256"] == hashlib.sha256(
+        _canonical(["stable", "target"])
+    ).hexdigest()
+    assert all(
+        "stable" not in str(value) and "target" not in str(value)
+        for key, value in summary.items()
+        if key != "source"
+    )
+
+
+@pytest.mark.parametrize(
+    "tamper",
+    (
+        "one_test",
+        "extra",
+        "overlap",
+        "duplicate",
+        "run_reclassified",
+        "test_reclassified",
+        "source_domain_drift",
+    ),
+)
+def test_multi_unresolved_results_reject_incomplete_or_invalid_test_domains(
+    tamper: str,
+) -> None:
+    target = _frozen_official_target("multi_swe_bench_mini")
+    source, status = _multi_source_and_noop_status()
+    fix = status["fix_patch_result"]
+    if tamper == "one_test":
+        status["fix_patch_result"] = _multi_result(failed=("target",))
+        match = "classification domain mismatch"
+    elif tamper == "extra":
+        fix["failed_tests"].append("rogue")
+        fix["failed_count"] += 1
+        match = "classification domain mismatch"
+    elif tamper == "overlap":
+        fix["failed_tests"].append("stable")
+        fix["failed_count"] += 1
+        match = "classifications overlap"
+    elif tamper == "duplicate":
+        fix["passed_tests"].append("stable")
+        fix["passed_count"] += 1
+        match = "duplicated"
+    elif tamper == "run_reclassified":
+        status["run_result"] = _multi_result(failed=("stable",))
+        match = "classifications differ from frozen source"
+    elif tamper == "test_reclassified":
+        status["test_patch_result"] = _multi_result(failed=("stable", "target"))
+        match = "classifications differ from frozen source"
+    else:
+        source["fix_patch_result"] = _multi_result(passed=("stable", "target", "drift"))
+        match = "frozen test_patch_result/fix_patch_result domains differ"
+    with pytest.raises(official_grader.OfficialGraderError, match=match):
         official_grader.validate_official_test_evidence(
             target,
-            source_row={},
+            source_row=source,
             test_output_raw=b"actual multi test output\n",
-            test_status_raw=_canonical(empty),
+            test_status_raw=_canonical(status),
             resolved=False,
+        )
+
+
+def test_matrix_revalidation_rejects_tampered_multi_unresolved_test_domain() -> None:
+    frozen_target = _frozen_official_target("multi_swe_bench_mini")
+    target = {
+        "benchmark_id": frozen_target.benchmark_id,
+        "instance_id": frozen_target.instance_id,
+    }
+    source, status = _multi_source_and_noop_status()
+    summary = official_grader.validate_official_test_evidence(
+        frozen_target,
+        source_row=source,
+        test_output_raw=b"actual multi test output\n",
+        test_status_raw=_canonical(status),
+        resolved=False,
+    )
+    status["fix_patch_result"] = _multi_result(failed=("target",))
+    with pytest.raises(benchmark_matrix.MatrixError, match="classification domain mismatch"):
+        benchmark_matrix._validate_smoke_test_status(
+            Path("multi-noop.result.json"),
+            target,
+            status,
+            summary,
+            resolved=False,
+            source_row=source,
         )
 
 

@@ -403,7 +403,11 @@ def _exact_int(value: Any, expected: int) -> bool:
     return type(value) is int and value == expected
 
 
-def _multi_test_result(value: Any, *, label: str) -> dict[str, int]:
+def _multi_test_result(
+    value: Any,
+    *,
+    label: str,
+) -> tuple[dict[str, int], dict[str, frozenset[str]], frozenset[str]]:
     required = {
         "passed_count", "failed_count", "skipped_count",
         "passed_tests", "failed_tests", "skipped_tests",
@@ -422,7 +426,20 @@ def _multi_test_result(value: Any, *, label: str) -> dict[str, int]:
         for left, right in (("passed", "failed"), ("passed", "skipped"), ("failed", "skipped"))
     ):
         raise MatrixError(f"{label} test result classifications overlap")
-    return {f"{kind}_count": len(classified[kind]) for kind in classified}
+    classifications = {
+        kind: frozenset(classified[kind])
+        for kind in ("passed", "failed", "skipped")
+    }
+    domain = frozenset(
+        test_name
+        for kind in ("passed", "failed", "skipped")
+        for test_name in classified[kind]
+    )
+    return (
+        {f"{kind}_count": len(classified[kind]) for kind in classified},
+        classifications,
+        domain,
+    )
 
 
 def _validate_smoke_test_status(
@@ -511,10 +528,31 @@ def _validate_smoke_test_status(
         or status.get("valid") is not resolved
     ):
         raise MatrixError(f"{result_file.name}: Multi-SWE test-status identity/result mismatch")
-    results = {
-        name: _multi_test_result(status.get(name), label=f"{result_file.name}:{name}")
-        for name in ("run_result", "test_patch_result", "fix_patch_result")
+    result_names = ("run_result", "test_patch_result", "fix_patch_result")
+    expected_results = {
+        name: _multi_test_result(
+            source_row.get(name), label=f"{result_file.name}:source.{name}"
+        )
+        for name in result_names
     }
+    actual_results = {
+        name: _multi_test_result(status.get(name), label=f"{result_file.name}:{name}")
+        for name in result_names
+    }
+    if expected_results["test_patch_result"][2] != expected_results["fix_patch_result"][2]:
+        raise MatrixError(
+            f"{result_file.name}: frozen Multi-SWE test/fix domains differ"
+        )
+    for name in ("run_result", "test_patch_result"):
+        if actual_results[name][1] != expected_results[name][1]:
+            raise MatrixError(
+                f"{result_file.name}: Multi-SWE {name} classifications differ from source"
+            )
+    if actual_results["fix_patch_result"][2] != expected_results["fix_patch_result"][2]:
+        raise MatrixError(
+            f"{result_file.name}: Multi-SWE fix_patch_result classification domain mismatch"
+        )
+    results = {name: actual_results[name][0] for name in result_names}
     for name in ("fixed_tests", "p2p_tests", "f2p_tests", "s2p_tests", "n2p_tests"):
         if not isinstance(status.get(name), dict):
             raise MatrixError(f"{result_file.name}: Multi-SWE {name} is missing")
@@ -523,6 +561,17 @@ def _validate_smoke_test_status(
     if (
         classified <= 0
         or summary.get("source") != "MULTI_SWE_PER_INSTANCE_REPORT"
+        or summary.get("expected_run_test_count") != len(expected_results["run_result"][2])
+        or summary.get("classified_run_test_count") != sum(results["run_result"].values())
+        or summary.get("expected_test_patch_test_count")
+        != len(expected_results["test_patch_result"][2])
+        or summary.get("classified_test_patch_test_count")
+        != sum(results["test_patch_result"].values())
+        or summary.get("expected_fix_test_count") != len(expected_results["fix_patch_result"][2])
+        or summary.get("classified_fix_test_count") != classified
+        or summary.get("expected_fix_test_domain_sha256") != hashlib.sha256(
+            _canonical(sorted(expected_results["fix_patch_result"][2]))
+        ).hexdigest()
         or summary.get("fix_tests_classified") != classified
         or summary.get("fix_tests_passed") != fix["passed_count"]
         or summary.get("fix_tests_failed") != fix["failed_count"]

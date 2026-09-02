@@ -141,7 +141,10 @@ def _source_test_ids(row: Mapping[str, Any], name: str) -> list[str]:
     return _strict_string_list(value, f"source.{name}")
 
 
-def _test_result_summary(value: Any, name: str) -> dict[str, int]:
+def _test_result_summary(
+    value: Any,
+    name: str,
+) -> tuple[dict[str, int], dict[str, frozenset[str]], frozenset[str]]:
     if not isinstance(value, Mapping):
         raise OfficialGraderError(f"Multi-SWE test result {name} is missing")
     required = {
@@ -162,7 +165,19 @@ def _test_result_summary(value: Any, name: str) -> dict[str, int]:
         ("passed", "failed"), ("passed", "skipped"), ("failed", "skipped")
     )):
         raise OfficialGraderError(f"Multi-SWE test result {name} classifications overlap")
-    return {f"{kind}_count": len(rows[kind]) for kind in ("passed", "failed", "skipped")}
+    classifications = {
+        kind: frozenset(rows[kind]) for kind in ("passed", "failed", "skipped")
+    }
+    domain = frozenset(
+        test_name
+        for kind in ("passed", "failed", "skipped")
+        for test_name in rows[kind]
+    )
+    return (
+        {f"{kind}_count": len(rows[kind]) for kind in ("passed", "failed", "skipped")},
+        classifications,
+        domain,
+    )
 
 
 def validate_official_test_evidence(
@@ -254,10 +269,29 @@ def validate_official_test_evidence(
         or status.get("valid") is not resolved
     ):
         raise OfficialGraderError("Multi-SWE official per-instance status identity/result mismatch")
-    summaries = {
-        name: _test_result_summary(status.get(name), name)
-        for name in ("run_result", "test_patch_result", "fix_patch_result")
+    result_names = ("run_result", "test_patch_result", "fix_patch_result")
+    expected_results = {
+        name: _test_result_summary(source_row.get(name), f"source.{name}")
+        for name in result_names
     }
+    actual_results = {
+        name: _test_result_summary(status.get(name), name)
+        for name in result_names
+    }
+    if expected_results["test_patch_result"][2] != expected_results["fix_patch_result"][2]:
+        raise OfficialGraderError(
+            "Multi-SWE frozen test_patch_result/fix_patch_result domains differ"
+        )
+    for name in ("run_result", "test_patch_result"):
+        if actual_results[name][1] != expected_results[name][1]:
+            raise OfficialGraderError(
+                f"Multi-SWE official {name} classifications differ from frozen source"
+            )
+    if actual_results["fix_patch_result"][2] != expected_results["fix_patch_result"][2]:
+        raise OfficialGraderError(
+            "Multi-SWE official fix_patch_result classification domain mismatch"
+        )
+    summaries = {name: actual_results[name][0] for name in result_names}
     fix = summaries["fix_patch_result"]
     fix_total = sum(fix.values())
     if fix_total <= 0:
@@ -269,6 +303,20 @@ def validate_official_test_evidence(
         "schema": "trimem/official-test-status-summary/1.0",
         "benchmark_id": target.benchmark_id,
         "source": "MULTI_SWE_PER_INSTANCE_REPORT",
+        "expected_run_test_count": len(expected_results["run_result"][2]),
+        "classified_run_test_count": sum(summaries["run_result"].values()),
+        "expected_test_patch_test_count": len(expected_results["test_patch_result"][2]),
+        "classified_test_patch_test_count": sum(summaries["test_patch_result"].values()),
+        "expected_fix_test_count": len(expected_results["fix_patch_result"][2]),
+        "classified_fix_test_count": fix_total,
+        "expected_fix_test_domain_sha256": hashlib.sha256(
+            json.dumps(
+                sorted(expected_results["fix_patch_result"][2]),
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest(),
         "fix_tests_classified": fix_total,
         "fix_tests_passed": fix["passed_count"],
         "fix_tests_failed": fix["failed_count"],
@@ -892,7 +940,7 @@ class OfficialHarnessGraderGateway:
                    "inspect_restricted_raw_streams": self._restricted_streams(
                        "image-inspect-" + expected, inspected.stdout, inspected.stderr
                    )}
-        if expected not in observed:
+        if observed != [expected]:
             raise self._failure(
                 request, started, stage="image_inspect", status="image_digest_mismatch",
                 reason="digest_mismatch", stdout=inspected.stdout, stderr=inspected.stderr,

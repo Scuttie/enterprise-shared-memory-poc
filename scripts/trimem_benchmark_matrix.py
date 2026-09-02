@@ -59,6 +59,22 @@ SHA256 = re.compile(r"^[0-9a-f]{64}$")
 OCI_DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 IMAGE = re.compile(r"^[a-z0-9][a-z0-9._/-]*@sha256:[0-9a-f]{64}$")
+SMOKE_EXECUTION_CONTRACT_FIELDS = {
+    "schema",
+    "profile",
+    "execution_mode",
+    "human_mode",
+    "force_build",
+    "need_clone",
+    "report_module",
+    "report_mode",
+    "source_image_build_calls",
+    "host_prepare_script_reads",
+    "submitted_patch_bytes",
+    "submitted_patch_sha256",
+    "patch_transport",
+    "api_calls",
+}
 ACCOUNTING_FIELDS = (
     "solve_calls", "decomposition_calls", "extraction_calls", "input_tokens",
     "cached_input_tokens", "output_tokens", "reasoning_tokens",
@@ -690,6 +706,399 @@ def _validate_smoke_completion_report(
         raise MatrixError(f"{result_file.name}: final official report is incomplete or has an empty patch")
 
 
+def _expected_smoke_execution_contract(
+    target: dict[str, Any], raw_patch: bytes
+) -> dict[str, Any]:
+    common = {
+        "schema": "trimem/official-grader-execution-contract/1.0",
+        "source_image_build_calls": 0,
+        "host_prepare_script_reads": 0,
+        "submitted_patch_bytes": len(raw_patch),
+        "submitted_patch_sha256": hashlib.sha256(raw_patch).hexdigest(),
+        "api_calls": 0,
+    }
+    if target.get("benchmark_id") == "swebench_verified":
+        return {
+            **common,
+            "profile": "SWE_BENCH_OFFICIAL_PREDICTION",
+            "execution_mode": "evaluation",
+            "human_mode": None,
+            "force_build": None,
+            "need_clone": None,
+            "report_module": "swebench.harness.run_evaluation",
+            "report_mode": "inline",
+            "patch_transport": {
+                "host_source": "prediction.jsonl.model_patch",
+                "container_destination": None,
+                "mode": None,
+            },
+        }
+    if str(target.get("benchmark_id", "")).startswith("multi_swe_bench_"):
+        return {
+            **common,
+            "profile": "MULTI_SWE_PREBUILT_EVALUATION",
+            "execution_mode": "instance_only",
+            "human_mode": True,
+            "force_build": False,
+            "need_clone": False,
+            "report_module": "multi_swe_bench.harness.gen_report",
+            "report_mode": "evaluation",
+            "patch_transport": {
+                "host_source": "evaluation_instance_fix.patch",
+                "container_destination": "/home/fix.patch",
+                "mode": "rw",
+            },
+        }
+    raise MatrixError(f"unsupported smoke benchmark execution contract: {target.get('benchmark_id')}")
+
+
+def _validate_smoke_execution_contract(
+    result_file: Path,
+    target: dict[str, Any],
+    raw_patch: bytes,
+    report: dict[str, Any],
+    record: dict[str, Any],
+) -> dict[str, Any]:
+    """Bind the adapter contract to the exact retained submitted-patch bytes."""
+
+    trimem = report.get("_trimem")
+    report_contract = (
+        trimem.get("execution_contract") if isinstance(trimem, dict) else None
+    )
+    if (
+        not isinstance(report_contract, dict)
+        or set(report_contract) != SMOKE_EXECUTION_CONTRACT_FIELDS
+    ):
+        raise MatrixError(
+            f"{result_file.name}: official report execution-contract evidence is missing"
+        )
+    expected = _expected_smoke_execution_contract(target, raw_patch)
+    if _canonical(report_contract) != _canonical(expected):
+        raise MatrixError(
+            f"{result_file.name}: official report execution-contract evidence drift"
+        )
+
+    evidence = _json_evidence(result_file, record, "execution_contract")
+    contract_sha256 = hashlib.sha256(_canonical(report_contract)).hexdigest()
+    if (
+        set(evidence)
+        != {
+            "schema",
+            "target_id",
+            "execution_contract_sha256",
+            "execution_contract",
+        }
+        or evidence.get("schema")
+        != "trimem/grader-smoke-execution-contract-evidence/1.0"
+        or evidence.get("target_id") != target["target_id"]
+        or evidence.get("execution_contract_sha256") != contract_sha256
+        or _canonical(evidence.get("execution_contract")) != _canonical(report_contract)
+        or record.get("execution_contract_sha256") != contract_sha256
+    ):
+        raise MatrixError(
+            f"{result_file.name}: submitted-patch execution-contract binding mismatch"
+        )
+
+    return {
+        "execution_contract_sha256": contract_sha256,
+        "execution_contract": report_contract,
+    }
+
+
+def _expected_smoke_execution_control(
+    target: dict[str, Any], expected_harness_revision: str
+) -> dict[str, Any]:
+    common = {
+        "schema": "trimem/official-grader-execution-control/1.0",
+        "harness_revision": expected_harness_revision,
+        "source_image_build_calls": 0,
+        "host_prepare_script_reads": 0,
+    }
+    if target.get("benchmark_id") == "swebench_verified":
+        return {
+            **common,
+            "profile": "SWE_BENCH_OFFICIAL_PREDICTION",
+            "proof_basis": "PINNED_CONTROL_FLOW_AND_FIXED_ARGV",
+            "dispatch": "main(task_repo=None,rewrite_reports=False)->run_instances",
+            "source_build_guard": {
+                "expression": "task_repo and not rewrite_reports",
+                "task_repo_argv_present": False,
+                "rewrite_reports_argv_present": False,
+                "evaluates": False,
+            },
+            "structurally_excluded_calls": ["_build_before_eval"],
+        }
+    return {
+        **common,
+        "profile": "MULTI_SWE_PREBUILT_EVALUATION",
+        "proof_basis": "PINNED_CONTROL_FLOW_AND_ADAPTER_CONSTRUCTION_INVARIANT",
+        "dispatch": (
+            "trimem_multi_swe_entrypoint.execute_pinned_instance_only"
+            "->CliArgs.run(instance_only)->run_mode_instance_only"
+        ),
+        "support_container_bootstrap_calls": 0,
+        "upstream_module_main_executed": False,
+        "structurally_excluded_calls": [
+            "run_evaluation.__main__.nix_swe_bootstrap",
+            "run_mode_image",
+            "check_commit_hashes",
+            "build_image",
+            "run_and_save_logs",
+        ],
+    }
+
+
+def _validate_smoke_execution_control(
+    result_file: Path,
+    target: dict[str, Any],
+    expected_harness_revision: str,
+    report: dict[str, Any],
+    record: dict[str, Any],
+    execution_contract: dict[str, Any],
+) -> dict[str, Any]:
+    trimem = report.get("_trimem")
+    control = (
+        trimem.get("execution_control_evidence")
+        if isinstance(trimem, dict)
+        else None
+    )
+    expected = _expected_smoke_execution_control(target, expected_harness_revision)
+    if not isinstance(control, dict) or _canonical(control) != _canonical(expected):
+        raise MatrixError(
+            f"{result_file.name}: official execution-control evidence drift"
+        )
+    if (
+        control["profile"] != execution_contract.get("profile")
+        or control["source_image_build_calls"]
+        != execution_contract.get("source_image_build_calls")
+        or control["host_prepare_script_reads"]
+        != execution_contract.get("host_prepare_script_reads")
+    ):
+        raise MatrixError(
+            f"{result_file.name}: execution-control/contract counter binding differs"
+        )
+    control_sha256 = hashlib.sha256(_canonical(control)).hexdigest()
+    evidence = _json_evidence(result_file, record, "execution_control")
+    if (
+        set(evidence)
+        != {
+            "schema",
+            "target_id",
+            "execution_control_sha256",
+            "execution_control",
+        }
+        or evidence.get("schema")
+        != "trimem/grader-smoke-execution-control-evidence/1.0"
+        or evidence.get("target_id") != target["target_id"]
+        or evidence.get("execution_control_sha256") != control_sha256
+        or _canonical(evidence.get("execution_control")) != _canonical(control)
+        or record.get("execution_control_sha256") != control_sha256
+    ):
+        raise MatrixError(
+            f"{result_file.name}: direct execution-control evidence binding differs"
+        )
+    return {
+        "execution_control_sha256": control_sha256,
+        "host_prepare_sh_access_count": control["host_prepare_script_reads"],
+        "source_image_build_count": control["source_image_build_calls"],
+    }
+
+
+def _smoke_prediction_input_bytes(
+    target: dict[str, Any], raw_patch: bytes
+) -> bytes:
+    patch = raw_patch.decode("utf-8")
+    if target.get("benchmark_id") == "swebench_verified":
+        value = {
+            "instance_id": target["instance_id"],
+            "model_patch": patch,
+            "model_name_or_path": f"trimem-v1-smoke-{str(target['probe']).lower()}",
+        }
+    else:
+        repository, number = target["instance_id"].rsplit("-", 1)
+        org, repo = repository.split("__", 1)
+        value = {"org": org, "repo": repo, "number": number, "fix_patch": patch}
+    return _canonical(value) + b"\n"
+
+
+def _validate_smoke_submitted_patch_identity(
+    result_file: Path,
+    target: dict[str, Any],
+    raw_patch: bytes,
+    report: dict[str, Any],
+    record: dict[str, Any],
+) -> dict[str, Any]:
+    trimem = report.get("_trimem")
+    private_inputs = (
+        trimem.get("materialized_private_inputs") if isinstance(trimem, dict) else None
+    )
+    expected_names = (
+        ["dataset.json", "prediction.jsonl"]
+        if target.get("benchmark_id") == "swebench_verified"
+        else ["dataset.jsonl", "prediction.jsonl", "config.json"]
+    )
+    if not isinstance(private_inputs, list) or len(private_inputs) != len(expected_names):
+        raise MatrixError(f"{result_file.name}: private-input identity set differs")
+    grader_root = result_file.parent / "official-grader"
+    task_relative = target["target_id"].replace("/", "_")
+    task_root = (grader_root / task_relative).resolve()
+    if grader_root.resolve() not in task_root.parents:
+        raise MatrixError(f"{result_file.name}: private-input path escaped grader root")
+    normalized_inputs: list[dict[str, Any]] = []
+    for expected_name, raw_row in zip(expected_names, private_inputs, strict=True):
+        if not isinstance(raw_row, dict) or set(raw_row) != {
+            "name", "sha256", "bytes", "retention"
+        }:
+            raise MatrixError(f"{result_file.name}: private-input evidence fields differ")
+        if (
+            raw_row.get("name") != expected_name
+            or not isinstance(raw_row.get("sha256"), str)
+            or SHA256.fullmatch(raw_row["sha256"]) is None
+            or type(raw_row.get("bytes")) is not int
+            or raw_row["bytes"] <= 0
+            or raw_row.get("retention") != "PURGED_AFTER_HASH_BOUND_GRADING"
+        ):
+            raise MatrixError(f"{result_file.name}: private-input identity drift")
+        host_path = task_root / expected_name
+        if host_path.exists() or host_path.is_symlink():
+            raise MatrixError(f"{result_file.name}: private input was not purged")
+        normalized_inputs.append({
+            **raw_row,
+            "host_path": host_path.relative_to(grader_root.resolve()).as_posix(),
+            "purged_after_capture": True,
+        })
+    prediction_raw = _smoke_prediction_input_bytes(target, raw_patch)
+    prediction = normalized_inputs[expected_names.index("prediction.jsonl")]
+    if (
+        prediction["bytes"] != len(prediction_raw)
+        or prediction["sha256"] != hashlib.sha256(prediction_raw).hexdigest()
+    ):
+        raise MatrixError(
+            f"{result_file.name}: prediction input submitted-patch identity differs"
+        )
+
+    patch_sha256 = hashlib.sha256(raw_patch).hexdigest()
+    applied_patch_ref = record.get("evidence", {}).get("applied_patch")
+    if applied_patch_ref != {
+        "path": "restricted-input/applied.patch",
+        "sha256": patch_sha256,
+        "bytes": len(raw_patch),
+    }:
+        raise MatrixError(f"{result_file.name}: restricted submitted-patch reference differs")
+    materialized = (
+        trimem.get("materialized_patch_evidence") if isinstance(trimem, dict) else None
+    )
+    if target.get("benchmark_id") == "swebench_verified":
+        if materialized is not None or (
+            isinstance(trimem, dict) and "materialized_patch_evidence" in trimem
+        ):
+            raise MatrixError(
+                f"{result_file.name}: SWE route claims materialized host-patch evidence"
+            )
+        route = "SWE_BENCH_PREDICTION_JSONL"
+        normalized_materialized = None
+    else:
+        required_materialized_fields = {
+            "schema",
+            "host_path",
+            "container_destination",
+            "mode",
+            "bytes",
+            "sha256",
+            "request_identity_match",
+            "restricted_materialized_patch",
+            "purged_after_capture",
+        }
+        if not isinstance(materialized, dict) or set(materialized) != required_materialized_fields:
+            raise MatrixError(
+                f"{result_file.name}: Multi-SWE materialized patch evidence is missing"
+            )
+        repository, number = target["instance_id"].rsplit("-", 1)
+        org, repo = repository.split("__", 1)
+        expected_host_path = (
+            f"{task_relative}/work/{org}/{repo}/evals/pr-{number}/fix.patch"
+        )
+        expected_restricted_path = (
+            "restricted-evidence/submitted-patch-materialized-"
+            f"{patch_sha256}.bin"
+        )
+        restricted = materialized.get("restricted_materialized_patch")
+        if (
+            materialized.get("schema")
+            != "trimem/materialized-submitted-patch-evidence/1.0"
+            or materialized.get("host_path") != expected_host_path
+            or materialized.get("container_destination") != "/home/fix.patch"
+            or materialized.get("mode") != "rw"
+            or type(materialized.get("bytes")) is not int
+            or materialized["bytes"] != len(raw_patch)
+            or materialized.get("sha256") != patch_sha256
+            or materialized.get("request_identity_match") is not True
+            or materialized.get("purged_after_capture") is not True
+            or not isinstance(restricted, dict)
+            or set(restricted) != {"path", "sha256", "bytes", "access"}
+            or restricted.get("path") != expected_restricted_path
+            or restricted.get("sha256") != patch_sha256
+            or type(restricted.get("bytes")) is not int
+            or restricted["bytes"] != len(raw_patch)
+            or restricted.get("access") != "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS"
+        ):
+            raise MatrixError(
+                f"{result_file.name}: materialized submitted-patch identity drift"
+            )
+        restricted_raw = _evidence_reference(
+            result_file,
+            {
+                "path": "official-grader/" + expected_restricted_path,
+                "sha256": patch_sha256,
+                "bytes": len(raw_patch),
+            },
+            "restricted materialized submitted patch",
+        )
+        if restricted_raw != raw_patch:
+            raise MatrixError(
+                f"{result_file.name}: restricted materialized patch bytes differ"
+            )
+        materialized_path = (grader_root / expected_host_path).resolve()
+        if materialized_path.exists() or materialized_path.is_symlink():
+            raise MatrixError(
+                f"{result_file.name}: materialized submitted patch was not purged"
+            )
+        route = "MULTI_SWE_MATERIALIZED_FIX_PATCH"
+        normalized_materialized = materialized
+
+    identity_body = {
+        "schema": "trimem/grader-smoke-submitted-patch-identity-evidence/1.0",
+        "target_id": target["target_id"],
+        "benchmark_id": target["benchmark_id"],
+        "route": route,
+        "submitted_patch_bytes": len(raw_patch),
+        "submitted_patch_sha256": patch_sha256,
+        "restricted_submitted_patch": applied_patch_ref,
+        "prediction_input_identity": prediction,
+        "private_input_identities": normalized_inputs,
+        "materialized_patch_evidence": normalized_materialized,
+        "submitted_patch_identity": True,
+    }
+    identity_sha256 = hashlib.sha256(_canonical(identity_body)).hexdigest()
+    evidence = _json_evidence(result_file, record, "submitted_patch_identity")
+    if (
+        set(evidence) != {*set(identity_body), "identity_evidence_sha256"}
+        or evidence.get("identity_evidence_sha256") != identity_sha256
+        or _canonical({
+            key: value for key, value in evidence.items()
+            if key != "identity_evidence_sha256"
+        }) != _canonical(identity_body)
+        or record.get("submitted_patch_identity_sha256") != identity_sha256
+    ):
+        raise MatrixError(
+            f"{result_file.name}: direct submitted-patch identity evidence differs"
+        )
+    return {
+        "submitted_patch_identity_sha256": identity_sha256,
+        "submitted_patch_identity": True,
+    }
+
+
 def _validate_smoke_evidence(
     result_file: Path,
     record: dict[str, Any],
@@ -808,6 +1217,9 @@ def _validate_smoke_evidence(
             or reference.get("sha256") != hashlib.sha256(raw).hexdigest()
         ):
             raise MatrixError(f"{result_file.name}: report/{name} evidence binding mismatch")
+    execution_contract_validation = _validate_smoke_execution_contract(
+        result_file, target, raw_patch, report, record
+    )
 
     container = _json_evidence(result_file, record, "container")
     expected_container = {
@@ -857,6 +1269,39 @@ def _validate_smoke_evidence(
     }:
         raise MatrixError(f"{result_file.name}: digest evidence mismatch")
 
+    execution_control_evidence = _validate_smoke_execution_control(
+        result_file,
+        target,
+        expected_harness_revision,
+        report,
+        record,
+        execution_contract_validation["execution_contract"],
+    )
+    submitted_patch_evidence = _validate_smoke_submitted_patch_identity(
+        result_file, target, raw_patch, report, record
+    )
+    execution_evidence = {
+        "patch_applied": True,
+        "tests_executed": True,
+        "digest_match": True,
+        "submitted_patch_identity": submitted_patch_evidence[
+            "submitted_patch_identity"
+        ],
+        "host_prepare_sh_access_count": execution_control_evidence[
+            "host_prepare_sh_access_count"
+        ],
+        "source_image_build_count": execution_control_evidence[
+            "source_image_build_count"
+        ],
+        "api_calls": execution_contract_validation["execution_contract"][
+            "api_calls"
+        ],
+    }
+    if _canonical(record.get("execution_evidence")) != _canonical(execution_evidence):
+        raise MatrixError(
+            f"{result_file.name}: per-cell execution evidence differs from validated proofs"
+        )
+
     accounting = record.get("actual_accounting")
     if (
         not isinstance(accounting, dict)
@@ -864,6 +1309,7 @@ def _validate_smoke_evidence(
         or accounting != {
         "model_gateway_calls": 0,
         "paid_model_calls": 0,
+        "api_calls": 0,
         "grader_calls": 1,
         "grader_containers": 1,
         "official_grader_runs": 1,
@@ -880,6 +1326,16 @@ def _validate_smoke_evidence(
         "applied_patch_sha256": patch_sha,
         "official_test_output_sha256": hashlib.sha256(test_output).hexdigest(),
         "official_test_status_sha256": hashlib.sha256(status_raw).hexdigest(),
+        "execution_contract_sha256": execution_contract_validation[
+            "execution_contract_sha256"
+        ],
+        "execution_control_sha256": execution_control_evidence[
+            "execution_control_sha256"
+        ],
+        "submitted_patch_identity_sha256": submitted_patch_evidence[
+            "submitted_patch_identity_sha256"
+        ],
+        **execution_evidence,
     }
 
 
@@ -1209,30 +1665,112 @@ def _aggregate_smoke(results_dir: Path) -> dict[str, Any]:
     ):
         raise MatrixError("grader-smoke exact 6/6 discrimination outcome counts differ")
     outcomes = [outcomes_by_id[row["target_id"]] for row in expected_rows]
-    return {
-        "actual_accounting": {
-            "grader_calls": 12,
-            "grader_containers": 12,
-            "model_gateway_calls": 0,
-            "official_grader_runs": 12,
-            "paid_model_calls": 0,
-        },
+    proof_counts = {
+        "patch_applied_count": sum(
+            row.get("patch_applied") is True for row in outcomes
+        ),
+        "tests_executed_count": sum(
+            row.get("tests_executed") is True for row in outcomes
+        ),
+        "digest_match_count": sum(row.get("digest_match") is True for row in outcomes),
+        "submitted_patch_identity_count": sum(
+            row.get("submitted_patch_identity") is True for row in outcomes
+        ),
+        "host_prepare_sh_access_count": sum(
+            int(row["host_prepare_sh_access_count"]) for row in outcomes
+        ),
+        "source_image_build_count": sum(
+            int(row["source_image_build_count"]) for row in outcomes
+        ),
+        "api_calls": sum(int(row["api_calls"]) for row in outcomes),
+    }
+    required_proof_counts = {
+        "patch_applied_count": 12,
+        "tests_executed_count": 12,
         "digest_match_count": 12,
+        "submitted_patch_identity_count": 12,
+        "host_prepare_sh_access_count": 0,
+        "source_image_build_count": 0,
+        "api_calls": 0,
+    }
+    if proof_counts != required_proof_counts:
+        raise MatrixError(
+            f"grader-smoke execution proof counts differ: {proof_counts}"
+        )
+    accounting_fields = (
+        "grader_calls",
+        "grader_containers",
+        "model_gateway_calls",
+        "official_grader_runs",
+        "paid_model_calls",
+        "api_calls",
+    )
+    actual_accounting = {
+        field: sum(int(value["actual_accounting"][field]) for _, value in records)
+        for field in accounting_fields
+    }
+    expected_accounting = {
+        "grader_calls": 12,
+        "grader_containers": 12,
+        "model_gateway_calls": 0,
+        "official_grader_runs": 12,
+        "paid_model_calls": 0,
+        "api_calls": 0,
+    }
+    if actual_accounting != expected_accounting:
+        raise MatrixError(
+            f"grader-smoke aggregate call/container accounting differs: {actual_accounting}"
+        )
+    evidence_names = (
+        "patch",
+        "tests",
+        "container",
+        "evaluator",
+        "report",
+        "digest",
+        "execution_contract",
+        "execution_control",
+        "submitted_patch_identity",
+        "applied_patch",
+        "test_output",
+        "official_test_status",
+    )
+    evidence_counts = {
+        name: sum(
+            isinstance(value.get("evidence"), dict)
+            and name in value["evidence"]
+            for _, value in records
+        )
+        for name in evidence_names
+    }
+    if any(count != len(records) for count in evidence_counts.values()):
+        raise MatrixError(
+            f"grader-smoke direct evidence coverage differs: {evidence_counts}"
+        )
+    return {
+        "actual_accounting": actual_accounting,
+        "api_calls": proof_counts["api_calls"],
+        "digest_match_count": proof_counts["digest_match_count"],
         "empty_patch_ids": [],
-        "evidence_counts": {
-            name: 12 for name in (
-                "patch", "tests", "container", "evaluator", "report", "digest",
-                "applied_patch", "test_output", "official_test_status",
-            )
-        },
+        "evidence_counts": evidence_counts,
         "expected_target_count": len(expected),
-        "infrastructure_failure_count": 0,
+        "host_prepare_sh_access_count": proof_counts[
+            "host_prepare_sh_access_count"
+        ],
+        "infrastructure_failure_count": sum(
+            value.get("execution_status") != "SUCCESS"
+            for _, value in records
+        ),
         "observed_target_count": len(records),
         "outcomes": outcomes,
-        "probe_counts": {"GOLD": 6, "NOOP_BASELINE": 6},
-        "patch_applied_count": 12,
+        "patch_applied_count": proof_counts["patch_applied_count"],
+        "probe_counts": dict(probe_counts),
         "resolved_counts": {"GOLD": 6, "NOOP_BASELINE": 0},
-        "tests_executed_count": 12,
+        "source_image_build_count": proof_counts["source_image_build_count"],
+        "submitted_patch_identity_count": proof_counts[
+            "submitted_patch_identity_count"
+        ],
+        "tests_executed_count": proof_counts["tests_executed_count"],
         "unresolved_counts": {"GOLD": 0, "NOOP_BASELINE": 6},
         "status": "PASS",
     }

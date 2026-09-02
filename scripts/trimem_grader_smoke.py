@@ -45,9 +45,489 @@ from trimem_pull_locked_images import (  # noqa: E402
     pull_and_observe_image,
     remove_materialized_image,
 )
+from trimem_official_grader import (  # noqa: E402
+    FrozenOfficialTarget,
+    MULTI_HARNESS_REVISION,
+    SWE_HARNESS_REVISION,
+    OfficialGraderError,
+    parse_official_report,
+    validate_official_test_evidence,
+)
 
 
 EMPTY_PATCH_SHA256 = sha256_bytes(b"")
+
+_EXECUTION_CONTRACT_FIELDS = {
+    "schema",
+    "profile",
+    "execution_mode",
+    "human_mode",
+    "force_build",
+    "need_clone",
+    "report_module",
+    "report_mode",
+    "source_image_build_calls",
+    "host_prepare_script_reads",
+    "submitted_patch_bytes",
+    "submitted_patch_sha256",
+    "patch_transport",
+    "api_calls",
+}
+
+
+def _expected_execution_contract(
+    target: Mapping[str, Any], patch_raw: bytes
+) -> dict[str, Any]:
+    common = {
+        "schema": "trimem/official-grader-execution-contract/1.0",
+        "source_image_build_calls": 0,
+        "host_prepare_script_reads": 0,
+        "submitted_patch_bytes": len(patch_raw),
+        "submitted_patch_sha256": sha256_bytes(patch_raw),
+        "api_calls": 0,
+    }
+    if target.get("benchmark_id") == "swebench_verified":
+        return {
+            **common,
+            "profile": "SWE_BENCH_OFFICIAL_PREDICTION",
+            "execution_mode": "evaluation",
+            "human_mode": None,
+            "force_build": None,
+            "need_clone": None,
+            "report_module": "swebench.harness.run_evaluation",
+            "report_mode": "inline",
+            "patch_transport": {
+                "host_source": "prediction.jsonl.model_patch",
+                "container_destination": None,
+                "mode": None,
+            },
+        }
+    if str(target.get("benchmark_id", "")).startswith("multi_swe_bench_"):
+        return {
+            **common,
+            "profile": "MULTI_SWE_PREBUILT_EVALUATION",
+            "execution_mode": "instance_only",
+            "human_mode": True,
+            "force_build": False,
+            "need_clone": False,
+            "report_module": "multi_swe_bench.harness.gen_report",
+            "report_mode": "evaluation",
+            "patch_transport": {
+                "host_source": "evaluation_instance_fix.patch",
+                "container_destination": "/home/fix.patch",
+                "mode": "rw",
+            },
+        }
+    raise BenchmarkExecutionError("official grader execution contract benchmark is unsupported")
+
+
+def _validated_execution_contract(
+    grade: GradeResult, *, target: Mapping[str, Any], patch_raw: bytes
+) -> dict[str, Any]:
+    """Require the adapter's exact, patch-bound execution-contract evidence."""
+
+    trimem = grade.report.get("_trimem") if isinstance(grade.report, Mapping) else None
+    raw_contract = trimem.get("execution_contract") if isinstance(trimem, Mapping) else None
+    if not isinstance(raw_contract, Mapping) or set(raw_contract) != _EXECUTION_CONTRACT_FIELDS:
+        raise BenchmarkExecutionError(
+            "official grader report has no exact execution-contract evidence"
+        )
+    contract = dict(raw_contract)
+    expected = _expected_execution_contract(target, patch_raw)
+    try:
+        equal = canonical_bytes(contract) == canonical_bytes(expected)
+    except (TypeError, ValueError) as exc:
+        raise BenchmarkExecutionError(
+            "official grader execution-contract evidence is not canonical JSON"
+        ) from exc
+    if not equal:
+        raise BenchmarkExecutionError(
+            "official grader execution-contract evidence drifted from the submitted patch"
+        )
+    return contract
+
+
+def _expected_execution_control(target: Mapping[str, Any]) -> dict[str, Any]:
+    benchmark_id = str(target.get("benchmark_id", ""))
+    common = {
+        "schema": "trimem/official-grader-execution-control/1.0",
+        "harness_revision": (
+            SWE_HARNESS_REVISION
+            if benchmark_id == "swebench_verified"
+            else MULTI_HARNESS_REVISION
+        ),
+        "source_image_build_calls": 0,
+        "host_prepare_script_reads": 0,
+    }
+    if benchmark_id == "swebench_verified":
+        return {
+            **common,
+            "profile": "SWE_BENCH_OFFICIAL_PREDICTION",
+            "proof_basis": "PINNED_CONTROL_FLOW_AND_FIXED_ARGV",
+            "dispatch": "main(task_repo=None,rewrite_reports=False)->run_instances",
+            "source_build_guard": {
+                "expression": "task_repo and not rewrite_reports",
+                "task_repo_argv_present": False,
+                "rewrite_reports_argv_present": False,
+                "evaluates": False,
+            },
+            "structurally_excluded_calls": ["_build_before_eval"],
+        }
+    if benchmark_id.startswith("multi_swe_bench_"):
+        return {
+            **common,
+            "profile": "MULTI_SWE_PREBUILT_EVALUATION",
+            "proof_basis": "PINNED_CONTROL_FLOW_AND_ADAPTER_CONSTRUCTION_INVARIANT",
+            "dispatch": (
+                "trimem_multi_swe_entrypoint.execute_pinned_instance_only"
+                "->CliArgs.run(instance_only)->run_mode_instance_only"
+            ),
+            "support_container_bootstrap_calls": 0,
+            "upstream_module_main_executed": False,
+            "structurally_excluded_calls": [
+                "run_evaluation.__main__.nix_swe_bootstrap",
+                "run_mode_image",
+                "check_commit_hashes",
+                "build_image",
+                "run_and_save_logs",
+            ],
+        }
+    raise BenchmarkExecutionError("official grader execution-control benchmark is unsupported")
+
+
+def _validated_execution_control(
+    grade: GradeResult,
+    *,
+    target: Mapping[str, Any],
+    execution_contract: Mapping[str, Any],
+) -> dict[str, Any]:
+    trimem = grade.report.get("_trimem") if isinstance(grade.report, Mapping) else None
+    raw_control = (
+        trimem.get("execution_control_evidence")
+        if isinstance(trimem, Mapping)
+        else None
+    )
+    if not isinstance(raw_control, Mapping):
+        raise BenchmarkExecutionError(
+            "official grader report has no execution-control evidence"
+        )
+    control = dict(raw_control)
+    expected = _expected_execution_control(target)
+    try:
+        equal = canonical_bytes(control) == canonical_bytes(expected)
+    except (TypeError, ValueError) as exc:
+        raise BenchmarkExecutionError(
+            "official grader execution-control evidence is not canonical JSON"
+        ) from exc
+    if not equal:
+        raise BenchmarkExecutionError("official grader execution-control evidence drift")
+    if (
+        control["source_image_build_calls"]
+        != execution_contract.get("source_image_build_calls")
+        or control["host_prepare_script_reads"]
+        != execution_contract.get("host_prepare_script_reads")
+        or control["profile"] != execution_contract.get("profile")
+    ):
+        raise BenchmarkExecutionError(
+            "execution-control evidence differs from the declared execution contract"
+        )
+    return control
+
+
+def _prediction_input_bytes(
+    target: Mapping[str, Any], patch_raw: bytes
+) -> bytes:
+    patch = patch_raw.decode("utf-8")
+    if target.get("benchmark_id") == "swebench_verified":
+        value = {
+            "instance_id": target["instance_id"],
+            "model_patch": patch,
+            "model_name_or_path": f"trimem-v1-smoke-{str(target['probe']).lower()}",
+        }
+    else:
+        repository, number = str(target["instance_id"]).rsplit("-", 1)
+        org, repo = repository.split("__", 1)
+        value = {
+            "org": org,
+            "repo": repo,
+            "number": number,
+            "fix_patch": patch,
+        }
+    return canonical_bytes(value) + b"\n"
+
+
+def _validated_submitted_patch_identity(
+    grade: GradeResult,
+    *,
+    target: Mapping[str, Any],
+    patch_raw: bytes,
+    grader_root: Path,
+    restricted_submitted_patch: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Prove the exact prediction route and, for Multi, its mounted host patch."""
+
+    trimem = grade.report.get("_trimem") if isinstance(grade.report, Mapping) else None
+    private_inputs = (
+        trimem.get("materialized_private_inputs")
+        if isinstance(trimem, Mapping)
+        else None
+    )
+    expected_names = (
+        ["dataset.json", "prediction.jsonl"]
+        if target.get("benchmark_id") == "swebench_verified"
+        else ["dataset.jsonl", "prediction.jsonl", "config.json"]
+    )
+    if not isinstance(private_inputs, list) or len(private_inputs) != len(expected_names):
+        raise BenchmarkExecutionError("official grader private-input identity set differs")
+    normalized_inputs: list[dict[str, Any]] = []
+    task_relative = str(target["target_id"]).replace("/", "_")
+    task_root = (grader_root / task_relative).resolve()
+    if grader_root.resolve() not in task_root.parents:
+        raise BenchmarkExecutionError("official grader task input path escaped grader root")
+    for expected_name, raw_row in zip(expected_names, private_inputs, strict=True):
+        if not isinstance(raw_row, Mapping) or set(raw_row) != {
+            "name", "sha256", "bytes", "retention"
+        }:
+            raise BenchmarkExecutionError("official grader private-input evidence field set differs")
+        row = dict(raw_row)
+        if (
+            row.get("name") != expected_name
+            or not isinstance(row.get("sha256"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", row["sha256"]) is None
+            or type(row.get("bytes")) is not int
+            or row["bytes"] <= 0
+            or row.get("retention") != "PURGED_AFTER_HASH_BOUND_GRADING"
+        ):
+            raise BenchmarkExecutionError("official grader private-input identity drift")
+        host_path = task_root / expected_name
+        if host_path.exists() or host_path.is_symlink():
+            raise BenchmarkExecutionError("official grader private input was not purged")
+        normalized_inputs.append({
+            **row,
+            "host_path": host_path.relative_to(grader_root.resolve()).as_posix(),
+            "purged_after_capture": True,
+        })
+
+    prediction_raw = _prediction_input_bytes(target, patch_raw)
+    prediction = normalized_inputs[expected_names.index("prediction.jsonl")]
+    if (
+        prediction["bytes"] != len(prediction_raw)
+        or prediction["sha256"] != sha256_bytes(prediction_raw)
+    ):
+        raise BenchmarkExecutionError(
+            "official prediction input does not contain the exact submitted patch identity"
+        )
+
+    patch_sha256 = sha256_bytes(patch_raw)
+    if restricted_submitted_patch != {
+        "path": "restricted-input/applied.patch",
+        "sha256": patch_sha256,
+        "bytes": len(patch_raw),
+    }:
+        raise BenchmarkExecutionError("restricted submitted-patch reference drift")
+
+    materialized = (
+        trimem.get("materialized_patch_evidence")
+        if isinstance(trimem, Mapping)
+        else None
+    )
+    if target.get("benchmark_id") == "swebench_verified":
+        if materialized is not None or (
+            isinstance(trimem, Mapping) and "materialized_patch_evidence" in trimem
+        ):
+            raise BenchmarkExecutionError(
+                "SWE prediction route unexpectedly claims a materialized host patch"
+            )
+        route = "SWE_BENCH_PREDICTION_JSONL"
+        normalized_materialized = None
+    else:
+        if not isinstance(materialized, Mapping) or set(materialized) != {
+            "schema",
+            "host_path",
+            "container_destination",
+            "mode",
+            "bytes",
+            "sha256",
+            "request_identity_match",
+            "restricted_materialized_patch",
+            "purged_after_capture",
+        }:
+            raise BenchmarkExecutionError(
+                "Multi-SWE materialized submitted-patch evidence is missing"
+            )
+        repository, number = str(target["instance_id"]).rsplit("-", 1)
+        org, repo = repository.split("__", 1)
+        expected_host_path = (
+            f"{task_relative}/work/{org}/{repo}/evals/pr-{number}/fix.patch"
+        )
+        restricted = materialized.get("restricted_materialized_patch")
+        expected_restricted_path = (
+            "restricted-evidence/submitted-patch-materialized-"
+            f"{patch_sha256}.bin"
+        )
+        if (
+            materialized.get("schema")
+            != "trimem/materialized-submitted-patch-evidence/1.0"
+            or materialized.get("host_path") != expected_host_path
+            or materialized.get("container_destination") != "/home/fix.patch"
+            or materialized.get("mode") != "rw"
+            or type(materialized.get("bytes")) is not int
+            or materialized["bytes"] != len(patch_raw)
+            or materialized.get("sha256") != patch_sha256
+            or materialized.get("request_identity_match") is not True
+            or materialized.get("purged_after_capture") is not True
+            or not isinstance(restricted, Mapping)
+            or set(restricted) != {"path", "sha256", "bytes", "access"}
+            or restricted.get("path") != expected_restricted_path
+            or restricted.get("sha256") != patch_sha256
+            or type(restricted.get("bytes")) is not int
+            or restricted["bytes"] != len(patch_raw)
+            or restricted.get("access") != "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS"
+        ):
+            raise BenchmarkExecutionError(
+                "Multi-SWE materialized submitted-patch identity drift"
+            )
+        restricted_path = (grader_root / expected_restricted_path).resolve()
+        if (
+            grader_root.resolve() not in restricted_path.parents
+            or not restricted_path.is_file()
+            or restricted_path.is_symlink()
+            or restricted_path.read_bytes() != patch_raw
+        ):
+            raise BenchmarkExecutionError(
+                "Multi-SWE restricted materialized patch bytes are missing or drifted"
+            )
+        materialized_path = (grader_root / expected_host_path).resolve()
+        if materialized_path.exists() or materialized_path.is_symlink():
+            raise BenchmarkExecutionError(
+                "Multi-SWE materialized submitted patch was not purged"
+            )
+        route = "MULTI_SWE_MATERIALIZED_FIX_PATCH"
+        normalized_materialized = dict(materialized)
+
+    return {
+        "schema": "trimem/grader-smoke-submitted-patch-identity-evidence/1.0",
+        "target_id": target["target_id"],
+        "benchmark_id": target["benchmark_id"],
+        "route": route,
+        "submitted_patch_bytes": len(patch_raw),
+        "submitted_patch_sha256": patch_sha256,
+        "restricted_submitted_patch": dict(restricted_submitted_patch),
+        "prediction_input_identity": prediction,
+        "private_input_identities": normalized_inputs,
+        "materialized_patch_evidence": normalized_materialized,
+        "submitted_patch_identity": True,
+    }
+
+
+def _smoke_execution_summary(
+    targets: list[dict[str, Any]],
+    cell_evidence: list[dict[str, Any]],
+    *,
+    failures: list[str],
+    infrastructure_failures: list[str],
+    grader_containers: int,
+    official_grader_runs: int,
+) -> dict[str, Any]:
+    """Summarize explicit per-cell proofs; absence of failures is not evidence."""
+
+    expected_cell_fields = {
+        "target_id",
+        "patch_applied",
+        "tests_executed",
+        "digest_match",
+        "submitted_patch_identity",
+        "host_prepare_sh_access_count",
+        "source_image_build_count",
+        "api_calls",
+    }
+    target_ids = [str(target.get("target_id")) for target in targets]
+    evidence_ids = [row.get("target_id") for row in cell_evidence]
+    malformed = [
+        str(row.get("target_id"))
+        for row in cell_evidence
+        if set(row) != expected_cell_fields
+        or any(
+            type(row.get(field)) is not bool
+            for field in (
+                "patch_applied",
+                "tests_executed",
+                "digest_match",
+                "submitted_patch_identity",
+            )
+        )
+        or any(
+            type(row.get(field)) is not int or row[field] < 0
+            for field in (
+                "host_prepare_sh_access_count",
+                "source_image_build_count",
+                "api_calls",
+            )
+        )
+    ]
+    summary_failures = list(failures)
+    if malformed or evidence_ids != target_ids:
+        summary_failures.append("CELL_EXECUTION_EVIDENCE_SET")
+
+    def true_count(field: str) -> int:
+        return sum(row.get(field) is True for row in cell_evidence)
+
+    def integer_total(field: str) -> int:
+        return sum(
+            row.get(field, 0)
+            for row in cell_evidence
+            if type(row.get(field, 0)) is int
+        )
+
+    counts = {
+        "patch_applied_count": true_count("patch_applied"),
+        "tests_executed_count": true_count("tests_executed"),
+        "digest_match_count": true_count("digest_match"),
+        "submitted_patch_identity_count": true_count("submitted_patch_identity"),
+        "host_prepare_sh_access_count": integer_total("host_prepare_sh_access_count"),
+        "source_image_build_count": integer_total("source_image_build_count"),
+        "api_calls": integer_total("api_calls"),
+    }
+    expected_count = len(targets)
+    for field in (
+        "patch_applied_count",
+        "tests_executed_count",
+        "digest_match_count",
+        "submitted_patch_identity_count",
+    ):
+        if counts[field] != expected_count:
+            summary_failures.append(field.upper())
+    for field in (
+        "host_prepare_sh_access_count",
+        "source_image_build_count",
+        "api_calls",
+    ):
+        if counts[field] != 0:
+            summary_failures.append(field.upper())
+    if grader_containers != expected_count:
+        summary_failures.append("GRADER_CONTAINER_COUNT")
+    if official_grader_runs != expected_count:
+        summary_failures.append("OFFICIAL_GRADER_RUN_COUNT")
+    distinct_failures = sorted(set(summary_failures))
+    distinct_infrastructure = sorted(set(infrastructure_failures))
+    return {
+        "schema": "trimem/grader-smoke-execution/1.0",
+        "expected_target_count": expected_count,
+        "observed_target_count": len(cell_evidence),
+        "probe_counts": {
+            probe: sum(target["probe"] == probe for target in targets)
+            for probe in ("GOLD", "NOOP_BASELINE")
+        },
+        "empty_patch_ids": [],
+        "failures": distinct_failures,
+        "grader_containers": grader_containers,
+        "official_grader_runs": official_grader_runs,
+        **counts,
+        "infrastructure_failure_count": len(distinct_infrastructure),
+        "model_gateway_calls": 0,
+        "paid_model_calls": 0,
+        "status": "PASS" if not distinct_failures else "FAIL",
+    }
 
 
 class _SerialImageLifecycle:
@@ -488,13 +968,19 @@ def audit_noop_baseline_checkouts(checkout_map_path: Path, output_path: Path) ->
 
 
 def _grader_test_evidence(
-    grade: GradeResult, *, task_dir: Path, grader_root: Path
-) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    grade: GradeResult,
+    *,
+    task_dir: Path,
+    grader_root: Path,
+    target: FrozenOfficialTarget,
+    source_row: Mapping[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, bool]]:
     trimem = grade.report.get("_trimem") if isinstance(grade.report, Mapping) else None
     test_evidence = trimem.get("test_evidence") if isinstance(trimem, Mapping) else None
     if not isinstance(test_evidence, Mapping):
         raise BenchmarkExecutionError("official grader returned no actual test evidence")
     result = []
+    raw_evidence: dict[str, bytes] = {}
     for name in ("test_output", "official_test_status"):
         source_reference = test_evidence.get(name)
         if not isinstance(source_reference, Mapping):
@@ -514,10 +1000,34 @@ def _grader_test_evidence(
         ):
             raise BenchmarkExecutionError(f"official grader {name} evidence digest/size mismatch")
         result.append(reference)
+        raw_evidence[name] = source.read_bytes()
     summary = test_evidence.get("summary")
     if not isinstance(summary, Mapping):
         raise BenchmarkExecutionError("official grader returned no test-status summary")
-    return result[0], result[1], dict(summary)
+    try:
+        report_resolved = parse_official_report(target, grade.report)
+        validated_summary = validate_official_test_evidence(
+            target,
+            source_row=source_row,
+            test_output_raw=raw_evidence["test_output"],
+            test_status_raw=raw_evidence["official_test_status"],
+            resolved=grade.resolved,
+        )
+    except OfficialGraderError as exc:
+        raise BenchmarkExecutionError(
+            f"official grader test status/report did not validate: {exc}"
+        ) from exc
+    if (
+        report_resolved is not grade.resolved
+        or canonical_bytes(dict(summary)) != canonical_bytes(validated_summary)
+    ):
+        raise BenchmarkExecutionError(
+            "official grader test status/report summary binding drift"
+        )
+    return result[0], result[1], validated_summary, {
+        "patch_applied": True,
+        "tests_executed": True,
+    }
 
 
 def _run_smoke_impl(
@@ -560,7 +1070,9 @@ def _run_smoke_impl(
         "git_head": approval["git_head"],
         "phase": approval["phase"],
     })
-    failures = []
+    failures: list[str] = []
+    infrastructure_failures: list[str] = []
+    cell_evidence: list[dict[str, Any]] = []
     for index, target in enumerate(targets):
         lifecycle.before_target(index, target)
         source = rows[(target["benchmark_id"], target["instance_id"])]
@@ -597,6 +1109,7 @@ def _run_smoke_impl(
             grade = exc.result
             execution_status = "FAILURE"
             failures.append(target["target_id"])
+            infrastructure_failures.append(target["target_id"])
         if not (
             execution_status == "SUCCESS"
             and grade.exit_code == 0
@@ -605,12 +1118,58 @@ def _run_smoke_impl(
             and grade.status == "success"
         ):
             failures.append(target["target_id"])
+            infrastructure_failures.append(target["target_id"])
         stdout_path, stderr_path, report_path = (
             task_dir / "stdout.txt", task_dir / "stderr.txt", task_dir / "report.json"
         )
         stdout_path.write_text(grade.stdout, encoding="utf-8", newline="\n")
         stderr_path.write_text(grade.stderr, encoding="utf-8", newline="\n")
         write_json(report_path, grade.report)
+        grader_root = task_dir / "official-grader"
+        grader_target = getattr(grader, "target", None)
+        if not isinstance(grader_target, FrozenOfficialTarget):
+            raise BenchmarkExecutionError(
+                "official grader gateway did not retain its frozen target"
+            )
+        execution_contract = _validated_execution_contract(
+            grade, target=target, patch_raw=patch_raw
+        )
+        execution_contract_sha256 = sha256_bytes(canonical_bytes(execution_contract))
+        execution_contract_path = task_dir / "execution-contract-evidence.json"
+        write_json(execution_contract_path, {
+            "schema": "trimem/grader-smoke-execution-contract-evidence/1.0",
+            "target_id": target["target_id"],
+            "execution_contract_sha256": execution_contract_sha256,
+            "execution_contract": execution_contract,
+        })
+        execution_control = _validated_execution_control(
+            grade, target=target, execution_contract=execution_contract
+        )
+        execution_control_sha256 = sha256_bytes(canonical_bytes(execution_control))
+        execution_control_path = task_dir / "execution-control-evidence.json"
+        write_json(execution_control_path, {
+            "schema": "trimem/grader-smoke-execution-control-evidence/1.0",
+            "target_id": target["target_id"],
+            "execution_control_sha256": execution_control_sha256,
+            "execution_control": execution_control,
+        })
+        submitted_patch_identity = _validated_submitted_patch_identity(
+            grade,
+            target=target,
+            patch_raw=patch_raw,
+            grader_root=grader_root,
+            restricted_submitted_patch=applied_patch_ref,
+        )
+        submitted_patch_identity_sha256 = sha256_bytes(
+            canonical_bytes(submitted_patch_identity)
+        )
+        submitted_patch_identity_path = (
+            task_dir / "submitted-patch-identity-evidence.json"
+        )
+        write_json(submitted_patch_identity_path, {
+            **submitted_patch_identity,
+            "identity_evidence_sha256": submitted_patch_identity_sha256,
+        })
         patch_path = task_dir / "patch-evidence.json"
         write_json(patch_path, {
             "schema": "trimem/grader-smoke-patch-evidence/1.0",
@@ -632,9 +1191,15 @@ def _run_smoke_impl(
         except BenchmarkExecutionError:
             observed = "UNPROVEN"
             failures.append(target["target_id"])
-        grader_root = task_dir / "official-grader"
-        test_output_ref, test_status_ref, test_summary = _grader_test_evidence(
-            grade, task_dir=task_dir, grader_root=grader_root
+            infrastructure_failures.append(target["target_id"])
+        test_output_ref, test_status_ref, test_summary, test_execution = (
+            _grader_test_evidence(
+                grade,
+                task_dir=task_dir,
+                grader_root=grader_root,
+                target=grader_target,
+                source_row=source,
+            )
         )
         trimem_report = grade.report.get("_trimem") if isinstance(grade.report, Mapping) else None
         if not isinstance(trimem_report, Mapping):
@@ -680,6 +1245,22 @@ def _run_smoke_impl(
             "observed_image_digest": observed,
             "target_id": target["target_id"],
         })
+        expected_digest = images[target["instance_id"]]["expected_digest"]
+        row_execution_evidence = {
+            "patch_applied": test_execution["patch_applied"],
+            "tests_executed": test_execution["tests_executed"],
+            "digest_match": observed == expected_digest,
+            "submitted_patch_identity": submitted_patch_identity[
+                "submitted_patch_identity"
+            ],
+            "host_prepare_sh_access_count": execution_control[
+                "host_prepare_script_reads"
+            ],
+            "source_image_build_count": execution_control[
+                "source_image_build_calls"
+            ],
+            "api_calls": execution_contract["api_calls"],
+        }
         record = {
             "target_id": target["target_id"],
             "benchmark_id": target["benchmark_id"],
@@ -698,8 +1279,12 @@ def _run_smoke_impl(
             "patch_sha256": patch_sha256,
             "expected_image_digest": images[target["instance_id"]]["expected_digest"],
             "observed_image_digest": observed,
+            "execution_contract_sha256": execution_contract_sha256,
+            "execution_control_sha256": execution_control_sha256,
+            "submitted_patch_identity_sha256": submitted_patch_identity_sha256,
+            "execution_evidence": row_execution_evidence,
             "actual_accounting": {
-                "model_gateway_calls": 0, "paid_model_calls": 0,
+                "model_gateway_calls": 0, "paid_model_calls": 0, "api_calls": 0,
                 "grader_calls": 1, "grader_containers": int(grade.container_started),
                 "official_grader_runs": int(grade.official and grade.container_started),
             },
@@ -712,6 +1297,15 @@ def _run_smoke_impl(
                 "stderr": evidence_reference(task_dir, stderr_path),
                 "report": evidence_reference(task_dir, report_path),
                 "digest": evidence_reference(task_dir, digest_path),
+                "execution_contract": evidence_reference(
+                    task_dir, execution_contract_path
+                ),
+                "execution_control": evidence_reference(
+                    task_dir, execution_control_path
+                ),
+                "submitted_patch_identity": evidence_reference(
+                    task_dir, submitted_patch_identity_path
+                ),
                 "applied_patch": applied_patch_ref,
                 "test_output": test_output_ref,
                 "official_test_status": test_status_ref,
@@ -721,6 +1315,7 @@ def _run_smoke_impl(
             },
         }
         write_json(task_dir / f"{safe}.result.json", record)
+        cell_evidence.append({"target_id": target["target_id"], **row_execution_evidence})
         if grade.resolved is not target["expected_resolved"]:
             failures.append(target["target_id"])
         lifecycle.after_target(index, target)
@@ -733,33 +1328,19 @@ def _run_smoke_impl(
         read_json(path)["actual_accounting"]["grader_containers"]
         for path in output_root.rglob("*.result.json")
     )
-    if official_runs != 12:
-        failures.append("OFFICIAL_GRADER_RUN_COUNT")
-    if grader_containers != 12:
-        failures.append("GRADER_CONTAINER_COUNT")
-    report = {
-        "schema": "trimem/grader-smoke-execution/1.0",
-        "expected_target_count": 12,
-        "observed_target_count": len(targets),
-        "probe_counts": {
-            probe: sum(target["probe"] == probe for target in targets)
-            for probe in ("GOLD", "NOOP_BASELINE")
-        },
-        "empty_patch_ids": [],
-        "failures": sorted(set(failures)),
-        "grader_containers": grader_containers,
-        "official_grader_runs": official_runs,
-        "patch_applied_count": 12 if not failures else 0,
-        "tests_executed_count": 12 if not failures else 0,
-        "digest_match_count": 12 if not failures else 0,
-        "infrastructure_failure_count": 0 if not failures else len(set(failures)),
-        "model_gateway_calls": 0,
-        "paid_model_calls": 0,
-        "status": "PASS" if not failures else "FAIL",
-    }
+    report = _smoke_execution_summary(
+        targets,
+        cell_evidence,
+        failures=failures,
+        infrastructure_failures=infrastructure_failures,
+        grader_containers=grader_containers,
+        official_grader_runs=official_runs,
+    )
     write_json(output_root / "smoke-execution-summary.json", report)
-    if failures:
-        raise BenchmarkExecutionError(f"grader smoke failed closed: {sorted(set(failures))}")
+    if report["failures"]:
+        raise BenchmarkExecutionError(
+            f"grader smoke failed closed: {report['failures']}"
+        )
     return report
 
 

@@ -93,23 +93,86 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
         }:
             raise PublicArtifactError("aggregate primary endpoint is not SWE-bench Verified")
     else:
+        expected_evidence_counts = {
+            name: 12
+            for name in (
+                "patch",
+                "tests",
+                "container",
+                "evaluator",
+                "report",
+                "digest",
+                "execution_contract",
+                "execution_control",
+                "submitted_patch_identity",
+                "applied_patch",
+                "test_output",
+                "official_test_status",
+            )
+        }
+        smoke_target_ids = [
+            row.get("target_id") for row in outcomes if isinstance(row, dict)
+        ]
+        smoke_outcomes_valid = (
+            len(outcomes) == 12
+            and len(smoke_target_ids) == 12
+            and all(isinstance(target_id, str) and target_id for target_id in smoke_target_ids)
+            and len(set(smoke_target_ids)) == 12
+            and all(
+                isinstance(row, dict)
+                and row.get("patch_applied") is True
+                and row.get("tests_executed") is True
+                and row.get("digest_match") is True
+                and row.get("submitted_patch_identity") is True
+                and type(row.get("host_prepare_sh_access_count")) is int
+                and row["host_prepare_sh_access_count"] == 0
+                and type(row.get("source_image_build_count")) is int
+                and row["source_image_build_count"] == 0
+                and type(row.get("api_calls")) is int
+                and row["api_calls"] == 0
+                and isinstance(row.get("execution_contract_sha256"), str)
+                and SHA256.fullmatch(row["execution_contract_sha256"]) is not None
+                and isinstance(row.get("execution_control_sha256"), str)
+                and SHA256.fullmatch(row["execution_control_sha256"]) is not None
+                and isinstance(row.get("submitted_patch_identity_sha256"), str)
+                and SHA256.fullmatch(row["submitted_patch_identity_sha256"])
+                is not None
+                for row in outcomes
+            )
+        )
         if (
             aggregate.get("probe_counts") != {"GOLD": 6, "NOOP_BASELINE": 6}
             or aggregate.get("resolved_counts") != {"GOLD": 6, "NOOP_BASELINE": 0}
             or aggregate.get("unresolved_counts") != {"GOLD": 0, "NOOP_BASELINE": 6}
-            or aggregate.get("patch_applied_count") != 12
-            or aggregate.get("tests_executed_count") != 12
-            or aggregate.get("digest_match_count") != 12
-            or aggregate.get("infrastructure_failure_count") != 0
+            or type(aggregate.get("patch_applied_count")) is not int
+            or aggregate["patch_applied_count"] != 12
+            or type(aggregate.get("tests_executed_count")) is not int
+            or aggregate["tests_executed_count"] != 12
+            or type(aggregate.get("digest_match_count")) is not int
+            or aggregate["digest_match_count"] != 12
+            or type(aggregate.get("submitted_patch_identity_count")) is not int
+            or aggregate["submitted_patch_identity_count"] != 12
+            or type(aggregate.get("host_prepare_sh_access_count")) is not int
+            or aggregate["host_prepare_sh_access_count"] != 0
+            or type(aggregate.get("source_image_build_count")) is not int
+            or aggregate["source_image_build_count"] != 0
+            or type(aggregate.get("api_calls")) is not int
+            or aggregate["api_calls"] != 0
+            or type(aggregate.get("infrastructure_failure_count")) is not int
+            or aggregate["infrastructure_failure_count"] != 0
             or aggregate.get("empty_patch_ids") != []
-            or aggregate.get("actual_accounting")
-            != {
+            or _canonical(aggregate.get("evidence_counts"))
+            != _canonical(expected_evidence_counts)
+            or not smoke_outcomes_valid
+            or _canonical(aggregate.get("actual_accounting"))
+            != _canonical({
                 "grader_calls": 12,
                 "grader_containers": 12,
                 "model_gateway_calls": 0,
                 "official_grader_runs": 12,
                 "paid_model_calls": 0,
-            }
+                "api_calls": 0,
+            })
             or aggregate.get("image_lifecycle", {}).get("status") != "PASS"
         ):
             raise PublicArtifactError("grader-smoke exact execution summary differs")
@@ -154,10 +217,12 @@ def package(aggregate_path: Path, output: Path) -> dict[str, Any]:
             result[field] = aggregate[field]
     if aggregate["manifest"] == "grader-smoke":
         for field in (
-            "actual_accounting", "digest_match_count", "empty_patch_ids",
+            "actual_accounting", "api_calls", "digest_match_count", "empty_patch_ids",
             "evidence_counts", "expected_target_count", "image_lifecycle",
+            "host_prepare_sh_access_count",
             "infrastructure_failure_count", "observed_target_count",
             "patch_applied_count", "probe_counts", "resolved_counts",
+            "source_image_build_count", "submitted_patch_identity_count",
             "tests_executed_count", "unresolved_counts",
         ):
             result[field] = aggregate[field]

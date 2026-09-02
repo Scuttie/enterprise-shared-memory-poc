@@ -16,6 +16,7 @@ import re
 import subprocess
 import sys
 import time
+from types import MappingProxyType
 from typing import Any, Callable, Mapping, Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +32,13 @@ from enterprise_memory.trimem.grader import (  # noqa: E402
 
 SWE_HARNESS_REVISION = "7a21e05772954cc81471ae19d56f436cecf43c54"
 MULTI_HARNESS_REVISION = "24f493f8a103e72312ded4f6b9c89f081d69cb09"
+MULTI_ENTRYPOINT = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
+MULTI_SWE_PREBUILT_EVALUATION: Mapping[str, object] = MappingProxyType({
+    "mode": "instance_only",
+    "force_build": False,
+    "human_mode": True,
+    "need_clone": False,
+})
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 DIGEST_IMAGE = re.compile(r"^[a-z0-9][a-z0-9._/-]*@sha256:[0-9a-f]{64}$")
 TAGGED_IMAGE = re.compile(r"^[a-z0-9][a-z0-9._/-]*:[A-Za-z0-9._-]+$")
@@ -48,6 +56,12 @@ SECRET_ENV_NAME = re.compile(
 
 class OfficialGraderError(RuntimeError):
     pass
+
+
+class _MaterializedPatchEvidenceError(OfficialGraderError):
+    def __init__(self, message: str, evidence: Mapping[str, Any]):
+        super().__init__(message)
+        self.evidence = dict(evidence)
 
 
 @dataclass(frozen=True)
@@ -93,6 +107,8 @@ class HarnessInvocation:
     private_input_paths: tuple[Path, ...]
     test_output_path: Path
     test_status_path: Path
+    report_argv: tuple[str, ...] = ()
+    materialized_patch_path: Path | None = None
 
 
 Runner = Callable[..., subprocess.CompletedProcess[str]]
@@ -300,6 +316,24 @@ def _parse_instance_number(instance_id: str) -> tuple[str, str, str]:
     return org, repo, number
 
 
+def _validated_multi_swe_prebuilt_evaluation() -> dict[str, object]:
+    """Return the only supported Multi-SWE prebuilt-image execution flags."""
+
+    expected = {
+        "mode": "instance_only",
+        "force_build": False,
+        "human_mode": True,
+        "need_clone": False,
+    }
+    try:
+        observed = dict(MULTI_SWE_PREBUILT_EVALUATION)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("MULTI_SWE_PREBUILT_EVALUATION invariant mismatch") from exc
+    if observed != expected:
+        raise ValueError("MULTI_SWE_PREBUILT_EVALUATION invariant mismatch")
+    return observed
+
+
 def build_harness_invocation(
     target: FrozenOfficialTarget,
     *,
@@ -369,23 +403,43 @@ def build_harness_invocation(
     )
     for path in (output_dir, log_dir, workdir, repo_dir):
         path.mkdir()
+    prebuilt_evaluation = _validated_multi_swe_prebuilt_evaluation()
     config = {
-        "mode": "evaluation", "workdir": str(workdir), "patch_files": [str(prediction)],
-        "dataset_files": [str(dataset)], "force_build": False, "output_dir": str(output_dir),
+        "workdir": str(workdir), "patch_files": [str(prediction)],
+        "dataset_files": [str(dataset)], "output_dir": str(output_dir),
         "specifics": [f"{org}/{repo}:pr-{number}"], "skips": [], "repo_dir": str(repo_dir),
-        "need_clone": False, "global_env": [], "clear_env": True, "stop_on_error": True,
+        "global_env": [], "clear_env": True, "stop_on_error": True,
         "max_workers": 1, "max_workers_build_image": 1, "max_workers_run_instance": 1,
-        "log_dir": str(log_dir), "log_level": "DEBUG", "log_to_console": True, "human_mode": False,
+        "log_dir": str(log_dir), "log_level": "DEBUG", "log_to_console": True,
+        **prebuilt_evaluation,
     }
     config_path = run_root / "config.json"
     _write_json(config_path, config)
     return HarnessInvocation(
-        argv=(python_binary, "-m", "multi_swe_bench.harness.run_evaluation", "--config", str(config_path)),
+        argv=(
+            python_binary,
+            str(MULTI_ENTRYPOINT),
+            "--harness-root",
+            str(harness_root),
+            "--config",
+            str(config_path),
+        ),
         cwd=harness_root,
         report_path=output_dir / "final_report.json",
         private_input_paths=(dataset, prediction, config_path),
         test_output_path=workdir / org / repo / "evals" / f"pr-{number}" / "fix-patch-run.log",
         test_status_path=workdir / org / repo / "evals" / f"pr-{number}" / "report.json",
+        report_argv=(
+            python_binary, "-m", "multi_swe_bench.harness.gen_report",
+            "--mode", "evaluation", "--workdir", str(workdir),
+            "--output_dir", str(output_dir), "--specifics", f"{org}/{repo}:pr-{number}",
+            "--dataset_files", str(dataset), "--max_workers", "1",
+            "--log_dir", str(log_dir), "--log_level", "DEBUG",
+            "--log_to_console", "true", "--regen", "true",
+        ),
+        materialized_patch_path=(
+            workdir / org / repo / "evals" / f"pr-{number}" / "fix.patch"
+        ),
     )
 
 
@@ -501,6 +555,8 @@ class OfficialHarnessGraderGateway:
         python_binary: str = sys.executable,
         timeout_seconds: int = 2400,
     ):
+        if target.benchmark_id != "swebench_verified":
+            _validated_multi_swe_prebuilt_evaluation()
         if not harness_root.is_dir():
             raise ValueError("pinned official harness checkout is missing")
         completed = subprocess.run(
@@ -535,6 +591,129 @@ class OfficialHarnessGraderGateway:
     def _run(self, argv: Sequence[str], *, cwd: Path | None = None, timeout: int = 60) -> subprocess.CompletedProcess[str]:
         return self.runner(list(argv), cwd=cwd, env=dict(self.execution_env), capture_output=True,
                            text=True, timeout=timeout, check=False)
+
+    def _execution_contract(self, patch: str) -> dict[str, Any]:
+        raw = patch.encode("utf-8")
+        common: dict[str, Any] = {
+            "schema": "trimem/official-grader-execution-contract/1.0",
+            "api_calls": 0,
+            "source_image_build_calls": 0,
+            "host_prepare_script_reads": 0,
+            "submitted_patch_bytes": len(raw),
+            "submitted_patch_sha256": hashlib.sha256(raw).hexdigest(),
+        }
+        if self.target.benchmark_id != "swebench_verified":
+            flags = _validated_multi_swe_prebuilt_evaluation()
+            return {
+                **common,
+                "profile": "MULTI_SWE_PREBUILT_EVALUATION",
+                "execution_mode": flags["mode"],
+                "human_mode": flags["human_mode"],
+                "force_build": flags["force_build"],
+                "need_clone": flags["need_clone"],
+                "report_module": "multi_swe_bench.harness.gen_report",
+                "report_mode": "evaluation",
+                "patch_transport": {
+                    "host_source": "evaluation_instance_fix.patch",
+                    "container_destination": "/home/fix.patch",
+                    "mode": "rw",
+                },
+            }
+        return {
+            **common,
+            "profile": "SWE_BENCH_OFFICIAL_PREDICTION",
+            "execution_mode": "evaluation",
+            "human_mode": None,
+            "force_build": None,
+            "need_clone": None,
+            "report_module": "swebench.harness.run_evaluation",
+            "report_mode": "inline",
+            "patch_transport": {
+                "host_source": "prediction.jsonl.model_patch",
+                "container_destination": None,
+                "mode": None,
+            },
+        }
+
+    def _execution_control_evidence(self) -> dict[str, Any]:
+        common = {
+            "schema": "trimem/official-grader-execution-control/1.0",
+            "harness_revision": self.target.harness_revision,
+            "source_image_build_calls": 0,
+            "host_prepare_script_reads": 0,
+        }
+        if self.target.benchmark_id != "swebench_verified":
+            return {
+                **common,
+                "profile": "MULTI_SWE_PREBUILT_EVALUATION",
+                "proof_basis": "PINNED_CONTROL_FLOW_AND_ADAPTER_CONSTRUCTION_INVARIANT",
+                "dispatch": (
+                    "trimem_multi_swe_entrypoint.execute_pinned_instance_only"
+                    "->CliArgs.run(instance_only)->run_mode_instance_only"
+                ),
+                "support_container_bootstrap_calls": 0,
+                "upstream_module_main_executed": False,
+                "structurally_excluded_calls": [
+                    "run_evaluation.__main__.nix_swe_bootstrap",
+                    "run_mode_image",
+                    "check_commit_hashes",
+                    "build_image",
+                    "run_and_save_logs",
+                ],
+            }
+        return {
+            **common,
+            "profile": "SWE_BENCH_OFFICIAL_PREDICTION",
+            "proof_basis": "PINNED_CONTROL_FLOW_AND_FIXED_ARGV",
+            "dispatch": "main(task_repo=None,rewrite_reports=False)->run_instances",
+            "source_build_guard": {
+                "expression": "task_repo and not rewrite_reports",
+                "task_repo_argv_present": False,
+                "rewrite_reports_argv_present": False,
+                "evaluates": False,
+            },
+            "structurally_excluded_calls": ["_build_before_eval"],
+        }
+
+    def _capture_materialized_patch(self, path: Path, patch: str) -> dict[str, Any]:
+        """Bind the exact upstream-created host patch, retain it restricted, then purge it."""
+
+        expected = patch.encode("utf-8")
+        lexical = path.absolute()
+        if self.output_root not in lexical.parents:
+            raise OfficialGraderError("materialized submitted patch escaped output root")
+        if path.is_symlink():
+            path.unlink()
+            raise OfficialGraderError("materialized submitted patch is a symlink")
+        resolved = path.resolve()
+        if self.output_root not in resolved.parents:
+            raise OfficialGraderError("materialized submitted patch escaped output root")
+        try:
+            if not resolved.is_file():
+                raise OfficialGraderError("materialized submitted patch is missing")
+            observed = resolved.read_bytes()
+            restricted = self._restricted_blob("submitted-patch", "materialized", observed)
+        finally:
+            if resolved.is_file():
+                resolved.unlink()
+        if resolved.exists() or resolved.is_symlink():
+            raise OfficialGraderError("materialized submitted patch purge failed")
+        evidence = {
+            "schema": "trimem/materialized-submitted-patch-evidence/1.0",
+            "host_path": resolved.relative_to(self.output_root).as_posix(),
+            "container_destination": "/home/fix.patch",
+            "mode": "rw",
+            "bytes": len(observed),
+            "sha256": hashlib.sha256(observed).hexdigest(),
+            "request_identity_match": observed == expected,
+            "restricted_materialized_patch": restricted,
+            "purged_after_capture": True,
+        }
+        if observed != expected:
+            raise _MaterializedPatchEvidenceError(
+                "materialized submitted patch bytes mismatch", evidence
+            )
+        return evidence
 
     def _restricted_blob(self, stage: str, kind: str, raw: bytes) -> dict[str, Any]:
         digest = hashlib.sha256(raw).hexdigest()
@@ -651,7 +830,15 @@ class OfficialHarnessGraderGateway:
             "restricted_raw_streams": restricted,
             "public_stream_policy": "REDACTED; canonical raw bytes are restricted evidence",
         }
-        report.update(dict(extra or {}))
+        extra_values = dict(extra or {})
+        report.update(extra_values)
+        trimem: dict[str, Any] = {
+            "execution_contract": self._execution_contract(request.patch),
+            "execution_control_evidence": self._execution_control_evidence(),
+        }
+        if isinstance(extra_values.get("materialized_patch_evidence"), Mapping):
+            trimem["materialized_patch_evidence"] = extra_values["materialized_patch_evidence"]
+        report["_trimem"] = trimem
         return GraderInvocationFailure(GradeResult(
             task_id=request.task_id, resolved=False, exit_code=exit_code,
             stdout=self._redact(stdout), stderr=self._redact(stderr), report=report,
@@ -778,12 +965,16 @@ class OfficialHarnessGraderGateway:
                 reason=type(exc).__name__, stderr=str(exc), evidence=image_evidence,
                 extra={"materialized_private_inputs": materialized},
             ) from None
+        private_paths = invocation.private_input_paths + (
+            (invocation.materialized_patch_path,)
+            if invocation.materialized_patch_path is not None else ()
+        )
         stale = [
             path for path in (invocation.test_output_path, invocation.test_status_path)
             if path.exists()
         ]
         if stale:
-            materialized = purge(invocation.private_input_paths, container_started=False)
+            materialized = purge(private_paths, container_started=False)
             raise self._failure(
                 request, started, stage="official_harness", status="stale_test_evidence",
                 reason="preexisting_test_evidence", evidence=image_evidence,
@@ -793,7 +984,7 @@ class OfficialHarnessGraderGateway:
         try:
             completed = self._run(invocation.argv, cwd=invocation.cwd, timeout=self.timeout_seconds)
         except subprocess.TimeoutExpired as exc:
-            materialized = purge(invocation.private_input_paths, container_started=True)
+            materialized = purge(private_paths, container_started=True)
             raise self._failure(
                 request, started, stage="official_harness", status="harness_timeout", reason="timeout",
                 stdout=_stream_text(exc.stdout), stderr=_stream_text(exc.stderr), container_started=True,
@@ -801,34 +992,125 @@ class OfficialHarnessGraderGateway:
                                                 "materialized_private_inputs": materialized},
             ) from None
         except OSError as exc:
-            materialized = purge(invocation.private_input_paths, container_started=False)
+            materialized = purge(private_paths, container_started=False)
             raise self._failure(
                 request, started, stage="official_harness", status="harness_launch_failed", reason="launch_failed",
                 stderr=str(exc), container_started=False, evidence=image_evidence,
                 extra={"invocation_argv": list(invocation.argv),
                        "materialized_private_inputs": materialized},
             ) from None
-        materialized = purge(invocation.private_input_paths, container_started=True)
-        common = {
-            "image_evidence": image_evidence,
-            "invocation_argv": list(invocation.argv),
-            "report_path": str(invocation.report_path.relative_to(task_root)),
-            "harness_restricted_raw_streams": self._restricted_streams(
-                "official-harness", completed.stdout, completed.stderr
-            ),
-            "public_stream_policy": "REDACTED; canonical raw bytes are restricted evidence",
-            "materialized_private_inputs": materialized,
-        }
+
+        materialized_patch_evidence: dict[str, Any] | None = None
+
+        def command_evidence(
+            materialized: Sequence[Mapping[str, Any]],
+            report_completed: subprocess.CompletedProcess[str] | None = None,
+            *,
+            report_status: str = "NOT_RUN",
+        ) -> dict[str, Any]:
+            evidence: dict[str, Any] = {
+                "image_evidence": image_evidence,
+                "invocation_argv": list(invocation.argv),
+                "report_path": str(invocation.report_path.relative_to(task_root)),
+                "harness_restricted_raw_streams": self._restricted_streams(
+                    "official-harness", completed.stdout, completed.stderr
+                ),
+                "public_stream_policy": "REDACTED; canonical raw bytes are restricted evidence",
+                "materialized_private_inputs": list(materialized),
+            }
+            if materialized_patch_evidence is not None:
+                evidence["materialized_patch_evidence"] = materialized_patch_evidence
+            if invocation.report_argv:
+                evidence["report_invocation_argv"] = list(invocation.report_argv)
+                evidence["report_invocation_status"] = report_status
+                if report_completed is not None:
+                    evidence["report_restricted_raw_streams"] = self._restricted_streams(
+                        "official-report", report_completed.stdout, report_completed.stderr
+                    )
+            return evidence
+
         if completed.returncode != 0:
+            materialized = purge(private_paths, container_started=True)
+            common = command_evidence(materialized)
             raise self._failure(
                 request, started, stage="official_harness", status="harness_exit_nonzero",
                 reason="nonzero_exit", stdout=completed.stdout, stderr=completed.stderr,
                 exit_code=completed.returncode, container_started=True, evidence=image_evidence, extra=common,
             )
+        if invocation.materialized_patch_path is not None:
+            try:
+                materialized_patch_evidence = self._capture_materialized_patch(
+                    invocation.materialized_patch_path, request.patch
+                )
+            except _MaterializedPatchEvidenceError as exc:
+                materialized_patch_evidence = dict(exc.evidence)
+                materialized = purge(private_paths, container_started=True)
+                common = command_evidence(materialized)
+                raise self._failure(
+                    request, started, stage="submitted_patch_evidence",
+                    status="materialized_patch_invalid", reason=str(exc),
+                    stdout=completed.stdout, stderr=completed.stderr,
+                    exit_code=completed.returncode, container_started=True,
+                    evidence=image_evidence, extra=common,
+                ) from None
+            except (OSError, ValueError, OfficialGraderError) as exc:
+                materialized = purge(private_paths, container_started=True)
+                common = command_evidence(materialized)
+                raise self._failure(
+                    request, started, stage="submitted_patch_evidence",
+                    status="materialized_patch_invalid", reason=str(exc),
+                    stdout=completed.stdout, stderr=completed.stderr,
+                    exit_code=completed.returncode, container_started=True,
+                    evidence=image_evidence, extra=common,
+                ) from None
+        report_completed: subprocess.CompletedProcess[str] | None = None
+        if invocation.report_argv:
+            try:
+                report_completed = self._run(
+                    invocation.report_argv, cwd=invocation.cwd, timeout=self.timeout_seconds
+                )
+            except subprocess.TimeoutExpired as exc:
+                materialized = purge(private_paths, container_started=True)
+                common = command_evidence(materialized, report_status="TIMEOUT")
+                raise self._failure(
+                    request, started, stage="official_report", status="report_timeout", reason="timeout",
+                    stdout=completed.stdout + _stream_text(exc.stdout),
+                    stderr=completed.stderr + _stream_text(exc.stderr), container_started=True,
+                    evidence=image_evidence, extra=common,
+                ) from None
+            except OSError as exc:
+                materialized = purge(private_paths, container_started=True)
+                common = command_evidence(materialized, report_status="LAUNCH_FAILED")
+                raise self._failure(
+                    request, started, stage="official_report", status="report_launch_failed",
+                    reason="launch_failed", stdout=completed.stdout,
+                    stderr=completed.stderr + str(exc), container_started=True,
+                    evidence=image_evidence, extra=common,
+                ) from None
+            if report_completed.returncode != 0:
+                materialized = purge(private_paths, container_started=True)
+                common = command_evidence(
+                    materialized, report_completed, report_status="EXIT_NONZERO"
+                )
+                raise self._failure(
+                    request, started, stage="official_report", status="report_exit_nonzero",
+                    reason="nonzero_exit", stdout=completed.stdout + report_completed.stdout,
+                    stderr=completed.stderr + report_completed.stderr,
+                    exit_code=report_completed.returncode, container_started=True,
+                    evidence=image_evidence, extra=common,
+                )
+        materialized = purge(private_paths, container_started=True)
+        common = command_evidence(
+            materialized,
+            report_completed,
+            report_status="SUCCESS" if report_completed is not None else "NOT_APPLICABLE",
+        )
+        combined_stdout = completed.stdout + (report_completed.stdout if report_completed else "")
+        combined_stderr = completed.stderr + (report_completed.stderr if report_completed else "")
         if not invocation.report_path.is_file():
             raise self._failure(
                 request, started, stage="official_harness", status="missing_report", reason="missing_report",
-                stdout=completed.stdout, stderr=completed.stderr, exit_code=completed.returncode,
+                stdout=combined_stdout, stderr=combined_stderr, exit_code=completed.returncode,
                 container_started=True, evidence=image_evidence, extra=common,
             )
         report_raw = invocation.report_path.read_bytes()
@@ -838,14 +1120,14 @@ class OfficialHarnessGraderGateway:
             restricted_report = self._restricted_blob("official-harness", "report", report_raw)
             raise self._failure(
                 request, started, stage="official_harness", status="invalid_report", reason="invalid_report",
-                stdout=completed.stdout, stderr=completed.stderr, exit_code=completed.returncode,
+                stdout=combined_stdout, stderr=combined_stderr, exit_code=completed.returncode,
                 container_started=True, evidence=image_evidence,
                 extra={**common, "restricted_raw_report": restricted_report},
             ) from None
         if not isinstance(report, dict):
             raise self._failure(
                 request, started, stage="official_harness", status="report_schema_mismatch",
-                reason="report_root_not_object", stdout=completed.stdout, stderr=completed.stderr,
+                reason="report_root_not_object", stdout=combined_stdout, stderr=combined_stderr,
                 exit_code=completed.returncode, container_started=True, evidence=image_evidence, extra=common,
             )
         try:
@@ -853,7 +1135,7 @@ class OfficialHarnessGraderGateway:
         except OfficialGraderError as exc:
             raise self._failure(
                 request, started, stage="official_harness", status="report_schema_mismatch",
-                reason=str(exc), stdout=completed.stdout, stderr=completed.stderr,
+                reason=str(exc), stdout=combined_stdout, stderr=combined_stderr,
                 exit_code=completed.returncode, container_started=True, evidence=image_evidence,
                 extra={**common, "raw_report": report},
             ) from None
@@ -862,8 +1144,8 @@ class OfficialHarnessGraderGateway:
         except (OSError, UnicodeDecodeError, ValueError, OfficialGraderError) as exc:
             raise self._failure(
                 request, started, stage="official_test_evidence",
-                status="test_evidence_invalid", reason=str(exc), stdout=completed.stdout,
-                stderr=completed.stderr, exit_code=completed.returncode,
+                status="test_evidence_invalid", reason=str(exc), stdout=combined_stdout,
+                stderr=combined_stderr, exit_code=completed.returncode,
                 container_started=True, evidence=image_evidence,
                 extra={**common, "raw_report": report},
             ) from None
@@ -871,6 +1153,8 @@ class OfficialHarnessGraderGateway:
         report["_trimem"] = {
             "benchmark_id": self.target.benchmark_id,
             "dataset_revision": self.target.dataset_revision,
+            "execution_contract": self._execution_contract(request.patch),
+            "execution_control_evidence": self._execution_control_evidence(),
             "harness_revision": self.target.harness_revision,
             **common,
             "source_row_sha256": self.target.source_row_sha256,
@@ -879,7 +1163,7 @@ class OfficialHarnessGraderGateway:
         elapsed = max(0, (time.perf_counter_ns() - started) // 1_000_000)
         return GradeResult(
             task_id=request.task_id, resolved=resolved, exit_code=completed.returncode,
-            stdout=self._redact(completed.stdout), stderr=self._redact(completed.stderr), report=report,
+            stdout=self._redact(combined_stdout), stderr=self._redact(combined_stderr), report=report,
             grader_id=f"official-{self.target.benchmark_id}@{self.target.harness_revision}",
             container_digest=self.target.image, official=True, wall_time_ms=elapsed,
             container_started=True, status="success",
@@ -895,7 +1179,7 @@ def _stream_text(value: object) -> str:
 
 
 __all__ = [
-    "FrozenOfficialTarget", "HarnessInvocation", "OfficialGraderError",
+    "FrozenOfficialTarget", "HarnessInvocation", "MULTI_SWE_PREBUILT_EVALUATION", "OfficialGraderError",
     "OfficialHarnessGraderGateway", "build_harness_invocation", "canonical_row_hash",
     "minimal_subprocess_env", "parse_official_report", "redact_text",
     "validate_official_test_evidence",

@@ -12,7 +12,7 @@ company_handoff_status: READY          # fresh-clone + offline demo pass; NOT st
 production_certification_status: NOT_CLAIMED
 
 migration_head: "0015"                 # structural tree inventory; not a TriMem benchmark result
-workflow_count: 72                     # structural tree inventory; research readiness is separately sealed
+workflow_count: 73                     # structural tree inventory; research readiness is separately sealed
 
 implemented_backends:
   - in_memory                          # InMemoryBackend (test/offline; no torch/mem0)
@@ -79,4 +79,4 @@ required_company_inputs:
 # --- MILESTONE RESEARCH RESULT (R19 utility router) ---
 utility_router_result: "NULL"           # R19-SMALL held-out: A5-A0 sig but NOT beyond compute(A1)/shuffled(A2) -> compute not content; fails 10.7 gate
 
-workflow_table_note: "70 workflows in this tree; ci-docs validates structural inventory only."
+workflow_table_note: "73 workflows in this tree; ci-docs validates structural inventory only."

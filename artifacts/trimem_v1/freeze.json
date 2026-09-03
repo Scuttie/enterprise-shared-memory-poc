@@ -5,8 +5,8 @@
       "sha256": "be15f205de6f62071c870d6cf99218962e209aa8f84bf040b4ecdbe768a7dc12"
     },
     ".github/workflows/ci-trimem-dev-toolchain.yml": {
-      "bytes": 4555,
-      "sha256": "d4198bec95927188c4121c1fabd0b9f9cba9ae4e3a0dc31e688e03c480b407aa"
+      "bytes": 4665,
+      "sha256": "39069eaa04577bc64bd8c9587f033c71f0cef611b43ee2d7a599e873fcf7c9c2"
     },
     ".github/workflows/ci-trimem-e2e.yml": {
       "bytes": 3065,
@@ -1141,8 +1141,8 @@
       "sha256": "39394ffcbcbcce1051e729aaf25c74732f0189a8a26506ad8073d8916264fd31"
     },
     "tests/unit/test_trimem_dev_toolchain_workflows.py": {
-      "bytes": 5614,
-      "sha256": "55fac8111c5cef4f6bdf90437ec10d55be6ccd29b2b94240655cd4948d2487ec"
+      "bytes": 5730,
+      "sha256": "a043a95afe38297e90380ea781c3f4f783790e7f383fec93a5d752c30fc06649"
     },
     "tests/unit/test_trimem_development_trigger.py": {
       "bytes": 89994,

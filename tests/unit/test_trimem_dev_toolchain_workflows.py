@@ -102,11 +102,13 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_self_hosted() -> None
         ".github/workflows/ci-trimem-dev-toolchain.yml",
         ".github/workflows/trimem-benchmark.yml",
         "configs/trimem_v1/gh_cli_lock.json",
+        "scripts/trimem_development_trigger_preflight.py",
         "scripts/trimem_install_pinned_gh.py",
         "scripts/trimem_verify_gh_lock.py",
         "scripts/trimem_verify_ready.py",
         "tests/unit/test_trimem_dev_toolchain_workflows.py",
         "tests/unit/test_trimem_pinned_gh.py",
+        "tests/unit/test_trimem_development_trigger.py",
         "tests/unit/test_trimem_smoke_attestation_only.py",
     ):
         assert f"- {path}" in text

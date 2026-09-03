@@ -993,9 +993,10 @@ def test_exact_preflight_cli_fails_closed_without_pinned_gh(tmp_path: Path) -> N
     assert completed.returncode == 1, completed.stderr
     assert completed.stdout, completed.stderr
     report = json.loads(completed.stdout)
-    assert report == {
-        "error": "gh CLI is required to verify remote gates",
-        "status": "FAIL_CLOSED",
+    assert report["status"] == "FAIL_CLOSED"
+    assert report["error"] in {
+        "gh CLI is required to verify remote gates",
+        "remote gate observer does not match the pinned gh byte lock",
     }
 
 

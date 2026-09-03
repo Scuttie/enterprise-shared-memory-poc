@@ -17,7 +17,7 @@
   "current_status": {
     "DEV_APPROVAL_ALLOWED": "YES",
     "DEV_EXECUTION_ALLOWED": "NO",
-    "ENDPOINT": "TRIMEM_V1_GRADER_SMOKE_PASS_READY_FOR_DEVELOPMENT_APPROVAL",
+    "ENDPOINT": "TRIMEM_V1_DEV_INCOMPLETE",
     "GRADER_EXEC_PACKAGE": "PASS",
     "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
     "PERFORMANCE": "NOT_MEASURED",
@@ -56,8 +56,14 @@
     "grader_smoke_rerun_authorized": false,
     "hard_cap_total_usd": 50.0,
     "heldout_execution_authorized": false,
-    "meaning": "DEV_APPROVAL_ALLOWED=YES grants only eligibility to request a separate DEVELOPMENT_TUNING approval; it does not authorize DEV execution.",
+    "meaning": "The received recovery authorization permits only the correction and one _002 attempt-1 run; protected DEV execution still requires a fresh run-bound external approval.",
     "model_id": "gpt-5.4-mini-2026-03-17",
+    "prior_failed_run_reusable": false,
+    "protected_execution_authorization_required": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_APPROVED_ONCE",
+    "recovery_authorization": "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE",
+    "recovery_authorization_received": true,
+    "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
+    "recovery_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
     "selected_m2_checkpoint": "PRE_DEVELOPMENT; produced only after separately approved development execution"
   },
   "frozen_counts": {
@@ -172,13 +178,58 @@
     "workflow_run_attempt": 1,
     "workflow_run_id": 33630256522
   },
+  "historical_development_preflight_failure": {
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "evidence": {
+      "failure_receipt_path": "artifacts/trimem_v1/development_tuning_exec/exec-001/preflight-failure-receipt.json",
+      "failure_receipt_raw_sha256": "16bda3012e29d6a3659d5a96537615db7ed72fa817e541e16db2c4d5d5d79868",
+      "previous_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json",
+      "previous_request_raw_sha256": "7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db"
+    },
+    "execution_accounting": {
+      "api_calls": 0,
+      "cached_input_tokens": 0,
+      "decomposition_calls": 0,
+      "extraction_calls": 0,
+      "grader_calls": 0,
+      "grader_containers": 0,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "model_gateway_calls": 0,
+      "official_grader_runs": 0,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "reasoning_tokens": 0,
+      "solve_calls": 0,
+      "support_image_pulls": 0,
+      "target_image_pulls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0.0
+    },
+    "failure_label": "TRIMEM_DEV_TRIGGER_PREFLIGHT_DEPENDENCY_IMPORT_FAILURE",
+    "recovery": {
+      "attempt_two_allowed": false,
+      "protected_execution_authorization_required": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_APPROVED_ONCE",
+      "received_recovery_authorization": "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE",
+      "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
+      "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
+      "single_new_attempt_one_run_allowed": true
+    },
+    "schema": "trimem/development-preflight-failure-status/1.0",
+    "status": "RECOVERY_002_APPROVED_PENDING_SENTINEL",
+    "workflow_run": {
+      "head_sha": "6eba1b0f9462c3b29323a9ade290470551bfd0ed",
+      "id": 33727051040,
+      "run_attempt": 1
+    }
+  },
   "post_approval_gates": [
-    "the authoritative smoke result plus the committed pre-execution Mini model/pricing amendment and new freeze make the branch eligible to request one separate DEVELOPMENT_TUNING approval; they do not authorize development execution",
+    "complete the _002 stdlib-only preflight correction and exact-head credential-free CI, then add one _002 sentinel-only child and require a fresh run-bound external approval before protected execution",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
   ],
-  "schema": "trimem/readiness-requirements/1.5",
+  "schema": "trimem/readiness-requirements/1.6",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
   "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed and independently validated exec-005 official PASS evidence, not from static CI alone; performance remains NOT_MEASURED and no paid-model, causal, full-suite, or leaderboard claim is made.",

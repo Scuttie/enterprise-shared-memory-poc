@@ -26,13 +26,24 @@ EXPECTED_WORKFLOW_REF = (
     "trimem-benchmark.yml@refs/heads/codex/trimem-coder-v1"
 )
 EXPECTED_PHASE = "DEVELOPMENT_TUNING"
-REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_001"
-REQUEST_SCHEMA = "trimem/development-tuning-branch-trigger/1.0"
+REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002"
+REQUEST_SCHEMA = "trimem/development-tuning-branch-trigger/1.1"
 SENTINEL_PATH = (
+    "artifacts/trimem_v1/exec_requests/"
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_002.json"
+)
+PREVIOUS_SENTINEL_PATH = (
     "artifacts/trimem_v1/exec_requests/"
     "DEVELOPMENT_TUNING_EXEC_REQUEST_001.json"
 )
+RECOVERY_FAILURE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/development_tuning_exec/exec-001/"
+    "preflight-failure-receipt.json"
+)
+PREVIOUS_SOURCE_HEAD = "0fe4cd70604d381f5a8d7d0a384724817c6e3a42"
+PREVIOUS_EXECUTION_HEAD = "6eba1b0f9462c3b29323a9ade290470551bfd0ed"
 WORKFLOW_PATH = ".github/workflows/trimem-benchmark.yml"
+EXPECTED_CONCURRENCY_GROUP = "trimem-v1-development-tuning-exec-002"
 FREEZE_PATH = "artifacts/trimem_v1/freeze.json"
 MODEL_LOCK_PATH = "configs/trimem_v1/model_lock.json"
 COST_PLAN_PATH = "configs/trimem_v1/cost_plan.json"
@@ -61,6 +72,9 @@ RESUME_DRIVER_PATH = "scripts/trimem_run_with_resume.py"
 
 AUTHORIZATION_SEMANTICS = (
     "The sentinel creates one run but does not authorize protected execution."
+)
+RECOVERY_AUTHORIZATION = (
+    "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE"
 )
 REQUIRED_EXTERNAL_AUTHORIZATION = (
     "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_APPROVED_ONCE"
@@ -134,10 +148,32 @@ PRE_EXECUTION_ACTUALS = {
     "output_tokens": 0,
     "paid_model_calls": 0,
     "reasoning_tokens": 0,
-    "scope": "D1.1_BEFORE_DEVELOPMENT_EXECUTION",
+    "scope": "D1.1_RECOVERY_002_BEFORE_DEVELOPMENT_EXECUTION",
     "solve_calls": 0,
     "target_image_pulls": 0,
     "task_arm_runs": 0,
+    "total_usd": 0.0,
+}
+RECOVERY_PROVENANCE = {
+    "failed_endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "failed_execution_head": PREVIOUS_EXECUTION_HEAD,
+    "failed_run_attempt": 1,
+    "failed_run_id": 33_727_051_040,
+    "failure_label": "TRIMEM_DEV_TRIGGER_PREFLIGHT_DEPENDENCY_IMPORT_FAILURE",
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "previous_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_001",
+    "previous_request_path": PREVIOUS_SENTINEL_PATH,
+    "previous_request_raw_sha256": (
+        "sha256:7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db"
+    ),
+    "protected_execution_authorization_required": REQUIRED_EXTERNAL_AUTHORIZATION,
+    "protected_execution_reached": False,
+    "received_recovery_authorization": RECOVERY_AUTHORIZATION,
+    "scientific_task_arm_runs": 0,
     "total_usd": 0.0,
 }
 PROHIBITED_ACTIONS = [
@@ -149,7 +185,7 @@ PROHIBITED_ACTIONS = [
     "grader_smoke_rerun",
     "merge_tag_or_release",
     "model_replacement",
-    "second_development_dispatch_or_rerun",
+    "additional_development_dispatch_or_rerun_after_recovery_002",
     "target_replacement",
 ]
 EXPECTED_TARGET_SET_SHA256 = (
@@ -168,6 +204,10 @@ EXPECTED_FROZEN_INPUT_SHA256 = {
     GRADER_LOCK_PATH: "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb",
     IMAGE_LOCK_PATH: "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
     MODEL_PRICING_AMENDMENT_PATH: "19caede5a601f8d0ebc1267dbb393b9b707aae37e144a31a9346087d2c320cee",
+}
+EXPECTED_RECOVERY_INPUT_SHA256 = {
+    PREVIOUS_SENTINEL_PATH: "7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db",
+    RECOVERY_FAILURE_RECEIPT_PATH: "16bda3012e29d6a3659d5a96537615db7ed72fa817e541e16db2c4d5d5d79868",
 }
 DEVELOPMENT_APPROVAL_FIELDS = [
     "approved_git_commit",
@@ -196,6 +236,8 @@ BOUND_PATHS = {
     "m2_candidate_manifest_sha256": M2_CANDIDATE_MANIFEST_PATH,
     "model_lock_sha256": MODEL_LOCK_PATH,
     "model_pricing_amendment_sha256": MODEL_PRICING_AMENDMENT_PATH,
+    "previous_dev_request_sha256": PREVIOUS_SENTINEL_PATH,
+    "recovery_failure_receipt_sha256": RECOVERY_FAILURE_RECEIPT_PATH,
     "selection_plan_sha256": SELECTION_PLAN_PATH,
 }
 FREEZE_CLOSURE_PATHS = (
@@ -219,6 +261,8 @@ FREEZE_CLOSURE_PATHS = (
     MATRIX_PATH,
     PUBLIC_ARTIFACT_PATH,
     RESUME_DRIVER_PATH,
+    PREVIOUS_SENTINEL_PATH,
+    RECOVERY_FAILURE_RECEIPT_PATH,
 )
 REQUEST_FIELDS = frozenset(
     {
@@ -236,6 +280,7 @@ REQUEST_FIELDS = frozenset(
         "phase",
         "pre_execution_actuals",
         "prohibited_actions",
+        "recovery_provenance",
         "request_id",
         "request_path",
         "request_sha256",
@@ -340,6 +385,96 @@ def _commit_bytes(repository: Path, commit: str, path: str) -> bytes:
     return raw
 
 
+def _validate_historical_recovery_graph(repository: Path, commit: str) -> None:
+    """Bind recovery material to the immutable _001 commit ancestry."""
+
+    _require(HEX40.fullmatch(commit) is not None, "material commit is not a commit SHA")
+    resolved = str(
+        _run_git(
+            repository,
+            "rev-parse",
+            "--verify",
+            f"{PREVIOUS_EXECUTION_HEAD}^{{commit}}",
+        )
+    ).strip()
+    _require(
+        resolved == PREVIOUS_EXECUTION_HEAD,
+        "historical _001 execution commit identity differs",
+    )
+    parents = str(
+        _run_git(
+            repository,
+            "rev-list",
+            "--parents",
+            "-n",
+            "1",
+            PREVIOUS_EXECUTION_HEAD,
+        )
+    ).strip().split()
+    _require(
+        parents == [PREVIOUS_EXECUTION_HEAD, PREVIOUS_SOURCE_HEAD],
+        "historical _001 parent identity differs",
+    )
+    ancestry = subprocess.run(
+        [
+            "git",
+            "-c",
+            "core.quotepath=false",
+            "merge-base",
+            "--is-ancestor",
+            PREVIOUS_EXECUTION_HEAD,
+            commit,
+        ],
+        cwd=repository,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    _require(
+        ancestry.returncode == 0 and commit != PREVIOUS_EXECUTION_HEAD,
+        "material commit does not descend from immutable _001 history",
+    )
+    changes = str(
+        _run_git(
+            repository,
+            "diff-tree",
+            "--no-commit-id",
+            "--name-status",
+            "-r",
+            "--no-renames",
+            PREVIOUS_EXECUTION_HEAD,
+        )
+    ).splitlines()
+    _require(
+        changes == [f"A\t{PREVIOUS_SENTINEL_PATH}"],
+        "historical _001 commit was not sentinel-only",
+    )
+    tree = str(
+        _run_git(
+            repository,
+            "ls-tree",
+            PREVIOUS_EXECUTION_HEAD,
+            "--",
+            PREVIOUS_SENTINEL_PATH,
+        )
+    ).strip()
+    _require(
+        re.fullmatch(
+            rf"100644 blob [0-9a-f]{{40}}\t{re.escape(PREVIOUS_SENTINEL_PATH)}",
+            tree,
+        )
+        is not None,
+        "historical _001 sentinel is not the exact regular Git blob",
+    )
+    _require(
+        hashlib.sha256(
+            _commit_bytes(repository, PREVIOUS_EXECUTION_HEAD, PREVIOUS_SENTINEL_PATH)
+        ).hexdigest()
+        == EXPECTED_RECOVERY_INPUT_SHA256[PREVIOUS_SENTINEL_PATH],
+        "historical _001 Git blob bytes differ",
+    )
+
+
 def _material(repository: Path, commit: str) -> dict[str, bytes]:
     paths = set(BOUND_PATHS.values()) | set(FREEZE_CLOSURE_PATHS)
     return {path: _commit_bytes(repository, commit, path) for path in paths}
@@ -355,12 +490,62 @@ def _json_material(raw: Mapping[str, bytes], path: str) -> dict[str, Any]:
 def _validate_frozen_material(
     repository: Path, commit: str
 ) -> tuple[dict[str, bytes], dict[str, str], dict[str, Any]]:
+    _validate_historical_recovery_graph(repository, commit)
     raw = _material(repository, commit)
     for path, expected_sha256 in EXPECTED_FROZEN_INPUT_SHA256.items():
         _require(
             hashlib.sha256(raw[path]).hexdigest() == expected_sha256,
             f"frozen scientific or model/pricing input changed: {path}",
         )
+    for path, expected_sha256 in EXPECTED_RECOVERY_INPUT_SHA256.items():
+        _require(
+            hashlib.sha256(raw[path]).hexdigest() == expected_sha256,
+            f"immutable DEV recovery input changed: {path}",
+        )
+    previous_request = _json_material(raw, PREVIOUS_SENTINEL_PATH)
+    failure_receipt = _json_material(raw, RECOVERY_FAILURE_RECEIPT_PATH)
+    _require(
+        previous_request.get("request_id")
+        == RECOVERY_PROVENANCE["previous_request_id"]
+        and previous_request.get("request_path") == PREVIOUS_SENTINEL_PATH
+        and previous_request.get("source_head")
+        == PREVIOUS_SOURCE_HEAD
+        and previous_request.get("one_time_workflow_run_attempt") == 1,
+        "historical _001 DEV request identity differs",
+    )
+    _require(
+        failure_receipt.get("schema")
+        == "trimem/development-trigger-preflight-failure-receipt/1.0"
+        and failure_receipt.get("endpoint")
+        == RECOVERY_PROVENANCE["failed_endpoint"]
+        and failure_receipt.get("failure_label")
+        == RECOVERY_PROVENANCE["failure_label"]
+        and failure_receipt.get("workflow_run", {}).get("id")
+        == RECOVERY_PROVENANCE["failed_run_id"]
+        and failure_receipt.get("workflow_run", {}).get("run_attempt")
+        == RECOVERY_PROVENANCE["failed_run_attempt"]
+        and failure_receipt.get("workflow_run", {}).get("head_sha")
+        == RECOVERY_PROVENANCE["failed_execution_head"]
+        and failure_receipt.get("jobs", {})
+        .get("protected_execution", {})
+        .get("conclusion")
+        == "skipped"
+        and failure_receipt.get("sentinel", {}).get("raw_sha256")
+        == RECOVERY_PROVENANCE["previous_request_raw_sha256"],
+        "historical _001 preflight-failure receipt differs",
+    )
+    receipt_accounting = failure_receipt.get("execution_accounting")
+    _require(
+        isinstance(receipt_accounting, dict)
+        and receipt_accounting.get("task_arm_runs") == 0
+        and receipt_accounting.get("model_calls") == 0
+        and receipt_accounting.get("paid_model_calls") == 0
+        and receipt_accounting.get("grader_containers") == 0
+        and receipt_accounting.get("input_tokens") == 0
+        and receipt_accounting.get("output_tokens") == 0
+        and receipt_accounting.get("total_usd") == 0.0,
+        "historical _001 failure receipt contains scientific execution",
+    )
     model = _json_material(raw, MODEL_LOCK_PATH)
     cost = _json_material(raw, COST_PLAN_PATH)
     policy = _json_material(raw, POLICY_REQUEST_PATH)
@@ -783,6 +968,7 @@ def build_request_document(
         "phase": EXPECTED_PHASE,
         "pre_execution_actuals": deepcopy(PRE_EXECUTION_ACTUALS),
         "prohibited_actions": list(PROHIBITED_ACTIONS),
+        "recovery_provenance": deepcopy(RECOVERY_PROVENANCE),
         "request_id": REQUEST_ID,
         "request_path": SENTINEL_PATH,
         "required_external_approval_fields": list(DEVELOPMENT_APPROVAL_FIELDS),
@@ -930,11 +1116,47 @@ def _validate_secret_free_preflight(
 ) -> None:
     exposed = sorted(name for name in FORBIDDEN_PREFLIGHT_SECRETS if name in environ)
     _require(not exposed, f"execution secret is exposed to DEV preflight: {exposed}")
-    workflow = _commit_bytes(repository, commit, WORKFLOW_PATH).decode("utf-8")
+    try:
+        workflow = _commit_bytes(repository, commit, WORKFLOW_PATH).decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise DevelopmentTriggerError("benchmark workflow is not UTF-8") from exc
+    trigger_start = workflow.find("on:\n")
+    concurrency_start = workflow.find("\nconcurrency:", trigger_start + 3)
+    _require(
+        trigger_start >= 0 and concurrency_start > trigger_start,
+        "benchmark workflow has no bounded trigger block",
+    )
+    trigger_block = workflow[trigger_start + len("on:\n") : concurrency_start]
+    expected_trigger_block = (
+        "  workflow_dispatch:\n"
+        "  push:\n"
+        "    branches:\n"
+        "      - codex/trimem-coder-v1\n"
+        "    paths:\n"
+        f"      - {SENTINEL_PATH}\n"
+    )
+    _require(
+        trigger_block == expected_trigger_block
+        and f"group: {EXPECTED_CONCURRENCY_GROUP}" in workflow
+        and "group: trimem-v1-development-tuning-exec-001" not in workflow
+        and "cancel-in-progress: false" in workflow,
+        "benchmark workflow trigger or recovery concurrency identity differs",
+    )
     start = workflow.find("  branch-trigger-preflight:")
     end = workflow.find("  frozen-serial-phase:")
     _require(0 <= start < end, "workflow has no isolated branch preflight job")
     preflight = workflow[start:end]
+    _require(
+        preflight.count(
+            "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
+        )
+        == 1
+        and preflight.count(
+            "python -I -S scripts/trimem_development_trigger_preflight.py"
+        )
+        == 1,
+        "branch preflight is not the exact isolated base-Python pair",
+    )
     forbidden = (
         "secrets.",
         "environment:",

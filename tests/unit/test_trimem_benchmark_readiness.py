@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT / "src"))
 import trimem_benchmark_run as benchmark_run  # noqa: E402
 import trimem_benchmark_matrix as benchmark_matrix  # noqa: E402
 import trimem_cleanup_exec as cleanup_exec  # noqa: E402
+import trimem_development_trigger_preflight as trigger  # noqa: E402
 import trimem_freeze as freeze  # noqa: E402
 import trimem_grader_smoke as grader_smoke  # noqa: E402
 import trimem_grader_smoke_authority as smoke_authority  # noqa: E402
@@ -425,7 +426,7 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert requirements["current_status"] == {
         "DEV_APPROVAL_ALLOWED": "YES",
         "DEV_EXECUTION_ALLOWED": "NO",
-        "ENDPOINT": readiness.SMOKE_PASS_ENDPOINT,
+        "ENDPOINT": readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT,
         "GRADER_EXEC_PACKAGE": "PASS",
         "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
@@ -438,7 +439,17 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["development_execution_authorized"] is False
     assert authorization["grader_smoke_rerun_authorized"] is False
     assert authorization["heldout_execution_authorized"] is False
-    assert "separate DEVELOPMENT_TUNING approval" in authorization["meaning"]
+    assert authorization["prior_failed_run_reusable"] is False
+    assert authorization["protected_execution_authorization_required"] == (
+        trigger.REQUIRED_EXTERNAL_AUTHORIZATION
+    )
+    assert authorization["recovery_authorization_received"] is True
+    assert authorization["recovery_authorization"] == (
+        "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE"
+    )
+    assert authorization["recovery_request_id"] == trigger.REQUEST_ID
+    assert authorization["recovery_request_path"] == trigger.SENTINEL_PATH
+    assert "fresh run-bound external approval" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     service_boundary = requirements["credential_free_service_ci_boundary"]
     assert "ALLOWED_PRE_EXEC" in service_boundary
@@ -516,6 +527,22 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "official_harness_failures": 0,
         "official_report_failures": 0,
     }
+    development_failure = requirements["historical_development_preflight_failure"]
+    assert development_failure == readiness._validated_development_preflight_failure()
+    assert development_failure["endpoint"] == readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT
+    assert development_failure["execution_accounting"]["task_arm_runs"] == 0
+    assert development_failure["execution_accounting"]["model_calls"] == 0
+    assert development_failure["execution_accounting"]["grader_containers"] == 0
+    assert development_failure["recovery"] == {
+        "attempt_two_allowed": False,
+        "protected_execution_authorization_required": (
+            trigger.REQUIRED_EXTERNAL_AUTHORIZATION
+        ),
+        "received_recovery_authorization": trigger.RECOVERY_AUTHORIZATION,
+        "request_id": trigger.REQUEST_ID,
+        "request_path": trigger.SENTINEL_PATH,
+        "single_new_attempt_one_run_allowed": True,
+    }
 
 
 def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
@@ -523,7 +550,9 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
 ) -> None:
     targets = readiness.validate_targets()
     derived = readiness.validate_readiness_plan(targets)
-    assert derived["current_status"]["ENDPOINT"] == readiness.SMOKE_PASS_ENDPOINT
+    assert derived["current_status"]["ENDPOINT"] == (
+        readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT
+    )
     assert derived["scientific_result"] == {
         "gold_resolved": 6,
         "gold_total": 6,
@@ -3279,16 +3308,24 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in benchmark
     assert (
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_001.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_002.json"
     ) in benchmark
     assert "branch-trigger-preflight:" in benchmark
     assert "needs: branch-trigger-preflight" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-002" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-001" not in benchmark
+    assert "cancel-in-progress: false" in benchmark
     preflight = benchmark.split("  branch-trigger-preflight:", 1)[1].split(
         "  frozen-serial-phase:", 1
     )[0]
     assert "runs-on: ubuntu-24.04" in preflight
     assert "fetch-depth: 0" in preflight
     assert "persist-credentials: false" in preflight
+    assert (
+        "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
+        in preflight
+    )
+    assert "python -I -S scripts/trimem_development_trigger_preflight.py" in preflight
     assert "secrets." not in preflight
     assert "environment:" not in preflight
     for path in workflows[2:4]:

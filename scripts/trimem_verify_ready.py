@@ -116,6 +116,13 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     validate_request_document,
 )
 from trimem_development_trigger_preflight import (  # noqa: E402
+    EXPECTED_RECOVERY_INPUT_SHA256 as DEVELOPMENT_RECOVERY_INPUT_SHA256,
+    PREVIOUS_SENTINEL_PATH as DEVELOPMENT_PREVIOUS_SENTINEL_PATH,
+    RECOVERY_FAILURE_RECEIPT_PATH as DEVELOPMENT_FAILURE_RECEIPT_PATH,
+    RECOVERY_PROVENANCE as DEVELOPMENT_RECOVERY_PROVENANCE,
+    RECOVERY_AUTHORIZATION as DEVELOPMENT_RECOVERY_AUTHORIZATION,
+    REQUEST_ID as DEVELOPMENT_REQUEST_ID,
+    REQUIRED_EXTERNAL_AUTHORIZATION as DEVELOPMENT_EXECUTION_AUTHORIZATION,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
 )
 from trimem_harness_lock import (  # noqa: E402
@@ -234,6 +241,7 @@ SMOKE_RECOVERY_ACTUAL_EXECUTION = {
 SMOKE_PASS_ENDPOINT = (
     "TRIMEM_V1_GRADER_SMOKE_PASS_READY_FOR_DEVELOPMENT_APPROVAL"
 )
+DEVELOPMENT_INCOMPLETE_ENDPOINT = "TRIMEM_V1_DEV_INCOMPLETE"
 SMOKE_PASS_READINESS_SCOPE = "P0.1.5_EXEC_005_AUTHORITATIVE_PASS"
 SMOKE_PASS_SCIENTIFIC_RESULT = (
     "GOLD_RESOLVED_6_OF_6_AND_NOOP_UNRESOLVED_6_OF_6"
@@ -2855,12 +2863,115 @@ def _validated_post_smoke_readiness_state() -> dict[str, Any]:
     }
 
 
+def _validated_development_preflight_failure() -> dict[str, Any]:
+    receipt_path = ROOT / DEVELOPMENT_FAILURE_RECEIPT_PATH
+    receipt_raw = receipt_path.read_bytes()
+    require(
+        hashlib.sha256(receipt_raw).hexdigest()
+        == DEVELOPMENT_RECOVERY_INPUT_SHA256[DEVELOPMENT_FAILURE_RECEIPT_PATH],
+        "DEV _001 preflight-failure receipt bytes differ",
+    )
+    receipt = read_json(receipt_path)
+    expected_accounting = {
+        "api_calls": 0,
+        "cached_input_tokens": 0,
+        "decomposition_calls": 0,
+        "extraction_calls": 0,
+        "grader_calls": 0,
+        "grader_containers": 0,
+        "input_tokens": 0,
+        "model_calls": 0,
+        "model_gateway_calls": 0,
+        "official_grader_runs": 0,
+        "output_tokens": 0,
+        "paid_model_calls": 0,
+        "reasoning_tokens": 0,
+        "solve_calls": 0,
+        "support_image_pulls": 0,
+        "target_image_pulls": 0,
+        "task_arm_runs": 0,
+        "total_usd": 0.0,
+    }
+    require(
+        receipt.get("schema")
+        == "trimem/development-trigger-preflight-failure-receipt/1.0"
+        and receipt.get("endpoint") == DEVELOPMENT_INCOMPLETE_ENDPOINT
+        and receipt.get("failure_label")
+        == DEVELOPMENT_RECOVERY_PROVENANCE["failure_label"]
+        and receipt.get("execution_accounting") == expected_accounting,
+        "DEV _001 failure receipt status or zero-execution accounting differs",
+    )
+    sentinel = receipt.get("sentinel", {})
+    workflow = receipt.get("workflow_run", {})
+    jobs = receipt.get("jobs", {})
+    control = receipt.get("control_plane", {})
+    recovery_contract = receipt.get("recovery_contract", {})
+    require(
+        sentinel.get("path") == DEVELOPMENT_PREVIOUS_SENTINEL_PATH
+        and sentinel.get("raw_sha256")
+        == DEVELOPMENT_RECOVERY_PROVENANCE["previous_request_raw_sha256"]
+        and workflow.get("id") == DEVELOPMENT_RECOVERY_PROVENANCE["failed_run_id"]
+        and workflow.get("run_attempt")
+        == DEVELOPMENT_RECOVERY_PROVENANCE["failed_run_attempt"]
+        and workflow.get("head_sha")
+        == DEVELOPMENT_RECOVERY_PROVENANCE["failed_execution_head"]
+        and jobs.get("hosted_preflight", {}).get("conclusion") == "failure"
+        and jobs.get("protected_execution", {}).get("conclusion") == "skipped"
+        and jobs.get("protected_execution", {}).get("steps") == 0
+        and control.get("approval_materialization_reached") is False
+        and control.get("matching_protected_deployments") == 0
+        and control.get("run_artifacts") == 0
+        and control.get("environment_secret_count_after_cleanup") == 0,
+        "DEV _001 immutable run/control-plane evidence differs",
+    )
+    require(
+        recovery_contract.get("received_recovery_authorization")
+        == DEVELOPMENT_RECOVERY_AUTHORIZATION
+        and recovery_contract.get("protected_execution_authorization_required")
+        == DEVELOPMENT_EXECUTION_AUTHORIZATION,
+        "DEV recovery and protected-execution authorities are conflated",
+    )
+    return {
+        "endpoint": DEVELOPMENT_INCOMPLETE_ENDPOINT,
+        "evidence": {
+            "failure_receipt_path": DEVELOPMENT_FAILURE_RECEIPT_PATH,
+            "failure_receipt_raw_sha256": hashlib.sha256(receipt_raw).hexdigest(),
+            "previous_request_path": DEVELOPMENT_PREVIOUS_SENTINEL_PATH,
+            "previous_request_raw_sha256": DEVELOPMENT_RECOVERY_PROVENANCE[
+                "previous_request_raw_sha256"
+            ].removeprefix("sha256:"),
+        },
+        "execution_accounting": expected_accounting,
+        "failure_label": DEVELOPMENT_RECOVERY_PROVENANCE["failure_label"],
+        "recovery": {
+            "attempt_two_allowed": False,
+            "protected_execution_authorization_required": (
+                DEVELOPMENT_EXECUTION_AUTHORIZATION
+            ),
+            "received_recovery_authorization": DEVELOPMENT_RECOVERY_AUTHORIZATION,
+            "request_id": DEVELOPMENT_REQUEST_ID,
+            "request_path": DEVELOPMENT_SENTINEL_PATH,
+            "single_new_attempt_one_run_allowed": True,
+        },
+        "schema": "trimem/development-preflight-failure-status/1.0",
+        "status": "RECOVERY_002_APPROVED_PENDING_SENTINEL",
+        "workflow_run": {
+            "head_sha": workflow["head_sha"],
+            "id": workflow["id"],
+            "run_attempt": workflow["run_attempt"],
+        },
+    }
+
+
 def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
     plan = read_json(ARTIFACT / "readiness_requirements.json")
-    require(plan.get("schema") == "trimem/readiness-requirements/1.5", "readiness requirements are stale")
+    require(plan.get("schema") == "trimem/readiness-requirements/1.6", "readiness requirements are stale")
     derived = _validated_post_smoke_readiness_state()
+    development_failure = _validated_development_preflight_failure()
+    derived["current_status"]["ENDPOINT"] = DEVELOPMENT_INCOMPLETE_ENDPOINT
+    derived["historical_development_preflight_failure"] = development_failure
     service_boundary = str(plan.get("credential_free_service_ci_boundary", ""))
     require(
         "ALLOWED_PRE_EXEC" in service_boundary
@@ -2906,11 +3017,19 @@ def validate_readiness_plan(
             "hard_cap_total_usd": 50.0,
             "heldout_execution_authorized": False,
             "meaning": (
-                "DEV_APPROVAL_ALLOWED=YES grants only eligibility to request "
-                "a separate DEVELOPMENT_TUNING approval; it does not authorize "
-                "DEV execution."
+                "The received recovery authorization permits only the correction "
+                "and one _002 attempt-1 run; protected DEV execution still "
+                "requires a fresh run-bound external approval."
             ),
             "model_id": "gpt-5.4-mini-2026-03-17",
+            "prior_failed_run_reusable": False,
+            "protected_execution_authorization_required": (
+                DEVELOPMENT_EXECUTION_AUTHORIZATION
+            ),
+            "recovery_authorization": DEVELOPMENT_RECOVERY_AUTHORIZATION,
+            "recovery_authorization_received": True,
+            "recovery_request_id": DEVELOPMENT_REQUEST_ID,
+            "recovery_request_path": DEVELOPMENT_SENTINEL_PATH,
             "selected_m2_checkpoint": (
                 "PRE_DEVELOPMENT; produced only after separately approved "
                 "development execution"
@@ -2952,6 +3071,11 @@ def validate_readiness_plan(
         == _validated_p014_historical_execution(),
         "readiness P0.1.4 immutable diagnostic history differs",
     )
+    require(
+        plan.get("historical_development_preflight_failure")
+        == development_failure,
+        "readiness DEV _001 immutable preflight-failure history differs",
+    )
     static_meaning = str(plan.get("static_ci_meaning", ""))
     require(
         "exec-005" in static_meaning
@@ -2964,7 +3088,7 @@ def validate_readiness_plan(
         isinstance(remaining, list)
         and remaining
         and all("_005" not in str(item) for item in remaining)
-        and any("separate DEVELOPMENT_TUNING approval" in str(item) for item in remaining),
+        and any("_002" in str(item) for item in remaining),
         "post-smoke remaining phase gates differ",
     )
     return derived
@@ -3266,6 +3390,21 @@ def validate_workflows() -> None:
         require("pull_request:" in text and "trimem_pytest_no_skip.py" in text, f"automatic no-skip PR CI missing: {path.name}")
     static = automatic[0].read_text(encoding="utf-8")
     require("tests/unit/test_trimem_*.py" in static and "tests/trimem/e2e/test_full_replay.py" in static, "static CI does not discover all TriMem units/full replay")
+    stdlib_freeze_rehearsal = (
+        "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
+    )
+    stdlib_preflight_rehearsal = (
+        "python -I -S scripts/trimem_development_trigger_preflight.py --help"
+    )
+    require(
+        static.count(stdlib_freeze_rehearsal) == 1
+        and static.count(stdlib_preflight_rehearsal) == 1
+        and static.index(stdlib_freeze_rehearsal)
+        < static.index("python -m pip install --require-hashes")
+        and static.index(stdlib_preflight_rehearsal)
+        < static.index("python -m pip install --require-hashes"),
+        "static CI lacks the dependency-free DEV preflight import rehearsal",
+    )
     service = automatic[1].read_text(encoding="utf-8")
     require("test_real_services_e2e.py" in service and "postgres@sha256:" in service and "qdrant/qdrant@sha256:" in service, "real PostgreSQL/Qdrant CI is absent")
     require("postgres_bootstrap.py" in service and "TRIMEM_TEST_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@" in service and "TRIMEM_TEST_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@" in service, "real-service role/RLS boundary is not wired")
@@ -3557,6 +3696,9 @@ def validate_workflows() -> None:
         and "push:" in benchmark_text
         and "      - codex/trimem-coder-v1" in benchmark_text
         and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-002" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-001" not in benchmark_text
+        and "cancel-in-progress: false" in benchmark_text
         and "branch-trigger-preflight:" in benchmark_text
         and "needs: branch-trigger-preflight" in benchmark_text
         and "trimem_development_trigger_preflight.py" in benchmark_text
@@ -3571,6 +3713,10 @@ def validate_workflows() -> None:
         "runs-on: ubuntu-24.04" in benchmark_preflight
         and "fetch-depth: 0" in benchmark_preflight
         and "persist-credentials: false" in benchmark_preflight
+        and "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
+        in benchmark_preflight
+        and "python -I -S scripts/trimem_development_trigger_preflight.py"
+        in benchmark_preflight
         and "secrets." not in benchmark_preflight
         and "environment:" not in benchmark_preflight
         and "services:" not in benchmark_preflight

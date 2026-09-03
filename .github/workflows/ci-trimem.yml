@@ -23,6 +23,10 @@ jobs:
         with:
           python-version: 3.11.10
           cache: ""
+      - name: Rehearse dependency-free DEV preflight boundary
+        run: |
+          python -I -S scripts/trimem_freeze.py --check --require-git-tracked
+          python -I -S scripts/trimem_development_trigger_preflight.py --help
       - name: Install hash-locked environment
         run: |
           python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock

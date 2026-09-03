@@ -4,7 +4,9 @@ from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 from typing import Callable
@@ -20,7 +22,11 @@ import trimem_exec_approval as approval_validator  # noqa: E402
 import trimem_approved_phase as approved_phase  # noqa: E402
 import trimem_benchmark_matrix as benchmark_matrix  # noqa: E402
 import trimem_benchmark_run as benchmark_run  # noqa: E402
+import trimem_freeze as freeze  # noqa: E402
+import trimem_grader_smoke_failure_closure as smoke_failure_closure  # noqa: E402
+import trimem_grader_smoke_failure_evidence as smoke_failure_evidence  # noqa: E402
 import trimem_m2_candidates as m2_candidates  # noqa: E402
+import trimem_multi_swe_probe_evidence as probe_evidence  # noqa: E402
 import trimem_public_artifact as public_artifact  # noqa: E402
 
 
@@ -30,6 +36,7 @@ def _git(repository: Path, *args: str) -> str:
         cwd=repository,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=True,
     )
     return completed.stdout.strip()
@@ -48,11 +55,27 @@ def _write_json(path: Path, value: object) -> bytes:
     return raw
 
 
-def _initialize(repository: Path) -> str:
+def _initialize(repository: Path, *, bind_recovery_history: bool = True) -> str:
     repository.mkdir()
     _git(repository, "init", "-b", "codex/trimem-coder-v1")
     _git(repository, "config", "user.name", "TriMem Test")
     _git(repository, "config", "user.email", "trimem@example.invalid")
+    if bind_recovery_history:
+        objects = Path(_git(ROOT, "rev-parse", "--git-path", "objects"))
+        if not objects.is_absolute():
+            objects = ROOT / objects
+        alternates = repository / ".git" / "objects" / "info" / "alternates"
+        alternates.write_text(
+            objects.resolve().as_posix() + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        _git(
+            repository,
+            "update-ref",
+            "refs/heads/codex/trimem-coder-v1",
+            trigger.PREVIOUS_EXECUTION_HEAD,
+        )
     amendment = json.loads(
         (ROOT / trigger.MODEL_PRICING_AMENDMENT_PATH).read_text(encoding="utf-8")
     )
@@ -124,6 +147,26 @@ def _environment(after: str) -> dict[str, str]:
     }
 
 
+def _isolated_cli_environment(environ: dict[str, str]) -> dict[str, str]:
+    allowed_host_names = (
+        "COMSPEC",
+        "LANG",
+        "LC_ALL",
+        "PATH",
+        "PATHEXT",
+        "SYSTEMROOT",
+        "TEMP",
+        "TMP",
+        "TMPDIR",
+        "WINDIR",
+    )
+    isolated = {
+        name: os.environ[name] for name in allowed_host_names if name in os.environ
+    }
+    isolated.update(environ)
+    return isolated
+
+
 def _trigger_repository(
     tmp_path: Path,
     *,
@@ -161,7 +204,7 @@ def test_only_exact_dev_sentinel_commit_passes(tmp_path: Path) -> None:
         "model_calls": 0,
         "paid_model_calls": 0,
         "phase": "DEVELOPMENT_TUNING",
-        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_001",
+        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
         "request_payload_sha256": trigger.strict_json_object(request_raw)["request_sha256"],
         "requires_external_approval": True,
         "source_head": before,
@@ -170,6 +213,17 @@ def test_only_exact_dev_sentinel_commit_passes(tmp_path: Path) -> None:
         "total_usd": 0.0,
         "trigger_commit": after,
     }
+    request = trigger.strict_json_object(request_raw)
+    assert request["recovery_provenance"] == trigger.RECOVERY_PROVENANCE
+    assert request["required_external_authorization"] == (
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_APPROVED_ONCE"
+    )
+    assert request["recovery_provenance"]["received_recovery_authorization"] == (
+        "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE"
+    )
+    assert request["recovery_provenance"][
+        "protected_execution_authorization_required"
+    ] == request["required_external_authorization"]
 
 
 def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
@@ -182,15 +236,19 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_001.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_002.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
+    assert "group: trimem-v1-development-tuning-exec-002" in workflow
+    assert "group: trimem-v1-development-tuning-exec-001" not in workflow
+    assert "cancel-in-progress: false" in workflow
     preflight = workflow.split("  branch-trigger-preflight:", 1)[1].split(
         "  frozen-serial-phase:", 1
     )[0]
-    assert "trimem_freeze.py --check --require-git-tracked" in preflight
+    assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_preflight.py" in preflight
     assert all(
         forbidden not in preflight
         for forbidden in (
@@ -218,6 +276,137 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
     assert "preserving plaintext and ciphertext" in protected
 
 
+def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
+    workflow = (ROOT / ".github/workflows/ci-trimem.yml").read_text(encoding="utf-8")
+    freeze_rehearsal = (
+        "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
+    )
+    rehearsal = "python -I -S scripts/trimem_development_trigger_preflight.py --help"
+    install = "python -m pip install --require-hashes"
+    assert workflow.count(freeze_rehearsal) == 1
+    assert workflow.count(rehearsal) == 1
+    assert workflow.index(freeze_rehearsal) < workflow.index(install)
+    assert workflow.index(rehearsal) < workflow.index(install)
+
+
+def test_freeze_path_literals_match_their_owner_modules() -> None:
+    assert freeze.PROBE_REQUEST_PATH == probe_evidence.PROBE_REQUEST_PATH
+    assert freeze.PROBE_RESULT_PATH == probe_evidence.PROBE_RESULT_PATH
+    assert freeze.PROBE_RECEIPT_PATH == probe_evidence.PROBE_RECEIPT_PATH
+    assert (
+        freeze.P014_FAILURE_RECEIPT_PATH
+        == smoke_failure_evidence.FAILURE_RECEIPT_PATH
+    )
+    assert (
+        freeze.P014_EVIDENCE_INVENTORY_PATH
+        == smoke_failure_evidence.EVIDENCE_INVENTORY_PATH
+    )
+    assert (
+        freeze.OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH
+        == smoke_failure_closure.FAILURE_RECEIPT_PATH
+    )
+    assert (
+        freeze.OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH
+        == smoke_failure_closure.EVIDENCE_INVENTORY_PATH
+    )
+
+
+def test_recovery_receipt_binds_exact_github_source_documents() -> None:
+    raw = (ROOT / trigger.RECOVERY_FAILURE_RECEIPT_PATH).read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == trigger.EXPECTED_RECOVERY_INPUT_SHA256[
+        trigger.RECOVERY_FAILURE_RECEIPT_PATH
+    ]
+    receipt = trigger.strict_json_object(raw)
+    assert receipt["workflow_run"]["id"] == trigger.RECOVERY_PROVENANCE[
+        "failed_run_id"
+    ]
+    assert receipt["sentinel"]["raw_sha256"] == trigger.RECOVERY_PROVENANCE[
+        "previous_request_raw_sha256"
+    ]
+    source_documents = receipt["source_documents"]
+    assert set(source_documents) == {
+        "artifacts_api",
+        "jobs_api",
+        "matching_deployments_api",
+        "pending_deployments_api",
+        "workflow_run_attempt_api",
+    }
+    assert all(
+        isinstance(document["bytes"], int)
+        and document["bytes"] > 0
+        and re.fullmatch(r"sha256:[0-9a-f]{64}", document["raw_sha256"])
+        and document["url"].startswith(
+            "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/"
+        )
+        for document in source_documents.values()
+    )
+    evidence_classification = receipt["evidence_classification"]
+    assert evidence_classification["operator_derived_from_failed_step_log"] == [
+        "root_cause"
+    ]
+    assert "credential_free_ci" in evidence_classification[
+        "operator_verified_from_github_control_plane"
+    ]
+    assert "jobs" in evidence_classification["api_bound"]
+    assert receipt["recovery_contract"] == {
+        "attempt_two_allowed": False,
+        "new_request_id": trigger.REQUEST_ID,
+        "new_request_path": trigger.SENTINEL_PATH,
+        "protected_execution_authorization_required": (
+            trigger.REQUIRED_EXTERNAL_AUTHORIZATION
+        ),
+        "received_recovery_authorization": trigger.RECOVERY_AUTHORIZATION,
+        "scientific_inputs_must_remain_unchanged": True,
+        "single_new_attempt_one_run_allowed": True,
+    }
+
+
+def test_recovery_request_preserves_every_scientific_contract(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    source_head = _initialize(repository)
+    recovered = trigger.build_request_document(repository, source_head=source_head)
+    historical_raw = (ROOT / trigger.PREVIOUS_SENTINEL_PATH).read_bytes()
+    assert hashlib.sha256(historical_raw).hexdigest() == (
+        trigger.EXPECTED_RECOVERY_INPUT_SHA256[trigger.PREVIOUS_SENTINEL_PATH]
+    )
+    historical = trigger.strict_json_object(historical_raw)
+    for field in (
+        "exact_model",
+        "expected_expenditure",
+        "grader_smoke_rerun_authorized",
+        "hard_caps",
+        "heldout_execution_authorized",
+        "model_secret_required",
+        "scientific_workload",
+    ):
+        assert recovered[field] == historical[field]
+    scientific_binding_fields = {
+        "benchmark_exec_request_sha256",
+        "cost_plan_sha256",
+        "development_manifest_sha256",
+        "grader_lock_sha256",
+        "image_lock_sha256",
+        "m2_candidate_manifest_sha256",
+        "model_lock_sha256",
+        "model_pricing_amendment_sha256",
+        "selection_plan_sha256",
+    }
+    assert {
+        name: recovered["bindings"][name] for name in scientific_binding_fields
+    } == {
+        name: historical["bindings"][name] for name in scientific_binding_fields
+    }
+    assert {
+        name: value
+        for name, value in recovered["pre_execution_actuals"].items()
+        if name != "scope"
+    } == {
+        name: value
+        for name, value in historical["pre_execution_actuals"].items()
+        if name != "scope"
+    }
+
+
 def test_benchmark_environment_snapshot_drift_is_rejected_even_if_resealed(
     tmp_path: Path,
 ) -> None:
@@ -239,6 +428,43 @@ def test_benchmark_environment_snapshot_drift_is_rejected_even_if_resealed(
         trigger.DevelopmentTriggerError,
         match="protected environment snapshot differs",
     ):
+        trigger.build_request_document(repository, source_head=source_head)
+
+
+@pytest.mark.parametrize(
+    "relative_path",
+    [trigger.PREVIOUS_SENTINEL_PATH, trigger.RECOVERY_FAILURE_RECEIPT_PATH],
+    ids=["previous-request", "preflight-failure-receipt"],
+)
+def test_historical_recovery_input_drift_is_rejected_even_if_resealed(
+    tmp_path: Path, relative_path: str
+) -> None:
+    repository = tmp_path / "repository"
+    _initialize(repository)
+    changed_path = repository / relative_path
+    changed_raw = changed_path.read_bytes() + b" "
+    changed_path.write_bytes(changed_raw)
+    freeze_path = repository / trigger.FREEZE_PATH
+    freeze_document = json.loads(freeze_path.read_text(encoding="utf-8"))
+    freeze_document["files"][relative_path] = {
+        "bytes": len(changed_raw),
+        "sha256": hashlib.sha256(changed_raw).hexdigest(),
+    }
+    _write_json(freeze_path, freeze_document)
+    source_head = _commit(repository, "tampered historical recovery material")
+    with pytest.raises(
+        trigger.DevelopmentTriggerError,
+        match="immutable DEV recovery input changed",
+    ):
+        trigger.build_request_document(repository, source_head=source_head)
+
+
+def test_copied_recovery_material_without_immutable_git_history_is_rejected(
+    tmp_path: Path,
+) -> None:
+    repository = tmp_path / "repository"
+    source_head = _initialize(repository, bind_recovery_history=False)
+    with pytest.raises(trigger.DevelopmentTriggerError, match="git verification failed"):
         trigger.build_request_document(repository, source_head=source_head)
 
 
@@ -454,6 +680,57 @@ def test_preflight_reads_no_secret(tmp_path: Path) -> None:
     exposed = {**environ, "OPENAI_API_KEY": "must-not-be-readable"}
     with pytest.raises(trigger.DevelopmentTriggerError, match="secret is exposed"):
         trigger.validate_branch_trigger(repository, event_path, environ=exposed)
+
+
+def test_exact_preflight_cli_runs_with_isolated_base_python(tmp_path: Path) -> None:
+    repository, event_path, _before, after, environ = _trigger_repository(tmp_path)
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-S",
+            str(repository / trigger.PREFLIGHT_PATH),
+            "--repository",
+            str(repository),
+            "--event-path",
+            str(event_path),
+        ],
+        cwd=repository,
+        capture_output=True,
+        text=True,
+        env=_isolated_cli_environment(environ),
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    report = json.loads(completed.stdout)
+    assert report["status"] == "PASS"
+    assert report["trigger_commit"] == after
+    assert report["request_id"] == trigger.REQUEST_ID
+
+
+def test_isolated_base_python_cli_rejects_attempt_two(tmp_path: Path) -> None:
+    repository, event_path, _before, _after, environ = _trigger_repository(tmp_path)
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-S",
+            str(repository / trigger.PREFLIGHT_PATH),
+            "--repository",
+            str(repository),
+            "--event-path",
+            str(event_path),
+        ],
+        cwd=repository,
+        capture_output=True,
+        text=True,
+        env=_isolated_cli_environment({**environ, "GITHUB_RUN_ATTEMPT": "2"}),
+        check=False,
+    )
+    assert completed.returncode == 1
+    report = json.loads(completed.stdout)
+    assert report["status"] == "FAIL_CLOSED"
+    assert "rerun attempt" in report["error"]
 
 
 def test_workflow_attempt_two_is_rejected_before_environment(tmp_path: Path) -> None:

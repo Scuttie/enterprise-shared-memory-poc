@@ -15,18 +15,32 @@ import subprocess
 import tempfile
 from typing import Any
 
-from trimem_multi_swe_probe_evidence import (
-    PROBE_RECEIPT_PATH,
-    PROBE_REQUEST_PATH,
-    PROBE_RESULT_PATH,
+# Keep this module importable by the hosted base-Python preflight.  These are
+# immutable repository paths, not executable behavior; importing their owner
+# modules here would transitively load the grader/runtime dependency graph.
+PROBE_REQUEST_PATH = (
+    "artifacts/trimem_v1/probe_requests/"
+    "MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json"
 )
-from trimem_grader_smoke_failure_evidence import (
-    EVIDENCE_INVENTORY_PATH as P014_EVIDENCE_INVENTORY_PATH,
-    FAILURE_RECEIPT_PATH as P014_FAILURE_RECEIPT_PATH,
+PROBE_RESULT_PATH = (
+    "artifacts/trimem_v1/probe_evidence/"
+    "MULTI_SWE_VUE_IMAGE_PROBE_RESULT_001.json"
 )
-from trimem_grader_smoke_failure_closure import (
-    EVIDENCE_INVENTORY_PATH as OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
-    FAILURE_RECEIPT_PATH as OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH,
+PROBE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/probe_evidence/"
+    "MULTI_SWE_VUE_IMAGE_PROBE_RECEIPT_001.json"
+)
+P014_FAILURE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/grader_smoke_official/failure-receipt.json"
+)
+P014_EVIDENCE_INVENTORY_PATH = (
+    "artifacts/trimem_v1/grader_smoke_official/evidence-inventory.json"
+)
+OFFICIAL_SMOKE_FAILURE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/failure-receipt.json"
+)
+OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH = (
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/evidence-inventory.json"
 )
 
 
@@ -66,6 +80,8 @@ CONFIG_PATHS = (
 )
 ARTIFACT_PATHS = (
     "artifacts/trimem_v1/development_model_pricing_amendment.json",
+    "artifacts/trimem_v1/development_tuning_exec/exec-001/preflight-failure-receipt.json",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json",
@@ -257,6 +273,7 @@ FROZEN_PATHS = (
     "alembic.ini",
     "DEPENDENCY_PROVENANCE.json",
     "docs/TRIMEM_V1_SYSTEM.md",
+    "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_001_PREFLIGHT_FAILURE.md",
     "reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md",
     "reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md",
     "reports/TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md",

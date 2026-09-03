@@ -327,5 +327,24 @@ The current endpoint is
 `GRADER_EXEC_PACKAGE=PASS`, `OFFICIAL_GRADER_VIABILITY=ESTABLISHED`,
 `PERFORMANCE=NOT_MEASURED`, and `DEV_APPROVAL_ALLOWED=YES`. The last field
 means only that a separate development approval may now be considered;
-`DEV_EXECUTION_ALLOWED=NO` remains the execution boundary. No DEV, HELDOUT,
-ablation, merge, tag, or release has been performed.
+`DEV_EXECUTION_ALLOWED=NO` remained the execution boundary at that snapshot.
+
+The first later DEV trigger, `_001`, produced run `33727051040` attempt 1 at
+`6eba1b0f9462c3b29323a9ade290470551bfd0ed`, but it was not a scientific or
+evaluator run. The secret-free hosted preflight imported the grader/runtime
+dependency graph through `trimem_freeze.py` and stopped on missing SQLAlchemy
+before the DEV request validator. The protected job was skipped. Deployment,
+approval materialization, target/support image pulls, task-arm and grader runs,
+model/API calls, input/output tokens, and USD were all zero. Its exact endpoint
+is `TRIMEM_V1_DEV_INCOMPLETE`; `_001`, its commit, and its run are immutable.
+
+Recovery identity `_002` is distinct. The hosted job now retains the complete
+freeze and request checks while executing both under `python -I -S`; constant
+paths in the freeze module no longer import runtime modules. The recovery
+freeze binds the `_001` bytes and a sanitized GitHub-evidence failure receipt.
+The validator additionally requires the exact `_001` commit and parent, its
+sentinel-only tree change, and ancestry into the recovered source.
+Only one new `_002` sentinel-only child, one fresh attempt-1 run, and a fresh
+run-bound external approval may enter the protected job. A rerun of `_001`, an
+attempt 2, an additional DEV execution, HELDOUT, ablation, grader-smoke rerun,
+merge, tag, or release remains forbidden.

@@ -12,6 +12,7 @@ docs/TRIMEM_V1_SYSTEM.md text eol=lf
 reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md text eol=lf
 reports/TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md text eol=lf
 reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md text eol=lf
+reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_001_PREFLIGHT_FAILURE.md text eol=lf
 migrations/env.py text eol=lf
 migrations/script.py.mako text eol=lf
 migrations/sql/*_up.sql text eol=lf

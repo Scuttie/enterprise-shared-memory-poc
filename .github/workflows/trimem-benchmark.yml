@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-001
+  group: trimem-v1-development-tuning-exec-002
   cancel-in-progress: false
 
 permissions:
@@ -39,8 +39,8 @@ jobs:
       - name: Verify one-time zero-authority DEV trigger
         run: |
           set -euo pipefail
-          python scripts/trimem_freeze.py --check --require-git-tracked
-          python scripts/trimem_development_trigger_preflight.py \
+          python -I -S scripts/trimem_freeze.py --check --require-git-tracked
+          python -I -S scripts/trimem_development_trigger_preflight.py \
             --repository "$GITHUB_WORKSPACE" \
             --event-path "$GITHUB_EVENT_PATH"
 

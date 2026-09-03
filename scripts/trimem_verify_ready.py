@@ -1,9 +1,9 @@
 """Fail-closed TriMem V1 readiness and external EXEC gate verifier.
 
-The authoritative grader-smoke PASS makes a separate development-approval
-request eligible; it does not authorize development execution.  A later EXEC
-gate still validates a protected approval outside the repository, while the
-selected development checkpoint and HELDOUT authorization remain pending.
+The authoritative grader-smoke PASS remains historical viability evidence.
+The one approved DEVELOPMENT_TUNING attempt later failed at its protected EXEC
+gate before scientific execution, so that request/run is final and consumed;
+no retry, replacement request, or later benchmark phase is authorized.
 """
 from __future__ import annotations
 
@@ -242,6 +242,56 @@ SMOKE_PASS_ENDPOINT = (
     "TRIMEM_V1_GRADER_SMOKE_PASS_READY_FOR_DEVELOPMENT_APPROVAL"
 )
 DEVELOPMENT_INCOMPLETE_ENDPOINT = "TRIMEM_V1_DEV_INCOMPLETE"
+DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/development_tuning_exec/exec-002/"
+    "protected-exec-gate-failure-receipt.json"
+)
+DEVELOPMENT_EXEC_002_FAILURE_REPORT_PATH = (
+    "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_002_PROTECTED_GATE_FAILURE.md"
+)
+DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_RAW_SHA256 = (
+    "8c9d4a8fea70e0088b7af9bb011e1e75081f4e9ddee9f7162cf05ff85c9f9d1a"
+)
+DEVELOPMENT_EXEC_002_FAILURE_REPORT_RAW_SHA256 = (
+    "cd6b5d53493854510b931625ea3bde6296351ed6b72f1274c8933b8915520719"
+)
+DEVELOPMENT_EXEC_002_HEAD = "c2738cae074351927dde117b628c601b1e296cf2"
+DEVELOPMENT_EXEC_002_SOURCE_HEAD = "98dd37fec7c826f6ed5b3b8734f2ca8dcab96e4a"
+DEVELOPMENT_EXEC_002_RUN_ID = 33_739_545_314
+DEVELOPMENT_EXEC_002_RUN_ATTEMPT = 1
+DEVELOPMENT_EXEC_002_COUNTER_SCOPE = (
+    "DEVELOPMENT_TUNING_EXEC_002_RUN_33739545314_ATTEMPT_1"
+)
+DEVELOPMENT_EXEC_002_REQUEST_RAW_SHA256 = (
+    "c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98"
+)
+DEVELOPMENT_EXEC_002_FAILURE_LABEL = "TRIMEM_DEV_EXEC_GATE_GH_CLI_MISSING"
+DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER = (
+    "DEVELOPMENT_TUNING request _002 and run 33739545314 attempt 1 are final "
+    "and consumed after a protected EXEC-gate failure; no retry, attempt 2, "
+    "_003 request, or future benchmark execution is authorized"
+)
+DEVELOPMENT_EXEC_002_ACCOUNTING = {
+    "api_calls": 0,
+    "cached_input_tokens": 0,
+    "decomposition_calls": 0,
+    "extraction_calls": 0,
+    "grader_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "model_gateway_calls": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "reasoning_tokens": 0,
+    "solve_calls": 0,
+    "support_service_containers": 2,
+    "support_service_image_pulls": 2,
+    "target_image_pulls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0.0,
+}
 SMOKE_PASS_READINESS_SCOPE = "P0.1.5_EXEC_005_AUTHORITATIVE_PASS"
 SMOKE_PASS_SCIENTIFIC_RESULT = (
     "GOLD_RESOLVED_6_OF_6_AND_NOOP_UNRESOLVED_6_OF_6"
@@ -2963,15 +3013,325 @@ def _validated_development_preflight_failure() -> dict[str, Any]:
     }
 
 
+def _validated_development_exec_002_failure() -> dict[str, Any]:
+    """Validate the immutable, final `_002` pre-scientific failure."""
+
+    receipt_path = ROOT / DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_PATH
+    report_path = ROOT / DEVELOPMENT_EXEC_002_FAILURE_REPORT_PATH
+    receipt_raw = receipt_path.read_bytes()
+    report_raw = report_path.read_bytes()
+    require(
+        hashlib.sha256(receipt_raw).hexdigest()
+        == DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_RAW_SHA256,
+        "DEV _002 protected-gate failure receipt bytes differ",
+    )
+    require(
+        hashlib.sha256(report_raw).hexdigest()
+        == DEVELOPMENT_EXEC_002_FAILURE_REPORT_RAW_SHA256,
+        "DEV _002 protected-gate failure report bytes differ",
+    )
+    receipt = _strict_json_bytes(
+        receipt_raw, label=DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_PATH
+    )
+    require(
+        receipt.get("schema")
+        == "trimem/development-protected-exec-gate-failure-receipt/1.0"
+        and receipt.get("status")
+        == "FAILED_AT_PROTECTED_EXEC_GATE_BEFORE_SCIENTIFIC_EXECUTION"
+        and receipt.get("endpoint") == DEVELOPMENT_INCOMPLETE_ENDPOINT
+        and receipt.get("failure_label") == DEVELOPMENT_EXEC_002_FAILURE_LABEL
+        and receipt.get("performance") == "NOT_MEASURED"
+        and receipt.get("scientific_run") is False,
+        "DEV _002 protected-gate failure classification differs",
+    )
+    require(
+        receipt.get("execution_accounting") == DEVELOPMENT_EXEC_002_ACCOUNTING,
+        "DEV _002 current-attempt accounting differs",
+    )
+
+    sentinel = receipt.get("sentinel", {})
+    expected_sentinel = {
+        "execution_head": DEVELOPMENT_EXEC_002_HEAD,
+        "immutable": True,
+        "path": DEVELOPMENT_SENTINEL_PATH,
+        "raw_sha256": "sha256:" + DEVELOPMENT_EXEC_002_REQUEST_RAW_SHA256,
+        "request_id": DEVELOPMENT_REQUEST_ID,
+        "sole_change": f"A\t{DEVELOPMENT_SENTINEL_PATH}",
+        "source_head": DEVELOPMENT_EXEC_002_SOURCE_HEAD,
+    }
+    require(sentinel == expected_sentinel, "DEV _002 sentinel identity differs")
+    sentinel_raw = (ROOT / DEVELOPMENT_SENTINEL_PATH).read_bytes()
+    require(
+        hashlib.sha256(sentinel_raw).hexdigest()
+        == DEVELOPMENT_EXEC_002_REQUEST_RAW_SHA256,
+        "DEV _002 committed sentinel bytes differ",
+    )
+    require(
+        _historical_git_file(DEVELOPMENT_EXEC_002_HEAD, DEVELOPMENT_SENTINEL_PATH)
+        == sentinel_raw,
+        "DEV _002 historical sentinel blob differs",
+    )
+    parents = subprocess.run(
+        ["git", "rev-list", "--parents", "-n", "1", DEVELOPMENT_EXEC_002_HEAD],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    require(
+        parents.returncode == 0
+        and parents.stdout.strip().split()
+        == [DEVELOPMENT_EXEC_002_HEAD, DEVELOPMENT_EXEC_002_SOURCE_HEAD],
+        "DEV _002 historical parent identity differs",
+    )
+    changes = subprocess.run(
+        [
+            "git",
+            "-c",
+            "core.quotepath=false",
+            "diff-tree",
+            "--no-commit-id",
+            "--name-status",
+            "-r",
+            "--no-renames",
+            DEVELOPMENT_EXEC_002_HEAD,
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    require(
+        changes.returncode == 0
+        and changes.stdout.splitlines() == [f"A\t{DEVELOPMENT_SENTINEL_PATH}"],
+        "DEV _002 historical commit was not sentinel-only",
+    )
+
+    workflow = receipt.get("workflow_run", {})
+    jobs = receipt.get("jobs", {})
+    protected = jobs.get("protected_execution", {})
+    require(
+        workflow.get("id") == DEVELOPMENT_EXEC_002_RUN_ID
+        and workflow.get("run_attempt") == DEVELOPMENT_EXEC_002_RUN_ATTEMPT
+        and workflow.get("head_sha") == DEVELOPMENT_EXEC_002_HEAD
+        and workflow.get("event") == "push"
+        and workflow.get("conclusion") == "failure"
+        and workflow.get("status") == "completed"
+        and jobs.get("hosted_preflight", {}).get("conclusion") == "success"
+        and protected.get("conclusion") == "failure"
+        and protected.get("failed_step")
+        == {
+            "conclusion": "failure",
+            "name": "Verify exact phase EXEC gate",
+            "number": 10,
+        },
+        "DEV _002 workflow or protected-gate identity differs",
+    )
+    require(
+        protected.get("skipped_before_scientific_execution")
+        == [
+            {
+                "conclusion": "skipped",
+                "name": "Verify required protected runtime secrets before paid work",
+                "number": 11,
+            },
+            {
+                "conclusion": "skipped",
+                "name": "Apply exact migration head",
+                "number": 12,
+            },
+            {
+                "conclusion": "skipped",
+                "name": "Pull committed images by digest and verify local observations",
+                "number": 13,
+            },
+            {
+                "conclusion": "skipped",
+                "name": "Execute frozen serial streams with one atomic phase ledger",
+                "number": 14,
+            },
+            {
+                "conclusion": "skipped",
+                "name": "Aggregate exact stream and target set fail closed",
+                "number": 15,
+            },
+            {
+                "conclusion": "skipped",
+                "name": "Build public allowlisted result",
+                "number": 16,
+            },
+        ],
+        "DEV _002 pre-scientific skipped-step boundary differs",
+    )
+
+    root_cause = receipt.get("root_cause", {})
+    require(
+        root_cause
+        == {
+            "blocker": (
+                "official grader smoke attestation verification failed: gh CLI "
+                "is required for cryptographic smoke attestation verification"
+            ),
+            "failure_stage": "PROTECTED_EXEC_GATE_BEFORE_RUNTIME_SECRET_CHECK",
+            "interpretation": (
+                "The protected environment, external approval materialization, "
+                "and event/phase checks succeeded. The fail-closed EXEC gate then "
+                "required the GitHub CLI for cryptographic official-grader-smoke "
+                "attestation verification, but gh was unavailable on the ephemeral "
+                "runner. Runtime-secret validation and every scientific step "
+                "remained unreached."
+            ),
+        },
+        "DEV _002 protected-gate root cause differs",
+    )
+    approval = receipt.get("approval", {})
+    require(
+        approval.get("materialization_status") == "PASS"
+        and approval.get("phase_and_event_checks_status") == "PASS"
+        and approval.get("approved_git_commit") == DEVELOPMENT_EXEC_002_HEAD
+        and approval.get("approved_source_git_commit")
+        == DEVELOPMENT_EXEC_002_SOURCE_HEAD
+        and approval.get("approved_workflow_run_id")
+        == DEVELOPMENT_EXEC_002_RUN_ID
+        and approval.get("approved_workflow_run_attempt")
+        == DEVELOPMENT_EXEC_002_RUN_ATTEMPT
+        and approval.get("approved_request_sha256")
+        == "sha256:" + DEVELOPMENT_EXEC_002_REQUEST_RAW_SHA256
+        and approval.get("approved_phase") == "DEVELOPMENT_TUNING"
+        and approval.get("approved_task_arm_runs") == 72
+        and approval.get("approved_grader_containers") == 72
+        and approval.get("approved_paid_model_call_cap") == 1_872
+        and approval.get("approved_input_token_cap") == 36_000_000
+        and approval.get("approved_output_token_cap") == 3_796_992
+        and approval.get("approved_currency_hard_cap_usd") == 50.0,
+        "DEV _002 consumed approval binding differs",
+    )
+    control = receipt.get("control_plane", {})
+    cleanup = receipt.get("cleanup", {})
+    require(
+        control.get("protected_environment_worked") is True
+        and control.get("protected_environment_approval_reached") is True
+        and control.get("public_benchmark_artifact_count") == 0
+        and cleanup.get("environment_secret_count_after_cleanup") == 0
+        and cleanup.get("repository_runner_count_after_cleanup") == 0,
+        "DEV _002 protected-environment or cleanup boundary differs",
+    )
+    expected_support_services = [
+        {
+            "container_count": 1,
+            "image": (
+                "postgres@sha256:"
+                "e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412"
+            ),
+            "image_pull_count": 1,
+            "role": "postgres",
+        },
+        {
+            "container_count": 1,
+            "image": (
+                "qdrant/qdrant@sha256:"
+                "241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636"
+            ),
+            "image_pull_count": 1,
+            "role": "qdrant",
+        },
+    ]
+    require(
+        receipt.get("support_services") == expected_support_services,
+        "DEV _002 support-service accounting differs",
+    )
+    recovery = receipt.get("recovery_boundary", {})
+    require(
+        recovery
+        == {
+            "attempt_two_created": False,
+            "future_recovery_authority_received": False,
+            "prohibited_without_new_explicit_authority": [
+                "attempt_2_or_rerun",
+                "DEVELOPMENT_TUNING_EXEC_REQUEST_003",
+                "HELDOUT_BENCHMARK",
+                "component_ablation",
+                "merge",
+                "tag",
+                "release",
+            ],
+            "request_002_and_run_33739545314_attempt_1_immutable": True,
+            "request_003_created": False,
+            "rerun_performed": False,
+        },
+        "DEV _002 final consumed authority boundary differs",
+    )
+    secret_scan = receipt.get("evidence", {}).get("full_workflow_logs", {}).get(
+        "secret_scan", {}
+    )
+    require(
+        secret_scan
+        == {
+            "exact_secret_hits": 0,
+            "scanned_secret_classes": [
+                "OPENAI_API_KEY",
+                "TRIMEM_EXEC_APPROVAL_B64",
+                "TRIMEM_EVIDENCE_PASSPHRASE",
+            ],
+            "status": "PASS",
+        },
+        "DEV _002 workflow-log secret scan differs",
+    )
+    return {
+        "authority": {
+            "attempt_one_consumed": True,
+            "attempt_two_allowed": False,
+            "future_recovery_authority_received": False,
+            "request_002_final": True,
+            "request_003_allowed": False,
+            "rerun_allowed": False,
+        },
+        "endpoint": DEVELOPMENT_INCOMPLETE_ENDPOINT,
+        "evidence": {
+            "failure_receipt_path": DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_PATH,
+            "failure_receipt_raw_sha256": (
+                DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_RAW_SHA256
+            ),
+            "failure_report_path": DEVELOPMENT_EXEC_002_FAILURE_REPORT_PATH,
+            "failure_report_raw_sha256": DEVELOPMENT_EXEC_002_FAILURE_REPORT_RAW_SHA256,
+            "request_path": DEVELOPMENT_SENTINEL_PATH,
+            "request_raw_sha256": DEVELOPMENT_EXEC_002_REQUEST_RAW_SHA256,
+        },
+        "execution_accounting": dict(DEVELOPMENT_EXEC_002_ACCOUNTING),
+        "failure_label": DEVELOPMENT_EXEC_002_FAILURE_LABEL,
+        "performance": "NOT_MEASURED",
+        "schema": "trimem/development-protected-exec-gate-failure-status/1.0",
+        "scientific_run": False,
+        "status": "FINAL_CONSUMED_BEFORE_SCIENTIFIC_EXECUTION",
+        "support_services": expected_support_services,
+        "workflow_run": {
+            "conclusion": "failure",
+            "head_sha": DEVELOPMENT_EXEC_002_HEAD,
+            "id": DEVELOPMENT_EXEC_002_RUN_ID,
+            "run_attempt": DEVELOPMENT_EXEC_002_RUN_ATTEMPT,
+        },
+    }
+
+
 def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
     plan = read_json(ARTIFACT / "readiness_requirements.json")
-    require(plan.get("schema") == "trimem/readiness-requirements/1.6", "readiness requirements are stale")
+    require(plan.get("schema") == "trimem/readiness-requirements/1.7", "readiness requirements are stale")
     derived = _validated_post_smoke_readiness_state()
-    development_failure = _validated_development_preflight_failure()
+    historical_development_failure = _validated_development_preflight_failure()
+    development_failure = _validated_development_exec_002_failure()
+    derived["current_status"]["DEV_APPROVAL_ALLOWED"] = "NO"
+    derived["current_status"]["DEV_EXECUTION_ALLOWED"] = "NO"
     derived["current_status"]["ENDPOINT"] = DEVELOPMENT_INCOMPLETE_ENDPOINT
-    derived["historical_development_preflight_failure"] = development_failure
+    derived["current_status"]["PERFORMANCE"] = "NOT_MEASURED"
+    derived["current_status"]["SCIENTIFIC_RESULT"] = (
+        "NO_DEVELOPMENT_SCIENTIFIC_RESULT"
+    )
+    derived["development_execution_failure"] = development_failure
+    derived["historical_development_preflight_failure"] = (
+        historical_development_failure
+    )
     service_boundary = str(plan.get("credential_free_service_ci_boundary", ""))
     require(
         "ALLOWED_PRE_EXEC" in service_boundary
@@ -3010,29 +3370,31 @@ def validate_readiness_plan(
             "amendment_evidence_path": (
                 "artifacts/trimem_v1/development_model_pricing_amendment.json"
             ),
-            "approval_request_eligible": True,
+            "approval_request_eligible": False,
+            "attempt_one_consumed": True,
+            "attempt_two_allowed": False,
             "development_execution_authorized": False,
             "expected_total_usd": 10.8,
             "grader_smoke_rerun_authorized": False,
             "hard_cap_total_usd": 50.0,
             "heldout_execution_authorized": False,
+            "future_recovery_authority_received": False,
             "meaning": (
-                "The received recovery authorization permits only the correction "
-                "and one _002 attempt-1 run; protected DEV execution still "
-                "requires a fresh run-bound external approval."
+                "The approved _002 attempt-1 run failed before scientific "
+                "execution and is final and consumed. No retry, _003 request, "
+                "or future benchmark execution is authorized."
             ),
             "model_id": "gpt-5.4-mini-2026-03-17",
             "prior_failed_run_reusable": False,
-            "protected_execution_authorization_required": (
-                DEVELOPMENT_EXECUTION_AUTHORIZATION
-            ),
             "recovery_authorization": DEVELOPMENT_RECOVERY_AUTHORIZATION,
             "recovery_authorization_received": True,
             "recovery_request_id": DEVELOPMENT_REQUEST_ID,
             "recovery_request_path": DEVELOPMENT_SENTINEL_PATH,
+            "request_002_final": True,
+            "request_003_allowed": False,
+            "rerun_allowed": False,
             "selected_m2_checkpoint": (
-                "PRE_DEVELOPMENT; produced only after separately approved "
-                "development execution"
+                "PRE_DEVELOPMENT; no development result or checkpoint was produced"
             ),
         },
         "post-smoke development authorization boundary differs",
@@ -3073,8 +3435,12 @@ def validate_readiness_plan(
     )
     require(
         plan.get("historical_development_preflight_failure")
-        == development_failure,
+        == historical_development_failure,
         "readiness DEV _001 immutable preflight-failure history differs",
+    )
+    require(
+        plan.get("development_execution_failure") == development_failure,
+        "readiness DEV _002 final protected-gate failure differs",
     )
     static_meaning = str(plan.get("static_ci_meaning", ""))
     require(
@@ -3088,7 +3454,12 @@ def validate_readiness_plan(
         isinstance(remaining, list)
         and remaining
         and all("_005" not in str(item) for item in remaining)
-        and any("_002" in str(item) for item in remaining),
+        and any(
+            "_002" in str(item)
+            and "consumed" in str(item)
+            and "_003" in str(item)
+            for item in remaining
+        ),
         "post-smoke remaining phase gates differ",
     )
     return derived
@@ -3913,20 +4284,43 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     require({"approved_workflow_run_id", "approved_workflow_run_attempt"} <= required, "single-dispatch EXEC approval binding is absent")
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
     smoke_actual = validate_grader_smoke_result(smoke)
+    development_failure = readiness_state["development_execution_failure"]
+    development_accounting = development_failure["execution_accounting"]
+    require(
+        development_accounting == DEVELOPMENT_EXEC_002_ACCOUNTING,
+        "DEV _002 current execution accounting differs at readiness output",
+    )
+    smoke_counters = readiness_state["execution_counters"]
+    require(
+        all(smoke_counters.get(key) == value for key, value in smoke_actual.items()),
+        "historical grader-smoke counters differ at readiness output",
+    )
     return {
         "credential_free_bundle_hash": credential["bundle_hash"],
-        "development_physical_runs": 72,
-        "heldout_physical_runs": 81,
+        "development_task_arm_runs_planned": 72,
+        "heldout_task_arm_runs_planned": 81,
         "support_image_digests_frozen": 1,
         "target_image_digests_frozen": 45,
-        "model_calls": smoke_actual["model_calls"],
-        "official_grader_runs": smoke_actual["official_grader_runs"],
-        "paid_model_calls": smoke_actual["paid_model_calls"],
+        "execution_counter_scope": DEVELOPMENT_EXEC_002_COUNTER_SCOPE,
+        "task_arm_runs": development_accounting["task_arm_runs"],
+        "model_calls": development_accounting["model_calls"],
+        "official_grader_runs": development_accounting["official_grader_runs"],
+        "paid_model_calls": development_accounting["paid_model_calls"],
+        "development_execution_accounting": development_accounting,
+        "grader_smoke_history": {
+            "execution_counter_scope": readiness_state["execution_counter_scope"],
+            "execution_counters": smoke_counters,
+            "scientific_result": readiness_state["scientific_result"],
+        },
         "grader_exec_package": smoke["grader_exec_package"],
         "endpoint": readiness_state["current_status"]["ENDPOINT"],
-        "dev_approval_allowed": smoke.get("status") == "PASS",
+        "dev_approval_allowed": (
+            readiness_state["current_status"]["DEV_APPROVAL_ALLOWED"] == "YES"
+        ),
         "dev_execution_allowed": False,
-        "scientific_result": readiness_state["scientific_result"],
+        "scientific_result": readiness_state["current_status"][
+            "SCIENTIFIC_RESULT"
+        ],
         "official_grader_viability": smoke["official_grader_viability"],
         "performance": smoke["performance"],
         "multi_swe_report_semantics_sha256": contracts["module_sha256"],
@@ -3938,7 +4332,8 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
 
 
 def preapproval_blockers() -> list[str]:
-    blockers = []
+    _validated_development_exec_002_failure()
+    blockers = [DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER]
     selected = validate_selected_m2(require_frozen=False)
     if selected.get("status") != "PRE_DEVELOPMENT":
         blockers.append("pre-development selection placeholder is not exact")
@@ -3968,6 +4363,9 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
         name = {"GRADER_SMOKE": "grader-smoke", "DEVELOPMENT_TUNING": "development", "HELDOUT_BENCHMARK": "heldout"}.get(phase)
         if name is None:
             return ["external approval phase is unknown"], None
+        if name in {"development", "heldout"}:
+            _validated_development_exec_002_failure()
+            return [DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER], name
         validate_exec_approval(name, approval_file)
     except (OSError, ValueError) as exc:
         return [str(exc)], None
@@ -4069,15 +4467,16 @@ def main() -> int:
         phase = None
         if args.level == "benchmark-approval":
             blockers = preapproval_blockers()
-        elif args.level in {"grader-smoke-exec", "benchmark-exec"}:
+        elif args.level == "benchmark-exec":
+            _validated_development_exec_002_failure()
+            blockers = [DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER]
+        elif args.level == "grader-smoke-exec":
             if args.approval_file is None:
                 blockers = ["external immutable approval file is required"]
             else:
                 blockers, phase = execution_blockers(args.approval_file.resolve())
-            if args.level == "grader-smoke-exec" and phase not in {None, "grader-smoke"}:
+            if phase not in {None, "grader-smoke"}:
                 blockers.append("grader-smoke gate received a non-smoke approval")
-            if args.level == "benchmark-exec" and phase not in {None, "development", "heldout"}:
-                blockers.append("benchmark gate received a non-benchmark approval")
         committed_package = evidence.get(
             "grader_exec_package", "CORRECTION_IN_PROGRESS"
         )

@@ -81,7 +81,9 @@ CONFIG_PATHS = (
 ARTIFACT_PATHS = (
     "artifacts/trimem_v1/development_model_pricing_amendment.json",
     "artifacts/trimem_v1/development_tuning_exec/exec-001/preflight-failure-receipt.json",
+    "artifacts/trimem_v1/development_tuning_exec/exec-002/protected-exec-gate-failure-receipt.json",
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json",
@@ -274,6 +276,7 @@ FROZEN_PATHS = (
     "DEPENDENCY_PROVENANCE.json",
     "docs/TRIMEM_V1_SYSTEM.md",
     "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_001_PREFLIGHT_FAILURE.md",
+    "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_002_PROTECTED_GATE_FAILURE.md",
     "reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md",
     "reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md",
     "reports/TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md",

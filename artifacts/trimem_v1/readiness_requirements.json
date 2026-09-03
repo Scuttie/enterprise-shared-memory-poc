@@ -15,13 +15,13 @@
     "public benchmark evaluation scope and no-redistribution policy documented; SWE-bench Verified dataset license remains undeclared and the EXEC actor must accept applicable source/project terms"
   ],
   "current_status": {
-    "DEV_APPROVAL_ALLOWED": "YES",
+    "DEV_APPROVAL_ALLOWED": "NO",
     "DEV_EXECUTION_ALLOWED": "NO",
     "ENDPOINT": "TRIMEM_V1_DEV_INCOMPLETE",
     "GRADER_EXEC_PACKAGE": "PASS",
     "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
     "PERFORMANCE": "NOT_MEASURED",
-    "SCIENTIFIC_RESULT": "GOLD_RESOLVED_6_OF_6_AND_NOOP_UNRESOLVED_6_OF_6",
+    "SCIENTIFIC_RESULT": "NO_DEVELOPMENT_SCIENTIFIC_RESULT",
     "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN"
   },
   "execution_counter_scope": "P0.1.5_EXEC_005_AUTHORITATIVE_PASS",
@@ -50,21 +50,91 @@
     "active_development_approval": false,
     "amendment_classification": "PRE_EXECUTION_COST_PERFORMANCE_AMENDMENT",
     "amendment_evidence_path": "artifacts/trimem_v1/development_model_pricing_amendment.json",
-    "approval_request_eligible": true,
+    "approval_request_eligible": false,
+    "attempt_one_consumed": true,
+    "attempt_two_allowed": false,
     "development_execution_authorized": false,
     "expected_total_usd": 10.8,
     "grader_smoke_rerun_authorized": false,
     "hard_cap_total_usd": 50.0,
     "heldout_execution_authorized": false,
-    "meaning": "The received recovery authorization permits only the correction and one _002 attempt-1 run; protected DEV execution still requires a fresh run-bound external approval.",
+    "future_recovery_authority_received": false,
+    "meaning": "The approved _002 attempt-1 run failed before scientific execution and is final and consumed. No retry, _003 request, or future benchmark execution is authorized.",
     "model_id": "gpt-5.4-mini-2026-03-17",
     "prior_failed_run_reusable": false,
-    "protected_execution_authorization_required": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_APPROVED_ONCE",
     "recovery_authorization": "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE",
     "recovery_authorization_received": true,
     "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
     "recovery_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
-    "selected_m2_checkpoint": "PRE_DEVELOPMENT; produced only after separately approved development execution"
+    "request_002_final": true,
+    "request_003_allowed": false,
+    "rerun_allowed": false,
+    "selected_m2_checkpoint": "PRE_DEVELOPMENT; no development result or checkpoint was produced"
+  },
+  "development_execution_failure": {
+    "authority": {
+      "attempt_one_consumed": true,
+      "attempt_two_allowed": false,
+      "future_recovery_authority_received": false,
+      "request_002_final": true,
+      "request_003_allowed": false,
+      "rerun_allowed": false
+    },
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "evidence": {
+      "failure_receipt_path": "artifacts/trimem_v1/development_tuning_exec/exec-002/protected-exec-gate-failure-receipt.json",
+      "failure_receipt_raw_sha256": "8c9d4a8fea70e0088b7af9bb011e1e75081f4e9ddee9f7162cf05ff85c9f9d1a",
+      "failure_report_path": "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_002_PROTECTED_GATE_FAILURE.md",
+      "failure_report_raw_sha256": "cd6b5d53493854510b931625ea3bde6296351ed6b72f1274c8933b8915520719",
+      "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
+      "request_raw_sha256": "c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98"
+    },
+    "execution_accounting": {
+      "api_calls": 0,
+      "cached_input_tokens": 0,
+      "decomposition_calls": 0,
+      "extraction_calls": 0,
+      "grader_calls": 0,
+      "grader_containers": 0,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "model_gateway_calls": 0,
+      "official_grader_runs": 0,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "reasoning_tokens": 0,
+      "solve_calls": 0,
+      "support_service_containers": 2,
+      "support_service_image_pulls": 2,
+      "target_image_pulls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0.0
+    },
+    "failure_label": "TRIMEM_DEV_EXEC_GATE_GH_CLI_MISSING",
+    "performance": "NOT_MEASURED",
+    "schema": "trimem/development-protected-exec-gate-failure-status/1.0",
+    "scientific_run": false,
+    "status": "FINAL_CONSUMED_BEFORE_SCIENTIFIC_EXECUTION",
+    "support_services": [
+      {
+        "container_count": 1,
+        "image": "postgres@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412",
+        "image_pull_count": 1,
+        "role": "postgres"
+      },
+      {
+        "container_count": 1,
+        "image": "qdrant/qdrant@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636",
+        "image_pull_count": 1,
+        "role": "qdrant"
+      }
+    ],
+    "workflow_run": {
+      "conclusion": "failure",
+      "head_sha": "c2738cae074351927dde117b628c601b1e296cf2",
+      "id": 33739545314,
+      "run_attempt": 1
+    }
   },
   "frozen_counts": {
     "development_instances": 12,
@@ -224,15 +294,15 @@
     }
   },
   "post_approval_gates": [
-    "complete the _002 stdlib-only preflight correction and exact-head credential-free CI, then add one _002 sentinel-only child and require a fresh run-bound external approval before protected execution",
+    "the _002 request and run 33739545314 attempt 1 are final and consumed after a protected EXEC-gate failure; retry, attempt 2, _003, and future benchmark execution require new explicit authority that has not been received",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
   ],
-  "schema": "trimem/readiness-requirements/1.6",
+  "schema": "trimem/readiness-requirements/1.7",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
-  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed and independently validated exec-005 official PASS evidence, not from static CI alone; performance remains NOT_MEASURED and no paid-model, causal, full-suite, or leaderboard claim is made.",
+  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed and independently validated exec-005 official PASS evidence, not from static CI alone. The later _002 DEV attempt is final and consumed after a protected pre-scientific gate failure; performance remains NOT_MEASURED and no paid-model, causal, full-suite, or leaderboard claim is made.",
   "target_set_sha256": {
     "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
     "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",

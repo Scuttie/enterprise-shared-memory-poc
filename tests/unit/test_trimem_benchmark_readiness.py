@@ -424,32 +424,35 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     ] == 12
     requirements = _read(ROOT / "artifacts/trimem_v1/readiness_requirements.json")
     assert requirements["current_status"] == {
-        "DEV_APPROVAL_ALLOWED": "YES",
+        "DEV_APPROVAL_ALLOWED": "NO",
         "DEV_EXECUTION_ALLOWED": "NO",
         "ENDPOINT": readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT,
         "GRADER_EXEC_PACKAGE": "PASS",
         "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
-        "SCIENTIFIC_RESULT": readiness.SMOKE_PASS_SCIENTIFIC_RESULT,
+        "SCIENTIFIC_RESULT": "NO_DEVELOPMENT_SCIENTIFIC_RESULT",
         "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN",
     }
     authorization = requirements["development_authorization_boundary"]
-    assert authorization["approval_request_eligible"] is True
+    assert authorization["approval_request_eligible"] is False
     assert authorization["active_development_approval"] is False
+    assert authorization["attempt_one_consumed"] is True
+    assert authorization["attempt_two_allowed"] is False
     assert authorization["development_execution_authorized"] is False
     assert authorization["grader_smoke_rerun_authorized"] is False
     assert authorization["heldout_execution_authorized"] is False
+    assert authorization["future_recovery_authority_received"] is False
     assert authorization["prior_failed_run_reusable"] is False
-    assert authorization["protected_execution_authorization_required"] == (
-        trigger.REQUIRED_EXTERNAL_AUTHORIZATION
-    )
     assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
         "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE"
     )
     assert authorization["recovery_request_id"] == trigger.REQUEST_ID
     assert authorization["recovery_request_path"] == trigger.SENTINEL_PATH
-    assert "fresh run-bound external approval" in authorization["meaning"]
+    assert authorization["request_002_final"] is True
+    assert authorization["request_003_allowed"] is False
+    assert authorization["rerun_allowed"] is False
+    assert "final and consumed" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     service_boundary = requirements["credential_free_service_ci_boundary"]
     assert "ALLOWED_PRE_EXEC" in service_boundary
@@ -543,6 +546,47 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "request_path": trigger.SENTINEL_PATH,
         "single_new_attempt_one_run_allowed": True,
     }
+    current_failure = requirements["development_execution_failure"]
+    assert current_failure == readiness._validated_development_exec_002_failure()
+    assert current_failure["status"] == (
+        "FINAL_CONSUMED_BEFORE_SCIENTIFIC_EXECUTION"
+    )
+    assert current_failure["scientific_run"] is False
+    assert current_failure["performance"] == "NOT_MEASURED"
+    assert current_failure["execution_accounting"] == {
+        **{
+            field: 0
+            for field in (
+                "api_calls",
+                "cached_input_tokens",
+                "decomposition_calls",
+                "extraction_calls",
+                "grader_calls",
+                "grader_containers",
+                "input_tokens",
+                "model_calls",
+                "model_gateway_calls",
+                "official_grader_runs",
+                "output_tokens",
+                "paid_model_calls",
+                "reasoning_tokens",
+                "solve_calls",
+                "target_image_pulls",
+                "task_arm_runs",
+            )
+        },
+        "support_service_containers": 2,
+        "support_service_image_pulls": 2,
+        "total_usd": 0.0,
+    }
+    assert current_failure["authority"] == {
+        "attempt_one_consumed": True,
+        "attempt_two_allowed": False,
+        "future_recovery_authority_received": False,
+        "request_002_final": True,
+        "request_003_allowed": False,
+        "rerun_allowed": False,
+    }
 
 
 def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
@@ -552,6 +596,12 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
     derived = readiness.validate_readiness_plan(targets)
     assert derived["current_status"]["ENDPOINT"] == (
         readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT
+    )
+    assert derived["current_status"]["DEV_APPROVAL_ALLOWED"] == "NO"
+    assert derived["current_status"]["DEV_EXECUTION_ALLOWED"] == "NO"
+    assert derived["current_status"]["PERFORMANCE"] == "NOT_MEASURED"
+    assert derived["development_execution_failure"] == (
+        readiness._validated_development_exec_002_failure()
     )
     assert derived["scientific_result"] == {
         "gold_resolved": 6,
@@ -601,6 +651,78 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
     assert protection["secret_state_before_sentinel"]["installed_secret_names"] == []
     assert protection["secret_state_before_sentinel"]["total_count"] == 0
     readiness.validate_smoke_environment_protection(protection)
+
+
+def test_development_exec_002_receipt_digest_and_semantics_fail_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    receipt_path = ROOT / readiness.DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_PATH
+    assert hashlib.sha256(receipt_path.read_bytes()).hexdigest() == (
+        readiness.DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_RAW_SHA256
+    )
+    monkeypatch.setattr(
+        readiness,
+        "DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_RAW_SHA256",
+        "0" * 64,
+    )
+    with pytest.raises(readiness.ReadinessError, match="receipt bytes differ"):
+        readiness._validated_development_exec_002_failure()
+
+
+def test_development_exec_002_semantic_drift_fails_even_with_bound_bytes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = readiness._strict_json_bytes
+
+    def tampered_parser(raw: bytes, *, label: str) -> dict:
+        value = original(raw, label=label)
+        if label == readiness.DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_PATH:
+            value["execution_accounting"]["support_service_containers"] = 1
+        return value
+
+    monkeypatch.setattr(readiness, "_strict_json_bytes", tampered_parser)
+    with pytest.raises(readiness.ReadinessError, match="current-attempt accounting"):
+        readiness._validated_development_exec_002_failure()
+
+
+def test_consumed_development_failure_blocks_approval_and_execution(
+    tmp_path: Path,
+) -> None:
+    assert readiness.preapproval_blockers() == [
+        readiness.DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER
+    ]
+    approval_path = tmp_path / "approval.json"
+    approval_path.write_text(
+        json.dumps({"approval": {"approved_phase": "DEVELOPMENT_TUNING"}}),
+        encoding="utf-8",
+    )
+    blockers, phase = readiness.execution_blockers(approval_path)
+    assert phase == "development"
+    assert blockers == [readiness.DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER]
+
+
+def test_benchmark_exec_cli_blocks_consumed_development_attempt(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        readiness,
+        "validate_static",
+        lambda require_git_tracked: {
+            "grader_exec_package": "PASS",
+            "official_grader_viability": "ESTABLISHED",
+            "performance": "NOT_MEASURED",
+        },
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["trimem_verify_ready.py", "--level", "benchmark-exec"],
+    )
+    assert readiness.main() == 1
+    report = json.loads(capsys.readouterr().out)
+    assert report["status"] == "FAIL_CLOSED"
+    assert report["blockers"] == [readiness.DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER]
+    assert report["git_tracked_freeze_required"] is True
 
 
 def test_smoke_environment_policy_set_is_exact_and_matches_both_workflow_routes() -> None:
@@ -1266,7 +1388,9 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "paid_model_calls": 0,
         "total_usd": 0,
     }
-    assert readiness.preapproval_blockers() == []
+    assert readiness.preapproval_blockers() == [
+        readiness.DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER
+    ]
 
 
 def test_recovery_ready_history_rejects_rebound_receipt_hash() -> None:
@@ -2966,6 +3090,9 @@ def test_freeze_allowlist_closes_all_trimem_execution_surfaces() -> None:
         "src/enterprise_memory/contracts/codec.py",
         "src/enterprise_memory/contracts/schema.py",
         "src/enterprise_memory/promotion/security_scan.py",
+        "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
+        "artifacts/trimem_v1/development_tuning_exec/exec-002/protected-exec-gate-failure-receipt.json",
+        "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_002_PROTECTED_GATE_FAILURE.md",
     } <= frozen
     assert not any(path.endswith("freeze.json") for path in frozen)
     referenced_blobs = set(freeze.referenced_blob_paths(ROOT))
@@ -3066,9 +3193,12 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "P0.1.5 recovery-ready closure" in static
-    assert "--level benchmark-approval --require-git-tracked" in static
-    assert "grader-smoke execution unexpectedly passed" in static
+    assert "terminal DEV gate-failure closure" in static
+    assert '("benchmark-approval", consumed)' in static
+    assert '"--require-git-tracked"' in static
+    assert '"status": "FAIL_CLOSED"' in static
+    assert "expected fail-closed report" in static
+    assert "are final and consumed after a protected EXEC-gate failure" in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service
     assert "python scripts/postgres_bootstrap.py" in service

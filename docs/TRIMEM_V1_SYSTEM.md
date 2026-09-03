@@ -348,3 +348,27 @@ Only one new `_002` sentinel-only child, one fresh attempt-1 run, and a fresh
 run-bound external approval may enter the protected job. A rerun of `_001`, an
 attempt 2, an additional DEV execution, HELDOUT, ablation, grader-smoke rerun,
 merge, tag, or release remains forbidden.
+
+That `_002` authorization is now consumed. Sentinel-only execution HEAD
+`c2738cae074351927dde117b628c601b1e296cf2`, from source HEAD
+`98dd37fec7c826f6ed5b3b8734f2ca8dcab96e4a`, created run `33739545314`
+attempt 1. The hosted preflight, protected environment, external approval
+materialization, and event/phase checks passed. The protected job then failed
+closed at `Verify exact phase EXEC gate` because the ephemeral runner lacked
+the `gh` CLI required for cryptographic official-grader-smoke attestation
+verification. Runtime-secret validation and every scientific step remained
+unreached.
+
+This failure is not a DEV result. Task-arm runs, solve/decomposition/extraction
+calls, model/API/paid-model calls, grader calls/containers, official grader
+runs, target-image pulls, every token class, and USD are zero. Job setup did
+pull and start exactly two support-service containers, pinned Postgres and
+Qdrant; support-service pulls and containers are therefore both 2 and are not
+grader or target-image activity. Performance remains `NOT_MEASURED`.
+
+The current endpoint remains `TRIMEM_V1_DEV_INCOMPLETE`, now with
+`DEV_APPROVAL_ALLOWED=NO` and `DEV_EXECUTION_ALLOWED=NO`. The `_002` request,
+run `33739545314`, and attempt 1 are immutable, final, and consumed. No rerun,
+attempt 2, `_003` request, HELDOUT, ablation, merge, tag, release, or future
+benchmark execution has been authorized. The earlier `_001` failure remains
+immutable history; it is not replaced by this later protected-gate evidence.

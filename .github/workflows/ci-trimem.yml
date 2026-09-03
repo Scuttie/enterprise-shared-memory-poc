@@ -38,16 +38,65 @@ jobs:
       - name: Run credential-free unit and Mini provider boundaries without skips
         run: |
           python scripts/trimem_pytest_no_skip.py tests/unit/test_trimem_*.py tests/trimem/e2e/test_full_replay.py tests/openai/test_openai_provider.py
-      - name: Verify committed freeze and P0.1.5 recovery-ready closure
+      - name: Verify committed freeze and terminal DEV gate-failure closure
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
-          python scripts/trimem_verify_ready.py --level benchmark-approval --require-git-tracked
-          if python scripts/trimem_verify_ready.py --level grader-smoke-exec --require-git-tracked; then
-            echo "grader-smoke execution unexpectedly passed without the exact external _005 approval" >&2
-            exit 1
-          fi
-          if python scripts/trimem_verify_ready.py --level benchmark-exec --require-git-tracked; then
-            echo "DEV/HELDOUT execution unexpectedly passed without a post-smoke approval" >&2
-            exit 1
-          fi
+          python - <<'PY'
+          import json
+          import subprocess
+          import sys
+
+          consumed = (
+              "DEVELOPMENT_TUNING request _002 and run 33739545314 attempt 1 "
+              "are final and consumed after a protected EXEC-gate failure; no "
+              "retry, attempt 2, _003 request, or future benchmark execution is "
+              "authorized"
+          )
+          cases = (
+              ("benchmark-approval", consumed),
+              ("grader-smoke-exec", "external immutable approval file is required"),
+              ("benchmark-exec", consumed),
+          )
+          for level, expected_blocker in cases:
+              completed = subprocess.run(
+                  [
+                      sys.executable,
+                      "scripts/trimem_verify_ready.py",
+                      "--level",
+                      level,
+                      "--require-git-tracked",
+                  ],
+                  capture_output=True,
+                  check=False,
+                  text=True,
+              )
+              sys.stdout.write(completed.stdout)
+              sys.stderr.write(completed.stderr)
+              if completed.returncode != 1:
+                  raise SystemExit(
+                      f"{level}: expected fail-closed exit 1, got "
+                      f"{completed.returncode}"
+                  )
+              try:
+                  report = json.loads(completed.stdout)
+              except (json.JSONDecodeError, TypeError) as exc:
+                  raise SystemExit(f"{level}: invalid readiness JSON: {exc}") from exc
+              observed = {
+                  "blockers": report.get("blockers"),
+                  "endpoint": report.get("endpoint"),
+                  "level": report.get("level"),
+                  "status": report.get("status"),
+              }
+              expected = {
+                  "blockers": [expected_blocker],
+                  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+                  "level": level,
+                  "status": "FAIL_CLOSED",
+              }
+              if observed != expected:
+                  raise SystemExit(
+                      f"{level}: expected fail-closed report {expected!r}, "
+                      f"got {observed!r}"
+                  )
+          PY

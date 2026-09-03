@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 from typing import Callable
@@ -28,6 +29,9 @@ import trimem_grader_smoke_failure_evidence as smoke_failure_evidence  # noqa: E
 import trimem_m2_candidates as m2_candidates  # noqa: E402
 import trimem_multi_swe_probe_evidence as probe_evidence  # noqa: E402
 import trimem_public_artifact as public_artifact  # noqa: E402
+
+
+REAL_COLLECT_REMOTE_GATE_EVIDENCE = trigger.collect_remote_gate_evidence
 
 
 def _git(repository: Path, *args: str) -> str:
@@ -82,7 +86,13 @@ def _initialize(repository: Path, *, bind_recovery_history: bool = True) -> str:
     candidates = json.loads(
         (ROOT / trigger.M2_CANDIDATE_MANIFEST_PATH).read_text(encoding="utf-8")
     )
+    toolchain_amendment = json.loads(
+        (ROOT / trigger.TOOLCHAIN_AMENDMENT_PATH).read_text(encoding="utf-8")
+    )
     additional_paths = set(amendment["preserved_contracts"]["path_sha256"])
+    additional_paths.update(
+        toolchain_amendment["preserved_contracts"]["path_sha256"]
+    )
     additional_paths.add(candidates["base_policy_path"])
     additional_paths.update(
         row["full_policy_path"] for row in candidates["candidates"]
@@ -121,6 +131,171 @@ def _initialize(repository: Path, *, bind_recovery_history: bool = True) -> str:
 def _rehash(value: dict[str, object]) -> None:
     payload = {key: child for key, child in value.items() if key != "request_sha256"}
     value["request_sha256"] = trigger.sha256_prefixed(trigger.canonical_bytes(payload))
+
+
+def _remote_gate_evidence(
+    source_head: str,
+    *,
+    conclusion: str = "success",
+    run_attempt: int = 1,
+) -> dict[str, object]:
+    return {
+        "all_required_workflows_passed": True,
+        "observed_at_utc": "2026-09-03T14:00:00.000Z",
+        "repository": trigger.EXPECTED_REPOSITORY,
+        "schema": trigger.REMOTE_GATE_SCHEMA,
+        "scientific_execution": {
+            "api_calls": 0,
+            "grader_runs": 0,
+            "model_calls": 0,
+            "paid_model_calls": 0,
+            "target_image_pulls": 0,
+            "task_arm_runs": 0,
+            "total_usd": 0.0,
+        },
+        "source_head": source_head,
+        "source_ref": trigger.EXPECTED_REF,
+        "workflows": [
+            {
+                "conclusion": conclusion,
+                "event": "push",
+                "head_branch": trigger.EXPECTED_BRANCH,
+                "head_sha": source_head,
+                "html_url": (
+                    "https://github.com/Scuttie/enterprise-shared-memory-poc/"
+                    f"actions/runs/{10_000 + index}"
+                ),
+                "run_attempt": run_attempt,
+                "run_id": 10_000 + index,
+                "status": "completed",
+                "workflow_path": path,
+            }
+            for index, path in enumerate(
+                trigger.REQUIRED_REMOTE_GATE_WORKFLOWS, start=1
+            )
+        ],
+    }
+
+
+@pytest.fixture(autouse=True)
+def _stub_live_remote_gate_collector(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Keep unit tests credential-free while exercising the live comparison path."""
+
+    monkeypatch.setattr(
+        trigger,
+        "collect_remote_gate_evidence",
+        lambda source_head: deepcopy(_remote_gate_evidence(source_head)),
+    )
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (
+            lambda value: value["workflows"][0].__setitem__("conclusion", "failure"),
+            "missing, red, rerun, or bound to another HEAD",
+        ),
+        (
+            lambda value: value["workflows"][0].__setitem__("run_attempt", 2),
+            "missing, red, rerun, or bound to another HEAD",
+        ),
+        (
+            lambda value: value["workflows"][0].__setitem__("run_attempt", True),
+            "missing, red, rerun, or bound to another HEAD",
+        ),
+        (
+            lambda value: value["workflows"][0].__setitem__("head_sha", "f" * 40),
+            "missing, red, rerun, or bound to another HEAD",
+        ),
+        (
+            lambda value: value["workflows"].__setitem__(
+                -1, deepcopy(value["workflows"][0])
+            ),
+            "missing, red, rerun, or bound to another HEAD",
+        ),
+    ],
+    ids=["red", "attempt-two", "bool-attempt", "wrong-head", "duplicate-missing"],
+)
+def test_remote_gate_evidence_fails_closed(
+    mutation: Callable[[dict[str, object]], None], message: str
+) -> None:
+    source_head = "a" * 40
+    evidence = _remote_gate_evidence(source_head)
+    mutation(evidence)
+    with pytest.raises(trigger.DevelopmentTriggerError, match=message):
+        trigger._validate_remote_gate_evidence(evidence, source_head=source_head)
+
+
+def test_collector_binds_exact_pinned_gh_and_exact_workflow_runs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source_head = "b" * 40
+    fixture = _remote_gate_evidence(source_head)
+    api_runs = [
+        {
+            "conclusion": row["conclusion"],
+            "event": row["event"],
+            "head_branch": row["head_branch"],
+            "head_sha": row["head_sha"],
+            "html_url": row["html_url"],
+            "id": row["run_id"],
+            "path": row["workflow_path"],
+            "run_attempt": row["run_attempt"],
+            "status": row["status"],
+        }
+        for row in fixture["workflows"]
+    ]
+    observed: list[tuple[object, Path]] = []
+    monkeypatch.setattr(trigger.shutil, "which", lambda name: "/pinned/bin/gh")
+    monkeypatch.setattr(trigger, "load_gh_cli_lock", lambda path: {"lock": str(path)})
+    monkeypatch.setattr(
+        trigger,
+        "verify_installed_gh",
+        lambda lock, path: observed.append((lock, path))
+        or {"first_version_line": "gh version 2.97.0 (2026-07-31)"},
+    )
+    monkeypatch.setattr(
+        trigger.subprocess,
+        "run",
+        lambda command, **kwargs: subprocess.CompletedProcess(
+            command,
+            0,
+            stdout=json.dumps({"workflow_runs": api_runs}).encode("utf-8"),
+            stderr=b"",
+        ),
+    )
+
+    result = REAL_COLLECT_REMOTE_GATE_EVIDENCE(source_head)
+
+    assert result["workflows"] == fixture["workflows"]
+    assert observed and observed[0][1] == Path("/pinned/bin/gh")
+
+
+def test_collector_serializes_remote_query_timeout_as_contract_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(trigger.shutil, "which", lambda name: "/pinned/bin/gh")
+    monkeypatch.setattr(trigger, "load_gh_cli_lock", lambda path: {})
+    monkeypatch.setattr(
+        trigger,
+        "verify_installed_gh",
+        lambda lock, path: {
+            "first_version_line": "gh version 2.97.0 (2026-07-31)"
+        },
+    )
+    monkeypatch.setattr(
+        trigger.subprocess,
+        "run",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            subprocess.TimeoutExpired(cmd="gh api", timeout=60)
+        ),
+    )
+    with pytest.raises(
+        trigger.DevelopmentTriggerError, match="GitHub remote gate query failed"
+    ):
+        REAL_COLLECT_REMOTE_GATE_EVIDENCE("c" * 40)
 
 
 def _event(before: str, after: str) -> dict[str, object]:
@@ -175,7 +350,11 @@ def _trigger_repository(
 ) -> tuple[Path, Path, str, str, dict[str, str]]:
     repository = tmp_path / "repository"
     before = _initialize(repository)
-    request = trigger.build_request_document(repository, source_head=before)
+    request = trigger.build_request_document(
+        repository,
+        source_head=before,
+        remote_gate_evidence=_remote_gate_evidence(before),
+    )
     if mutate is not None:
         mutate(request)
         _rehash(request)
@@ -192,6 +371,8 @@ def test_only_exact_dev_sentinel_commit_passes(tmp_path: Path) -> None:
     repository, event_path, before, after, environ = _trigger_repository(tmp_path)
     result = trigger.validate_branch_trigger(repository, event_path, environ=environ)
     request_raw = (repository / trigger.SENTINEL_PATH).read_bytes()
+    request = trigger.strict_json_object(request_raw)
+    remote_gate_evidence = request["remote_gate_evidence"]
     assert result == {
         "actual_execution_authorized": False,
         "approved_freeze_sha256": trigger.strict_json_object(request_raw)["bindings"][
@@ -204,7 +385,14 @@ def test_only_exact_dev_sentinel_commit_passes(tmp_path: Path) -> None:
         "model_calls": 0,
         "paid_model_calls": 0,
         "phase": "DEVELOPMENT_TUNING",
-        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
+        "remote_gate_evidence_sha256": trigger.sha256_prefixed(
+            trigger.canonical_bytes(remote_gate_evidence)
+        ),
+        "remote_gate_workflow_runs": {
+            row["workflow_path"]: row["run_id"]
+            for row in remote_gate_evidence["workflows"]
+        },
+        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
         "request_payload_sha256": trigger.strict_json_object(request_raw)["request_sha256"],
         "requires_external_approval": True,
         "source_head": before,
@@ -213,17 +401,64 @@ def test_only_exact_dev_sentinel_commit_passes(tmp_path: Path) -> None:
         "total_usd": 0.0,
         "trigger_commit": after,
     }
-    request = trigger.strict_json_object(request_raw)
     assert request["recovery_provenance"] == trigger.RECOVERY_PROVENANCE
     assert request["required_external_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert request["recovery_provenance"]["received_recovery_authorization"] == (
-        "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert request["recovery_provenance"][
         "protected_execution_authorization_required"
     ] == request["required_external_authorization"]
+
+
+def test_branch_trigger_rejects_fabricated_embedded_remote_runs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repository, event_path, before, _after, environ = _trigger_repository(tmp_path)
+    live = deepcopy(_remote_gate_evidence(before))
+    live["workflows"][0]["run_id"] = 90_001
+    live["workflows"][0]["html_url"] = (
+        "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/90001"
+    )
+    monkeypatch.setattr(
+        trigger, "collect_remote_gate_evidence", lambda source_head: live
+    )
+    with pytest.raises(
+        trigger.DevelopmentTriggerError,
+        match="embedded remote gates differ from the live exact-head GitHub runs",
+    ):
+        trigger.validate_branch_trigger(repository, event_path, environ=environ)
+
+
+def test_d12_preserved_contract_entry_cannot_be_deleted_and_resealed(
+    tmp_path: Path,
+) -> None:
+    repository = tmp_path / "repository"
+    _initialize(repository)
+    amendment_path = repository / trigger.TOOLCHAIN_AMENDMENT_PATH
+    amendment = json.loads(amendment_path.read_text(encoding="utf-8"))
+    amendment["preserved_contracts"]["path_sha256"].pop(
+        "configs/trimem_v1/model_lock.json"
+    )
+    amendment_raw = _write_json(amendment_path, amendment)
+    freeze_path = repository / trigger.FREEZE_PATH
+    freeze_document = json.loads(freeze_path.read_text(encoding="utf-8"))
+    freeze_document["files"][trigger.TOOLCHAIN_AMENDMENT_PATH] = {
+        "bytes": len(amendment_raw),
+        "sha256": hashlib.sha256(amendment_raw).hexdigest(),
+    }
+    _write_json(freeze_path, freeze_document)
+    source_head = _commit(repository, "remove preserved D1.2 binding and reseal")
+    with pytest.raises(
+        trigger.DevelopmentTriggerError, match="preserved-contract map differs"
+    ):
+        trigger.build_request_document(
+            repository,
+            source_head=source_head,
+            remote_gate_evidence=_remote_gate_evidence(source_head),
+        )
 
 
 def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
@@ -236,12 +471,13 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_002.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_003.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-002" in workflow
+    assert "group: trimem-v1-development-tuning-exec-003" in workflow
+    assert "group: trimem-v1-development-tuning-exec-002" not in workflow
     assert "group: trimem-v1-development-tuning-exec-001" not in workflow
     assert "cancel-in-progress: false" in workflow
     preflight = workflow.split("  branch-trigger-preflight:", 1)[1].split(
@@ -325,10 +561,15 @@ def test_recovery_receipt_binds_exact_github_source_documents() -> None:
     ]
     source_documents = receipt["source_documents"]
     assert set(source_documents) == {
+        "artifact_metadata_api",
         "artifacts_api",
+        "deployment_statuses_api",
+        "environment_secrets_after_cleanup_api",
+        "fork_policy_after_cleanup_api",
         "jobs_api",
         "matching_deployments_api",
         "pending_deployments_api",
+        "repository_runners_after_cleanup_api",
         "workflow_run_attempt_api",
     }
     assert all(
@@ -340,31 +581,37 @@ def test_recovery_receipt_binds_exact_github_source_documents() -> None:
         )
         for document in source_documents.values()
     )
-    evidence_classification = receipt["evidence_classification"]
-    assert evidence_classification["operator_derived_from_failed_step_log"] == [
-        "root_cause"
-    ]
-    assert "credential_free_ci" in evidence_classification[
-        "operator_verified_from_github_control_plane"
-    ]
-    assert "jobs" in evidence_classification["api_bound"]
-    assert receipt["recovery_contract"] == {
-        "attempt_two_allowed": False,
-        "new_request_id": trigger.REQUEST_ID,
-        "new_request_path": trigger.SENTINEL_PATH,
-        "protected_execution_authorization_required": (
-            trigger.REQUIRED_EXTERNAL_AUTHORIZATION
-        ),
-        "received_recovery_authorization": trigger.RECOVERY_AUTHORIZATION,
-        "scientific_inputs_must_remain_unchanged": True,
-        "single_new_attempt_one_run_allowed": True,
+    assert receipt["control_plane"]["protected_environment_worked"] is True
+    assert receipt["approval"]["materialization_status"] == "PASS"
+    assert receipt["jobs"]["protected_execution"]["failed_step"]["name"] == (
+        "Verify exact phase EXEC gate"
+    )
+    assert receipt["recovery_boundary"] == {
+        "attempt_two_created": False,
+        "future_recovery_authority_received": False,
+        "prohibited_without_new_explicit_authority": [
+            "attempt_2_or_rerun",
+            "DEVELOPMENT_TUNING_EXEC_REQUEST_003",
+            "HELDOUT_BENCHMARK",
+            "component_ablation",
+            "merge",
+            "tag",
+            "release",
+        ],
+        "request_002_and_run_33739545314_attempt_1_immutable": True,
+        "request_003_created": False,
+        "rerun_performed": False,
     }
 
 
 def test_recovery_request_preserves_every_scientific_contract(tmp_path: Path) -> None:
     repository = tmp_path / "repository"
     source_head = _initialize(repository)
-    recovered = trigger.build_request_document(repository, source_head=source_head)
+    recovered = trigger.build_request_document(
+        repository,
+        source_head=source_head,
+        remote_gate_evidence=_remote_gate_evidence(source_head),
+    )
     historical_raw = (ROOT / trigger.PREVIOUS_SENTINEL_PATH).read_bytes()
     assert hashlib.sha256(historical_raw).hexdigest() == (
         trigger.EXPECTED_RECOVERY_INPUT_SHA256[trigger.PREVIOUS_SENTINEL_PATH]
@@ -428,13 +675,27 @@ def test_benchmark_environment_snapshot_drift_is_rejected_even_if_resealed(
         trigger.DevelopmentTriggerError,
         match="protected environment snapshot differs",
     ):
-        trigger.build_request_document(repository, source_head=source_head)
+        trigger.build_request_document(
+            repository,
+            source_head=source_head,
+            remote_gate_evidence=_remote_gate_evidence(source_head),
+        )
 
 
 @pytest.mark.parametrize(
     "relative_path",
-    [trigger.PREVIOUS_SENTINEL_PATH, trigger.RECOVERY_FAILURE_RECEIPT_PATH],
-    ids=["previous-request", "preflight-failure-receipt"],
+    [
+        trigger.EARLIER_SENTINEL_PATH,
+        trigger.EARLIER_FAILURE_RECEIPT_PATH,
+        trigger.PREVIOUS_SENTINEL_PATH,
+        trigger.RECOVERY_FAILURE_RECEIPT_PATH,
+    ],
+    ids=[
+        "request-001",
+        "failure-receipt-001",
+        "request-002",
+        "failure-receipt-002",
+    ],
 )
 def test_historical_recovery_input_drift_is_rejected_even_if_resealed(
     tmp_path: Path, relative_path: str
@@ -456,7 +717,11 @@ def test_historical_recovery_input_drift_is_rejected_even_if_resealed(
         trigger.DevelopmentTriggerError,
         match="immutable DEV recovery input changed",
     ):
-        trigger.build_request_document(repository, source_head=source_head)
+        trigger.build_request_document(
+            repository,
+            source_head=source_head,
+            remote_gate_evidence=_remote_gate_evidence(source_head),
+        )
 
 
 def test_copied_recovery_material_without_immutable_git_history_is_rejected(
@@ -465,7 +730,11 @@ def test_copied_recovery_material_without_immutable_git_history_is_rejected(
     repository = tmp_path / "repository"
     source_head = _initialize(repository, bind_recovery_history=False)
     with pytest.raises(trigger.DevelopmentTriggerError, match="git verification failed"):
-        trigger.build_request_document(repository, source_head=source_head)
+        trigger.build_request_document(
+            repository,
+            source_head=source_head,
+            remote_gate_evidence=_remote_gate_evidence(source_head),
+        )
 
 
 def test_ordinary_branch_push_is_rejected(tmp_path: Path) -> None:
@@ -492,7 +761,11 @@ def test_sentinel_plus_another_file_is_rejected(tmp_path: Path) -> None:
 def test_modified_existing_sentinel_is_rejected(tmp_path: Path) -> None:
     repository = tmp_path / "repository"
     base = _initialize(repository)
-    request = trigger.build_request_document(repository, source_head=base)
+    request = trigger.build_request_document(
+        repository,
+        source_head=base,
+        remote_gate_evidence=_remote_gate_evidence(base),
+    )
     _write_json(repository / trigger.SENTINEL_PATH, request)
     before = _commit(repository, "first sentinel")
     (repository / trigger.SENTINEL_PATH).write_bytes(
@@ -514,7 +787,11 @@ def test_merge_commit_is_rejected(tmp_path: Path) -> None:
     (repository / "side.txt").write_text("side\n", encoding="utf-8")
     _commit(repository, "side")
     _git(repository, "switch", "codex/trimem-coder-v1")
-    request = trigger.build_request_document(repository, source_head=base)
+    request = trigger.build_request_document(
+        repository,
+        source_head=base,
+        remote_gate_evidence=_remote_gate_evidence(base),
+    )
     _write_json(repository / trigger.SENTINEL_PATH, request)
     before = _commit(repository, "sentinel")
     _git(repository, "merge", "--no-ff", "side", "-m", "merge")
@@ -580,7 +857,11 @@ def test_multi_commit_push_is_rejected(tmp_path: Path) -> None:
     before = _initialize(repository)
     (repository / "intermediate.txt").write_text("intermediate\n", encoding="utf-8")
     source_head = _commit(repository, "intermediate source")
-    request = trigger.build_request_document(repository, source_head=source_head)
+    request = trigger.build_request_document(
+        repository,
+        source_head=source_head,
+        remote_gate_evidence=_remote_gate_evidence(source_head),
+    )
     _write_json(repository / trigger.SENTINEL_PATH, request)
     after = _commit(repository, "sentinel")
     event_path = tmp_path / "event.json"
@@ -654,7 +935,11 @@ def test_python_equal_but_byte_distinct_scalars_are_rejected(
 ) -> None:
     repository = tmp_path / "repository"
     before = _initialize(repository)
-    request = trigger.build_request_document(repository, source_head=before)
+    request = trigger.build_request_document(
+        repository,
+        source_head=before,
+        remote_gate_evidence=_remote_gate_evidence(before),
+    )
     mutate(request)
     # Deliberately retain the old payload hash: Python dict equality considers
     # False == 0 and 50 == 50.0, while the committed JSON bytes are different.
@@ -682,8 +967,12 @@ def test_preflight_reads_no_secret(tmp_path: Path) -> None:
         trigger.validate_branch_trigger(repository, event_path, environ=exposed)
 
 
-def test_exact_preflight_cli_runs_with_isolated_base_python(tmp_path: Path) -> None:
-    repository, event_path, _before, after, environ = _trigger_repository(tmp_path)
+def test_exact_preflight_cli_fails_closed_without_pinned_gh(tmp_path: Path) -> None:
+    repository, event_path, _before, _after, environ = _trigger_repository(tmp_path)
+    git = shutil.which("git")
+    assert git is not None
+    isolated = _isolated_cli_environment(environ)
+    isolated["PATH"] = str(Path(git).parent)
     completed = subprocess.run(
         [
             sys.executable,
@@ -698,14 +987,16 @@ def test_exact_preflight_cli_runs_with_isolated_base_python(tmp_path: Path) -> N
         cwd=repository,
         capture_output=True,
         text=True,
-        env=_isolated_cli_environment(environ),
+        env=isolated,
         check=False,
     )
-    assert completed.returncode == 0, completed.stderr
+    assert completed.returncode == 1, completed.stderr
+    assert completed.stdout, completed.stderr
     report = json.loads(completed.stdout)
-    assert report["status"] == "PASS"
-    assert report["trigger_commit"] == after
-    assert report["request_id"] == trigger.REQUEST_ID
+    assert report == {
+        "error": "gh CLI is required to verify remote gates",
+        "status": "FAIL_CLOSED",
+    }
 
 
 def test_isolated_base_python_cli_rejects_attempt_two(tmp_path: Path) -> None:
@@ -804,6 +1095,29 @@ def test_push_route_rejects_heldout_before_generic_validation(
         match="accepts only DEVELOPMENT_TUNING",
     ):
         approved_phase.approved_name(path)
+
+
+def test_approved_phase_cli_serializes_benchmark_execution_error(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    approval_path = tmp_path / "approval.json"
+    _write_json(approval_path, {"approval": {"approved_phase": "UNKNOWN"}})
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["trimem_approved_phase.py", "--approval-file", str(approval_path)],
+    )
+
+    assert approved_phase.main() == 1
+    captured = capsys.readouterr()
+    report = json.loads(captured.out)
+    assert captured.err == ""
+    assert report == {
+        "error": "external approval phase is unknown",
+        "status": "FAIL",
+    }
 
 
 def test_generic_request_cannot_authorize_development() -> None:

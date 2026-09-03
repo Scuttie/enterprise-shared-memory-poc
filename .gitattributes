@@ -4,6 +4,7 @@
 /.gitignore text eol=lf
 /alembic.ini text eol=lf
 /DEPENDENCY_PROVENANCE.json text eol=lf
+/COMPANY_HANDOFF_MANIFEST.json text eol=lf
 /pyproject.toml text eol=lf
 /requirements.lock text eol=lf
 .github/workflows/*trimem*.yml text eol=lf

@@ -426,7 +426,9 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert requirements["current_status"] == {
         "DEV_APPROVAL_ALLOWED": "NO",
         "DEV_EXECUTION_ALLOWED": "NO",
+        "DEV_SCIENTIFIC_STATUS": "NOT_STARTED",
         "ENDPOINT": readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT,
+        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_002_FAILURE_LABEL,
         "GRADER_EXEC_PACKAGE": "PASS",
         "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
@@ -441,19 +443,23 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["development_execution_authorized"] is False
     assert authorization["grader_smoke_rerun_authorized"] is False
     assert authorization["heldout_execution_authorized"] is False
-    assert authorization["future_recovery_authority_received"] is False
+    assert authorization["future_recovery_authority_received"] is True
     assert authorization["prior_failed_run_reusable"] is False
     assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
-        "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert authorization["recovery_request_id"] == trigger.REQUEST_ID
     assert authorization["recovery_request_path"] == trigger.SENTINEL_PATH
     assert authorization["request_002_final"] is True
-    assert authorization["request_003_allowed"] is False
+    assert authorization["request_003_allowed_after_exact_remote_gates"] is True
     assert authorization["rerun_allowed"] is False
     assert "final and consumed" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
+    assert authorization["amendment_classification"] == (
+        "NON_SEMANTIC_RUNNER_TOOLCHAIN_DEPENDENCY_FIX"
+    )
+    assert authorization["toolchain_rehearsal_required_before_request_003"] is True
     service_boundary = requirements["credential_free_service_ci_boundary"]
     assert "ALLOWED_PRE_EXEC" in service_boundary
     assert "digest-pinned PostgreSQL and Qdrant support services" in service_boundary
@@ -539,11 +545,13 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert development_failure["recovery"] == {
         "attempt_two_allowed": False,
         "protected_execution_authorization_required": (
-            trigger.REQUIRED_EXTERNAL_AUTHORIZATION
+            readiness.DEVELOPMENT_EXEC_001_EXTERNAL_AUTHORIZATION
         ),
-        "received_recovery_authorization": trigger.RECOVERY_AUTHORIZATION,
-        "request_id": trigger.REQUEST_ID,
-        "request_path": trigger.SENTINEL_PATH,
+        "received_recovery_authorization": (
+            readiness.DEVELOPMENT_EXEC_001_RECOVERY_AUTHORIZATION
+        ),
+        "request_id": readiness.DEVELOPMENT_EXEC_002_REQUEST_ID,
+        "request_path": readiness.DEVELOPMENT_EXEC_002_SENTINEL_PATH,
         "single_new_attempt_one_run_allowed": True,
     }
     current_failure = requirements["development_execution_failure"]
@@ -582,9 +590,10 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert current_failure["authority"] == {
         "attempt_one_consumed": True,
         "attempt_two_allowed": False,
-        "future_recovery_authority_received": False,
+        "fresh_attempt_one_request": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
+        "future_recovery_authority_received": True,
         "request_002_final": True,
-        "request_003_allowed": False,
+        "request_003_allowed_after_exact_remote_gates": True,
         "rerun_allowed": False,
     }
 
@@ -685,23 +694,39 @@ def test_development_exec_002_semantic_drift_fails_even_with_bound_bytes(
         readiness._validated_development_exec_002_failure()
 
 
-def test_consumed_development_failure_blocks_approval_and_execution(
-    tmp_path: Path,
+def test_d12_recovery_allows_only_the_fresh_development_approval_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    assert readiness.preapproval_blockers() == [
-        readiness.DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER
-    ]
+    assert readiness.preapproval_blockers() == []
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
         json.dumps({"approval": {"approved_phase": "DEVELOPMENT_TUNING"}}),
         encoding="utf-8",
     )
+    original_read_json = readiness.read_json
+
+    def fake_read_json(path: Path) -> dict:
+        if path == readiness.ARTIFACT / "grader_smoke_result.json":
+            return {"status": "PASS"}
+        return original_read_json(path)
+
+    monkeypatch.setattr(readiness, "read_json", fake_read_json)
+    monkeypatch.setattr(readiness, "validate_exec_approval", lambda *_args: {})
+    monkeypatch.setattr(readiness, "validate_grader_smoke_result", lambda _smoke: {})
+    monkeypatch.setattr(
+        readiness, "verify_official_smoke_attestation_cryptographically", lambda: {}
+    )
+    monkeypatch.setattr(
+        readiness,
+        "validate_selected_m2",
+        lambda require_frozen: {"status": "PRE_DEVELOPMENT"},
+    )
     blockers, phase = readiness.execution_blockers(approval_path)
     assert phase == "development"
-    assert blockers == [readiness.DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER]
+    assert blockers == []
 
 
-def test_benchmark_exec_cli_blocks_consumed_development_attempt(
+def test_benchmark_exec_cli_requires_fresh_run_bound_approval(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(
@@ -721,8 +746,115 @@ def test_benchmark_exec_cli_blocks_consumed_development_attempt(
     assert readiness.main() == 1
     report = json.loads(capsys.readouterr().out)
     assert report["status"] == "FAIL_CLOSED"
-    assert report["blockers"] == [readiness.DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER]
+    assert report["blockers"] == ["external immutable approval file is required"]
     assert report["git_tracked_freeze_required"] is True
+
+
+def test_benchmark_exec_cli_serializes_benchmark_execution_error(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    approval_path = tmp_path / "approval.json"
+    approval_path.write_text(
+        json.dumps({"approval": {"approved_phase": "DEVELOPMENT_TUNING"}}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        readiness,
+        "validate_static",
+        lambda require_git_tracked: {
+            "dev_approval_allowed": False,
+            "dev_execution_allowed": False,
+            "grader_exec_package": "PASS",
+            "official_grader_viability": "ESTABLISHED",
+            "performance": "NOT_MEASURED",
+        },
+    )
+    monkeypatch.setattr(
+        readiness,
+        "execution_blockers",
+        lambda _path: (_ for _ in ()).throw(
+            benchmark_run.BenchmarkExecutionError("synthetic approval binding failure")
+        ),
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "trimem_verify_ready.py",
+            "--level",
+            "benchmark-exec",
+            "--approval-file",
+            str(approval_path),
+        ],
+    )
+
+    assert readiness.main() == 1
+    captured = capsys.readouterr()
+    report = json.loads(captured.out)
+    assert captured.err == ""
+    assert report == {
+        "error": "synthetic approval binding failure",
+        "level": "benchmark-exec",
+        "status": "FAIL",
+    }
+
+
+def test_valid_development_exec_enables_only_the_dynamic_exec_report(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    approval_path = tmp_path / "approval.json"
+    approval_path.write_text("{}", encoding="utf-8")
+    static_evidence = {
+        "dev_approval_allowed": False,
+        "dev_execution_allowed": False,
+        "grader_exec_package": "PASS",
+        "official_grader_viability": "ESTABLISHED",
+        "performance": "NOT_MEASURED",
+    }
+    observed_require_git_tracked: list[bool] = []
+
+    def fake_validate_static(require_git_tracked: bool) -> dict[str, object]:
+        observed_require_git_tracked.append(require_git_tracked)
+        return dict(static_evidence)
+
+    monkeypatch.setattr(readiness, "validate_static", fake_validate_static)
+    monkeypatch.setattr(
+        readiness,
+        "execution_blockers",
+        lambda _path: ([], "development"),
+    )
+
+    monkeypatch.setattr(sys, "argv", ["trimem_verify_ready.py", "--level", "static"])
+    assert readiness.main() == 0
+    static_report = json.loads(capsys.readouterr().out)
+    assert static_report["status"] == "PASS"
+    assert static_report["dev_approval_allowed"] is False
+    assert static_report["dev_execution_allowed"] is False
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "trimem_verify_ready.py",
+            "--level",
+            "benchmark-exec",
+            "--approval-file",
+            str(approval_path),
+        ],
+    )
+    assert readiness.main() == 0
+    exec_report = json.loads(capsys.readouterr().out)
+    assert exec_report["status"] == "PASS"
+    assert exec_report["approved_phase"] == "development"
+    assert exec_report["dev_approval_allowed"] is True
+    assert exec_report["dev_execution_allowed"] is True
+    assert static_evidence["dev_approval_allowed"] is False
+    assert static_evidence["dev_execution_allowed"] is False
+    assert observed_require_git_tracked == [False, True]
 
 
 def test_smoke_environment_policy_set_is_exact_and_matches_both_workflow_routes() -> None:
@@ -1388,9 +1520,7 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "paid_model_calls": 0,
         "total_usd": 0,
     }
-    assert readiness.preapproval_blockers() == [
-        readiness.DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER
-    ]
+    assert readiness.preapproval_blockers() == []
 
 
 def test_recovery_ready_history_rejects_rebound_receipt_hash() -> None:
@@ -3193,12 +3323,12 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "terminal DEV gate-failure closure" in static
-    assert '("benchmark-approval", consumed)' in static
+    assert "D1.2 fresh-run approval boundaries" in static
+    assert '("benchmark-approval", 0, [])' in static
     assert '"--require-git-tracked"' in static
-    assert '"status": "FAIL_CLOSED"' in static
-    assert "expected fail-closed report" in static
-    assert "are final and consumed after a protected EXEC-gate failure" in static
+    assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
+    assert "expected exact D1.2 report" in static
+    assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service
     assert "python scripts/postgres_bootstrap.py" in service
@@ -3438,11 +3568,12 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in benchmark
     assert (
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_002.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_003.json"
     ) in benchmark
     assert "branch-trigger-preflight:" in benchmark
     assert "needs: branch-trigger-preflight" in benchmark
-    assert "group: trimem-v1-development-tuning-exec-002" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-003" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-002" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-001" not in benchmark
     assert "cancel-in-progress: false" in benchmark
     preflight = benchmark.split("  branch-trigger-preflight:", 1)[1].split(
@@ -3466,7 +3597,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "timeout-minutes: 7200" in benchmark
     assert "matrix:" not in benchmark
     assert "permissions:\n  actions: read\n  contents: read" in benchmark
-    assert benchmark.count("GH_TOKEN: ${{ github.token }}") == 1
+    assert benchmark.count("GH_TOKEN: ${{ github.token }}") == 2
     gate_start = benchmark.index("- name: Verify exact phase EXEC gate")
     secret_gate = benchmark.index(
         "- name: Verify required protected runtime secrets before paid work"

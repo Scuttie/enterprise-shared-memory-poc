@@ -62,6 +62,7 @@ CONFIG_PATHS = (
     "configs/trimem_v1/benchmark_exec_request.json",
     "configs/trimem_v1/cost_plan.json",
     "configs/trimem_v1/development_manifest.json",
+    "configs/trimem_v1/gh_cli_lock.json",
     "configs/trimem_v1/grader_lock.json",
     "configs/trimem_v1/grader_smoke_manifest.json",
     "configs/trimem_v1/heldout_manifest.json",
@@ -80,6 +81,7 @@ CONFIG_PATHS = (
 )
 ARTIFACT_PATHS = (
     "artifacts/trimem_v1/development_model_pricing_amendment.json",
+    "artifacts/trimem_v1/development_runner_toolchain_amendment.json",
     "artifacts/trimem_v1/development_tuning_exec/exec-001/preflight-failure-receipt.json",
     "artifacts/trimem_v1/development_tuning_exec/exec-002/protected-exec-gate-failure-receipt.json",
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json",
@@ -129,6 +131,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_grader_smoke_protocol.py",
     "scripts/trimem_grader_smoke_trigger_preflight.py",
     "scripts/trimem_harness_lock.py",
+    "scripts/trimem_install_pinned_gh.py",
     "scripts/trimem_m2_candidates.py",
     "scripts/trimem_multi_swe_contract.py",
     "scripts/trimem_multi_swe_entrypoint.py",
@@ -145,6 +148,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_select_targets.py",
     "scripts/trimem_smoke_attestation.py",
     "scripts/trimem_verify_credential_free.py",
+    "scripts/trimem_verify_gh_lock.py",
     "scripts/trimem_verify_ready.py",
 )
 SOURCE_PATHS = (
@@ -231,12 +235,14 @@ TEST_PATHS = (
     "tests/unit/test_trimem_benchmark_checkpoint_recovery.py",
     "tests/unit/test_trimem_benchmark_readiness.py",
     "tests/unit/test_trimem_development_trigger.py",
+    "tests/unit/test_trimem_dev_toolchain_workflows.py",
     "tests/unit/test_trimem_grader_smoke_trigger.py",
     "tests/unit/test_trimem_grader_smoke_authority.py",
     "tests/unit/test_trimem_grader_smoke_execution_accounting.py",
     "tests/unit/test_trimem_grader_smoke_failure_evidence.py",
     "tests/unit/test_trimem_grader_terminal_evidence.py",
     "tests/unit/test_trimem_harness_lock.py",
+    "tests/unit/test_trimem_pinned_gh.py",
     "tests/unit/test_trimem_multi_prebuilt_evaluation.py",
     "tests/unit/test_trimem_multi_swe_entrypoint.py",
     "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
@@ -258,6 +264,7 @@ TEST_PATHS = (
     "tests/unit/test_trimem_runtime_boundaries.py",
     "tests/unit/test_trimem_schema_sql.py",
     "tests/unit/test_trimem_schema_store.py",
+    "tests/unit/test_trimem_smoke_attestation_only.py",
     "tests/unit/test_trimem_vector_index.py",
     "tests/unit/test_trimem_working_retrieval.py",
 )
@@ -266,6 +273,7 @@ WORKFLOW_PATHS = (
     ".github/workflows/ci-trimem-e2e.yml",
     ".github/workflows/ci-trimem-harness-lock.yml",
     ".github/workflows/ci-trimem-multi-swe-contract.yml",
+    ".github/workflows/ci-trimem-dev-toolchain.yml",
     ".github/workflows/trimem-benchmark.yml",
     ".github/workflows/trimem-grader-smoke.yml",
 )

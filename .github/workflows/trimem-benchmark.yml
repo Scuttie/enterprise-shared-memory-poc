@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_003.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-002
+  group: trimem-v1-development-tuning-exec-003
   cancel-in-progress: false
 
 permissions:
@@ -36,7 +36,29 @@ jobs:
         with:
           python-version: 3.11.10
           cache: ""
+      - name: Install pinned GitHub CLI for branch gate
+        run: |
+          set -euo pipefail
+          expected_bin="$RUNNER_TEMP/trimem-preflight-gh/bin"
+          observed_bin="$(
+            python scripts/trimem_install_pinned_gh.py \
+              --lock configs/trimem_v1/gh_cli_lock.json \
+              --prefix "$RUNNER_TEMP/trimem-preflight-gh"
+          )"
+          test "$observed_bin" = "$expected_bin"
+          printf '%s\n' "$observed_bin" >> "$GITHUB_PATH"
+      - name: Verify pinned GitHub CLI for branch gate
+        run: |
+          set -euo pipefail
+          resolved_gh="$(command -v gh)"
+          test "$resolved_gh" = "$RUNNER_TEMP/trimem-preflight-gh/bin/gh"
+          gh --version
+          python scripts/trimem_verify_gh_lock.py \
+            --lock configs/trimem_v1/gh_cli_lock.json \
+            --prefix "$RUNNER_TEMP/trimem-preflight-gh"
       - name: Verify one-time zero-authority DEV trigger
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
@@ -101,6 +123,26 @@ jobs:
         run: |
           python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
           python -m pip install --no-deps --no-build-isolation -e .
+      - name: Install exact pinned GitHub CLI
+        run: |
+          set -euo pipefail
+          expected_bin="$RUNNER_TEMP/trimem-gh/bin"
+          observed_bin="$(
+            python scripts/trimem_install_pinned_gh.py \
+              --lock configs/trimem_v1/gh_cli_lock.json \
+              --prefix "$RUNNER_TEMP/trimem-gh"
+          )"
+          test "$observed_bin" = "$expected_bin"
+          printf '%s\n' "$observed_bin" >> "$GITHUB_PATH"
+      - name: Verify exact GitHub CLI
+        run: |
+          set -euo pipefail
+          resolved_gh="$(command -v gh)"
+          test "$resolved_gh" = "$RUNNER_TEMP/trimem-gh/bin/gh"
+          gh --version
+          python scripts/trimem_verify_gh_lock.py \
+            --lock configs/trimem_v1/gh_cli_lock.json \
+            --prefix "$RUNNER_TEMP/trimem-gh"
       - name: Materialize protected external approval
         id: approval_materialization
         env:

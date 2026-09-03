@@ -366,9 +366,30 @@ pull and start exactly two support-service containers, pinned Postgres and
 Qdrant; support-service pulls and containers are therefore both 2 and are not
 grader or target-image activity. Performance remains `NOT_MEASURED`.
 
-The current endpoint remains `TRIMEM_V1_DEV_INCOMPLETE`, now with
-`DEV_APPROVAL_ALLOWED=NO` and `DEV_EXECUTION_ALLOWED=NO`. The `_002` request,
-run `33739545314`, and attempt 1 are immutable, final, and consumed. No rerun,
-attempt 2, `_003` request, HELDOUT, ablation, merge, tag, release, or future
-benchmark execution has been authorized. The earlier `_001` failure remains
-immutable history; it is not replaced by this later protected-gate evidence.
+The current pre-recovery endpoint remains `TRIMEM_V1_DEV_INCOMPLETE`, with
+`DEV_APPROVAL_ALLOWED=NO`, `DEV_EXECUTION_ALLOWED=NO`, and
+`DEV_SCIENTIFIC_STATUS=NOT_STARTED`. The `_002` request, run `33739545314`, and
+attempt 1 are immutable, final, and consumed. They may not be rerun and may not
+gain an attempt 2. The earlier `_001` failure also remains immutable history;
+neither historical record is replaced by later recovery evidence.
+
+D1.2 is classified as `NON_SEMANTIC_RUNNER_TOOLCHAIN_DEPENDENCY_FIX`. It adds a
+byte lock for the official GitHub CLI v2.97.0 Linux amd64 release archive and
+its extracted executable, a prefix-local fail-closed installer, and a narrow
+`smoke-attestation-only` mode that calls the same cryptographic verification
+function as the protected benchmark EXEC gate. The historical trusted root,
+official smoke subject/bundle/results/evidence, model, pricing, target order,
+arms, M2 policies, prompt/tool/parser/runtime locks, selection rule, grader,
+and image locks are not changed.
+
+The explicit D1.2 authority permits one fresh `_003` sentinel-only commit and
+its attempt-1 run only after every credential-free workflow and the exact-head
+self-hosted toolchain rehearsal pass. The rehearsal uses the dedicated
+`[self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]` runner, installs the
+same pinned CLI used by the benchmark workflow, verifies the historical smoke
+attestation and its live run attempt, and has zero model, grader, database,
+image, token, and USD surface. `_003` remains a zero-authority sentinel: paid
+execution additionally requires a fresh external approval bound to the exact
+run ID, attempt 1, execution HEAD, source HEAD, freeze, request, and phase caps.
+HELDOUT, ablation, a fifth M2 candidate, model/target changes, `_004`, merge,
+tag, and release remain prohibited.

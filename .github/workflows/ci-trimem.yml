@@ -38,7 +38,11 @@ jobs:
       - name: Run credential-free unit and Mini provider boundaries without skips
         run: |
           python scripts/trimem_pytest_no_skip.py tests/unit/test_trimem_*.py tests/trimem/e2e/test_full_replay.py tests/openai/test_openai_provider.py
-      - name: Verify committed freeze and terminal DEV gate-failure closure
+      - name: Verify product handoff manifest remains separated and current
+        run: python scripts/make_handoff_manifest.py --check
+      - name: Scan tracked source for forbidden credentials and host paths
+        run: python scripts/release_check.py --secrets
+      - name: Verify committed freeze and D1.2 fresh-run approval boundaries
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
@@ -47,18 +51,20 @@ jobs:
           import subprocess
           import sys
 
-          consumed = (
-              "DEVELOPMENT_TUNING request _002 and run 33739545314 attempt 1 "
-              "are final and consumed after a protected EXEC-gate failure; no "
-              "retry, attempt 2, _003 request, or future benchmark execution is "
-              "authorized"
-          )
           cases = (
-              ("benchmark-approval", consumed),
-              ("grader-smoke-exec", "external immutable approval file is required"),
-              ("benchmark-exec", consumed),
+              ("benchmark-approval", 0, []),
+              (
+                  "grader-smoke-exec",
+                  1,
+                  ["external immutable approval file is required"],
+              ),
+              (
+                  "benchmark-exec",
+                  1,
+                  ["external immutable approval file is required"],
+              ),
           )
-          for level, expected_blocker in cases:
+          for level, expected_returncode, expected_blockers in cases:
               completed = subprocess.run(
                   [
                       sys.executable,
@@ -73,9 +79,9 @@ jobs:
               )
               sys.stdout.write(completed.stdout)
               sys.stderr.write(completed.stderr)
-              if completed.returncode != 1:
+              if completed.returncode != expected_returncode:
                   raise SystemExit(
-                      f"{level}: expected fail-closed exit 1, got "
+                      f"{level}: expected exit {expected_returncode}, got "
                       f"{completed.returncode}"
                   )
               try:
@@ -89,14 +95,14 @@ jobs:
                   "status": report.get("status"),
               }
               expected = {
-                  "blockers": [expected_blocker],
+                  "blockers": expected_blockers,
                   "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
                   "level": level,
-                  "status": "FAIL_CLOSED",
+                  "status": "PASS" if not expected_blockers else "FAIL_CLOSED",
               }
               if observed != expected:
                   raise SystemExit(
-                      f"{level}: expected fail-closed report {expected!r}, "
+                      f"{level}: expected exact D1.2 report {expected!r}, "
                       f"got {observed!r}"
                   )
           PY

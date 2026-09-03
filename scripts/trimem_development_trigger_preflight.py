@@ -9,13 +9,19 @@ from __future__ import annotations
 
 import argparse
 from copy import deepcopy
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
+import sys
 from typing import Any, Mapping
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from trimem_install_pinned_gh import load_gh_cli_lock, verify_installed_gh
 
 
 EXPECTED_EVENT = "push"
@@ -26,25 +32,38 @@ EXPECTED_WORKFLOW_REF = (
     "trimem-benchmark.yml@refs/heads/codex/trimem-coder-v1"
 )
 EXPECTED_PHASE = "DEVELOPMENT_TUNING"
-REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002"
-REQUEST_SCHEMA = "trimem/development-tuning-branch-trigger/1.1"
+EXPECTED_BRANCH = "codex/trimem-coder-v1"
+REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003"
+REQUEST_SCHEMA = "trimem/development-tuning-branch-trigger/1.2"
 SENTINEL_PATH = (
     "artifacts/trimem_v1/exec_requests/"
-    "DEVELOPMENT_TUNING_EXEC_REQUEST_002.json"
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_003.json"
 )
 PREVIOUS_SENTINEL_PATH = (
     "artifacts/trimem_v1/exec_requests/"
-    "DEVELOPMENT_TUNING_EXEC_REQUEST_001.json"
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_002.json"
 )
 RECOVERY_FAILURE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/development_tuning_exec/exec-002/"
+    "protected-exec-gate-failure-receipt.json"
+)
+EARLIER_SENTINEL_PATH = (
+    "artifacts/trimem_v1/exec_requests/"
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_001.json"
+)
+EARLIER_FAILURE_RECEIPT_PATH = (
     "artifacts/trimem_v1/development_tuning_exec/exec-001/"
     "preflight-failure-receipt.json"
 )
-PREVIOUS_SOURCE_HEAD = "0fe4cd70604d381f5a8d7d0a384724817c6e3a42"
-PREVIOUS_EXECUTION_HEAD = "6eba1b0f9462c3b29323a9ade290470551bfd0ed"
+EARLIER_SOURCE_HEAD = "0fe4cd70604d381f5a8d7d0a384724817c6e3a42"
+EARLIER_EXECUTION_HEAD = "6eba1b0f9462c3b29323a9ade290470551bfd0ed"
+PREVIOUS_SOURCE_HEAD = "98dd37fec7c826f6ed5b3b8734f2ca8dcab96e4a"
+PREVIOUS_EXECUTION_HEAD = "c2738cae074351927dde117b628c601b1e296cf2"
 WORKFLOW_PATH = ".github/workflows/trimem-benchmark.yml"
-EXPECTED_CONCURRENCY_GROUP = "trimem-v1-development-tuning-exec-002"
+TOOLCHAIN_WORKFLOW_PATH = ".github/workflows/ci-trimem-dev-toolchain.yml"
+EXPECTED_CONCURRENCY_GROUP = "trimem-v1-development-tuning-exec-003"
 FREEZE_PATH = "artifacts/trimem_v1/freeze.json"
+GH_CLI_LOCK_PATH = "configs/trimem_v1/gh_cli_lock.json"
 MODEL_LOCK_PATH = "configs/trimem_v1/model_lock.json"
 COST_PLAN_PATH = "configs/trimem_v1/cost_plan.json"
 POLICY_REQUEST_PATH = "configs/trimem_v1/benchmark_exec_request.json"
@@ -59,7 +78,16 @@ MODEL_PRICING_AMENDMENT_PATH = (
 BENCHMARK_ENVIRONMENT_PROTECTION_PATH = (
     "artifacts/trimem_v1/benchmark_environment_protection.json"
 )
+TOOLCHAIN_AMENDMENT_PATH = (
+    "artifacts/trimem_v1/development_runner_toolchain_amendment.json"
+)
+CREDENTIAL_FREE_BUNDLE_PATH = (
+    "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json"
+)
 PREFLIGHT_PATH = "scripts/trimem_development_trigger_preflight.py"
+GH_INSTALLER_PATH = "scripts/trimem_install_pinned_gh.py"
+GH_VERIFIER_PATH = "scripts/trimem_verify_gh_lock.py"
+READINESS_VERIFIER_PATH = "scripts/trimem_verify_ready.py"
 BENCHMARK_RUNNER_PATH = "scripts/trimem_benchmark_run.py"
 APPROVAL_VALIDATOR_PATH = "scripts/trimem_exec_approval.py"
 APPROVED_PHASE_PATH = "scripts/trimem_approved_phase.py"
@@ -69,16 +97,22 @@ TRIGGER_TEST_PATH = "tests/unit/test_trimem_development_trigger.py"
 MATRIX_PATH = "scripts/trimem_benchmark_matrix.py"
 PUBLIC_ARTIFACT_PATH = "scripts/trimem_public_artifact.py"
 RESUME_DRIVER_PATH = "scripts/trimem_run_with_resume.py"
+REQUIRED_REMOTE_GATE_WORKFLOWS = (
+    ".github/workflows/ci-trimem.yml",
+    ".github/workflows/ci-trimem-e2e.yml",
+    ".github/workflows/ci-trimem-harness-lock.yml",
+    ".github/workflows/ci-trimem-multi-swe-contract.yml",
+    TOOLCHAIN_WORKFLOW_PATH,
+)
+REMOTE_GATE_SCHEMA = "trimem/development-remote-gate-evidence/1.0"
 
 AUTHORIZATION_SEMANTICS = (
     "The sentinel creates one run but does not authorize protected execution."
 )
 RECOVERY_AUTHORIZATION = (
-    "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE"
+    "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE"
 )
-REQUIRED_EXTERNAL_AUTHORIZATION = (
-    "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_APPROVED_ONCE"
-)
+REQUIRED_EXTERNAL_AUTHORIZATION = RECOVERY_AUTHORIZATION
 EXACT_MODEL = {
     "cached_input_price_per_million_tokens_usd": 0.075,
     "endpoint": "https://api.openai.com/v1/responses",
@@ -148,7 +182,7 @@ PRE_EXECUTION_ACTUALS = {
     "output_tokens": 0,
     "paid_model_calls": 0,
     "reasoning_tokens": 0,
-    "scope": "D1.1_RECOVERY_002_BEFORE_DEVELOPMENT_EXECUTION",
+    "scope": "D1.2_GH_TOOLCHAIN_RECOVERY_003_BEFORE_DEVELOPMENT_EXECUTION",
     "solve_calls": 0,
     "target_image_pulls": 0,
     "task_arm_runs": 0,
@@ -158,34 +192,39 @@ RECOVERY_PROVENANCE = {
     "failed_endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
     "failed_execution_head": PREVIOUS_EXECUTION_HEAD,
     "failed_run_attempt": 1,
-    "failed_run_id": 33_727_051_040,
-    "failure_label": "TRIMEM_DEV_TRIGGER_PREFLIGHT_DEPENDENCY_IMPORT_FAILURE",
+    "failed_run_id": 33_739_545_314,
+    "failure_label": "TRIMEM_DEV_EXEC_GATE_GH_CLI_MISSING",
     "grader_containers": 0,
     "input_tokens": 0,
     "model_calls": 0,
     "output_tokens": 0,
     "paid_model_calls": 0,
-    "previous_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_001",
+    "previous_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
     "previous_request_path": PREVIOUS_SENTINEL_PATH,
     "previous_request_raw_sha256": (
-        "sha256:7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db"
+        "sha256:c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98"
     ),
     "protected_execution_authorization_required": REQUIRED_EXTERNAL_AUTHORIZATION,
-    "protected_execution_reached": False,
+    "approval_materialization_reached": True,
+    "protected_environment_reached": True,
+    "protected_execution_reached": True,
     "received_recovery_authorization": RECOVERY_AUTHORIZATION,
     "scientific_task_arm_runs": 0,
     "total_usd": 0.0,
 }
 PROHIBITED_ACTIONS = [
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_002_rerun_or_attempt_2",
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_004",
     "HELDOUT_BENCHMARK",
     "additional_development_targets",
     "automatic_next_phase_execution",
     "candidate_addition",
     "component_ablation",
     "grader_smoke_rerun",
+    "fifth_M2_candidate",
     "merge_tag_or_release",
     "model_replacement",
-    "additional_development_dispatch_or_rerun_after_recovery_002",
+    "additional_development_dispatch_or_rerun_after_recovery_003",
     "target_replacement",
 ]
 EXPECTED_TARGET_SET_SHA256 = (
@@ -206,8 +245,31 @@ EXPECTED_FROZEN_INPUT_SHA256 = {
     MODEL_PRICING_AMENDMENT_PATH: "19caede5a601f8d0ebc1267dbb393b9b707aae37e144a31a9346087d2c320cee",
 }
 EXPECTED_RECOVERY_INPUT_SHA256 = {
-    PREVIOUS_SENTINEL_PATH: "7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db",
-    RECOVERY_FAILURE_RECEIPT_PATH: "16bda3012e29d6a3659d5a96537615db7ed72fa817e541e16db2c4d5d5d79868",
+    EARLIER_SENTINEL_PATH: "7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db",
+    EARLIER_FAILURE_RECEIPT_PATH: "16bda3012e29d6a3659d5a96537615db7ed72fa817e541e16db2c4d5d5d79868",
+    PREVIOUS_SENTINEL_PATH: "c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98",
+    RECOVERY_FAILURE_RECEIPT_PATH: "8c9d4a8fea70e0088b7af9bb011e1e75081f4e9ddee9f7162cf05ff85c9f9d1a",
+}
+EXPECTED_D12_PRESERVED_SHA256 = {
+    "artifacts/trimem_v1/development_model_pricing_amendment.json": "19caede5a601f8d0ebc1267dbb393b9b707aae37e144a31a9346087d2c320cee",
+    "artifacts/trimem_v1/grader_image_lock.json": "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-bundle.json": "c1cc04284b8f1be1cde006fa2309f6af918e8478485002b4556df7fcb165335e",
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-subject.json": "647d9d3eaddaf2917bfaaa8fc47c0c54f814a50ddf5e900c3176d3c895513846",
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/evidence-inventory.json": "b1c3ba191c4d037f4f8ee70cf8a4821592b5b25a65700d7ce3faa2d0024add8e",
+    "artifacts/trimem_v1/grader_smoke_official/exec-005/public-results.json": "4a1253e69a95b3058b9433fbfe51ef3f8bee538c90b5faf29c996a841224faa4",
+    "configs/trimem_v1/arms.json": "88cbe12d47780509216498816fa13349f0027f239937c5f8cb54d90a17c93cb1",
+    "configs/trimem_v1/cost_plan.json": "d54b70e8c700cedff987efa713aeddf724059b7320bbe8fc1970ca9c0f69a86e",
+    "configs/trimem_v1/development_manifest.json": "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
+    "configs/trimem_v1/grader_lock.json": "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb",
+    "configs/trimem_v1/grader_smoke_manifest.json": "cf9a841a5509133d501dc83e7b69ddbd85770c371ab3ed9cda008f598349d409",
+    "configs/trimem_v1/heldout_manifest.json": "951371ed84931b37e27929e2669aff5d06e32215d1a300e3343ba7f1bdd84fda",
+    "configs/trimem_v1/m2_candidate_bundles.json": "3248b15e3f9f7293cacfea1f13fcfd354dbb804d34a1ea40dce6d8c1b881a6de",
+    "configs/trimem_v1/model_lock.json": "f5e932696d31d1cb7185b32b67c38e4c9cbbfedd79783adfb8faddc7b90abfe0",
+    "configs/trimem_v1/selected_m2.json": "1b9a1777515475dddaf303c2ad85e3be67eac7cfb7a1bc1918a208c740f4a8fc",
+    "configs/trimem_v1/selection_plan.json": "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
+    "configs/trimem_v1/sigstore_trusted_root.jsonl": "65ca537f6ed8a47fd0e560c421baa1f6c1efb8b25fc200d8c5c02c0e92eb2b9c",
+    "configs/trimem_v1/tool_environment_lock.json": "7b4bafe0a5366fdb9277a49ebb70fe6197f3bb27fa253f75ffe686a7a44f7c6c",
+    "src/enterprise_memory/trimem/runtime_lock.py": "053de00adb66a13fb0cb3b039b008e9fdc028121dc5fc060cfddc2c371a32aed",
 }
 DEVELOPMENT_APPROVAL_FIELDS = [
     "approved_git_commit",
@@ -228,20 +290,29 @@ DEVELOPMENT_APPROVAL_FIELDS = [
 ]
 BOUND_PATHS = {
     "benchmark_exec_request_sha256": POLICY_REQUEST_PATH,
+    "benchmark_workflow_sha256": WORKFLOW_PATH,
     "cost_plan_sha256": COST_PLAN_PATH,
+    "credential_free_bundle_sha256": CREDENTIAL_FREE_BUNDLE_PATH,
     "development_manifest_sha256": DEVELOPMENT_MANIFEST_PATH,
     "freeze_sha256": FREEZE_PATH,
     "grader_lock_sha256": GRADER_LOCK_PATH,
+    "gh_cli_lock_sha256": GH_CLI_LOCK_PATH,
+    "gh_installer_sha256": GH_INSTALLER_PATH,
+    "gh_verifier_sha256": GH_VERIFIER_PATH,
     "image_lock_sha256": IMAGE_LOCK_PATH,
     "m2_candidate_manifest_sha256": M2_CANDIDATE_MANIFEST_PATH,
     "model_lock_sha256": MODEL_LOCK_PATH,
     "model_pricing_amendment_sha256": MODEL_PRICING_AMENDMENT_PATH,
     "previous_dev_request_sha256": PREVIOUS_SENTINEL_PATH,
     "recovery_failure_receipt_sha256": RECOVERY_FAILURE_RECEIPT_PATH,
+    "runner_toolchain_amendment_sha256": TOOLCHAIN_AMENDMENT_PATH,
     "selection_plan_sha256": SELECTION_PLAN_PATH,
+    "toolchain_workflow_sha256": TOOLCHAIN_WORKFLOW_PATH,
 }
 FREEZE_CLOSURE_PATHS = (
     WORKFLOW_PATH,
+    TOOLCHAIN_WORKFLOW_PATH,
+    GH_CLI_LOCK_PATH,
     MODEL_LOCK_PATH,
     COST_PLAN_PATH,
     POLICY_REQUEST_PATH,
@@ -251,7 +322,12 @@ FREEZE_CLOSURE_PATHS = (
     GRADER_LOCK_PATH,
     IMAGE_LOCK_PATH,
     BENCHMARK_ENVIRONMENT_PROTECTION_PATH,
+    TOOLCHAIN_AMENDMENT_PATH,
+    CREDENTIAL_FREE_BUNDLE_PATH,
     PREFLIGHT_PATH,
+    GH_INSTALLER_PATH,
+    GH_VERIFIER_PATH,
+    READINESS_VERIFIER_PATH,
     BENCHMARK_RUNNER_PATH,
     APPROVAL_VALIDATOR_PATH,
     APPROVED_PHASE_PATH,
@@ -263,10 +339,13 @@ FREEZE_CLOSURE_PATHS = (
     RESUME_DRIVER_PATH,
     PREVIOUS_SENTINEL_PATH,
     RECOVERY_FAILURE_RECEIPT_PATH,
+    EARLIER_SENTINEL_PATH,
+    EARLIER_FAILURE_RECEIPT_PATH,
 )
 REQUEST_FIELDS = frozenset(
     {
         "actual_execution_authorized",
+        "amendment_classification",
         "authorization_semantics",
         "bindings",
         "branch_ref",
@@ -281,6 +360,7 @@ REQUEST_FIELDS = frozenset(
         "pre_execution_actuals",
         "prohibited_actions",
         "recovery_provenance",
+        "remote_gate_evidence",
         "request_id",
         "request_path",
         "request_sha256",
@@ -363,6 +443,211 @@ def sha256_prefixed(raw: bytes) -> str:
     return "sha256:" + hashlib.sha256(raw).hexdigest()
 
 
+def _validate_remote_gate_evidence(
+    evidence: Any, *, source_head: str
+) -> dict[str, Any]:
+    _require(isinstance(evidence, dict), "remote gate evidence is missing")
+    _require(
+        set(evidence)
+        == {
+            "all_required_workflows_passed",
+            "observed_at_utc",
+            "repository",
+            "schema",
+            "scientific_execution",
+            "source_head",
+            "source_ref",
+            "workflows",
+        },
+        "remote gate evidence field set differs",
+    )
+    _require(evidence.get("schema") == REMOTE_GATE_SCHEMA, "remote gate schema differs")
+    _require(
+        evidence.get("repository") == EXPECTED_REPOSITORY
+        and evidence.get("source_head") == source_head
+        and evidence.get("source_ref") == EXPECTED_REF
+        and evidence.get("all_required_workflows_passed") is True,
+        "remote gate source or aggregate status differs",
+    )
+    observed_at = evidence.get("observed_at_utc")
+    _require(
+        isinstance(observed_at, str) and observed_at.endswith("Z"),
+        "remote gate observation timestamp is not UTC",
+    )
+    try:
+        parsed_observed_at = datetime.fromisoformat(observed_at[:-1] + "+00:00")
+    except ValueError as exc:
+        raise DevelopmentTriggerError(
+            "remote gate observation timestamp is invalid"
+        ) from exc
+    _require(
+        parsed_observed_at.tzinfo == timezone.utc,
+        "remote gate observation timestamp is not timezone-aware",
+    )
+    scientific_execution = evidence.get("scientific_execution")
+    expected_zero = {
+        "api_calls": 0,
+        "grader_runs": 0,
+        "model_calls": 0,
+        "paid_model_calls": 0,
+        "target_image_pulls": 0,
+        "task_arm_runs": 0,
+        "total_usd": 0.0,
+    }
+    _require(
+        scientific_execution == expected_zero,
+        "remote credential-free gates contain scientific execution",
+    )
+    workflows = evidence.get("workflows")
+    _require(
+        isinstance(workflows, list)
+        and len(workflows) == len(REQUIRED_REMOTE_GATE_WORKFLOWS),
+        "remote gate workflow count differs",
+    )
+    for expected_path, row in zip(
+        REQUIRED_REMOTE_GATE_WORKFLOWS, workflows, strict=True
+    ):
+        _require(
+            isinstance(row, dict)
+            and set(row)
+            == {
+                "conclusion",
+                "event",
+                "head_branch",
+                "head_sha",
+                "html_url",
+                "run_attempt",
+                "run_id",
+                "status",
+                "workflow_path",
+            },
+            f"remote gate row shape differs: {expected_path}",
+        )
+        _require(
+            row.get("workflow_path") == expected_path
+            and row.get("head_sha") == source_head
+            and row.get("head_branch") == EXPECTED_BRANCH
+            and row.get("event") == "push"
+            and row.get("status") == "completed"
+            and row.get("conclusion") == "success"
+            and type(row.get("run_id")) is int
+            and row["run_id"] > 0
+            and type(row.get("run_attempt")) is int
+            and row.get("run_attempt") == 1
+            and isinstance(row.get("html_url"), str)
+            and row["html_url"]
+            == (
+                "https://github.com/Scuttie/enterprise-shared-memory-poc/"
+                f"actions/runs/{row['run_id']}"
+            ),
+            f"remote gate is missing, red, rerun, or bound to another HEAD: {expected_path}",
+        )
+    return deepcopy(evidence)
+
+
+def collect_remote_gate_evidence(source_head: str) -> dict[str, Any]:
+    """Read all exact-head credential-free workflow conclusions via GitHub CLI."""
+
+    _require(HEX40.fullmatch(source_head) is not None, "source_head is not a commit SHA")
+    gh = shutil.which("gh")
+    _require(gh is not None, "gh CLI is required to verify remote gates")
+    try:
+        gh_lock = load_gh_cli_lock(Path(__file__).resolve().parents[1] / GH_CLI_LOCK_PATH)
+        gh_verification = verify_installed_gh(gh_lock, Path(gh))
+    except (OSError, ValueError) as exc:
+        raise DevelopmentTriggerError(
+            "remote gate observer does not match the pinned gh byte lock"
+        ) from exc
+    _require(
+        gh_verification.get("first_version_line")
+        == "gh version 2.97.0 (2026-07-31)",
+        "remote gate observer is not exact gh 2.97.0",
+    )
+    safe_environment = {
+        key: value
+        for key, value in os.environ.items()
+        if key not in FORBIDDEN_PREFLIGHT_SECRETS
+    }
+    try:
+        query = subprocess.run(
+            [
+                gh,
+                "api",
+                "--hostname",
+                "github.com",
+                "--method",
+                "GET",
+                f"repos/{EXPECTED_REPOSITORY}/actions/runs",
+                "-f",
+                f"head_sha={source_head}",
+                "-f",
+                "event=push",
+                "-f",
+                "per_page=100",
+            ],
+            capture_output=True,
+            text=False,
+            check=False,
+            timeout=60,
+            env=safe_environment,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise DevelopmentTriggerError("GitHub remote gate query failed") from exc
+    _require(query.returncode == 0, "GitHub remote gate query failed")
+    response = strict_json_object(query.stdout)
+    runs = response.get("workflow_runs")
+    _require(isinstance(runs, list), "GitHub remote gate response has no workflow runs")
+    rows: list[dict[str, Any]] = []
+    for expected_path in REQUIRED_REMOTE_GATE_WORKFLOWS:
+        matches = [
+            row
+            for row in runs
+            if isinstance(row, dict)
+            and row.get("path") == expected_path
+            and row.get("head_sha") == source_head
+            and row.get("event") == "push"
+        ]
+        _require(
+            len(matches) == 1,
+            f"exactly one exact-head attempt-1 run is required: {expected_path}",
+        )
+        run = matches[0]
+        rows.append(
+            {
+                "conclusion": run.get("conclusion"),
+                "event": run.get("event"),
+                "head_branch": run.get("head_branch"),
+                "head_sha": run.get("head_sha"),
+                "html_url": run.get("html_url"),
+                "run_attempt": run.get("run_attempt"),
+                "run_id": run.get("id"),
+                "status": run.get("status"),
+                "workflow_path": run.get("path"),
+            }
+        )
+    evidence = {
+        "all_required_workflows_passed": True,
+        "observed_at_utc": datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace(
+            "+00:00", "Z"
+        ),
+        "repository": EXPECTED_REPOSITORY,
+        "schema": REMOTE_GATE_SCHEMA,
+        "scientific_execution": {
+            "api_calls": 0,
+            "grader_runs": 0,
+            "model_calls": 0,
+            "paid_model_calls": 0,
+            "target_image_pulls": 0,
+            "task_arm_runs": 0,
+            "total_usd": 0.0,
+        },
+        "source_head": source_head,
+        "source_ref": EXPECTED_REF,
+        "workflows": rows,
+    }
+    return _validate_remote_gate_evidence(evidence, source_head=source_head)
+
+
 def _run_git(repository: Path, *args: str, text: bool = True) -> str | bytes:
     result = subprocess.run(
         ["git", "-c", "core.quotepath=false", *args],
@@ -385,22 +670,24 @@ def _commit_bytes(repository: Path, commit: str, path: str) -> bytes:
     return raw
 
 
-def _validate_historical_recovery_graph(repository: Path, commit: str) -> None:
-    """Bind recovery material to the immutable _001 commit ancestry."""
-
-    _require(HEX40.fullmatch(commit) is not None, "material commit is not a commit SHA")
+def _validate_historical_sentinel(
+    repository: Path,
+    material_commit: str,
+    *,
+    execution_head: str,
+    source_head: str,
+    sentinel_path: str,
+    label: str,
+) -> None:
     resolved = str(
         _run_git(
             repository,
             "rev-parse",
             "--verify",
-            f"{PREVIOUS_EXECUTION_HEAD}^{{commit}}",
+            f"{execution_head}^{{commit}}",
         )
     ).strip()
-    _require(
-        resolved == PREVIOUS_EXECUTION_HEAD,
-        "historical _001 execution commit identity differs",
-    )
+    _require(resolved == execution_head, f"historical {label} execution commit identity differs")
     parents = str(
         _run_git(
             repository,
@@ -408,12 +695,12 @@ def _validate_historical_recovery_graph(repository: Path, commit: str) -> None:
             "--parents",
             "-n",
             "1",
-            PREVIOUS_EXECUTION_HEAD,
+            execution_head,
         )
     ).strip().split()
     _require(
-        parents == [PREVIOUS_EXECUTION_HEAD, PREVIOUS_SOURCE_HEAD],
-        "historical _001 parent identity differs",
+        parents == [execution_head, source_head],
+        f"historical {label} parent identity differs",
     )
     ancestry = subprocess.run(
         [
@@ -422,8 +709,8 @@ def _validate_historical_recovery_graph(repository: Path, commit: str) -> None:
             "core.quotepath=false",
             "merge-base",
             "--is-ancestor",
-            PREVIOUS_EXECUTION_HEAD,
-            commit,
+            execution_head,
+            material_commit,
         ],
         cwd=repository,
         capture_output=True,
@@ -431,8 +718,8 @@ def _validate_historical_recovery_graph(repository: Path, commit: str) -> None:
         check=False,
     )
     _require(
-        ancestry.returncode == 0 and commit != PREVIOUS_EXECUTION_HEAD,
-        "material commit does not descend from immutable _001 history",
+        ancestry.returncode == 0 and material_commit != execution_head,
+        f"material commit does not descend from immutable {label} history",
     )
     changes = str(
         _run_git(
@@ -442,36 +729,49 @@ def _validate_historical_recovery_graph(repository: Path, commit: str) -> None:
             "--name-status",
             "-r",
             "--no-renames",
-            PREVIOUS_EXECUTION_HEAD,
+            execution_head,
         )
     ).splitlines()
     _require(
-        changes == [f"A\t{PREVIOUS_SENTINEL_PATH}"],
-        "historical _001 commit was not sentinel-only",
+        changes == [f"A\t{sentinel_path}"],
+        f"historical {label} commit was not sentinel-only",
     )
     tree = str(
-        _run_git(
-            repository,
-            "ls-tree",
-            PREVIOUS_EXECUTION_HEAD,
-            "--",
-            PREVIOUS_SENTINEL_PATH,
-        )
+        _run_git(repository, "ls-tree", execution_head, "--", sentinel_path)
     ).strip()
     _require(
         re.fullmatch(
-            rf"100644 blob [0-9a-f]{{40}}\t{re.escape(PREVIOUS_SENTINEL_PATH)}",
-            tree,
+            rf"100644 blob [0-9a-f]{{40}}\t{re.escape(sentinel_path)}", tree
         )
         is not None,
-        "historical _001 sentinel is not the exact regular Git blob",
+        f"historical {label} sentinel is not the exact regular Git blob",
     )
     _require(
-        hashlib.sha256(
-            _commit_bytes(repository, PREVIOUS_EXECUTION_HEAD, PREVIOUS_SENTINEL_PATH)
-        ).hexdigest()
-        == EXPECTED_RECOVERY_INPUT_SHA256[PREVIOUS_SENTINEL_PATH],
-        "historical _001 Git blob bytes differ",
+        hashlib.sha256(_commit_bytes(repository, execution_head, sentinel_path)).hexdigest()
+        == EXPECTED_RECOVERY_INPUT_SHA256[sentinel_path],
+        f"historical {label} Git blob bytes differ",
+    )
+
+
+def _validate_historical_recovery_graph(repository: Path, commit: str) -> None:
+    """Bind D1.2 recovery material to immutable _001 and _002 ancestry."""
+
+    _require(HEX40.fullmatch(commit) is not None, "material commit is not a commit SHA")
+    _validate_historical_sentinel(
+        repository,
+        commit,
+        execution_head=EARLIER_EXECUTION_HEAD,
+        source_head=EARLIER_SOURCE_HEAD,
+        sentinel_path=EARLIER_SENTINEL_PATH,
+        label="_001",
+    )
+    _validate_historical_sentinel(
+        repository,
+        commit,
+        execution_head=PREVIOUS_EXECUTION_HEAD,
+        source_head=PREVIOUS_SOURCE_HEAD,
+        sentinel_path=PREVIOUS_SENTINEL_PATH,
+        label="_002",
     )
 
 
@@ -511,11 +811,11 @@ def _validate_frozen_material(
         and previous_request.get("source_head")
         == PREVIOUS_SOURCE_HEAD
         and previous_request.get("one_time_workflow_run_attempt") == 1,
-        "historical _001 DEV request identity differs",
+        "historical _002 DEV request identity differs",
     )
     _require(
         failure_receipt.get("schema")
-        == "trimem/development-trigger-preflight-failure-receipt/1.0"
+        == "trimem/development-protected-exec-gate-failure-receipt/1.0"
         and failure_receipt.get("endpoint")
         == RECOVERY_PROVENANCE["failed_endpoint"]
         and failure_receipt.get("failure_label")
@@ -529,10 +829,31 @@ def _validate_frozen_material(
         and failure_receipt.get("jobs", {})
         .get("protected_execution", {})
         .get("conclusion")
-        == "skipped"
+        == "failure"
+        and failure_receipt.get("jobs", {})
+        .get("protected_execution", {})
+        .get("failed_step", {})
+        .get("name")
+        == "Verify exact phase EXEC gate"
         and failure_receipt.get("sentinel", {}).get("raw_sha256")
         == RECOVERY_PROVENANCE["previous_request_raw_sha256"],
-        "historical _001 preflight-failure receipt differs",
+        "historical _002 protected-gate failure receipt differs",
+    )
+    approval = failure_receipt.get("approval", {})
+    control_plane = failure_receipt.get("control_plane", {})
+    _require(
+        approval.get("materialization_status") == "PASS"
+        and approval.get("phase_and_event_checks_status") == "PASS"
+        and approval.get("approved_git_commit") == PREVIOUS_EXECUTION_HEAD
+        and approval.get("approved_source_git_commit") == PREVIOUS_SOURCE_HEAD
+        and approval.get("approved_workflow_run_id")
+        == RECOVERY_PROVENANCE["failed_run_id"]
+        and approval.get("approved_workflow_run_attempt")
+        == RECOVERY_PROVENANCE["failed_run_attempt"]
+        and control_plane.get("protected_environment_worked") is True
+        and control_plane.get("protected_environment_approval_reached") is True
+        and failure_receipt.get("scientific_run") is False,
+        "historical _002 approval/environment boundary differs",
     )
     receipt_accounting = failure_receipt.get("execution_accounting")
     _require(
@@ -544,7 +865,7 @@ def _validate_frozen_material(
         and receipt_accounting.get("input_tokens") == 0
         and receipt_accounting.get("output_tokens") == 0
         and receipt_accounting.get("total_usd") == 0.0,
-        "historical _001 failure receipt contains scientific execution",
+        "historical _002 failure receipt contains scientific execution",
     )
     model = _json_material(raw, MODEL_LOCK_PATH)
     cost = _json_material(raw, COST_PLAN_PATH)
@@ -553,10 +874,92 @@ def _validate_frozen_material(
     candidates = _json_material(raw, M2_CANDIDATE_MANIFEST_PATH)
     selection = _json_material(raw, SELECTION_PLAN_PATH)
     grader = _json_material(raw, GRADER_LOCK_PATH)
+    gh_lock = _json_material(raw, GH_CLI_LOCK_PATH)
     images = _json_material(raw, IMAGE_LOCK_PATH)
     freeze = _json_material(raw, FREEZE_PATH)
     amendment = _json_material(raw, MODEL_PRICING_AMENDMENT_PATH)
     environment = _json_material(raw, BENCHMARK_ENVIRONMENT_PROTECTION_PATH)
+    toolchain_amendment = _json_material(raw, TOOLCHAIN_AMENDMENT_PATH)
+
+    _require(
+        gh_lock.get("schema") == "trimem/gh-cli-lock/1.0"
+        and gh_lock.get("version") == "2.97.0"
+        and gh_lock.get("platform") == "linux_amd64"
+        and gh_lock.get("expected_first_version_line")
+        == "gh version 2.97.0 (2026-07-31)"
+        and gh_lock.get("archive_sha256")
+        == "a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112"
+        and gh_lock.get("extracted_gh_binary_sha256")
+        == "141507c337e8b202ad398550c3b73d72f5af92e86f71665214538a81efd4c409",
+        "D1.2 pinned GitHub CLI lock differs",
+    )
+
+    _require(
+        toolchain_amendment.get("schema")
+        == "trimem/development-runner-toolchain-amendment/1.0"
+        and toolchain_amendment.get("status")
+        == "AUTHORIZED_CONDITIONAL_ON_EXACT_REMOTE_GATES"
+        and toolchain_amendment.get("amendment", {}).get("classification")
+        == "NON_SEMANTIC_RUNNER_TOOLCHAIN_DEPENDENCY_FIX"
+        and toolchain_amendment.get("amendment", {}).get("method_amendment")
+        is False
+        and toolchain_amendment.get("source_git_head")
+        == "c0b8b862ee50515a9a83506233646f6362f0c091"
+        and toolchain_amendment.get("source_freeze_raw_sha256")
+        == "e6d343266d58ecca6a85c28f8d0d3bc089fb793ce5e8f76dca7a04dc03b29d90",
+        "D1.2 runner-toolchain amendment identity differs",
+    )
+    recovery_boundary = toolchain_amendment.get("authorization_boundary", {})
+    _require(
+        recovery_boundary.get("authorization") == RECOVERY_AUTHORIZATION
+        and recovery_boundary.get("prior_request_final")
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002"
+        and recovery_boundary.get("prior_run_attempt_final") == "33739545314/1"
+        and recovery_boundary.get("prior_run_rerun_allowed") is False
+        and recovery_boundary.get("new_request_allowed_after_conditions")
+        == REQUEST_ID,
+        "D1.2 conditional recovery authority differs",
+    )
+    causal_boundary = toolchain_amendment.get("causal_boundary", {})
+    _require(
+        causal_boundary.get("scientific_status") == "NOT_STARTED"
+        and causal_boundary.get("benchmark_model_results_observed") is False
+        and all(
+            causal_boundary.get(field) == 0
+            for field in (
+                "api_calls",
+                "grader_containers",
+                "input_tokens",
+                "model_calls",
+                "official_grader_runs",
+                "output_tokens",
+                "paid_model_calls",
+                "target_image_pulls",
+                "task_arm_runs",
+                "total_usd",
+            )
+        ),
+        "D1.2 causal boundary is not zero before scientific execution",
+    )
+    d12_preserved = toolchain_amendment.get("preserved_contracts", {}).get(
+        "path_sha256"
+    )
+    _require(
+        d12_preserved == EXPECTED_D12_PRESERVED_SHA256,
+        "D1.2 preserved-contract map differs",
+    )
+    for path, expected_sha256 in d12_preserved.items():
+        _require(
+            isinstance(path, str)
+            and isinstance(expected_sha256, str)
+            and re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is not None,
+            "D1.2 preserved-contract map is malformed",
+        )
+        _require(
+            hashlib.sha256(_commit_bytes(repository, commit, path)).hexdigest()
+            == expected_sha256,
+            f"D1.2 non-semantic recovery changed a preserved contract: {path}",
+        )
 
     _require(
         environment
@@ -947,14 +1350,22 @@ def _validate_frozen_material(
 
 
 def build_request_document(
-    repository: Path, *, source_head: str, material_commit: str | None = None
+    repository: Path,
+    *,
+    source_head: str,
+    remote_gate_evidence: Mapping[str, Any],
+    material_commit: str | None = None,
 ) -> dict[str, Any]:
     _require(HEX40.fullmatch(source_head) is not None, "source_head is not a commit SHA")
     commit = source_head if material_commit is None else material_commit
     _require(HEX40.fullmatch(commit) is not None, "material commit is not a commit SHA")
     _raw, bindings, workload = _validate_frozen_material(repository, commit)
+    verified_remote_gates = _validate_remote_gate_evidence(
+        remote_gate_evidence, source_head=source_head
+    )
     payload: dict[str, Any] = {
         "actual_execution_authorized": False,
+        "amendment_classification": "NON_SEMANTIC_RUNNER_TOOLCHAIN_DEPENDENCY_FIX",
         "authorization_semantics": AUTHORIZATION_SEMANTICS,
         "bindings": bindings,
         "branch_ref": EXPECTED_REF,
@@ -969,6 +1380,7 @@ def build_request_document(
         "pre_execution_actuals": deepcopy(PRE_EXECUTION_ACTUALS),
         "prohibited_actions": list(PROHIBITED_ACTIONS),
         "recovery_provenance": deepcopy(RECOVERY_PROVENANCE),
+        "remote_gate_evidence": verified_remote_gates,
         "request_id": REQUEST_ID,
         "request_path": SENTINEL_PATH,
         "required_external_approval_fields": list(DEVELOPMENT_APPROVAL_FIELDS),
@@ -1007,6 +1419,9 @@ def validate_request_document(
     expected = build_request_document(
         repository,
         source_head=expected_source_head,
+        remote_gate_evidence=_validate_remote_gate_evidence(
+            value.get("remote_gate_evidence"), source_head=expected_source_head
+        ),
         material_commit=material_commit,
     )
     _require(value == expected, "DEV request content differs from the frozen contract")
@@ -1139,6 +1554,7 @@ def _validate_secret_free_preflight(
         trigger_block == expected_trigger_block
         and f"group: {EXPECTED_CONCURRENCY_GROUP}" in workflow
         and "group: trimem-v1-development-tuning-exec-001" not in workflow
+        and "group: trimem-v1-development-tuning-exec-002" not in workflow
         and "cancel-in-progress: false" in workflow,
         "benchmark workflow trigger or recovery concurrency identity differs",
     )
@@ -1193,6 +1609,12 @@ def validate_branch_trigger(
         after,
         expected_parent=before,
     )
+    live_remote_gates = collect_remote_gate_evidence(before)
+    _require(
+        request["remote_gate_evidence"]["workflows"]
+        == live_remote_gates["workflows"],
+        "embedded remote gates differ from the live exact-head GitHub runs",
+    )
     request_raw = _commit_bytes(repository, after, SENTINEL_PATH)
     return {
         "actual_execution_authorized": False,
@@ -1206,6 +1628,13 @@ def validate_branch_trigger(
         "phase": EXPECTED_PHASE,
         "request_id": REQUEST_ID,
         "request_payload_sha256": request["request_sha256"],
+        "remote_gate_evidence_sha256": sha256_prefixed(
+            canonical_bytes(request["remote_gate_evidence"])
+        ),
+        "remote_gate_workflow_runs": {
+            row["workflow_path"]: row["run_id"]
+            for row in request["remote_gate_evidence"]["workflows"]
+        },
         "requires_external_approval": True,
         "source_head": before,
         "status": "PASS",
@@ -1234,7 +1663,12 @@ def write_request(repository: Path) -> dict[str, Any]:
     _require(not history, "DEV sentinel already exists in branch history")
     target = repository / SENTINEL_PATH
     _require(not target.exists() and not target.is_symlink(), "DEV sentinel path already exists")
-    document = build_request_document(repository, source_head=source_head)
+    remote_gate_evidence = collect_remote_gate_evidence(source_head)
+    document = build_request_document(
+        repository,
+        source_head=source_head,
+        remote_gate_evidence=remote_gate_evidence,
+    )
     raw = canonical_bytes(document, trailing_lf=True)
     target.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -1248,6 +1682,13 @@ def write_request(repository: Path) -> dict[str, Any]:
         "bytes": len(raw),
         "path": SENTINEL_PATH,
         "request_id": REQUEST_ID,
+        "remote_gate_evidence_sha256": sha256_prefixed(
+            canonical_bytes(remote_gate_evidence)
+        ),
+        "remote_gate_workflow_runs": {
+            row["workflow_path"]: row["run_id"]
+            for row in remote_gate_evidence["workflows"]
+        },
         "sentinel_bytes_sha256": sha256_prefixed(raw),
         "source_head": source_head,
         "status": "WROTE_ZERO_AUTHORITY_SENTINEL",

@@ -52,7 +52,7 @@ def main() -> int:
                 stream.write(f"TRIMEM_EXEC_SPLIT={name}\n")
         print(json.dumps({"approved_manifest": name, "status": "PASS"}, sort_keys=True))
         return 0
-    except (OSError, ValueError, json.JSONDecodeError) as exc:
+    except (OSError, ValueError, BenchmarkExecutionError, json.JSONDecodeError) as exc:
         print(json.dumps({"error": str(exc), "status": "FAIL"}, sort_keys=True))
         return 1
 

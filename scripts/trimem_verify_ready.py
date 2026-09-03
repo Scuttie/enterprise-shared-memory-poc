@@ -43,7 +43,7 @@ from enterprise_memory.trimem.production_v03_lifecycle import (  # noqa: E402
 )
 from enterprise_memory.trimem.runtime_lock import RuntimeLock  # noqa: E402
 from trimem_benchmark_run import (  # noqa: E402
-    AtomicBudgetLedger, BudgetedModelGateway, JournaledGraderGateway,
+    AtomicBudgetLedger, BenchmarkExecutionError, BudgetedModelGateway, JournaledGraderGateway,
     JournaledModelGateway, validate_exec_approval,
 )
 from trimem_freeze import (  # noqa: E402
@@ -116,9 +116,10 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     validate_request_document,
 )
 from trimem_development_trigger_preflight import (  # noqa: E402
+    EARLIER_FAILURE_RECEIPT_PATH as DEVELOPMENT_EXEC_001_FAILURE_RECEIPT_PATH,
+    EARLIER_SENTINEL_PATH as DEVELOPMENT_EXEC_001_SENTINEL_PATH,
     EXPECTED_RECOVERY_INPUT_SHA256 as DEVELOPMENT_RECOVERY_INPUT_SHA256,
-    PREVIOUS_SENTINEL_PATH as DEVELOPMENT_PREVIOUS_SENTINEL_PATH,
-    RECOVERY_FAILURE_RECEIPT_PATH as DEVELOPMENT_FAILURE_RECEIPT_PATH,
+    PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_002_SENTINEL_PATH,
     RECOVERY_PROVENANCE as DEVELOPMENT_RECOVERY_PROVENANCE,
     RECOVERY_AUTHORIZATION as DEVELOPMENT_RECOVERY_AUTHORIZATION,
     REQUEST_ID as DEVELOPMENT_REQUEST_ID,
@@ -129,6 +130,7 @@ from trimem_harness_lock import (  # noqa: E402
     HASH_BASIS as HARNESS_DEPENDENCY_HASH_BASIS,
     validate_harness_lock_configuration,
 )
+from trimem_install_pinned_gh import load_gh_cli_lock  # noqa: E402
 from trimem_multi_swe_contract import validate_report_semantics_lock  # noqa: E402
 from trimem_multi_swe_report_semantics import validate_public_summary  # noqa: E402
 from trimem_official_grader import adapter_evidence_envelope_contract  # noqa: E402
@@ -242,6 +244,25 @@ SMOKE_PASS_ENDPOINT = (
     "TRIMEM_V1_GRADER_SMOKE_PASS_READY_FOR_DEVELOPMENT_APPROVAL"
 )
 DEVELOPMENT_INCOMPLETE_ENDPOINT = "TRIMEM_V1_DEV_INCOMPLETE"
+DEVELOPMENT_EXEC_001_FAILURE_RECEIPT_RAW_SHA256 = (
+    "16bda3012e29d6a3659d5a96537615db7ed72fa817e541e16db2c4d5d5d79868"
+)
+DEVELOPMENT_EXEC_001_REQUEST_RAW_SHA256 = (
+    "7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db"
+)
+DEVELOPMENT_EXEC_001_HEAD = "6eba1b0f9462c3b29323a9ade290470551bfd0ed"
+DEVELOPMENT_EXEC_001_RUN_ID = 33_727_051_040
+DEVELOPMENT_EXEC_001_RUN_ATTEMPT = 1
+DEVELOPMENT_EXEC_001_FAILURE_LABEL = (
+    "TRIMEM_DEV_TRIGGER_PREFLIGHT_DEPENDENCY_IMPORT_FAILURE"
+)
+DEVELOPMENT_EXEC_001_RECOVERY_AUTHORIZATION = (
+    "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE"
+)
+DEVELOPMENT_EXEC_001_EXTERNAL_AUTHORIZATION = (
+    "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_APPROVED_ONCE"
+)
+DEVELOPMENT_EXEC_002_REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002"
 DEVELOPMENT_EXEC_002_FAILURE_RECEIPT_PATH = (
     "artifacts/trimem_v1/development_tuning_exec/exec-002/"
     "protected-exec-gate-failure-receipt.json"
@@ -266,11 +287,6 @@ DEVELOPMENT_EXEC_002_REQUEST_RAW_SHA256 = (
     "c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98"
 )
 DEVELOPMENT_EXEC_002_FAILURE_LABEL = "TRIMEM_DEV_EXEC_GATE_GH_CLI_MISSING"
-DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER = (
-    "DEVELOPMENT_TUNING request _002 and run 33739545314 attempt 1 are final "
-    "and consumed after a protected EXEC-gate failure; no retry, attempt 2, "
-    "_003 request, or future benchmark execution is authorized"
-)
 DEVELOPMENT_EXEC_002_ACCOUNTING = {
     "api_calls": 0,
     "cached_input_tokens": 0,
@@ -314,12 +330,15 @@ P014_EVIDENCE_INVENTORY_RAW_SHA256 = (
 )
 SMOKE_ATTESTATION_POLICY_PATH = "configs/trimem_v1/smoke_attestation_policy.json"
 SMOKE_TRUSTED_ROOT_PATH = "configs/trimem_v1/sigstore_trusted_root.jsonl"
+SMOKE_GH_CLI_LOCK_PATH = "configs/trimem_v1/gh_cli_lock.json"
 SMOKE_ATTESTATION_ACTION = (
     "actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6"
 )
 SMOKE_PROTECTED_ENVIRONMENT_OID = "1.3.6.1.4.1.57264.1.23"
 SMOKE_OIDC_ISSUER = "https://token.actions.githubusercontent.com"
-SMOKE_GH_VERSION_LINE = "gh version 2.97.0 (2026-07-31)"
+SMOKE_GH_VERSION_LINE = load_gh_cli_lock(
+    ROOT / SMOKE_GH_CLI_LOCK_PATH
+)["expected_first_version_line"]
 SMOKE_GITHUB_API_ACCEPT = "application/vnd.github+json"
 SMOKE_GITHUB_API_VERSION = "2022-11-28"
 SMOKE_RUN_API_ROUTE_TEMPLATE = (
@@ -329,6 +348,28 @@ SMOKE_RUN_API_JSON_PROJECTION = (
     "{id,run_attempt,event,status,conclusion,head_sha,head_branch,path,"
     "workflow_id,repository_full_name:.repository.full_name}"
 )
+ATTESTATION_ONLY_EXECUTION = {
+    "api_calls": 0,
+    "database_operations": 0,
+    "decomposition_calls": 0,
+    "docker_image_pulls": 0,
+    "extraction_calls": 0,
+    "grader_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "model_gateway_calls": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "reasoning_tokens": 0,
+    "solve_calls": 0,
+    "support_service_containers": 0,
+    "support_service_image_pulls": 0,
+    "target_image_pulls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0,
+}
 
 
 def _smoke_cert_identity(source_ref: str) -> str:
@@ -1096,6 +1137,99 @@ def verify_official_smoke_attestation_cryptographically() -> None:
         "GitHub official smoke run-attempt verification failed",
     )
     _validate_live_workflow_run_attempt(live.stdout, subject)
+
+
+def verify_smoke_attestation_only() -> dict[str, Any]:
+    """Run the paid-phase smoke attestation gate without a paid phase.
+
+    This wrapper adds only immutable-byte observations and a zero-scientific-
+    execution receipt.  Cryptographic and live-run semantics remain owned by
+    ``verify_official_smoke_attestation_cryptographically``, which is also the
+    function called from the benchmark execution gate.
+    """
+
+    gh_lock_path = ROOT / SMOKE_GH_CLI_LOCK_PATH
+    gh_lock_raw = gh_lock_path.read_bytes()
+    gh_lock = load_gh_cli_lock(gh_lock_path)
+    require(
+        gh_lock["expected_first_version_line"] == SMOKE_GH_VERSION_LINE,
+        "smoke attestation verifier and pinned gh lock version differ",
+    )
+    policy = validate_smoke_attestation_policy()
+    smoke = read_json(ARTIFACT / "grader_smoke_result.json")
+    evidence = smoke.get("official_execution_evidence")
+    require(isinstance(evidence, dict), "official smoke execution evidence is missing")
+
+    paths = {
+        "trusted_root": ROOT / SMOKE_TRUSTED_ROOT_PATH,
+        "attestation_subject": ROOT / OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
+        "attestation_bundle": ROOT / OFFICIAL_SMOKE_ATTESTATION_BUNDLE_PATH,
+        "evidence_inventory": ROOT / OFFICIAL_SMOKE_EVIDENCE_INVENTORY_PATH,
+        "public_result": ROOT / OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
+    }
+    before = {name: path.read_bytes() for name, path in paths.items()}
+    expected_hashes = {
+        "trusted_root": policy["trusted_root"]["raw_sha256"],
+        "attestation_subject": evidence.get("attestation_subject_raw_sha256"),
+        "attestation_bundle": evidence.get("attestation_bundle_raw_sha256"),
+        "evidence_inventory": evidence.get("evidence_inventory_raw_sha256"),
+        "public_result": evidence.get("public_result_raw_sha256"),
+    }
+    for name, raw in before.items():
+        require(
+            hashlib.sha256(raw).hexdigest() == expected_hashes[name],
+            f"{name.replace('_', ' ')} differs before attestation-only verification",
+        )
+
+    # This exact function is the sole cryptographic interpretation shared with
+    # the benchmark execution gate.  Do not replace it with a rehearsal mock or
+    # a second verifier implementation.
+    verify_official_smoke_attestation_cryptographically()
+
+    after = {name: path.read_bytes() for name, path in paths.items()}
+    require(
+        before == after,
+        "trusted root or official smoke attestation bytes changed during verification",
+    )
+    subject = _strict_json_bytes(
+        before["attestation_subject"],
+        label=OFFICIAL_SMOKE_ATTESTATION_SUBJECT_PATH,
+    )
+    execution = subject.get("execution")
+    require(isinstance(execution, dict), "official smoke attestation execution is missing")
+    certificate_policy = policy["certificate_policy"]
+    return {
+        "status": "PASS",
+        "shared_verifier": "verify_official_smoke_attestation_cryptographically",
+        "gh_cli_lock": {
+            "path": SMOKE_GH_CLI_LOCK_PATH,
+            "raw_sha256": hashlib.sha256(gh_lock_raw).hexdigest(),
+            "version": gh_lock["version"],
+            "expected_first_version_line": gh_lock["expected_first_version_line"],
+            "extracted_gh_binary_sha256": gh_lock["extracted_gh_binary_sha256"],
+        },
+        "signer": {
+            "repository": execution.get("repository"),
+            "workflow": execution.get("signer_workflow"),
+            "source_digest": execution.get("source_digest"),
+            "source_ref": execution.get("source_ref"),
+            "certificate_identity": _smoke_cert_identity(
+                str(execution.get("source_ref"))
+            ),
+            "protected_environment": certificate_policy["protected_environment"],
+        },
+        "workflow_run_id": execution.get("workflow_run_id"),
+        "workflow_run_attempt": execution.get("workflow_run_attempt"),
+        "live_run_attempt_query_count": 1,
+        "immutable_files": {
+            name: {
+                "bytes": len(raw),
+                "path": paths[name].relative_to(ROOT).as_posix(),
+                "sha256": hashlib.sha256(raw).hexdigest(),
+            }
+            for name, raw in before.items()
+        },
+    }
 
 
 def _validate_official_smoke_pass(
@@ -2914,11 +3048,14 @@ def _validated_post_smoke_readiness_state() -> dict[str, Any]:
 
 
 def _validated_development_preflight_failure() -> dict[str, Any]:
-    receipt_path = ROOT / DEVELOPMENT_FAILURE_RECEIPT_PATH
+    receipt_path = ROOT / DEVELOPMENT_EXEC_001_FAILURE_RECEIPT_PATH
     receipt_raw = receipt_path.read_bytes()
     require(
         hashlib.sha256(receipt_raw).hexdigest()
-        == DEVELOPMENT_RECOVERY_INPUT_SHA256[DEVELOPMENT_FAILURE_RECEIPT_PATH],
+        == DEVELOPMENT_EXEC_001_FAILURE_RECEIPT_RAW_SHA256
+        == DEVELOPMENT_RECOVERY_INPUT_SHA256[
+            DEVELOPMENT_EXEC_001_FAILURE_RECEIPT_PATH
+        ],
         "DEV _001 preflight-failure receipt bytes differ",
     )
     receipt = read_json(receipt_path)
@@ -2947,7 +3084,7 @@ def _validated_development_preflight_failure() -> dict[str, Any]:
         == "trimem/development-trigger-preflight-failure-receipt/1.0"
         and receipt.get("endpoint") == DEVELOPMENT_INCOMPLETE_ENDPOINT
         and receipt.get("failure_label")
-        == DEVELOPMENT_RECOVERY_PROVENANCE["failure_label"]
+        == DEVELOPMENT_EXEC_001_FAILURE_LABEL
         and receipt.get("execution_accounting") == expected_accounting,
         "DEV _001 failure receipt status or zero-execution accounting differs",
     )
@@ -2957,14 +3094,12 @@ def _validated_development_preflight_failure() -> dict[str, Any]:
     control = receipt.get("control_plane", {})
     recovery_contract = receipt.get("recovery_contract", {})
     require(
-        sentinel.get("path") == DEVELOPMENT_PREVIOUS_SENTINEL_PATH
+        sentinel.get("path") == DEVELOPMENT_EXEC_001_SENTINEL_PATH
         and sentinel.get("raw_sha256")
-        == DEVELOPMENT_RECOVERY_PROVENANCE["previous_request_raw_sha256"]
-        and workflow.get("id") == DEVELOPMENT_RECOVERY_PROVENANCE["failed_run_id"]
-        and workflow.get("run_attempt")
-        == DEVELOPMENT_RECOVERY_PROVENANCE["failed_run_attempt"]
-        and workflow.get("head_sha")
-        == DEVELOPMENT_RECOVERY_PROVENANCE["failed_execution_head"]
+        == "sha256:" + DEVELOPMENT_EXEC_001_REQUEST_RAW_SHA256
+        and workflow.get("id") == DEVELOPMENT_EXEC_001_RUN_ID
+        and workflow.get("run_attempt") == DEVELOPMENT_EXEC_001_RUN_ATTEMPT
+        and workflow.get("head_sha") == DEVELOPMENT_EXEC_001_HEAD
         and jobs.get("hosted_preflight", {}).get("conclusion") == "failure"
         and jobs.get("protected_execution", {}).get("conclusion") == "skipped"
         and jobs.get("protected_execution", {}).get("steps") == 0
@@ -2976,31 +3111,31 @@ def _validated_development_preflight_failure() -> dict[str, Any]:
     )
     require(
         recovery_contract.get("received_recovery_authorization")
-        == DEVELOPMENT_RECOVERY_AUTHORIZATION
+        == DEVELOPMENT_EXEC_001_RECOVERY_AUTHORIZATION
         and recovery_contract.get("protected_execution_authorization_required")
-        == DEVELOPMENT_EXECUTION_AUTHORIZATION,
+        == DEVELOPMENT_EXEC_001_EXTERNAL_AUTHORIZATION,
         "DEV recovery and protected-execution authorities are conflated",
     )
     return {
         "endpoint": DEVELOPMENT_INCOMPLETE_ENDPOINT,
         "evidence": {
-            "failure_receipt_path": DEVELOPMENT_FAILURE_RECEIPT_PATH,
+            "failure_receipt_path": DEVELOPMENT_EXEC_001_FAILURE_RECEIPT_PATH,
             "failure_receipt_raw_sha256": hashlib.sha256(receipt_raw).hexdigest(),
-            "previous_request_path": DEVELOPMENT_PREVIOUS_SENTINEL_PATH,
-            "previous_request_raw_sha256": DEVELOPMENT_RECOVERY_PROVENANCE[
-                "previous_request_raw_sha256"
-            ].removeprefix("sha256:"),
+            "previous_request_path": DEVELOPMENT_EXEC_001_SENTINEL_PATH,
+            "previous_request_raw_sha256": DEVELOPMENT_EXEC_001_REQUEST_RAW_SHA256,
         },
         "execution_accounting": expected_accounting,
-        "failure_label": DEVELOPMENT_RECOVERY_PROVENANCE["failure_label"],
+        "failure_label": DEVELOPMENT_EXEC_001_FAILURE_LABEL,
         "recovery": {
             "attempt_two_allowed": False,
             "protected_execution_authorization_required": (
-                DEVELOPMENT_EXECUTION_AUTHORIZATION
+                DEVELOPMENT_EXEC_001_EXTERNAL_AUTHORIZATION
             ),
-            "received_recovery_authorization": DEVELOPMENT_RECOVERY_AUTHORIZATION,
-            "request_id": DEVELOPMENT_REQUEST_ID,
-            "request_path": DEVELOPMENT_SENTINEL_PATH,
+            "received_recovery_authorization": (
+                DEVELOPMENT_EXEC_001_RECOVERY_AUTHORIZATION
+            ),
+            "request_id": DEVELOPMENT_EXEC_002_REQUEST_ID,
+            "request_path": DEVELOPMENT_EXEC_002_SENTINEL_PATH,
             "single_new_attempt_one_run_allowed": True,
         },
         "schema": "trimem/development-preflight-failure-status/1.0",
@@ -3053,21 +3188,23 @@ def _validated_development_exec_002_failure() -> dict[str, Any]:
     expected_sentinel = {
         "execution_head": DEVELOPMENT_EXEC_002_HEAD,
         "immutable": True,
-        "path": DEVELOPMENT_SENTINEL_PATH,
+        "path": DEVELOPMENT_EXEC_002_SENTINEL_PATH,
         "raw_sha256": "sha256:" + DEVELOPMENT_EXEC_002_REQUEST_RAW_SHA256,
-        "request_id": DEVELOPMENT_REQUEST_ID,
-        "sole_change": f"A\t{DEVELOPMENT_SENTINEL_PATH}",
+        "request_id": DEVELOPMENT_EXEC_002_REQUEST_ID,
+        "sole_change": f"A\t{DEVELOPMENT_EXEC_002_SENTINEL_PATH}",
         "source_head": DEVELOPMENT_EXEC_002_SOURCE_HEAD,
     }
     require(sentinel == expected_sentinel, "DEV _002 sentinel identity differs")
-    sentinel_raw = (ROOT / DEVELOPMENT_SENTINEL_PATH).read_bytes()
+    sentinel_raw = (ROOT / DEVELOPMENT_EXEC_002_SENTINEL_PATH).read_bytes()
     require(
         hashlib.sha256(sentinel_raw).hexdigest()
         == DEVELOPMENT_EXEC_002_REQUEST_RAW_SHA256,
         "DEV _002 committed sentinel bytes differ",
     )
     require(
-        _historical_git_file(DEVELOPMENT_EXEC_002_HEAD, DEVELOPMENT_SENTINEL_PATH)
+        _historical_git_file(
+            DEVELOPMENT_EXEC_002_HEAD, DEVELOPMENT_EXEC_002_SENTINEL_PATH
+        )
         == sentinel_raw,
         "DEV _002 historical sentinel blob differs",
     )
@@ -3103,7 +3240,8 @@ def _validated_development_exec_002_failure() -> dict[str, Any]:
     )
     require(
         changes.returncode == 0
-        and changes.stdout.splitlines() == [f"A\t{DEVELOPMENT_SENTINEL_PATH}"],
+        and changes.stdout.splitlines()
+        == [f"A\t{DEVELOPMENT_EXEC_002_SENTINEL_PATH}"],
         "DEV _002 historical commit was not sentinel-only",
     )
 
@@ -3281,9 +3419,10 @@ def _validated_development_exec_002_failure() -> dict[str, Any]:
         "authority": {
             "attempt_one_consumed": True,
             "attempt_two_allowed": False,
-            "future_recovery_authority_received": False,
+            "fresh_attempt_one_request": DEVELOPMENT_REQUEST_ID,
+            "future_recovery_authority_received": True,
             "request_002_final": True,
-            "request_003_allowed": False,
+            "request_003_allowed_after_exact_remote_gates": True,
             "rerun_allowed": False,
         },
         "endpoint": DEVELOPMENT_INCOMPLETE_ENDPOINT,
@@ -3294,7 +3433,7 @@ def _validated_development_exec_002_failure() -> dict[str, Any]:
             ),
             "failure_report_path": DEVELOPMENT_EXEC_002_FAILURE_REPORT_PATH,
             "failure_report_raw_sha256": DEVELOPMENT_EXEC_002_FAILURE_REPORT_RAW_SHA256,
-            "request_path": DEVELOPMENT_SENTINEL_PATH,
+            "request_path": DEVELOPMENT_EXEC_002_SENTINEL_PATH,
             "request_raw_sha256": DEVELOPMENT_EXEC_002_REQUEST_RAW_SHA256,
         },
         "execution_accounting": dict(DEVELOPMENT_EXEC_002_ACCOUNTING),
@@ -3317,13 +3456,17 @@ def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
     plan = read_json(ARTIFACT / "readiness_requirements.json")
-    require(plan.get("schema") == "trimem/readiness-requirements/1.7", "readiness requirements are stale")
+    require(plan.get("schema") == "trimem/readiness-requirements/1.8", "readiness requirements are stale")
     derived = _validated_post_smoke_readiness_state()
     historical_development_failure = _validated_development_preflight_failure()
     development_failure = _validated_development_exec_002_failure()
     derived["current_status"]["DEV_APPROVAL_ALLOWED"] = "NO"
     derived["current_status"]["DEV_EXECUTION_ALLOWED"] = "NO"
+    derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = "NOT_STARTED"
     derived["current_status"]["ENDPOINT"] = DEVELOPMENT_INCOMPLETE_ENDPOINT
+    derived["current_status"]["FAILURE_SUBTYPE"] = (
+        DEVELOPMENT_EXEC_002_FAILURE_LABEL
+    )
     derived["current_status"]["PERFORMANCE"] = "NOT_MEASURED"
     derived["current_status"]["SCIENTIFIC_RESULT"] = (
         "NO_DEVELOPMENT_SCIENTIFIC_RESULT"
@@ -3366,9 +3509,11 @@ def validate_readiness_plan(
         authorization
         == {
             "active_development_approval": False,
-            "amendment_classification": "PRE_EXECUTION_COST_PERFORMANCE_AMENDMENT",
+            "amendment_classification": (
+                "NON_SEMANTIC_RUNNER_TOOLCHAIN_DEPENDENCY_FIX"
+            ),
             "amendment_evidence_path": (
-                "artifacts/trimem_v1/development_model_pricing_amendment.json"
+                "artifacts/trimem_v1/development_runner_toolchain_amendment.json"
             ),
             "approval_request_eligible": False,
             "attempt_one_consumed": True,
@@ -3378,11 +3523,13 @@ def validate_readiness_plan(
             "grader_smoke_rerun_authorized": False,
             "hard_cap_total_usd": 50.0,
             "heldout_execution_authorized": False,
-            "future_recovery_authority_received": False,
+            "future_recovery_authority_received": True,
             "meaning": (
                 "The approved _002 attempt-1 run failed before scientific "
-                "execution and is final and consumed. No retry, _003 request, "
-                "or future benchmark execution is authorized."
+                "execution and is final and consumed. The explicit D1.2 "
+                "authority permits one fresh _003 attempt-1 path only after "
+                "the exact correction HEAD passes every credential-free gate "
+                "and the dedicated self-hosted toolchain rehearsal."
             ),
             "model_id": "gpt-5.4-mini-2026-03-17",
             "prior_failed_run_reusable": False,
@@ -3391,11 +3538,12 @@ def validate_readiness_plan(
             "recovery_request_id": DEVELOPMENT_REQUEST_ID,
             "recovery_request_path": DEVELOPMENT_SENTINEL_PATH,
             "request_002_final": True,
-            "request_003_allowed": False,
+            "request_003_allowed_after_exact_remote_gates": True,
             "rerun_allowed": False,
             "selected_m2_checkpoint": (
                 "PRE_DEVELOPMENT; no development result or checkpoint was produced"
             ),
+            "toolchain_rehearsal_required_before_request_003": True,
         },
         "post-smoke development authorization boundary differs",
     )
@@ -3458,6 +3606,7 @@ def validate_readiness_plan(
             "_002" in str(item)
             and "consumed" in str(item)
             and "_003" in str(item)
+            and "exact correction HEAD" in str(item)
             for item in remaining
         ),
         "post-smoke remaining phase gates differ",
@@ -4067,7 +4216,8 @@ def validate_workflows() -> None:
         and "push:" in benchmark_text
         and "      - codex/trimem-coder-v1" in benchmark_text
         and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
-        and "group: trimem-v1-development-tuning-exec-002" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-003" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-002" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-001" not in benchmark_text
         and "cancel-in-progress: false" in benchmark_text
         and "branch-trigger-preflight:" in benchmark_text
@@ -4088,6 +4238,7 @@ def validate_workflows() -> None:
         in benchmark_preflight
         and "python -I -S scripts/trimem_development_trigger_preflight.py"
         in benchmark_preflight
+        and "GH_TOKEN: ${{ github.token }}" in benchmark_preflight
         and "secrets." not in benchmark_preflight
         and "environment:" not in benchmark_preflight
         and "services:" not in benchmark_preflight
@@ -4170,7 +4321,7 @@ def validate_workflows() -> None:
     )
     require(
         "permissions:\n  actions: read\n  contents: read" in benchmark_text
-        and benchmark_text.count("GH_TOKEN: ${{ github.token }}") == 1
+        and benchmark_text.count("GH_TOKEN: ${{ github.token }}") == 2
         and 0 <= gate_start < gate_end
         and gate_start < secret_gate < gate_end < image_pull
         and 'test -n "$OPENAI_API_KEY"'
@@ -4212,9 +4363,15 @@ def validate_workflows() -> None:
 
 def validate_eol_policy() -> None:
     attributes = (ROOT / ".gitattributes").read_text(encoding="utf-8")
-    require("scripts/trimem_*.py text eol=lf" in attributes and "configs/trimem_v1/** text eol=lf" in attributes, "cross-platform LF freeze policy is absent")
+    require(
+        "scripts/trimem_*.py text eol=lf" in attributes
+        and "configs/trimem_v1/** text eol=lf" in attributes
+        and "/COMPANY_HANDOFF_MANIFEST.json text eol=lf" in attributes,
+        "cross-platform LF freeze/product-manifest policy is absent",
+    )
     representative = (
-        ".gitattributes", ".gitignore", "alembic.ini", "DEPENDENCY_PROVENANCE.json", "requirements.lock",
+        ".gitattributes", ".gitignore", "alembic.ini", "DEPENDENCY_PROVENANCE.json",
+        "COMPANY_HANDOFF_MANIFEST.json", "requirements.lock",
         "pyproject.toml", "configs/trimem_v1/model_lock.json", "scripts/trimem_freeze.py",
         "scripts/check_migration_head.py", "docs/TRIMEM_V1_SYSTEM.md",
         "reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md",
@@ -4333,7 +4490,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
 
 def preapproval_blockers() -> list[str]:
     _validated_development_exec_002_failure()
-    blockers = [DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER]
+    blockers: list[str] = []
     selected = validate_selected_m2(require_frozen=False)
     if selected.get("status") != "PRE_DEVELOPMENT":
         blockers.append("pre-development selection placeholder is not exact")
@@ -4363,11 +4520,13 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
         name = {"GRADER_SMOKE": "grader-smoke", "DEVELOPMENT_TUNING": "development", "HELDOUT_BENCHMARK": "heldout"}.get(phase)
         if name is None:
             return ["external approval phase is unknown"], None
-        if name in {"development", "heldout"}:
+        if name == "heldout":
             _validated_development_exec_002_failure()
-            return [DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER], name
+            return ["HELDOUT_BENCHMARK is not authorized by D1.2"], name
+        if name == "development":
+            _validated_development_exec_002_failure()
         validate_exec_approval(name, approval_file)
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, BenchmarkExecutionError) as exc:
         return [str(exc)], None
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
     try:
@@ -4404,7 +4563,17 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--level", choices=("static", "benchmark-approval", "grader-smoke-exec", "benchmark-exec"), default="static")
+    parser.add_argument(
+        "--level",
+        choices=(
+            "static",
+            "benchmark-approval",
+            "grader-smoke-exec",
+            "benchmark-exec",
+            "smoke-attestation-only",
+        ),
+        default="static",
+    )
     parser.add_argument("--require-git-tracked", action="store_true")
     parser.add_argument("--approval-file", type=Path)
     parser.add_argument("--pre-cell-failure-output", type=Path)
@@ -4416,6 +4585,7 @@ def main() -> int:
             "--pre-cell-failure-output requires grader-smoke-exec and --approval-file"
         )
     validated_approval_binding: dict[str, Any] | None = None
+    attestation_verification: dict[str, Any] | None = None
 
     def record_exec_gate_failure(reason: str) -> None:
         if (
@@ -4468,8 +4638,14 @@ def main() -> int:
         if args.level == "benchmark-approval":
             blockers = preapproval_blockers()
         elif args.level == "benchmark-exec":
-            _validated_development_exec_002_failure()
-            blockers = [DEVELOPMENT_EXEC_002_CONSUMED_BLOCKER]
+            if args.approval_file is None:
+                blockers = ["external immutable approval file is required"]
+            else:
+                blockers, phase = execution_blockers(args.approval_file.resolve())
+            if phase not in {None, "development", "heldout"}:
+                blockers.append("benchmark gate received a non-benchmark approval")
+        elif args.level == "smoke-attestation-only":
+            attestation_verification = verify_smoke_attestation_only()
         elif args.level == "grader-smoke-exec":
             if args.approval_file is None:
                 blockers = ["external immutable approval file is required"]
@@ -4495,11 +4671,29 @@ def main() -> int:
             "status": "PASS" if not blockers else "FAIL_CLOSED",
             "trimem_system_implementation": "CREDENTIAL_FREE_GREEN",
         }
+        if (
+            args.level == "benchmark-exec"
+            and phase == "development"
+            and not blockers
+        ):
+            report["dev_approval_allowed"] = True
+            report["dev_execution_allowed"] = True
+        if attestation_verification is not None:
+            report["attestation_verification"] = attestation_verification
+            report["attestation_only_execution"] = dict(
+                ATTESTATION_ONLY_EXECUTION
+            )
         if blockers:
             record_exec_gate_failure("; ".join(blockers))
         print(json.dumps(report, ensure_ascii=False, sort_keys=True))
         return 0 if not blockers else 1
-    except (OSError, ValueError, json.JSONDecodeError, subprocess.SubprocessError) as exc:
+    except (
+        OSError,
+        ValueError,
+        BenchmarkExecutionError,
+        json.JSONDecodeError,
+        subprocess.SubprocessError,
+    ) as exc:
         record_exec_gate_failure(str(exc).strip() or type(exc).__name__)
         print(json.dumps({"error": str(exc), "level": args.level, "status": "FAIL"}, ensure_ascii=False, sort_keys=True))
         return 1

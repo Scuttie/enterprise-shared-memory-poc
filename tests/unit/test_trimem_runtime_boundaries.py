@@ -177,7 +177,7 @@ def test_async_paid_provider_bridge_requires_scope_exact_model_and_usage():
             response = ModelResponse(
                 text='{"tool":"list_files","arguments":{}}',
                 finish_reason="completed",
-                returned_model="gpt-5.4-2026-03-05",
+                returned_model="gpt-5.4-mini-2026-03-17",
                 provider_request_id="req-fixture",
                 input_tokens=11,
                 output_tokens=7,
@@ -187,8 +187,8 @@ def test_async_paid_provider_bridge_requires_scope_exact_model_and_usage():
                 logical_request_id=logical_request_id,
                 attempts=2,
                 provider_request_id="req-fixture",
-                requested_model="gpt-5.4-2026-03-05",
-                returned_model="gpt-5.4-2026-03-05",
+                requested_model="gpt-5.4-mini-2026-03-17",
+                returned_model="gpt-5.4-mini-2026-03-17",
                 prompt_hash="a" * 64,
                 response_hash="b" * 64,
                 input_tokens=11,
@@ -202,7 +202,7 @@ def test_async_paid_provider_bridge_requires_scope_exact_model_and_usage():
             return response, record
 
     gateway = AsyncProviderModelGateway(
-        Provider(), asyncio.run, expected_model="gpt-5.4-2026-03-05"
+        Provider(), asyncio.run, expected_model="gpt-5.4-mini-2026-03-17"
     )
     request = GatewayRequest(
         task_id="t", arm="M0", step_no=1, call_kind="solve", logical_call_id="call-1",
@@ -231,7 +231,7 @@ def test_async_paid_provider_bridge_rejects_impossible_usage_subsets(
             response = ModelResponse(
                 text='{"tool":"list_files","arguments":{}}',
                 finish_reason="completed",
-                returned_model="gpt-5.4-2026-03-05",
+                returned_model="gpt-5.4-mini-2026-03-17",
                 provider_request_id="req-impossible-usage",
                 input_tokens=11,
                 output_tokens=7,
@@ -241,8 +241,8 @@ def test_async_paid_provider_bridge_rejects_impossible_usage_subsets(
                 logical_request_id=logical_request_id,
                 attempts=1,
                 provider_request_id="req-impossible-usage",
-                requested_model="gpt-5.4-2026-03-05",
-                returned_model="gpt-5.4-2026-03-05",
+                requested_model="gpt-5.4-mini-2026-03-17",
+                returned_model="gpt-5.4-mini-2026-03-17",
                 prompt_hash="a" * 64,
                 response_hash="b" * 64,
                 input_tokens=11,
@@ -256,7 +256,7 @@ def test_async_paid_provider_bridge_rejects_impossible_usage_subsets(
             return response, record
 
     gateway = AsyncProviderModelGateway(
-        Provider(), asyncio.run, expected_model="gpt-5.4-2026-03-05"
+        Provider(), asyncio.run, expected_model="gpt-5.4-mini-2026-03-17"
     )
     with pytest.raises(Exception, match="invalid_token_usage"):
         gateway.invoke(GatewayRequest(
@@ -271,8 +271,8 @@ def test_failed_provider_invalid_usage_is_explicit_and_consumes_unknown_usage_sh
         async def generate(self, request, *, logical_request_id, org_id):
             record = ModelCallRecord(
                 logical_request_id=logical_request_id, attempts=1,
-                provider_request_id="req-invalid", requested_model="gpt-5.4-2026-03-05",
-                returned_model="gpt-5.4-2026-03-05", prompt_hash="a" * 64,
+                provider_request_id="req-invalid", requested_model="gpt-5.4-mini-2026-03-17",
+                returned_model="gpt-5.4-mini-2026-03-17", prompt_hash="a" * 64,
                 response_hash=None, input_tokens=4, output_tokens=2, total_tokens=6,
                 first_byte_latency=None, total_latency=0.1, final_status="failed",
             )
@@ -281,7 +281,7 @@ def test_failed_provider_invalid_usage_is_explicit_and_consumes_unknown_usage_sh
             raise ProviderError("invalid provider usage", record=record)
 
     gateway = AsyncProviderModelGateway(
-        Provider(), asyncio.run, expected_model="gpt-5.4-2026-03-05"
+        Provider(), asyncio.run, expected_model="gpt-5.4-mini-2026-03-17"
     )
     with pytest.raises(GatewayInvocationFailure) as captured:
         gateway.invoke(GatewayRequest(
@@ -302,7 +302,7 @@ def test_failed_paid_provider_call_is_still_accounted_and_evidenced(tmp_path):
                 logical_request_id=logical_request_id,
                 attempts=3,
                 provider_request_id=None,
-                requested_model="gpt-5.4-2026-03-05",
+                requested_model="gpt-5.4-mini-2026-03-17",
                 returned_model=None,
                 prompt_hash="a" * 64,
                 response_hash=None,
@@ -321,7 +321,7 @@ def test_failed_paid_provider_call_is_still_accounted_and_evidenced(tmp_path):
     evidence = RawEvidenceLedger(tmp_path / "failure-evidence", clock=lambda: "2026-08-31T00:00:00Z")
     gateway = RecordingModelGateway(
         AsyncProviderModelGateway(
-            FailingProvider(), asyncio.run, expected_model="gpt-5.4-2026-03-05"
+            FailingProvider(), asyncio.run, expected_model="gpt-5.4-mini-2026-03-17"
         ),
         accounting,
         evidence,
@@ -356,7 +356,7 @@ def test_paid_response_validation_failure_preserves_returned_body_and_usage(tmp_
                     logical_request_id=logical_request_id,
                     attempts=1,
                     provider_request_id="req-wrong-model",
-                    requested_model="gpt-5.4-2026-03-05",
+                    requested_model="gpt-5.4-mini-2026-03-17",
                     returned_model="unexpected-model",
                     prompt_hash="a" * 64,
                     response_hash="b" * 64,
@@ -372,7 +372,7 @@ def test_paid_response_validation_failure_preserves_returned_body_and_usage(tmp_
     evidence = RawEvidenceLedger(tmp_path / "wrong-model", clock=lambda: "2026-08-31T00:00:00Z")
     gateway = RecordingModelGateway(
         AsyncProviderModelGateway(
-            WrongModelProvider(), asyncio.run, expected_model="gpt-5.4-2026-03-05"
+            WrongModelProvider(), asyncio.run, expected_model="gpt-5.4-mini-2026-03-17"
         ),
         accounting,
         evidence,

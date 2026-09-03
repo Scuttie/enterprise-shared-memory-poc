@@ -96,8 +96,8 @@
     "extraction_calls": "task_arm_runs * exactly one extraction call; never folded into solve calls",
     "grader_containers": "12 GOLD/NOOP_BASELINE smoke condition rows + 72 development task-arm runs + 81 held-out task-arm runs",
     "heldout_physical_runs": "27 held-out targets * M0/M1/selected-M2 = 81",
-    "model_cost": "uncached_input_tokens * 2.50/1M + cached_input_tokens * 0.25/1M + output_tokens * 15.00/1M USD",
-    "no_long_context_surcharge": "each request reserves len(UTF-8 prompt bytes)+4096 envelope tokens and is rejected above 262000, conservatively below the 272K-token surcharge threshold",
+    "model_cost": "uncached_input_tokens * 0.75/1M + cached_input_tokens * 0.075/1M + output_tokens * 4.50/1M USD",
+    "preserved_conservative_input_ceiling": "each request reserves len(UTF-8 prompt bytes)+4096 envelope tokens and is rejected above 262000; this unchanged runtime ceiling is stricter than the documented 400000-token Mini context window",
     "solve_calls": "sum of actual solve calls; expected 12 and hard maximum 24 per task-arm",
     "stream_order": "each candidate/arm has one independent frozen serial task sequence; stream order is not multiplied into task N"
   },
@@ -123,7 +123,7 @@
         "model_calls": 1008,
         "output_tokens": 432000,
         "task_arm_runs": 72,
-        "total_usd": 36.0
+        "total_usd": 10.8
       },
       "GRADER_SMOKE": {
         "grader_containers": 12,
@@ -136,20 +136,20 @@
         "model_calls": 1134,
         "output_tokens": 486000,
         "task_arm_runs": 81,
-        "total_usd": 40.5
+        "total_usd": 12.15
       }
     },
     "solve_calls": 1836,
     "status": "FROZEN_PLANNING_ESTIMATE",
     "task_arm_runs": 153,
-    "total_usd": 76.5
+    "total_usd": 22.95
   },
   "model_pricing": {
-    "cached_input_per_million_tokens_usd": 0.25,
-    "input_per_million_tokens_usd": 2.5,
-    "model_id": "gpt-5.4-2026-03-05",
-    "output_per_million_tokens_usd": 15.0,
-    "source_url": "https://developers.openai.com/api/docs/models/gpt-5.4"
+    "cached_input_per_million_tokens_usd": 0.075,
+    "input_per_million_tokens_usd": 0.75,
+    "model_id": "gpt-5.4-mini-2026-03-17",
+    "output_per_million_tokens_usd": 4.5,
+    "source_url": "https://developers.openai.com/api/docs/models/gpt-5.4-mini"
   },
   "phase_hard_caps": {
     "DEVELOPMENT_TUNING": {
@@ -164,8 +164,8 @@
       "paid_model_calls": 1872,
       "solve_calls": 1728,
       "task_arm_runs": 72,
-      "total_usd": 150.0,
-      "uncached_token_cost_ceiling_usd": 146.95488
+      "total_usd": 50.0,
+      "uncached_token_cost_ceiling_usd": 44.086464
     },
     "GRADER_SMOKE": {
       "benchmark_grader_containers": 12,
@@ -192,7 +192,7 @@
       "solve_calls": 1944,
       "task_arm_runs": 81,
       "total_usd": 170.0,
-      "uncached_token_cost_ceiling_usd": 165.32424
+      "uncached_token_cost_ceiling_usd": 49.597272
     }
   },
   "proposed_hard_cap": {
@@ -210,8 +210,8 @@
     "solve_calls": 3672,
     "status": "PROPOSED_PENDING_SEPARATE_PHASE_EXEC_APPROVALS",
     "task_arm_runs": 153,
-    "total_usd": 320.0,
-    "uncached_token_cost_ceiling_usd": 312.27912
+    "total_usd": 220.0,
+    "uncached_token_cost_ceiling_usd": 93.683736
   },
   "run_counts": {
     "development_m0_m1_runs_after_selection": 24,
@@ -224,6 +224,6 @@
     "heldout_unique_instances": 27,
     "total_physical_task_arm_runs": 153
   },
-  "schema": "trimem/cost-plan/1.3",
+  "schema": "trimem/cost-plan/1.4",
   "status": "FROZEN_FOR_BENCHMARK_APPROVAL"
 }

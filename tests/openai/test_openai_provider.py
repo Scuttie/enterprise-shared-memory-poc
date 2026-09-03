@@ -66,10 +66,10 @@ def test_gpt56_schema_reasoning_no_temperature():
     assert rec.input_tokens == 100 and rec.output_tokens == 50
 
 
-def test_gpt54_dated_snapshot_schema_reasoning_no_temperature():
-    c = FakeClient([FakeResp(200, ok_body(model="gpt-5.4-2026-03-05"))])
+def test_gpt54_mini_dated_snapshot_schema_reasoning_no_temperature():
+    c = FakeClient([FakeResp(200, ok_body(model="gpt-5.4-mini-2026-03-17"))])
     p = OpenAIResponsesProvider(
-        "https://fake/v1", "gpt-5.4-2026-03-05", FakeSecrets(), family="gpt5.4",
+        "https://fake/v1", "gpt-5.4-mini-2026-03-17", FakeSecrets(), family="gpt5.4",
         reasoning_effort="medium", max_retries=1, http_client=c,
     )
     run(p.generate(

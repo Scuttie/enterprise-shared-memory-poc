@@ -600,7 +600,7 @@ class AtomicBudgetLedger:
         if not logical_call_id or input_upper_bound <= 0 or output_cap <= 0:
             raise ValueError("reservation requires a logical call and positive bounds")
         if input_upper_bound > 262_000:
-            raise BenchmarkExecutionError("per-call conservative input bound exceeds the frozen no-surcharge cap")
+            raise BenchmarkExecutionError("per-call conservative input bound exceeds the frozen runtime cap")
         amount = input_upper_bound * self.pricing["input"] / 1_000_000 + output_cap * self.pricing["output"] / 1_000_000
         reservation_id = sha256_bytes(canonical_bytes({
             "approval": self.approval_digest, "logical_call_id": logical_call_id,
@@ -889,8 +889,18 @@ def build_paid_model_gateway(
 ):
     import httpx
     model = model_lock.get("primary_model", {}).get("model_id")
-    if model != "gpt-5.4-2026-03-05":
+    if model != "gpt-5.4-mini-2026-03-17":
         raise BenchmarkExecutionError("model lock does not select the frozen dated snapshot")
+    roles = model_lock.get("model_roles", {})
+    if (
+        set(roles) != {"decomposition", "solve", "experience_extraction"}
+        or any(
+            not isinstance(roles.get(role), Mapping)
+            or roles[role].get("model_id") != model
+            for role in roles
+        )
+    ):
+        raise BenchmarkExecutionError("all benchmark model roles must use the frozen Mini snapshot")
     runner = getattr(session, "coroutine_runner", None)
     if not callable(runner):
         raise BenchmarkExecutionError("production arm has no long-lived coroutine runner")

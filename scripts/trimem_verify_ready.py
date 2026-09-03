@@ -2108,13 +2108,37 @@ def validate_model_cost_environment() -> None:
     model = read_json(CONFIG / "model_lock.json")
     primary = model.get("primary_model", {})
     require(model.get("status") == "FROZEN_PRE_EXEC_EXECUTION_PENDING_APPROVAL", "model lock status is overstated")
-    require(primary.get("model_id") == "gpt-5.4-2026-03-05" and primary.get("status") == "FROZEN", "dated model snapshot is not frozen")
-    require((primary.get("input_price_per_million_tokens_usd"), primary.get("cached_input_price_per_million_tokens_usd"), primary.get("output_price_per_million_tokens_usd")) == (2.5, 0.25, 15.0), "official model pricing drift")
+    require(model.get("schema") == "trimem/model-lock/1.2", "model lock schema is stale")
+    require(primary.get("model_id") == "gpt-5.4-mini-2026-03-17" and primary.get("status") == "FROZEN", "dated Mini model snapshot is not frozen")
+    require((primary.get("input_price_per_million_tokens_usd"), primary.get("cached_input_price_per_million_tokens_usd"), primary.get("output_price_per_million_tokens_usd")) == (0.75, 0.075, 4.5), "official Mini model pricing drift")
+    roles = model.get("model_roles", {})
+    require(
+        set(roles) == {"decomposition", "solve", "experience_extraction"}
+        and all(
+            isinstance(roles.get(role), dict)
+            and roles[role].get("model_id") == "gpt-5.4-mini-2026-03-17"
+            and roles[role].get("status") == "FROZEN_EXECUTION_PENDING_APPROVAL"
+            for role in roles
+        ),
+        "decomposition, solving, and extraction are not locked to one Mini snapshot",
+    )
+    require("gpt-5.4-nano" not in " ".join(strings(model)).lower(), "Nano is mixed into the Mini model lock")
     require("gpt-5.6" not in " ".join(strings(model)), "unselected floating performance alternative remains")
     schema = model.get("request_schema")
     require(hashlib.sha256(canonical(schema)).hexdigest() == model.get("request_schema_sha256"), "request schema hash mismatch")
-    guard = model.get("long_context_surcharge_guard", {})
-    require(guard.get("maximum_reserved_input_tokens_per_call") == 262000 and guard.get("contract") == "NO_LONG_CONTEXT_SURCHARGE", "long-context surcharge guard drift")
+    require(
+        schema.get("body", {}).get("model") == "gpt-5.4-mini-2026-03-17"
+        and model.get("provider_bridge", {}).get("exact_returned_model_required")
+        == "gpt-5.4-mini-2026-03-17",
+        "request or returned-model lock differs from the Mini snapshot",
+    )
+    guard = model.get("conservative_input_guard", {})
+    require(
+        guard.get("documented_model_context_window_tokens") == 400000
+        and guard.get("maximum_reserved_input_tokens_per_call") == 262000
+        and guard.get("contract") == "PRESERVED_CONSERVATIVE_INPUT_CEILING",
+        "preserved conservative input ceiling drift",
+    )
     embedder = model.get("retrieval_embedding", {}).get("production", {})
     require((embedder.get("model_id"), embedder.get("revision"), embedder.get("dimension"), embedder.get("license")) == (
         "sentence-transformers/all-MiniLM-L6-v2", "1110a243fdf4706b3f48f1d95db1a4f5529b4d41", 384, "Apache-2.0"
@@ -2123,14 +2147,159 @@ def validate_model_cost_environment() -> None:
     require(model.get("actual_execution") == {"model_gateway_calls": 0, "paid_model_calls": 0}, "pre-EXEC model counters are nonzero")
 
     cost = read_json(CONFIG / "cost_plan.json")
-    require(cost.get("schema") == "trimem/cost-plan/1.3", "cost plan schema is stale")
+    require(cost.get("schema") == "trimem/cost-plan/1.4", "cost plan schema is stale")
+    pricing = cost.get("model_pricing", {})
+    require(
+        (
+            pricing.get("model_id"),
+            pricing.get("input_per_million_tokens_usd"),
+            pricing.get("cached_input_per_million_tokens_usd"),
+            pricing.get("output_per_million_tokens_usd"),
+        )
+        == ("gpt-5.4-mini-2026-03-17", 0.75, 0.075, 4.5),
+        "cost-plan Mini model or prices drift",
+    )
     counts = cost.get("run_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_physical_task_arm_runs")) == (72, 81, 153), "physical run counts do not include four-candidate tuning")
     expected, hard = cost.get("expected_cost", {}), cost.get("proposed_hard_cap", {})
-    require((expected.get("model_calls"), expected.get("input_tokens"), expected.get("output_tokens"), expected.get("total_usd")) == (2142, 25092000, 918000, 76.5), "expected cost arithmetic drift")
-    require((hard.get("model_calls"), hard.get("input_tokens"), hard.get("output_tokens"), hard.get("total_usd")) == (3978, 76500000, 8068608, 320.0), "proposed hard-cap arithmetic drift")
+    require((expected.get("model_calls"), expected.get("input_tokens"), expected.get("output_tokens"), expected.get("total_usd")) == (2142, 25092000, 918000, 22.95), "expected cost arithmetic drift")
+    require((hard.get("model_calls"), hard.get("input_tokens"), hard.get("output_tokens"), hard.get("total_usd"), hard.get("uncached_token_cost_ceiling_usd")) == (3978, 76500000, 8068608, 220.0, 93.683736), "proposed hard-cap arithmetic drift")
     phases = cost.get("phase_hard_caps", {})
     require(phases.get("DEVELOPMENT_TUNING", {}).get("task_arm_runs") == 72 and phases.get("HELDOUT_BENCHMARK", {}).get("task_arm_runs") == 81 and phases.get("GRADER_SMOKE", {}).get("benchmark_grader_containers") == 12, "phase hard caps are incomplete")
+    expected_phases = expected.get("phase_totals", {})
+    require(
+        (
+            expected_phases.get("DEVELOPMENT_TUNING", {}).get("task_arm_runs"),
+            expected_phases.get("DEVELOPMENT_TUNING", {}).get("model_calls"),
+            expected_phases.get("DEVELOPMENT_TUNING", {}).get("input_tokens"),
+            expected_phases.get("DEVELOPMENT_TUNING", {}).get("output_tokens"),
+            expected_phases.get("DEVELOPMENT_TUNING", {}).get("total_usd"),
+        )
+        == (72, 1008, 11808000, 432000, 10.8)
+        and expected_phases.get("GRADER_SMOKE", {}).get("total_usd") == 0.0
+        and expected_phases.get("HELDOUT_BENCHMARK", {}).get("total_usd") == 12.15,
+        "phase expected-cost arithmetic drift",
+    )
+    require(
+        (
+            phases.get("DEVELOPMENT_TUNING", {}).get("total_usd"),
+            phases.get("DEVELOPMENT_TUNING", {}).get("uncached_token_cost_ceiling_usd"),
+            phases.get("HELDOUT_BENCHMARK", {}).get("total_usd"),
+            phases.get("HELDOUT_BENCHMARK", {}).get("uncached_token_cost_ceiling_usd"),
+        )
+        == (50.0, 44.086464, 170.0, 49.597272),
+        "phase hard-cap or pricing ceiling drift",
+    )
+
+    amendment = read_json(ARTIFACT / "development_model_pricing_amendment.json")
+    require(
+        amendment.get("schema") == "trimem/development-model-pricing-amendment/1.0"
+        and amendment.get("status")
+        == "FROZEN_PRE_EXECUTION_PENDING_SEPARATE_DEVELOPMENT_APPROVAL",
+        "development model/pricing amendment is not frozen pre-execution",
+    )
+    amendment_body = amendment.get("amendment", {})
+    require(
+        amendment_body.get("classification") == "PRE_EXECUTION_COST_PERFORMANCE_AMENDMENT"
+        and amendment_body.get("source_git_head")
+        == "e40a549fcf92f270c86aaf97b3a9691c99b19fef"
+        and amendment_body.get("source_freeze_raw_sha256")
+        == "971ffcd9ad25a3904f0cfa8fb82631fb3bd162bcf91c918f4f63ef9e496b90fc"
+        and amendment_body.get("after")
+        == {
+            "model_id": "gpt-5.4-mini-2026-03-17",
+            "input_price_per_million_tokens_usd": 0.75,
+            "cached_input_price_per_million_tokens_usd": 0.075,
+            "output_price_per_million_tokens_usd": 4.5,
+        }
+        and amendment_body.get("before")
+        == {
+            "model_id": "gpt-5.4-2026-03-05",
+            "input_price_per_million_tokens_usd": 2.5,
+            "cached_input_price_per_million_tokens_usd": 0.25,
+            "output_price_per_million_tokens_usd": 15.0,
+        },
+        "development model/pricing amendment identity drift",
+    )
+    require(
+        amendment.get("causal_boundary")
+        == {
+            "benchmark_model_results_observed_before_amendment": False,
+            "input_tokens_before_amendment": 0,
+            "model_gateway_calls_before_amendment": 0,
+            "output_tokens_before_amendment": 0,
+            "paid_model_calls_before_amendment": 0,
+            "task_arm_runs_before_amendment": 0,
+            "total_usd_before_amendment": 0,
+        },
+        "pre-execution causal boundary is not zero-result",
+    )
+    require(
+        amendment.get("role_lock")
+        == {
+            "decomposition": "gpt-5.4-mini-2026-03-17",
+            "experience_extraction": "gpt-5.4-mini-2026-03-17",
+            "mixed_nano_model": False,
+            "solve": "gpt-5.4-mini-2026-03-17",
+        },
+        "amendment role lock is not all-Mini",
+    )
+    require(
+        amendment.get("planning_consequences", {}).get("heldout_expected_total_usd") == 12.15
+        and amendment.get("planning_consequences", {}).get("heldout_hard_cap_total_usd") == 170.0
+        and amendment.get("planning_consequences", {}).get("global_expected_total_usd") == 22.95
+        and amendment.get("planning_consequences", {}).get("global_hard_cap_total_usd") == 220.0,
+        "amendment planning consequences drift",
+    )
+    development_contract = amendment.get("development_contract", {})
+    require(
+        (
+            development_contract.get("targets"),
+            development_contract.get("m2_joint_candidates"),
+            development_contract.get("task_arm_runs"),
+            development_contract.get("benchmark_grader_containers"),
+            development_contract.get("expected_model_calls"),
+            development_contract.get("expected_input_tokens"),
+            development_contract.get("expected_output_tokens"),
+            development_contract.get("expected_total_usd"),
+            development_contract.get("hard_cap_paid_model_calls"),
+            development_contract.get("hard_cap_input_tokens"),
+            development_contract.get("hard_cap_output_tokens"),
+            development_contract.get("hard_cap_total_usd"),
+        )
+        == (12, 4, 72, 72, 1008, 11808000, 432000, 10.8, 1872, 36000000, 3796992, 50.0),
+        "development amendment workload or cost boundary drift",
+    )
+    execution_boundary = amendment.get("execution_boundary", {})
+    require(
+        execution_boundary.get("active_development_approval") is False
+        and execution_boundary.get("development_execution_authorized") is False
+        and execution_boundary.get("grader_smoke_rerun_authorized") is False
+        and execution_boundary.get("heldout_execution_authorized") is False
+        and execution_boundary.get("new_freeze_required_before_approval") is True
+        and execution_boundary.get("separate_external_development_approval_required") is True,
+        "amendment overstates execution authority",
+    )
+    preserved = amendment.get("preserved_contracts", {}).get("path_sha256")
+    expected_preserved_paths = {
+        "artifacts/trimem_v1/grader_image_lock.json",
+        "configs/trimem_v1/arms.json",
+        "configs/trimem_v1/development_manifest.json",
+        "configs/trimem_v1/grader_lock.json",
+        "configs/trimem_v1/grader_smoke_manifest.json",
+        "configs/trimem_v1/heldout_manifest.json",
+        "configs/trimem_v1/m2_candidate_bundles.json",
+        "configs/trimem_v1/selected_m2.json",
+        "configs/trimem_v1/selection_plan.json",
+        "configs/trimem_v1/tool_environment_lock.json",
+        "src/enterprise_memory/trimem/runtime_lock.py",
+    }
+    require(isinstance(preserved, dict) and set(preserved) == expected_preserved_paths, "preserved amendment path set drift")
+    for relative, expected_sha256 in preserved.items():
+        require(
+            hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == expected_sha256,
+            f"pre-execution amendment changed a preserved contract: {relative}",
+        )
     counter_fields = {
         "api_calls", "cached_input_tokens", "decomposition_calls",
         "docker_pulls", "extraction_calls", "grader_calls",
@@ -2687,7 +2856,7 @@ def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
     plan = read_json(ARTIFACT / "readiness_requirements.json")
-    require(plan.get("schema") == "trimem/readiness-requirements/1.4", "readiness requirements are stale")
+    require(plan.get("schema") == "trimem/readiness-requirements/1.5", "readiness requirements are stale")
     derived = _validated_post_smoke_readiness_state()
     service_boundary = str(plan.get("credential_free_service_ci_boundary", ""))
     require(
@@ -2711,20 +2880,34 @@ def validate_readiness_plan(
         ),
         "primary/secondary per-benchmark aggregation readiness requirement is absent",
     )
+    require(
+        any(
+            "exact gpt-5.4-mini-2026-03-17 pricing and request schema" in str(item)
+            for item in plan.get("benchmark_approval_requires", ())
+        ),
+        "Mini snapshot and pricing readiness requirement is absent",
+    )
     authorization = plan.get("development_authorization_boundary", {})
     require(
         authorization
         == {
             "active_development_approval": False,
+            "amendment_classification": "PRE_EXECUTION_COST_PERFORMANCE_AMENDMENT",
+            "amendment_evidence_path": (
+                "artifacts/trimem_v1/development_model_pricing_amendment.json"
+            ),
             "approval_request_eligible": True,
             "development_execution_authorized": False,
+            "expected_total_usd": 10.8,
             "grader_smoke_rerun_authorized": False,
+            "hard_cap_total_usd": 50.0,
             "heldout_execution_authorized": False,
             "meaning": (
                 "DEV_APPROVAL_ALLOWED=YES grants only eligibility to request "
                 "a separate DEVELOPMENT_TUNING approval; it does not authorize "
                 "DEV execution."
             ),
+            "model_id": "gpt-5.4-mini-2026-03-17",
             "selected_m2_checkpoint": (
                 "PRE_DEVELOPMENT; produced only after separately approved "
                 "development execution"

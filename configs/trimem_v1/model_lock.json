@@ -1,5 +1,5 @@
 {
-  "schema": "trimem/model-lock/1.1",
+  "schema": "trimem/model-lock/1.2",
   "status": "FROZEN_PRE_EXEC_EXECUTION_PENDING_APPROVAL",
   "actual_execution": {
     "model_gateway_calls": 0,
@@ -7,24 +7,24 @@
   },
   "primary_model": {
     "provider": "openai",
-    "model_id": "gpt-5.4-2026-03-05",
+    "model_id": "gpt-5.4-mini-2026-03-17",
     "status": "FROZEN",
     "reason": "Officially documented dated snapshot avoids alias drift",
-    "input_price_per_million_tokens_usd": 2.5,
-    "cached_input_price_per_million_tokens_usd": 0.25,
-    "output_price_per_million_tokens_usd": 15.0
+    "input_price_per_million_tokens_usd": 0.75,
+    "cached_input_price_per_million_tokens_usd": 0.075,
+    "output_price_per_million_tokens_usd": 4.5
   },
   "model_roles": {
     "decomposition": {
-      "model_id": "gpt-5.4-2026-03-05",
+      "model_id": "gpt-5.4-mini-2026-03-17",
       "status": "FROZEN_EXECUTION_PENDING_APPROVAL"
     },
     "solve": {
-      "model_id": "gpt-5.4-2026-03-05",
+      "model_id": "gpt-5.4-mini-2026-03-17",
       "status": "FROZEN_EXECUTION_PENDING_APPROVAL"
     },
     "experience_extraction": {
-      "model_id": "gpt-5.4-2026-03-05",
+      "model_id": "gpt-5.4-mini-2026-03-17",
       "status": "FROZEN_EXECUTION_PENDING_APPROVAL"
     }
   },
@@ -38,7 +38,7 @@
     "endpoint": "https://api.openai.com/v1/responses",
     "http_method": "POST",
     "body": {
-      "model": "gpt-5.4-2026-03-05",
+      "model": "gpt-5.4-mini-2026-03-17",
       "input": "one user message containing the byte-exact common-runtime prompt",
       "reasoning": {
         "effort": "medium"
@@ -49,7 +49,7 @@
     "top_p": "OMITTED",
     "response_requirements": [
       "non-empty output text",
-      "returned model exactly gpt-5.4-2026-03-05",
+      "returned model exactly gpt-5.4-mini-2026-03-17",
       "exact non-negative input_tokens",
       "exact non-negative cached_input_tokens",
       "exact non-negative output_tokens",
@@ -57,27 +57,27 @@
       "attempt count and wall time"
     ]
   },
-  "request_schema_sha256": "649540af5f638efa1a92f8345de586c9373feaa9a5c657437171b7591e3abf42",
+  "request_schema_sha256": "ef820f9e7b0e414a3214a0dc53b96bbdb68e021016c8d0e22a133efa6c54f61c",
   "provider_bridge": {
     "async_provider_class": "enterprise_memory.providers.openai_responses.OpenAIResponsesProvider",
     "common_runtime_bridge_class": "enterprise_memory.trimem.gateway.AsyncProviderModelGateway",
     "provider_family": "gpt5.4",
-    "exact_returned_model_required": "gpt-5.4-2026-03-05",
+    "exact_returned_model_required": "gpt-5.4-mini-2026-03-17",
     "long_lived_coroutine_runner_required": true,
     "provider_retry_attempt_cap": 1
   },
-  "long_context_surcharge_guard": {
-    "official_surcharge_threshold_input_tokens_exclusive": 272000,
+  "conservative_input_guard": {
+    "documented_model_context_window_tokens": 400000,
     "conservative_reservation_formula": "UTF-8 prompt byte length + 4096 Responses-envelope tokens",
     "maximum_reserved_input_tokens_per_call": 262000,
-    "contract": "NO_LONG_CONTEXT_SURCHARGE",
+    "contract": "PRESERVED_CONSERVATIVE_INPUT_CEILING",
     "enforcement": "reject before provider send when the conservative reservation exceeds 262000; one UTF-8 byte is treated as at least one reserved token"
   },
   "pricing_evidence": {
-    "model_detail_url": "https://developers.openai.com/api/docs/models/gpt-5.4",
-    "observed_date_utc": "2026-08-31",
+    "model_detail_url": "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
+    "observed_date_utc": "2026-09-03",
     "source_policy": "official OpenAI documentation only",
-    "documented_long_context_pricing": "prompts above 272K input tokens charge the full session at 2x input and 1.5x output"
+    "context_note": "the official Mini model page documents a 400000-token context window; the stricter 262000 reservation ceiling remains unchanged as a benchmark runtime limit, not as a Mini surcharge claim"
   },
   "retrieval_embedding": {
     "production": {

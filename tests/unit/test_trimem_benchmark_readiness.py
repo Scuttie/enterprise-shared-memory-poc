@@ -323,8 +323,33 @@ def test_four_candidate_bundle_is_executable_and_preserves_hard_retrieval_limits
 
 
 def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
+    model = _read(ROOT / "configs/trimem_v1/model_lock.json")
+    assert model["schema"] == "trimem/model-lock/1.2"
+    assert model["primary_model"]["model_id"] == "gpt-5.4-mini-2026-03-17"
+    assert {
+        role["model_id"] for role in model["model_roles"].values()
+    } == {"gpt-5.4-mini-2026-03-17"}
+    assert "gpt-5.4-nano" not in json.dumps(model).lower()
+    amendment = _read(
+        ROOT / "artifacts/trimem_v1/development_model_pricing_amendment.json"
+    )
+    assert amendment["amendment"]["classification"] == (
+        "PRE_EXECUTION_COST_PERFORMANCE_AMENDMENT"
+    )
+    assert amendment["causal_boundary"]["paid_model_calls_before_amendment"] == 0
+    assert amendment["execution_boundary"]["development_execution_authorized"] is False
+    assert amendment["execution_boundary"]["grader_smoke_rerun_authorized"] is False
     cost = _read(ROOT / "configs/trimem_v1/cost_plan.json")
-    assert cost["schema"] == "trimem/cost-plan/1.3"
+    assert cost["schema"] == "trimem/cost-plan/1.4"
+    assert cost["model_pricing"] == {
+        "cached_input_per_million_tokens_usd": 0.075,
+        "input_per_million_tokens_usd": 0.75,
+        "model_id": "gpt-5.4-mini-2026-03-17",
+        "output_per_million_tokens_usd": 4.5,
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
+    }
+    assert cost["expected_cost"]["phase_totals"]["DEVELOPMENT_TUNING"]["total_usd"] == 10.8
+    assert cost["phase_hard_caps"]["DEVELOPMENT_TUNING"]["total_usd"] == 50.0
     assert cost["run_counts"]["development_physical_task_arm_runs"] == 72
     assert cost["run_counts"]["heldout_physical_task_arm_runs"] == 81
     assert cost["run_counts"]["total_physical_task_arm_runs"] == 153
@@ -3921,18 +3946,18 @@ def test_cached_and_uncached_input_cost_is_exact_per_task() -> None:
         "output_tokens": 100_000,
     }
     pricing = {
-        "input_per_million_tokens_usd": 2.5,
-        "cached_input_per_million_tokens_usd": 0.25,
-        "output_per_million_tokens_usd": 15.0,
+        "input_per_million_tokens_usd": 0.75,
+        "cached_input_per_million_tokens_usd": 0.075,
+        "output_per_million_tokens_usd": 4.5,
     }
-    assert benchmark_run.actual_usd_for_accounting(accounting, pricing) == "3.437500000000"
+    assert benchmark_run.actual_usd_for_accounting(accounting, pricing) == "1.031250000000"
 
 
 def _stream_total_fixture() -> tuple[list[dict], dict, dict]:
     pricing = {
-        "input_per_million_tokens_usd": 2.5,
-        "cached_input_per_million_tokens_usd": 0.25,
-        "output_per_million_tokens_usd": 15.0,
+        "input_per_million_tokens_usd": 0.75,
+        "cached_input_per_million_tokens_usd": 0.075,
+        "output_per_million_tokens_usd": 4.5,
     }
     first_accounting = {field: 0 for field in benchmark_matrix.ACCOUNTING_FIELDS}
     first_accounting.update({
@@ -3982,13 +4007,13 @@ def _stream_total_fixture() -> tuple[list[dict], dict, dict]:
         {
             "actual_accounting": first_accounting,
             "actual_memory_metrics": first_memory,
-            "actual_usd": "0.003550000000",
+            "actual_usd": "0.001065000000",
             "resolved": True,
         },
         {
             "actual_accounting": second_accounting,
             "actual_memory_metrics": second_memory,
-            "actual_usd": "0.008000000000",
+            "actual_usd": "0.002400000000",
             "resolved": False,
         },
     ]
@@ -4002,7 +4027,7 @@ def _stream_total_fixture() -> tuple[list[dict], dict, dict]:
             for field in benchmark_matrix.MEMORY_FIELDS
         },
         "actual_total_tokens": 3_300,
-        "actual_usd": "0.011550000000",
+        "actual_usd": "0.003465000000",
         "resolved_count": 1,
     }
     return records, summary, pricing
@@ -4028,7 +4053,7 @@ def test_stream_summary_tampering_is_rejected(
     tampered = deepcopy(summary)
     if section is None:
         tampered[field] = (
-            "0.011550000001" if field == "actual_usd" else int(tampered[field]) + 1
+            "0.003465000001" if field == "actual_usd" else int(tampered[field]) + 1
         )
     else:
         tampered[section][field] += 1

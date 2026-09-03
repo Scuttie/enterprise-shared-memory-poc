@@ -31,9 +31,9 @@ jobs:
         run: python scripts/trimem_select_targets.py --verify
       - name: Verify four preregistered executable M2 bundles
         run: python scripts/trimem_m2_candidates.py --verify
-      - name: Run credential-free unit boundaries without skips
+      - name: Run credential-free unit and Mini provider boundaries without skips
         run: |
-          python scripts/trimem_pytest_no_skip.py tests/unit/test_trimem_*.py tests/trimem/e2e/test_full_replay.py
+          python scripts/trimem_pytest_no_skip.py tests/unit/test_trimem_*.py tests/trimem/e2e/test_full_replay.py tests/openai/test_openai_provider.py
       - name: Verify committed freeze and P0.1.5 recovery-ready closure
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked

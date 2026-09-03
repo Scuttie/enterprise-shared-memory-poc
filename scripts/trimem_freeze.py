@@ -65,6 +65,7 @@ CONFIG_PATHS = (
     "configs/trimem_v1/tool_environment_lock.json",
 )
 ARTIFACT_PATHS = (
+    "artifacts/trimem_v1/development_model_pricing_amendment.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json",

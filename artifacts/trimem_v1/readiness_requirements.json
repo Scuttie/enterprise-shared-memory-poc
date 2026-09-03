@@ -6,7 +6,7 @@
     "all 45 smoke/development/held-out target images plus one support image are immutable digest references sourced from official registry metadata without official grader/benchmark target image pull or run",
     "four executable joint M2 development candidates and deterministic result-independent selection and post-development freeze rule",
     "frozen M0/M1/M2 common runtime, workspace, tool, parser, model, dataset, harness, dependency, service, and compute-ceiling contracts",
-    "exact gpt-5.4-2026-03-05 pricing and request schema plus immutable all-MiniLM-L6-v2 embedding revision",
+    "exact gpt-5.4-mini-2026-03-17 pricing and request schema plus immutable all-MiniLM-L6-v2 embedding revision",
     "expected cost separated from proposed hard caps for 72 development and 81 held-out task-arm runs plus 12 grader-smoke containers",
     "fail-closed per-arm/per-benchmark n, resolved, and Pass@1 aggregation with SWE-bench Verified primary, Multi-SWE-bench secondary, and pooled totals descriptive only",
     "one shared pinned Multi-SWE two-stage report-semantics helper and one total v2 adapter evidence envelope",
@@ -48,11 +48,16 @@
   },
   "development_authorization_boundary": {
     "active_development_approval": false,
+    "amendment_classification": "PRE_EXECUTION_COST_PERFORMANCE_AMENDMENT",
+    "amendment_evidence_path": "artifacts/trimem_v1/development_model_pricing_amendment.json",
     "approval_request_eligible": true,
     "development_execution_authorized": false,
+    "expected_total_usd": 10.8,
     "grader_smoke_rerun_authorized": false,
+    "hard_cap_total_usd": 50.0,
     "heldout_execution_authorized": false,
     "meaning": "DEV_APPROVAL_ALLOWED=YES grants only eligibility to request a separate DEVELOPMENT_TUNING approval; it does not authorize DEV execution.",
+    "model_id": "gpt-5.4-mini-2026-03-17",
     "selected_m2_checkpoint": "PRE_DEVELOPMENT; produced only after separately approved development execution"
   },
   "frozen_counts": {
@@ -168,12 +173,12 @@
     "workflow_run_id": 33630256522
   },
   "post_approval_gates": [
-    "new committed smoke result and freeze make the branch eligible to request one separate DEVELOPMENT_TUNING approval; they do not authorize development execution",
+    "the authoritative smoke result plus the committed pre-execution Mini model/pricing amendment and new freeze make the branch eligible to request one separate DEVELOPMENT_TUNING approval; they do not authorize development execution",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
   ],
-  "schema": "trimem/readiness-requirements/1.4",
+  "schema": "trimem/readiness-requirements/1.5",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
   "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed and independently validated exec-005 official PASS evidence, not from static CI alone; performance remains NOT_MEASURED and no paid-model, causal, full-suite, or leaderboard claim is made.",

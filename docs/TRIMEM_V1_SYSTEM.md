@@ -163,6 +163,17 @@ entrypoint records one normal process attempt and, only on nonzero exit, one
 same-run/same-attempt `--resume` attempt; both streams and statuses are retained
 and the second failure is propagated.
 
+Before any benchmark model call or task-arm result existed, the common reader
+was amended from the full GPT-5.4 snapshot to
+`gpt-5.4-mini-2026-03-17` as a cost/performance choice. Decomposition, solving,
+and experience extraction all use that one exact Mini snapshot; Nano is not
+mixed in. The DEV planning estimate is USD 10.80 and its independent hard cap
+is USD 50.00. Target identities/order, M0/M1/M2 and the four joint M2
+candidates, prompts/tools/parsers, runtime ceilings, selection, datasets,
+grader contracts, and image locks are unchanged. This frozen amendment is
+eligibility to request a new external DEV approval, not execution authority;
+grader smoke is not rerun.
+
 Every task-arm result records solve/decomposition/extraction/provider/grader
 calls, input/cached-input/output/reasoning tokens, model/tool/grader and total
 task wall time, frozen-price USD, retrieval and bank-specific injections,

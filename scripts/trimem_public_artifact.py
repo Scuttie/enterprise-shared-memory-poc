@@ -13,6 +13,11 @@ from trimem_multi_swe_report_semantics import (
     PUBLIC_SUMMARY_FIELDS,
     validate_public_semantics_summary,
 )
+from trimem_m2_candidates import (
+    CandidateContractError,
+    load_bundle as load_m2_candidate_bundle,
+    select_development_candidate,
+)
 
 
 FORBIDDEN_KEYS = {
@@ -80,6 +85,70 @@ BENCHMARK_OUTCOME_FIELDS = (
     "actual_usd",
 )
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
+HEX40 = re.compile(r"^[0-9a-f]{40}$")
+POSITIVE_INTEGER = re.compile(r"^[1-9][0-9]*$")
+EXPECTED_PHASE_BY_MANIFEST = {
+    "grader-smoke": "GRADER_SMOKE",
+    "development": "DEVELOPMENT_TUNING",
+    "heldout": "HELDOUT_BENCHMARK",
+}
+
+
+def validate_public_approval_binding(
+    approval: Any, *, manifest: str
+) -> dict[str, str]:
+    expected_phase = EXPECTED_PHASE_BY_MANIFEST.get(manifest)
+    if expected_phase is None:
+        raise PublicArtifactError("aggregate approval manifest is invalid")
+    required = {
+        "approval_artifact_sha256",
+        "approved_request_sha256",
+        "approved_workflow_run_id",
+        "approved_workflow_run_attempt",
+        "freeze_sha256",
+        "git_head",
+        "phase",
+    }
+    if manifest == "development":
+        required.add("source_head")
+    if not isinstance(approval, dict) or set(approval) != required:
+        raise PublicArtifactError("aggregate approval binding is malformed")
+    for field in (
+        "approval_artifact_sha256",
+        "approved_request_sha256",
+        "freeze_sha256",
+    ):
+        if not isinstance(approval[field], str) or not SHA256.fullmatch(approval[field]):
+            raise PublicArtifactError(f"aggregate approval binding has invalid {field}")
+    if not isinstance(approval["git_head"], str) or not HEX40.fullmatch(
+        approval["git_head"]
+    ):
+        raise PublicArtifactError("aggregate approval binding has invalid git_head")
+    if manifest == "development" and (
+        not isinstance(approval["source_head"], str)
+        or not HEX40.fullmatch(approval["source_head"])
+    ):
+        raise PublicArtifactError("aggregate approval binding has invalid source_head")
+    if approval["phase"] != expected_phase:
+        raise PublicArtifactError("aggregate approval phase differs from manifest")
+    for field in ("approved_workflow_run_id", "approved_workflow_run_attempt"):
+        if (
+            not isinstance(approval[field], str)
+            or POSITIVE_INTEGER.fullmatch(approval[field]) is None
+        ):
+            raise PublicArtifactError(
+                f"aggregate approval binding has invalid {field}"
+            )
+    if (
+        manifest in {"grader-smoke", "development"}
+        and approval["approved_workflow_run_attempt"] != "1"
+    ):
+        raise PublicArtifactError(
+            "one-time aggregate approval requires workflow run attempt 1"
+        )
+    return {field: str(approval[field]) for field in sorted(required)}
+
+
 SMOKE_ACCOUNTING_FIELDS = (
     "api_calls",
     "cached_input_tokens",
@@ -191,6 +260,100 @@ def _canonical(value: Any) -> bytes:
     ).encode("utf-8")
 
 
+def validate_public_development_selection(
+    aggregate: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Validate the aggregate-bound selection trace and restricted artifact hashes."""
+
+    evidence = aggregate.get("development_selection")
+    digest = aggregate.get("development_selection_sha256")
+    selected_candidate_id = aggregate.get("selected_candidate_id")
+    restricted_hashes = aggregate.get("restricted_selection_artifact_hashes")
+    if (
+        not isinstance(evidence, dict)
+        or set(evidence)
+        != {
+            "schema",
+            "status",
+            "candidate_bundle_sha256",
+            "candidate_summaries",
+            "selection",
+        }
+        or evidence.get("schema")
+        != "trimem/development-m2-selection-evidence/1.0"
+        or evidence.get("status")
+        != "COMPLETE_PENDING_COMMIT_FREEZE_AND_HELDOUT_APPROVAL"
+        or not isinstance(evidence.get("candidate_bundle_sha256"), str)
+        or evidence.get("candidate_bundle_sha256")
+        != "sha256:" + hashlib.sha256(
+            _canonical(load_m2_candidate_bundle())
+        ).hexdigest()
+    ):
+        raise PublicArtifactError("development selection evidence is malformed")
+    candidate_fields = {
+        "candidate_id",
+        "completed_target_count",
+        "final_resume_cursor",
+        "resolved_count",
+        "actual_total_tokens",
+        "actual_usd",
+        "sequence_sha256",
+        "runtime_lock_sha256",
+        "m2_policy_manifest_sha256",
+        "checkpoint_source_path",
+        "checkpoint_source_file_sha256",
+        "checkpoint_digest",
+        "namespace",
+    }
+    candidate_summaries = evidence.get("candidate_summaries")
+    if (
+        not isinstance(candidate_summaries, list)
+        or len(candidate_summaries) != 4
+        or any(
+            not isinstance(row, dict) or set(row) != candidate_fields
+            for row in candidate_summaries
+        )
+    ):
+        raise PublicArtifactError("development selection candidate field set differs")
+    if (
+        not isinstance(digest, str)
+        or SHA256.fullmatch(digest) is None
+        or hashlib.sha256(_canonical(evidence)).hexdigest() != digest
+    ):
+        raise PublicArtifactError("development selection evidence hash differs")
+    try:
+        recalculated = select_development_candidate(
+            candidate_summaries
+        )
+    except CandidateContractError as exc:
+        raise PublicArtifactError(str(exc)) from None
+    if evidence.get("selection") != recalculated:
+        raise PublicArtifactError("development selection trace is not deterministic")
+    if selected_candidate_id != recalculated.get("selected_candidate_id"):
+        raise PublicArtifactError("aggregate selected M2 candidate differs from trace")
+    expected_hash_names = {
+        "development_selection_evidence_sha256",
+        "selected_m2_checkpoint_sha256",
+        "selected_m2_proposal_sha256",
+    }
+    if (
+        not isinstance(restricted_hashes, dict)
+        or set(restricted_hashes) != expected_hash_names
+        or any(
+            not isinstance(value, str) or SHA256.fullmatch(value) is None
+            for value in restricted_hashes.values()
+        )
+    ):
+        raise PublicArtifactError("restricted DEV selection artifact hashes are malformed")
+    _reject_forbidden(evidence)
+    return {
+        "development_selection": evidence,
+        "development_selection_sha256": digest,
+        "restricted_selection_artifact_hashes": restricted_hashes,
+        "selected_candidate_id": selected_candidate_id,
+    }
+
+
 def _valid_multi_swe_semantic_summary(
     value: Any, *, resolved: object
 ) -> bool:
@@ -286,6 +449,17 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
             "swebench_verified"
         }:
             raise PublicArtifactError("aggregate primary endpoint is not SWE-bench Verified")
+        if aggregate.get("manifest") == "development":
+            validate_public_development_selection(aggregate)
+        elif any(
+            field in aggregate
+            for field in (
+                "development_selection",
+                "development_selection_sha256",
+                "restricted_selection_artifact_hashes",
+            )
+        ):
+            raise PublicArtifactError("HELDOUT aggregate contains DEV selection evidence")
     else:
         if totals != [] or any(
             field in aggregate
@@ -446,24 +620,10 @@ def _verified_aggregate(aggregate_path: Path) -> dict[str, Any]:
             or not _valid_smoke_image_lifecycle(aggregate.get("image_lifecycle"))
         ):
             raise PublicArtifactError("grader-smoke exact execution summary differs")
-    required_approval = {
-        "approval_artifact_sha256",
-        "approved_request_sha256",
-        "approved_workflow_run_id",
-        "approved_workflow_run_attempt",
-        "freeze_sha256",
-        "git_head",
-        "phase",
-    }
-    if not isinstance(approval, dict) or set(approval) != required_approval:
-        raise PublicArtifactError("aggregate approval binding is malformed")
-    for field in (
-        "approval_artifact_sha256",
-        "approved_request_sha256",
-        "freeze_sha256",
-    ):
-        if not isinstance(approval[field], str) or not SHA256.fullmatch(approval[field]):
-            raise PublicArtifactError(f"aggregate approval binding has invalid {field}")
+    aggregate["approval_binding"] = validate_public_approval_binding(
+        approval,
+        manifest=str(aggregate.get("manifest")),
+    )
     return aggregate
 
 
@@ -488,6 +648,8 @@ def package(aggregate_path: Path, output: Path) -> dict[str, Any]:
     ):
         if field in aggregate:
             result[field] = aggregate[field]
+    if aggregate["manifest"] == "development":
+        result.update(validate_public_development_selection(aggregate))
     if aggregate["manifest"] == "grader-smoke":
         for field in (
             "actual_accounting", "api_calls", "digest_match_count", "empty_patch_ids",

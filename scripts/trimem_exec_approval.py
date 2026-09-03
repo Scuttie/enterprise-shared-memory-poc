@@ -25,6 +25,11 @@ APPROVAL_FIELDS = (
     "approval_actor",
     "approval_timestamp",
 )
+DEVELOPMENT_APPROVAL_FIELDS = (
+    "approved_git_commit",
+    "approved_source_git_commit",
+    *APPROVAL_FIELDS[1:],
+)
 TOP_LEVEL_FIELDS = {
     "schema", "request_id", "approved_request_sha256", "approval",
 }
@@ -73,6 +78,7 @@ def validate_external_approval_document(
     request_sha256: str,
     freeze_sha256: str,
     git_head: str,
+    source_head: str | None = None,
     workflow_run_id: str,
     workflow_run_attempt: str,
     now: datetime | None = None,
@@ -80,8 +86,29 @@ def validate_external_approval_document(
     """Validate every approval field, value, and scalar type exactly."""
 
     _require(set(document) == TOP_LEVEL_FIELDS, "external approval field set differs")
+    development_request = phase == "DEVELOPMENT_TUNING"
+    request_phase = request.get("phase")
+    if development_request:
+        _require(
+            request_phase == phase,
+            (
+                "DEVELOPMENT_TUNING requires its exact phase-bearing request"
+                if request_phase is None
+                else "phase-bearing request cannot authorize a different phase"
+            ),
+        )
+    else:
+        _require(
+            request_phase is None or request_phase == phase,
+            "phase-bearing request cannot authorize a different phase",
+        )
+    expected_schema = (
+        "trimem/external-exec-approval/1.1"
+        if development_request
+        else "trimem/external-exec-approval/1.0"
+    )
     _require(
-        document.get("schema") == "trimem/external-exec-approval/1.0",
+        document.get("schema") == expected_schema,
         "external EXEC approval schema mismatch",
     )
     _require(
@@ -92,21 +119,39 @@ def validate_external_approval_document(
         _bare_sha256(document.get("approved_request_sha256")) == request_sha256,
         "external approval does not bind the committed request bytes",
     )
-    required = policy_request.get("required_approval_fields")
+    required = (
+        request.get("required_external_approval_fields")
+        if development_request
+        else policy_request.get("required_approval_fields")
+    )
+    expected_approval_fields = (
+        DEVELOPMENT_APPROVAL_FIELDS if development_request else APPROVAL_FIELDS
+    )
     _require(
         isinstance(required, list)
-        and tuple(required) == APPROVAL_FIELDS,
+        and tuple(required) == expected_approval_fields,
         "frozen required approval field contract differs",
     )
     approval = document.get("approval")
     _require(isinstance(approval, dict), "external approval binding is missing")
-    _require(set(approval) == set(APPROVAL_FIELDS), "approval binding field set differs")
+    _require(
+        set(approval) == set(expected_approval_fields),
+        "approval binding field set differs",
+    )
     _require(
         isinstance(git_head, str)
         and HEX40.fullmatch(git_head) is not None
         and approval.get("approved_git_commit") == git_head,
         "approval Git commit differs from execution HEAD",
     )
+    if development_request:
+        _require(
+            isinstance(source_head, str)
+            and HEX40.fullmatch(source_head) is not None
+            and request.get("source_head") == source_head
+            and approval.get("approved_source_git_commit") == source_head,
+            "approval source Git commit differs from the DEV sentinel parent",
+        )
     _require(
         _bare_sha256(approval.get("approved_freeze_sha256")) == freeze_sha256,
         "approval freeze digest differs from committed freeze",
@@ -133,8 +178,9 @@ def validate_external_approval_document(
         "exact positive workflow run ID/attempt is required",
     )
     _require(
-        phase != "GRADER_SMOKE" or workflow_run_attempt == "1",
-        "grader-smoke one-time recovery requires workflow run attempt 1",
+        phase not in {"GRADER_SMOKE", "DEVELOPMENT_TUNING"}
+        or workflow_run_attempt == "1",
+        "one-time phase execution requires workflow run attempt 1",
     )
     _require(
         str(approval.get("approved_workflow_run_id")) == workflow_run_id,
@@ -163,7 +209,58 @@ def validate_external_approval_document(
     return dict(approval)
 
 
+def build_external_approval_document(
+    *,
+    request_id: str,
+    request_sha256: str,
+    git_commit: str,
+    freeze_sha256: str,
+    phase: str,
+    task_arm_runs: int,
+    paid_model_call_cap: int,
+    input_token_cap: int,
+    output_token_cap: int,
+    currency_hard_cap: float,
+    grader_containers: int,
+    workflow_run_id: int,
+    workflow_run_attempt: int,
+    legal_terms_acceptance: bool,
+    approval_actor: str,
+    approval_timestamp: str,
+    source_git_commit: str | None = None,
+) -> dict[str, Any]:
+    """Build canonical approval data; callers still validate before installation."""
+
+    approval: dict[str, Any] = {
+        "approved_git_commit": git_commit,
+        "approved_freeze_sha256": freeze_sha256,
+        "approved_phase": phase,
+        "approved_task_arm_runs": task_arm_runs,
+        "approved_paid_model_call_cap": paid_model_call_cap,
+        "approved_input_token_cap": input_token_cap,
+        "approved_output_token_cap": output_token_cap,
+        "approved_currency_hard_cap": currency_hard_cap,
+        "approved_grader_containers": grader_containers,
+        "approved_workflow_run_id": workflow_run_id,
+        "approved_workflow_run_attempt": workflow_run_attempt,
+        "approved_legal_terms_acceptance": legal_terms_acceptance,
+        "approval_actor": approval_actor,
+        "approval_timestamp": approval_timestamp,
+    }
+    schema = "trimem/external-exec-approval/1.0"
+    if source_git_commit is not None:
+        approval["approved_source_git_commit"] = source_git_commit
+        schema = "trimem/external-exec-approval/1.1"
+    return {
+        "approval": approval,
+        "approved_request_sha256": request_sha256,
+        "request_id": request_id,
+        "schema": schema,
+    }
+
+
 __all__ = [
-    "APPROVAL_FIELDS", "ApprovalValidationError",
+    "APPROVAL_FIELDS", "DEVELOPMENT_APPROVAL_FIELDS", "ApprovalValidationError",
+    "build_external_approval_document",
     "validate_external_approval_document",
 ]

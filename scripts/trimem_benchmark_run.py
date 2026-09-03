@@ -14,7 +14,7 @@ import argparse
 from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import datetime, timezone
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 import hashlib
 import json
 import os
@@ -82,7 +82,13 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     REQUEST_SCHEMA as GRADER_SMOKE_REQUEST_SCHEMA,
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
     TriggerPreflightError,
-    validate_request_document,
+    validate_request_document as validate_grader_smoke_request_document,
+)
+from trimem_development_trigger_preflight import (  # noqa: E402
+    EXPECTED_WORKFLOW_REF as DEVELOPMENT_WORKFLOW_REF,
+    SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
+    DevelopmentTriggerError,
+    validate_sentinel_commit as validate_development_sentinel_commit,
 )
 from trimem_exec_approval import (  # noqa: E402
     ApprovalValidationError,
@@ -104,10 +110,71 @@ PHASES = {
     "heldout": "HELDOUT_BENCHMARK",
     "grader-smoke": "GRADER_SMOKE",
 }
+LEDGER_ACTUAL_FIELDS = (
+    "paid_model_calls",
+    "solve_calls",
+    "decomposition_calls",
+    "extraction_calls",
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "total_usd",
+    "task_arm_runs",
+    "grader_containers",
+)
+LEDGER_OUTSTANDING_FIELDS = tuple(
+    field for field in LEDGER_ACTUAL_FIELDS if field != "cached_input_tokens"
+)
+CALL_CAP_BY_KIND = {
+    "solve": "solve_calls",
+    "decompose": "decomposition_calls",
+    "extract": "extraction_calls",
+}
+TASK_LEDGER_PROJECTION_FIELDS = (
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "solve_calls",
+    "decomposition_calls",
+    "extraction_calls",
+    "model_gateway_calls",
+    "paid_model_calls",
+    "total_usd",
+)
+TERMINAL_LEDGER_REQUEST_FIELDS = {
+    "reservation_id",
+    "status",
+    "input_upper_bound",
+    "output_cap",
+    "reserved_usd",
+    "task_arm_key",
+    "call_kind",
+    "call_cap_name",
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "actual_usd",
+}
+TERMINAL_LEDGER_TASK_ARM_FIELDS = {
+    "reservation_id",
+    "status",
+    "actual_input_tokens",
+    "outstanding_input_tokens",
+    "actual_model_calls",
+    "outstanding_model_calls",
+    "container_started",
+}
+MAX_LEDGER_INPUT_BOUND_PER_CALL = 262_000
+MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND = {
+    "solve": 2_048,
+    "decompose": 2_048,
+    "extract": 1_536,
+}
 BENCHMARK_EXEC_REQUEST = Path("configs/trimem_v1/benchmark_exec_request.json")
 GRADER_SMOKE_EXEC_REQUEST = Path(
     GRADER_SMOKE_SENTINEL_PATH
 )
+DEVELOPMENT_EXEC_REQUEST = Path(DEVELOPMENT_SENTINEL_PATH)
 OFFICIAL_DATASET_URLS = {
     "swebench_verified": "https://huggingface.co/datasets/SWE-bench/SWE-bench_Verified/resolve/{revision}/{path}",
     "multi_swe_bench_mini": "https://huggingface.co/datasets/ByteDance-Seed/Multi-SWE-bench_mini/resolve/{revision}/{path}",
@@ -196,7 +263,7 @@ def validate_grader_smoke_sentinel(request_path: Path) -> dict[str, Any]:
                 "grader-smoke push HEAD is not the exact one-parent sentinel commit"
             )
     try:
-        return validate_request_document(
+        return validate_grader_smoke_request_document(
             ROOT,
             request_path.read_bytes(),
             expected_source_head=expected_source_head,
@@ -305,12 +372,16 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
     repository and this function binds every byte of it to the committed
     request, HEAD, freeze, phase, and caps.
     """
+    if split == "heldout" and os.environ.get("GITHUB_EVENT_NAME") == "push":
+        raise BenchmarkExecutionError(
+            "benchmark branch push cannot route to HELDOUT_BENCHMARK"
+        )
     policy_request_path = ROOT / BENCHMARK_EXEC_REQUEST
-    request_path = (
-        ROOT / GRADER_SMOKE_EXEC_REQUEST
-        if split == "grader-smoke"
-        else policy_request_path
-    )
+    request_path = {
+        "grader-smoke": ROOT / GRADER_SMOKE_EXEC_REQUEST,
+        "development": ROOT / DEVELOPMENT_EXEC_REQUEST,
+        "heldout": policy_request_path,
+    }[split]
     freeze_path = ROOT / "artifacts/trimem_v1/freeze.json"
     cost_path = ROOT / "configs/trimem_v1/cost_plan.json"
     for path in (
@@ -348,6 +419,32 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
                 "grader-smoke sentinel does not bind the frozen execution policy"
             )
         validate_grader_smoke_sentinel(request_path)
+    elif split == "development":
+        if os.environ.get("GITHUB_EVENT_NAME") != "push":
+            raise BenchmarkExecutionError(
+                "one-time DEVELOPMENT_TUNING execution requires the exact sentinel push"
+            )
+        if os.environ.get("GITHUB_RUN_ATTEMPT") != "1":
+            raise BenchmarkExecutionError(
+                "one-time DEVELOPMENT_TUNING execution requires workflow attempt 1"
+            )
+        if os.environ.get("GITHUB_WORKFLOW_REF") != DEVELOPMENT_WORKFLOW_REF:
+            raise BenchmarkExecutionError(
+                "DEVELOPMENT_TUNING approval is outside the exact branch workflow"
+            )
+        if os.environ.get("GITHUB_WORKFLOW_SHA") != git_head():
+            raise BenchmarkExecutionError(
+                "DEVELOPMENT_TUNING workflow source differs from execution HEAD"
+            )
+        try:
+            validated_request = validate_development_sentinel_commit(
+                ROOT,
+                git_head(),
+            )
+        except DevelopmentTriggerError as exc:
+            raise BenchmarkExecutionError(str(exc)) from None
+        if request != validated_request:
+            raise BenchmarkExecutionError("DEV sentinel validation result differs")
     try:
         approval_resolved = approval_path.resolve(strict=True)
     except OSError as exc:
@@ -357,7 +454,12 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
         raise BenchmarkExecutionError("EXEC approval must be external to the frozen repository")
     approval_raw = approval_resolved.read_bytes()
     approval_document = read_json(approval_resolved)
-    if approval_document.get("schema") != "trimem/external-exec-approval/1.0":
+    expected_approval_schema = (
+        "trimem/external-exec-approval/1.1"
+        if split == "development"
+        else "trimem/external-exec-approval/1.0"
+    )
+    if approval_document.get("schema") != expected_approval_schema:
         raise BenchmarkExecutionError("external EXEC approval schema mismatch")
     if approval_document.get("request_id") != request.get("request_id"):
         raise BenchmarkExecutionError("external approval request identity mismatch")
@@ -367,14 +469,22 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
     approval = approval_document.get("approval")
     if not isinstance(approval, dict):
         raise BenchmarkExecutionError("external approval binding is missing")
-    missing = sorted(
-        set(policy_request.get("required_approval_fields", ())) - set(approval)
+    required_approval_fields = (
+        request.get("required_external_approval_fields", ())
+        if split == "development"
+        else policy_request.get("required_approval_fields", ())
     )
+    missing = sorted(set(required_approval_fields) - set(approval))
     if missing:
         raise BenchmarkExecutionError(f"approval binding fields are missing: {missing}")
     head = git_head()
     if approval.get("approved_git_commit") != head:
         raise BenchmarkExecutionError("approval Git commit differs from execution HEAD")
+    source_head = request.get("source_head") if split == "development" else None
+    if split == "development" and approval.get("approved_source_git_commit") != source_head:
+        raise BenchmarkExecutionError(
+            "approval source Git commit differs from the DEV sentinel parent"
+        )
     freeze_hash = sha256_bytes(freeze_path.read_bytes())
     if approval.get("approved_freeze_sha256") not in {freeze_hash, "sha256:" + freeze_hash}:
         raise BenchmarkExecutionError("approval freeze digest differs from committed freeze")
@@ -386,9 +496,9 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
         raise BenchmarkExecutionError("exact GITHUB_RUN_ID is required for single-dispatch approval binding")
     if not workflow_run_attempt or re.fullmatch(r"[1-9][0-9]*", workflow_run_attempt) is None:
         raise BenchmarkExecutionError("exact GITHUB_RUN_ATTEMPT is required for single-attempt approval binding")
-    if split == "grader-smoke" and workflow_run_attempt != "1":
+    if split in {"grader-smoke", "development"} and workflow_run_attempt != "1":
         raise BenchmarkExecutionError(
-            "grader-smoke one-time recovery requires workflow run attempt 1"
+            "one-time phase execution requires workflow run attempt 1"
         )
     if str(approval.get("approved_workflow_run_id")) != workflow_run_id:
         raise BenchmarkExecutionError("approval workflow run ID differs from this dispatch")
@@ -427,6 +537,7 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
             request_sha256=request_hash,
             freeze_sha256=freeze_hash,
             git_head=head,
+            source_head=source_head,
             workflow_run_id=workflow_run_id,
             workflow_run_attempt=workflow_run_attempt,
         )
@@ -441,10 +552,50 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
         "approved_workflow_run_id": workflow_run_id,
         "approved_workflow_run_attempt": workflow_run_attempt,
         "git_head": head,
+        "source_head": source_head,
         "freeze_sha256": freeze_hash,
         "phase": phase,
         "hard_cap": hard,
     }
+
+
+def write_external_approval_evidence(
+    output: Path,
+    *,
+    split: str,
+    approval_path: Path,
+    validated: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Persist the exact restricted approval and its public hash-only binding."""
+
+    approval_raw = approval_path.resolve(strict=True).read_bytes()
+    if sha256_bytes(approval_raw) != validated["approval_artifact_sha256"]:
+        raise BenchmarkExecutionError("exact external approval bytes/hash mismatch")
+    restricted_approval = output / "restricted-external-approval.json"
+    if restricted_approval.exists():
+        if restricted_approval.read_bytes() != approval_raw:
+            raise BenchmarkExecutionError(
+                "resume external approval differs from the first process attempt"
+            )
+    else:
+        restricted_approval.write_bytes(approval_raw)
+        try:
+            restricted_approval.chmod(0o600)
+        except OSError:
+            pass
+    public = {
+        "approval_artifact_sha256": validated["approval_artifact_sha256"],
+        "approved_request_sha256": validated["approved_request_sha256"],
+        "approved_workflow_run_id": validated["approved_workflow_run_id"],
+        "approved_workflow_run_attempt": validated["approved_workflow_run_attempt"],
+        "freeze_sha256": validated["freeze_sha256"],
+        "git_head": validated["git_head"],
+        "phase": validated["phase"],
+    }
+    if split == "development":
+        public["source_head"] = validated["source_head"]
+    write_json(output / "external-approval-evidence.json", public)
+    return public
 
 
 @contextmanager
@@ -478,16 +629,21 @@ class AtomicBudgetLedger:
 
     All three arms use this same file in one workflow job.  Model calls reserve
     the conservative uncached input byte bound, provider maximum output, one
-    paid call, and worst-case USD before delegation.  Task-arm and grader
-    capacity is also reserved before the runtime starts a task.
+    paid call, their exact solve/decomposition/extraction class, and worst-case
+    USD before delegation. Task-arm and grader capacity is also reserved before
+    the runtime starts a task.
     """
 
     def __init__(self, path: Path, *, approval_digest: str, caps: Mapping[str, Any], pricing: Mapping[str, Any]):
         self.path = path.resolve()
         self.lock_path = self.path.with_suffix(self.path.suffix + ".lock")
         self.approval_digest = approval_digest
+        self.approved_hard_cap = dict(caps)
         self.caps = {
             "paid_model_calls": int(caps["paid_model_calls"]),
+            "solve_calls": int(caps["solve_calls"]),
+            "decomposition_calls": int(caps["decomposition_calls"]),
+            "extraction_calls": int(caps["extraction_calls"]),
             "input_tokens": int(caps["input_tokens"]),
             "output_tokens": int(caps["output_tokens"]),
             "total_usd": float(caps["total_usd"]),
@@ -503,17 +659,36 @@ class AtomicBudgetLedger:
         }
         if any(value <= 0 for value in self.caps.values()) or any(value <= 0 for value in self.pricing.values()):
             raise ValueError("budget caps and pricing must be positive")
+        if int(caps["model_calls"]) != self.caps["paid_model_calls"] or int(
+            caps["model_calls"]
+        ) != sum(self.caps[field] for field in CALL_CAP_BY_KIND.values()):
+            raise ValueError("approved model/paid/role call caps do not add up")
+        uncached_ceiling = (
+            Decimal(self.caps["input_tokens"]) * Decimal(str(self.pricing["input"]))
+            + Decimal(self.caps["output_tokens"])
+            * Decimal(str(self.pricing["output"]))
+        ) / Decimal(1_000_000)
+        if uncached_ceiling != Decimal(str(caps["uncached_token_cost_ceiling_usd"])):
+            raise ValueError("uncached token-cost ceiling differs from caps/pricing")
 
     def _empty(self) -> dict[str, Any]:
         return {
-            "schema": "trimem/atomic-budget-ledger/1.1",
+            "schema": "trimem/atomic-budget-ledger/1.3",
             "approval_digest": self.approval_digest,
+            "approved_hard_cap": self.approved_hard_cap,
+            "approved_hard_cap_sha256": sha256_bytes(
+                canonical_bytes(self.approved_hard_cap)
+            ),
             "caps": self.caps,
             "pricing": self.pricing,
-            "actual": {"paid_model_calls": 0, "input_tokens": 0, "cached_input_tokens": 0,
+            "actual": {"paid_model_calls": 0, "solve_calls": 0,
+                       "decomposition_calls": 0, "extraction_calls": 0,
+                       "input_tokens": 0, "cached_input_tokens": 0,
                        "output_tokens": 0, "total_usd": 0.0, "task_arm_runs": 0,
                        "grader_containers": 0},
-            "outstanding": {"paid_model_calls": 0, "input_tokens": 0, "output_tokens": 0,
+            "outstanding": {"paid_model_calls": 0, "solve_calls": 0,
+                            "decomposition_calls": 0, "extraction_calls": 0,
+                            "input_tokens": 0, "output_tokens": 0,
                             "total_usd": 0.0, "task_arm_runs": 0, "grader_containers": 0},
             "requests": {},
             "task_arms": {},
@@ -523,14 +698,269 @@ class AtomicBudgetLedger:
         if not self.path.exists():
             return self._empty()
         value = read_json(self.path)
-        if (value.get("schema") != "trimem/atomic-budget-ledger/1.1" or
+        if (value.get("schema") != "trimem/atomic-budget-ledger/1.3" or
                 value.get("approval_digest") != self.approval_digest or
+                value.get("approved_hard_cap") != self.approved_hard_cap or
+                value.get("approved_hard_cap_sha256") != sha256_bytes(
+                    canonical_bytes(self.approved_hard_cap)
+                ) or
                 value.get("caps") != self.caps or value.get("pricing") != self.pricing):
             raise BenchmarkExecutionError("budget ledger approval/cap identity mismatch")
         return value
 
+    @staticmethod
+    def _money_equal(left: Any, right: Any) -> bool:
+        try:
+            if isinstance(left, bool) or isinstance(right, bool):
+                return False
+            return abs(Decimal(str(left)) - Decimal(str(right))) <= Decimal(
+                "0.000000000001"
+            )
+        except (InvalidOperation, ValueError, TypeError):
+            return False
+
+    def finalize(
+        self,
+        *,
+        expected_actual: Mapping[str, Any],
+        expected_task_arms: Mapping[str, Mapping[str, Any]],
+    ) -> dict[str, Any]:
+        """Validate the terminal ledger against every successful task result."""
+
+        with _exclusive_file_lock(self.lock_path):
+            state = self._read()
+        if set(state) != {
+            "schema", "approval_digest", "approved_hard_cap",
+            "approved_hard_cap_sha256", "caps", "pricing", "actual",
+            "outstanding", "requests", "task_arms",
+        }:
+            raise BenchmarkExecutionError("budget ledger top-level shape differs")
+        actual, outstanding = state.get("actual"), state.get("outstanding")
+        if not isinstance(actual, dict) or set(actual) != set(LEDGER_ACTUAL_FIELDS):
+            raise BenchmarkExecutionError("budget ledger actual counter shape differs")
+        if not isinstance(outstanding, dict) or set(outstanding) != set(
+            LEDGER_OUTSTANDING_FIELDS
+        ):
+            raise BenchmarkExecutionError("budget ledger outstanding counter shape differs")
+        if set(expected_actual) != set(LEDGER_ACTUAL_FIELDS):
+            raise BenchmarkExecutionError("task-result ledger projection shape differs")
+        for field, expected in expected_actual.items():
+            observed = actual[field]
+            valid = self._money_equal(observed, expected) if field == "total_usd" else (
+                type(observed) is int and observed >= 0 and observed == expected
+            )
+            if not valid:
+                raise BenchmarkExecutionError(
+                    f"budget ledger actual {field} differs from task results"
+                )
+        for field, value in outstanding.items():
+            valid = self._money_equal(value, 0) if field == "total_usd" else (
+                type(value) is int and value == 0
+            )
+            if not valid:
+                raise BenchmarkExecutionError(
+                    f"phase completed with outstanding {field} reservation"
+                )
+        if actual["cached_input_tokens"] > actual["input_tokens"]:
+            raise BenchmarkExecutionError("budget ledger cached input exceeds total input")
+        if actual["paid_model_calls"] != sum(
+            actual[field] for field in CALL_CAP_BY_KIND.values()
+        ):
+            raise BenchmarkExecutionError("budget ledger paid/role call totals differ")
+
+        requests = state["requests"]
+        if not isinstance(requests, dict) or len(requests) != actual["paid_model_calls"]:
+            raise BenchmarkExecutionError("budget ledger request count differs from actual calls")
+        role_counts = {field: 0 for field in CALL_CAP_BY_KIND.values()}
+        per_task_requests: dict[str, dict[str, Any]] = {
+            task_key: {
+                field: ("0.000000000000" if field == "total_usd" else 0)
+                for field in TASK_LEDGER_PROJECTION_FIELDS
+            }
+            for task_key in expected_task_arms
+        }
+        for logical_id, request in requests.items():
+            if (
+                not isinstance(logical_id, str)
+                or not logical_id
+                or not isinstance(request, dict)
+                or set(request) != TERMINAL_LEDGER_REQUEST_FIELDS
+            ):
+                raise BenchmarkExecutionError(
+                    "budget ledger terminal request shape differs"
+                )
+            if request.get("status") != "SUCCESS":
+                raise BenchmarkExecutionError("successful phase has a non-success model reservation")
+            cap_name = CALL_CAP_BY_KIND.get(request.get("call_kind"))
+            if cap_name is None or request.get("call_cap_name") != cap_name:
+                raise BenchmarkExecutionError("budget ledger request role binding differs")
+            task_key = request.get("task_arm_key")
+            if not isinstance(task_key, str) or task_key not in per_task_requests:
+                raise BenchmarkExecutionError("budget ledger request task-arm binding differs")
+            input_upper_bound = request.get("input_upper_bound")
+            output_cap = request.get("output_cap")
+            if (
+                type(input_upper_bound) is not int
+                or not 0 < input_upper_bound <= MAX_LEDGER_INPUT_BOUND_PER_CALL
+                or type(output_cap) is not int
+                or output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[
+                    str(request["call_kind"])
+                ]
+            ):
+                raise BenchmarkExecutionError(
+                    "budget ledger request reservation bounds are invalid"
+                )
+            expected_reservation_id = sha256_bytes(canonical_bytes({
+                "approval": self.approval_digest,
+                "logical_call_id": logical_id,
+                "task_arm_key": task_key,
+                "call_kind": request["call_kind"],
+                "input_upper_bound": input_upper_bound,
+                "output_cap": output_cap,
+            }))
+            if request.get("reservation_id") != expected_reservation_id:
+                raise BenchmarkExecutionError(
+                    "budget ledger request reservation identity differs"
+                )
+            expected_reserved_usd = (
+                Decimal(input_upper_bound) * Decimal(str(self.pricing["input"]))
+                + Decimal(output_cap) * Decimal(str(self.pricing["output"]))
+            ) / Decimal(1_000_000)
+            if not self._money_equal(
+                request.get("reserved_usd"), expected_reserved_usd
+            ):
+                raise BenchmarkExecutionError(
+                    "budget ledger request reserved USD differs from bounds/pricing"
+                )
+            token_values = (
+                request.get("input_tokens"), request.get("cached_input_tokens"),
+                request.get("output_tokens"),
+            )
+            if (
+                any(type(value) is not int or value < 0 for value in token_values)
+                or token_values[1] > token_values[0]
+            ):
+                raise BenchmarkExecutionError("budget ledger request token accounting is invalid")
+            if token_values[0] > input_upper_bound or token_values[2] > output_cap:
+                raise BenchmarkExecutionError(
+                    "budget ledger request actual usage exceeds its reservation"
+                )
+            request_usd = (
+                Decimal(token_values[0] - token_values[1])
+                * Decimal(str(self.pricing["input"]))
+                + Decimal(token_values[1]) * Decimal(str(self.pricing["cached"]))
+                + Decimal(token_values[2]) * Decimal(str(self.pricing["output"]))
+            ) / Decimal(1_000_000)
+            if not self._money_equal(request.get("actual_usd"), request_usd):
+                raise BenchmarkExecutionError("budget ledger request USD differs from pricing")
+            try:
+                actual_usd = Decimal(str(request["actual_usd"]))
+            except (InvalidOperation, TypeError, ValueError) as exc:
+                raise BenchmarkExecutionError(
+                    "budget ledger request actual USD is invalid"
+                ) from exc
+            if actual_usd < 0 or actual_usd > expected_reserved_usd + Decimal(
+                "0.000000000001"
+            ):
+                raise BenchmarkExecutionError(
+                    "budget ledger request actual USD exceeds its reservation"
+                )
+            role_counts[cap_name] += 1
+            projection = per_task_requests[str(task_key)]
+            projection["input_tokens"] += token_values[0]
+            projection["cached_input_tokens"] += token_values[1]
+            projection["output_tokens"] += token_values[2]
+            projection[cap_name] += 1
+            projection["model_gateway_calls"] += 1
+            projection["paid_model_calls"] += 1
+            projection["total_usd"] = format(
+                Decimal(str(projection["total_usd"])) + request_usd,
+                ".12f",
+            )
+        if any(actual[field] != count for field, count in role_counts.items()):
+            raise BenchmarkExecutionError("budget ledger request/role totals differ")
+
+        task_arms = state.get("task_arms")
+        if not isinstance(task_arms, dict) or set(task_arms) != set(expected_task_arms):
+            raise BenchmarkExecutionError("budget ledger task-arm identities differ from results")
+        for task_arm_key, expected in expected_task_arms.items():
+            row = task_arms[task_arm_key]
+            projection = per_task_requests[task_arm_key]
+            if set(expected) != set(TASK_LEDGER_PROJECTION_FIELDS):
+                raise BenchmarkExecutionError("task-result ledger projection shape differs")
+            for field in TASK_LEDGER_PROJECTION_FIELDS:
+                matches = (
+                    self._money_equal(projection[field], expected[field])
+                    if field == "total_usd"
+                    else type(expected[field]) is int
+                    and projection[field] == expected[field]
+                )
+                if not matches:
+                    raise BenchmarkExecutionError(
+                        "budget ledger per-task request/result accounting differs"
+                    )
+            expected_task_reservation_id = sha256_bytes(canonical_bytes({
+                "approval": self.approval_digest,
+                "task_arm_key": task_arm_key,
+            }))
+            if (
+                not isinstance(row, dict)
+                or set(row) != TERMINAL_LEDGER_TASK_ARM_FIELDS
+                or row.get("reservation_id") != expected_task_reservation_id
+                or row.get("status") not in {
+                    "SUCCESS", "SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR"
+                }
+                or row.get("container_started") is not True
+                or type(row.get("outstanding_input_tokens")) is not int
+                or row["outstanding_input_tokens"] != 0
+                or type(row.get("outstanding_model_calls")) is not int
+                or row["outstanding_model_calls"] != 0
+                or type(row.get("actual_input_tokens")) is not int
+                or row["actual_input_tokens"] != expected["input_tokens"]
+                or row["actual_input_tokens"]
+                > self.caps["max_input_tokens_per_task_arm"]
+                or type(row.get("actual_model_calls")) is not int
+                or row["actual_model_calls"] != expected["model_gateway_calls"]
+                or row["actual_model_calls"]
+                > self.caps["max_model_calls_per_task_arm"]
+            ):
+                raise BenchmarkExecutionError(
+                    "budget ledger task-arm/result accounting differs"
+                )
+
+        hard = self.approved_hard_cap
+        bounded = {
+            "model_calls": actual["paid_model_calls"],
+            "paid_model_calls": actual["paid_model_calls"],
+            "solve_calls": actual["solve_calls"],
+            "decomposition_calls": actual["decomposition_calls"],
+            "extraction_calls": actual["extraction_calls"],
+            "input_tokens": actual["input_tokens"],
+            "output_tokens": actual["output_tokens"],
+            "task_arm_runs": actual["task_arm_runs"],
+            "benchmark_grader_containers": actual["grader_containers"],
+        }
+        for field, value in bounded.items():
+            if value > hard[field]:
+                raise BenchmarkExecutionError(f"terminal {field} exceeds approved hard cap")
+        for field in ("task_arm_runs", "decomposition_calls", "extraction_calls"):
+            if bounded[field] != hard[field]:
+                raise BenchmarkExecutionError(f"terminal {field} differs from exact workload")
+        if bounded["benchmark_grader_containers"] != hard[
+            "benchmark_grader_containers"
+        ]:
+            raise BenchmarkExecutionError(
+                "terminal benchmark_grader_containers differs from exact workload"
+            )
+        actual_usd = Decimal(str(actual["total_usd"]))
+        if actual_usd > Decimal(str(hard["total_usd"])) or actual_usd > Decimal(
+            str(hard["uncached_token_cost_ceiling_usd"])
+        ):
+            raise BenchmarkExecutionError("terminal USD exceeds approved hard cap")
+        return state
+
     def reserve_task_arm(self, task_arm_key: str) -> str:
-        if not task_arm_key:
+        if not isinstance(task_arm_key, str) or not task_arm_key:
             raise ValueError("task-arm key is required")
         reservation_id = sha256_bytes(canonical_bytes({
             "approval": self.approval_digest, "task_arm_key": task_arm_key,
@@ -595,16 +1025,38 @@ class AtomicBudgetLedger:
 
     def reserve(
         self, logical_call_id: str, *, task_arm_key: str,
-        input_upper_bound: int, output_cap: int,
+        call_kind: str, input_upper_bound: int, output_cap: int,
     ) -> str:
-        if not logical_call_id or input_upper_bound <= 0 or output_cap <= 0:
+        if (
+            not isinstance(logical_call_id, str)
+            or not logical_call_id
+            or not isinstance(task_arm_key, str)
+            or not task_arm_key
+            or type(input_upper_bound) is not int
+            or input_upper_bound <= 0
+            or type(output_cap) is not int
+            or output_cap <= 0
+        ):
             raise ValueError("reservation requires a logical call and positive bounds")
-        if input_upper_bound > 262_000:
+        if input_upper_bound > MAX_LEDGER_INPUT_BOUND_PER_CALL:
             raise BenchmarkExecutionError("per-call conservative input bound exceeds the frozen runtime cap")
+        call_cap_name = {
+            "solve": "solve_calls",
+            "decompose": "decomposition_calls",
+            "extract": "extraction_calls",
+        }.get(call_kind)
+        if call_cap_name is None:
+            raise BenchmarkExecutionError("paid request has an unknown call kind")
+        if output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[call_kind]:
+            raise BenchmarkExecutionError(
+                "per-call output cap differs from the frozen runtime cap"
+            )
         amount = input_upper_bound * self.pricing["input"] / 1_000_000 + output_cap * self.pricing["output"] / 1_000_000
         reservation_id = sha256_bytes(canonical_bytes({
             "approval": self.approval_digest, "logical_call_id": logical_call_id,
-            "input_upper_bound": input_upper_bound, "output_cap": output_cap,
+            "task_arm_key": task_arm_key,
+            "call_kind": call_kind, "input_upper_bound": input_upper_bound,
+            "output_cap": output_cap,
         }))
         with _exclusive_file_lock(self.lock_path):
             state = self._read()
@@ -621,6 +1073,7 @@ class AtomicBudgetLedger:
                 raise BenchmarkExecutionError("paid request rejected before send: task-arm call hard cap")
             combined = {
                 "paid_model_calls": state["actual"]["paid_model_calls"] + state["outstanding"]["paid_model_calls"] + 1,
+                call_cap_name: state["actual"][call_cap_name] + state["outstanding"][call_cap_name] + 1,
                 "input_tokens": state["actual"]["input_tokens"] + state["outstanding"]["input_tokens"] + input_upper_bound,
                 "output_tokens": state["actual"]["output_tokens"] + state["outstanding"]["output_tokens"] + output_cap,
                 "total_usd": state["actual"]["total_usd"] + state["outstanding"]["total_usd"] + amount,
@@ -629,6 +1082,7 @@ class AtomicBudgetLedger:
                 if total > self.caps[name] + (1e-12 if name == "total_usd" else 0):
                     raise BenchmarkExecutionError(f"paid request rejected before send: {name} hard cap")
             state["outstanding"]["paid_model_calls"] += 1
+            state["outstanding"][call_cap_name] += 1
             state["outstanding"]["input_tokens"] += input_upper_bound
             state["outstanding"]["output_tokens"] += output_cap
             state["outstanding"]["total_usd"] += amount
@@ -638,6 +1092,7 @@ class AtomicBudgetLedger:
                 "reservation_id": reservation_id, "status": "RESERVED",
                 "input_upper_bound": input_upper_bound, "output_cap": output_cap,
                 "reserved_usd": amount, "task_arm_key": task_arm_key,
+                "call_kind": call_kind, "call_cap_name": call_cap_name,
             }
             write_json(self.path, state)
         return reservation_id
@@ -658,6 +1113,14 @@ class AtomicBudgetLedger:
             request = state["requests"].get(logical_call_id)
             if not isinstance(request, dict) or request.get("reservation_id") != reservation_id or request.get("status") != "RESERVED":
                 raise BenchmarkExecutionError("unknown or already reconciled paid reservation")
+            call_kind = request.get("call_kind")
+            call_cap_name = {
+                "solve": "solve_calls",
+                "decompose": "decomposition_calls",
+                "extract": "extraction_calls",
+            }.get(call_kind)
+            if call_cap_name is None or request.get("call_cap_name") != call_cap_name:
+                raise BenchmarkExecutionError("paid reservation call-kind identity mismatch")
             if conservative_unknown:
                 input_tokens, cached_input_tokens, output_tokens = request["input_upper_bound"], 0, request["output_cap"]
             values = (input_tokens, cached_input_tokens, output_tokens)
@@ -671,6 +1134,7 @@ class AtomicBudgetLedger:
                 output_tokens * self.pricing["output"]
             ) / 1_000_000
             state["outstanding"]["paid_model_calls"] -= 1
+            state["outstanding"][call_cap_name] -= 1
             state["outstanding"]["input_tokens"] -= request["input_upper_bound"]
             state["outstanding"]["output_tokens"] -= request["output_cap"]
             state["outstanding"]["total_usd"] -= request["reserved_usd"]
@@ -682,6 +1146,7 @@ class AtomicBudgetLedger:
             task_arm["actual_input_tokens"] += input_tokens
             task_arm["actual_model_calls"] += 1
             state["actual"]["paid_model_calls"] += 1
+            state["actual"][call_cap_name] += 1
             state["actual"]["input_tokens"] += input_tokens
             state["actual"]["cached_input_tokens"] += cached_input_tokens
             state["actual"]["output_tokens"] += output_tokens
@@ -689,7 +1154,10 @@ class AtomicBudgetLedger:
             request.update({"status": status, "input_tokens": input_tokens,
                             "cached_input_tokens": cached_input_tokens, "output_tokens": output_tokens,
                             "actual_usd": actual_usd})
-            for name in ("paid_model_calls", "input_tokens", "output_tokens", "total_usd"):
+            for name in (
+                "paid_model_calls", call_cap_name, "input_tokens", "output_tokens",
+                "total_usd",
+            ):
                 if state["actual"][name] > self.caps[name] + (1e-12 if name == "total_usd" else 0):
                     raise BenchmarkExecutionError(f"reconciled provider usage exceeded {name} hard cap")
             write_json(self.path, state)
@@ -715,6 +1183,7 @@ class BudgetedModelGateway:
         ledger_logical_call_id = f"{self.stream_id}:{request.logical_call_id}"
         reservation = self.ledger.reserve(
             ledger_logical_call_id, task_arm_key=task_arm_key,
+            call_kind=request.call_kind,
             input_upper_bound=input_bound, output_cap=request.max_output_tokens
         )
         try:
@@ -1237,6 +1706,175 @@ def actual_usd_for_accounting(
     return format(value, ".12f")
 
 
+def validate_phase_completion(
+    output_root: Path,
+    *,
+    split: str,
+    summaries: Sequence[Mapping[str, Any]],
+    ledger: AtomicBudgetLedger,
+    hard_cap: Mapping[str, Any],
+    pricing: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Bind all terminal result, stream, session, and atomic-ledger evidence."""
+
+    result_records = [
+        read_json(path) for path in sorted(output_root.rglob("*.result.json"))
+    ]
+    if len(result_records) != hard_cap["task_arm_runs"]:
+        raise BenchmarkExecutionError(
+            "phase result count does not equal the approved exact matrix"
+        )
+    summary_by_arm: dict[str, Mapping[str, Any]] = {}
+    for summary in summaries:
+        arm = summary.get("arm")
+        if not isinstance(arm, str) or not arm or arm in summary_by_arm:
+            raise BenchmarkExecutionError("phase stream summaries have duplicate/invalid arms")
+        summary_by_arm[arm] = summary
+
+    empty_accounting = actual_accounting({"summary": {}})
+    accounting_fields = set(empty_accounting)
+    phase_accounting = {field: 0 for field in empty_accounting}
+    task_arm_actual: dict[str, dict[str, Any]] = {}
+    observed_keys: set[tuple[str, str]] = set()
+    records_by_arm: dict[str, list[Mapping[str, Any]]] = {
+        arm: [] for arm in summary_by_arm
+    }
+    execution_locks: dict[str, str] = {}
+    for record in result_records:
+        arm, runtime_arm, target_id = (
+            record.get("arm"), record.get("runtime_arm"), record.get("target_id")
+        )
+        if (
+            not isinstance(arm, str)
+            or arm not in summary_by_arm
+            or runtime_arm not in ARMS
+            or not isinstance(target_id, str)
+            or not target_id
+            or (arm, target_id) in observed_keys
+        ):
+            raise BenchmarkExecutionError("phase result stream/task identity differs")
+        observed_keys.add((arm, target_id))
+        accounting = record.get("actual_accounting")
+        if not isinstance(accounting, dict) or set(accounting) != accounting_fields or any(
+            type(accounting[field]) is not int or accounting[field] < 0
+            for field in accounting_fields
+        ):
+            raise BenchmarkExecutionError("phase result accounting shape/value differs")
+        if (
+            accounting["decomposition_calls"] != 1
+            or accounting["extraction_calls"] != 1
+            or not 1 <= accounting["solve_calls"] <= 24
+            or accounting["model_gateway_calls"]
+            != accounting["solve_calls"]
+            + accounting["decomposition_calls"]
+            + accounting["extraction_calls"]
+            or accounting["paid_model_calls"] != accounting["model_gateway_calls"]
+            or (
+                accounting["grader_calls"], accounting["grader_containers"],
+                accounting["official_grader_runs"],
+            )
+            != (1, 1, 1)
+        ):
+            raise BenchmarkExecutionError("phase result exact call/grader workload differs")
+        if (
+            accounting["input_tokens"] > hard_cap["max_input_tokens_per_task_arm"]
+            or accounting["model_gateway_calls"]
+            > hard_cap["max_model_calls_per_task_arm"]
+        ):
+            raise BenchmarkExecutionError("phase result exceeds a per-task-arm hard cap")
+        actual_usd = actual_usd_for_accounting(accounting, pricing)
+        if record.get("actual_usd") != actual_usd:
+            raise BenchmarkExecutionError("phase result USD differs from tokens/pricing")
+        execution_lock_hash = record.get("execution_lock_hash")
+        if (
+            not isinstance(execution_lock_hash, str)
+            or re.fullmatch(r"sha256:[0-9a-f]{64}", execution_lock_hash) is None
+            or summary_by_arm[arm].get("execution_lock_hash") != execution_lock_hash
+        ):
+            raise BenchmarkExecutionError("result/summary execution-lock binding differs")
+        prior_lock = execution_locks.setdefault(arm, execution_lock_hash)
+        if prior_lock != execution_lock_hash:
+            raise BenchmarkExecutionError("execution lock changed within a stream")
+        for field in accounting_fields:
+            phase_accounting[field] += accounting[field]
+        task_arm_key = f"{arm}:{runtime_arm}:{target_id}"
+        task_arm_actual[task_arm_key] = {
+            "input_tokens": accounting["input_tokens"],
+            "cached_input_tokens": accounting["cached_input_tokens"],
+            "output_tokens": accounting["output_tokens"],
+            "solve_calls": accounting["solve_calls"],
+            "decomposition_calls": accounting["decomposition_calls"],
+            "extraction_calls": accounting["extraction_calls"],
+            "model_gateway_calls": accounting["model_gateway_calls"],
+            "paid_model_calls": accounting["paid_model_calls"],
+            "total_usd": actual_usd,
+        }
+        records_by_arm[arm].append(record)
+
+    if len(set(execution_locks.values())) != len(execution_locks):
+        raise BenchmarkExecutionError("benchmark streams share an execution lock")
+    for arm, summary in summary_by_arm.items():
+        stream_records = records_by_arm[arm]
+        expected_stream_accounting = {
+            field: sum(row["actual_accounting"][field] for row in stream_records)
+            for field in accounting_fields
+        }
+        if summary.get("actual_accounting") != expected_stream_accounting:
+            raise BenchmarkExecutionError("stream summary/result accounting totals differ")
+        if summary.get("actual_usd") != actual_usd_for_accounting(
+            expected_stream_accounting, pricing
+        ):
+            raise BenchmarkExecutionError("stream summary USD differs from results")
+        identity_path = _arm_identity_path(output_root, arm)
+        if not identity_path.is_file():
+            raise BenchmarkExecutionError("stream session identity evidence is missing")
+        envelope = read_json(identity_path)
+        payload, digest = envelope.get("payload"), envelope.get("digest")
+        if (
+            not isinstance(payload, dict)
+            or set(payload)
+            != {
+                "schema", "arm", "split", "experiment_id", "execution_lock_hash",
+                "run_nonce",
+            }
+            or digest != "sha256:" + sha256_bytes(canonical_bytes(payload))
+            or payload.get("schema") != "trimem/benchmark-arm-session-identity/1.0"
+            or payload.get("arm") != arm
+            or payload.get("split") != split
+            or payload.get("execution_lock_hash") != execution_locks[arm]
+        ):
+            raise BenchmarkExecutionError("stream session/execution-lock identity differs")
+        try:
+            run_nonce = str(uuid.UUID(str(payload.get("run_nonce"))))
+        except (ValueError, AttributeError) as exc:
+            raise BenchmarkExecutionError("stream session nonce is invalid") from exc
+        if payload.get("run_nonce") != run_nonce:
+            raise BenchmarkExecutionError("stream session nonce is not canonical")
+
+    expected_ledger_actual = {
+        "paid_model_calls": phase_accounting["paid_model_calls"],
+        "solve_calls": phase_accounting["solve_calls"],
+        "decomposition_calls": phase_accounting["decomposition_calls"],
+        "extraction_calls": phase_accounting["extraction_calls"],
+        "input_tokens": phase_accounting["input_tokens"],
+        "cached_input_tokens": phase_accounting["cached_input_tokens"],
+        "output_tokens": phase_accounting["output_tokens"],
+        "total_usd": float(actual_usd_for_accounting(phase_accounting, pricing)),
+        "task_arm_runs": len(result_records),
+        "grader_containers": phase_accounting["grader_containers"],
+    }
+    ledger.finalize(
+        expected_actual=expected_ledger_actual,
+        expected_task_arms=task_arm_actual,
+    )
+    return {
+        "actual_accounting": phase_accounting,
+        "actual_usd": actual_usd_for_accounting(phase_accounting, pricing),
+        "execution_locks": execution_locks,
+        "task_arm_runs": len(result_records),
+    }
+
+
 def actual_memory_metrics(result: Any, events_path: Path) -> dict[str, int]:
     recalls = []
     for line in events_path.read_text(encoding="utf-8").splitlines():
@@ -1741,6 +2379,7 @@ def run_arm_stream(
                 "arm": stream_id, "runtime_arm": arm,
                 "benchmark_id": target["benchmark_id"],
                 "checkout_evidence_sha256": sha256_bytes(canonical_bytes(checkout_evidence[task.task_id])),
+                "execution_lock_hash": execution_lock_hash,
                 "execution_status": "SUCCESS", "grader_exit_code": result.grade.exit_code,
                 "evidence_tail_hash": result.evidence_tail_hash,
                 "namespace": session.namespace, "expected_image_digest": expected_digest,
@@ -1933,16 +2572,12 @@ def main() -> int:
         tasks = coding_tasks(manifest_targets, rows)
         output = ROOT / "artifacts/trimem_v1/benchmark_exec" / args.split
         output.mkdir(parents=True, exist_ok=True)
-        write_json(output / "external-approval-evidence.json", {
-            "approval_artifact": approval["approval_document"],
-            "approval_artifact_sha256": approval["approval_artifact_sha256"],
-            "approved_request_sha256": approval["approved_request_sha256"],
-            "approved_workflow_run_id": approval["approved_workflow_run_id"],
-            "approved_workflow_run_attempt": approval["approved_workflow_run_attempt"],
-            "freeze_sha256": approval["freeze_sha256"],
-            "git_head": approval["git_head"],
-            "phase": approval["phase"],
-        })
+        write_external_approval_evidence(
+            output,
+            split=args.split,
+            approval_path=args.approval_file,
+            validated=approval,
+        )
         if args.split == "development":
             selected_state = validate_selected_m2(require_frozen=False)
             if selected_state.get("status") != "PRE_DEVELOPMENT":
@@ -2071,14 +2706,19 @@ def main() -> int:
                     checkpoint_path=selected_checkpoint_path if arm == "M2" else None,
                     prompt_candidate_id=selected_candidate_id,
                 ))
-        ledger_state = read_json(output / "budget-ledger.json")
-        if any(int(value) != 0 for value in ledger_state.get("outstanding", {}).values()):
-            raise BenchmarkExecutionError("phase completed with outstanding budget reservations")
-        if ledger_state.get("actual", {}).get("task_arm_runs") != approval["hard_cap"]["task_arm_runs"]:
-            raise BenchmarkExecutionError("phase task-arm total does not equal the approved exact matrix")
-        if ledger_state.get("actual", {}).get("grader_containers") != approval["hard_cap"]["benchmark_grader_containers"]:
-            raise BenchmarkExecutionError("phase grader-container total does not equal the approved exact matrix")
-        print(json.dumps({"streams": summaries, "status": "PASS"}, ensure_ascii=False, sort_keys=True))
+        phase_evidence = validate_phase_completion(
+            output,
+            split=args.split,
+            summaries=summaries,
+            ledger=ledger,
+            hard_cap=approval["hard_cap"],
+            pricing=cost["model_pricing"],
+        )
+        print(json.dumps(
+            {"phase_evidence": phase_evidence, "streams": summaries, "status": "PASS"},
+            ensure_ascii=False,
+            sort_keys=True,
+        ))
         return 0
     except Exception as exc:
         print(json.dumps({"error": str(exc), "status": "FAIL"}, ensure_ascii=False, sort_keys=True))

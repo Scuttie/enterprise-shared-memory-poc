@@ -599,6 +599,46 @@ def test_smoke_environment_policy_set_is_exact_and_matches_both_workflow_routes(
             readiness.validate_smoke_environment_protection(tampered)
 
 
+def test_benchmark_environment_policy_set_is_exact_and_zero_secret() -> None:
+    protection = _read(
+        ROOT / "artifacts/trimem_v1/benchmark_environment_protection.json"
+    )
+    readiness.validate_benchmark_environment_protection(protection)
+    assert protection["environment"] == {
+        "can_admins_bypass": False,
+        "id": 21138935165,
+        "name": "trimem-benchmark-exec",
+    }
+    assert protection["branch_policies"]["branch_policies"] == [
+        {"id": 58983771, "name": "codex/trimem-coder-v1", "type": "branch"},
+        {"id": 58983776, "name": "main", "type": "branch"},
+    ]
+    assert protection["secret_state_before_sentinel"] == {
+        "installed_secret_names": [],
+        "required_later": [
+            "OPENAI_API_KEY",
+            "TRIMEM_EVIDENCE_PASSPHRASE",
+            "TRIMEM_EXEC_APPROVAL_B64",
+        ],
+        "total_count": 0,
+    }
+    for mutate in (
+        lambda value: value["environment"].update(can_admins_bypass=True),
+        lambda value: value["branch_policies"].update(total_count=1),
+        lambda value: value["branch_policies"]["branch_policies"][0].update(
+            name="*"
+        ),
+        lambda value: value["secret_state_before_sentinel"].update(total_count=1),
+    ):
+        tampered = deepcopy(protection)
+        mutate(tampered)
+        with pytest.raises(
+            readiness.ReadinessError,
+            match="benchmark protected environment snapshot/route policy set differs",
+        ):
+            readiness.validate_benchmark_environment_protection(tampered)
+
+
 def test_benchmark_approval_cannot_disable_git_tracked_freeze(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -3233,7 +3273,24 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "if: always()" not in attest_block
     benchmark = workflows[3].read_text(encoding="utf-8")
     assert "workflow_dispatch:" in benchmark
-    assert all(trigger not in benchmark for trigger in ("pull_request:", "push:", "schedule:"))
+    assert "pull_request:" not in benchmark
+    assert "schedule:" not in benchmark
+    assert "push:" in benchmark
+    assert "      - codex/trimem-coder-v1" in benchmark
+    assert (
+        "      - artifacts/trimem_v1/exec_requests/"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_001.json"
+    ) in benchmark
+    assert "branch-trigger-preflight:" in benchmark
+    assert "needs: branch-trigger-preflight" in benchmark
+    preflight = benchmark.split("  branch-trigger-preflight:", 1)[1].split(
+        "  frozen-serial-phase:", 1
+    )[0]
+    assert "runs-on: ubuntu-24.04" in preflight
+    assert "fetch-depth: 0" in preflight
+    assert "persist-credentials: false" in preflight
+    assert "secrets." not in preflight
+    assert "environment:" not in preflight
     for path in workflows[2:4]:
         text = path.read_text(encoding="utf-8")
         assert "openssl enc -aes-256-cbc" in text
@@ -3244,9 +3301,22 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "permissions:\n  actions: read\n  contents: read" in benchmark
     assert benchmark.count("GH_TOKEN: ${{ github.token }}") == 1
     gate_start = benchmark.index("- name: Verify exact phase EXEC gate")
+    secret_gate = benchmark.index(
+        "- name: Verify required protected runtime secrets before paid work"
+    )
     gate_end = benchmark.index("- name: Apply exact migration head")
+    image_pull = benchmark.index(
+        "- name: Pull committed images by digest and verify local observations"
+    )
+    assert gate_start < secret_gate < gate_end < image_pull
     assert "GH_TOKEN: ${{ github.token }}" in benchmark[gate_start:gate_end]
     assert "trimem_run_with_resume.py" in benchmark
+    assert 'test -n "$OPENAI_API_KEY"' in benchmark
+    assert 'test -n "$TRIMEM_EVIDENCE_PASSPHRASE"' in benchmark
+    assert "umask 077" in benchmark
+    assert "trap cleanup_partial_approval EXIT" in benchmark
+    assert 'rm -f -- "$approval_tmp" "$restricted_approval"' in benchmark
+    assert "trap - EXIT" in benchmark
     assert "trimem_cleanup_exec.py --phase benchmark" in benchmark
     assert "python scripts/postgres_bootstrap.py" in benchmark
     assert "TRIMEM_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@" in benchmark
@@ -3895,7 +3965,7 @@ def test_external_approval_is_bound_to_single_workflow_dispatch_and_attempt(
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "2")
     with pytest.raises(
         benchmark_run.BenchmarkExecutionError,
-        match="one-time recovery requires workflow run attempt 1",
+        match="one-time phase execution requires workflow run attempt 1",
     ):
         benchmark_run.validate_exec_approval("grader-smoke", path)
 
@@ -3912,7 +3982,7 @@ def test_external_approval_is_bound_to_single_workflow_dispatch_and_attempt(
     }
     with pytest.raises(
         exec_approval.ApprovalValidationError,
-        match="one-time recovery requires workflow run attempt 1",
+        match="one-time phase execution requires workflow run attempt 1",
     ):
         exec_approval.validate_external_approval_document(
             attempt_two_document,
@@ -3922,11 +3992,15 @@ def test_external_approval_is_bound_to_single_workflow_dispatch_and_attempt(
 
     other_phase_document = deepcopy(attempt_two_document)
     other_phase_document["approval"]["approved_phase"] = "DEVELOPMENT_TUNING"
-    assert exec_approval.validate_external_approval_document(
-        other_phase_document,
-        phase="DEVELOPMENT_TUNING",
-        **validation_args,
-    )["approved_workflow_run_attempt"] == "2"
+    with pytest.raises(
+        exec_approval.ApprovalValidationError,
+        match="cannot authorize a different phase",
+    ):
+        exec_approval.validate_external_approval_document(
+            other_phase_document,
+            phase="DEVELOPMENT_TUNING",
+            **validation_args,
+        )
 
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
     path.write_text(json.dumps(attempt_two_document), encoding="utf-8")

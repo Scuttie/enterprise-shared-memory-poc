@@ -629,7 +629,8 @@ def test_public_artifact_recursively_rejects_raw_multi_swe_name_keys(
     tmp_path: Path, raw_key: str
 ) -> None:
     aggregate = _sealed_public_aggregate()
-    aggregate["manifest"] = "development"
+    aggregate["manifest"] = "heldout"
+    aggregate["approval_binding"]["phase"] = "HELDOUT_BENCHMARK"
     aggregate["outcomes"] = []
     aggregate["stream_totals"] = [{
         "otherwise_allowed_container": {

@@ -115,6 +115,9 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     TriggerPreflightError,
     validate_request_document,
 )
+from trimem_development_trigger_preflight import (  # noqa: E402
+    SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
+)
 from trimem_harness_lock import (  # noqa: E402
     HASH_BASIS as HARNESS_DEPENDENCY_HASH_BASIS,
     validate_harness_lock_configuration,
@@ -3174,6 +3177,73 @@ def validate_smoke_environment_protection(environment: Mapping[str, Any]) -> Non
     )
 
 
+def validate_benchmark_environment_protection(environment: Mapping[str, Any]) -> None:
+    """Require the exact zero-secret DEV/HELDOUT environment created pre-sentinel."""
+
+    expected = {
+        "branch_policies": {
+            "branch_policies": [
+                {
+                    "id": 58983771,
+                    "name": "codex/trimem-coder-v1",
+                    "type": "branch",
+                },
+                {"id": 58983776, "name": "main", "type": "branch"},
+            ],
+            "total_count": 2,
+        },
+        "configured_before_sentinel": True,
+        "deployment_branch_policy": {
+            "custom_branch_policies": True,
+            "protected_branches": False,
+        },
+        "environment": {
+            "can_admins_bypass": False,
+            "id": 21138935165,
+            "name": "trimem-benchmark-exec",
+        },
+        "observed_at_utc": "2026-09-03T04:42:36Z",
+        "protection_rule": {
+            "id": 64484014,
+            "prevent_self_review": False,
+            "reviewers": [
+                {"id": 95427459, "login": "Scuttie", "type": "User"}
+            ],
+            "type": "required_reviewers",
+        },
+        "repository": "Scuttie/enterprise-shared-memory-poc",
+        "schema": "trimem/benchmark-environment-protection/1.0",
+        "secret_state_before_sentinel": {
+            "installed_secret_names": [],
+            "required_later": [
+                "OPENAI_API_KEY",
+                "TRIMEM_EVIDENCE_PASSPHRASE",
+                "TRIMEM_EXEC_APPROVAL_B64",
+            ],
+            "total_count": 0,
+        },
+        "source_api_paths": [
+            (
+                "repos/Scuttie/enterprise-shared-memory-poc/environments/"
+                "trimem-benchmark-exec"
+            ),
+            (
+                "repos/Scuttie/enterprise-shared-memory-poc/environments/"
+                "trimem-benchmark-exec/deployment-branch-policies"
+            ),
+            (
+                "repos/Scuttie/enterprise-shared-memory-poc/environments/"
+                "trimem-benchmark-exec/secrets"
+            ),
+        ],
+        "status": "CONFIGURED",
+    }
+    require(
+        dict(environment) == expected,
+        "benchmark protected environment snapshot/route policy set differs",
+    )
+
+
 def validate_workflows() -> None:
     automatic = [
         ROOT / ".github/workflows/ci-trimem.yml",
@@ -3482,21 +3552,117 @@ def validate_workflows() -> None:
     benchmark_text = benchmark_workflow.read_text(encoding="utf-8")
     require(
         "workflow_dispatch:" in benchmark_text
-        and all(
-            trigger not in benchmark_text
-            for trigger in ("pull_request:", "push:", "schedule:")
-        ),
-        "benchmark EXEC workflow is not manual-only",
+        and "pull_request:" not in benchmark_text
+        and "schedule:" not in benchmark_text
+        and "push:" in benchmark_text
+        and "      - codex/trimem-coder-v1" in benchmark_text
+        and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
+        and "branch-trigger-preflight:" in benchmark_text
+        and "needs: branch-trigger-preflight" in benchmark_text
+        and "trimem_development_trigger_preflight.py" in benchmark_text
+        and "github.ref == 'refs/heads/main'" in benchmark_text
+        and "github.ref == 'refs/heads/codex/trimem-coder-v1'" in benchmark_text,
+        "benchmark EXEC workflow lacks the exact DEV sentinel/manual-main trigger boundary",
+    )
+    benchmark_preflight = benchmark_text.split(
+        "  branch-trigger-preflight:", 1
+    )[1].split("  frozen-serial-phase:", 1)[0]
+    require(
+        "runs-on: ubuntu-24.04" in benchmark_preflight
+        and "fetch-depth: 0" in benchmark_preflight
+        and "persist-credentials: false" in benchmark_preflight
+        and "secrets." not in benchmark_preflight
+        and "environment:" not in benchmark_preflight
+        and "services:" not in benchmark_preflight
+        and "container:" not in benchmark_preflight
+        and "trimem_benchmark_run.py" not in benchmark_preflight
+        and "trimem_official_grader" not in benchmark_preflight
+        and "trimem_pull_locked_images.py" not in benchmark_preflight
+        and "docker " not in benchmark_preflight.lower(),
+        "DEV branch preflight is not credential-free and non-protected",
+    )
+    benchmark_protected = benchmark_text.split("  frozen-serial-phase:", 1)[1]
+    public_upload = benchmark_protected.split(
+        "      - name: Upload public benchmark result", 1
+    )[1].split("      - name: Upload encrypted restricted evidence", 1)[0]
+    benchmark_secrets = set(
+        re.findall(r"\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)", benchmark_protected)
+    )
+    require(
+        "environment: trimem-benchmark-exec" in benchmark_protected
+        and "needs: branch-trigger-preflight" in benchmark_text
+        and "needs.branch-trigger-preflight.result == 'success'" in benchmark_text
+        and "github.run_attempt == 1" in benchmark_protected
+        and "persist-credentials: false" in benchmark_protected
+        and "ref: ${{ github.sha }}" in benchmark_protected
+        and "event == 'push' and split == 'development'" in benchmark_protected
+        and "event == 'workflow_dispatch' and split == 'heldout'"
+        in benchmark_protected
+        and 'test -n "$OPENAI_API_KEY"' in benchmark_protected
+        and 'test -n "$TRIMEM_EVIDENCE_PASSPHRASE"' in benchmark_protected,
+        "protected benchmark job lacks exact event/attempt/checkout routing",
+    )
+    require(
+        benchmark_secrets
+        == {
+            "OPENAI_API_KEY",
+            "TRIMEM_EVIDENCE_PASSPHRASE",
+            "TRIMEM_EXEC_APPROVAL_B64",
+        },
+        "benchmark workflow secret surface differs from the approved three values",
+    )
+    require(
+        "artifacts/trimem_v1/benchmark_exec/*/public-results.json" in public_upload
+        and "development_selection/" not in public_upload
+        and "benchmark_exec/control/restricted-external-approval.json"
+        in benchmark_protected
+        and "cmp --silent" in benchmark_protected
+        and "umask 077" in benchmark_protected
+        and "trap cleanup_partial_approval EXIT" in benchmark_protected
+        and 'rm -f -- "$approval_tmp" "$restricted_approval"'
+        in benchmark_protected
+        and "trap - EXIT" in benchmark_protected
+        and "steps.approval_materialization.outcome == 'success'"
+        in benchmark_protected
+        and "evidence_paths=(benchmark_exec)" in benchmark_protected
+        and "evidence_paths+=(development_selection)" in benchmark_protected
+        and "steps.encrypt_evidence.outcome == 'success'" in benchmark_protected
+        and "Remove plaintext external approval after encryption attempt"
+        in benchmark_protected
+        and benchmark_protected.count(
+            "artifacts/trimem_v1/benchmark_exec/control/restricted-external-approval.json"
+        ) >= 3
+        and 'test ! -e "$RUNNER_TEMP/trimem-exec-approval.json"'
+        in benchmark_protected
+        and "RESTRICTED_UPLOAD_OUTCOME" in benchmark_protected
+        and 'if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ]; then'
+        in benchmark_protected
+        and "preserving plaintext and ciphertext" in benchmark_protected
+        and "test ! -e artifacts/trimem_v1/benchmark_exec" in benchmark_protected
+        and "test ! -e artifacts/trimem_v1/development_selection"
+        in benchmark_protected,
+        "benchmark public/restricted evidence and fail-closed cleanup contract differs",
     )
     gate_start = benchmark_text.find("- name: Verify exact phase EXEC gate")
     gate_end = benchmark_text.find("- name: Apply exact migration head")
+    secret_gate = benchmark_text.find(
+        "- name: Verify required protected runtime secrets before paid work"
+    )
+    image_pull = benchmark_text.find(
+        "- name: Pull committed images by digest and verify local observations"
+    )
     require(
         "permissions:\n  actions: read\n  contents: read" in benchmark_text
         and benchmark_text.count("GH_TOKEN: ${{ github.token }}") == 1
         and 0 <= gate_start < gate_end
+        and gate_start < secret_gate < gate_end < image_pull
+        and 'test -n "$OPENAI_API_KEY"'
+        in benchmark_text[secret_gate:gate_end]
+        and 'test -n "$TRIMEM_EVIDENCE_PASSPHRASE"'
+        in benchmark_text[secret_gate:gate_end]
         and "GH_TOKEN: ${{ github.token }}"
         in benchmark_text[gate_start:gate_end],
-        "benchmark live-run gate lacks least-privilege Actions read token scope",
+        "benchmark live-run/secret gate ordering or least-privilege scope differs",
     )
     for path in manual:
         text = path.read_text(encoding="utf-8")
@@ -3521,6 +3687,10 @@ def validate_workflows() -> None:
         ARTIFACT / "grader_smoke_environment_protection.json"
     )
     validate_smoke_environment_protection(environment)
+    benchmark_environment = read_json(
+        ARTIFACT / "benchmark_environment_protection.json"
+    )
+    validate_benchmark_environment_protection(benchmark_environment)
 
 
 def validate_eol_policy() -> None:

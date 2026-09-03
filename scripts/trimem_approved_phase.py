@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -26,6 +27,15 @@ def approved_name(path: Path) -> str:
         name = PHASE_TO_NAME[phase]
     except KeyError as exc:
         raise BenchmarkExecutionError("external approval phase is unknown") from exc
+    event_name = os.environ.get("GITHUB_EVENT_NAME")
+    if event_name == "push" and name != "development":
+        raise BenchmarkExecutionError(
+            "benchmark branch push accepts only DEVELOPMENT_TUNING approval"
+        )
+    if event_name == "workflow_dispatch" and name != "heldout":
+        raise BenchmarkExecutionError(
+            "benchmark main dispatch accepts only HELDOUT_BENCHMARK approval"
+        )
     validate_exec_approval(name, path)
     return name
 

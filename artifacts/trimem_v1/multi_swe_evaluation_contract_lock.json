@@ -489,9 +489,9 @@
     "local_validator_projection": {
       "files": {
         "scripts/trimem_benchmark_matrix.py": {
-          "bytes": 123286,
+          "bytes": 155892,
           "role": "independent fail-closed aggregate revalidator",
-          "sha256": "cf05654fa25c643ef9e2573f7e3f70b54236aa545669e353d886e80d9e710767"
+          "sha256": "4dfb1da981e999aedac60fdb8196028ab58c5607c4324b7f6bea33f05e2038d9"
         },
         "scripts/trimem_grader_smoke.py": {
           "bytes": 135285,
@@ -803,6 +803,6 @@
     "source_image_builds_observed_before_failure": 1
   },
   "report": "reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md",
-  "contract_projection_sha256": "8f1957ac22fb823cf1540b2550ff2a5e9763e2e2db1e3f46665787f468105e6a",
-  "lock_sha256": "26f406176510c745eac7c3bd6ddc2000cd534b5510db7bf18a1baf1869c878af"
+  "contract_projection_sha256": "7cd1486285c5b8e28ab521e4954c5fd4830180655eb2acae17eba9370886fe90",
+  "lock_sha256": "a03993ff4f3134aa4cbe9062128fb534f037063fdd35a031fe139bb432d3ffc1"
 }

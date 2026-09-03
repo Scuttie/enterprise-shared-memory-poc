@@ -17,12 +17,14 @@ import re
 import subprocess
 import sys
 from typing import Any, Mapping
+import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from trimem_m2_candidates import (  # noqa: E402
     CANDIDATE_IDS,
     candidate_row,
+    load_bundle as load_m2_candidate_bundle,
     load_candidate_policy,
     runtime_lock_for,
     select_development_candidate,
@@ -40,6 +42,11 @@ from trimem_exec_approval import (  # noqa: E402
 )
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
+)
+from trimem_development_trigger_preflight import (  # noqa: E402
+    SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
+    DevelopmentTriggerError,
+    validate_sentinel_commit as validate_development_sentinel_commit,
 )
 from trimem_select_targets import (  # noqa: E402
     SelectionError,
@@ -98,6 +105,74 @@ ACCOUNTING_FIELDS = (
     "model_gateway_calls", "paid_model_calls", "grader_calls", "grader_containers",
     "official_grader_runs",
 )
+BENCHMARK_HARD_CAP_FIELDS = {
+    "benchmark_grader_containers",
+    "decomposition_calls",
+    "extraction_calls",
+    "input_tokens",
+    "max_input_tokens_per_task_arm",
+    "max_model_calls_per_task_arm",
+    "model_calls",
+    "output_tokens",
+    "paid_model_calls",
+    "solve_calls",
+    "task_arm_runs",
+    "total_usd",
+    "uncached_token_cost_ceiling_usd",
+}
+LEDGER_ACTUAL_FIELDS = {
+    "paid_model_calls",
+    "solve_calls",
+    "decomposition_calls",
+    "extraction_calls",
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "total_usd",
+    "task_arm_runs",
+    "grader_containers",
+}
+LEDGER_OUTSTANDING_FIELDS = LEDGER_ACTUAL_FIELDS - {"cached_input_tokens"}
+TASK_LEDGER_PROJECTION_FIELDS = {
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "solve_calls",
+    "decomposition_calls",
+    "extraction_calls",
+    "model_gateway_calls",
+    "paid_model_calls",
+    "total_usd",
+}
+TERMINAL_LEDGER_REQUEST_FIELDS = {
+    "reservation_id",
+    "status",
+    "input_upper_bound",
+    "output_cap",
+    "reserved_usd",
+    "task_arm_key",
+    "call_kind",
+    "call_cap_name",
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "actual_usd",
+}
+TERMINAL_LEDGER_TASK_ARM_FIELDS = {
+    "reservation_id",
+    "status",
+    "actual_input_tokens",
+    "outstanding_input_tokens",
+    "actual_model_calls",
+    "outstanding_model_calls",
+    "container_started",
+}
+MAX_LEDGER_INPUT_BOUND_PER_CALL = 262_000
+MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND = {
+    "solve": 2_048,
+    "decompose": 2_048,
+    "extract": 1_536,
+}
 SMOKE_ACCOUNTING_FIELDS = (
     "api_calls",
     "cached_input_tokens",
@@ -1727,6 +1802,8 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
         "git_head",
         "phase",
     }
+    if name == "development":
+        required.add("source_head")
     if set(value) != required:
         raise MatrixError("external approval evidence field set differs")
     for field in (
@@ -1738,6 +1815,11 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
             raise MatrixError(f"external approval {field} is invalid")
     if not isinstance(value.get("git_head"), str) or not HEX40.fullmatch(value["git_head"]):
         raise MatrixError("external approval git_head is invalid")
+    if name == "development" and (
+        not isinstance(value.get("source_head"), str)
+        or not HEX40.fullmatch(value["source_head"])
+    ):
+        raise MatrixError("external approval source_head is invalid")
     for field in ("approved_workflow_run_id", "approved_workflow_run_attempt"):
         item = str(value.get(field, ""))
         if re.fullmatch(r"[1-9][0-9]*", item) is None:
@@ -1755,11 +1837,11 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
     if value.get("phase") != expected_phase:
         raise MatrixError("external approval phase differs from the aggregate manifest")
 
-    request = (
-        ROOT / GRADER_SMOKE_SENTINEL_PATH
-        if name == "grader-smoke"
-        else ROOT / "configs/trimem_v1/benchmark_exec_request.json"
-    )
+    request = {
+        "grader-smoke": ROOT / GRADER_SMOKE_SENTINEL_PATH,
+        "development": ROOT / DEVELOPMENT_SENTINEL_PATH,
+        "heldout": ROOT / "configs/trimem_v1/benchmark_exec_request.json",
+    }[name]
     freeze = ROOT / "artifacts/trimem_v1/freeze.json"
     if not request.is_file():
         raise MatrixError("external approval request sentinel is missing")
@@ -1772,6 +1854,16 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
     )
     if completed.returncode != 0 or completed.stdout.strip() != value["git_head"]:
         raise MatrixError("external approval git_head differs from aggregate HEAD")
+    if name == "development":
+        try:
+            validated_request = validate_development_sentinel_commit(
+                ROOT,
+                value["git_head"],
+            )
+        except DevelopmentTriggerError as exc:
+            raise MatrixError(str(exc)) from None
+        if validated_request.get("source_head") != value.get("source_head"):
+            raise MatrixError("DEV sentinel parent differs from approval source_head")
     restricted = results_dir / "restricted-external-approval.json"
     if not restricted.is_file():
         raise MatrixError("restricted exact external approval evidence is missing")
@@ -1795,12 +1887,24 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
     if isinstance(raw_freeze, str) and raw_freeze.startswith("sha256:"):
         raw_freeze = raw_freeze.removeprefix("sha256:")
     if (
-        restricted_value.get("schema") != "trimem/external-exec-approval/1.0"
+        restricted_value.get("schema")
+        != (
+            "trimem/external-exec-approval/1.1"
+            if name == "development"
+            else "trimem/external-exec-approval/1.0"
+        )
         or not isinstance(raw_approval, dict)
         or raw_request != value["approved_request_sha256"]
         or raw_freeze != value["freeze_sha256"]
         or raw_approval.get("approved_git_commit") != value["git_head"]
         or raw_approval.get("approved_phase") != value["phase"]
+        or (
+            name == "development"
+            and (
+                raw_approval.get("approved_source_git_commit")
+                != value.get("source_head")
+            )
+        )
         or str(raw_approval.get("approved_workflow_run_id"))
         != str(value["approved_workflow_run_id"])
         or str(raw_approval.get("approved_workflow_run_attempt"))
@@ -1823,6 +1927,7 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
             request_sha256=value["approved_request_sha256"],
             freeze_sha256=value["freeze_sha256"],
             git_head=value["git_head"],
+            source_head=(value.get("source_head") if name == "development" else None),
             workflow_run_id=str(value["approved_workflow_run_id"]),
             workflow_run_attempt=str(value["approved_workflow_run_attempt"]),
         )
@@ -1831,10 +1936,20 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
     return {field: str(value[field]) for field in sorted(required)}
 
 
-def _seal_aggregate(name: str, results_dir: Path, report: dict[str, Any]) -> dict[str, Any]:
+def _seal_aggregate(
+    name: str,
+    results_dir: Path,
+    report: dict[str, Any],
+    *,
+    approval_binding: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
     body = {
         **report,
-        "approval_binding": _approval_binding(name, results_dir),
+        "approval_binding": (
+            dict(approval_binding)
+            if approval_binding is not None
+            else _approval_binding(name, results_dir)
+        ),
         "manifest": name,
         "schema": "trimem/verified-aggregate/1.0",
     }
@@ -1863,6 +1978,479 @@ def _actual_usd_from_accounting(
     except (InvalidOperation, KeyError, TypeError, ValueError) as exc:
         raise MatrixError("frozen model pricing is invalid") from exc
     return format(value, ".12f")
+
+
+def _money_equal(left: Any, right: Any) -> bool:
+    try:
+        if isinstance(left, bool) or isinstance(right, bool):
+            return False
+        return abs(Decimal(str(left)) - Decimal(str(right))) <= Decimal(
+            "0.000000000001"
+        )
+    except (InvalidOperation, TypeError, ValueError):
+        return False
+
+
+def _validate_phase_budget(
+    records: list[dict[str, Any]],
+    *,
+    pricing: dict[str, Any],
+    hard_cap: dict[str, Any],
+) -> dict[str, Any]:
+    """Recompute phase-wide scientific workload and every approved cap."""
+
+    if set(hard_cap) != BENCHMARK_HARD_CAP_FIELDS:
+        raise MatrixError("benchmark phase hard-cap field set differs")
+    integer_caps = BENCHMARK_HARD_CAP_FIELDS - {
+        "total_usd", "uncached_token_cost_ceiling_usd"
+    }
+    if any(type(hard_cap[field]) is not int or hard_cap[field] <= 0 for field in integer_caps):
+        raise MatrixError("benchmark count/token hard caps are invalid")
+    if hard_cap["model_calls"] != hard_cap["paid_model_calls"] or hard_cap[
+        "model_calls"
+    ] != sum(
+        hard_cap[field]
+        for field in ("solve_calls", "decomposition_calls", "extraction_calls")
+    ):
+        raise MatrixError("benchmark model/paid/role hard caps do not add up")
+    try:
+        ceiling = (
+            Decimal(hard_cap["input_tokens"])
+            * Decimal(str(pricing["input_per_million_tokens_usd"]))
+            + Decimal(hard_cap["output_tokens"])
+            * Decimal(str(pricing["output_per_million_tokens_usd"]))
+        ) / Decimal(1_000_000)
+    except (InvalidOperation, KeyError, TypeError, ValueError) as exc:
+        raise MatrixError("benchmark hard-cap pricing is invalid") from exc
+    if ceiling != Decimal(str(hard_cap["uncached_token_cost_ceiling_usd"])):
+        raise MatrixError("uncached token-cost ceiling differs from caps/pricing")
+
+    totals = {field: 0 for field in ACCOUNTING_FIELDS}
+    for record in records:
+        accounting = record.get("actual_accounting")
+        if not isinstance(accounting, dict) or set(accounting) != set(ACCOUNTING_FIELDS):
+            raise MatrixError("phase task accounting shape differs")
+        if any(type(accounting[field]) is not int or accounting[field] < 0 for field in ACCOUNTING_FIELDS):
+            raise MatrixError("phase task accounting values are invalid")
+        if (
+            accounting["input_tokens"] > hard_cap["max_input_tokens_per_task_arm"]
+            or accounting["model_gateway_calls"]
+            > hard_cap["max_model_calls_per_task_arm"]
+        ):
+            raise MatrixError("task-arm accounting exceeds an approved per-task hard cap")
+        for field in ACCOUNTING_FIELDS:
+            totals[field] += accounting[field]
+
+    task_arm_runs = len(records)
+    model_calls = totals["model_gateway_calls"]
+    if (
+        task_arm_runs != hard_cap["task_arm_runs"]
+        or totals["decomposition_calls"] != hard_cap["decomposition_calls"]
+        or totals["extraction_calls"] != hard_cap["extraction_calls"]
+        or totals["grader_calls"] != hard_cap["benchmark_grader_containers"]
+        or totals["grader_containers"] != hard_cap["benchmark_grader_containers"]
+        or totals["official_grader_runs"] != hard_cap["benchmark_grader_containers"]
+    ):
+        raise MatrixError("phase exact task/decomposition/extraction/grader workload differs")
+    if (
+        model_calls != totals["paid_model_calls"]
+        or model_calls
+        != totals["solve_calls"]
+        + totals["decomposition_calls"]
+        + totals["extraction_calls"]
+    ):
+        raise MatrixError("phase model/paid/role call totals do not add up")
+    bounded = {
+        "model_calls": model_calls,
+        "paid_model_calls": totals["paid_model_calls"],
+        "solve_calls": totals["solve_calls"],
+        "decomposition_calls": totals["decomposition_calls"],
+        "extraction_calls": totals["extraction_calls"],
+        "input_tokens": totals["input_tokens"],
+        "output_tokens": totals["output_tokens"],
+    }
+    for field, value in bounded.items():
+        if value > hard_cap[field]:
+            raise MatrixError(f"phase {field} exceeds the approved hard cap")
+    total_usd = _actual_usd_from_accounting(totals, pricing)
+    uncached_cost = (
+        Decimal(totals["input_tokens"])
+        * Decimal(str(pricing["input_per_million_tokens_usd"]))
+        + Decimal(totals["output_tokens"])
+        * Decimal(str(pricing["output_per_million_tokens_usd"]))
+    ) / Decimal(1_000_000)
+    if (
+        Decimal(total_usd) > Decimal(str(hard_cap["total_usd"]))
+        or uncached_cost > Decimal(str(hard_cap["uncached_token_cost_ceiling_usd"]))
+    ):
+        raise MatrixError("phase USD exceeds the approved hard cap")
+    return {
+        "schema": "trimem/verified-phase-budget/1.0",
+        "actual_accounting": totals,
+        "model_calls": model_calls,
+        "task_arm_runs": task_arm_runs,
+        "total_usd": total_usd,
+        "uncached_token_cost_usd": format(uncached_cost, ".12f"),
+        "hard_cap": dict(hard_cap),
+        "status": "PASS",
+    }
+
+
+def _validate_execution_lock_evidence(
+    name: str,
+    results_dir: Path,
+    records: list[dict[str, Any]],
+    summaries: list[dict[str, Any]],
+    approval_binding: Mapping[str, str],
+) -> dict[str, str]:
+    """Bind every result to its stream summary and sealed pre-session identity."""
+
+    summary_by_arm: dict[str, dict[str, Any]] = {}
+    for summary in summaries:
+        arm, digest = summary.get("arm"), summary.get("execution_lock_hash")
+        if (
+            not isinstance(arm, str)
+            or not arm
+            or arm in summary_by_arm
+            or not isinstance(digest, str)
+            or re.fullmatch(r"sha256:[0-9a-f]{64}", digest) is None
+        ):
+            raise MatrixError("stream summary execution-lock evidence is malformed")
+        summary_by_arm[arm] = summary
+    result_arms = {record.get("arm") for record in records}
+    if result_arms != set(summary_by_arm):
+        raise MatrixError("result/summary execution-lock stream set differs")
+    locks: dict[str, str] = {}
+    split = "development" if name == "development" else "heldout"
+    for arm, summary in summary_by_arm.items():
+        digest = str(summary["execution_lock_hash"])
+        if {
+            record.get("execution_lock_hash")
+            for record in records
+            if record.get("arm") == arm
+        } != {digest}:
+            raise MatrixError("result/summary execution-lock binding differs")
+        identity_path = results_dir / f"{arm}.session-identity.json"
+        value = _load(identity_path)
+        if not isinstance(value, dict) or set(value) != {"payload", "digest"}:
+            raise MatrixError("stream session identity envelope differs")
+        payload = value.get("payload")
+        if not isinstance(payload, dict) or set(payload) != {
+            "schema", "arm", "split", "experiment_id", "execution_lock_hash",
+            "run_nonce",
+        }:
+            raise MatrixError("stream session identity payload differs")
+        expected_experiment = "trimemv1-" + approval_binding["git_head"][:12] + "-" + re.sub(
+            r"[^a-z0-9-]", "-", arm.lower()
+        )
+        if (
+            value.get("digest") != "sha256:" + hashlib.sha256(_canonical(payload)).hexdigest()
+            or payload.get("schema") != "trimem/benchmark-arm-session-identity/1.0"
+            or payload.get("arm") != arm
+            or payload.get("split") != split
+            or payload.get("experiment_id") != expected_experiment
+            or payload.get("execution_lock_hash") != digest
+        ):
+            raise MatrixError("stream session/execution-lock identity differs")
+        try:
+            run_nonce = str(uuid.UUID(str(payload.get("run_nonce"))))
+        except (ValueError, AttributeError) as exc:
+            raise MatrixError("stream session nonce is invalid") from exc
+        if payload.get("run_nonce") != run_nonce:
+            raise MatrixError("stream session nonce is not canonical")
+        locks[arm] = digest
+    if len(set(locks.values())) != len(locks):
+        raise MatrixError("benchmark streams share an execution lock")
+    return dict(sorted(locks.items()))
+
+
+def _frozen_file_hash(relative_path: str) -> str:
+    freeze = _load(ROOT / "artifacts/trimem_v1/freeze.json")
+    row = freeze.get("files", {}).get(relative_path) if isinstance(freeze, dict) else None
+    path = ROOT / relative_path
+    if not isinstance(row, dict) or set(row) != {"bytes", "sha256"} or not path.is_file():
+        raise MatrixError(f"freeze has no exact {relative_path} binding")
+    raw = path.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    if row.get("bytes") != len(raw) or row.get("sha256") != digest:
+        raise MatrixError(f"freeze/current {relative_path} binding differs")
+    return digest
+
+
+def _validate_budget_ledger_evidence(
+    results_dir: Path,
+    *,
+    records: list[dict[str, Any]],
+    pricing: dict[str, Any],
+    hard_cap: dict[str, Any],
+    phase_budget: dict[str, Any],
+    approval_binding: Mapping[str, str],
+    execution_locks: Mapping[str, str],
+) -> dict[str, Any]:
+    """Independently match the durable ledger to approval and result totals."""
+
+    path = results_dir / "budget-ledger.json"
+    value = _load(path)
+    if not isinstance(value, dict) or set(value) != {
+        "schema", "approval_digest", "approved_hard_cap",
+        "approved_hard_cap_sha256", "caps", "pricing", "actual",
+        "outstanding", "requests", "task_arms",
+    }:
+        raise MatrixError("budget ledger top-level shape differs")
+    hard_cap_sha256 = hashlib.sha256(_canonical(hard_cap)).hexdigest()
+    expected_caps = {
+        "paid_model_calls": int(hard_cap["paid_model_calls"]),
+        "solve_calls": int(hard_cap["solve_calls"]),
+        "decomposition_calls": int(hard_cap["decomposition_calls"]),
+        "extraction_calls": int(hard_cap["extraction_calls"]),
+        "input_tokens": int(hard_cap["input_tokens"]),
+        "output_tokens": int(hard_cap["output_tokens"]),
+        "total_usd": float(hard_cap["total_usd"]),
+        "task_arm_runs": int(hard_cap["task_arm_runs"]),
+        "grader_containers": int(hard_cap["benchmark_grader_containers"]),
+        "max_input_tokens_per_task_arm": int(
+            hard_cap["max_input_tokens_per_task_arm"]
+        ),
+        "max_model_calls_per_task_arm": int(
+            hard_cap["max_model_calls_per_task_arm"]
+        ),
+    }
+    expected_pricing = {
+        "input": float(pricing["input_per_million_tokens_usd"]),
+        "cached": float(pricing["cached_input_per_million_tokens_usd"]),
+        "output": float(pricing["output_per_million_tokens_usd"]),
+    }
+    if (
+        value.get("schema") != "trimem/atomic-budget-ledger/1.3"
+        or value.get("approval_digest")
+        != approval_binding["approval_artifact_sha256"]
+        or value.get("approved_hard_cap") != hard_cap
+        or value.get("approved_hard_cap_sha256") != hard_cap_sha256
+        or value.get("caps") != expected_caps
+        or value.get("pricing") != expected_pricing
+    ):
+        raise MatrixError("budget ledger approval/cap/pricing binding differs")
+    actual, outstanding = value.get("actual"), value.get("outstanding")
+    if not isinstance(actual, dict) or set(actual) != LEDGER_ACTUAL_FIELDS:
+        raise MatrixError("budget ledger actual counter shape differs")
+    if not isinstance(outstanding, dict) or set(outstanding) != LEDGER_OUTSTANDING_FIELDS:
+        raise MatrixError("budget ledger outstanding counter shape differs")
+    if any(
+        not _money_equal(counter, 0) if field == "total_usd" else type(counter) is not int or counter != 0
+        for field, counter in outstanding.items()
+    ):
+        raise MatrixError("budget ledger has outstanding terminal reservations")
+    totals = phase_budget["actual_accounting"]
+    expected_actual = {
+        "paid_model_calls": totals["paid_model_calls"],
+        "solve_calls": totals["solve_calls"],
+        "decomposition_calls": totals["decomposition_calls"],
+        "extraction_calls": totals["extraction_calls"],
+        "input_tokens": totals["input_tokens"],
+        "cached_input_tokens": totals["cached_input_tokens"],
+        "output_tokens": totals["output_tokens"],
+        "total_usd": float(phase_budget["total_usd"]),
+        "task_arm_runs": phase_budget["task_arm_runs"],
+        "grader_containers": totals["grader_containers"],
+    }
+    for field, expected in expected_actual.items():
+        valid = _money_equal(actual.get(field), expected) if field == "total_usd" else (
+            type(actual.get(field)) is int and actual[field] == expected
+        )
+        if not valid:
+            raise MatrixError(f"budget ledger actual {field} differs from results")
+
+    expected_task_rows = {}
+    for record in records:
+        accounting = record["actual_accounting"]
+        expected_task_rows[
+            f"{record['arm']}:{record['runtime_arm']}:{record['target_id']}"
+        ] = {
+            "input_tokens": accounting["input_tokens"],
+            "cached_input_tokens": accounting["cached_input_tokens"],
+            "output_tokens": accounting["output_tokens"],
+            "solve_calls": accounting["solve_calls"],
+            "decomposition_calls": accounting["decomposition_calls"],
+            "extraction_calls": accounting["extraction_calls"],
+            "model_gateway_calls": accounting["model_gateway_calls"],
+            "paid_model_calls": accounting["paid_model_calls"],
+            "total_usd": record["actual_usd"],
+        }
+    requests, task_arms = value.get("requests"), value.get("task_arms")
+    if not isinstance(requests, dict) or len(requests) != totals["paid_model_calls"]:
+        raise MatrixError("budget ledger request count differs from results")
+    if not isinstance(task_arms, dict) or set(task_arms) != set(expected_task_rows):
+        raise MatrixError("budget ledger task-arm identities differ from results")
+    request_totals = {
+        "paid_model_calls": 0,
+        "solve_calls": 0,
+        "decomposition_calls": 0,
+        "extraction_calls": 0,
+        "input_tokens": 0,
+        "cached_input_tokens": 0,
+        "output_tokens": 0,
+        "total_usd": Decimal(0),
+    }
+    call_caps = {
+        "solve": "solve_calls",
+        "decompose": "decomposition_calls",
+        "extract": "extraction_calls",
+    }
+    per_task_requests = {
+        key: {
+            field: (Decimal(0) if field == "total_usd" else 0)
+            for field in TASK_LEDGER_PROJECTION_FIELDS
+        }
+        for key in expected_task_rows
+    }
+    for logical_id, request in requests.items():
+        if (
+            not isinstance(logical_id, str)
+            or not logical_id
+            or not isinstance(request, dict)
+            or set(request) != TERMINAL_LEDGER_REQUEST_FIELDS
+        ):
+            raise MatrixError("budget ledger terminal request shape differs")
+        cap_name = call_caps.get(request.get("call_kind"))
+        task_key = request.get("task_arm_key")
+        if (
+            request.get("status") != "SUCCESS"
+            or cap_name is None
+            or request.get("call_cap_name") != cap_name
+            or not isinstance(task_key, str)
+            or task_key not in per_task_requests
+        ):
+            raise MatrixError("budget ledger request identity/status/role differs")
+        input_upper_bound = request.get("input_upper_bound")
+        output_cap = request.get("output_cap")
+        if (
+            type(input_upper_bound) is not int
+            or not 0 < input_upper_bound <= MAX_LEDGER_INPUT_BOUND_PER_CALL
+            or type(output_cap) is not int
+            or output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[
+                str(request["call_kind"])
+            ]
+        ):
+            raise MatrixError("budget ledger request reservation bounds are invalid")
+        expected_reservation_id = hashlib.sha256(_canonical({
+            "approval": value["approval_digest"],
+            "logical_call_id": logical_id,
+            "task_arm_key": task_key,
+            "call_kind": request["call_kind"],
+            "input_upper_bound": input_upper_bound,
+            "output_cap": output_cap,
+        })).hexdigest()
+        if request.get("reservation_id") != expected_reservation_id:
+            raise MatrixError("budget ledger request reservation identity differs")
+        expected_reserved_usd = (
+            Decimal(input_upper_bound)
+            * Decimal(str(pricing["input_per_million_tokens_usd"]))
+            + Decimal(output_cap)
+            * Decimal(str(pricing["output_per_million_tokens_usd"]))
+        ) / Decimal(1_000_000)
+        if not _money_equal(request.get("reserved_usd"), expected_reserved_usd):
+            raise MatrixError(
+                "budget ledger request reserved USD differs from bounds/pricing"
+            )
+        tokens = (
+            request.get("input_tokens"), request.get("cached_input_tokens"),
+            request.get("output_tokens"),
+        )
+        if any(type(counter) is not int or counter < 0 for counter in tokens) or tokens[1] > tokens[0]:
+            raise MatrixError("budget ledger request token accounting is invalid")
+        if tokens[0] > input_upper_bound or tokens[2] > output_cap:
+            raise MatrixError(
+                "budget ledger request actual usage exceeds its reservation"
+            )
+        request_accounting = {
+            "input_tokens": tokens[0],
+            "cached_input_tokens": tokens[1],
+            "output_tokens": tokens[2],
+        }
+        request_usd = Decimal(
+            _actual_usd_from_accounting(request_accounting, pricing)
+        )
+        if not _money_equal(request.get("actual_usd"), request_usd):
+            raise MatrixError("budget ledger request USD differs from pricing")
+        try:
+            actual_usd = Decimal(str(request["actual_usd"]))
+        except (InvalidOperation, TypeError, ValueError) as exc:
+            raise MatrixError("budget ledger request actual USD is invalid") from exc
+        if actual_usd < 0 or actual_usd > expected_reserved_usd + Decimal(
+            "0.000000000001"
+        ):
+            raise MatrixError(
+                "budget ledger request actual USD exceeds its reservation"
+            )
+        request_totals["paid_model_calls"] += 1
+        request_totals[cap_name] += 1
+        request_totals["input_tokens"] += tokens[0]
+        request_totals["cached_input_tokens"] += tokens[1]
+        request_totals["output_tokens"] += tokens[2]
+        request_totals["total_usd"] += request_usd
+        per_task_requests[task_key]["input_tokens"] += tokens[0]
+        per_task_requests[task_key]["cached_input_tokens"] += tokens[1]
+        per_task_requests[task_key]["output_tokens"] += tokens[2]
+        per_task_requests[task_key][cap_name] += 1
+        per_task_requests[task_key]["model_gateway_calls"] += 1
+        per_task_requests[task_key]["paid_model_calls"] += 1
+        per_task_requests[task_key]["total_usd"] += request_usd
+    for field, expected in request_totals.items():
+        valid = _money_equal(actual[field], expected) if field == "total_usd" else actual[field] == expected
+        if not valid:
+            raise MatrixError(f"budget ledger request/actual {field} totals differ")
+    for task_key, accounting in expected_task_rows.items():
+        row = task_arms[task_key]
+        if set(accounting) != TASK_LEDGER_PROJECTION_FIELDS:
+            raise MatrixError("task-result ledger projection shape differs")
+        for field in TASK_LEDGER_PROJECTION_FIELDS:
+            matches = (
+                _money_equal(per_task_requests[task_key][field], accounting[field])
+                if field == "total_usd"
+                else type(accounting[field]) is int
+                and per_task_requests[task_key][field] == accounting[field]
+            )
+            if not matches:
+                raise MatrixError(
+                    "budget ledger per-task request/result accounting differs"
+                )
+        expected_task_reservation_id = hashlib.sha256(_canonical({
+            "approval": value["approval_digest"],
+            "task_arm_key": task_key,
+        })).hexdigest()
+        if (
+            not isinstance(row, dict)
+            or set(row) != TERMINAL_LEDGER_TASK_ARM_FIELDS
+            or row.get("reservation_id") != expected_task_reservation_id
+            or row.get("status") not in {
+                "SUCCESS", "SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR"
+            }
+            or row.get("container_started") is not True
+            or type(row.get("outstanding_input_tokens")) is not int
+            or row["outstanding_input_tokens"] != 0
+            or type(row.get("outstanding_model_calls")) is not int
+            or row["outstanding_model_calls"] != 0
+            or type(row.get("actual_input_tokens")) is not int
+            or row["actual_input_tokens"] != accounting["input_tokens"]
+            or row["actual_input_tokens"]
+            > hard_cap["max_input_tokens_per_task_arm"]
+            or type(row.get("actual_model_calls")) is not int
+            or row["actual_model_calls"] != accounting["model_gateway_calls"]
+            or row["actual_model_calls"]
+            > hard_cap["max_model_calls_per_task_arm"]
+        ):
+            raise MatrixError("budget ledger task-arm/result accounting differs")
+
+    return {
+        "schema": "trimem/verified-budget-ledger-evidence/1.0",
+        "approval_artifact_sha256": value["approval_digest"],
+        "approved_hard_cap_sha256": hard_cap_sha256,
+        "cost_plan_sha256": _frozen_file_hash("configs/trimem_v1/cost_plan.json"),
+        "model_lock_sha256": _frozen_file_hash("configs/trimem_v1/model_lock.json"),
+        "ledger_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "execution_locks": dict(execution_locks),
+        "status": "PASS",
+    }
 
 
 def _validate_stream_summary_totals(
@@ -2476,7 +3064,134 @@ def _validate_smoke_image_lifecycle(
     }
 
 
-def _aggregate_benchmark(name: str, results_dir: Path) -> dict[str, Any]:
+def _validate_development_promotion(
+    *,
+    results_dir: Path,
+    selection_evidence: Mapping[str, Any],
+    selected_candidate_id: str,
+    summaries: list[dict[str, Any]],
+) -> dict[str, str]:
+    """Bind the restricted promotion copies to the verified DEV selection."""
+
+    promotion_root = ROOT / "artifacts/trimem_v1/development_selection"
+    evidence_path = promotion_root / "development_selection_evidence.json"
+    proposal_path = promotion_root / "selected_m2.proposed.json"
+    checkpoint_path = promotion_root / "selected_m2_checkpoint.json"
+    for path in (evidence_path, proposal_path, checkpoint_path):
+        if not path.is_file() or path.is_symlink():
+            raise MatrixError(f"development promotion artifact is missing/unsafe: {path.name}")
+    promotion_evidence = _load(evidence_path)
+    if promotion_evidence != dict(selection_evidence):
+        raise MatrixError("development promotion evidence differs from aggregate input")
+    expected_evidence_fields = {
+        "schema",
+        "status",
+        "candidate_bundle_sha256",
+        "candidate_summaries",
+        "selection",
+    }
+    if (
+        set(promotion_evidence) != expected_evidence_fields
+        or promotion_evidence.get("schema")
+        != "trimem/development-m2-selection-evidence/1.0"
+        or promotion_evidence.get("status")
+        != "COMPLETE_PENDING_COMMIT_FREEZE_AND_HELDOUT_APPROVAL"
+        or promotion_evidence.get("candidate_bundle_sha256")
+        != "sha256:" + hashlib.sha256(
+            _canonical(load_m2_candidate_bundle())
+        ).hexdigest()
+    ):
+        raise MatrixError("development promotion evidence contract differs")
+    compact_fields = {
+        "candidate_id",
+        "completed_target_count",
+        "final_resume_cursor",
+        "resolved_count",
+        "actual_total_tokens",
+        "actual_usd",
+        "sequence_sha256",
+        "runtime_lock_sha256",
+        "m2_policy_manifest_sha256",
+        "checkpoint_source_path",
+        "checkpoint_source_file_sha256",
+        "checkpoint_digest",
+        "namespace",
+    }
+    evidence_rows = promotion_evidence.get("candidate_summaries")
+    if (
+        not isinstance(evidence_rows, list)
+        or len(evidence_rows) != len(CANDIDATE_IDS)
+        or any(not isinstance(row, dict) or set(row) != compact_fields for row in evidence_rows)
+    ):
+        raise MatrixError("development promotion candidate field set differs")
+    selected_summary = next(
+        (
+            row
+            for row in summaries
+            if row.get("candidate_id") == selected_candidate_id
+            and str(row.get("arm", "")).startswith("M2-")
+        ),
+        None,
+    )
+    if selected_summary is None:
+        raise MatrixError("selected M2 stream summary is missing")
+    selected_evidence = next(
+        (row for row in evidence_rows if row.get("candidate_id") == selected_candidate_id),
+        None,
+    )
+    if selected_evidence is None:
+        raise MatrixError("selected M2 candidate evidence is missing")
+    source_path = ROOT / str(selected_evidence["checkpoint_source_path"])
+    try:
+        source_path.resolve(strict=True).relative_to(results_dir.resolve(strict=True))
+    except (OSError, ValueError) as exc:
+        raise MatrixError("selected M2 checkpoint source escapes DEV results") from exc
+    if source_path.is_symlink() or not source_path.is_file():
+        raise MatrixError("selected M2 checkpoint source is missing/unsafe")
+    source_raw = source_path.read_bytes()
+    checkpoint_raw = checkpoint_path.read_bytes()
+    checkpoint = _load(checkpoint_path)
+    if (
+        checkpoint_raw != source_raw
+        or checkpoint != selected_summary.get("selected_checkpoint")
+        or selected_evidence.get("checkpoint_source_file_sha256")
+        != hashlib.sha256(source_raw).hexdigest()
+        or selected_evidence.get("checkpoint_digest") != checkpoint.get("digest")
+    ):
+        raise MatrixError("selected M2 checkpoint promotion binding differs")
+    evidence_raw = evidence_path.read_bytes()
+    candidate = candidate_row(selected_candidate_id)
+    expected_proposal = {
+        "schema": "trimem/selected-m2/1.0",
+        "status": "FROZEN_AFTER_DEVELOPMENT",
+        "candidate_bundle_path": "configs/trimem_v1/m2_candidate_bundles.json",
+        "selected_candidate_id": selected_candidate_id,
+        "selected_full_policy_path": candidate["full_policy_path"],
+        "selected_full_policy_file_sha256": candidate["full_policy_file_sha256"],
+        "selected_runtime_lock_sha256": candidate["runtime_lock_sha256"],
+        "selected_checkpoint_path": checkpoint_path.relative_to(ROOT).as_posix(),
+        "selected_checkpoint_file_sha256": hashlib.sha256(checkpoint_raw).hexdigest(),
+        "selected_checkpoint_digest": checkpoint.get("digest"),
+        "development_selection_evidence_path": evidence_path.relative_to(ROOT).as_posix(),
+        "development_selection_evidence_sha256": hashlib.sha256(evidence_raw).hexdigest(),
+        "heldout_execution": "PENDING_SEPARATE_EXEC_APPROVAL",
+    }
+    proposal = _load(proposal_path)
+    if proposal != expected_proposal:
+        raise MatrixError("selected M2 proposal differs from verified promotion")
+    return {
+        "development_selection_evidence_sha256": hashlib.sha256(evidence_raw).hexdigest(),
+        "selected_m2_checkpoint_sha256": hashlib.sha256(checkpoint_raw).hexdigest(),
+        "selected_m2_proposal_sha256": hashlib.sha256(proposal_path.read_bytes()).hexdigest(),
+    }
+
+
+def _aggregate_benchmark(
+    name: str,
+    results_dir: Path,
+    *,
+    approval_binding: Mapping[str, str],
+) -> dict[str, Any]:
     manifest = _load(manifest_path(name))
     targets = _validate_target_set(manifest, ordered=True)
     benchmark_roles = _validate_benchmark_roles(manifest, targets)
@@ -2499,6 +3214,7 @@ def _aggregate_benchmark(name: str, results_dir: Path) -> dict[str, Any]:
     outcomes = []
     selected_candidate_id: str
     selection_evidence: dict[str, Any] | None = None
+    promotion_hashes: dict[str, str] = {}
     if name == "development":
         selection_path = results_dir / "development-selection.json"
         selection_evidence = _load(selection_path)
@@ -2661,6 +3377,41 @@ def _aggregate_benchmark(name: str, results_dir: Path) -> dict[str, Any]:
             ):
                 if summary.get(field) != evidence.get(field):
                     raise MatrixError(f"development selection evidence drift: {candidate_id}.{field}")
+        promotion_hashes = _validate_development_promotion(
+            results_dir=results_dir,
+            selection_evidence=selection_evidence or {},
+            selected_candidate_id=selected_candidate_id,
+            summaries=summaries,
+        )
+    expected_phase = {
+        "development": "DEVELOPMENT_TUNING",
+        "heldout": "HELDOUT_BENCHMARK",
+    }[name]
+    hard_cap = cost_plan.get("phase_hard_caps", {}).get(expected_phase)
+    if not isinstance(hard_cap, dict):
+        raise MatrixError("frozen benchmark phase hard cap is missing")
+    record_values = [record for _, record in records]
+    phase_budget = _validate_phase_budget(
+        record_values,
+        pricing=pricing,
+        hard_cap=hard_cap,
+    )
+    execution_locks = _validate_execution_lock_evidence(
+        name,
+        results_dir,
+        record_values,
+        summaries,
+        approval_binding,
+    )
+    budget_ledger_evidence = _validate_budget_ledger_evidence(
+        results_dir,
+        records=record_values,
+        pricing=pricing,
+        hard_cap=hard_cap,
+        phase_budget=phase_budget,
+        approval_binding=approval_binding,
+        execution_locks=execution_locks,
+    )
     benchmark_totals = _benchmark_endpoint_totals(
         outcomes, tuple(expected_streams), benchmark_roles
     )
@@ -2675,6 +3426,8 @@ def _aggregate_benchmark(name: str, results_dir: Path) -> dict[str, Any]:
             ],
             "expected_task_arm_count": len(expected_keys),
             "observed_task_arm_count": len(records),
+            "phase_budget": phase_budget,
+            "budget_ledger_evidence": budget_ledger_evidence,
             "outcomes": sorted(outcomes, key=lambda row: (row["arm"], row["target_id"])),
             "stream_totals": sorted(({
                 "arm": row["arm"],
@@ -2685,6 +3438,13 @@ def _aggregate_benchmark(name: str, results_dir: Path) -> dict[str, Any]:
                 "reporting_scope": "DESCRIPTIVE_POOLED_ALL_BENCHMARKS",
                 "resolved_count": row.get("resolved_count"),
             } for row in summaries), key=lambda row: row["arm"]),
+            **({
+                "development_selection": selection_evidence,
+                "development_selection_sha256": hashlib.sha256(
+                    _canonical(selection_evidence)
+                ).hexdigest(),
+                "restricted_selection_artifact_hashes": promotion_hashes,
+            } if name == "development" else {}),
             "sequence_sha256": expected_sequence, "status": "PASS"}
 
 
@@ -2693,6 +3453,7 @@ def aggregate(
     results_dir: Path,
     image_evidence_dir: Path | None = None,
 ) -> dict[str, Any]:
+    approval_binding: dict[str, str] | None = None
     if name == "grader-smoke":
         if image_evidence_dir is None:
             raise MatrixError("grader-smoke aggregate requires image lifecycle evidence")
@@ -2703,8 +3464,18 @@ def aggregate(
     else:
         if image_evidence_dir is not None:
             raise MatrixError("benchmark aggregate rejects grader-smoke image evidence")
-        report = _aggregate_benchmark(name, results_dir)
-    return _seal_aggregate(name, results_dir, report)
+        approval_binding = _approval_binding(name, results_dir)
+        report = _aggregate_benchmark(
+            name,
+            results_dir,
+            approval_binding=approval_binding,
+        )
+    return _seal_aggregate(
+        name,
+        results_dir,
+        report,
+        approval_binding=approval_binding,
+    )
 
 
 def _write_json(path: Path, value: Any) -> None:

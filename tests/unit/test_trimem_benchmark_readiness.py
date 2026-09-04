@@ -449,7 +449,7 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "DEV_EXECUTION_ALLOWED": "NO",
         "DEV_SCIENTIFIC_STATUS": "STARTED_NO_COMPLETED_CELL",
         "ENDPOINT": readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT,
-        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_004_FAILURE_SUBTYPE,
+        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_005_FAILURE_SUBTYPE,
         "GRADER_EXEC_PACKAGE": "PASS",
         "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
@@ -464,7 +464,7 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["development_execution_authorized"] is False
     assert authorization["grader_smoke_rerun_authorized"] is False
     assert authorization["heldout_execution_authorized"] is False
-    assert authorization["future_recovery_authority_received"] is True
+    assert authorization["future_recovery_authority_received"] is False
     assert authorization["prior_failed_run_reusable"] is False
     assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
@@ -475,15 +475,15 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["request_003_final"] is True
     assert authorization["request_004_allowed_after_exact_remote_gates"] is False
     assert authorization["request_004_attempt_one_consumed"] is True
-    assert authorization["request_005_allowed_after_exact_remote_gates"] is True
-    assert authorization["request_005_attempt_one_consumed"] is False
+    assert authorization["request_005_allowed_after_exact_remote_gates"] is False
+    assert authorization["request_005_attempt_one_consumed"] is True
     assert authorization["rerun_allowed"] is False
     assert "is final" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     assert authorization["amendment_classification"] == (
         "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT"
     )
-    assert authorization["solve_execution_contract_rehearsal_required_before_request_005"] is True
+    assert authorization["solve_execution_contract_rehearsal_required_before_request_005"] is False
     service_boundary = requirements["credential_free_service_ci_boundary"]
     assert "ALLOWED_PRE_EXEC" in service_boundary
     assert "digest-pinned PostgreSQL and Qdrant support services" in service_boundary
@@ -581,31 +581,39 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     gate_failure = requirements["historical_development_exec_gate_failure"]
     assert gate_failure == readiness._validated_development_exec_002_failure()
     current_failure = requirements["development_execution_failure"]
-    assert current_failure == readiness._validated_development_exec_004_failure()
+    assert current_failure == readiness._validated_development_exec_005_failure()
     assert current_failure["dev_scientific_status"] == "STARTED_NO_COMPLETED_CELL"
     assert current_failure["performance"] == "NOT_MEASURED"
     assert current_failure["execution_accounting"] == {
-        "api_calls": 6,
-        "model_calls": 6,
-        "paid_model_calls": 6,
+        "api_calls": 1,
+        "model_calls": 1,
+        "paid_model_calls": 1,
         "decomposition_calls": 1,
-        "solve_calls": 5,
+        "solve_calls": 0,
         "extraction_calls": 0,
-        "input_tokens": 54620,
-        "cached_input_tokens": 17664,
-        "output_tokens": 4203,
-        "reasoning_tokens": 1485,
+        "input_tokens": None,
+        "cached_input_tokens": None,
+        "output_tokens": None,
+        "reasoning_tokens": None,
+        "provider_reported_usage": "UNAVAILABLE_HTTP_AUTH_ERROR",
+        "ledger_conservative_reservation": {
+            "input_tokens": 5069,
+            "output_tokens": 8192,
+            "total_usd": 0.04066575,
+        },
         "completed_task_arm_runs": 0,
         "grader_containers": 0,
         "official_grader_runs": 0,
-        "total_usd": 0.0479553,
     }
     assert current_failure["failure_subtype"] == (
-        "TRIMEM_DEV_FIRST_TASK_SOLVE_RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS"
+        "TRIMEM_DEV_FIRST_DECOMPOSITION_HTTP_AUTH_ERROR"
     )
     assert current_failure["further_execution_authorized"] is False
     assert requirements["historical_development_provider_failure"] == (
         readiness._validated_development_exec_003_failure()
+    )
+    assert requirements["historical_development_exec_004_failure"] == (
+        readiness._validated_development_exec_004_failure()
     )
 
 
@@ -621,7 +629,7 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
     assert derived["current_status"]["DEV_EXECUTION_ALLOWED"] == "NO"
     assert derived["current_status"]["PERFORMANCE"] == "NOT_MEASURED"
     assert derived["development_execution_failure"] == (
-        readiness._validated_development_exec_004_failure()
+        readiness._validated_development_exec_005_failure()
     )
     assert derived["historical_development_provider_failure"] == (
         readiness._validated_development_exec_003_failure()
@@ -712,7 +720,7 @@ def test_d14_recovery_requires_fresh_sentinel_before_approval(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     assert readiness.preapproval_blockers() == [
-        "DEV _005 sentinel and exact-head remote gates are required before approval"
+        "DEV _005 attempt 1 is terminally consumed; no rerun, attempt 2, or _006 is authorized"
     ]
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
@@ -739,7 +747,9 @@ def test_d14_recovery_requires_fresh_sentinel_before_approval(
     )
     blockers, phase = readiness.execution_blockers(approval_path)
     assert phase == "development"
-    assert blockers == []
+    assert blockers == [
+        "DEV _005 is terminally consumed; further development execution is not authorized"
+    ]
 
 
 def test_benchmark_exec_cli_requires_fresh_run_bound_approval(
@@ -1537,7 +1547,7 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "total_usd": 0,
     }
     assert readiness.preapproval_blockers() == [
-        "DEV _005 sentinel and exact-head remote gates are required before approval"
+        "DEV _005 attempt 1 is terminally consumed; no rerun, attempt 2, or _006 is authorized"
     ]
 
 
@@ -3341,11 +3351,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "D1.4 fresh-run approval boundaries" in static
-    assert '"DEV _005 sentinel and exact-head remote gates are "' in static
+    assert "D1.4 terminal authority boundaries" in static
+    assert '"DEV _005 attempt 1 is terminally consumed; no rerun, "' in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
-    assert "expected exact D1.4 report" in static
+    assert "expected exact D1.4 terminal report" in static
     assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service

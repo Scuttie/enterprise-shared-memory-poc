@@ -20,7 +20,7 @@
     "DEV_EXECUTION_ALLOWED": "NO",
     "DEV_SCIENTIFIC_STATUS": "STARTED_NO_COMPLETED_CELL",
     "ENDPOINT": "TRIMEM_V1_DEV_INCOMPLETE",
-    "FAILURE_SUBTYPE": "TRIMEM_DEV_FIRST_TASK_SOLVE_RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+    "FAILURE_SUBTYPE": "TRIMEM_DEV_FIRST_DECOMPOSITION_HTTP_AUTH_ERROR",
     "GRADER_EXEC_PACKAGE": "PASS",
     "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
     "PERFORMANCE": "NOT_MEASURED",
@@ -61,8 +61,8 @@
     "grader_smoke_rerun_authorized": false,
     "hard_cap_total_usd": 50.0,
     "heldout_execution_authorized": false,
-    "future_recovery_authority_received": true,
-    "meaning": "Each approved _003 and _004 attempt-1 run is final. The _004 run made six provider calls and completed no task-arm. Sanitized zero-call forensics classified its truncated fifth solve action as SOLVE_TRUNCATED_WRITE_FILE_CONTENT. A distinct _005 attempt-1 request is conditionally allowed only after the D1.4 credential-free contract and exact source-head workflows pass; the sentinel alone has zero execution authority.",
+    "future_recovery_authority_received": false,
+    "meaning": "The approved _005 attempt-1 run is final. It reached all exact-head gates and 13 digest-locked images, then the first M2-baseline decomposition request failed with HTTP_AUTH_ERROR. The terminal journal replay made zero additional provider calls. Zero task-arm cells completed, and no rerun, attempt 2, or _006 is authorized.",
     "model_id": "gpt-5.4-mini-2026-03-17",
     "prior_failed_run_reusable": false,
     "recovery_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_SOLVE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE",
@@ -73,11 +73,11 @@
     "request_003_final": true,
     "request_004_allowed_after_exact_remote_gates": false,
     "request_004_attempt_one_consumed": true,
-    "request_005_allowed_after_exact_remote_gates": true,
-    "request_005_attempt_one_consumed": false,
+    "request_005_allowed_after_exact_remote_gates": false,
+    "request_005_attempt_one_consumed": true,
     "rerun_allowed": false,
     "selected_m2_checkpoint": "PRE_DEVELOPMENT; no development result or checkpoint was produced",
-    "solve_execution_contract_rehearsal_required_before_request_005": true
+    "solve_execution_contract_rehearsal_required_before_request_005": false
   },
   "historical_development_exec_gate_failure": {
     "authority": {
@@ -145,7 +145,7 @@
       "run_attempt": 1
     }
   },
-  "development_execution_failure": {
+  "historical_development_exec_004_failure": {
     "schema": "trimem/development-provider-terminal-failure-status/1.0",
     "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
     "failure_subtype": "TRIMEM_DEV_FIRST_TASK_SOLVE_RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
@@ -180,6 +180,50 @@
     },
     "failure_receipt_path": "artifacts/trimem_v1/development_tuning_exec/exec-004/provider-incomplete-max-output-tokens-receipt.json",
     "failure_receipt_raw_sha256": "393bff5c1a518ea2ea487ff1c940152bc9d2e618ab300fd05fadacc179c933fc",
+    "historical_run_rerun_allowed": false,
+    "current_run_rerun_allowed": false,
+    "attempt_two_allowed": false,
+    "further_execution_authorized": false
+  },
+  "development_execution_failure": {
+    "schema": "trimem/development-provider-terminal-failure-status/1.1",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "failure_subtype": "TRIMEM_DEV_FIRST_DECOMPOSITION_HTTP_AUTH_ERROR",
+    "raw_provider_outcome_class": "HTTP_AUTH_ERROR",
+    "performance": "NOT_MEASURED",
+    "dev_scientific_status": "STARTED_NO_COMPLETED_CELL",
+    "workflow_run": {
+      "id": 33859839836,
+      "run_attempt": 1,
+      "head_sha": "57db1a21fca3b036a64629c439ca196fb1606638",
+      "conclusion": "failure"
+    },
+    "execution_accounting": {
+      "api_calls": 1,
+      "model_calls": 1,
+      "paid_model_calls": 1,
+      "decomposition_calls": 1,
+      "solve_calls": 0,
+      "extraction_calls": 0,
+      "input_tokens": null,
+      "cached_input_tokens": null,
+      "output_tokens": null,
+      "reasoning_tokens": null,
+      "provider_reported_usage": "UNAVAILABLE_HTTP_AUTH_ERROR",
+      "ledger_conservative_reservation": {
+        "input_tokens": 5069,
+        "output_tokens": 8192,
+        "total_usd": 0.04066575
+      },
+      "completed_task_arm_runs": 0,
+      "grader_containers": 0,
+      "official_grader_runs": 0
+    },
+    "provider_status_distribution": {
+      "HTTP_AUTH_ERROR": 1
+    },
+    "failure_receipt_path": "artifacts/trimem_v1/development_tuning_exec/exec-005/http-auth-error-receipt.json",
+    "failure_receipt_raw_sha256": "951f99472bdca153878f48ce1b18b11990e8125c15b47d529df508760939d42d",
     "historical_run_rerun_allowed": false,
     "current_run_rerun_allowed": false,
     "attempt_two_allowed": false,
@@ -368,7 +412,7 @@
     }
   },
   "post_approval_gates": [
-    "the _003 and _004 requests and their attempt-1 runs are final; _004 ended after six provider calls and zero completed cells, and neither run may be rerun",
+    "the _003, _004, and _005 requests and their attempt-1 runs are final; _005 ended on the first decomposition HTTP_AUTH_ERROR with zero completed cells and may not be rerun",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
@@ -376,7 +420,7 @@
   "schema": "trimem/readiness-requirements/1.9",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
-  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed and independently validated exec-005 official PASS evidence, not from static CI alone. The later _003 and _004 DEV attempts are final with zero completed cells. D1.3 established the _004 terminal provider outcome as RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS; performance remains NOT_MEASURED and no causal, full-suite, or leaderboard claim is made.",
+  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed and independently validated grader-smoke exec-005 official PASS evidence, not from static CI alone. DEV _005 is final after one provider request terminated with HTTP_AUTH_ERROR and zero completed cells; performance remains NOT_MEASURED and no causal, full-suite, or leaderboard claim is made.",
   "target_set_sha256": {
     "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
     "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",

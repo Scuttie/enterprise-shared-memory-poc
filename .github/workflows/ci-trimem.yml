@@ -43,7 +43,7 @@ jobs:
         run: python scripts/make_handoff_manifest.py --check
       - name: Scan tracked source for forbidden credentials and host paths
         run: python scripts/release_check.py --secrets
-      - name: Verify committed freeze and D1.4 fresh-run approval boundaries
+      - name: Verify committed freeze and D1.4 terminal authority boundaries
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
@@ -57,8 +57,8 @@ jobs:
                   "benchmark-approval",
                   1,
                   [
-                      "DEV _005 sentinel and exact-head remote gates are "
-                      "required before approval"
+                      "DEV _005 attempt 1 is terminally consumed; no rerun, "
+                      "attempt 2, or _006 is authorized"
                   ],
               ),
               (
@@ -110,7 +110,7 @@ jobs:
               }
               if observed != expected:
                   raise SystemExit(
-                      f"{level}: expected exact D1.4 report {expected!r}, "
+                      f"{level}: expected exact D1.4 terminal report {expected!r}, "
                       f"got {observed!r}"
                   )
           PY

@@ -43,10 +43,15 @@ from trimem_exec_approval import (  # noqa: E402
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
 )
-from trimem_development_trigger_preflight import (  # noqa: E402
+from trimem_development_trigger_d15 import (  # noqa: E402
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
     validate_sentinel_commit as validate_development_sentinel_commit,
+)
+from trimem_development_trigger_preflight import (  # noqa: E402
+    SENTINEL_PATH as LEGACY_DEVELOPMENT_SENTINEL_PATH,
+    DevelopmentTriggerError as LegacyDevelopmentTriggerError,
+    validate_sentinel_commit as validate_legacy_development_sentinel_commit,
 )
 from trimem_select_targets import (  # noqa: E402
     SelectionError,
@@ -1923,9 +1928,15 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
     if value.get("phase") != expected_phase:
         raise MatrixError("external approval phase differs from the aggregate manifest")
 
+    development_is_d15 = (ROOT / DEVELOPMENT_SENTINEL_PATH).is_file()
     request = {
         "grader-smoke": ROOT / GRADER_SMOKE_SENTINEL_PATH,
-        "development": ROOT / DEVELOPMENT_SENTINEL_PATH,
+        "development": ROOT
+        / (
+            DEVELOPMENT_SENTINEL_PATH
+            if development_is_d15
+            else LEGACY_DEVELOPMENT_SENTINEL_PATH
+        ),
         "heldout": ROOT / "configs/trimem_v1/benchmark_exec_request.json",
     }[name]
     freeze = ROOT / "artifacts/trimem_v1/freeze.json"
@@ -1942,11 +1953,13 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
         raise MatrixError("external approval git_head differs from aggregate HEAD")
     if name == "development":
         try:
-            validated_request = validate_development_sentinel_commit(
-                ROOT,
-                value["git_head"],
+            validator = (
+                validate_development_sentinel_commit
+                if development_is_d15
+                else validate_legacy_development_sentinel_commit
             )
-        except DevelopmentTriggerError as exc:
+            validated_request = validator(ROOT, value["git_head"])
+        except (DevelopmentTriggerError, LegacyDevelopmentTriggerError) as exc:
             raise MatrixError(str(exc)) from None
         if validated_request.get("source_head") != value.get("source_head"):
             raise MatrixError("DEV sentinel parent differs from approval source_head")
@@ -1975,7 +1988,11 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
     if (
         restricted_value.get("schema")
         != (
-            "trimem/external-exec-approval/1.1"
+            (
+                "trimem/external-exec-approval/1.2"
+                if development_is_d15
+                else "trimem/external-exec-approval/1.1"
+            )
             if name == "development"
             else "trimem/external-exec-approval/1.0"
         )

@@ -38,7 +38,7 @@ class FakeClient:
 
 class FakeSecrets:
     def get(self, name):
-        return "sk-DUMMY-NOT-REAL"  # never a real key
+        return "DUMMY-NOT-REAL-CREDENTIAL-0001"  # never a real key
 
 
 def ok_body(model="gpt-5.6-terra", text="```python\nprint(1)\n```", rt=64):

@@ -24,6 +24,10 @@ from .base import (
     ProviderResponseEnvelope,
 )
 from .redaction import sanitize
+from .openai_credential import (
+    OpenAICredentialValidationError,
+    build_openai_headers,
+)
 
 
 _REASONING_FAMILIES = {
@@ -31,6 +35,20 @@ _REASONING_FAMILIES = {
 }
 _NONREASONING_FAMILIES = {"gpt4o", "gpt-4o", "nonreasoning"}
 _ENVELOPE_SCHEMA = "trimem/provider-response-envelope/1.0"
+
+
+def _http_error_classification(status: int) -> str:
+    return {
+        401: "HTTP_401_AUTHENTICATION_FAILED",
+        403: "HTTP_403_PERMISSION_DENIED",
+        404: "HTTP_404_MODEL_NOT_AVAILABLE",
+        429: "HTTP_429_RATE_OR_QUOTA_LIMIT",
+    }.get(
+        status,
+        "HTTP_RETRYABLE_SERVER_ERROR"
+        if status in {500, 502, 503, 504}
+        else "HTTP_OTHER_CLIENT_ERROR",
+    )
 
 
 def _canonical_bytes(value: Any) -> bytes:
@@ -145,9 +163,10 @@ class OpenAIResponsesProvider(CodingModelProvider):
 
     def _headers(self):
         key = self._secrets.get(self._key_name)
-        if not key:
-            raise AuthError("missing %s" % self._key_name)
-        return {"Authorization": "Bearer %s" % key, "Content-Type": "application/json"}
+        try:
+            return build_openai_headers(key)
+        except OpenAICredentialValidationError as exc:
+            raise AuthError(exc.classification) from None
 
     async def _post(self, body):
         assert self._client is not None, "no http client bound"
@@ -240,6 +259,7 @@ class OpenAIResponsesProvider(CodingModelProvider):
         structured: bool,
         parsing_stage: str,
         classification: str,
+        retry_decision: str = "stop",
     ) -> ProviderResponseEnvelope:
         usage = self._usage(data)
         error = data.get("error")
@@ -260,6 +280,13 @@ class OpenAIResponsesProvider(CodingModelProvider):
             response_status=data.get("status") if isinstance(data.get("status"), str) else None,
             response_model=data.get("model") if isinstance(data.get("model"), str) else None,
             response_error_code=error.get("code") if isinstance(error.get("code"), str) else None,
+            response_error_type=error.get("type") if isinstance(error.get("type"), str) else None,
+            response_error_param=error.get("param") if isinstance(error.get("param"), str) else None,
+            response_error_message_bytes=(
+                len(error_message.encode("utf-8"))
+                if isinstance(error_message, str)
+                else None
+            ),
             response_error_message_sha256=(
                 hashlib.sha256(error_message.encode("utf-8")).hexdigest()
                 if isinstance(error_message, str)
@@ -289,6 +316,7 @@ class OpenAIResponsesProvider(CodingModelProvider):
             raw_restricted_evidence_reference=raw_reference,
             parsing_stage=parsing_stage,
             terminal_classification=classification,
+            retry_decision=retry_decision,
         )
 
     async def generate(
@@ -335,7 +363,11 @@ class OpenAIResponsesProvider(CodingModelProvider):
                 observations = {
                     "output_item_types": (), "content_item_types": (), "text": "", "refusal": ""
                 }
-                classification = "HTTP_200_INVALID_JSON" if status == 200 else "HTTP_ERROR_INVALID_JSON"
+                classification = (
+                    "HTTP_200_INVALID_JSON"
+                    if status == 200
+                    else _http_error_classification(status)
+                )
                 envelope = self._envelope(
                     logical_request_id=logical_request_id, http_status=status,
                     provider_request_id=header_request_id, data={}, observations=observations,
@@ -363,15 +395,17 @@ class OpenAIResponsesProvider(CodingModelProvider):
                     attempts, retry_reasons, t0, a0, header_request_id, raw, raw_reference,
                 )
 
-            classification = "HTTP_RETRYABLE_ERROR" if status in {429, 500, 502, 503, 504} else (
-                "HTTP_AUTH_ERROR" if status in {401, 403} else "HTTP_INVALID_REQUEST"
-            )
+            classification = _http_error_classification(status)
             envelope = self._envelope(
                 logical_request_id=logical_request_id, http_status=status,
                 provider_request_id=header_request_id, data=data, observations=observations,
                 raw=raw, raw_reference=raw_reference,
                 structured=request.output_json_schema is not None,
                 parsing_stage="HTTP_STATUS", classification=classification,
+                retry_decision=(
+                    "retry" if status in {429, 500, 502, 503, 504} and attempt < self._max_retries
+                    else "stop"
+                ),
             )
             retryable = status in {429, 500, 502, 503, 504}
             attempts.append(AttemptRecord(

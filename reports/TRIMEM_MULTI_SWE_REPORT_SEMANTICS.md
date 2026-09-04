@@ -200,11 +200,11 @@ encrypted-evidence upload and otherwise preserves plaintext and ciphertext.
 - Semantics lock raw-file SHA-256:
   `620618f967ef5e33037fccc123fcf004f63bbe656efeb61c46e85f764ef9c80e`
 - Extended evaluation-contract projection SHA-256:
-  `75b5a2179789dd3fd2ba05def343fb535c42c9a555ac07948ad2d8c338560368`
+  `2f7cea4173042564a7a5169490ef0a8050351c3a617dd4e02352126f52781646`
 - Extended evaluation-contract self-lock SHA-256:
-  `4bc48ea3bbe31b0e6bd8b99946e351d89d4a92f6ab2a4c7c2f6cb151a66230ce`
+  `6ea3c2f2e0aefbcf69915777031d4bb3505f92256979893f8a455a3553cd9a2d`
 - Extended evaluation-contract raw-file SHA-256:
-  `79e2b399c56269eff1cd23f815156ba4ace259c81e12690d63377a32c107c1ae`
+  `002de54d756a7da8bf121e96d0b84c41043cb2a500c62ea47d24d4b8655665da`
 - Adapter failure-envelope contract raw-file SHA-256:
   `77b6b215538da9f809428fb5eb3a2c860b1c1d8f2d443b0291379cd46df9990b`
 

@@ -124,6 +124,11 @@ from trimem_development_trigger_preflight import (  # noqa: E402
     PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_004_SENTINEL_PATH,
     RECOVERY_PROVENANCE as DEVELOPMENT_RECOVERY_PROVENANCE,
     RECOVERY_AUTHORIZATION as DEVELOPMENT_RECOVERY_AUTHORIZATION,
+    REQUEST_ID as DEVELOPMENT_EXEC_005_REQUEST_ID,
+    REQUIRED_EXTERNAL_AUTHORIZATION as DEVELOPMENT_EXEC_005_AUTHORIZATION,
+    SENTINEL_PATH as DEVELOPMENT_EXEC_005_SENTINEL_PATH,
+)
+from trimem_development_trigger_d15 import (  # noqa: E402
     REQUEST_ID as DEVELOPMENT_REQUEST_ID,
     REQUIRED_EXTERNAL_AUTHORIZATION as DEVELOPMENT_EXECUTION_AUTHORIZATION,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
@@ -2496,7 +2501,11 @@ def validate_model_cost_environment() -> None:
         and solve_budget_lock.get("contract_sha256")
         == hashlib.sha256(solve_budget_path.read_bytes()).hexdigest()
         and all(
-            hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == digest
+            relative in {
+                "scripts/trimem_benchmark_run.py",
+                "scripts/trimem_benchmark_matrix.py",
+            }
+            or hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == digest
             for relative, digest in implementation_lock.items()
         ),
         "D1.4 solve-output implementation lock differs",
@@ -2509,7 +2518,7 @@ def validate_model_cost_environment() -> None:
         and solve_amendment.get("causal_boundary", {}).get("forensic_class")
         == "SOLVE_TRUNCATED_WRITE_FILE_CONTENT"
         and solve_amendment.get("execution_boundary", {}).get("fresh_request_id")
-        == DEVELOPMENT_REQUEST_ID
+        == DEVELOPMENT_EXEC_005_REQUEST_ID
         and solve_amendment.get("execution_boundary", {}).get(
             "required_authorization"
         )
@@ -3895,7 +3904,7 @@ def _validated_development_exec_004_failure() -> dict[str, Any]:
 
 def _validated_development_exec_005_failure() -> dict[str, Any]:
     receipt_path = ROOT / DEVELOPMENT_EXEC_005_FAILURE_RECEIPT_PATH
-    sentinel_path = ROOT / DEVELOPMENT_SENTINEL_PATH
+    sentinel_path = ROOT / DEVELOPMENT_EXEC_005_SENTINEL_PATH
     receipt_raw = receipt_path.read_bytes()
     sentinel_raw = sentinel_path.read_bytes()
     require(
@@ -4016,7 +4025,7 @@ def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
     plan = read_json(ARTIFACT / "readiness_requirements.json")
-    require(plan.get("schema") == "trimem/readiness-requirements/1.9", "readiness requirements are stale")
+    require(plan.get("schema") == "trimem/readiness-requirements/2.0", "readiness requirements are stale")
     derived = _validated_post_smoke_readiness_state()
     historical_development_failure = _validated_development_preflight_failure()
     protected_gate_failure = _validated_development_exec_002_failure()
@@ -4077,9 +4086,9 @@ def validate_readiness_plan(
         isinstance(authorization, dict)
         and authorization.get("active_development_approval") is False
         and authorization.get("amendment_classification")
-        == "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT"
+        == "NON_SEMANTIC_CREDENTIAL_CONTROL_PLANE_FIX"
         and authorization.get("amendment_evidence_path")
-        == "artifacts/trimem_v1/development_solve_execution_contract_amendment.json"
+        == "artifacts/trimem_v1/development_credential_control_plane_amendment.json"
         and authorization.get("approval_request_eligible") is False
         and authorization.get("attempt_two_allowed") is False
         and authorization.get("development_execution_authorized") is False
@@ -4087,22 +4096,25 @@ def validate_readiness_plan(
         and authorization.get("grader_smoke_rerun_authorized") is False
         and authorization.get("hard_cap_total_usd") == 50.0
         and authorization.get("heldout_execution_authorized") is False
+        and authorization.get("future_recovery_authority_received") is True
         and authorization.get("model_id") == "gpt-5.4-mini-2026-03-17"
         and authorization.get("prior_failed_run_reusable") is False
         and authorization.get("recovery_authorization")
-        == DEVELOPMENT_RECOVERY_AUTHORIZATION
+        == DEVELOPMENT_EXECUTION_AUTHORIZATION
         and authorization.get("recovery_request_id") == DEVELOPMENT_REQUEST_ID
         and authorization.get("recovery_request_path") == DEVELOPMENT_SENTINEL_PATH
         and authorization.get("request_004_allowed_after_exact_remote_gates") is False
         and authorization.get("request_004_attempt_one_consumed") is True
         and authorization.get("request_005_allowed_after_exact_remote_gates") is False
         and authorization.get("request_005_attempt_one_consumed") is True
+        and authorization.get("request_006_allowed_after_exact_remote_gates") is True
+        and authorization.get("request_006_attempt_one_consumed") is False
         and authorization.get(
             "solve_execution_contract_rehearsal_required_before_request_005"
         )
         is False
         and authorization.get("rerun_allowed") is False,
-        "D1.4 development authorization boundary differs",
+        "D1.5 development authorization boundary differs",
     )
     counts = plan.get("frozen_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_benchmark_physical_task_arm_runs")) == (72, 81, 153), "readiness physical-run counts drift")
@@ -4164,8 +4176,8 @@ def validate_readiness_plan(
     )
     static_meaning = str(plan.get("static_ci_meaning", ""))
     require(
-        "exec-005" in static_meaning
-        and "not from static CI alone" in static_meaning
+        "grader-smoke PASS evidence" in static_meaning
+        and "D1.5" in static_meaning
         and "performance remains NOT_MEASURED" in static_meaning,
         "post-smoke static-CI evidence boundary differs",
     )
@@ -4179,7 +4191,81 @@ def validate_readiness_plan(
     return derived
 
 
+def validate_d15_credential_control_amendment() -> None:
+    path = ARTIFACT / "development_credential_control_plane_amendment.json"
+    amendment = read_json(path)
+    implementation = amendment.get("implementation_sha256")
+    required_paths = {
+        ".github/workflows/trimem-benchmark.yml",
+        "scripts/trimem_audit_encrypted_evidence.py",
+        "scripts/trimem_benchmark_matrix.py",
+        "scripts/trimem_benchmark_run.py",
+        "scripts/trimem_development_trigger_d15.py",
+        "scripts/trimem_exec_approval.py",
+        "scripts/trimem_openai_model_access_check.py",
+        "scripts/trimem_validate_openai_credential.py",
+        "scripts/trimem_verify_openai_key_binding.py",
+        "src/enterprise_memory/providers/base.py",
+        "src/enterprise_memory/providers/openai_credential.py",
+        "src/enterprise_memory/providers/openai_responses.py",
+    }
+    require(
+        amendment.get("schema")
+        == "trimem/development-credential-control-plane-amendment/1.0"
+        and amendment.get("classification")
+        == "NON_SEMANTIC_CREDENTIAL_CONTROL_PLANE_FIX"
+        and amendment.get("causal_boundary", {}).get(
+            "historical_completed_task_arm_runs"
+        )
+        == 0
+        and amendment.get("causal_boundary", {}).get(
+            "performance_result_existed_before_amendment"
+        )
+        is False
+        and isinstance(implementation, dict)
+        and set(implementation) == required_paths,
+        "D1.5 credential-control amendment identity differs",
+    )
+    for relative, expected in implementation.items():
+        require(
+            isinstance(expected, str)
+            and re.fullmatch(r"[0-9a-f]{64}", expected) is not None
+            and hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
+            == expected,
+            f"D1.5 implementation seal differs: {relative}",
+        )
+    require(
+        amendment.get("preserved")
+        == {
+            "model_id": "gpt-5.4-mini-2026-03-17",
+            "reasoning_effort": "medium",
+            "prompts_and_structured_schemas": True,
+            "replace_text_and_write_file_policy": True,
+            "task_level_output_pools": True,
+            "m0_m1_m2_and_four_candidates": True,
+            "target_identities_and_order": True,
+            "memory_and_dqn_parameters": True,
+            "grader_and_image_locks": True,
+            "selection_rule": True,
+            "development_usd_hard_cap": 50.0,
+        },
+        "D1.5 frozen scientific-preservation boundary differs",
+    )
+    custody = amendment.get("evidence_custody_contract", {})
+    require(
+        custody.get("artifact_zip_digest_verified") is True
+        and custody.get("plaintext_persisted_during_audit") is False
+        and custody.get("file_path_type_size_sha256_verified") is True
+        and custody.get("provider_envelope_verified") is True
+        and custody.get("public_and_log_secret_scan_required") is True
+        and custody.get("delete_secrets_only_after_external_audit") is True
+        and custody.get("failure_endpoint") == "EVIDENCE_CUSTODY_INCOMPLETE",
+        "D1.5 evidence-custody boundary differs",
+    )
+
+
 def validate_runtime_and_candidates() -> None:
+    validate_d15_credential_control_amendment()
     bundle = load_bundle()
     require(bundle.get("candidate_order") == list(CANDIDATE_IDS), "M2 candidate order drift")
     require(bundle.get("development_contract", {}).get("candidate_task_arm_runs") == 48, "M2 candidate run count drift")
@@ -4479,7 +4565,7 @@ def validate_workflows() -> None:
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
     stdlib_preflight_rehearsal = (
-        "python -I -S scripts/trimem_development_trigger_preflight.py --help"
+        "python -I -S scripts/trimem_development_trigger_d15.py --help"
     )
     require(
         static.count(stdlib_freeze_rehearsal) == 1
@@ -4781,7 +4867,7 @@ def validate_workflows() -> None:
         and "push:" in benchmark_text
         and "      - codex/trimem-coder-v1" in benchmark_text
         and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
-        and "group: trimem-v1-development-tuning-exec-005" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-006" in benchmark_text
         and "group: trimem-v1-development-tuning-exec-004" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-003" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-002" not in benchmark_text
@@ -4789,7 +4875,7 @@ def validate_workflows() -> None:
         and "cancel-in-progress: false" in benchmark_text
         and "branch-trigger-preflight:" in benchmark_text
         and "needs: branch-trigger-preflight" in benchmark_text
-        and "trimem_development_trigger_preflight.py" in benchmark_text
+        and "trimem_development_trigger_d15.py" in benchmark_text
         and "github.ref == 'refs/heads/main'" in benchmark_text
         and "github.ref == 'refs/heads/codex/trimem-coder-v1'" in benchmark_text,
         "benchmark EXEC workflow lacks the exact DEV sentinel/manual-main trigger boundary",
@@ -4803,7 +4889,7 @@ def validate_workflows() -> None:
         and "persist-credentials: false" in benchmark_preflight
         and "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in benchmark_preflight
-        and "python -I -S scripts/trimem_development_trigger_preflight.py"
+        and "python -I -S scripts/trimem_development_trigger_d15.py"
         in benchmark_preflight
         and "GH_TOKEN: ${{ github.token }}" in benchmark_preflight
         and "secrets." not in benchmark_preflight
@@ -4819,7 +4905,7 @@ def validate_workflows() -> None:
     benchmark_protected = benchmark_text.split("  frozen-serial-phase:", 1)[1]
     public_upload = benchmark_protected.split(
         "      - name: Upload public benchmark result", 1
-    )[1].split("      - name: Upload encrypted restricted evidence", 1)[0]
+    )[1].split("      - name: Inventory complete restricted benchmark evidence", 1)[0]
     benchmark_secrets = set(
         re.findall(r"\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)", benchmark_protected)
     )
@@ -4861,7 +4947,15 @@ def validate_workflows() -> None:
         in benchmark_protected
         and "evidence_paths=(benchmark_exec)" in benchmark_protected
         and "evidence_paths+=(development_selection)" in benchmark_protected
+        and "python scripts/trimem_evidence_inventory.py" in benchmark_protected
+        and "--root-label benchmark_exec" in benchmark_protected
+        and "--root-label development_selection" in benchmark_protected
+        and "steps.benchmark_evidence_inventory.outcome == 'success'"
+        in benchmark_protected
         and "steps.encrypt_evidence.outcome == 'success'" in benchmark_protected
+        and "Upload non-sensitive benchmark evidence inventories"
+        in benchmark_protected
+        and "trimem-benchmark-evidence-inventories" in benchmark_protected
         and "Remove plaintext external approval after encryption attempt"
         in benchmark_protected
         and benchmark_protected.count(
@@ -4870,7 +4964,8 @@ def validate_workflows() -> None:
         and 'test ! -e "$RUNNER_TEMP/trimem-exec-approval.json"'
         in benchmark_protected
         and "RESTRICTED_UPLOAD_OUTCOME" in benchmark_protected
-        and 'if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ]; then'
+        and "INVENTORY_UPLOAD_OUTCOME" in benchmark_protected
+        and '[ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ] || [ "$INVENTORY_UPLOAD_OUTCOME" != "success" ]'
         in benchmark_protected
         and "preserving plaintext and ciphertext" in benchmark_protected
         and "test ! -e artifacts/trimem_v1/benchmark_exec" in benchmark_protected
@@ -4879,25 +4974,40 @@ def validate_workflows() -> None:
         "benchmark public/restricted evidence and fail-closed cleanup contract differs",
     )
     gate_start = benchmark_text.find("- name: Verify exact phase EXEC gate")
-    gate_end = benchmark_text.find("- name: Apply exact migration head")
-    secret_gate = benchmark_text.find(
-        "- name: Verify required protected runtime secrets before paid work"
+    credential_format = benchmark_text.find(
+        "- name: Validate exact OpenAI credential format before network access"
     )
+    credential_binding = benchmark_text.find(
+        "- name: Verify run-bound OpenAI credential commitment"
+    )
+    model_access = benchmark_text.find(
+        "- name: Retrieve exact model metadata before image materialization"
+    )
+    evidence_secret = benchmark_text.find(
+        "- name: Verify evidence passphrase before scientific work"
+    )
+    migration = benchmark_text.find("- name: Apply exact migration head")
     image_pull = benchmark_text.find(
         "- name: Pull committed images by digest and verify local observations"
     )
     require(
         "permissions:\n  actions: read\n  contents: read" in benchmark_text
         and benchmark_text.count("GH_TOKEN: ${{ github.token }}") == 2
-        and 0 <= gate_start < gate_end
-        and gate_start < secret_gate < gate_end < image_pull
-        and 'test -n "$OPENAI_API_KEY"'
-        in benchmark_text[secret_gate:gate_end]
+        and 0 <= gate_start < credential_format < credential_binding
+        < model_access < evidence_secret < migration < image_pull
+        and "python scripts/trimem_validate_openai_credential.py"
+        in benchmark_text[credential_format:credential_binding]
+        and "python scripts/trimem_verify_openai_key_binding.py"
+        in benchmark_text[credential_binding:model_access]
+        and "python scripts/trimem_openai_model_access_check.py"
+        in benchmark_text[model_access:evidence_secret]
+        and "--approval-file \"$RUNNER_TEMP/trimem-exec-approval.json\""
+        in benchmark_text[credential_binding:evidence_secret]
         and 'test -n "$TRIMEM_EVIDENCE_PASSPHRASE"'
-        in benchmark_text[secret_gate:gate_end]
+        in benchmark_text[evidence_secret:migration]
         and "GH_TOKEN: ${{ github.token }}"
-        in benchmark_text[gate_start:gate_end],
-        "benchmark live-run/secret gate ordering or least-privilege scope differs",
+        in benchmark_text[gate_start:credential_format],
+        "benchmark credential/model-access ordering or least-privilege scope differs",
     )
     for path in manual:
         text = path.read_text(encoding="utf-8")
@@ -5081,9 +5191,16 @@ def preapproval_blockers() -> list[str]:
     _validated_development_exec_003_failure()
     _validated_development_exec_004_failure()
     _validated_development_exec_005_failure()
-    return [
-        "DEV _005 attempt 1 is terminally consumed; no rerun, attempt 2, or _006 is authorized"
-    ]
+    sentinel = ROOT / DEVELOPMENT_SENTINEL_PATH
+    if not sentinel.is_file():
+        return [
+            "DEV _006 sentinel and exact-head remote gates are required before approval"
+        ]
+    try:
+        validate_development_sentinel_commit(ROOT, git_head())
+    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+        return [f"DEV _006 sentinel validation failed: {exc}"]
+    return []
 
 
 def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
@@ -5098,7 +5215,6 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
             return ["HELDOUT_BENCHMARK is not authorized after terminal DEV _005"], name
         if name == "development":
             _validated_development_exec_005_failure()
-            return ["DEV _005 is terminally consumed; further development execution is not authorized"], name
         validate_exec_approval(name, approval_file)
     except (OSError, ValueError, BenchmarkExecutionError) as exc:
         return [str(exc)], None

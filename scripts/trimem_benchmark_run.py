@@ -87,7 +87,7 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     TriggerPreflightError,
     validate_request_document as validate_grader_smoke_request_document,
 )
-from trimem_development_trigger_preflight import (  # noqa: E402
+from trimem_development_trigger_d15 import (  # noqa: E402
     EXPECTED_WORKFLOW_REF as DEVELOPMENT_WORKFLOW_REF,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
@@ -482,7 +482,11 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
     approval_raw = approval_resolved.read_bytes()
     approval_document = read_json(approval_resolved)
     expected_approval_schema = (
-        "trimem/external-exec-approval/1.1"
+        "trimem/external-exec-approval/1.2"
+        if split == "development"
+        and "approved_openai_key_commitment"
+        in request.get("required_external_approval_fields", ())
+        else "trimem/external-exec-approval/1.1"
         if split == "development"
         else "trimem/external-exec-approval/1.0"
     )

@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_005.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_006.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-005
+  group: trimem-v1-development-tuning-exec-006
   cancel-in-progress: false
 
 permissions:
@@ -62,7 +62,7 @@ jobs:
         run: |
           set -euo pipefail
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
-          python -I -S scripts/trimem_development_trigger_preflight.py \
+          python -I -S scripts/trimem_development_trigger_d15.py \
             --repository "$GITHUB_WORKSPACE" \
             --event-path "$GITHUB_EVENT_PATH"
 
@@ -181,13 +181,29 @@ jobs:
           --level benchmark-exec
           --require-git-tracked
           --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
-      - name: Verify required protected runtime secrets before paid work
+      - name: Validate exact OpenAI credential format before network access
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python scripts/trimem_validate_openai_credential.py
+      - name: Verify run-bound OpenAI credential commitment
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: >-
+          python scripts/trimem_verify_openai_key_binding.py
+          --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
+      - name: Retrieve exact model metadata before image materialization
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: >-
+          python scripts/trimem_openai_model_access_check.py
+          --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
+          --restricted-evidence-dir "artifacts/trimem_v1/benchmark_exec/$TRIMEM_EXEC_SPLIT/restricted/model-access"
+          --output "artifacts/trimem_v1/benchmark_exec/$TRIMEM_EXEC_SPLIT/control/model-access-result.json"
+      - name: Verify evidence passphrase before scientific work
+        env:
           TRIMEM_EVIDENCE_PASSPHRASE: ${{ secrets.TRIMEM_EVIDENCE_PASSPHRASE }}
         run: |
           set -euo pipefail
-          test -n "$OPENAI_API_KEY"
           test -n "$TRIMEM_EVIDENCE_PASSPHRASE"
       - name: Apply exact migration head
         env:
@@ -229,11 +245,28 @@ jobs:
           --source "artifacts/trimem_v1/benchmark_exec/$TRIMEM_EXEC_SPLIT"
           --aggregate "artifacts/trimem_v1/benchmark_exec/$TRIMEM_EXEC_SPLIT/aggregate.json"
           --output "artifacts/trimem_v1/benchmark_exec/$TRIMEM_EXEC_SPLIT/public-results.json"
+      - name: Inventory complete restricted benchmark evidence
+        id: benchmark_evidence_inventory
+        if: >-
+          always() &&
+          steps.approval_materialization.outcome == 'success'
+        run: |
+          set -euo pipefail
+          python scripts/trimem_evidence_inventory.py \
+            --root artifacts/trimem_v1/benchmark_exec \
+            --root-label benchmark_exec \
+            --output "$RUNNER_TEMP/trimem-benchmark-exec-inventory.json"
+          if [ -d artifacts/trimem_v1/development_selection ]; then
+            python scripts/trimem_evidence_inventory.py \
+              --root artifacts/trimem_v1/development_selection \
+              --root-label development_selection \
+              --output "$RUNNER_TEMP/trimem-development-selection-inventory.json"
+          fi
       - name: Encrypt complete restricted evidence
         id: encrypt_evidence
         if: >-
           always() &&
-          steps.approval_materialization.outcome == 'success'
+          steps.benchmark_evidence_inventory.outcome == 'success'
         env:
           TRIMEM_EVIDENCE_PASSPHRASE: ${{ secrets.TRIMEM_EVIDENCE_PASSPHRASE }}
         run: |
@@ -263,6 +296,15 @@ jobs:
           path: ${{ runner.temp }}/trimem-benchmark-restricted.tar.enc
           if-no-files-found: error
           retention-days: 14
+      - name: Upload non-sensitive benchmark evidence inventories
+        if: always() && steps.benchmark_evidence_inventory.outcome == 'success'
+        id: inventory-upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-benchmark-evidence-inventories
+          path: ${{ runner.temp }}/trimem-*-inventory.json
+          if-no-files-found: error
+          retention-days: 14
       - name: Remove plaintext external approval after encryption attempt
         if: always() && steps.approval_materialization.outcome == 'success'
         run: |
@@ -276,10 +318,11 @@ jobs:
         if: always()
         env:
           RESTRICTED_UPLOAD_OUTCOME: ${{ steps.restricted-upload.outcome }}
+          INVENTORY_UPLOAD_OUTCOME: ${{ steps.inventory-upload.outcome }}
         run: |
           set -euo pipefail
-          if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ]; then
-            echo "encrypted restricted evidence was not durably uploaded; preserving plaintext and ciphertext" >&2
+          if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ] || [ "$INVENTORY_UPLOAD_OUTCOME" != "success" ]; then
+            echo "encrypted evidence or its inventories were not durably uploaded; preserving plaintext and ciphertext" >&2
             exit 1
           fi
           python scripts/trimem_cleanup_exec.py --phase benchmark

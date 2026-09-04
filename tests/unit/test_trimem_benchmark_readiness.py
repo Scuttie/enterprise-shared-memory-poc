@@ -464,24 +464,33 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["development_execution_authorized"] is False
     assert authorization["grader_smoke_rerun_authorized"] is False
     assert authorization["heldout_execution_authorized"] is False
-    assert authorization["future_recovery_authority_received"] is False
+    assert authorization["future_recovery_authority_received"] is True
     assert authorization["prior_failed_run_reusable"] is False
     assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_SOLVE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_AUTH_RECOVERY_EXEC_APPROVED_ONCE"
     )
-    assert authorization["recovery_request_id"] == trigger.REQUEST_ID
-    assert authorization["recovery_request_path"] == trigger.SENTINEL_PATH
+    assert authorization["recovery_request_id"] == (
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_006"
+    )
+    assert authorization["recovery_request_path"].endswith(
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_006.json"
+    )
     assert authorization["request_003_final"] is True
     assert authorization["request_004_allowed_after_exact_remote_gates"] is False
     assert authorization["request_004_attempt_one_consumed"] is True
     assert authorization["request_005_allowed_after_exact_remote_gates"] is False
     assert authorization["request_005_attempt_one_consumed"] is True
+    assert authorization["request_006_allowed_after_exact_remote_gates"] is True
+    assert authorization["request_006_attempt_one_consumed"] is False
     assert authorization["rerun_allowed"] is False
-    assert "is final" in authorization["meaning"]
+    assert "_005 attempt-1 run is final" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     assert authorization["amendment_classification"] == (
-        "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT"
+        "NON_SEMANTIC_CREDENTIAL_CONTROL_PLANE_FIX"
+    )
+    assert authorization["amendment_evidence_path"].endswith(
+        "development_credential_control_plane_amendment.json"
     )
     assert authorization["solve_execution_contract_rehearsal_required_before_request_005"] is False
     service_boundary = requirements["credential_free_service_ci_boundary"]
@@ -716,11 +725,11 @@ def test_development_exec_002_semantic_drift_fails_even_with_bound_bytes(
         readiness._validated_development_exec_002_failure()
 
 
-def test_d14_recovery_requires_fresh_sentinel_before_approval(
+def test_d15_recovery_requires_fresh_sentinel_before_approval(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     assert readiness.preapproval_blockers() == [
-        "DEV _005 attempt 1 is terminally consumed; no rerun, attempt 2, or _006 is authorized"
+        "DEV _006 sentinel and exact-head remote gates are required before approval"
     ]
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
@@ -747,9 +756,7 @@ def test_d14_recovery_requires_fresh_sentinel_before_approval(
     )
     blockers, phase = readiness.execution_blockers(approval_path)
     assert phase == "development"
-    assert blockers == [
-        "DEV _005 is terminally consumed; further development execution is not authorized"
-    ]
+    assert blockers == []
 
 
 def test_benchmark_exec_cli_requires_fresh_run_bound_approval(
@@ -1547,7 +1554,7 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "total_usd": 0,
     }
     assert readiness.preapproval_blockers() == [
-        "DEV _005 attempt 1 is terminally consumed; no rerun, attempt 2, or _006 is authorized"
+        "DEV _006 sentinel and exact-head remote gates are required before approval"
     ]
 
 
@@ -3351,11 +3358,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "D1.4 terminal authority boundaries" in static
-    assert '"DEV _005 attempt 1 is terminally consumed; no rerun, "' in static
+    assert "D1.5 recovery authority boundaries" in static
+    assert '"DEV _006 sentinel and exact-head remote gates are "' in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
-    assert "expected exact D1.4 terminal report" in static
+    assert "expected exact D1.5 recovery report" in static
     assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service
@@ -3596,11 +3603,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in benchmark
     assert (
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_005.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_006.json"
     ) in benchmark
     assert "branch-trigger-preflight:" in benchmark
     assert "needs: branch-trigger-preflight" in benchmark
-    assert "group: trimem-v1-development-tuning-exec-005" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-006" in benchmark
     assert "group: trimem-v1-development-tuning-exec-002" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-001" not in benchmark
     assert "cancel-in-progress: false" in benchmark
@@ -3614,7 +3621,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in preflight
     )
-    assert "python -I -S scripts/trimem_development_trigger_preflight.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d15.py" in preflight
     assert "secrets." not in preflight
     assert "environment:" not in preflight
     for path in workflows[2:4]:
@@ -3627,14 +3634,31 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "permissions:\n  actions: read\n  contents: read" in benchmark
     assert benchmark.count("GH_TOKEN: ${{ github.token }}") == 2
     gate_start = benchmark.index("- name: Verify exact phase EXEC gate")
+    credential_format = benchmark.index(
+        "- name: Validate exact OpenAI credential format before network access"
+    )
+    credential_binding = benchmark.index(
+        "- name: Verify run-bound OpenAI credential commitment"
+    )
+    model_access = benchmark.index(
+        "- name: Retrieve exact model metadata before image materialization"
+    )
     secret_gate = benchmark.index(
-        "- name: Verify required protected runtime secrets before paid work"
+        "- name: Verify evidence passphrase before scientific work"
     )
     gate_end = benchmark.index("- name: Apply exact migration head")
     image_pull = benchmark.index(
         "- name: Pull committed images by digest and verify local observations"
     )
-    assert gate_start < secret_gate < gate_end < image_pull
+    assert (
+        gate_start
+        < credential_format
+        < credential_binding
+        < model_access
+        < secret_gate
+        < gate_end
+        < image_pull
+    )
     assert "GH_TOKEN: ${{ github.token }}" in benchmark[gate_start:gate_end]
     assert "trimem_run_with_resume.py" in benchmark
     assert 'test -n "$OPENAI_API_KEY"' in benchmark

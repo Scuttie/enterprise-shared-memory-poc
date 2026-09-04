@@ -110,6 +110,10 @@ class ProviderResponseEnvelope:
     raw_restricted_evidence_reference: str
     parsing_stage: str
     terminal_classification: str
+    response_error_type: Optional[str] = None
+    response_error_param: Optional[str] = None
+    response_error_message_bytes: Optional[int] = None
+    retry_decision: str = "stop"
 
     @property
     def provider_reported_usage_available(self) -> bool:
@@ -141,6 +145,9 @@ class ProviderResponseEnvelope:
             "response_status": self.response_status,
             "response_model": self.response_model,
             "response_error_code": self.response_error_code,
+            "response_error_type": self.response_error_type,
+            "response_error_param": self.response_error_param,
+            "response_error_message_bytes": self.response_error_message_bytes,
             "response_error_message_sha256": self.response_error_message_sha256,
             "incomplete_reason": self.incomplete_reason,
             "output_item_types": list(self.output_item_types),
@@ -165,6 +172,7 @@ class ProviderResponseEnvelope:
             "raw_restricted_evidence_reference": self.raw_restricted_evidence_reference,
             "parsing_stage": self.parsing_stage,
             "terminal_classification": self.terminal_classification,
+            "retry_decision": self.retry_decision,
         }
 
 

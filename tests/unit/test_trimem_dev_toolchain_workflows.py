@@ -83,7 +83,7 @@ def test_benchmark_installs_and_byte_verifies_pinned_gh_before_exec_gate() -> No
     gate = text.index("- name: Verify exact phase EXEC gate")
     assert install < verify < materialize < gate
     gate_block = text[gate : text.index(
-        "- name: Verify required protected runtime secrets before paid work"
+        "- name: Validate exact OpenAI credential format before network access"
     )]
     assert "GH_TOKEN: ${{ github.token }}" in gate_block
     assert "--level benchmark-exec" in gate_block

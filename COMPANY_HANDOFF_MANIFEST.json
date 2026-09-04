@@ -1,13 +1,13 @@
 {
   "schema_version": 2,
-  "commit": "6ad7fccc9d3042574bb895c5fa13bf84ed41499d",
+  "commit": "839abf0925fd70b5cfdc6db59c21069b56af189d",
   "manifest_scope": "PRODUCT_HANDOFF_ONLY_NOT_TRIMEM_RESEARCH_STATE",
   "hash_basis": "git ls-files -z (tracked files only; newline-normalized content)",
   "trimem_research_state_authority": "artifacts/trimem_v1/freeze.json",
   "project_version": "0.3.0rc1",
   "label": "COMPANY-HANDOFF-READY (gated on fresh-clone + offline demo) — NOT COMPANY-STAGING-CERTIFIED",
-  "source_tree_sha256": "51c5ed62216a0f3415c50f21f2b9ef5438dfb7d8faea5d503412fd5c50056af8",
-  "source_files": 133,
+  "source_tree_sha256": "defdbb69f881d32dd994a033c8efed6e93aec675c3a33946e063ea4ca9de734b",
+  "source_files": 134,
   "docs_tree_sha256": "b1378a68fa8c7f5320242bcabe4469fd75697c1b0127aff03600627f503b1901",
   "docs_files": 57,
   "examples_tree_sha256": "dc62d76eb3fa73cf1df33236bea8257306ef108d5d7d12fc3488597f05dfd922",
@@ -44,5 +44,5 @@
   ],
   "clone": "git clone <repo> && git checkout <commit>",
   "demo": "python scripts/demo_company_handoff.py --offline  # -> DEMO_PASS: true",
-  "manifest_hash": "7dc7ed48082a412ac3b52ab187d2428947bee00ece72ecc9ebbfda714c2540d9"
+  "manifest_hash": "b466fb33f98849fd48358a42bfd5a31779ee1f173f3edb098c5fbbe98cfcc15c"
 }

@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 import re
 from typing import Any, Mapping
 
+from enterprise_memory.providers.openai_credential import compute_openai_key_commitment
+
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
@@ -25,10 +27,15 @@ APPROVAL_FIELDS = (
     "approval_actor",
     "approval_timestamp",
 )
-DEVELOPMENT_APPROVAL_FIELDS = (
+LEGACY_DEVELOPMENT_APPROVAL_FIELDS = (
     "approved_git_commit",
     "approved_source_git_commit",
     *APPROVAL_FIELDS[1:],
+)
+DEVELOPMENT_APPROVAL_FIELDS = (
+    *LEGACY_DEVELOPMENT_APPROVAL_FIELDS,
+    "approval_nonce",
+    "approved_openai_key_commitment",
 )
 TOP_LEVEL_FIELDS = {
     "schema", "request_id", "approved_request_sha256", "approval",
@@ -102,8 +109,18 @@ def validate_external_approval_document(
             request_phase is None or request_phase == phase,
             "phase-bearing request cannot authorize a different phase",
         )
+    required = (
+        request.get("required_external_approval_fields")
+        if development_request
+        else policy_request.get("required_approval_fields")
+    )
+    new_development_contract = (
+        development_request and tuple(required or ()) == DEVELOPMENT_APPROVAL_FIELDS
+    )
     expected_schema = (
-        "trimem/external-exec-approval/1.1"
+        "trimem/external-exec-approval/1.2"
+        if new_development_contract
+        else "trimem/external-exec-approval/1.1"
         if development_request
         else "trimem/external-exec-approval/1.0"
     )
@@ -119,13 +136,12 @@ def validate_external_approval_document(
         _bare_sha256(document.get("approved_request_sha256")) == request_sha256,
         "external approval does not bind the committed request bytes",
     )
-    required = (
-        request.get("required_external_approval_fields")
-        if development_request
-        else policy_request.get("required_approval_fields")
-    )
     expected_approval_fields = (
-        DEVELOPMENT_APPROVAL_FIELDS if development_request else APPROVAL_FIELDS
+        DEVELOPMENT_APPROVAL_FIELDS
+        if new_development_contract
+        else LEGACY_DEVELOPMENT_APPROVAL_FIELDS
+        if development_request
+        else APPROVAL_FIELDS
     )
     _require(
         isinstance(required, list)
@@ -152,6 +168,22 @@ def validate_external_approval_document(
             and approval.get("approved_source_git_commit") == source_head,
             "approval source Git commit differs from the DEV sentinel parent",
         )
+        if new_development_contract:
+            _require(
+                isinstance(approval.get("approval_nonce"), str)
+                and 16 <= len(approval["approval_nonce"]) <= 256
+                and approval["approval_nonce"].isascii()
+                and approval["approval_nonce"].isprintable()
+                and approval["approval_nonce"].strip()
+                == approval["approval_nonce"],
+                "approval nonce is missing or noncanonical",
+            )
+            _require(
+                isinstance(approval.get("approved_openai_key_commitment"), str)
+                and SHA256.fullmatch(approval["approved_openai_key_commitment"])
+                is not None,
+                "approved OpenAI key commitment is invalid",
+            )
     _require(
         _bare_sha256(approval.get("approved_freeze_sha256")) == freeze_sha256,
         "approval freeze digest differs from committed freeze",
@@ -228,6 +260,9 @@ def build_external_approval_document(
     approval_actor: str,
     approval_timestamp: str,
     source_git_commit: str | None = None,
+    openai_api_key: object | None = None,
+    approval_nonce: str | None = None,
+    model_id: str | None = None,
 ) -> dict[str, Any]:
     """Build canonical approval data; callers still validate before installation."""
 
@@ -251,6 +286,31 @@ def build_external_approval_document(
     if source_git_commit is not None:
         approval["approved_source_git_commit"] = source_git_commit
         schema = "trimem/external-exec-approval/1.1"
+        if openai_api_key is not None or approval_nonce is not None or model_id is not None:
+            if not (
+                openai_api_key is not None
+                and isinstance(approval_nonce, str)
+                and approval_nonce
+                and isinstance(model_id, str)
+                and model_id
+            ):
+                raise ApprovalValidationError(
+                    "development credential commitment inputs are incomplete"
+                )
+            binding = {
+                "request_id": request_id,
+                "execution_head": git_commit,
+                "source_head": source_git_commit,
+                "workflow_run_id": str(workflow_run_id),
+                "workflow_run_attempt": str(workflow_run_attempt),
+                "model_id": model_id,
+                "approval_nonce": approval_nonce,
+            }
+            approval["approval_nonce"] = approval_nonce
+            approval["approved_openai_key_commitment"] = (
+                compute_openai_key_commitment(openai_api_key, binding)
+            )
+            schema = "trimem/external-exec-approval/1.2"
     return {
         "approval": approval,
         "approved_request_sha256": request_sha256,
@@ -260,7 +320,8 @@ def build_external_approval_document(
 
 
 __all__ = [
-    "APPROVAL_FIELDS", "DEVELOPMENT_APPROVAL_FIELDS", "ApprovalValidationError",
+    "APPROVAL_FIELDS", "DEVELOPMENT_APPROVAL_FIELDS",
+    "LEGACY_DEVELOPMENT_APPROVAL_FIELDS", "ApprovalValidationError",
     "build_external_approval_document",
     "validate_external_approval_document",
 ]

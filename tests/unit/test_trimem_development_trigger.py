@@ -476,12 +476,12 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_005.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_006.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-005" in workflow
+    assert "group: trimem-v1-development-tuning-exec-006" in workflow
     assert "group: trimem-v1-development-tuning-exec-004" not in workflow
     assert "group: trimem-v1-development-tuning-exec-002" not in workflow
     assert "group: trimem-v1-development-tuning-exec-001" not in workflow
@@ -490,7 +490,7 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "  frozen-serial-phase:", 1
     )[0]
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in preflight
-    assert "python -I -S scripts/trimem_development_trigger_preflight.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d15.py" in preflight
     assert all(
         forbidden not in preflight
         for forbidden in (
@@ -506,7 +506,7 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
     protected = workflow.split("  frozen-serial-phase:", 1)[1]
     public_upload = protected.split(
         "      - name: Upload public benchmark result", 1
-    )[1].split("      - name: Upload encrypted restricted evidence", 1)[0]
+    )[1].split("      - name: Inventory complete restricted benchmark evidence", 1)[0]
     assert "environment: trimem-benchmark-exec" in protected
     assert "ref: ${{ github.sha }}" in protected
     assert "artifacts/trimem_v1/benchmark_exec/*/public-results.json" in public_upload
@@ -514,7 +514,11 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
     assert "benchmark_exec/control/restricted-external-approval.json" in protected
     assert "steps.approval_materialization.outcome == 'success'" in protected
     assert "steps.encrypt_evidence.outcome == 'success'" in protected
-    assert 'if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ]; then' in protected
+    assert "INVENTORY_UPLOAD_OUTCOME" in protected
+    assert (
+        '[ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ] || '
+        '[ "$INVENTORY_UPLOAD_OUTCOME" != "success" ]'
+    ) in protected
     assert "preserving plaintext and ciphertext" in protected
 
 
@@ -523,7 +527,7 @@ def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
     freeze_rehearsal = (
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
-    rehearsal = "python -I -S scripts/trimem_development_trigger_preflight.py --help"
+    rehearsal = "python -I -S scripts/trimem_development_trigger_d15.py --help"
     install = "python -m pip install --require-hashes"
     assert workflow.count(freeze_rehearsal) == 1
     assert workflow.count(rehearsal) == 1

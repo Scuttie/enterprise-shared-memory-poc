@@ -26,6 +26,7 @@ scripts/postgres_bootstrap_roles.sql text eol=lf
 scripts/run_trimem_replay_e2e.py text eol=lf
 scripts/trimem_*.py text eol=lf
 /src/enterprise_memory/providers/openai_responses.py text eol=lf
+/src/enterprise_memory/providers/openai_credential.py text eol=lf
 /src/enterprise_memory/providers/__init__.py text eol=lf
 /src/enterprise_memory/providers/base.py text eol=lf
 /src/enterprise_memory/providers/redaction.py text eol=lf

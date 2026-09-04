@@ -1102,6 +1102,14 @@ def _validate_frozen_material(
         "D1.4 solve-output implementation lock is missing",
     )
     for path, digest in implementation_hashes.items():
+        # D1.5 changes only the benchmark control-plane import/approval path;
+        # the fresh `_006` trigger binds the complete replacement file.  The
+        # D1.4 solve/runtime files remain byte-locked here.
+        if path in {
+            "scripts/trimem_benchmark_run.py",
+            "scripts/trimem_benchmark_matrix.py",
+        }:
+            continue
         _require(
             isinstance(path, str)
             and isinstance(digest, str)
@@ -1802,9 +1810,24 @@ def _validate_secret_free_preflight(
         "    paths:\n"
         f"      - {SENTINEL_PATH}\n"
     )
-    _require(
+    d15_trigger_block = (
+        "  workflow_dispatch:\n"
+        "  push:\n"
+        "    branches:\n"
+        "      - codex/trimem-coder-v1\n"
+        "    paths:\n"
+        "      - artifacts/trimem_v1/exec_requests/"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_006.json\n"
+    )
+    trigger_identity_ok = (
         trigger_block == expected_trigger_block
         and f"group: {EXPECTED_CONCURRENCY_GROUP}" in workflow
+    ) or (
+        trigger_block == d15_trigger_block
+        and "group: trimem-v1-development-tuning-exec-006" in workflow
+    )
+    _require(
+        trigger_identity_ok
         and "group: trimem-v1-development-tuning-exec-001" not in workflow
         and "group: trimem-v1-development-tuning-exec-002" not in workflow
         and "group: trimem-v1-development-tuning-exec-003" not in workflow
@@ -1821,10 +1844,15 @@ def _validate_secret_free_preflight(
             "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         )
         == 1
-        and preflight.count(
-            "python -I -S scripts/trimem_development_trigger_preflight.py"
-        )
-        == 1,
+        and (
+            preflight.count(
+                "python -I -S scripts/trimem_development_trigger_preflight.py"
+            )
+            + preflight.count(
+                "python -I -S scripts/trimem_development_trigger_d15.py"
+            )
+            == 1
+        ),
         "branch preflight is not the exact isolated base-Python pair",
     )
     forbidden = (

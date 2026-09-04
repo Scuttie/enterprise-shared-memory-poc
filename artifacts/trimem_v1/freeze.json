@@ -5,8 +5,8 @@
       "sha256": "be15f205de6f62071c870d6cf99218962e209aa8f84bf040b4ecdbe768a7dc12"
     },
     ".github/workflows/ci-trimem-dev-toolchain.yml": {
-      "bytes": 4665,
-      "sha256": "39069eaa04577bc64bd8c9587f033c71f0cef611b43ee2d7a599e873fcf7c9c2"
+      "bytes": 4719,
+      "sha256": "4f02e95cceed1e6ac4fae73b72f6e69ec0a54eada70c9fd9b1ed9ee49f53ace6"
     },
     ".github/workflows/ci-trimem-e2e.yml": {
       "bytes": 3065,

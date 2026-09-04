@@ -18,6 +18,7 @@
       "full_policy_path": "configs/trimem_v1/m2_candidates/baseline.json",
       "order_index": 0,
       "runtime_lock_manifest": {
+        "function_tools_sha256": "5c035f219b9e023c2fb5c7792a7a51c0c4c783a718a9367d723e26b7253039eb",
         "limits": {
           "max_agent_steps": 24,
           "max_decomposition_calls": 1,
@@ -32,16 +33,19 @@
           "max_total_output_tokens_per_task_arm": 65536,
           "max_total_solve_output_tokens_per_task_arm": 49152
         },
-        "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
+        "live_solve_response_mode": "SINGLE_FUNCTION_CALL",
+        "parallel_tool_calls": false,
+        "parser_hash": "827230b0fe620ba7c66e1c36a87f22e9517339179f109c1e2c6299f590e1d34c",
         "prompt_hashes": {
           "decomposer_prompt": "8a2a27bb89e3747f832dd8ec2d57da5134c10526ac7e8b8bbc5c6538985ab1ec",
           "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
-          "solve_prompt": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f"
+          "solve_prompt": "1a3caba70a1f37bfb819b6c0fe8babb780343ffb409c1164196b48cc034bbb75"
         },
+        "tool_choice": "required",
         "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:4e9a5e8d9d39ae8665c8240fb9d823724621da9972fc64a924938ed86bec0ea8"
+      "runtime_lock_sha256": "sha256:4e0f63319e837a43b0d786bda78fdca684353c779f0318597a9a8e238a2fc96b"
     },
     {
       "candidate_id": "precision",
@@ -52,6 +56,7 @@
       "full_policy_path": "configs/trimem_v1/m2_candidates/precision.json",
       "order_index": 1,
       "runtime_lock_manifest": {
+        "function_tools_sha256": "5c035f219b9e023c2fb5c7792a7a51c0c4c783a718a9367d723e26b7253039eb",
         "limits": {
           "max_agent_steps": 24,
           "max_decomposition_calls": 1,
@@ -66,16 +71,19 @@
           "max_total_output_tokens_per_task_arm": 65536,
           "max_total_solve_output_tokens_per_task_arm": 49152
         },
-        "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
+        "live_solve_response_mode": "SINGLE_FUNCTION_CALL",
+        "parallel_tool_calls": false,
+        "parser_hash": "827230b0fe620ba7c66e1c36a87f22e9517339179f109c1e2c6299f590e1d34c",
         "prompt_hashes": {
           "decomposer_prompt": "f70f3055ac4ba910fa3aeef9fc944410d847e3c7741708f0d347afef5f4be013",
           "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
-          "solve_prompt": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f"
+          "solve_prompt": "1a3caba70a1f37bfb819b6c0fe8babb780343ffb409c1164196b48cc034bbb75"
         },
+        "tool_choice": "required",
         "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:860d9c49238d0cc0ea69a096c8fd8e2054d1174079d5a1d5ab8cc192950c55d7"
+      "runtime_lock_sha256": "sha256:67a176c3d7e7203b5733c7d1a9f4ecb39ad32ec1e176eb37e40f62aebaa58dc0"
     },
     {
       "candidate_id": "recall",
@@ -86,6 +94,7 @@
       "full_policy_path": "configs/trimem_v1/m2_candidates/recall.json",
       "order_index": 2,
       "runtime_lock_manifest": {
+        "function_tools_sha256": "5c035f219b9e023c2fb5c7792a7a51c0c4c783a718a9367d723e26b7253039eb",
         "limits": {
           "max_agent_steps": 24,
           "max_decomposition_calls": 1,
@@ -100,16 +109,19 @@
           "max_total_output_tokens_per_task_arm": 65536,
           "max_total_solve_output_tokens_per_task_arm": 49152
         },
-        "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
+        "live_solve_response_mode": "SINGLE_FUNCTION_CALL",
+        "parallel_tool_calls": false,
+        "parser_hash": "827230b0fe620ba7c66e1c36a87f22e9517339179f109c1e2c6299f590e1d34c",
         "prompt_hashes": {
           "decomposer_prompt": "b7538ba90142b07e7cf152e990efc5e5b50de0c30889f726c09361afaf654bb8",
           "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
-          "solve_prompt": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f"
+          "solve_prompt": "1a3caba70a1f37bfb819b6c0fe8babb780343ffb409c1164196b48cc034bbb75"
         },
+        "tool_choice": "required",
         "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:bfe26b36e4ffe01fbb7592feb664293eb73defeb99e981333fa5aed1119477dd"
+      "runtime_lock_sha256": "sha256:1a322b0e89bcd45eb04346f5e185d997ddac1fc729b08e89ec6a785fb76e0413"
     },
     {
       "candidate_id": "balanced",
@@ -120,6 +132,7 @@
       "full_policy_path": "configs/trimem_v1/m2_candidates/balanced.json",
       "order_index": 3,
       "runtime_lock_manifest": {
+        "function_tools_sha256": "5c035f219b9e023c2fb5c7792a7a51c0c4c783a718a9367d723e26b7253039eb",
         "limits": {
           "max_agent_steps": 24,
           "max_decomposition_calls": 1,
@@ -134,16 +147,19 @@
           "max_total_output_tokens_per_task_arm": 65536,
           "max_total_solve_output_tokens_per_task_arm": 49152
         },
-        "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
+        "live_solve_response_mode": "SINGLE_FUNCTION_CALL",
+        "parallel_tool_calls": false,
+        "parser_hash": "827230b0fe620ba7c66e1c36a87f22e9517339179f109c1e2c6299f590e1d34c",
         "prompt_hashes": {
           "decomposer_prompt": "84705566bc66ed1be7d2110a2553d5f9d7bb874978b69a1b39fbb553b2cd486d",
           "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
-          "solve_prompt": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f"
+          "solve_prompt": "1a3caba70a1f37bfb819b6c0fe8babb780343ffb409c1164196b48cc034bbb75"
         },
+        "tool_choice": "required",
         "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:d65cb4eee9fa8dbab3a096237e44d6110362850353573236b602663fd38139f7"
+      "runtime_lock_sha256": "sha256:49d7a1ddc46fff9742fd98c5efd1dfba81a2ac541e17660088c6e5f3403e7949"
     }
   ],
   "development_contract": {

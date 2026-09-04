@@ -43,7 +43,7 @@ jobs:
         run: python scripts/make_handoff_manifest.py --check
       - name: Scan tracked source for forbidden credentials and host paths
         run: python scripts/release_check.py --secrets
-      - name: Verify committed freeze and D1.5 recovery authority boundaries
+      - name: Verify committed freeze and D1.6 recovery authority boundaries
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
@@ -57,7 +57,7 @@ jobs:
                   "benchmark-approval",
                   1,
                   [
-                      "DEV _006 sentinel and exact-head remote gates are "
+                      "DEV _007 sentinel and exact-head remote gates are "
                       "required before approval"
                   ],
               ),
@@ -110,7 +110,7 @@ jobs:
               }
               if observed != expected:
                   raise SystemExit(
-                      f"{level}: expected exact D1.5 recovery report {expected!r}, "
+                      f"{level}: expected exact D1.6 recovery report {expected!r}, "
                       f"got {observed!r}"
                   )
           PY

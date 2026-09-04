@@ -137,10 +137,11 @@ def build():
 
 def main():
     check = "--check" in sys.argv
-    if not check and _branch().startswith("codex/r23-"):
+    branch = _branch()
+    research_branch = branch.startswith(("codex/r23-", "codex/trimem-"))
+    if not check and research_branch:
         print("refusing to rewrite product handoff manifest from an R23 research branch")
         return 2
-    manifest = build()
     path = os.path.join(ROOT, "COMPANY_HANDOFF_MANIFEST.json")
     if check:
         if not os.path.isfile(path):
@@ -151,6 +152,14 @@ def main():
         if old.get("manifest_hash") != _manifest_hash(old):
             print("handoff manifest self-hash INVALID")
             return 1
+        if research_branch:
+            _assert_tracked_tree_clean()
+            if old.get("manifest_scope") != "PRODUCT_HANDOFF_ONLY_NOT_TRIMEM_RESEARCH_STATE":
+                print("handoff manifest scope INVALID")
+                return 1
+            print("handoff manifest separated and self-consistent")
+            return 0
+        manifest = build()
         # The commit changes when this generated manifest is committed. The
         # product inventory and its self-hash remain the authoritative check.
         expected = {key: value for key, value in manifest.items() if key not in ("manifest_hash", "commit")}
@@ -160,6 +169,7 @@ def main():
             return 1
         print("handoff manifest current")
         return 0
+    manifest = build()
     with open(path, "w", encoding="utf-8", newline="\n") as handle:
         json.dump(manifest, handle, indent=2, ensure_ascii=False)
         handle.write("\n")

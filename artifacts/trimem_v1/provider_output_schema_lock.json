@@ -17,6 +17,6 @@
     "trimem_experience_extraction_v1": "f493150cb382ceee4e75b856c9660b7ab6587b953128af28be1054d40bed88cf"
   },
   "source_path": "src/enterprise_memory/trimem/provider_output_contracts.py",
-  "source_sha256": "d60c747d179e20f23f1909c127d9a92baf4a46f76cedce643995485b0a3d1224",
+  "source_sha256": "6b2e5711ae78057b7a29ce7424ad88e0c63e03e0051ac452dc96e67e4885f906",
   "status": "FROZEN_PRE_RESULT_AMENDMENT"
 }

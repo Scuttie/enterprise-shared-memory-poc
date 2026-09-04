@@ -1,0 +1,75 @@
+{
+  "schema": "trimem/development-action-protocol-amendment/1.0",
+  "status": "FROZEN_PRE_RESULT_PENDING_FRESH_EXECUTION",
+  "recorded_at_utc": "2026-09-04T18:27:54Z",
+  "classification": "PRE_RESULT_ACTION_PROTOCOL_AND_CELL_CONTAINMENT_FIX",
+  "completed_scientific_cells_before_amendment": 0,
+  "causal_boundary": {
+    "historical_run_id": 33894821607,
+    "historical_run_attempt": 1,
+    "historical_execution_head": "0e41ef4a73118730489c57220536287559b048b6",
+    "terminal_classification": "RESPONSE_OUTPUT_ITEM_BOUNDARY_ACTION_PROTOCOL_FAILURE",
+    "performance_result_existed_before_amendment": false
+  },
+  "scientific_inputs_preserved": {
+    "development_targets_and_order": true,
+    "heldout_targets_untouched": true,
+    "m0_m1_m2_definitions": true,
+    "four_m2_candidates": true,
+    "selection_rule": true,
+    "model_and_reasoning_effort": true,
+    "memory_dqn_ppr_policy": true,
+    "grader_and_image_locks": true
+  },
+  "native_action_contract": {
+    "response_item_boundaries_preserved": true,
+    "function_tool_count": 9,
+    "tool_choice": "required",
+    "parallel_tool_calls": false,
+    "legacy_text_action_parser_live_use_allowed": false,
+    "executed_arguments_redacted_before_execution": false
+  },
+  "cell_terminal_policy": {
+    "cell_scientific_failure_stops_campaign": false,
+    "partial_patch_officially_graded": true,
+    "no_patch_uses_canonical_noop": true,
+    "official_grader_is_pass_at_1_authority": true,
+    "fixed_candidate_denominator": 12,
+    "extraction_failure_preserves_grade_and_skips_memory_update": true,
+    "global_integrity_failure_stops_campaign": true
+  },
+  "protocol_canary": {
+    "generation_calls": 1,
+    "scientific_result": false,
+    "before_benchmark_image_pull": true,
+    "continues_directly_to_72_cells_on_pass": true
+  },
+  "hard_caps": {
+    "all_paid_generation_calls": 1873,
+    "scientific_generation_calls": 1872,
+    "protocol_canary_generation_calls": 1,
+    "input_tokens": 36004096,
+    "output_tokens": 4720640,
+    "official_grader_runs": 72,
+    "total_usd": 50.0,
+    "uncached_token_cost_ceiling_usd": 48.245952
+  },
+  "implementation_sha256": {
+    ".github/workflows/trimem-benchmark.yml": "2d642c1b19915d963fe217bb2e52a14315f3d37001f35c5c67e3d77b782c2c40",
+    "configs/trimem_v1/cost_plan.json": "691489139bcd8d862d274a92fc9ffd26c605c54494cbed61f00ae940c05940f6",
+    "configs/trimem_v1/m2_candidate_bundles.json": "9383f70c021730a2901bd1de8e69b98082895bdaad25fe6483bfdc58a8047e68",
+    "configs/trimem_v1/tool_environment_lock.json": "4d0ef738d99bbfab5c4a54abba61dd6e3b50ebf2953009cfd84a5e45c7a88a4e",
+    "scripts/trimem_action_canary.py": "b046bfdf6a692ea32f56992f629cbf4aabb143acdaa973d37998985d2907ec6b",
+    "scripts/trimem_benchmark_run.py": "6a09399168dadf95145eb864e94699f23bbd05dbc4bd5a67fa4fbf8746cbbd37",
+    "scripts/trimem_development_trigger_d15.py": "a54a48eac47ab619f9859b57e0ac4e4a54490c27346b88298677eb1fdfa65c1c",
+    "src/enterprise_memory/providers/base.py": "657c1d76dcebb1b9bad8489e06a69d8bbb8bea3786b55a3f5b2b3c3c018c4f51",
+    "src/enterprise_memory/providers/openai_responses.py": "417693dd05414ecb98ba6d13dc1d03e2a9abc312befc9e5ebb211babf54ff34e",
+    "src/enterprise_memory/trimem/agent_runtime.py": "4098d7ac89efc82f3eff9e761f1dca234b176e074c6c4a692d6a899ab1ef66b8",
+    "src/enterprise_memory/trimem/function_tools.py": "2776fc926e7e6995c2002849ec51ba27b784fe62346dc7b76a57ac6d6e910ae6",
+    "src/enterprise_memory/trimem/gateway.py": "aa3f65d52730239786b6047305bc7a5a4170a9becb5cf11e2a22621931c799eb",
+    "src/enterprise_memory/trimem/git_workspace.py": "f4e91c3ceddb4d2b149b0467351a97cafca88b71fcf903580c72c1788096b949",
+    "src/enterprise_memory/trimem/provider_output_contracts.py": "6b2e5711ae78057b7a29ce7424ad88e0c63e03e0051ac452dc96e67e4885f906",
+    "src/enterprise_memory/trimem/runtime_lock.py": "c31bddb29153a79cfea46f05908150834dd178b3b0e29767c04c2755d29f505e",
+    "src/enterprise_memory/trimem/workspace.py": "d9048da6bf7ef31fdf6f646d3e4ace85133dc545eda3701d52caeabb8438630f"
+  }
+}

@@ -97,6 +97,7 @@ ARTIFACT_PATHS = (
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json",
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_003.json",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_004.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json",

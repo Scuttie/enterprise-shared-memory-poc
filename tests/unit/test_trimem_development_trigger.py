@@ -532,6 +532,7 @@ def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
 
 
 def test_freeze_path_literals_match_their_owner_modules() -> None:
+    assert trigger.PREVIOUS_SENTINEL_PATH in freeze.ARTIFACT_PATHS
     assert freeze.PROBE_REQUEST_PATH == probe_evidence.PROBE_REQUEST_PATH
     assert freeze.PROBE_RESULT_PATH == probe_evidence.PROBE_RESULT_PATH
     assert freeze.PROBE_RECEIPT_PATH == probe_evidence.PROBE_RECEIPT_PATH

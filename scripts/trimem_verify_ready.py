@@ -120,12 +120,14 @@ from trimem_development_trigger_preflight import (  # noqa: E402
     EARLIER_SENTINEL_PATH as DEVELOPMENT_EXEC_001_SENTINEL_PATH,
     EXPECTED_RECOVERY_INPUT_SHA256 as DEVELOPMENT_RECOVERY_INPUT_SHA256,
     MIDDLE_SENTINEL_PATH as DEVELOPMENT_EXEC_002_SENTINEL_PATH,
-    PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_003_SENTINEL_PATH,
+    D12_SENTINEL_PATH as DEVELOPMENT_EXEC_003_SENTINEL_PATH,
+    PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_004_SENTINEL_PATH,
     RECOVERY_PROVENANCE as DEVELOPMENT_RECOVERY_PROVENANCE,
     RECOVERY_AUTHORIZATION as DEVELOPMENT_RECOVERY_AUTHORIZATION,
     REQUEST_ID as DEVELOPMENT_REQUEST_ID,
     REQUIRED_EXTERNAL_AUTHORIZATION as DEVELOPMENT_EXECUTION_AUTHORIZATION,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
+    validate_sentinel_commit as validate_development_sentinel_commit,
 )
 from trimem_harness_lock import (  # noqa: E402
     HASH_BASIS as HARNESS_DEPENDENCY_HASH_BASIS,
@@ -2334,7 +2336,11 @@ def validate_noop_baseline_audit(
 def validate_model_cost_environment() -> None:
     model = read_json(CONFIG / "model_lock.json")
     primary = model.get("primary_model", {})
-    require(model.get("status") == "FROZEN_PRE_RESULT_AMENDMENT_PENDING_APPROVAL", "model lock status is overstated")
+    require(
+        model.get("status")
+        == "FROZEN_PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT_PENDING_APPROVAL",
+        "model lock status is overstated",
+    )
     require(model.get("schema") == "trimem/model-lock/1.2", "model lock schema is stale")
     require(primary.get("model_id") == "gpt-5.4-mini-2026-03-17" and primary.get("status") == "FROZEN", "dated Mini model snapshot is not frozen")
     require((primary.get("input_price_per_million_tokens_usd"), primary.get("cached_input_price_per_million_tokens_usd"), primary.get("output_price_per_million_tokens_usd")) == (0.75, 0.075, 4.5), "official Mini model pricing drift")
@@ -2374,9 +2380,9 @@ def validate_model_cost_environment() -> None:
     require(
         model.get("actual_execution")
         == {
-            "model_gateway_calls": 1,
-            "paid_model_calls": 1,
-            "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+            "model_gateway_calls": 7,
+            "paid_model_calls": 7,
+            "provider_reported_usage": "MIXED_ONE_HISTORICAL_UNAVAILABLE_SIX_AVAILABLE",
             "completed_task_arm_runs": 0,
         },
         "historical DEV execution boundary differs",
@@ -2416,12 +2422,107 @@ def validate_model_cost_environment() -> None:
         and response_amendment.get("execution_boundary", {}).get(
             "fresh_request_id"
         )
-        == DEVELOPMENT_REQUEST_ID
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_004"
         and response_amendment.get("execution_boundary", {}).get(
             "required_authorization"
         )
-        == DEVELOPMENT_RECOVERY_AUTHORIZATION,
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE",
         "D1.3 response-contract amendment differs",
+    )
+    solve_forensic_path = (
+        ARTIFACT
+        / "development_tuning_exec/exec-004/solve-0005-output-shape-forensics.json"
+    )
+    solve_forensic = read_json(solve_forensic_path)
+    solve_budget_path = CONFIG / "solve_output_budget_contract.json"
+    solve_budget = read_json(solve_budget_path)
+    solve_budget_lock_path = ARTIFACT / "solve_output_budget_contract_lock.json"
+    solve_budget_lock = read_json(solve_budget_lock_path)
+    solve_amendment = read_json(
+        ARTIFACT / "development_solve_execution_contract_amendment.json"
+    )
+    runtime = RuntimeLock()
+    require(
+        solve_forensic.get("forensic_status") == "CLASSIFIED_A"
+        and solve_forensic.get("classification")
+        == "SOLVE_TRUNCATED_WRITE_FILE_CONTENT"
+        and solve_forensic.get("source", {}).get("run_id")
+        == DEVELOPMENT_EXEC_004_RUN_ID
+        and solve_forensic.get("provider_terminal", {}).get("api_terminal_cause")
+        == "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS"
+        and solve_forensic.get("scientific_state", {}).get(
+            "paid_model_calls_for_forensic"
+        )
+        == 0,
+        "D1.4 sanitized solve forensic differs",
+    )
+    require(
+        solve_budget.get("schema") == "trimem/solve-output-budget-contract/1.0"
+        and solve_budget.get("task_arm_role_pools")
+        == {"decomposition": 8192, "solve": 49152, "extraction": 8192, "total": 65536}
+        and solve_budget.get("per_call_output_caps")
+        == {"decomposition": 8192, "solve_maximum": 16384, "extraction": 8192}
+        and solve_budget.get("development_phase", {}).get("output_tokens")
+        == 4_718_592
+        and solve_budget.get("development_phase", {}).get(
+            "uncached_token_cost_ceiling_usd"
+        )
+        == 48.233664,
+        "D1.4 solve-output budget contract differs",
+    )
+    implementation_lock = solve_budget_lock.get("implementation_sha256")
+    require(
+        solve_budget_lock.get("schema")
+        == "trimem/solve-output-budget-contract-lock/1.0"
+        and isinstance(implementation_lock, dict)
+        and bool(implementation_lock)
+        and solve_budget_lock.get("contract_sha256")
+        == hashlib.sha256(solve_budget_path.read_bytes()).hexdigest()
+        and all(
+            hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == digest
+            for relative, digest in implementation_lock.items()
+        ),
+        "D1.4 solve-output implementation lock differs",
+    )
+    require(
+        solve_amendment.get("classification")
+        == "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT"
+        and solve_amendment.get("edit_surface_classification")
+        == "PRE_RESULT_SOLVE_EDIT_SURFACE_AMENDMENT"
+        and solve_amendment.get("causal_boundary", {}).get("forensic_class")
+        == "SOLVE_TRUNCATED_WRITE_FILE_CONTENT"
+        and solve_amendment.get("execution_boundary", {}).get("fresh_request_id")
+        == DEVELOPMENT_REQUEST_ID
+        and solve_amendment.get("execution_boundary", {}).get(
+            "required_authorization"
+        )
+        == DEVELOPMENT_RECOVERY_AUTHORIZATION
+        and solve_amendment.get("bindings")
+        == {
+            "historical_failure_receipt_sha256": DEVELOPMENT_EXEC_004_FAILURE_RECEIPT_RAW_SHA256,
+            "runtime_lock_content_sha256": runtime.content_hash,
+            "sanitized_forensic_sha256": hashlib.sha256(
+                solve_forensic_path.read_bytes()
+            ).hexdigest(),
+            "solve_output_budget_contract_lock_sha256": hashlib.sha256(
+                solve_budget_lock_path.read_bytes()
+            ).hexdigest(),
+            "solve_prompt_sha256": runtime.prompt_hashes["solve_prompt"],
+            "tool_schema_sha256": runtime.tool_hash,
+        },
+        "D1.4 solve-execution amendment differs",
+    )
+    require(
+        (
+            runtime.limits.max_output_tokens_decomposition,
+            runtime.limits.max_output_tokens_per_solve,
+            runtime.limits.max_total_solve_output_tokens_per_task_arm,
+            runtime.limits.max_output_tokens_extraction,
+            runtime.limits.max_total_output_tokens_per_task_arm,
+        )
+        == (8192, 16384, 49152, 8192, 65536)
+        and any(row.get("name") == "replace_text" for row in runtime.tool_schema),
+        "D1.4 runtime output pools or bounded edit tool differ",
     )
 
     cost = read_json(CONFIG / "cost_plan.json")
@@ -2643,35 +2744,42 @@ def validate_model_cost_environment() -> None:
     actual_to_date = cost.get("actual_to_date", {})
     require(
         isinstance(actual_to_date, dict)
-        and actual_to_date.get("api_calls") == 1
-        and actual_to_date.get("decomposition_calls") == 1
-        and actual_to_date.get("model_calls") == 1
-        and actual_to_date.get("model_gateway_calls") == 1
-        and actual_to_date.get("paid_model_calls") == 1
+        and actual_to_date.get("api_calls") == 7
+        and actual_to_date.get("decomposition_calls") == 2
+        and actual_to_date.get("solve_calls") == 5
+        and actual_to_date.get("model_calls") == 7
+        and actual_to_date.get("model_gateway_calls") == 7
+        and actual_to_date.get("paid_model_calls") == 7
         and actual_to_date.get("provider_reported_usage")
-        == "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP"
+        == "MIXED_ONE_HISTORICAL_UNAVAILABLE_SIX_AVAILABLE"
         and actual_to_date.get("input_tokens") is None
         and actual_to_date.get("output_tokens") is None
         and actual_to_date.get("reasoning_tokens") is None
+        and actual_to_date.get("known_provider_input_tokens") == 54_620
+        and actual_to_date.get("known_provider_cached_input_tokens") == 17_664
+        and actual_to_date.get("known_provider_output_tokens") == 4_203
+        and actual_to_date.get("known_provider_reasoning_tokens") == 1_485
         and actual_to_date.get("ledger_reservation")
         == {"input_tokens": 5069, "output_tokens": 2048, "total_usd": 0.01301775}
-        and all(
-            actual_to_date.get(field) == cumulative[field]
-            for field in (
-                "docker_pulls", "extraction_calls", "grader_calls",
-                "grader_containers", "official_grader_runs", "solve_calls",
-                "support_image_pulls", "target_image_pulls", "task_arm_runs",
-            )
-        ),
+        and actual_to_date.get("docker_pulls") == 24
+        and actual_to_date.get("extraction_calls") == 0
+        and actual_to_date.get("grader_calls") == 18
+        and actual_to_date.get("grader_containers") == 18
+        and actual_to_date.get("official_grader_runs") == 18
+        and actual_to_date.get("support_image_pulls") == 3
+        and actual_to_date.get("target_image_pulls") == 21
+        and actual_to_date.get("task_arm_runs") == 0
+        and actual_to_date.get("total_usd") == 0.06097305,
         "cumulative historical DEV usage/reservation accounting differs",
     )
     accounting_windows = cost.get("accounting_windows", {})
     require(
         cost.get("actual_to_date_scope")
-        == "CUMULATIVE_INCLUDES_GRADER_HISTORY_AND_DEV_RUN_33788493773_ATTEMPT_1"
+        == "CUMULATIVE_INCLUDES_GRADER_HISTORY_AND_DEV_RUNS_33788493773_33840007588_ATTEMPT_1"
         and set(accounting_windows)
         == {
             "d13_historical_dev_exec_003",
+            "d13_historical_dev_exec_004",
             "p014_diagnostic_history",
             "p015_correction_pre_exec_005",
             "p015_authoritative_exec_005",
@@ -2684,7 +2792,34 @@ def validate_model_cost_environment() -> None:
         and accounting_windows["d13_historical_dev_exec_003"].get(
             "completed_task_arm_runs"
         )
-        == 0,
+        == 0
+        and accounting_windows["d13_historical_dev_exec_004"]
+        == {
+            "api_calls": 6,
+            "cached_input_tokens": 17664,
+            "completed_task_arm_runs": 0,
+            "decomposition_calls": 1,
+            "extraction_calls": 0,
+            "git_head": DEVELOPMENT_EXEC_004_HEAD,
+            "grader_containers": 0,
+            "input_tokens": 54620,
+            "model_calls": 6,
+            "model_gateway_calls": 6,
+            "official_grader_runs": 0,
+            "output_tokens": 4203,
+            "paid_model_calls": 6,
+            "provider_reported_usage": "AVAILABLE_FOR_ALL_CALLS",
+            "reasoning_tokens": 1485,
+            "scope": "IMMUTABLE_HISTORICAL_DEV_EXECUTION",
+            "solve_calls": 5,
+            "started_task_arm_runs": 1,
+            "support_image_pulls": 1,
+            "target_image_pulls": 12,
+            "task_arm_runs": 0,
+            "total_usd": 0.0479553,
+            "workflow_run_attempt": 1,
+            "workflow_run_id": DEVELOPMENT_EXEC_004_RUN_ID,
+        },
         "grader/DEV accounting windows differ",
     )
 
@@ -3526,7 +3661,7 @@ def _validated_development_exec_002_failure() -> dict[str, Any]:
         "authority": {
             "attempt_one_consumed": True,
             "attempt_two_allowed": False,
-            "fresh_attempt_one_request": DEVELOPMENT_REQUEST_ID,
+            "fresh_attempt_one_request": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
             "future_recovery_authority_received": True,
             "request_002_final": True,
             "request_003_allowed_after_exact_remote_gates": True,
@@ -3637,13 +3772,13 @@ def _validated_development_exec_003_failure() -> dict[str, Any]:
         },
         "historical_run_rerun_allowed": False,
         "attempt_two_allowed": False,
-        "fresh_request_id": DEVELOPMENT_REQUEST_ID,
+        "fresh_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_004",
     }
 
 
 def _validated_development_exec_004_failure() -> dict[str, Any]:
     receipt_path = ROOT / DEVELOPMENT_EXEC_004_FAILURE_RECEIPT_PATH
-    sentinel_path = ROOT / DEVELOPMENT_SENTINEL_PATH
+    sentinel_path = ROOT / DEVELOPMENT_EXEC_004_SENTINEL_PATH
     receipt_raw = receipt_path.read_bytes()
     sentinel_raw = sentinel_path.read_bytes()
     require(
@@ -3745,7 +3880,7 @@ def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
     plan = read_json(ARTIFACT / "readiness_requirements.json")
-    require(plan.get("schema") == "trimem/readiness-requirements/1.8", "readiness requirements are stale")
+    require(plan.get("schema") == "trimem/readiness-requirements/1.9", "readiness requirements are stale")
     derived = _validated_post_smoke_readiness_state()
     historical_development_failure = _validated_development_preflight_failure()
     protected_gate_failure = _validated_development_exec_002_failure()
@@ -3802,7 +3937,9 @@ def validate_readiness_plan(
         isinstance(authorization, dict)
         and authorization.get("active_development_approval") is False
         and authorization.get("amendment_classification")
-        == "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
+        == "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT"
+        and authorization.get("amendment_evidence_path")
+        == "artifacts/trimem_v1/development_solve_execution_contract_amendment.json"
         and authorization.get("approval_request_eligible") is False
         and authorization.get("attempt_two_allowed") is False
         and authorization.get("development_execution_authorized") is False
@@ -3818,8 +3955,14 @@ def validate_readiness_plan(
         and authorization.get("recovery_request_path") == DEVELOPMENT_SENTINEL_PATH
         and authorization.get("request_004_allowed_after_exact_remote_gates") is False
         and authorization.get("request_004_attempt_one_consumed") is True
+        and authorization.get("request_005_allowed_after_exact_remote_gates") is True
+        and authorization.get("request_005_attempt_one_consumed") is False
+        and authorization.get(
+            "solve_execution_contract_rehearsal_required_before_request_005"
+        )
+        is True
         and authorization.get("rerun_allowed") is False,
-        "D1.3 development authorization boundary differs",
+        "D1.4 development authorization boundary differs",
     )
     counts = plan.get("frozen_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_benchmark_physical_task_arm_runs")) == (72, 81, 153), "readiness physical-run counts drift")
@@ -4494,7 +4637,9 @@ def validate_workflows() -> None:
         and "push:" in benchmark_text
         and "      - codex/trimem-coder-v1" in benchmark_text
         and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
-        and "group: trimem-v1-development-tuning-exec-004" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-005" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-004" not in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-003" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-002" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-001" not in benchmark_text
         and "cancel-in-progress: false" in benchmark_text
@@ -4786,9 +4931,21 @@ def preapproval_blockers() -> list[str]:
     _validated_development_exec_002_failure()
     _validated_development_exec_003_failure()
     _validated_development_exec_004_failure()
-    blockers: list[str] = [
-        "DEV _004 attempt 1 is final; no further benchmark approval is authorized"
-    ]
+    blockers: list[str] = []
+    sentinel = ROOT / DEVELOPMENT_SENTINEL_PATH
+    if not sentinel.is_file():
+        blockers.append(
+            "DEV _005 sentinel and exact-head remote gates are required before approval"
+        )
+    else:
+        try:
+            head = subprocess.run(
+                ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
+                check=True, text=True, encoding="utf-8",
+            ).stdout.strip()
+            validate_development_sentinel_commit(ROOT, head)
+        except (OSError, ValueError, subprocess.SubprocessError) as exc:
+            blockers.append(f"DEV _005 sentinel validation failed: {exc}")
     selected = validate_selected_m2(require_frozen=False)
     if selected.get("status") != "PRE_DEVELOPMENT":
         blockers.append("pre-development selection placeholder is not exact")
@@ -4820,13 +4977,9 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
             return ["external approval phase is unknown"], None
         if name == "heldout":
             _validated_development_exec_004_failure()
-            return ["HELDOUT_BENCHMARK is not authorized by D1.3"], name
+            return ["HELDOUT_BENCHMARK is not authorized by D1.4"], name
         if name == "development":
             _validated_development_exec_004_failure()
-            return [
-                "DEV _004 attempt 1 is final; no rerun or further development "
-                "execution is authorized"
-            ], name
         validate_exec_approval(name, approval_file)
     except (OSError, ValueError, BenchmarkExecutionError) as exc:
         return [str(exc)], None

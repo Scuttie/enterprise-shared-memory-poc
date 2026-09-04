@@ -1,1 +1,0 @@
-{"content":"def load_config(name):\n    if not name.endswith(('.yaml', '.yml')):\n        raise ValueError('yaml required')\n    return 'loaded'\n","end_line":4,"path":"src/config.py","start_line":1,"total_lines":4,"truncated":false}

@@ -5,8 +5,8 @@
       "sha256": "be15f205de6f62071c870d6cf99218962e209aa8f84bf040b4ecdbe768a7dc12"
     },
     ".github/workflows/ci-trimem-dev-toolchain.yml": {
-      "bytes": 4719,
-      "sha256": "4f02e95cceed1e6ac4fae73b72f6e69ec0a54eada70c9fd9b1ed9ee49f53ace6"
+      "bytes": 5377,
+      "sha256": "70ff94fb7416071a564b77fbb82c968dc96e07b380a5bcbd2a0c58de975d07dc"
     },
     ".github/workflows/ci-trimem-e2e.yml": {
       "bytes": 3065,
@@ -21,12 +21,12 @@
       "sha256": "656ba5f178d2ced386635ed2f40c42d2891c42d6a0bed95f339398c5d55c444e"
     },
     ".github/workflows/ci-trimem.yml": {
-      "bytes": 4604,
-      "sha256": "b1a23a6ac1a1bc8684086bcb288d26934f88ade90944cf0ef8afb37f4d1283a8"
+      "bytes": 4606,
+      "sha256": "fbb89342cfa98c55efeed76024efe637e32e0ad0c50be84a21474c439f0a5da0"
     },
     ".github/workflows/trimem-benchmark.yml": {
       "bytes": 12304,
-      "sha256": "22f88196923cc59063c6048c0ac91da91bcbab9d8ec255092f7955416abe9951"
+      "sha256": "c2b550ac055378f417b57eb8f678d9b43b64ae132e36c1ba5b80ba17f88128df"
     },
     ".github/workflows/trimem-grader-smoke.yml": {
       "bytes": 18086,
@@ -53,32 +53,36 @@
       "sha256": "f15f32506506fcdc337c81ce91463b5d99a4e1e033f2be475f51143e6ff43c26"
     },
     "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json": {
-      "bytes": 6657,
-      "sha256": "3a830985a25d8e7127ad0f6961b6b36e02797ee8a580c40fc8dfa219d28618c7"
+      "bytes": 6754,
+      "sha256": "aff5c972f8ad9d1bd3193156efac4265d7726ee16fbb27436de964fadda11057"
     },
     "artifacts/trimem_v1/credential_free_e2e/dqn_frozen_checkpoint.json": {
       "bytes": 13902,
       "sha256": "dba3226b48035260671911db848a4a30a0bf8432fc316d50f3abdd4311b30131"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/checkpoints/source-json-extension-M2.json": {
-      "bytes": 19981,
-      "sha256": "69332995aceed993d73139ecd1a3652b8a4b23f64124aaad876d4ded326f49af"
+      "bytes": 20309,
+      "sha256": "772e881d1446766a9b027240f56e0f5699f455fd0cb2086660c36b6133ffce37"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/checkpoints/source-json-extension-M2.sha256": {
       "bytes": 65,
-      "sha256": "3f5b6a45d2cbbf8e83cddc6c4cbd119f9d6afe7bc4d84fbe51e73960a274d423"
+      "sha256": "ed9aaf7386d1491e854de74a8b3e718e7f76099eeb6230aceb7bad30d16650ca"
+    },
+    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/039ed6e5f99dabc00c26c50a6deb804729121b756afc7b2503832b8edbe1af35": {
+      "bytes": 6071,
+      "sha256": "039ed6e5f99dabc00c26c50a6deb804729121b756afc7b2503832b8edbe1af35"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/0be66de66ca708c1f94be951385b0538f862f92c7e152468abb918a04ac7d1cc": {
       "bytes": 80,
       "sha256": "0be66de66ca708c1f94be951385b0538f862f92c7e152468abb918a04ac7d1cc"
     },
-    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/0e4624cdf10167734ae9bcc95a85bc6adccdb638d04a5f7fcc0f906408190116": {
-      "bytes": 5418,
-      "sha256": "0e4624cdf10167734ae9bcc95a85bc6adccdb638d04a5f7fcc0f906408190116"
+    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/120310a00f60b0c02bed69b23201a7417e1aae550054e0e78857ac66327d0bf7": {
+      "bytes": 3082,
+      "sha256": "120310a00f60b0c02bed69b23201a7417e1aae550054e0e78857ac66327d0bf7"
     },
-    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/23b9394792449ec45ae7f5d5bf340ec26b65e2f35ba47257c4b6816e3bb01979": {
-      "bytes": 4207,
-      "sha256": "23b9394792449ec45ae7f5d5bf340ec26b65e2f35ba47257c4b6816e3bb01979"
+    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/2d28739d687b52c98c6f5577bacc6f2b787def423a9e83b00edcfa8ea9d6488d": {
+      "bytes": 7060,
+      "sha256": "2d28739d687b52c98c6f5577bacc6f2b787def423a9e83b00edcfa8ea9d6488d"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/2f28f7847c3049c7d9fbe4847c3cd0156b47ef5235b047ef58a9bf5a814c3101": {
       "bytes": 61,
@@ -87,6 +91,10 @@
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/3477bdd04d184fdad049ed84f0c17f6d0641f263381b09bbcf3bf84696a0e937": {
       "bytes": 36,
       "sha256": "3477bdd04d184fdad049ed84f0c17f6d0641f263381b09bbcf3bf84696a0e937"
+    },
+    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/3f6cd93a29e632060e76d4065a75bda5ca463f85772cffd218250685ee879aa1": {
+      "bytes": 4806,
+      "sha256": "3f6cd93a29e632060e76d4065a75bda5ca463f85772cffd218250685ee879aa1"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/4605c331d83b4187c2c053a41581aa8ee117691b8c6a6abff0d5429cf080b6af": {
       "bytes": 118,
@@ -104,10 +112,6 @@
       "bytes": 73,
       "sha256": "5aaa598713ac1f15c0897841255d1153954b7e216be835be3dabd5b2599dfd56"
     },
-    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/5b39139c73f722d754050684c95e7b9215e79cd9849a9adfe6b7c1a8ce1cdf39": {
-      "bytes": 3912,
-      "sha256": "5b39139c73f722d754050684c95e7b9215e79cd9849a9adfe6b7c1a8ce1cdf39"
-    },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/6337eacdce6d3675aea24be19581b24a03b6c57c4a8ac6196ad6c8e5b10c71ff": {
       "bytes": 77,
       "sha256": "6337eacdce6d3675aea24be19581b24a03b6c57c4a8ac6196ad6c8e5b10c71ff"
@@ -120,21 +124,13 @@
       "bytes": 103,
       "sha256": "6afc8f41ad78e7ddd8a64288008a589bcd35532085e476cd51dfd878c0783e74"
     },
-    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/6dd47145433cd2f4fcc8c168852f69e1ff60214bdbb11d6cc495ff2ed1ffda9d": {
-      "bytes": 4153,
-      "sha256": "6dd47145433cd2f4fcc8c168852f69e1ff60214bdbb11d6cc495ff2ed1ffda9d"
-    },
-    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/8aa1a5dcd9f12ee001cde6effe7ae5fd24c77f3d673c75a0e954d08b8ee3727d": {
-      "bytes": 2592,
-      "sha256": "8aa1a5dcd9f12ee001cde6effe7ae5fd24c77f3d673c75a0e954d08b8ee3727d"
+    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/8aa0e275bac00d35948603f15642c7dac9ae04e906dd3fc05758daaa7d0c97dc": {
+      "bytes": 380,
+      "sha256": "8aa0e275bac00d35948603f15642c7dac9ae04e906dd3fc05758daaa7d0c97dc"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/94305f56ccc2350c7f31c9d5dc112361e241ae926f4721b47b1e23fa8603a3d9": {
       "bytes": 188,
       "sha256": "94305f56ccc2350c7f31c9d5dc112361e241ae926f4721b47b1e23fa8603a3d9"
-    },
-    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/97d01a6c24efcc76f7c7fc01af35ac38fa4fcd02a0ae3f4662fe1191d5353c13": {
-      "bytes": 6407,
-      "sha256": "97d01a6c24efcc76f7c7fc01af35ac38fa4fcd02a0ae3f4662fe1191d5353c13"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/a442cf03e60000b0f0d8dc09a7a7246035e6b49c6e2a0897844dd7a7313bfa85": {
       "bytes": 214,
@@ -143,6 +139,10 @@
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/a56691b8eeb62757393e5e712293d0888e8e0c3ebde5177316ad86d32135f568": {
       "bytes": 208,
       "sha256": "a56691b8eeb62757393e5e712293d0888e8e0c3ebde5177316ad86d32135f568"
+    },
+    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/b9b89185e7c39dfe7ab0f1e591af66de491bd6a4b31ae4cee63c3672b370d366": {
+      "bytes": 4370,
+      "sha256": "b9b89185e7c39dfe7ab0f1e591af66de491bd6a4b31ae4cee63c3672b370d366"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/bfb3a1b5cbcac7de58395494ec3c183e126da7949505bd2f0b85bc06ed15b5b2": {
       "bytes": 107,
@@ -172,25 +172,29 @@
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/e557bc56e8cf31cd421b1bab58a8321e69aff09d65cb95ae96e144b7b3fb77eb": {
-      "bytes": 225,
-      "sha256": "e557bc56e8cf31cd421b1bab58a8321e69aff09d65cb95ae96e144b7b3fb77eb"
+    "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/eb22ced26271595249d82bf29fb905fe25e9bd027bccdeef326038ca42231fb9": {
+      "bytes": 4738,
+      "sha256": "eb22ced26271595249d82bf29fb905fe25e9bd027bccdeef326038ca42231fb9"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/blobs/ece79937578b775579af8c057688d559892893580f5fefb863cc85b6c7bb2cd6": {
       "bytes": 100,
       "sha256": "ece79937578b775579af8c057688d559892893580f5fefb863cc85b6c7bb2cd6"
     },
     "artifacts/trimem_v1/credential_free_e2e/source-json-extension/evidence/events.ndjson": {
-      "bytes": 21072,
-      "sha256": "f3d44004c7ee016862fa6fc60688c9897f9651f447f5d94fc607ace015d539c6"
+      "bytes": 22253,
+      "sha256": "73b7df2b3ac3a6e25dfa03a0727ba91e8a97d0a6cb64641376c6ea6c970b9ed4"
     },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/checkpoints/target-yaml-extension-M2.json": {
-      "bytes": 22859,
-      "sha256": "208d139702d1b8760d72fec7e8a000871a8de7cd5378da6a6bd89f8a951cf4fb"
+      "bytes": 23187,
+      "sha256": "422607b94c28c1948124540b338ff4cdd22dd41d69fbfd8501c7ee7bda68117b"
     },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/checkpoints/target-yaml-extension-M2.sha256": {
       "bytes": 65,
-      "sha256": "a9a300415d0d38919b2f9707c8d08db8695802d43cec6fee84843315d9d200b4"
+      "sha256": "2a8e4d74b979f0b6a53823aa4abbf918f64070be4a44ecea6e38626b3c0e8cc1"
+    },
+    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/00d6cd5299f4be0fe1ded640de4e1da45a49c4d3c7cdfa54cba5ab108eaa2202": {
+      "bytes": 5684,
+      "sha256": "00d6cd5299f4be0fe1ded640de4e1da45a49c4d3c7cdfa54cba5ab108eaa2202"
     },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/0838a0335ee7636517eba16c9f5de12e938666ec27dc5f3350a811fdec28369e": {
       "bytes": 102,
@@ -204,49 +208,41 @@
       "bytes": 79,
       "sha256": "0ed97b3e9e02647e2acf064ceb432bb465467161f4e33573072425e8a8fdf53f"
     },
-    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/0ef59a30b40c497da2498179bd246cca80ba3bc389676cd2ecbbbd95fd9d4a03": {
-      "bytes": 233,
-      "sha256": "0ef59a30b40c497da2498179bd246cca80ba3bc389676cd2ecbbbd95fd9d4a03"
-    },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/1a982f938052085f8936073de9954d7e92df4be13b9891f0bd982e046c497eaa": {
       "bytes": 61,
       "sha256": "1a982f938052085f8936073de9954d7e92df4be13b9891f0bd982e046c497eaa"
     },
-    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/2e11d31be6c53892ecae39395809dc85950c0859388e5f1a061afede9632abba": {
-      "bytes": 6019,
-      "sha256": "2e11d31be6c53892ecae39395809dc85950c0859388e5f1a061afede9632abba"
+    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/2b4878ffa2bf7d009a28aec27eec75be65c2f81476aeb365a3230e9995e0cab0": {
+      "bytes": 5703,
+      "sha256": "2b4878ffa2bf7d009a28aec27eec75be65c2f81476aeb365a3230e9995e0cab0"
     },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/3b2a9d41451a0941aa64eacfe9bc58e08b9aa8eaf669f04d5fea684dcbce8c2f": {
       "bytes": 931,
       "sha256": "3b2a9d41451a0941aa64eacfe9bc58e08b9aa8eaf669f04d5fea684dcbce8c2f"
     },
-    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/4c8901b37802480459c090e6cab849f5db8dcb3527e51d35474fbb2130314e86": {
-      "bytes": 4349,
-      "sha256": "4c8901b37802480459c090e6cab849f5db8dcb3527e51d35474fbb2130314e86"
-    },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/4d2999ede1fbf3b08e3606ec0456b959f761ff7bd39aa9707c6e1598e6fd56ef": {
       "bytes": 42,
       "sha256": "4d2999ede1fbf3b08e3606ec0456b959f761ff7bd39aa9707c6e1598e6fd56ef"
+    },
+    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/4fec1b62033bf315fe82c3eb229f60b30c55e37380eca16c6835143a4233bbb1": {
+      "bytes": 388,
+      "sha256": "4fec1b62033bf315fe82c3eb229f60b30c55e37380eca16c6835143a4233bbb1"
     },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/5fac87b5e9c825d56ba34f8e3a7e3204dd369790c4e660ad4b458967ba5bc1ec": {
       "bytes": 237,
       "sha256": "5fac87b5e9c825d56ba34f8e3a7e3204dd369790c4e660ad4b458967ba5bc1ec"
     },
-    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/6125a6203939b7f3a00024125976849eac45c3694f1d0bc5061650aaf5e4054d": {
-      "bytes": 5031,
-      "sha256": "6125a6203939b7f3a00024125976849eac45c3694f1d0bc5061650aaf5e4054d"
+    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/60b12639d84530d1600a5cbf48ff47a7ffac89a87c63cd0d2cb0c2e9bd057bb1": {
+      "bytes": 6672,
+      "sha256": "60b12639d84530d1600a5cbf48ff47a7ffac89a87c63cd0d2cb0c2e9bd057bb1"
     },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/6de640cd3825c6d98563847a91f066ae60a0a7b44108c434883bfc78ba45d83b": {
       "bytes": 57,
       "sha256": "6de640cd3825c6d98563847a91f066ae60a0a7b44108c434883bfc78ba45d83b"
     },
-    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/719bd56aff8106fda41b419294683f26b435316c303e54734c25a39719f20335": {
-      "bytes": 6160,
-      "sha256": "719bd56aff8106fda41b419294683f26b435316c303e54734c25a39719f20335"
-    },
-    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/82135906e9aa919ce7ebc3ef5dfa2722d42688d9484264298b224b0adaccdd93": {
-      "bytes": 3532,
-      "sha256": "82135906e9aa919ce7ebc3ef5dfa2722d42688d9484264298b224b0adaccdd93"
+    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/76e533c6db92efa16ddbda4ecfa8e5640218c515adaacd8b8b5bf96267b721a0": {
+      "bytes": 4022,
+      "sha256": "76e533c6db92efa16ddbda4ecfa8e5640218c515adaacd8b8b5bf96267b721a0"
     },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/907b143fadfcba343358334e9b0b99429c34fec71b5fd5c7f60d54372aa34064": {
       "bytes": 188,
@@ -272,6 +268,10 @@
       "bytes": 545,
       "sha256": "b0cfedf74075bfedbc927252c009d48c030c4aade30a6bd5faf0606611708efb"
     },
+    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/ccb99ea9adbb2805310bc616d710b9d9b3e1c1018ed158836fee7e29ad802fb9": {
+      "bytes": 4512,
+      "sha256": "ccb99ea9adbb2805310bc616d710b9d9b3e1c1018ed158836fee7e29ad802fb9"
+    },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/d14309f328cc389f6d33780a3cf90fd66253447f5727e496ce0ed8a35ba2bc51": {
       "bytes": 45,
       "sha256": "d14309f328cc389f6d33780a3cf90fd66253447f5727e496ce0ed8a35ba2bc51"
@@ -296,17 +296,17 @@
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/ec0a7cfe5879880ab1d49d6482617ebe13228e73890e810bf80159cdc59da180": {
-      "bytes": 4877,
-      "sha256": "ec0a7cfe5879880ab1d49d6482617ebe13228e73890e810bf80159cdc59da180"
-    },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/f871e2aeb795bf145fdda7c915bc0394dc336c76ee2c99cdfc55636470e2cf5a": {
       "bytes": 102,
       "sha256": "f871e2aeb795bf145fdda7c915bc0394dc336c76ee2c99cdfc55636470e2cf5a"
     },
+    "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/blobs/fbc6db132be392c6c02101d32a7235e06a4f827a7870ef3869a88251e5efaead": {
+      "bytes": 6986,
+      "sha256": "fbc6db132be392c6c02101d32a7235e06a4f827a7870ef3869a88251e5efaead"
+    },
     "artifacts/trimem_v1/credential_free_e2e/target-yaml-extension/evidence/events.ndjson": {
-      "bytes": 22975,
-      "sha256": "cca1f206da74ff795c3c923355b942cf412947a7fa3cda6810ddbb34529aefaa"
+      "bytes": 24156,
+      "sha256": "685095cc7f2c3a7beffe247bba6f9b36219ce2c6c10b86d5cd4c58ee4251f196"
     },
     "artifacts/trimem_v1/development_model_pricing_amendment.json": {
       "bytes": 4126,
@@ -319,6 +319,10 @@
     "artifacts/trimem_v1/development_runner_toolchain_amendment.json": {
       "bytes": 4928,
       "sha256": "04188d0eafbefabc4090e37ef534c624c06e6b27d29af288ca73f471e6dbfefd"
+    },
+    "artifacts/trimem_v1/development_solve_execution_contract_amendment.json": {
+      "bytes": 2232,
+      "sha256": "bf171992c29c4099abac8a55b693ee8261be9285197dd977b6c968d6f0da401b"
     },
     "artifacts/trimem_v1/development_tuning_exec/exec-001/preflight-failure-receipt.json": {
       "bytes": 6481,
@@ -339,6 +343,10 @@
     "artifacts/trimem_v1/development_tuning_exec/exec-004/provider-incomplete-max-output-tokens-receipt.json": {
       "bytes": 11505,
       "sha256": "393bff5c1a518ea2ea487ff1c940152bc9d2e618ab300fd05fadacc179c933fc"
+    },
+    "artifacts/trimem_v1/development_tuning_exec/exec-004/solve-0005-output-shape-forensics.json": {
+      "bytes": 3232,
+      "sha256": "7161de361d9946b914446df7f0ae3e4a838f6de0b64c7375f29baf5e279702e5"
     },
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json": {
       "bytes": 5392,
@@ -406,7 +414,7 @@
     },
     "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json": {
       "bytes": 31088,
-      "sha256": "fae0cde2d13608590530d6f6673ca86ed0db4a485b2163d16eb41f32462c64b6"
+      "sha256": "fd0d62a1a9c459ec5bcce04ee5c85275d82821e9d177b94a87605c18b71d96bb"
     },
     "artifacts/trimem_v1/multi_swe_report_semantics_lock.json": {
       "bytes": 6349,
@@ -433,16 +441,20 @@
       "sha256": "2b38294980ba5293df702a56e5976716acabb64ea91899f8af43a7d44337f865"
     },
     "artifacts/trimem_v1/readiness_requirements.json": {
-      "bytes": 19011,
-      "sha256": "4b788292d6ecd13ba4caa2f882e8bc7d621255bb9549ade197a893dabf8c7a4f"
+      "bytes": 19306,
+      "sha256": "d18c6eb1b59a231d8285605c6512a0d9515804945f400440f73131333764eba4"
+    },
+    "artifacts/trimem_v1/solve_output_budget_contract_lock.json": {
+      "bytes": 1057,
+      "sha256": "81242a4a1aac4f8e74a1ca887718e976da1cc8bea5e0a7cf773ea21800364949"
     },
     "artifacts/trimem_v1/upstream_source_audit.json": {
       "bytes": 5077,
       "sha256": "97f6981c71b8ebfab9ad7c6668f2c1c73d2290881fbc0571b9688bb5b048fc25"
     },
     "configs/trimem_v1/arms.json": {
-      "bytes": 3109,
-      "sha256": "63baf3c1ef882be350cc97a908ce4438eac9542781467069bc8097f3a1124ae0"
+      "bytes": 3218,
+      "sha256": "7ecc15277cc9a9041befd4ae32f99b65da63009383b22701e0aecb407fe3906c"
     },
     "configs/trimem_v1/benchmark_environment.in": {
       "bytes": 820,
@@ -461,8 +473,8 @@
       "sha256": "05e19aeec6630f2362c481a86eb66d0e630041794866a638c3ebbf07e5ccbba4"
     },
     "configs/trimem_v1/cost_plan.json": {
-      "bytes": 8885,
-      "sha256": "bd2ef2896728597cd4f55245544ef43ffb07c63a27d5b86e5a9c577b34175910"
+      "bytes": 9939,
+      "sha256": "1306aca78ead4021fec884ab78c8af944ac32b258de0abf1f12d475d31e33ddb"
     },
     "configs/trimem_v1/development_manifest.json": {
       "bytes": 8042,
@@ -485,8 +497,8 @@
       "sha256": "951371ed84931b37e27929e2669aff5d06e32215d1a300e3343ba7f1bdd84fda"
     },
     "configs/trimem_v1/m2_candidate_bundles.json": {
-      "bytes": 8035,
-      "sha256": "b564ccbee8b5b9ee584835b2d7c00079e4fc23312fcfd6df286d808ee8642dcd"
+      "bytes": 8519,
+      "sha256": "605accc70fd330ccee70a0a308ccc4a57ab4077875daadb23093c64f7c3e0875"
     },
     "configs/trimem_v1/m2_candidates/balanced.json": {
       "bytes": 5187,
@@ -509,8 +521,8 @@
       "sha256": "ca7c1be00addd47ec7781d3e89d9af08575c548034c1f8b4f27be8d0fda60ed9"
     },
     "configs/trimem_v1/model_lock.json": {
-      "bytes": 4927,
-      "sha256": "aae9d9ddcbf0fcd12a519c388ecc468e029bc3c9de59e2471af8389c08cd7d72"
+      "bytes": 4954,
+      "sha256": "a0a4811590d396c2bea4f0454c18c912d11579858947540a355407009a975922"
     },
     "configs/trimem_v1/provider_output_schemas.json": {
       "bytes": 5074,
@@ -532,9 +544,13 @@
       "bytes": 2898,
       "sha256": "aeb1911afa222e5b2e791bad0a686867f4ca9ee530873a90b14df932bfaafe15"
     },
+    "configs/trimem_v1/solve_output_budget_contract.json": {
+      "bytes": 1469,
+      "sha256": "49943aa6527bd8192c051ac72b2798f36976f66fa5aaff0d62525398494156e4"
+    },
     "configs/trimem_v1/tool_environment_lock.json": {
-      "bytes": 3597,
-      "sha256": "8636d88896dd77dc7652f29a74e5ed56117ce165c2e13e5ca83b88ae93a555a0"
+      "bytes": 3710,
+      "sha256": "399b9ab05ee427d17f9b815c96b57a8fafa36a8ad1806953c05a2ee51940b186"
     },
     "docs/TRIMEM_V1_SYSTEM.md": {
       "bytes": 24839,
@@ -732,6 +748,10 @@
       "bytes": 2276,
       "sha256": "10f56591c08c6cdf069508f161473dc5b4f93df8452cfa1bc9b012080c5e87b4"
     },
+    "reports/TRIMEM_D14_SOLVE_0005_OUTPUT_SHAPE_FORENSICS.md": {
+      "bytes": 2591,
+      "sha256": "3cbb6b37fd7a29fbe81a6c946bfc159a48ed503e64abeda6ca00d1c0f0fac011"
+    },
     "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_001_PREFLIGHT_FAILURE.md": {
       "bytes": 3866,
       "sha256": "b2832acbef602c8c09df8832ec8657184e737f46387f96bd016ea44de8486f48"
@@ -746,11 +766,11 @@
     },
     "reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md": {
       "bytes": 23860,
-      "sha256": "30eef983dab3d19a305483d0b76c02d45a268b91b96e0eb750e99f55376dda08"
+      "sha256": "8014ff5d4eea459fb2a8b8648dcbaabbc7b11dd758e03546b6941fcc203c1ad4"
     },
     "reports/TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md": {
       "bytes": 15573,
-      "sha256": "3122163b8744189257c806d34de6bb7ff792c3f4558a7d2835807e5950b88524"
+      "sha256": "f8ba0fc83030fc2e99e6d7758ff584fef5e0796d82a9fec36df1ff21e32faa15"
     },
     "requirements.lock": {
       "bytes": 709,
@@ -781,20 +801,20 @@
       "sha256": "0e06621594e1c32905d794cb9ea7f40443a2347fa61b1e5fac70363355da32b3"
     },
     "scripts/trimem_benchmark_matrix.py": {
-      "bytes": 159370,
-      "sha256": "52d828b1e6ca3b2c164ffb218ac425596f43ee7826296abf198d4a83a1974048"
+      "bytes": 162104,
+      "sha256": "54205086c98421b80d1ca765dd65c12349d2fb5d21b2030dec7edbec5c65b8b2"
     },
     "scripts/trimem_benchmark_run.py": {
-      "bytes": 144304,
-      "sha256": "66c9d7470d8ed79f40b237f32c489d07c8259edee4b6d332abb51eb578fbeb4f"
+      "bytes": 150542,
+      "sha256": "b2d16337ab1819575936b2a006ec734fe957ee9d4b598d73273a20e23a05cedd"
     },
     "scripts/trimem_cleanup_exec.py": {
       "bytes": 2472,
       "sha256": "31d600cae74beaf0862c1ed7b98a0ba5f55196c451494136f984b56f686d0843"
     },
     "scripts/trimem_development_trigger_preflight.py": {
-      "bytes": 71593,
-      "sha256": "49d6c08e060146adec0864ca806c128872b67d5c7ebe78ce5456f3d062581d8b"
+      "bytes": 79299,
+      "sha256": "96d9092575a27682bda685b723528c6d22df3b29397205518cf15204c0690ad2"
     },
     "scripts/trimem_evidence_inventory.py": {
       "bytes": 4747,
@@ -805,8 +825,8 @@
       "sha256": "e0e141d11e30fb6cfd02fd1bb84b0218fb9ae3738d8cdef73878c5d9f685f09d"
     },
     "scripts/trimem_freeze.py": {
-      "bytes": 28054,
-      "sha256": "f91a08ab46f26a49527272c87593ba42d48d2cc76d49eb3609ea88a2951f0629"
+      "bytes": 28527,
+      "sha256": "a7afed2991baf6b5654f59f09394ed97e451c34003146ca8f1c214f8a4052181"
     },
     "scripts/trimem_grader_smoke.py": {
       "bytes": 135285,
@@ -921,8 +941,8 @@
       "sha256": "7079b36d6d539470692738c1b1514cf2ef38e1c0c8483ebdbd65c407c6ec4408"
     },
     "scripts/trimem_verify_ready.py": {
-      "bytes": 222530,
-      "sha256": "e7128053ba9c484447516a4de8e5ed28e410f335e64b37aac2c5b0f819c528e7"
+      "bytes": 229743,
+      "sha256": "d4050badd003ebdf78ba96c6a9a070d8c7234f673274e071b2d1451f0d112524"
     },
     "src/enterprise_memory/contracts/codec.py": {
       "bytes": 7174,
@@ -1037,8 +1057,8 @@
       "sha256": "a66e78ca451b530a83bb5f55f7923b9d2e3b8a79263ac8db3c9235b14e412631"
     },
     "src/enterprise_memory/trimem/agent_runtime.py": {
-      "bytes": 87212,
-      "sha256": "e4162c6174cdd0594744ad0e8d9bc40a028da42f290a05511154ae1958ee1442"
+      "bytes": 90282,
+      "sha256": "692dcbd7066205a3a64ae1a85ab288ea4b592b9ab37af9c38b839013f1e5e9af"
     },
     "src/enterprise_memory/trimem/arms.py": {
       "bytes": 17871,
@@ -1061,12 +1081,12 @@
       "sha256": "8a11ee2718d7461650f05e3a463d7da16c251c76c0f863a4aa6f2fe0f24bd1c9"
     },
     "src/enterprise_memory/trimem/gateway.py": {
-      "bytes": 25201,
-      "sha256": "74919065d2b8f5d47613c17adda104460df76248cc6a2e607e0916d692a1950e"
+      "bytes": 25560,
+      "sha256": "8bb3de15ddd6efcca02c16d191c2fedf3c81e0783a020c03c8f8e01bb61ad43e"
     },
     "src/enterprise_memory/trimem/git_workspace.py": {
-      "bytes": 34119,
-      "sha256": "a4b1f3d3f0265fc5a695a1d67376f3714035d498295125b8df077b5b2a00631e"
+      "bytes": 36230,
+      "sha256": "e237386ddbe6d8b991325ad341358bd8ae882ccdded8dbe6807570a0f744f54d"
     },
     "src/enterprise_memory/trimem/grader.py": {
       "bytes": 19399,
@@ -1121,12 +1141,16 @@
       "sha256": "3f94781e3425f7367672b67c84ae509632896f4ccb1cb278894d0e1e98bf785e"
     },
     "src/enterprise_memory/trimem/runtime_lock.py": {
-      "bytes": 6116,
-      "sha256": "359dbcdc6fe9b5de481ef88da7e488641bea8712067e319b131e845990c8c4ee"
+      "bytes": 6818,
+      "sha256": "77686f1d8b58cbabee85286e1d502495fae28b70b5279ec4dbe7133ea4440ae5"
     },
     "src/enterprise_memory/trimem/schema.py": {
       "bytes": 26573,
       "sha256": "d27b5e42eef352050bd7da515e3c9302942f72c37af12fb6353876ab7680416d"
+    },
+    "src/enterprise_memory/trimem/solve_forensics.py": {
+      "bytes": 5961,
+      "sha256": "c8b470e4ad632957c0149e6d9ddd0b2df71f895a6f109e7596de26f08736ee0e"
     },
     "src/enterprise_memory/trimem/store.py": {
       "bytes": 28497,
@@ -1141,8 +1165,8 @@
       "sha256": "e28bd7d0fad011ae5ee7ec48170e7e77ad683c732a53f51cf199185793678123"
     },
     "src/enterprise_memory/trimem/workspace.py": {
-      "bytes": 18587,
-      "sha256": "359661324335ad092c8b6c7786d42b0744148e2dc01d8c47e779ddd7a5c4f953"
+      "bytes": 21245,
+      "sha256": "046800bb40b09150f89628fa1efe4124e1efb3965ef0df03411a9a777c00a38d"
     },
     "tests/openai/test_openai_provider.py": {
       "bytes": 6902,
@@ -1177,20 +1201,24 @@
       "sha256": "686c00fa178aa80d24e4474475abd00acbba179649b568484c2e4e8e172df2c9"
     },
     "tests/unit/test_trimem_benchmark_readiness.py": {
-      "bytes": 272453,
-      "sha256": "0f2c017835266684493dd8f5df7d65ad3588086dc658a8af846b9a9962b669c7"
+      "bytes": 272827,
+      "sha256": "7932d0c980fe91685c1cbab7b4c1482edb0b5280a89442c4a7523d7f8b3cbfa1"
+    },
+    "tests/unit/test_trimem_d14_solve_contract.py": {
+      "bytes": 14829,
+      "sha256": "c8992913def73be79426c1baded604004f61987daac5ee3453bdd3c43b7878e0"
     },
     "tests/unit/test_trimem_dev_toolchain_workflows.py": {
-      "bytes": 5730,
-      "sha256": "a043a95afe38297e90380ea781c3f4f783790e7f383fec93a5d752c30fc06649"
+      "bytes": 5745,
+      "sha256": "11a3148b11ee39b794669ab092363f5e79424577dea270beafcf55265e9f05f9"
     },
     "tests/unit/test_trimem_development_trigger.py": {
-      "bytes": 91654,
-      "sha256": "5ecadde1f93b3f51bf3acb07b80eb0ac444ac7d47216b3f6d9ff01807b305f6c"
+      "bytes": 91663,
+      "sha256": "480c4a1c5c06f968fc24d2cd188076969b50056f5557059e7e5c53812716a9b6"
     },
     "tests/unit/test_trimem_git_workspace.py": {
-      "bytes": 25908,
-      "sha256": "7295aefdcf6f265b0faa8ae5053ba0afaeb0de4cdb4da9f50482067e240a292b"
+      "bytes": 26567,
+      "sha256": "18e55977182ce86710ea95c1326dbac5a1c79a354cafd76e700832d286d34e29"
     },
     "tests/unit/test_trimem_grader_smoke_authority.py": {
       "bytes": 22598,
@@ -1230,7 +1258,7 @@
     },
     "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py": {
       "bytes": 30250,
-      "sha256": "29b76744a1c3db6f5b18d21dcf63e47c1fa0f4c537f6103f3c7fbede94aa16c8"
+      "sha256": "b7acbafc88caaed5427283b019c721e311c319259086a90489817e58a95a1e67"
     },
     "tests/unit/test_trimem_multi_swe_image_probe.py": {
       "bytes": 11222,

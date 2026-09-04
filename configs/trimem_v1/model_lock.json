@@ -1,10 +1,10 @@
 {
   "schema": "trimem/model-lock/1.2",
-  "status": "FROZEN_PRE_RESULT_AMENDMENT_PENDING_APPROVAL",
+  "status": "FROZEN_PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT_PENDING_APPROVAL",
   "actual_execution": {
-    "model_gateway_calls": 1,
-    "paid_model_calls": 1,
-    "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+    "model_gateway_calls": 7,
+    "paid_model_calls": 7,
+    "provider_reported_usage": "MIXED_ONE_HISTORICAL_UNAVAILABLE_SIX_AVAILABLE",
     "completed_task_arm_runs": 0
   },
   "primary_model": {

@@ -1,5 +1,5 @@
 name: TriMem V1 credential-free DEV toolchain rehearsal
-# D1.3 exact-head pre-execution credential-free gate.
+# D1.4 exact-head pre-execution credential-free gate.
 
 on:
   push:
@@ -9,13 +9,25 @@ on:
       - .github/workflows/ci-trimem-dev-toolchain.yml
       - .github/workflows/trimem-benchmark.yml
       - configs/trimem_v1/gh_cli_lock.json
+      - configs/trimem_v1/solve_output_budget_contract.json
+      - artifacts/trimem_v1/development_solve_execution_contract_amendment.json
+      - artifacts/trimem_v1/solve_output_budget_contract_lock.json
       - scripts/trimem_development_trigger_preflight.py
+      - scripts/trimem_benchmark_matrix.py
+      - scripts/trimem_benchmark_run.py
       - scripts/trimem_install_pinned_gh.py
       - scripts/trimem_verify_gh_lock.py
       - scripts/trimem_verify_ready.py
+      - src/enterprise_memory/trimem/agent_runtime.py
+      - src/enterprise_memory/trimem/gateway.py
+      - src/enterprise_memory/trimem/git_workspace.py
+      - src/enterprise_memory/trimem/runtime_lock.py
+      - src/enterprise_memory/trimem/solve_forensics.py
+      - src/enterprise_memory/trimem/workspace.py
       - tests/unit/test_trimem_dev_toolchain_workflows.py
       - tests/unit/test_trimem_pinned_gh.py
       - tests/unit/test_trimem_development_trigger.py
+      - tests/unit/test_trimem_d14_solve_contract.py
       - tests/unit/test_trimem_smoke_attestation_only.py
 
 permissions:

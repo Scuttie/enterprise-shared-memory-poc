@@ -120,7 +120,7 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_self_hosted() -> None
     assert "TRIMEM_EVIDENCE_PASSPHRASE" not in text
     assert "trimem_pull_locked_images.py" not in text
     assert "trimem_run_with_resume.py" not in text
-    assert "trimem_benchmark_run.py" not in text
+    assert "python scripts/trimem_benchmark_run.py" not in text
     assert "GH_TOKEN: ${{ github.token }}" in text
     assert text.count("GH_TOKEN: ${{ github.token }}") == 1
     assert "--level smoke-attestation-only" in text

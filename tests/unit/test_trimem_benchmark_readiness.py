@@ -352,7 +352,7 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert cost["run_counts"]["heldout_physical_task_arm_runs"] == 81
     assert cost["run_counts"]["total_physical_task_arm_runs"] == 153
     assert cost["actual_to_date_scope"] == (
-        "CUMULATIVE_INCLUDES_GRADER_HISTORY_AND_DEV_RUN_33788493773_ATTEMPT_1"
+        "CUMULATIVE_INCLUDES_GRADER_HISTORY_AND_DEV_RUNS_33788493773_33840007588_ATTEMPT_1"
     )
     p014_actual = {
         **_smoke_accounting(6),
@@ -413,21 +413,29 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     }
     assert cost["actual_to_date"] == {
         **cumulative,
-        "api_calls": 1,
-        "decomposition_calls": 1,
+        "api_calls": 7,
+        "decomposition_calls": 2,
+        "docker_pulls": 24,
         "input_tokens": None,
-        "model_calls": 1,
-        "model_gateway_calls": 1,
+        "known_provider_cached_input_tokens": 17664,
+        "known_provider_input_tokens": 54620,
+        "known_provider_output_tokens": 4203,
+        "known_provider_reasoning_tokens": 1485,
+        "model_calls": 7,
+        "model_gateway_calls": 7,
         "output_tokens": None,
-        "paid_model_calls": 1,
-        "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+        "paid_model_calls": 7,
+        "provider_reported_usage": "MIXED_ONE_HISTORICAL_UNAVAILABLE_SIX_AVAILABLE",
         "reasoning_tokens": None,
         "ledger_reservation": {
             "input_tokens": 5069,
             "output_tokens": 2048,
             "total_usd": 0.01301775,
         },
-        "total_usd": 0.01301775,
+        "solve_calls": 5,
+        "support_image_pulls": 3,
+        "target_image_pulls": 21,
+        "total_usd": 0.06097305,
     }
     assert cost["expected_cost"]["phase_totals"]["GRADER_SMOKE"][
         "grader_containers"
@@ -460,20 +468,22 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["prior_failed_run_reusable"] is False
     assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_SOLVE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert authorization["recovery_request_id"] == trigger.REQUEST_ID
     assert authorization["recovery_request_path"] == trigger.SENTINEL_PATH
     assert authorization["request_003_final"] is True
     assert authorization["request_004_allowed_after_exact_remote_gates"] is False
     assert authorization["request_004_attempt_one_consumed"] is True
+    assert authorization["request_005_allowed_after_exact_remote_gates"] is True
+    assert authorization["request_005_attempt_one_consumed"] is False
     assert authorization["rerun_allowed"] is False
     assert "is final" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     assert authorization["amendment_classification"] == (
-        "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
+        "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT"
     )
-    assert authorization["provider_contract_rehearsal_required_before_request_004"] is True
+    assert authorization["solve_execution_contract_rehearsal_required_before_request_005"] is True
     service_boundary = requirements["credential_free_service_ci_boundary"]
     assert "ALLOWED_PRE_EXEC" in service_boundary
     assert "digest-pinned PostgreSQL and Qdrant support services" in service_boundary
@@ -698,11 +708,11 @@ def test_development_exec_002_semantic_drift_fails_even_with_bound_bytes(
         readiness._validated_development_exec_002_failure()
 
 
-def test_d13_terminal_failure_closes_further_development_execution(
+def test_d14_recovery_requires_fresh_sentinel_before_approval(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     assert readiness.preapproval_blockers() == [
-        "DEV _004 attempt 1 is final; no further benchmark approval is authorized"
+        "DEV _005 sentinel and exact-head remote gates are required before approval"
     ]
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
@@ -729,10 +739,7 @@ def test_d13_terminal_failure_closes_further_development_execution(
     )
     blockers, phase = readiness.execution_blockers(approval_path)
     assert phase == "development"
-    assert blockers == [
-        "DEV _004 attempt 1 is final; no rerun or further development "
-        "execution is authorized"
-    ]
+    assert blockers == []
 
 
 def test_benchmark_exec_cli_requires_fresh_run_bound_approval(
@@ -1530,7 +1537,7 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "total_usd": 0,
     }
     assert readiness.preapproval_blockers() == [
-        "DEV _004 attempt 1 is final; no further benchmark approval is authorized"
+        "DEV _005 sentinel and exact-head remote gates are required before approval"
     ]
 
 
@@ -3334,11 +3341,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "D1.3 fresh-run approval boundaries" in static
-    assert '"DEV _004 attempt 1 is final; no further benchmark "' in static
+    assert "D1.4 fresh-run approval boundaries" in static
+    assert '"DEV _005 sentinel and exact-head remote gates are "' in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
-    assert "expected exact D1.3 report" in static
+    assert "expected exact D1.4 report" in static
     assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service
@@ -3579,11 +3586,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in benchmark
     assert (
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_004.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_005.json"
     ) in benchmark
     assert "branch-trigger-preflight:" in benchmark
     assert "needs: branch-trigger-preflight" in benchmark
-    assert "group: trimem-v1-development-tuning-exec-004" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-005" in benchmark
     assert "group: trimem-v1-development-tuning-exec-002" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-001" not in benchmark
     assert "cancel-in-progress: false" in benchmark

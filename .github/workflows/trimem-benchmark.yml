@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_004.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_005.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-004
+  group: trimem-v1-development-tuning-exec-005
   cancel-in-progress: false
 
 permissions:

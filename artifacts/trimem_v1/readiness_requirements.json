@@ -20,7 +20,7 @@
     "DEV_EXECUTION_ALLOWED": "NO",
     "DEV_SCIENTIFIC_STATUS": "STARTED_NO_COMPLETED_CELL",
     "ENDPOINT": "TRIMEM_V1_DEV_INCOMPLETE",
-    "FAILURE_SUBTYPE": "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_EXTRACTED_TEXT",
+    "FAILURE_SUBTYPE": "TRIMEM_DEV_FIRST_TASK_SOLVE_RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
     "GRADER_EXEC_PACKAGE": "PASS",
     "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
     "PERFORMANCE": "NOT_MEASURED",
@@ -62,7 +62,7 @@
     "hard_cap_total_usd": 50.0,
     "heldout_execution_authorized": false,
     "future_recovery_authority_received": true,
-    "meaning": "The approved _003 attempt-1 run made one API call but completed no task-arm and is final. D1.3 permits one fresh _004 attempt-1 path only after the exact correction HEAD passes every credential-free gate.",
+    "meaning": "Each approved _003 and _004 attempt-1 run is final. The _004 run made six provider calls, completed no task-arm, and established RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS at the first task's fifth solve call. No further execution is authorized.",
     "model_id": "gpt-5.4-mini-2026-03-17",
     "prior_failed_run_reusable": false,
     "recovery_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE",
@@ -71,7 +71,8 @@
     "recovery_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_004.json",
     "request_002_final": true,
     "request_003_final": true,
-    "request_004_allowed_after_exact_remote_gates": true,
+    "request_004_allowed_after_exact_remote_gates": false,
+    "request_004_attempt_one_consumed": true,
     "rerun_allowed": false,
     "selected_m2_checkpoint": "PRE_DEVELOPMENT; no development result or checkpoint was produced",
     "provider_contract_rehearsal_required_before_request_004": true
@@ -143,6 +144,46 @@
     }
   },
   "development_execution_failure": {
+    "schema": "trimem/development-provider-terminal-failure-status/1.0",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "failure_subtype": "TRIMEM_DEV_FIRST_TASK_SOLVE_RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+    "raw_provider_outcome_class": "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+    "performance": "NOT_MEASURED",
+    "dev_scientific_status": "STARTED_NO_COMPLETED_CELL",
+    "workflow_run": {
+      "id": 33840007588,
+      "run_attempt": 1,
+      "head_sha": "795c589c7da0b815bbe4f6188191fd0165f85649",
+      "conclusion": "failure"
+    },
+    "execution_accounting": {
+      "api_calls": 6,
+      "model_calls": 6,
+      "paid_model_calls": 6,
+      "decomposition_calls": 1,
+      "solve_calls": 5,
+      "extraction_calls": 0,
+      "input_tokens": 54620,
+      "cached_input_tokens": 17664,
+      "output_tokens": 4203,
+      "reasoning_tokens": 1485,
+      "completed_task_arm_runs": 0,
+      "grader_containers": 0,
+      "official_grader_runs": 0,
+      "total_usd": 0.0479553
+    },
+    "provider_status_distribution": {
+      "SUCCESS": 5,
+      "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS": 1
+    },
+    "failure_receipt_path": "artifacts/trimem_v1/development_tuning_exec/exec-004/provider-incomplete-max-output-tokens-receipt.json",
+    "failure_receipt_raw_sha256": "393bff5c1a518ea2ea487ff1c940152bc9d2e618ab300fd05fadacc179c933fc",
+    "historical_run_rerun_allowed": false,
+    "current_run_rerun_allowed": false,
+    "attempt_two_allowed": false,
+    "further_execution_authorized": false
+  },
+  "historical_development_provider_failure": {
     "schema": "trimem/development-provider-output-contract-failure-status/1.0",
     "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
     "failure_subtype": "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_EXTRACTED_TEXT",
@@ -325,7 +366,7 @@
     }
   },
   "post_approval_gates": [
-    "the _003 request and run 33788493773 attempt 1 are final after one API call and zero completed cells; rerun and attempt 2 remain forbidden, while the fresh _004 attempt-1 path is conditional on all credential-free CI passing for the exact correction HEAD",
+    "the _003 and _004 requests and their attempt-1 runs are final; _004 ended after six provider calls and zero completed cells, and neither run may be rerun",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
@@ -333,7 +374,7 @@
   "schema": "trimem/readiness-requirements/1.8",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
-  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed and independently validated exec-005 official PASS evidence, not from static CI alone. The later _003 DEV attempt is final after one API call and zero completed cells. D1.3 is a pre-result provider output-contract amendment and requires exact remote CI before _004; performance remains NOT_MEASURED and no causal, full-suite, or leaderboard claim is made.",
+  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed and independently validated exec-005 official PASS evidence, not from static CI alone. The later _003 and _004 DEV attempts are final with zero completed cells. D1.3 established the _004 terminal provider outcome as RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS; performance remains NOT_MEASURED and no causal, full-suite, or leaderboard claim is made.",
   "target_set_sha256": {
     "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
     "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",

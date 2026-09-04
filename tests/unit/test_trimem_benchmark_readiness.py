@@ -441,7 +441,7 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "DEV_EXECUTION_ALLOWED": "NO",
         "DEV_SCIENTIFIC_STATUS": "STARTED_NO_COMPLETED_CELL",
         "ENDPOINT": readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT,
-        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_003_FAILURE_SUBTYPE,
+        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_004_FAILURE_SUBTYPE,
         "GRADER_EXEC_PACKAGE": "PASS",
         "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
@@ -465,7 +465,8 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["recovery_request_id"] == trigger.REQUEST_ID
     assert authorization["recovery_request_path"] == trigger.SENTINEL_PATH
     assert authorization["request_003_final"] is True
-    assert authorization["request_004_allowed_after_exact_remote_gates"] is True
+    assert authorization["request_004_allowed_after_exact_remote_gates"] is False
+    assert authorization["request_004_attempt_one_consumed"] is True
     assert authorization["rerun_allowed"] is False
     assert "is final" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
@@ -570,21 +571,32 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     gate_failure = requirements["historical_development_exec_gate_failure"]
     assert gate_failure == readiness._validated_development_exec_002_failure()
     current_failure = requirements["development_execution_failure"]
-    assert current_failure == readiness._validated_development_exec_003_failure()
+    assert current_failure == readiness._validated_development_exec_004_failure()
     assert current_failure["dev_scientific_status"] == "STARTED_NO_COMPLETED_CELL"
     assert current_failure["performance"] == "NOT_MEASURED"
     assert current_failure["execution_accounting"] == {
-        "api_calls": 1,
-        "model_calls": 1,
-        "paid_model_calls": 1,
+        "api_calls": 6,
+        "model_calls": 6,
+        "paid_model_calls": 6,
+        "decomposition_calls": 1,
+        "solve_calls": 5,
+        "extraction_calls": 0,
+        "input_tokens": 54620,
+        "cached_input_tokens": 17664,
+        "output_tokens": 4203,
+        "reasoning_tokens": 1485,
         "completed_task_arm_runs": 0,
         "grader_containers": 0,
-        "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+        "official_grader_runs": 0,
+        "total_usd": 0.0479553,
     }
     assert current_failure["failure_subtype"] == (
-        "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_EXTRACTED_TEXT"
+        "TRIMEM_DEV_FIRST_TASK_SOLVE_RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS"
     )
-    assert current_failure["fresh_request_id"] == trigger.REQUEST_ID
+    assert current_failure["further_execution_authorized"] is False
+    assert requirements["historical_development_provider_failure"] == (
+        readiness._validated_development_exec_003_failure()
+    )
 
 
 def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
@@ -599,6 +611,9 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
     assert derived["current_status"]["DEV_EXECUTION_ALLOWED"] == "NO"
     assert derived["current_status"]["PERFORMANCE"] == "NOT_MEASURED"
     assert derived["development_execution_failure"] == (
+        readiness._validated_development_exec_004_failure()
+    )
+    assert derived["historical_development_provider_failure"] == (
         readiness._validated_development_exec_003_failure()
     )
     assert derived["scientific_result"] == {
@@ -683,10 +698,12 @@ def test_development_exec_002_semantic_drift_fails_even_with_bound_bytes(
         readiness._validated_development_exec_002_failure()
 
 
-def test_d12_recovery_allows_only_the_fresh_development_approval_path(
+def test_d13_terminal_failure_closes_further_development_execution(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    assert readiness.preapproval_blockers() == []
+    assert readiness.preapproval_blockers() == [
+        "DEV _004 attempt 1 is final; no further benchmark approval is authorized"
+    ]
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
         json.dumps({"approval": {"approved_phase": "DEVELOPMENT_TUNING"}}),
@@ -712,7 +729,10 @@ def test_d12_recovery_allows_only_the_fresh_development_approval_path(
     )
     blockers, phase = readiness.execution_blockers(approval_path)
     assert phase == "development"
-    assert blockers == []
+    assert blockers == [
+        "DEV _004 attempt 1 is final; no rerun or further development "
+        "execution is authorized"
+    ]
 
 
 def test_benchmark_exec_cli_requires_fresh_run_bound_approval(
@@ -1509,7 +1529,9 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "paid_model_calls": 0,
         "total_usd": 0,
     }
-    assert readiness.preapproval_blockers() == []
+    assert readiness.preapproval_blockers() == [
+        "DEV _004 attempt 1 is final; no further benchmark approval is authorized"
+    ]
 
 
 def test_recovery_ready_history_rejects_rebound_receipt_hash() -> None:
@@ -3313,7 +3335,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
     assert "D1.3 fresh-run approval boundaries" in static
-    assert '("benchmark-approval", 0, [])' in static
+    assert '"DEV _004 attempt 1 is final; no further benchmark "' in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
     assert "expected exact D1.3 report" in static

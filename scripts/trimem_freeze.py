@@ -88,6 +88,7 @@ ARTIFACT_PATHS = (
     "artifacts/trimem_v1/development_tuning_exec/exec-002/protected-exec-gate-failure-receipt.json",
     "artifacts/trimem_v1/development_tuning_exec/exec-003/model-parser-failure-receipt.json",
     "artifacts/trimem_v1/development_tuning_exec/exec-003/provider-observability-terminology-amendment.json",
+    "artifacts/trimem_v1/development_tuning_exec/exec-004/provider-incomplete-max-output-tokens-receipt.json",
     "artifacts/trimem_v1/provider_output_schema_lock.json",
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json",
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",

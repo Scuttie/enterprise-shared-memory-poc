@@ -327,6 +327,23 @@ DEVELOPMENT_EXEC_003_RUN_ATTEMPT = 1
 DEVELOPMENT_EXEC_003_FAILURE_SUBTYPE = (
     "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_EXTRACTED_TEXT"
 )
+DEVELOPMENT_EXEC_004_FAILURE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/development_tuning_exec/exec-004/"
+    "provider-incomplete-max-output-tokens-receipt.json"
+)
+DEVELOPMENT_EXEC_004_FAILURE_RECEIPT_RAW_SHA256 = (
+    "393bff5c1a518ea2ea487ff1c940152bc9d2e618ab300fd05fadacc179c933fc"
+)
+DEVELOPMENT_EXEC_004_REQUEST_RAW_SHA256 = (
+    "20bccf63d7f09e4130e7297bc0b1c07b4d97f15baefa77099b582e105874dd80"
+)
+DEVELOPMENT_EXEC_004_HEAD = "795c589c7da0b815bbe4f6188191fd0165f85649"
+DEVELOPMENT_EXEC_004_SOURCE_HEAD = "ded36427f03b60256305a32266fd0537f3602798"
+DEVELOPMENT_EXEC_004_RUN_ID = 33_840_007_588
+DEVELOPMENT_EXEC_004_RUN_ATTEMPT = 1
+DEVELOPMENT_EXEC_004_FAILURE_SUBTYPE = (
+    "TRIMEM_DEV_FIRST_TASK_SOLVE_RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS"
+)
 SMOKE_PASS_READINESS_SCOPE = "P0.1.5_EXEC_005_AUTHORITATIVE_PASS"
 SMOKE_PASS_SCIENTIFIC_RESULT = (
     "GOLD_RESOLVED_6_OF_6_AND_NOOP_UNRESOLVED_6_OF_6"
@@ -3624,6 +3641,106 @@ def _validated_development_exec_003_failure() -> dict[str, Any]:
     }
 
 
+def _validated_development_exec_004_failure() -> dict[str, Any]:
+    receipt_path = ROOT / DEVELOPMENT_EXEC_004_FAILURE_RECEIPT_PATH
+    sentinel_path = ROOT / DEVELOPMENT_SENTINEL_PATH
+    receipt_raw = receipt_path.read_bytes()
+    sentinel_raw = sentinel_path.read_bytes()
+    require(
+        hashlib.sha256(receipt_raw).hexdigest()
+        == DEVELOPMENT_EXEC_004_FAILURE_RECEIPT_RAW_SHA256
+        and hashlib.sha256(sentinel_raw).hexdigest()
+        == DEVELOPMENT_EXEC_004_REQUEST_RAW_SHA256,
+        "DEV _004 immutable evidence bytes differ",
+    )
+    receipt = _strict_json_bytes(
+        receipt_raw, label=DEVELOPMENT_EXEC_004_FAILURE_RECEIPT_PATH
+    )
+    workflow = receipt.get("workflow_run", {})
+    accounting = receipt.get("execution_accounting", {})
+    root_cause = receipt.get("root_cause", {})
+    terminal = receipt.get("terminal_boundary", {})
+    require(
+        workflow.get("id") == DEVELOPMENT_EXEC_004_RUN_ID
+        and workflow.get("run_attempt") == DEVELOPMENT_EXEC_004_RUN_ATTEMPT
+        and workflow.get("head_sha") == DEVELOPMENT_EXEC_004_HEAD
+        and receipt.get("endpoint") == DEVELOPMENT_INCOMPLETE_ENDPOINT
+        and receipt.get("scientific_status") == "STARTED_NO_COMPLETED_CELL"
+        and receipt.get("performance") == "NOT_MEASURED"
+        and receipt.get("failure_label") == DEVELOPMENT_EXEC_004_FAILURE_SUBTYPE
+        and root_cause.get("terminal_classification")
+        == "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS"
+        and root_cause.get("incomplete_reason") == "max_output_tokens"
+        and accounting.get("api_calls") == 6
+        and accounting.get("model_calls") == 6
+        and accounting.get("paid_model_calls") == 6
+        and accounting.get("decomposition_calls") == 1
+        and accounting.get("solve_calls") == 5
+        and accounting.get("extraction_calls") == 0
+        and accounting.get("input_tokens") == 54620
+        and accounting.get("cached_input_tokens") == 17664
+        and accounting.get("output_tokens") == 4203
+        and accounting.get("reasoning_tokens") == 1485
+        and accounting.get("completed_task_arm_runs") == 0
+        and accounting.get("grader_containers") == 0
+        and accounting.get("official_grader_runs") == 0
+        and accounting.get("total_usd") == 0.0479553
+        and terminal.get("run_33788493773_rerun_performed") is False
+        and terminal.get("run_33840007588_rerun_performed") is False
+        and terminal.get("github_actions_attempt_2_created") is False
+        and terminal.get("development_request_005_created") is False
+        and terminal.get("further_execution_authorized") is False,
+        "DEV _004 terminal failure boundary differs",
+    )
+    ancestry = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", DEVELOPMENT_EXEC_004_HEAD, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    require(ancestry.returncode == 0, "DEV _004 execution is not immutable branch history")
+    return {
+        "schema": "trimem/development-provider-terminal-failure-status/1.0",
+        "endpoint": DEVELOPMENT_INCOMPLETE_ENDPOINT,
+        "failure_subtype": DEVELOPMENT_EXEC_004_FAILURE_SUBTYPE,
+        "raw_provider_outcome_class": "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+        "performance": "NOT_MEASURED",
+        "dev_scientific_status": "STARTED_NO_COMPLETED_CELL",
+        "workflow_run": {
+            "id": DEVELOPMENT_EXEC_004_RUN_ID,
+            "run_attempt": DEVELOPMENT_EXEC_004_RUN_ATTEMPT,
+            "head_sha": DEVELOPMENT_EXEC_004_HEAD,
+            "conclusion": "failure",
+        },
+        "execution_accounting": {
+            "api_calls": 6,
+            "model_calls": 6,
+            "paid_model_calls": 6,
+            "decomposition_calls": 1,
+            "solve_calls": 5,
+            "extraction_calls": 0,
+            "input_tokens": 54620,
+            "cached_input_tokens": 17664,
+            "output_tokens": 4203,
+            "reasoning_tokens": 1485,
+            "completed_task_arm_runs": 0,
+            "grader_containers": 0,
+            "official_grader_runs": 0,
+            "total_usd": 0.0479553,
+        },
+        "provider_status_distribution": {
+            "SUCCESS": 5,
+            "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS": 1,
+        },
+        "failure_receipt_path": DEVELOPMENT_EXEC_004_FAILURE_RECEIPT_PATH,
+        "failure_receipt_raw_sha256": DEVELOPMENT_EXEC_004_FAILURE_RECEIPT_RAW_SHA256,
+        "historical_run_rerun_allowed": False,
+        "current_run_rerun_allowed": False,
+        "attempt_two_allowed": False,
+        "further_execution_authorized": False,
+    }
+
+
 def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
@@ -3632,19 +3749,21 @@ def validate_readiness_plan(
     derived = _validated_post_smoke_readiness_state()
     historical_development_failure = _validated_development_preflight_failure()
     protected_gate_failure = _validated_development_exec_002_failure()
-    development_failure = _validated_development_exec_003_failure()
+    historical_provider_failure = _validated_development_exec_003_failure()
+    development_failure = _validated_development_exec_004_failure()
     derived["current_status"]["DEV_APPROVAL_ALLOWED"] = "NO"
     derived["current_status"]["DEV_EXECUTION_ALLOWED"] = "NO"
     derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = "STARTED_NO_COMPLETED_CELL"
     derived["current_status"]["ENDPOINT"] = DEVELOPMENT_INCOMPLETE_ENDPOINT
     derived["current_status"]["FAILURE_SUBTYPE"] = (
-        DEVELOPMENT_EXEC_003_FAILURE_SUBTYPE
+        DEVELOPMENT_EXEC_004_FAILURE_SUBTYPE
     )
     derived["current_status"]["PERFORMANCE"] = "NOT_MEASURED"
     derived["current_status"]["SCIENTIFIC_RESULT"] = (
         "NO_DEVELOPMENT_SCIENTIFIC_RESULT"
     )
     derived["development_execution_failure"] = development_failure
+    derived["historical_development_provider_failure"] = historical_provider_failure
     derived["historical_development_exec_gate_failure"] = protected_gate_failure
     derived["historical_development_preflight_failure"] = (
         historical_development_failure
@@ -3697,7 +3816,8 @@ def validate_readiness_plan(
         == DEVELOPMENT_RECOVERY_AUTHORIZATION
         and authorization.get("recovery_request_id") == DEVELOPMENT_REQUEST_ID
         and authorization.get("recovery_request_path") == DEVELOPMENT_SENTINEL_PATH
-        and authorization.get("request_004_allowed_after_exact_remote_gates") is True
+        and authorization.get("request_004_allowed_after_exact_remote_gates") is False
+        and authorization.get("request_004_attempt_one_consumed") is True
         and authorization.get("rerun_allowed") is False,
         "D1.3 development authorization boundary differs",
     )
@@ -3742,7 +3862,12 @@ def validate_readiness_plan(
     )
     require(
         plan.get("development_execution_failure") == development_failure,
-        "readiness DEV _003 provider-output failure differs",
+        "readiness DEV _004 provider-output failure differs",
+    )
+    require(
+        plan.get("historical_development_provider_failure")
+        == historical_provider_failure,
+        "readiness DEV _003 historical provider-output failure differs",
     )
     require(
         plan.get("historical_development_exec_gate_failure")
@@ -3761,13 +3886,7 @@ def validate_readiness_plan(
         isinstance(remaining, list)
         and remaining
         and all("_005" not in str(item) for item in remaining)
-        and any(
-            "_003" in str(item)
-            and "final" in str(item)
-            and "_004" in str(item)
-            and "exact correction HEAD" in str(item)
-            for item in remaining
-        ),
+        and any("_004" in str(item) and "final" in str(item) for item in remaining),
         "post-smoke remaining phase gates differ",
     )
     return derived
@@ -4605,14 +4724,22 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     require(
         development_accounting
         == {
-            "api_calls": 1,
-            "model_calls": 1,
-            "paid_model_calls": 1,
+            "api_calls": 6,
+            "model_calls": 6,
+            "paid_model_calls": 6,
+            "decomposition_calls": 1,
+            "solve_calls": 5,
+            "extraction_calls": 0,
+            "input_tokens": 54620,
+            "cached_input_tokens": 17664,
+            "output_tokens": 4203,
+            "reasoning_tokens": 1485,
             "completed_task_arm_runs": 0,
             "grader_containers": 0,
-            "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+            "official_grader_runs": 0,
+            "total_usd": 0.0479553,
         },
-        "DEV _003 current execution accounting differs at readiness output",
+        "DEV _004 current execution accounting differs at readiness output",
     )
     smoke_counters = readiness_state["execution_counters"]
     require(
@@ -4625,7 +4752,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "heldout_task_arm_runs_planned": 81,
         "support_image_digests_frozen": 1,
         "target_image_digests_frozen": 45,
-        "execution_counter_scope": "DEVELOPMENT_TUNING_EXEC_003_RUN_33788493773_ATTEMPT_1",
+        "execution_counter_scope": "DEVELOPMENT_TUNING_EXEC_004_RUN_33840007588_ATTEMPT_1",
         "task_arm_runs": development_accounting["completed_task_arm_runs"],
         "model_calls": development_accounting["model_calls"],
         "official_grader_runs": 0,
@@ -4658,7 +4785,10 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
 def preapproval_blockers() -> list[str]:
     _validated_development_exec_002_failure()
     _validated_development_exec_003_failure()
-    blockers: list[str] = []
+    _validated_development_exec_004_failure()
+    blockers: list[str] = [
+        "DEV _004 attempt 1 is final; no further benchmark approval is authorized"
+    ]
     selected = validate_selected_m2(require_frozen=False)
     if selected.get("status") != "PRE_DEVELOPMENT":
         blockers.append("pre-development selection placeholder is not exact")
@@ -4689,10 +4819,14 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
         if name is None:
             return ["external approval phase is unknown"], None
         if name == "heldout":
-            _validated_development_exec_003_failure()
+            _validated_development_exec_004_failure()
             return ["HELDOUT_BENCHMARK is not authorized by D1.3"], name
         if name == "development":
-            _validated_development_exec_003_failure()
+            _validated_development_exec_004_failure()
+            return [
+                "DEV _004 attempt 1 is final; no rerun or further development "
+                "execution is authorized"
+            ], name
         validate_exec_approval(name, approval_file)
     except (OSError, ValueError, BenchmarkExecutionError) as exc:
         return [str(exc)], None

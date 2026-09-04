@@ -53,7 +53,14 @@ jobs:
           import sys
 
           cases = (
-              ("benchmark-approval", 0, []),
+              (
+                  "benchmark-approval",
+                  1,
+                  [
+                      "DEV _004 attempt 1 is final; no further benchmark "
+                      "approval is authorized"
+                  ],
+              ),
               (
                   "grader-smoke-exec",
                   1,

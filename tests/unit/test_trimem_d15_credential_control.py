@@ -1,4 +1,4 @@
-"""Credential-free D1.5 authentication control-plane contract tests."""
+"""Credential-free D1.6 authentication control-plane contract tests."""
 from __future__ import annotations
 
 import asyncio
@@ -198,6 +198,17 @@ def test_d15_approval_builder_embeds_only_the_run_bound_commitment():
         compute_openai_key_commitment(KEY, binding())
     )
     assert d15.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_007.json")
+
+
+def test_historical_sentinel_is_hash_bound_but_not_a_freeze_member():
+    freeze = json.loads((ROOT / "artifacts/trimem_v1/freeze.json").read_text())
+    path = d15.PREVIOUS_SENTINEL_PATH
+    assert path not in freeze["files"]
+    assert d15.BOUND_PATHS["previous_dev_request_sha256"] == path
+    assert path in d15.FREEZE_MEMBERSHIP_EXEMPT_PATHS
+    assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == (
+        d15.PREVIOUS_SENTINEL_SHA256
+    )
 
 
 def test_exact_model_metadata_passes_without_generation_or_ledger():

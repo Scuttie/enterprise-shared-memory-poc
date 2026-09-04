@@ -112,6 +112,10 @@ BOUND_PATHS = {
     "tool_environment_lock_sha256": "configs/trimem_v1/tool_environment_lock.json",
     "key_binding_checker_sha256": "scripts/trimem_verify_openai_key_binding.py",
 }
+FREEZE_MEMBERSHIP_EXEMPT_PATHS = {
+    "artifacts/trimem_v1/freeze.json",
+    PREVIOUS_SENTINEL_PATH,
+}
 PRESERVED_SHA256 = {
     "configs/trimem_v1/arms.json": "7ecc15277cc9a9041befd4ae32f99b65da63009383b22701e0aecb407fe3906c",
     "configs/trimem_v1/development_manifest.json": "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
@@ -272,7 +276,7 @@ def _validate_source(repository: Path, source_head: str) -> dict[str, str]:
     for name, path in BOUND_PATHS.items():
         raw = commit_bytes(repository, source_head, path)
         require(
-            path == "artifacts/trimem_v1/freeze.json"
+            path in FREEZE_MEMBERSHIP_EXEMPT_PATHS
             or files.get(path)
             == {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()},
             f"research freeze does not bind {path}",

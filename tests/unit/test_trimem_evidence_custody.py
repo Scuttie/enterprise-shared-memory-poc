@@ -4,12 +4,15 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import sys
 import tarfile
 import zipfile
 
 import pytest
 
-from scripts import trimem_audit_encrypted_evidence as custody
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
+import trimem_audit_encrypted_evidence as custody  # noqa: E402
 
 
 def _inventory(root: str, files: dict[str, bytes]) -> dict:

@@ -1265,8 +1265,8 @@
       "sha256": "5a60ea4485d074efa97040d6dd18f82bc4c92491d82b944e73665fccddd23bce"
     },
     "tests/unit/test_trimem_evidence_custody.py": {
-      "bytes": 5063,
-      "sha256": "5c832172068eca33368580cc419f96c4292cf7594618a2b10e30688b17f74f48"
+      "bytes": 5160,
+      "sha256": "949e9e5ab1cf5510003cb8211135f5d3d11c0fdd181083635658c15f84fec3aa"
     },
     "tests/unit/test_trimem_git_workspace.py": {
       "bytes": 26567,

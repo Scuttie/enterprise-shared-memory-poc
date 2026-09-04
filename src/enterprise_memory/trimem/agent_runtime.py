@@ -28,9 +28,11 @@ from .gateway import (
     GatewayRequest,
     ModelGateway,
     RecordingModelGateway,
+    parse_function_action,
     parse_tool_action,
     strict_json_object,
 )
+from enterprise_memory.providers.base import SINGLE_FUNCTION_CALL
 from .grader import (
     GradeRequest,
     GradeResult,
@@ -52,6 +54,53 @@ from .workspace import (
 
 class RuntimeFailure(RuntimeError):
     pass
+
+
+class CellScientificFailure(RuntimeError):
+    """A terminal task-arm outcome that must still be officially graded."""
+
+    def __init__(self, classification: str):
+        super().__init__(classification)
+        self.classification = classification
+
+
+CANONICAL_FAILED_CELL_NOOP = (
+    "diff --git a/.trimem_failed_cell_noop b/.trimem_failed_cell_noop\n"
+    "new file mode 100644\n"
+    "--- /dev/null\n"
+    "+++ b/.trimem_failed_cell_noop\n"
+    "@@ -0,0 +1 @@\n"
+    "+TRIMEM_FAILED_CELL_NOOP_V1\n"
+)
+CANONICAL_FAILED_CELL_NOOP_SHA256 = sha256_bytes(
+    CANONICAL_FAILED_CELL_NOOP.encode("utf-8")
+)
+
+
+def is_cell_gateway_failure(status: str) -> bool:
+    return status.startswith(("RESPONSE_", "SOLVE_", "STRUCTURED_OUTPUT_")) or status == (
+        "HTTP_200_INVALID_JSON"
+    )
+
+
+def is_cell_runtime_failure(message: str) -> bool:
+    fragments = (
+        "TASK_SOLVE_OUTPUT_POOL_EXHAUSTED",
+        "solve-call or global step cap reached",
+        "per-subtask step cap reached",
+        "DAG has no ready node",
+        "decomposer must return",
+        "invalid semantic subtask",
+        "unknown semantic subtask field",
+        "subtask IDs must be unique",
+        "durable extraction model failure",
+        "invalid extraction response",
+        "semantic_candidate must be object or null",
+        "failed source attempted to enter semantic bank",
+        "episode extraction is incomplete",
+        "extractor outcome contradicts grader",
+    )
+    return any(fragment in message for fragment in fragments)
 
 
 class InjectedCrash(RuntimeError):
@@ -176,6 +225,15 @@ def _validate_evidence_suffix(
             ("memory_recall", "model_request", "model_response"),
             ("memory_recall", "model_request", "model_failure"),
             ("memory_recall", "model_request", "model_response", "tool_result"),
+            ("memory_recall", "model_request", "model_response", "function_call_parsed"),
+            (
+                "memory_recall", "model_request", "model_response",
+                "function_call_parsed", "tool_result",
+            ),
+            (
+                "memory_recall", "model_request", "model_response",
+                "action_contract_failure",
+            ),
         }
         if events not in allowed:
             raise CheckpointMismatch("evidence suffix is outside the solve crash window")
@@ -222,8 +280,31 @@ def _validate_evidence_suffix(
                 step_no=checkpoint.next_step_no,
                 active_node_id=active_node_id,
             )
-        if len(suffix) == 4:
-            tool = _require_suffix_payload(suffix[3], "tool_result")
+        if events[-1:] == ("action_contract_failure",):
+            failure = _require_suffix_payload(suffix[-1], "action_contract_failure")
+            expected_failure = {
+                "task_id": task.task_id,
+                "arm": arm,
+                "step_no": checkpoint.next_step_no,
+                "active_node_id": active_node_id,
+                "logical_call_id": logical_call_id,
+            }
+            if any(failure.get(name) != value for name, value in expected_failure.items()):
+                raise CheckpointMismatch("action-contract failure suffix identity mismatch")
+        if "function_call_parsed" in events:
+            parsed_index = events.index("function_call_parsed")
+            parsed = _require_suffix_payload(suffix[parsed_index], "function_call_parsed")
+            expected_parsed = {
+                "task_id": task.task_id,
+                "arm": arm,
+                "step_no": checkpoint.next_step_no,
+                "active_node_id": active_node_id,
+                "logical_call_id": logical_call_id,
+            }
+            if any(parsed.get(name) != value for name, value in expected_parsed.items()):
+                raise CheckpointMismatch("function-call suffix identity mismatch")
+        if events[-1:] == ("tool_result",):
+            tool = _require_suffix_payload(suffix[-1], "tool_result")
             if any(
                 tool.get(name) != value
                 for name, value in {
@@ -340,22 +421,24 @@ def _completed_tool_suffix(
     *,
     tool_names: set[str],
 ) -> Optional[dict[str, Any]]:
-    if tuple(event.get("event_type") for event in suffix) != (
-        "memory_recall",
-        "model_request",
-        "model_response",
-        "tool_result",
-    ):
+    events = tuple(event.get("event_type") for event in suffix)
+    legacy = (
+        "memory_recall", "model_request", "model_response", "tool_result",
+    )
+    native = (
+        "memory_recall", "model_request", "model_response",
+        "function_call_parsed", "tool_result",
+    )
+    if events not in {legacy, native}:
         return None
     request_event = _require_suffix_payload(suffix[1], "model_request")
     response_event = _require_suffix_payload(suffix[2], "model_response")
-    tool_event = _require_suffix_payload(suffix[3], "tool_result")
+    parsed_event = (
+        _require_suffix_payload(suffix[3], "function_call_parsed")
+        if events == native else None
+    )
+    tool_event = _require_suffix_payload(suffix[-1], "tool_result")
     try:
-        response_text = _evidence_blob(
-            evidence,
-            response_event.get("response"),
-            media_type="text/plain; charset=utf-8",
-        ).decode("utf-8", errors="strict")
         request_payload = strict_json_loads(
             _evidence_blob(
                 evidence,
@@ -370,7 +453,21 @@ def _completed_tool_suffix(
                 media_type="application/json",
             )
         )
-        tool, arguments = parse_tool_action(response_text, tool_names)
+        if events == native:
+            arguments_raw = _evidence_blob(
+                evidence,
+                response_event.get("function_arguments"),
+                media_type="text/plain; charset=utf-8",
+            ).decode("utf-8", errors="strict")
+            reply = _native_gateway_response(evidence, response_event, arguments_raw)
+            tool, arguments = parse_function_action(reply, tool_names)
+        else:
+            response_text = _evidence_blob(
+                evidence,
+                response_event.get("response"),
+                media_type="text/plain; charset=utf-8",
+            ).decode("utf-8", errors="strict")
+            tool, arguments = parse_tool_action(response_text, tool_names)
     except (UnicodeDecodeError, ValueError) as exc:
         raise CheckpointMismatch("completed tool suffix payload is invalid") from exc
     if (
@@ -379,6 +476,14 @@ def _completed_tool_suffix(
         or not isinstance(result_payload, Mapping)
         or tool_event.get("tool") != tool
         or tool_event.get("status") not in {"success", "error"}
+        or (
+            parsed_event is not None
+            and (
+                parsed_event.get("function_name") != tool
+                or parsed_event.get("argument_sha256")
+                != response_event.get("function_arguments_sha256")
+            )
+        )
     ):
         raise CheckpointMismatch("completed tool suffix request/result binding differs")
     return {
@@ -386,9 +491,73 @@ def _completed_tool_suffix(
         "model_request": request_event,
         "model_response": response_event,
         "tool_event": tool_event,
+        "parsed_event": parsed_event,
         "tool": tool,
         "arguments": dict(arguments),
         "result": dict(result_payload),
+    }
+
+
+def _native_gateway_response(
+    evidence: RawEvidenceLedger, event: Mapping[str, Any], arguments: str
+):
+    from .gateway import GatewayResponse
+
+    call_id = _evidence_blob(
+        evidence,
+        event.get("function_call_id"),
+        media_type="text/plain; charset=utf-8",
+    ).decode("utf-8", errors="strict")
+    return GatewayResponse(
+        text="",
+        provider=str(event["provider"]),
+        model=str(event["model"]),
+        input_tokens=event.get("input_tokens"),
+        output_tokens=event.get("output_tokens"),
+        wall_time_ms=int(event["wall_time_ms"]),
+        paid=bool(event["paid"]),
+        cached_input_tokens=event.get("cached_input_tokens"),
+        reasoning_tokens=event.get("reasoning_tokens"),
+        attempt=int(event["attempt"]),
+        status=str(event["status"]),
+        provider_reported_usage_available=bool(
+            event.get("provider_reported_usage_available", True)
+        ),
+        provider_response_envelope=event.get("provider_response_envelope"),
+        ledger_reservation=event.get("ledger_reservation"),
+        response_mode=SINGLE_FUNCTION_CALL,
+        output_items=tuple(event.get("output_items", ())),
+        function_call_id=call_id,
+        function_name=event.get("function_name"),
+        function_arguments=arguments,
+        function_arguments_sha256=event.get("function_arguments_sha256"),
+    )
+
+
+def _function_call_evidence(
+    *,
+    task: "CodingTask",
+    arm: str,
+    step_no: int,
+    active_node_id: str,
+    logical_call_id: str,
+    response: Any,
+) -> dict[str, Any]:
+    envelope = response.provider_response_envelope or {}
+    response_id = envelope.get("response_id")
+    call_id = str(response.function_call_id)
+    return {
+        "task_id": task.task_id,
+        "arm": arm,
+        "step_no": step_no,
+        "active_node_id": active_node_id,
+        "logical_call_id": logical_call_id,
+        "provider_response_id": response_id if isinstance(response_id, str) else None,
+        "call_id_sha256": sha256_bytes(call_id.encode("utf-8")),
+        "function_name": response.function_name,
+        "argument_bytes": len(str(response.function_arguments).encode("utf-8")),
+        "argument_sha256": response.function_arguments_sha256,
+        "ledger_reservation": response.ledger_reservation,
     }
 
 
@@ -456,7 +625,15 @@ def _model_suffix_call(
             reasoning_tokens=result_event["reasoning_tokens"],
             wall_time_ms=result_event["wall_time_ms"],
             prompt_hash=str(prompt["sha256"]),
-            response_hash=str(result_event["response"]["sha256"]),
+            response_hash=str(
+                result_event.get("function_arguments_sha256")
+                if (
+                    result_event.get("response_mode") == SINGLE_FUNCTION_CALL
+                    and isinstance(result_event.get("function_arguments_sha256"), str)
+                    and len(result_event["function_arguments_sha256"]) == 64
+                )
+                else result_event["response"]["sha256"]
+            ),
             active_node_id=active_node_id,
             paid=result_event["paid"],
             attempt=result_event["attempt"],
@@ -696,6 +873,11 @@ class AgentRunResult:
     accounting: Mapping[str, Any]
     evidence_tail_hash: str
     lifecycle_result: Mapping[str, Any]
+    cell_status: str = "AGENT_COMPLETED"
+    model_failure_class: Optional[str] = None
+    grader_patch_source: str = "MODEL_PATCH"
+    agent_completed: bool = True
+    extraction_status: str = "SUCCESS"
 
 
 class RuntimeMemoryController(Protocol):
@@ -842,6 +1024,134 @@ class TriMemAgentRuntime:
         arm: str,
         run_id: Optional[str] = None,
         resume: bool = False,
+        **crash_controls: Any,
+    ) -> AgentRunResult:
+        """Run one cell, containing scientific failures but not integrity failures."""
+
+        resolved_run_id = run_id or f"{task.task_id}-{arm}"
+        self._active_workspace = None
+        self._active_graph = None
+        self._active_accounting = None
+        self._active_tools = None
+        self._active_config_hashes = None
+        self._active_call_kind = None
+        crash_after_action_contract_failure = bool(
+            crash_controls.pop("crash_after_action_contract_failure", False)
+        )
+        if resume:
+            try:
+                terminal_checkpoint = self.checkpoints.load(
+                    resolved_run_id,
+                    required_config_hashes=None,
+                    required_evidence_hash=None,
+                )
+            except FileNotFoundError:
+                terminal_checkpoint = None
+            if (
+                terminal_checkpoint is not None
+                and terminal_checkpoint.state == "DONE"
+                and terminal_checkpoint.terminal_payload.get("cell_status")
+                in {"CELL_SCIENTIFIC_FAILURE", "MEMORY_EXTRACTION_FAILED"}
+            ):
+                return self._failed_result_from_checkpoint(terminal_checkpoint)
+        try:
+            return self._run_strict(
+                task,
+                arm=arm,
+                run_id=resolved_run_id,
+                resume=resume,
+                **crash_controls,
+            )
+        except GatewayInvocationFailure as failure:
+            if not is_cell_gateway_failure(failure.status):
+                raise
+            if (
+                crash_after_action_contract_failure
+                and failure.status.startswith("SOLVE_")
+            ):
+                raise InjectedCrash(
+                    "injected after durable action-contract failure"
+                ) from failure
+            return self._finalize_scientific_failure(
+                task,
+                arm=arm,
+                run_id=resolved_run_id,
+                failure_class=failure.status,
+            )
+        except RuntimeFailure as failure:
+            if not is_cell_runtime_failure(str(failure)):
+                raise
+            return self._finalize_scientific_failure(
+                task,
+                arm=arm,
+                run_id=resolved_run_id,
+                failure_class=str(failure),
+            )
+        except ValueError as failure:
+            if not str(failure).startswith("SOLVE_"):
+                raise
+            self.evidence.append(
+                "action_contract_failure",
+                {
+                    "task_id": task.task_id,
+                    "arm": arm,
+                    "failure_class": str(failure),
+                    "logical_call_id": getattr(self, "_active_logical_call_id", None),
+                },
+            )
+            return self._finalize_scientific_failure(
+                task,
+                arm=arm,
+                run_id=resolved_run_id,
+                failure_class=str(failure),
+            )
+
+    def _failed_result_from_checkpoint(
+        self, checkpoint: RuntimeCheckpoint
+    ) -> AgentRunResult:
+        payload = checkpoint.terminal_payload
+        grade = _grade_from_terminal(
+            payload.get("grade"), checkpoint.task_id, payload
+        )
+        extraction = _extraction_from_terminal(payload.get("extraction"), payload)
+        patch = _evidence_blob(
+            self.evidence,
+            payload.get("graded_patch"),
+            media_type="text/plain; charset=utf-8",
+        ).decode("utf-8", errors="strict")
+        lifecycle = payload.get("lifecycle_result")
+        if not isinstance(lifecycle, Mapping):
+            raise CheckpointMismatch("failed-cell lifecycle result is malformed")
+        return AgentRunResult(
+            run_id=checkpoint.run_id,
+            task_id=checkpoint.task_id,
+            arm=checkpoint.arm,
+            resolved=grade.resolved,
+            patch=patch,
+            graph_snapshot=checkpoint.graph_snapshot,
+            grade=grade,
+            extraction=extraction,
+            injections=tuple(checkpoint.injection_ledger),
+            accounting=checkpoint.accounting,
+            evidence_tail_hash=checkpoint.evidence_event_hash,
+            lifecycle_result=dict(lifecycle),
+            cell_status=str(payload["cell_status"]),
+            model_failure_class=(
+                str(payload["model_failure_class"])
+                if payload.get("model_failure_class") is not None else None
+            ),
+            grader_patch_source=str(payload["grader_patch_source"]),
+            agent_completed=bool(payload["agent_completed"]),
+            extraction_status=str(payload["extraction_status"]),
+        )
+
+    def _run_strict(
+        self,
+        task: CodingTask,
+        *,
+        arm: str,
+        run_id: Optional[str] = None,
+        resume: bool = False,
         crash_after_checkpoints: Optional[int] = None,
         crash_after_tool_evidence_step: Optional[int] = None,
         crash_after_model_response_step: Optional[int] = None,
@@ -871,8 +1181,10 @@ class TriMemAgentRuntime:
             "workspace": self.workspace_factory.content_hash,
             "lifecycle": _lifecycle_configuration_hash(self.lifecycle),
         }
+        self._active_config_hashes = config_hashes
 
         workspace = self.workspace_factory(task)
+        self._active_workspace = workspace
         if not isinstance(workspace, RepositoryWorkspace):
             raise RuntimeFailure("workspace factory returned an invalid workspace")
         locked_tool_names = {str(row["name"]) for row in self.lock.tool_schema}
@@ -985,6 +1297,30 @@ class TriMemAgentRuntime:
                         ),
                         "failure": suffix_events[2] == "model_failure",
                     }
+                elif suffix_events == (
+                    "memory_recall", "model_request", "model_response",
+                    "action_contract_failure",
+                ):
+                    response_event = _require_suffix_payload(
+                        suffix[2], "model_response"
+                    )
+                    action_failure = _require_suffix_payload(
+                        suffix[3], "action_contract_failure"
+                    )
+                    recovered_solve_model = {
+                        "recall_event": _require_suffix_payload(
+                            suffix[0], "memory_recall"
+                        ),
+                        "model_request": _require_suffix_payload(
+                            suffix[1], "model_request"
+                        ),
+                        "model_result": {
+                            **dict(response_event),
+                            "status": action_failure["failure_class"],
+                        },
+                        "failure": True,
+                        "action_contract_failure": dict(action_failure),
+                    }
                 elif suffix_events == ("patch_finalized",):
                     recovered_patch = _require_suffix_payload(
                         suffix[0], "patch_finalized"
@@ -1027,6 +1363,8 @@ class TriMemAgentRuntime:
                 raise RuntimeFailure("checkpoint task/arm mismatch")
             graph = ShortTermWorkingGraph.from_snapshot(checkpoint.graph_snapshot)
             accounting = RunAccounting.from_dict(checkpoint.accounting)
+            self._active_graph = graph
+            self._active_accounting = accounting
             if (
                 recovered_tool is not None
                 and recovered_tool["tool"] in {"write_file", "replace_text"}
@@ -1069,8 +1407,11 @@ class TriMemAgentRuntime:
             phase_state = checkpoint.state
         else:
             accounting = RunAccounting()
+            self._active_accounting = accounting
             model = RecordingModelGateway(self.model_delegate, accounting, self.evidence)
+            self._active_call_kind = "decompose"
             graph = self._decompose(task, arm, model)
+            self._active_graph = graph
             tool_history: list[dict] = []
             next_step = 1
             generation = 0
@@ -1083,6 +1424,7 @@ class TriMemAgentRuntime:
         model = RecordingModelGateway(self.model_delegate, accounting, self.evidence)
         tools = RecordingToolExecutor(workspace, accounting, self.evidence, task_id=task.task_id, arm=arm)
         tools.history = tool_history
+        self._active_tools = tools
         checkpoint_count = 0
 
         def save_checkpoint(state: str, active_node_id: Optional[str]) -> None:
@@ -1224,9 +1566,33 @@ class TriMemAgentRuntime:
                         )
 
                     if recovered_tool is None:
-                        tool, arguments = parse_tool_action(
-                            response_text, set(workspace.tool_names)
-                        )
+                        if result_event.get("response_mode") == SINGLE_FUNCTION_CALL:
+                            arguments_raw = _evidence_blob(
+                                self.evidence,
+                                result_event.get("function_arguments"),
+                                media_type="text/plain; charset=utf-8",
+                            ).decode("utf-8", errors="strict")
+                            recovered_reply = _native_gateway_response(
+                                self.evidence, result_event, arguments_raw
+                            )
+                            tool, arguments = parse_function_action(
+                                recovered_reply, set(workspace.tool_names)
+                            )
+                            self.evidence.append(
+                                "function_call_parsed",
+                                _function_call_evidence(
+                                    task=task,
+                                    arm=arm,
+                                    step_no=next_step,
+                                    active_node_id=node.node_id,
+                                    logical_call_id=call.logical_call_id,
+                                    response=recovered_reply,
+                                ),
+                            )
+                        else:
+                            tool, arguments = parse_tool_action(
+                                response_text, set(workspace.tool_names)
+                            )
                         result = tools.execute(next_step, node.node_id, tool, arguments)
                     else:
                         tool = recovered_tool["tool"]
@@ -1340,9 +1706,13 @@ class TriMemAgentRuntime:
                 )
                 prompt = self._solve_prompt(task, graph, tools.history, self.memory.context_for(node.node_id))
                 logical_id = f"{task.task_id}:{arm}:solve:{next_step:04d}"
+                self._active_call_kind = "solve"
+                self._active_logical_call_id = logical_id
                 if logical_id in completed_call_ids:
                     raise RuntimeFailure("checkpoint would repeat a completed logical call")
                 reply = model.invoke(
+                    # The local loop is stateless; each request includes the
+                    # canonical current state and never a remote conversation ID.
                     GatewayRequest(
                         task_id=task.task_id,
                         arm=arm,
@@ -1353,6 +1723,11 @@ class TriMemAgentRuntime:
                         max_output_tokens=request_max_output_tokens,
                         org_id=task.org_id,
                         active_node_id=node.node_id,
+                        response_mode=SINGLE_FUNCTION_CALL,
+                        function_tools=self.lock.function_tools,
+                        function_tools_sha256=self.lock.function_tools_sha256,
+                        tool_choice="required",
+                        parallel_tool_calls=False,
                     )
                 )
                 if crash_after_model_response_step == next_step:
@@ -1362,7 +1737,20 @@ class TriMemAgentRuntime:
                 completed_call_ids.add(logical_id)
                 solve_calls += 1
                 node_steps += 1
-                tool, arguments = parse_tool_action(reply.text, set(workspace.tool_names))
+                tool, arguments = parse_function_action(
+                    reply, set(workspace.tool_names)
+                )
+                self.evidence.append(
+                    "function_call_parsed",
+                    _function_call_evidence(
+                        task=task,
+                        arm=arm,
+                        step_no=next_step,
+                        active_node_id=node.node_id,
+                        logical_call_id=logical_id,
+                        response=reply,
+                    ),
+                )
                 result = tools.execute(next_step, node.node_id, tool, arguments)
                 if crash_after_tool_evidence_step == next_step:
                     raise InjectedCrash(
@@ -1659,6 +2047,271 @@ class TriMemAgentRuntime:
             lifecycle_result=lifecycle_result,
         )
 
+    def _finalize_scientific_failure(
+        self,
+        task: CodingTask,
+        *,
+        arm: str,
+        run_id: str,
+        failure_class: str,
+    ) -> AgentRunResult:
+        """Grade one failed cell exactly once and produce a durable terminal record."""
+
+        agent_failure_class = failure_class
+        workspace = self._active_workspace
+        accounting = self._active_accounting
+        graph = self._active_graph
+        if not isinstance(workspace, RepositoryWorkspace):
+            workspace = self.workspace_factory(task)
+        if not isinstance(accounting, RunAccounting):
+            accounting = RunAccounting()
+        if not isinstance(graph, ShortTermWorkingGraph):
+            graph = ShortTermWorkingGraph(task.task_id, task.instruction, task.repository)
+
+        try:
+            previous = self.checkpoints.load(
+                run_id,
+                required_config_hashes=None,
+                required_evidence_hash=None,
+            )
+        except FileNotFoundError:
+            previous = None
+
+        agent_completed = bool(
+            previous is not None
+            and previous.state in {
+                "AGENT_COMPLETE", "PATCH_FINALIZED", "GRADED", "EXTRACTED",
+                "LIFECYCLE_STORED", "LIFECYCLE_CREDITED", "DONE",
+            }
+        )
+        extraction_failed = bool(
+            previous is not None
+            and previous.state == "GRADED"
+            and getattr(self, "_active_call_kind", None) == "extract"
+        )
+        self.evidence.append(
+            "cell_scientific_failure",
+            {
+                "run_id": run_id,
+                "task_id": task.task_id,
+                "arm": arm,
+                "failure_class": failure_class,
+                "agent_completed": agent_completed,
+                "campaign_disposition": "GRADE_AND_CONTINUE",
+            },
+        )
+
+        model_patch = workspace.patch()
+        if model_patch:
+            graded_patch = model_patch
+            patch_source = "MODEL_PATCH" if agent_completed else "MODEL_PARTIAL_PATCH"
+        else:
+            graded_patch = CANONICAL_FAILED_CELL_NOOP
+            patch_source = "CANONICAL_FAILED_CELL_NOOP"
+        patch_hash = sha256_bytes(graded_patch.encode("utf-8"))
+
+        grade: Optional[GradeResult] = None
+        terminal_payload = dict(previous.terminal_payload) if previous is not None else {}
+        if previous is not None and previous.state in {
+            "GRADED", "EXTRACTED", "LIFECYCLE_STORED", "LIFECYCLE_CREDITED", "DONE",
+        }:
+            grade = _grade_from_terminal(
+                terminal_payload.get("grade"), task.task_id, terminal_payload
+            )
+        if grade is None:
+            grader = RecordingGraderGateway(
+                self.grader_delegate, accounting, self.evidence, arm
+            )
+            grade = grader.grade(
+                GradeRequest(
+                    task_id=task.task_id,
+                    repository=task.repository,
+                    base_commit=task.commit,
+                    patch=graded_patch,
+                    workspace=workspace.grader_context(base_commit=task.commit),
+                )
+            )
+        if grade.status != "success":
+            raise GraderInvocationFailure(grade)
+
+        extraction_status = "SUCCESS"
+        extraction: Optional[ExperienceExtraction] = None
+        lifecycle_result: dict[str, Any]
+        injections = tuple(_memory_ledger(self.memory.checkpoint_state()))
+        if extraction_failed:
+            extraction_status = "MEMORY_EXTRACTION_FAILED"
+        else:
+            try:
+                model = RecordingModelGateway(
+                    self.model_delegate, accounting, self.evidence
+                )
+                tools = self._active_tools
+                history = list(tools.history) if tools is not None else []
+                extraction = self._extract(
+                    task,
+                    arm,
+                    graph,
+                    history,
+                    graded_patch,
+                    grade,
+                    model,
+                    max(1, 1 + sum(
+                        1 for call in accounting.calls if call.call_kind == "solve"
+                    )),
+                )
+            except GatewayInvocationFailure as extraction_failure:
+                if not is_cell_gateway_failure(extraction_failure.status):
+                    raise
+                extraction_status = "MEMORY_EXTRACTION_FAILED"
+                extraction_failure_class = extraction_failure.status
+            except RuntimeFailure:
+                extraction_status = "MEMORY_EXTRACTION_FAILED"
+                extraction_failure_class = "MEMORY_EXTRACTION_SCHEMA_FAILURE"
+
+        if extraction is None:
+            self.evidence.append(
+                "memory_extraction_failed",
+                {
+                    "task_id": task.task_id,
+                    "arm": arm,
+                    "failure_class": locals().get(
+                        "extraction_failure_class", agent_failure_class
+                    ),
+                    "memory_update_performed": False,
+                    "grader_score_preserved": True,
+                },
+            )
+            extraction = ExperienceExtraction(
+                episode={
+                    "summary": "Memory extraction did not produce a usable record.",
+                    "action": "No memory update was performed.",
+                    "outcome": "passed" if grade.resolved else "failed",
+                },
+                semantic_candidate=None,
+                response_hash=sha256_bytes(b""),
+                patch_hash=patch_hash,
+                public_evidence_hash=sha256_bytes(canonical_bytes([])),
+            )
+            lifecycle_result = {
+                "storage": {"storage_action": "NONE", "reason": extraction_status},
+                "credit": {"credited": 0, "reason": extraction_status},
+            }
+        else:
+            prepare = getattr(self.lifecycle, "prepare_store_experience", None)
+            if callable(prepare):
+                prepare(task, extraction, grade, injections)
+            storage_result = dict(
+                self.lifecycle.store_experience(
+                    task, graph, extraction, grade, injections
+                )
+            )
+            credit_result = dict(
+                self.lifecycle.credit_outcome(
+                    task,
+                    grade,
+                    injections,
+                    outcome_metrics=_outcome_metrics(
+                        graph, accounting, injections, [], grade
+                    ),
+                )
+            )
+            lifecycle_result = {
+                "storage": storage_result,
+                "credit": credit_result,
+            }
+
+        terminal_payload.update({
+            "cell_status": (
+                "MEMORY_EXTRACTION_FAILED"
+                if extraction_status == "MEMORY_EXTRACTION_FAILED" and agent_completed
+                else "CELL_SCIENTIFIC_FAILURE"
+            ),
+            "model_failure_class": agent_failure_class,
+            "agent_completed": agent_completed,
+            "grader_patch_source": patch_source,
+            "model_partial_patch": self.evidence.put_blob(model_patch),
+            "graded_patch": self.evidence.put_blob(graded_patch),
+            "patch_sha256": patch_hash,
+            "extraction_status": extraction_status,
+            "extraction": asdict(extraction),
+            "lifecycle_result": lifecycle_result,
+        })
+        _store_terminal_grade(terminal_payload, grade)
+        terminal_payload["extraction_sha256"] = sha256_bytes(
+            canonical_bytes(terminal_payload["extraction"])
+        )
+
+        finished = {
+            "run_id": run_id,
+            "task_id": task.task_id,
+            "arm": arm,
+            "resolved": grade.resolved,
+            "cell_status": terminal_payload["cell_status"],
+            "model_failure_class": agent_failure_class,
+            "agent_completed": agent_completed,
+            "grader_patch_source": patch_source,
+            "extraction_status": extraction_status,
+            "lifecycle": lifecycle_result,
+            "accounting": accounting.summary(),
+        }
+        self.evidence.append("agent_run_finished", finished)
+
+        config_hashes = self._active_config_hashes
+        if not isinstance(config_hashes, Mapping):
+            raise RuntimeFailure("failed-cell finalization lacks configuration hashes")
+        generation = previous.generation + 1 if previous is not None else 1
+        checkpoint = RuntimeCheckpoint(
+            run_id=run_id,
+            task_id=task.task_id,
+            arm=arm,
+            generation=generation,
+            next_step_no=max(1, 1 + sum(
+                1 for call in accounting.calls if call.call_kind == "solve"
+            )),
+            state="DONE",
+            active_node_id=graph.active_node_id,
+            graph_snapshot=graph.snapshot(),
+            workspace_state=dict(workspace.checkpoint_state()),
+            injected_memory_ids=tuple(sorted(_memory_ids(self.memory.checkpoint_state()))),
+            injected_bytes=_memory_bytes(self.memory.checkpoint_state()),
+            injection_ledger=injections,
+            tool_history=tuple(
+                getattr(self._active_tools, "history", ())
+            ),
+            completed_call_ids=tuple(sorted(
+                call.logical_call_id for call in accounting.calls
+            )),
+            accounting=accounting.to_dict(),
+            config_hashes=dict(config_hashes),
+            evidence_event_hash=self.evidence.last_event_hash,
+            memory_controller_state=dict(self.memory.checkpoint_state()),
+            lifecycle_state=_lifecycle_checkpoint_state(self.lifecycle),
+            terminal_payload=terminal_payload,
+            previous_checkpoint_hash=(
+                previous.content_hash if previous is not None else "0" * 64
+            ),
+        )
+        self.checkpoints.save(checkpoint)
+        return AgentRunResult(
+            run_id=run_id,
+            task_id=task.task_id,
+            arm=arm,
+            resolved=grade.resolved,
+            patch=graded_patch,
+            graph_snapshot=graph.snapshot(),
+            grade=grade,
+            extraction=extraction,
+            injections=injections,
+            accounting=accounting.to_dict(),
+            evidence_tail_hash=self.evidence.last_event_hash,
+            lifecycle_result=lifecycle_result,
+            cell_status=str(terminal_payload["cell_status"]),
+            model_failure_class=agent_failure_class,
+            grader_patch_source=patch_source,
+            agent_completed=agent_completed,
+            extraction_status=extraction_status,
+        )
+
     def _decompose(self, task: CodingTask, arm: str, model: RecordingModelGateway) -> ShortTermWorkingGraph:
         prompt = self.lock.decomposer_prompt + "\n\nPUBLIC TASK:\n" + json.dumps(
             task.public_payload(), ensure_ascii=False, sort_keys=True
@@ -1795,6 +2448,8 @@ class TriMemAgentRuntime:
             task, graph, history, patch, grade
         )
         logical_id = f"{task.task_id}:{arm}:extract:0001"
+        self._active_call_kind = "extract"
+        self._active_logical_call_id = logical_id
         response = model.invoke(
             GatewayRequest(
                 task_id=task.task_id,

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from typing import Any, Mapping
 
 
@@ -218,6 +219,24 @@ def validate_structured_value(value: Any, schema: Mapping[str, Any]) -> None:
                 raise ValueError(f"{path} is too short")
             if "enum" in node and item not in node["enum"]:
                 raise ValueError(f"{path} is outside the enum")
+            maximum_length = node.get("maxLength")
+            if maximum_length is not None and len(item) > int(maximum_length):
+                raise ValueError(f"{path} is too long")
+            pattern = node.get("pattern")
+            if pattern is not None and (
+                not isinstance(pattern, str) or re.fullmatch(pattern, item) is None
+            ):
+                raise ValueError(f"{path} does not match the required pattern")
+            return
+        if kind == "integer":
+            if isinstance(item, bool) or not isinstance(item, int):
+                raise ValueError(f"{path} must be an integer")
+            minimum = node.get("minimum")
+            maximum = node.get("maximum")
+            if minimum is not None and item < int(minimum):
+                raise ValueError(f"{path} is below the minimum")
+            if maximum is not None and item > int(maximum):
+                raise ValueError(f"{path} exceeds the maximum")
             return
         raise ValueError(f"{path} uses an unsupported schema type")
 

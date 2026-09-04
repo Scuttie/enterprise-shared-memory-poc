@@ -1,12 +1,25 @@
 """Model gateway boundary shared by paid providers and credential-free replay."""
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import json
 import time
 from typing import Any, Awaitable, Callable, Mapping, Optional, Protocol
 
 from .accounting import CallRecord, RawEvidenceLedger, RunAccounting, canonical_bytes, sha256_bytes
+from enterprise_memory.providers.base import SINGLE_FUNCTION_CALL, STRUCTURED_TEXT
+from .function_tools import validate_function_arguments
+
+
+ACTION_CONTRACT_FAILURE_STATUSES = frozenset({
+    "SOLVE_EXPECTED_FUNCTION_CALL",
+    "SOLVE_MULTIPLE_FUNCTION_CALLS",
+    "SOLVE_UNEXPECTED_MESSAGE_OUTPUT",
+    "SOLVE_UNKNOWN_FUNCTION",
+    "SOLVE_FUNCTION_ARGUMENT_INVALID_JSON",
+    "SOLVE_FUNCTION_ARGUMENT_SCHEMA_FAILURE",
+    "SOLVE_FUNCTION_CALL_ID_MISSING",
+})
 
 
 @dataclass(frozen=True)
@@ -24,6 +37,39 @@ class GatewayRequest:
     output_json_schema: Optional[Mapping[str, Any]] = None
     output_schema_sha256: Optional[str] = None
     strict_structured_output: bool = False
+    response_mode: str = STRUCTURED_TEXT
+    function_tools: tuple[Mapping[str, Any], ...] = ()
+    function_tools_sha256: Optional[str] = None
+    tool_choice: Optional[Any] = None
+    parallel_tool_calls: Optional[bool] = None
+
+    def __post_init__(self) -> None:
+        if self.response_mode not in {STRUCTURED_TEXT, SINGLE_FUNCTION_CALL}:
+            raise ValueError("unknown response mode")
+        structured = (
+            self.output_schema_name,
+            self.output_json_schema,
+            self.output_schema_sha256,
+        )
+        if any(item is not None for item in structured) and not all(
+            item is not None for item in structured
+        ):
+            raise ValueError("structured output contract fields must be supplied together")
+        function_contract = (
+            bool(self.function_tools),
+            self.function_tools_sha256 is not None,
+            self.tool_choice is not None,
+            self.parallel_tool_calls is not None,
+        )
+        if self.response_mode == SINGLE_FUNCTION_CALL:
+            if not all(function_contract):
+                raise ValueError("single-function mode requires the complete function contract")
+            if any(item is not None for item in structured) or self.strict_structured_output:
+                raise ValueError("single-function mode cannot use structured text")
+            if self.parallel_tool_calls is not False:
+                raise ValueError("single-function mode forbids parallel tool calls")
+        elif any(function_contract):
+            raise ValueError("structured-text mode cannot carry function tools")
 
 
 @dataclass(frozen=True)
@@ -43,6 +89,12 @@ class GatewayResponse:
     provider_response_envelope: Optional[Mapping[str, Any]] = None
     ledger_reservation: Optional[Mapping[str, Any]] = None
     terminal_outcome_replayed: bool = False
+    response_mode: str = STRUCTURED_TEXT
+    output_items: tuple[Mapping[str, Any], ...] = ()
+    function_call_id: Optional[str] = None
+    function_name: Optional[str] = None
+    function_arguments: Optional[str] = None
+    function_arguments_sha256: Optional[str] = None
 
 
 class ModelGateway(Protocol):
@@ -183,6 +235,11 @@ class AsyncProviderModelGateway:
             output_json_schema=request.output_json_schema,
             output_schema_sha256=request.output_schema_sha256,
             strict_structured_output=request.strict_structured_output,
+            response_mode=request.response_mode,
+            function_tools=request.function_tools,
+            function_tools_sha256=request.function_tools_sha256,
+            tool_choice=request.tool_choice,
+            parallel_tool_calls=request.parallel_tool_calls,
         )
         try:
             response, record = self.runner(
@@ -330,6 +387,14 @@ class AsyncProviderModelGateway:
             provider_response_envelope=(
                 response.envelope.to_public_dict() if response.envelope is not None else None
             ),
+            response_mode=response.response_mode,
+            output_items=tuple(
+                item.to_public_dict() for item in response.output_items
+            ),
+            function_call_id=response.function_call_id,
+            function_name=response.function_name,
+            function_arguments=response.function_arguments,
+            function_arguments_sha256=response.function_arguments_sha256,
         )
 
 
@@ -351,6 +416,30 @@ class ReplayModelGateway:
             text = self._responses[request.logical_call_id]
         self.invocations.append(request.logical_call_id)
         elapsed = max(0, (time.perf_counter_ns() - start) // 1_000_000)
+        if request.response_mode == SINGLE_FUNCTION_CALL:
+            value = strict_json_object(text)
+            if set(value) != {"tool", "arguments"}:
+                raise ValueError("credential-free function replay requires legacy tool/arguments fixture")
+            value["arguments"] = _complete_legacy_nullable_arguments(
+                str(value["tool"]), value["arguments"]
+            )
+            function_arguments = json.dumps(
+                value["arguments"], ensure_ascii=False, sort_keys=True, separators=(",", ":")
+            )
+            return GatewayResponse(
+                text="",
+                provider="credential-free-replay",
+                model=self.model,
+                input_tokens=_deterministic_tokens(request.prompt),
+                output_tokens=_deterministic_tokens(text),
+                wall_time_ms=elapsed,
+                paid=False,
+                response_mode=SINGLE_FUNCTION_CALL,
+                function_call_id="replay-" + sha256_bytes(request.logical_call_id.encode())[:24],
+                function_name=value["tool"],
+                function_arguments=function_arguments,
+                function_arguments_sha256=sha256_bytes(function_arguments.encode("utf-8")),
+            )
         return GatewayResponse(
             text=text,
             provider="credential-free-replay",
@@ -417,6 +506,10 @@ class RecordingModelGateway:
                     "output_schema_name": request.output_schema_name,
                     "output_schema_sha256": request.output_schema_sha256,
                     "strict_structured_output": request.strict_structured_output,
+                    "response_mode": request.response_mode,
+                    "function_tools_sha256": request.function_tools_sha256,
+                    "tool_choice": request.tool_choice,
+                    "parallel_tool_calls": request.parallel_tool_calls,
                 },
         )
         try:
@@ -447,9 +540,7 @@ class RecordingModelGateway:
                 ledger_reservation=failure.ledger_reservation,
             )
             self.accounting.add_call(record)
-            self.evidence.append(
-                "model_failure",
-                {
+            failure_payload = {
                     "logical_call_id": request.logical_call_id,
                     "request_sha256": request_sha256,
                     "provider": failure.provider,
@@ -480,10 +571,58 @@ class RecordingModelGateway:
                     "raw_envelope_reference": failure.raw_envelope_reference,
                     "extracted_text_bytes": failure.extracted_text_bytes,
                     "structured_output_bytes": failure.structured_output_bytes,
-                },
-            )
+                }
+            if (
+                request.response_mode == SINGLE_FUNCTION_CALL
+                and failure.status in ACTION_CONTRACT_FAILURE_STATUSES
+            ):
+                self.evidence.append(
+                    "model_response",
+                    {
+                        **failure_payload,
+                        "response_mode": SINGLE_FUNCTION_CALL,
+                        "output_items": list(
+                            (failure.provider_response_envelope or {}).get("output_items", ())
+                        ),
+                        "function_call_id": None,
+                        "function_name": _failure_function_name(failure),
+                        "function_arguments": None,
+                        "function_arguments_sha256": _failure_argument_hash(failure),
+                    },
+                )
+                self.evidence.append(
+                    "action_contract_failure",
+                    {
+                        "task_id": request.task_id,
+                        "arm": request.arm,
+                        "step_no": request.step_no,
+                        "active_node_id": request.active_node_id,
+                        "logical_call_id": request.logical_call_id,
+                        "request_sha256": request_sha256,
+                        "provider_response_id": failure.response_id,
+                        "failure_class": failure.status,
+                        "function_name": _failure_function_name(failure),
+                        "argument_sha256": _failure_argument_hash(failure),
+                        "ledger_reservation": failure.ledger_reservation,
+                    },
+                )
+            else:
+                self.evidence.append("model_failure", failure_payload)
             raise
+        if (
+            request.response_mode == SINGLE_FUNCTION_CALL
+            and response.response_mode == STRUCTURED_TEXT
+            and not response.paid
+        ):
+            response = _adapt_credential_free_legacy_response(
+                request, response
+            )
         response_ref = self.evidence.put_blob(response.text)
+        function_arguments_ref = (
+            self.evidence.put_blob(response.function_arguments)
+            if response.function_arguments is not None
+            else None
+        )
         record = CallRecord(
             task_id=request.task_id,
             arm=request.arm,
@@ -498,7 +637,11 @@ class RecordingModelGateway:
             reasoning_tokens=response.reasoning_tokens,
             wall_time_ms=response.wall_time_ms,
             prompt_hash=prompt_ref["sha256"],
-            response_hash=response_ref["sha256"],
+            response_hash=(
+                response.function_arguments_sha256
+                if response.response_mode == SINGLE_FUNCTION_CALL
+                else response_ref["sha256"]
+            ),
             active_node_id=request.active_node_id,
             paid=response.paid,
             attempt=response.attempt,
@@ -527,9 +670,120 @@ class RecordingModelGateway:
                 "provider_reported_usage_available": response.provider_reported_usage_available,
                 "provider_response_envelope": response.provider_response_envelope,
                 "ledger_reservation": response.ledger_reservation,
+                "response_mode": response.response_mode,
+                "output_items": [dict(item) for item in response.output_items],
+                "function_call_id": (
+                    self.evidence.put_blob(response.function_call_id)
+                    if response.function_call_id is not None
+                    else None
+                ),
+                "function_name": response.function_name,
+                "function_arguments": function_arguments_ref,
+                "function_arguments_sha256": response.function_arguments_sha256,
             },
         )
         return response
+
+
+def _failure_function_name(failure: GatewayInvocationFailure) -> Optional[str]:
+    envelope = failure.provider_response_envelope or {}
+    for item in envelope.get("output_items", ()):
+        if isinstance(item, Mapping) and item.get("item_type") == "function_call":
+            name = item.get("function_name")
+            return name if isinstance(name, str) else None
+    return None
+
+
+def _failure_argument_hash(failure: GatewayInvocationFailure) -> Optional[str]:
+    envelope = failure.provider_response_envelope or {}
+    for item in envelope.get("output_items", ()):
+        if isinstance(item, Mapping) and item.get("item_type") == "function_call":
+            digest = item.get("arguments_sha256")
+            return digest if isinstance(digest, str) else None
+    return None
+
+
+def parse_function_action(
+    response: GatewayResponse,
+    tool_names: set[str],
+) -> tuple[str, dict[str, Any]]:
+    """Validate the native action envelope without altering its arguments."""
+
+    if response.response_mode != SINGLE_FUNCTION_CALL:
+        raise ValueError("SOLVE_EXPECTED_FUNCTION_CALL")
+    if not response.function_call_id:
+        raise ValueError("SOLVE_FUNCTION_CALL_ID_MISSING")
+    if response.function_name not in tool_names:
+        raise ValueError("SOLVE_UNKNOWN_FUNCTION")
+    if not isinstance(response.function_arguments, str):
+        raise ValueError("SOLVE_FUNCTION_ARGUMENT_INVALID_JSON")
+    raw = response.function_arguments.encode("utf-8")
+    if sha256_bytes(raw) != response.function_arguments_sha256:
+        raise ValueError("SOLVE_FUNCTION_ARGUMENT_INVALID_JSON")
+    try:
+        arguments = strict_json_object(response.function_arguments)
+    except ValueError as exc:
+        raise ValueError("SOLVE_FUNCTION_ARGUMENT_INVALID_JSON") from exc
+    try:
+        validate_function_arguments(response.function_name, arguments)
+    except ValueError as exc:
+        raise ValueError("SOLVE_FUNCTION_ARGUMENT_SCHEMA_FAILURE") from exc
+    return response.function_name, arguments
+
+
+def _complete_legacy_nullable_arguments(name: str, value: Any) -> Any:
+    """Adapt immutable pre-D1.6 text fixtures, never live provider output."""
+
+    if not isinstance(value, dict):
+        return value
+    result = dict(value)
+    nullable = {
+        "read_file": ("start_line", "max_lines"),
+        "search": ("path",),
+        "run_command": ("cwd", "timeout_seconds"),
+    }
+    for field in nullable.get(name, ()):
+        result.setdefault(field, None)
+    if name == "revise_subtask_dag":
+        rows = []
+        for original in result.get("new_subtasks", ()):
+            row = dict(original) if isinstance(original, Mapping) else original
+            if isinstance(row, dict):
+                for field in (
+                    "preconditions", "invariants", "files", "symbols", "apis",
+                    "errors", "tests", "required_memory_facets",
+                ):
+                    row.setdefault(field, None)
+            rows.append(row)
+        result["new_subtasks"] = rows
+    return result
+
+
+def _adapt_credential_free_legacy_response(
+    request: GatewayRequest, response: GatewayResponse
+) -> GatewayResponse:
+    """Keep old fake/replay fixtures usable without weakening the paid path."""
+
+    value = strict_json_object(response.text)
+    if set(value) != {"tool", "arguments"}:
+        raise ValueError("credential-free function replay requires tool/arguments")
+    arguments = _complete_legacy_nullable_arguments(
+        str(value["tool"]), value["arguments"]
+    )
+    raw = json.dumps(
+        arguments, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    )
+    return replace(
+        response,
+        text="",
+        response_mode=SINGLE_FUNCTION_CALL,
+        function_call_id="replay-" + sha256_bytes(
+            request.logical_call_id.encode("utf-8")
+        )[:24],
+        function_name=str(value["tool"]),
+        function_arguments=raw,
+        function_arguments_sha256=sha256_bytes(raw.encode("utf-8")),
+    )
 
 
 def strict_json_object(raw: str) -> dict:

@@ -5,6 +5,10 @@ from dataclasses import dataclass, field
 from typing import Any, List, Mapping, Optional, Tuple
 
 
+STRUCTURED_TEXT = "STRUCTURED_TEXT"
+SINGLE_FUNCTION_CALL = "SINGLE_FUNCTION_CALL"
+
+
 class ProviderError(Exception):
     """Transport/5xx/exhaustion failure. Never carries the API key. Carries the accounting record so the
     caller can persist a LogicalModelCall on every outcome, not only success."""
@@ -58,6 +62,11 @@ class ModelRequest:
     output_json_schema: Optional[Mapping[str, Any]] = None
     output_schema_sha256: Optional[str] = None
     strict_structured_output: bool = False
+    response_mode: str = STRUCTURED_TEXT
+    function_tools: Tuple[Mapping[str, Any], ...] = ()
+    function_tools_sha256: Optional[str] = None
+    tool_choice: Optional[Any] = None
+    parallel_tool_calls: Optional[bool] = None
 
     def __post_init__(self) -> None:
         contract = (
@@ -71,6 +80,95 @@ class ModelRequest:
             raise ValueError("structured output contract fields must be supplied together")
         if self.strict_structured_output and not all(value is not None for value in contract):
             raise ValueError("strict structured output requires a complete output contract")
+        if self.response_mode not in {STRUCTURED_TEXT, SINGLE_FUNCTION_CALL}:
+            raise ValueError("unknown response mode")
+        function_contract = (
+            bool(self.function_tools),
+            self.function_tools_sha256 is not None,
+            self.tool_choice is not None,
+            self.parallel_tool_calls is not None,
+        )
+        if self.response_mode == SINGLE_FUNCTION_CALL:
+            if not all(function_contract):
+                raise ValueError("single-function mode requires the complete function contract")
+            if any(value is not None for value in contract) or self.strict_structured_output:
+                raise ValueError("single-function mode cannot use text structured output")
+            if self.parallel_tool_calls is not False:
+                raise ValueError("single-function mode forbids parallel tool calls")
+        elif any(function_contract):
+            raise ValueError("structured-text mode cannot carry function tools")
+
+
+@dataclass(frozen=True)
+class ProviderOutputItem:
+    index: int
+    item_id: Optional[str]
+    item_type: str
+    raw_json: str
+    raw_json_bytes: int
+    raw_json_sha256: str
+
+    def to_public_dict(self) -> dict[str, Any]:
+        return {
+            "index": self.index,
+            "item_type": self.item_type,
+            "raw_json_bytes": self.raw_json_bytes,
+            "raw_json_sha256": self.raw_json_sha256,
+        }
+
+
+@dataclass(frozen=True)
+class ProviderMessageItem(ProviderOutputItem):
+    content_item_count: int
+    content_item_types: Tuple[str, ...]
+    text_item_count: int
+    text: str
+    text_bytes: int
+    text_sha256: Optional[str]
+
+    def to_public_dict(self) -> dict[str, Any]:
+        return {
+            **super().to_public_dict(),
+            "content_item_count": self.content_item_count,
+            "content_item_types": list(self.content_item_types),
+            "text_item_count": self.text_item_count,
+            "text_bytes": self.text_bytes,
+            "text_sha256": self.text_sha256,
+        }
+
+
+@dataclass(frozen=True)
+class ProviderFunctionCall(ProviderOutputItem):
+    function_name: Optional[str]
+    call_id: Optional[str]
+    arguments: str
+    argument_bytes: int
+    arguments_sha256: str
+
+    def to_public_dict(self) -> dict[str, Any]:
+        return {
+            **super().to_public_dict(),
+            "function_name": self.function_name,
+            "argument_bytes": self.argument_bytes,
+            "arguments_sha256": self.arguments_sha256,
+        }
+
+
+@dataclass(frozen=True)
+class ProviderRefusalItem:
+    output_index: int
+    content_index: int
+    refusal: str
+    refusal_bytes: int
+    refusal_sha256: str
+
+    def to_public_dict(self) -> dict[str, Any]:
+        return {
+            "output_index": self.output_index,
+            "content_index": self.content_index,
+            "refusal_bytes": self.refusal_bytes,
+            "refusal_sha256": self.refusal_sha256,
+        }
 
 
 @dataclass(frozen=True)
@@ -114,6 +212,7 @@ class ProviderResponseEnvelope:
     response_error_param: Optional[str] = None
     response_error_message_bytes: Optional[int] = None
     retry_decision: str = "stop"
+    output_items: Tuple[Mapping[str, Any], ...] = ()
 
     @property
     def provider_reported_usage_available(self) -> bool:
@@ -173,6 +272,7 @@ class ProviderResponseEnvelope:
             "parsing_stage": self.parsing_stage,
             "terminal_classification": self.terminal_classification,
             "retry_decision": self.retry_decision,
+            "output_items": [dict(item) for item in self.output_items],
         }
 
 
@@ -186,6 +286,12 @@ class ModelResponse:
     output_tokens: Optional[int]
     total_tokens: Optional[int]
     envelope: Optional[ProviderResponseEnvelope] = None
+    response_mode: str = STRUCTURED_TEXT
+    output_items: Tuple[ProviderOutputItem, ...] = ()
+    function_call_id: Optional[str] = None
+    function_name: Optional[str] = None
+    function_arguments: Optional[str] = None
+    function_arguments_sha256: Optional[str] = None
 
 
 @dataclass

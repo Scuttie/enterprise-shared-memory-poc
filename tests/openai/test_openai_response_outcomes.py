@@ -10,7 +10,11 @@ import sys
 
 import pytest
 
-from enterprise_memory.providers.base import ModelRequest, ProviderError
+from enterprise_memory.providers.base import (
+    ModelRequest,
+    ProviderError,
+    SINGLE_FUNCTION_CALL,
+)
 from enterprise_memory.providers.openai_responses import (
     OpenAIResponsesProvider,
     RestrictedProviderResponseStore,
@@ -28,6 +32,10 @@ from enterprise_memory.trimem.provider_output_contracts import (
     schema_sha256,
 )
 from enterprise_memory.trimem.runtime_lock import RuntimeLock
+from enterprise_memory.trimem.function_tools import (
+    FUNCTION_TOOLS_SHA256,
+    detached_function_tools,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -98,12 +106,18 @@ def extraction_value():
 
 
 def completed(text: str, *, usage=True, output=None, status="completed", **extra):
+    if output is None:
+        output = [{
+            "id": "msg-1",
+            "type": "message",
+            "content": [{"type": "output_text", "text": text}] if text else [],
+        }]
     value = {
         "id": "resp-body",
         "status": status,
         "model": MODEL,
         "output_text": text,
-        "output": output or [],
+        "output": output,
         **extra,
     }
     if usage:
@@ -130,7 +144,14 @@ def request(kind="decompose"):
     contract = output_contract(
         "trimem_decomposition_v1" if kind == "decompose" else "trimem_experience_extraction_v1"
     ) if kind != "solve" else {}
-    return ModelRequest([{"role": "user", "content": "fixture prompt"}], 8192 if kind != "solve" else 2048, **contract)
+    native = ({
+        "response_mode": SINGLE_FUNCTION_CALL,
+        "function_tools": detached_function_tools(),
+        "function_tools_sha256": FUNCTION_TOOLS_SHA256,
+        "tool_choice": "required",
+        "parallel_tool_calls": False,
+    } if kind == "solve" else {})
+    return ModelRequest([{"role": "user", "content": "fixture prompt"}], 8192 if kind != "solve" else 2048, **contract, **native)
 
 
 def invoke_direct(p, req=None):
@@ -355,17 +376,18 @@ def test_extraction_request_contains_exact_strict_schema(tmp_path):
     )
 
 
-def test_solve_request_remains_unstructured_and_byte_compatible(tmp_path):
-    p, client, _ = provider(tmp_path, completed('{"tool":"list_files","arguments":{}}'))
+def test_solve_request_uses_frozen_native_function_contract(tmp_path):
+    output = [{
+        "id": "fc-1", "type": "function_call", "call_id": "call-1",
+        "name": "list_files", "arguments": "{}",
+    }]
+    p, client, _ = provider(tmp_path, completed("", output=output))
     invoke_direct(p, request("solve"))
     body = client.calls[0]["body"]
     assert "text" not in body
-    assert body == {
-        "model": MODEL,
-        "input": [{"role": "user", "content": "fixture prompt"}],
-        "max_output_tokens": 2048,
-        "reasoning": {"effort": "medium"},
-    }
+    assert body["tools"] == list(detached_function_tools())
+    assert body["tool_choice"] == "required"
+    assert body["parallel_tool_calls"] is False
 
 
 def test_all_arms_share_role_contracts_and_output_ceilings():
@@ -377,3 +399,104 @@ def test_all_arms_share_role_contracts_and_output_ceilings():
     assert len({row.output_schema_sha256 for row in decompose}) == 1
     assert len({row.output_schema_sha256 for row in extract}) == 1
     assert {row.max_output_tokens for row in decompose + extract} == {8192}
+
+
+def function_item(
+    *, name="list_files", arguments="{}", call_id="call-1", item_id="fc-1"
+):
+    row = {
+        "id": item_id,
+        "type": "function_call",
+        "name": name,
+        "arguments": arguments,
+    }
+    if call_id is not None:
+        row["call_id"] = call_id
+    return row
+
+
+def test_d16_three_message_fixture_preserves_boundaries_and_never_flattens(tmp_path):
+    fragments = (
+        '{"tool":"list_files","arguments":{}}',
+        '{"tool":"read_file","arguments":{"path":"x"}}',
+        '{"tool":"complete_subtask","arguments":{"evidence":"x"}}',
+    )
+    output = [
+        {"id": f"msg-{index}", "type": "message", "content": [
+            {"type": "output_text", "text": fragment}
+        ]}
+        for index, fragment in enumerate(fragments)
+    ]
+    p, _, _ = provider(tmp_path, completed("", output=output))
+    with pytest.raises(ProviderError) as captured:
+        invoke_direct(p)
+    envelope = captured.value.record.response_envelope
+    assert envelope.terminal_classification == "RESPONSE_MULTIPLE_MESSAGE_ITEMS"
+    assert len(envelope.output_items) == 3
+    assert [item["text_sha256"] for item in envelope.output_items] == [
+        hashlib.sha256(fragment.encode()).hexdigest() for fragment in fragments
+    ]
+    assert "".join(fragments) not in json.dumps(envelope.to_public_dict())
+
+
+@pytest.mark.parametrize(
+    ("output", "classification"),
+    [
+        ([], "SOLVE_EXPECTED_FUNCTION_CALL"),
+        ([function_item(item_id="a"), function_item(item_id="b", call_id="call-2")],
+         "SOLVE_MULTIPLE_FUNCTION_CALLS"),
+        ([{"id": "msg", "type": "message", "content": [
+            {"type": "output_text", "text": "prose"}
+        ]}], "SOLVE_UNEXPECTED_MESSAGE_OUTPUT"),
+        ([function_item(), {"id": "msg", "type": "message", "content": [
+            {"type": "output_text", "text": "prose"}
+        ]}], "SOLVE_UNEXPECTED_MESSAGE_OUTPUT"),
+        ([function_item(call_id=None)], "SOLVE_FUNCTION_CALL_ID_MISSING"),
+        ([function_item(name="not_a_tool")], "SOLVE_UNKNOWN_FUNCTION"),
+        ([function_item(arguments='{"path":"x","path":"y"}', name="read_file")],
+         "SOLVE_FUNCTION_ARGUMENT_INVALID_JSON"),
+        ([function_item(arguments='{"path":"x"}', name="read_file")],
+         "SOLVE_FUNCTION_ARGUMENT_SCHEMA_FAILURE"),
+    ],
+)
+def test_d16_native_function_failure_classes(tmp_path, output, classification):
+    p, _, _ = provider(tmp_path, completed("", output=output))
+    with pytest.raises(ProviderError) as captured:
+        invoke_direct(p, request("solve"))
+    assert captured.value.record.final_status == classification
+
+
+def test_d16_reasoning_plus_one_function_call_succeeds(tmp_path):
+    output = [
+        {"id": "reason", "type": "reasoning", "summary": []},
+        function_item(),
+    ]
+    p, _, _ = provider(tmp_path, completed("", output=output))
+    response, record = invoke_direct(p, request("solve"))
+    assert response.function_name == "list_files"
+    assert response.function_arguments == "{}"
+    assert response.function_call_id == "call-1"
+    assert record.final_status == "success"
+
+
+def test_d16_every_function_schema_is_recursive_strict_and_top_level_complete():
+    def walk(node):
+        if node.get("type") == "object":
+            assert node.get("additionalProperties") is False
+            assert set(node.get("required", ())) == set(node.get("properties", {}))
+            for child in node.get("properties", {}).values():
+                walk(child)
+        for option in node.get("anyOf", ()):
+            walk(option)
+        items = node.get("items")
+        if isinstance(items, dict):
+            walk(items)
+
+    tools = detached_function_tools()
+    assert len(tools) == 9
+    for tool in tools:
+        assert tool["type"] == "function" and tool["strict"] is True
+        walk(tool["parameters"])
+    assert hashlib.sha256(
+        json.dumps(tools, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest() == FUNCTION_TOOLS_SHA256

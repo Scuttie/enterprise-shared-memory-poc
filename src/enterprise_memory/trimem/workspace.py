@@ -421,7 +421,7 @@ def _validated_command_arguments(arguments: Mapping[str, Any]) -> tuple[tuple[st
         cwd = None
     elif cwd is not None:
         cwd = _safe_path(cwd)
-    timeout = arguments.get("timeout_seconds", 120)
+    timeout = arguments.get("timeout_seconds") or 120
     if isinstance(timeout, bool) or not isinstance(timeout, int) or not 1 <= timeout <= 120:
         raise ToolExecutionError("timeout_seconds must be an integer in 1..120")
     return tuple(argv), cwd, timeout
@@ -471,7 +471,7 @@ def _validated_dag_revision_arguments(arguments: object) -> dict[str, Any]:
             "predicted_operation": row["predicted_operation"].strip(),
         }
         for name in ("depends_on", *sorted(optional)):
-            value = row.get(name, [])
+            value = row.get(name) or []
             if (
                 not isinstance(value, list)
                 or any(not isinstance(item, str) or not item.strip() for item in value)
@@ -502,8 +502,8 @@ def _validated_dag_revision_arguments(arguments: object) -> dict[str, Any]:
 
 
 def _line_window(path: str, content: str, arguments: Mapping[str, Any]) -> dict[str, Any]:
-    start = arguments.get("start_line", 1)
-    maximum = arguments.get("max_lines", 400)
+    start = arguments.get("start_line") or 1
+    maximum = arguments.get("max_lines") or 400
     if isinstance(start, bool) or not isinstance(start, int) or start < 1:
         raise ToolExecutionError("start_line must be a positive integer")
     if isinstance(maximum, bool) or not isinstance(maximum, int) or not 1 <= maximum <= 2000:

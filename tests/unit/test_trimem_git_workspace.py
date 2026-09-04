@@ -563,12 +563,11 @@ def test_git_runtime_folds_forward_durable_model_failure_without_retry(tmp_path)
             failure_call=logical_id, failure_status=terminal
         ),
     )
-    with pytest.raises(GatewayInvocationFailure, match=terminal):
-        runtime.run(task, arm="M0")
-    with pytest.raises(GatewayInvocationFailure, match=terminal):
-        runtime.run(task, arm="M0", resume=True)
-    with pytest.raises(GatewayInvocationFailure, match=terminal):
-        runtime.run(task, arm="M0", resume=True)
+    result = runtime.run(task, arm="M0")
+    assert result.model_failure_class == terminal
+    assert result.cell_status == "CELL_SCIENTIFIC_FAILURE"
+    resumed = runtime.run(task, arm="M0", resume=True)
+    assert resumed.model_failure_class == terminal
     assert gateway.invocations.count(logical_id) == 1
     events = _events(evidence)
     assert sum(
@@ -581,6 +580,7 @@ def test_git_runtime_folds_forward_durable_model_failure_without_retry(tmp_path)
         and row["payload"].get("logical_call_id") == logical_id
         for row in events
     ) == 1
+    assert sum(row["event_type"] == "grader_result" for row in events) == 1
     checkpoint = runtime.checkpoints.load(
         "git-crash-matrix-M0", required_config_hashes=None
     )

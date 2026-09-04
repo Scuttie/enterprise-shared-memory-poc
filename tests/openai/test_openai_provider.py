@@ -43,6 +43,8 @@ class FakeSecrets:
 
 def ok_body(model="gpt-5.6-terra", text="```python\nprint(1)\n```", rt=64):
     return {"id": "resp_1", "model": model, "status": "completed", "output_text": text,
+            "output": [{"id": "msg-1", "type": "message",
+                        "content": [{"type": "output_text", "text": text}]}],
             "usage": {"input_tokens": 100, "output_tokens": 50, "total_tokens": 150,
                       "output_tokens_details": {"reasoning_tokens": rt},
                       "input_tokens_details": {"cached_tokens": 10}}}

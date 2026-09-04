@@ -21,7 +21,13 @@ from .base import (
     ParserError,
     PolicyRejection,
     ProviderError,
+    ProviderFunctionCall,
+    ProviderMessageItem,
+    ProviderOutputItem,
+    ProviderRefusalItem,
     ProviderResponseEnvelope,
+    SINGLE_FUNCTION_CALL,
+    STRUCTURED_TEXT,
 )
 from .redaction import sanitize
 from .openai_credential import (
@@ -143,7 +149,14 @@ class OpenAIResponsesProvider(CodingModelProvider):
             "input": [{"role": "user", "content": request.messages[-1]["content"]}],
             "max_output_tokens": request.max_output_tokens,
         }
-        if request.output_json_schema is not None:
+        if request.response_mode == SINGLE_FUNCTION_CALL:
+            digest = hashlib.sha256(_canonical_bytes(request.function_tools)).hexdigest()
+            if digest != request.function_tools_sha256:
+                raise InvalidRequestError("function-tool schema hash mismatch")
+            body["tools"] = json.loads(_canonical_bytes(request.function_tools))
+            body["tool_choice"] = request.tool_choice
+            body["parallel_tool_calls"] = request.parallel_tool_calls
+        elif request.output_json_schema is not None:
             digest = hashlib.sha256(_canonical_bytes(request.output_json_schema)).hexdigest()
             if digest != request.output_schema_sha256:
                 raise InvalidRequestError("structured output schema hash mismatch")
@@ -181,38 +194,92 @@ class OpenAIResponsesProvider(CodingModelProvider):
     def _extract_observations(data: Mapping[str, Any]) -> dict[str, Any]:
         output_types: list[str] = []
         content_types: list[str] = []
-        text_parts: list[str] = []
-        refusals: list[str] = []
+        output_items: list[ProviderOutputItem] = []
+        messages: list[ProviderMessageItem] = []
+        function_calls: list[ProviderFunctionCall] = []
+        refusals: list[ProviderRefusalItem] = []
         output = data.get("output")
         if isinstance(output, list):
-            for item in output:
+            for index, item in enumerate(output):
                 if not isinstance(item, Mapping):
                     continue
                 item_type = item.get("type")
-                if isinstance(item_type, str):
-                    output_types.append(item_type)
-                content = item.get("content")
-                if not isinstance(content, list):
+                if not isinstance(item_type, str):
                     continue
-                for part in content:
-                    if not isinstance(part, Mapping):
-                        continue
-                    content_type = part.get("type")
-                    if isinstance(content_type, str):
+                output_types.append(item_type)
+                item_raw = _canonical_bytes(item)
+                common = {
+                    "index": index,
+                    "item_id": item.get("id") if isinstance(item.get("id"), str) else None,
+                    "item_type": item_type,
+                    "raw_json": item_raw.decode("utf-8"),
+                    "raw_json_bytes": len(item_raw),
+                    "raw_json_sha256": hashlib.sha256(item_raw).hexdigest(),
+                }
+                if item_type == "message":
+                    content = item.get("content")
+                    content = content if isinstance(content, list) else []
+                    message_content_types: list[str] = []
+                    message_text_parts: list[str] = []
+                    for content_index, part in enumerate(content):
+                        if not isinstance(part, Mapping):
+                            continue
+                        content_type = part.get("type")
+                        if not isinstance(content_type, str):
+                            continue
                         content_types.append(content_type)
-                    if content_type in {"output_text", "text"} and isinstance(part.get("text"), str):
-                        text_parts.append(part["text"])
-                    if content_type == "refusal":
-                        refusal = part.get("refusal", part.get("text", ""))
-                        if isinstance(refusal, str):
-                            refusals.append(refusal)
-        if not text_parts and isinstance(data.get("output_text"), str):
-            text_parts.append(data["output_text"])
+                        message_content_types.append(content_type)
+                        if content_type in {"output_text", "text"} and isinstance(part.get("text"), str):
+                            message_text_parts.append(part["text"])
+                        if content_type == "refusal":
+                            refusal = part.get("refusal", part.get("text", ""))
+                            if isinstance(refusal, str):
+                                refusal_raw = refusal.encode("utf-8")
+                                refusals.append(ProviderRefusalItem(
+                                    output_index=index,
+                                    content_index=content_index,
+                                    refusal=refusal,
+                                    refusal_bytes=len(refusal_raw),
+                                    refusal_sha256=hashlib.sha256(refusal_raw).hexdigest(),
+                                ))
+                    message_text = "".join(message_text_parts)
+                    message_raw = message_text.encode("utf-8")
+                    record = ProviderMessageItem(
+                        **common,
+                        content_item_count=len(content),
+                        content_item_types=tuple(message_content_types),
+                        text_item_count=len(message_text_parts),
+                        text=message_text,
+                        text_bytes=len(message_raw),
+                        text_sha256=(
+                            hashlib.sha256(message_raw).hexdigest() if message_raw else None
+                        ),
+                    )
+                    messages.append(record)
+                    output_items.append(record)
+                elif item_type == "function_call":
+                    arguments = item.get("arguments")
+                    arguments = arguments if isinstance(arguments, str) else ""
+                    argument_raw = arguments.encode("utf-8")
+                    record = ProviderFunctionCall(
+                        **common,
+                        function_name=item.get("name") if isinstance(item.get("name"), str) else None,
+                        call_id=item.get("call_id") if isinstance(item.get("call_id"), str) else None,
+                        arguments=arguments,
+                        argument_bytes=len(argument_raw),
+                        arguments_sha256=hashlib.sha256(argument_raw).hexdigest(),
+                    )
+                    function_calls.append(record)
+                    output_items.append(record)
+                else:
+                    output_items.append(ProviderOutputItem(**common))
         return {
             "output_item_types": tuple(output_types),
             "content_item_types": tuple(content_types),
-            "text": "".join(text_parts),
-            "refusal": "".join(refusals),
+            "output_items": tuple(output_items),
+            "messages": tuple(messages),
+            "function_calls": tuple(function_calls),
+            "refusals": tuple(refusals),
         }
 
     def _persist_raw(self, raw: bytes, logical_request_id: str) -> str:
@@ -267,10 +334,24 @@ class OpenAIResponsesProvider(CodingModelProvider):
         error_message = error.get("message")
         incomplete = data.get("incomplete_details")
         incomplete = incomplete if isinstance(incomplete, Mapping) else {}
-        text = observations.get("text") if isinstance(observations.get("text"), str) else ""
-        refusal = observations.get("refusal") if isinstance(observations.get("refusal"), str) else ""
-        text_raw = text.encode("utf-8")
-        refusal_raw = refusal.encode("utf-8")
+        messages = tuple(observations.get("messages", ()))
+        refusals = tuple(observations.get("refusals", ()))
+        message_bytes = sum(item.text_bytes for item in messages)
+        message_hash = (
+            messages[0].text_sha256
+            if len(messages) == 1
+            else hashlib.sha256(_canonical_bytes([
+                item.text_sha256 for item in messages
+            ])).hexdigest() if messages else None
+        )
+        refusal_bytes = sum(item.refusal_bytes for item in refusals)
+        refusal_hash = (
+            refusals[0].refusal_sha256
+            if len(refusals) == 1
+            else hashlib.sha256(_canonical_bytes([
+                item.refusal_sha256 for item in refusals
+            ])).hexdigest() if refusals else None
+        )
         return ProviderResponseEnvelope(
             schema_version=_ENVELOPE_SCHEMA,
             logical_request_id=logical_request_id,
@@ -297,15 +378,13 @@ class OpenAIResponsesProvider(CodingModelProvider):
             ),
             output_item_types=tuple(observations.get("output_item_types", ())),
             content_item_types=tuple(observations.get("content_item_types", ())),
-            refusal_present=bool(refusal),
-            refusal_bytes=len(refusal_raw),
-            refusal_sha256=hashlib.sha256(refusal_raw).hexdigest() if refusal_raw else None,
-            extracted_text_bytes=len(text_raw),
-            extracted_text_sha256=hashlib.sha256(text_raw).hexdigest() if text_raw else None,
-            structured_output_bytes=len(text_raw) if structured else 0,
-            structured_output_sha256=(
-                hashlib.sha256(text_raw).hexdigest() if structured and text_raw else None
-            ),
+            refusal_present=bool(refusals),
+            refusal_bytes=refusal_bytes,
+            refusal_sha256=refusal_hash,
+            extracted_text_bytes=message_bytes,
+            extracted_text_sha256=message_hash,
+            structured_output_bytes=message_bytes if structured else 0,
+            structured_output_sha256=message_hash if structured else None,
             input_tokens=usage["input_tokens"],
             cached_input_tokens=usage["cached_input_tokens"],
             output_tokens=usage["output_tokens"],
@@ -317,6 +396,9 @@ class OpenAIResponsesProvider(CodingModelProvider):
             parsing_stage=parsing_stage,
             terminal_classification=classification,
             retry_decision=retry_decision,
+            output_items=tuple(
+                item.to_public_dict() for item in observations.get("output_items", ())
+            ),
         )
 
     async def generate(
@@ -447,6 +529,10 @@ class OpenAIResponsesProvider(CodingModelProvider):
             if isinstance(incomplete, Mapping) and isinstance(incomplete.get("reason"), str)
             else None
         )
+        messages = tuple(observations.get("messages", ()))
+        function_calls = tuple(observations.get("function_calls", ()))
+        refusals = tuple(observations.get("refusals", ()))
+        nonempty_messages = tuple(item for item in messages if item.text_bytes > 0)
         if status == "failed":
             classification, parsing_stage = "RESPONSE_FAILED", "RESPONSE_STATUS"
         elif status == "incomplete":
@@ -457,13 +543,24 @@ class OpenAIResponsesProvider(CodingModelProvider):
             else:
                 classification = "RESPONSE_INCOMPLETE_OTHER"
             parsing_stage = "RESPONSE_STATUS"
-        elif observations["refusal"]:
+        elif refusals:
             classification, parsing_stage = "RESPONSE_REFUSAL", "RESPONSE_CONTENT"
-        elif status == "completed" and observations["text"]:
+        elif status == "completed" and request.response_mode == SINGLE_FUNCTION_CALL:
+            if nonempty_messages:
+                classification = "SOLVE_UNEXPECTED_MESSAGE_OUTPUT"
+            elif len(function_calls) == 0:
+                classification = "SOLVE_EXPECTED_FUNCTION_CALL"
+            elif len(function_calls) > 1:
+                classification = "SOLVE_MULTIPLE_FUNCTION_CALLS"
+            else:
+                classification = "SUCCESS"
+            parsing_stage = "SINGLE_FUNCTION_CALL"
+        elif status == "completed" and len(messages) > 1:
+            classification = "RESPONSE_MULTIPLE_MESSAGE_ITEMS"
+            parsing_stage = "RESPONSE_ITEM_BOUNDARY"
+        elif status == "completed" and len(messages) == 1 and messages[0].text_bytes > 0:
             classification = "SUCCESS"
-            parsing_stage = (
-                "STRUCTURED_OUTPUT_SCHEMA" if request.output_json_schema is not None else "OUTPUT_TEXT"
-            )
+            parsing_stage = "STRUCTURED_OUTPUT_SCHEMA"
         elif status == "completed":
             classification = "RESPONSE_COMPLETED_WITHOUT_CONSUMABLE_OUTPUT"
             parsing_stage = "RESPONSE_CONTENT"
@@ -485,10 +582,10 @@ class OpenAIResponsesProvider(CodingModelProvider):
             error_code=None if classification == "SUCCESS" else classification,
         ))
 
-        def record(final_classification: str, *, response_hash=None):
+        def record(final_classification: str, *, response_hash=None, stage=None):
             final_envelope = envelope if envelope.terminal_classification == final_classification else replace(
                 envelope, terminal_classification=final_classification,
-                parsing_stage="STRUCTURED_OUTPUT_SCHEMA",
+                parsing_stage=stage or parsing_stage,
             )
             return self._rec(
                 logical_request_id, prompt_hash, attempt, attempts, retry_reasons, t0,
@@ -508,8 +605,65 @@ class OpenAIResponsesProvider(CodingModelProvider):
             raise PolicyRejection("provider response contained a refusal", record(classification))
         if classification == "RESPONSE_COMPLETED_WITHOUT_CONSUMABLE_OUTPUT":
             raise ParserError("completed response had no consumable output", record(classification))
+        if classification in {
+            "RESPONSE_MULTIPLE_MESSAGE_ITEMS",
+            "SOLVE_EXPECTED_FUNCTION_CALL",
+            "SOLVE_MULTIPLE_FUNCTION_CALLS",
+            "SOLVE_UNEXPECTED_MESSAGE_OUTPUT",
+        }:
+            raise ParserError("provider response violated the output-item contract", record(classification))
 
-        text = observations["text"]
+        if request.response_mode == SINGLE_FUNCTION_CALL:
+            function_call = function_calls[0]
+            if not function_call.call_id:
+                raise ParserError(
+                    "function call omitted call_id",
+                    record("SOLVE_FUNCTION_CALL_ID_MISSING", stage="SINGLE_FUNCTION_CALL"),
+                )
+            allowed = {
+                item.get("name") for item in request.function_tools if isinstance(item, Mapping)
+            }
+            if function_call.function_name not in allowed:
+                raise ParserError(
+                    "function call selected an unknown function",
+                    record("SOLVE_UNKNOWN_FUNCTION", stage="SINGLE_FUNCTION_CALL"),
+                )
+            try:
+                arguments = _strict_json_object(function_call.arguments.encode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+                raise ParserError(
+                    "function arguments were not one strict JSON object",
+                    record("SOLVE_FUNCTION_ARGUMENT_INVALID_JSON", stage="SINGLE_FUNCTION_CALL"),
+                ) from None
+            from enterprise_memory.trimem.function_tools import validate_function_arguments
+
+            try:
+                validate_function_arguments(str(function_call.function_name), arguments)
+            except ValueError:
+                raise ParserError(
+                    "function arguments violated the frozen schema",
+                    record("SOLVE_FUNCTION_ARGUMENT_SCHEMA_FAILURE", stage="SINGLE_FUNCTION_CALL"),
+                ) from None
+            response_hash = function_call.arguments_sha256
+            rec = record("SUCCESS", response_hash=response_hash)
+            return ModelResponse(
+                text="",
+                finish_reason=status,
+                returned_model=envelope.response_model,
+                provider_request_id=request_id,
+                input_tokens=usage["input_tokens"],
+                output_tokens=usage["output_tokens"],
+                total_tokens=usage["total_tokens"],
+                envelope=rec.response_envelope,
+                response_mode=SINGLE_FUNCTION_CALL,
+                output_items=tuple(observations.get("output_items", ())),
+                function_call_id=function_call.call_id,
+                function_name=function_call.function_name,
+                function_arguments=function_call.arguments,
+                function_arguments_sha256=function_call.arguments_sha256,
+            ), rec
+
+        text = messages[0].text
         if request.output_json_schema is not None:
             from enterprise_memory.trimem.provider_output_contracts import validate_structured_value
 
@@ -530,6 +684,8 @@ class OpenAIResponsesProvider(CodingModelProvider):
             provider_request_id=request_id, input_tokens=usage["input_tokens"],
             output_tokens=usage["output_tokens"], total_tokens=usage["total_tokens"],
             envelope=rec.response_envelope,
+            response_mode=STRUCTURED_TEXT,
+            output_items=tuple(observations.get("output_items", ())),
         ), rec
 
     def _rec(

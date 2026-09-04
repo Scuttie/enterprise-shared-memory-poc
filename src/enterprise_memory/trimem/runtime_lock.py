@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Mapping
 
 from .accounting import canonical_bytes, sha256_bytes
+from .function_tools import FUNCTION_TOOLS_SHA256, detached_function_tools
 
 
 DECOMPOSITION_PROMPT = """You decompose a coding task into evidence-grounded semantic subtasks.
@@ -16,7 +17,7 @@ Use only the public task and repository snapshot supplied below. Never infer hid
 """
 
 SOLVE_PROMPT = """You are a repository coding agent. Work only on the ACTIVE semantic subtask.
-Use one tool action per response and return strict JSON with exactly `tool` and `arguments`.
+Select exactly one of the provided native function tools on every response. Do not emit assistant prose.
 Use replace_text for modifications to an existing file. Use write_file only for a new file or an
 intentionally complete small-file replacement. Never emit a full large existing file merely to
 change a local span.
@@ -40,6 +41,7 @@ or version-specific literal and its non-applicability boundary is explicit.
 ACTION_PARSER = {
     "name": "trimem-strict-json-action-parser",
     "version": "1.0.0",
+    "scope": "immutable historical replay only (_001 through _006)",
     "unknown_fields": "reject",
     "duplicate_json_keys": "reject",
 }
@@ -129,12 +131,24 @@ class RuntimeLock:
     def parser_hash(self) -> str:
         return sha256_bytes(canonical_bytes(self.action_parser))
 
+    @property
+    def function_tools(self) -> tuple[Mapping[str, Any], ...]:
+        return detached_function_tools()
+
+    @property
+    def function_tools_sha256(self) -> str:
+        return FUNCTION_TOOLS_SHA256
+
     def to_manifest(self) -> dict[str, Any]:
         return {
             "version": self.version,
             "prompt_hashes": self.prompt_hashes,
             "tool_hash": self.tool_hash,
             "parser_hash": self.parser_hash,
+            "live_solve_response_mode": "SINGLE_FUNCTION_CALL",
+            "function_tools_sha256": self.function_tools_sha256,
+            "tool_choice": "required",
+            "parallel_tool_calls": False,
             "limits": asdict(self.limits),
         }
 

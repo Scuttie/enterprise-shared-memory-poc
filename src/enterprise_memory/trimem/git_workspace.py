@@ -554,8 +554,8 @@ class GitCheckoutWorkspace:
         return sorted(item for item in values if item)
 
     def _read_file_window(self, path: Path, arguments: Mapping[str, Any]) -> dict[str, Any]:
-        start = arguments.get("start_line", 1)
-        maximum = arguments.get("max_lines", 400)
+        start = arguments.get("start_line") or 1
+        maximum = arguments.get("max_lines") or 400
         if isinstance(start, bool) or not isinstance(start, int) or start < 1:
             raise ToolExecutionError("start_line must be a positive integer")
         if isinstance(maximum, bool) or not isinstance(maximum, int) or not 1 <= maximum <= 2000:
@@ -752,7 +752,7 @@ def _validated_command_arguments(
         cwd = None
     elif cwd is not None:
         cwd = _safe_relative(cwd)
-    timeout = arguments.get("timeout_seconds", 120)
+    timeout = arguments.get("timeout_seconds") or 120
     if isinstance(timeout, bool) or not isinstance(timeout, int) or not 1 <= timeout <= 120:
         raise ToolExecutionError("timeout_seconds must be an integer in 1..120")
     return tuple(argv), cwd, timeout

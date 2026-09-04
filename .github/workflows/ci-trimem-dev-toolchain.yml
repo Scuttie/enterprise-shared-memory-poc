@@ -1,5 +1,5 @@
 name: TriMem V1 credential-free DEV toolchain rehearsal
-# D1.5 exact-head pre-execution credential-free gate.
+# D1.6 exact-head pre-execution credential-free gate.
 
 on:
   push:

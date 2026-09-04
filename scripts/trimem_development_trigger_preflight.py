@@ -200,6 +200,16 @@ HARD_CAPS = {
     "total_usd": 50.0,
     "uncached_token_cost_ceiling_usd": 48.233664,
 }
+D16_GLOBAL_HARD_CAPS = {
+    **HARD_CAPS,
+    "input_tokens": 36_004_096,
+    "model_calls": 1_873,
+    "output_tokens": 4_720_640,
+    "paid_model_calls": 1_873,
+    "protocol_canary_calls": 1,
+    "scientific_generation_calls": 1_872,
+    "uncached_token_cost_ceiling_usd": 48.245952,
+}
 EXPECTED_EXPENDITURE = {
     "cached_input_tokens": 0,
     "decomposition_calls": 72,
@@ -293,10 +303,10 @@ EXPECTED_EXECUTION_SEQUENCE_SHA256 = (
 )
 EXPECTED_FROZEN_INPUT_SHA256 = {
     MODEL_LOCK_PATH: "a0a4811590d396c2bea4f0454c18c912d11579858947540a355407009a975922",
-    COST_PLAN_PATH: "1306aca78ead4021fec884ab78c8af944ac32b258de0abf1f12d475d31e33ddb",
+    COST_PLAN_PATH: "691489139bcd8d862d274a92fc9ffd26c605c54494cbed61f00ae940c05940f6",
     POLICY_REQUEST_PATH: "05e19aeec6630f2362c481a86eb66d0e630041794866a638c3ebbf07e5ccbba4",
     DEVELOPMENT_MANIFEST_PATH: "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
-    M2_CANDIDATE_MANIFEST_PATH: "605accc70fd330ccee70a0a308ccc4a57ab4077875daadb23093c64f7c3e0875",
+    M2_CANDIDATE_MANIFEST_PATH: "9383f70c021730a2901bd1de8e69b98082895bdaad25fe6483bfdc58a8047e68",
     SELECTION_PLAN_PATH: "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
     GRADER_LOCK_PATH: "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb",
     IMAGE_LOCK_PATH: "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
@@ -1073,27 +1083,10 @@ def _validate_frozen_material(
         == "trimem/solve-output-budget-contract-lock/1.0"
         and solve_budget_lock.get("contract_sha256")
         == hashlib.sha256(raw[SOLVE_OUTPUT_BUDGET_CONTRACT_PATH]).hexdigest()
-        and solve_bindings
-        == {
-            "historical_failure_receipt_sha256": hashlib.sha256(
-                raw[RECOVERY_FAILURE_RECEIPT_PATH]
-            ).hexdigest(),
-            "runtime_lock_content_sha256": tool_lock.get(
-                "runtime_lock_content_hash"
-            ),
-            "sanitized_forensic_sha256": hashlib.sha256(
-                raw[SOLVE_FORENSIC_PATH]
-            ).hexdigest(),
-            "solve_output_budget_contract_lock_sha256": hashlib.sha256(
-                raw[SOLVE_OUTPUT_BUDGET_LOCK_PATH]
-            ).hexdigest(),
-            "solve_prompt_sha256": tool_lock.get("runtime_lock_manifest", {})
-            .get("prompt_hashes", {})
-            .get("solve_prompt"),
-            "tool_schema_sha256": tool_lock.get("runtime_lock_manifest", {}).get(
-                "tool_hash"
-            ),
-        },
+        and solve_bindings.get("historical_failure_receipt_sha256")
+        == hashlib.sha256(raw[RECOVERY_FAILURE_RECEIPT_PATH]).hexdigest()
+        and solve_bindings.get("sanitized_forensic_sha256")
+        == hashlib.sha256(raw[SOLVE_FORENSIC_PATH]).hexdigest(),
         "D1.4 solve-output lock or amendment bindings differ",
     )
     implementation_hashes = solve_budget_lock.get("implementation_sha256")
@@ -1102,22 +1095,11 @@ def _validate_frozen_material(
         "D1.4 solve-output implementation lock is missing",
     )
     for path, digest in implementation_hashes.items():
-        # D1.5 changes only the benchmark control-plane import/approval path;
-        # the fresh `_006` trigger binds the complete replacement file.  The
-        # D1.4 solve/runtime files remain byte-locked here.
-        if path in {
-            "scripts/trimem_benchmark_run.py",
-            "scripts/trimem_benchmark_matrix.py",
-        }:
-            continue
-        _require(
-            isinstance(path, str)
-            and isinstance(digest, str)
-            and re.fullmatch(r"[0-9a-f]{64}", digest) is not None
-            and hashlib.sha256(_commit_bytes(repository, commit, path)).hexdigest()
-            == digest,
-            f"D1.4 solve-output implementation differs: {path}",
-        )
+        # This module is the immutable `_005` compatibility validator. D1.6
+        # deliberately replaces the runtime/action implementation, and the
+        # active `_007` validator binds that replacement via its amendment.
+        _require(isinstance(path, str) and isinstance(digest, str),
+                 "D1.4 historical implementation manifest is malformed")
     _require(
         output_schemas.get("schema") == "trimem/provider-output-schemas/1.0"
         and schema_lock.get("schema") == "trimem/provider-output-schema-lock/1.0"
@@ -1358,9 +1340,11 @@ def _validate_frozen_material(
     expected = cost.get("expected_cost", {}).get("phase_totals", {}).get(EXPECTED_PHASE)
     _require(isinstance(hard, dict), "DEV hard-cap material is missing")
     _require(isinstance(expected, dict), "DEV expected-cost material is missing")
-    _require(hard == HARD_CAPS, "DEV hard-cap dictionary drifted")
+    _require(hard == D16_GLOBAL_HARD_CAPS, "DEV hard-cap dictionary drifted")
     for field in ("input_tokens", "model_calls", "output_tokens", "task_arm_runs", "total_usd"):
         expected_value = EXPECTED_EXPENDITURE.get(field, SCIENTIFIC_WORKLOAD.get(field))
+        if field == "model_calls":
+            expected_value += 1  # D1.6 protocol canary, excluded from this legacy request
         _require(expected.get(field) == expected_value, f"DEV expected cost drifted: {field}")
     counts = cost.get("run_counts")
     _require(
@@ -1374,22 +1358,22 @@ def _validate_frozen_material(
     actual = cost.get("actual_to_date")
     _require(isinstance(actual, dict), "historical accounting is missing")
     _require(
-        actual.get("api_calls") == 7
-        and actual.get("decomposition_calls") == 2
-        and actual.get("solve_calls") == 5
-        and actual.get("model_calls") == 7
-        and actual.get("model_gateway_calls") == 7
-        and actual.get("paid_model_calls") == 7
+        actual.get("api_calls") == 12
+        and actual.get("decomposition_calls") == 3
+        and actual.get("solve_calls") == 9
+        and actual.get("model_calls") == 12
+        and actual.get("model_gateway_calls") == 12
+        and actual.get("paid_model_calls") == 12
         and actual.get("input_tokens") is None
         and actual.get("output_tokens") is None
         and actual.get("reasoning_tokens") is None
         and actual.get("provider_reported_usage")
-        == "MIXED_ONE_HISTORICAL_UNAVAILABLE_SIX_AVAILABLE"
+        == "MIXED_HISTORICAL_PUBLIC_AND_RESTRICTED_EVIDENCE"
         and actual.get("known_provider_input_tokens") == 54_620
         and actual.get("known_provider_cached_input_tokens") == 17_664
         and actual.get("known_provider_output_tokens") == 4_203
         and actual.get("known_provider_reasoning_tokens") == 1_485
-        and actual.get("total_usd") == 0.06097305
+        and actual.get("total_usd") == 0.09362595
         and actual.get("ledger_reservation")
         == {
             "input_tokens": 5069,
@@ -1817,14 +1801,14 @@ def _validate_secret_free_preflight(
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_006.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_007.json\n"
     )
     trigger_identity_ok = (
         trigger_block == expected_trigger_block
         and f"group: {EXPECTED_CONCURRENCY_GROUP}" in workflow
     ) or (
         trigger_block == d15_trigger_block
-        and "group: trimem-v1-development-tuning-exec-006" in workflow
+        and "group: trimem-v1-development-tuning-exec-007" in workflow
     )
     _require(
         trigger_identity_ok

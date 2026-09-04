@@ -187,6 +187,20 @@ TASK_OUTPUT_POOL_BY_CALL_KIND = {
     "extract": 8_192,
 }
 TASK_TOTAL_OUTPUT_POOL = 65_536
+PROTOCOL_CANARY_RELATIVE_PATH = Path("control/protocol-action-canary.json")
+PROTOCOL_CANARY_INPUT_RESERVATION = 4_096
+PROTOCOL_CANARY_OUTPUT_RESERVATION = 2_048
+TERMINAL_MODEL_RESERVATION_STATUSES = {
+    "SUCCESS",
+    "SUCCESS_CONSERVATIVE_USAGE",
+    "PROVIDER_FAILURE",
+    "PROVIDER_FAILURE_CONSERVATIVE",
+}
+TERMINAL_TASK_ARM_STATUSES = {
+    "SUCCESS",
+    "SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR",
+    "CELL_TERMINAL",
+}
 TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND = {
     "decompose": "actual_decomposition_output_tokens",
     "solve": "actual_solve_output_tokens",
@@ -824,8 +838,8 @@ class AtomicBudgetLedger:
                 raise BenchmarkExecutionError(
                     "budget ledger terminal request shape differs"
                 )
-            if request.get("status") != "SUCCESS":
-                raise BenchmarkExecutionError("successful phase has a non-success model reservation")
+            if request.get("status") not in TERMINAL_MODEL_RESERVATION_STATUSES:
+                raise BenchmarkExecutionError("phase has a non-terminal model reservation")
             cap_name = CALL_CAP_BY_KIND.get(request.get("call_kind"))
             if cap_name is None or request.get("call_cap_name") != cap_name:
                 raise BenchmarkExecutionError("budget ledger request role binding differs")
@@ -946,9 +960,7 @@ class AtomicBudgetLedger:
                 not isinstance(row, dict)
                 or set(row) != TERMINAL_LEDGER_TASK_ARM_FIELDS
                 or row.get("reservation_id") != expected_task_reservation_id
-                or row.get("status") not in {
-                    "SUCCESS", "SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR"
-                }
+                or row.get("status") not in TERMINAL_TASK_ARM_STATUSES
                 or row.get("container_started") is not True
                 or type(row.get("outstanding_input_tokens")) is not int
                 or row["outstanding_input_tokens"] != 0
@@ -1990,6 +2002,86 @@ def actual_usd_for_accounting(
     return format(value, ".12f")
 
 
+def scientific_caps_after_protocol_canary(
+    phase_cap: Mapping[str, Any], canary: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Derive a non-transferable scientific budget from the global `_007` cap."""
+
+    required = {
+        "status": "PASS",
+        "scientific_result": False,
+        "generation_calls": 1,
+        "input_token_cap": PROTOCOL_CANARY_INPUT_RESERVATION,
+        "output_token_cap": PROTOCOL_CANARY_OUTPUT_RESERVATION,
+        "model": "gpt-5.4-mini-2026-03-17",
+    }
+    if any(canary.get(name) != expected for name, expected in required.items()):
+        raise BenchmarkExecutionError("protocol canary identity/status differs")
+    token_fields = ("input_tokens", "cached_input_tokens", "output_tokens")
+    if any(type(canary.get(name)) is not int or canary[name] < 0 for name in token_fields):
+        raise BenchmarkExecutionError("protocol canary usage is invalid")
+    if (
+        canary["cached_input_tokens"] > canary["input_tokens"]
+        or canary["input_tokens"] > PROTOCOL_CANARY_INPUT_RESERVATION
+        or canary["output_tokens"] > PROTOCOL_CANARY_OUTPUT_RESERVATION
+    ):
+        raise BenchmarkExecutionError("protocol canary exceeded its reservation")
+    try:
+        canary_usd = Decimal(str(canary["actual_usd"]))
+    except (InvalidOperation, KeyError, TypeError, ValueError) as exc:
+        raise BenchmarkExecutionError("protocol canary USD is invalid") from exc
+    if canary_usd < 0:
+        raise BenchmarkExecutionError("protocol canary USD is negative")
+    if (
+        phase_cap.get("protocol_canary_calls") != 1
+        or phase_cap.get("scientific_generation_calls") != 1_872
+        or phase_cap.get("model_calls") != 1_873
+        or phase_cap.get("paid_model_calls") != 1_873
+        or phase_cap.get("input_tokens") != 36_004_096
+        or phase_cap.get("output_tokens") != 4_720_640
+        or Decimal(str(phase_cap.get("uncached_token_cost_ceiling_usd")))
+        != Decimal("48.245952")
+    ):
+        raise BenchmarkExecutionError("global `_007` hard caps differ")
+    scientific = dict(phase_cap)
+    scientific.pop("protocol_canary_calls", None)
+    scientific.pop("scientific_generation_calls", None)
+    scientific.update({
+        "model_calls": 1_872,
+        "paid_model_calls": 1_872,
+        "input_tokens": 36_000_000,
+        "output_tokens": 4_718_592,
+        "total_usd": float(Decimal("50.0") - canary_usd),
+        "uncached_token_cost_ceiling_usd": 48.233664,
+    })
+    return scientific
+
+
+def validate_global_phase_accounting(
+    phase_cap: Mapping[str, Any], canary: Mapping[str, Any], scientific: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Prove the separate protocol and scientific ledgers fit the phase cap."""
+
+    combined = {
+        "model_calls": int(scientific["paid_model_calls"]) + 1,
+        "paid_model_calls": int(scientific["paid_model_calls"]) + 1,
+        "input_tokens": int(scientific["input_tokens"]) + int(canary["input_tokens"]),
+        "cached_input_tokens": int(scientific["cached_input_tokens"])
+        + int(canary["cached_input_tokens"]),
+        "output_tokens": int(scientific["output_tokens"]) + int(canary["output_tokens"]),
+        "total_usd": format(
+            Decimal(str(scientific["total_usd"])) + Decimal(str(canary["actual_usd"])),
+            ".12f",
+        ),
+    }
+    for field in ("model_calls", "paid_model_calls", "input_tokens", "output_tokens"):
+        if combined[field] > int(phase_cap[field]):
+            raise BenchmarkExecutionError(f"combined protocol/scientific {field} exceeds phase cap")
+    if Decimal(combined["total_usd"]) > Decimal(str(phase_cap["total_usd"])):
+        raise BenchmarkExecutionError("combined protocol/scientific USD exceeds phase cap")
+    return combined
+
+
 def validate_phase_completion(
     output_root: Path,
     *,
@@ -2046,9 +2138,9 @@ def validate_phase_completion(
         ):
             raise BenchmarkExecutionError("phase result accounting shape/value differs")
         if (
-            accounting["decomposition_calls"] != 1
-            or accounting["extraction_calls"] != 1
-            or not 1 <= accounting["solve_calls"] <= 24
+                accounting["decomposition_calls"] != 1
+                or accounting["extraction_calls"] != 1
+                or not 0 <= accounting["solve_calls"] <= 24
             or accounting["model_gateway_calls"]
             != accounting["solve_calls"]
             + accounting["decomposition_calls"]
@@ -2740,7 +2832,12 @@ def run_arm_stream(
                 "benchmark_id": target["benchmark_id"],
                 "checkout_evidence_sha256": sha256_bytes(canonical_bytes(checkout_evidence[task.task_id])),
                 "execution_lock_hash": execution_lock_hash,
-                "execution_status": "SUCCESS", "grader_exit_code": result.grade.exit_code,
+                "execution_status": "CELL_TERMINAL", "grader_exit_code": result.grade.exit_code,
+                "cell_status": result.cell_status,
+                "model_failure_class": result.model_failure_class,
+                "agent_completed": result.agent_completed,
+                "grader_patch_source": result.grader_patch_source,
+                "extraction_status": result.extraction_status,
                 "evidence_tail_hash": result.evidence_tail_hash,
                 "namespace": session.namespace, "expected_image_digest": expected_digest,
                 "identity_seed_digest": identity_seed_evidence["digest"],
@@ -2776,7 +2873,7 @@ def run_arm_stream(
             stream_checkpoint = advance(task, result)
             save_arm_checkpoint(output_root, stream_id, stream_checkpoint)
             ledger.complete_task_arm(
-                task_arm_key, task_reservation, status="SUCCESS", container_started=True
+                task_arm_key, task_reservation, status="CELL_TERMINAL", container_started=True
             )
         selected_checkpoint = None
         checkpoint_file: Optional[Path] = None
@@ -2845,6 +2942,29 @@ def run_arm_stream(
             ),
             "actual_usd": actual_usd,
             "resolved_count": sum(int(row["resolved"]) for row in result_records),
+            "model_failure_count": sum(
+                int(row.get("model_failure_class") is not None)
+                for row in result_records
+            ),
+            "model_failure_distribution": dict(sorted({
+                name: sum(
+                    int(row.get("model_failure_class") == name)
+                    for row in result_records
+                )
+                for name in {
+                    str(row["model_failure_class"])
+                    for row in result_records
+                    if row.get("model_failure_class") is not None
+                }
+            }.items())),
+            "partial_patch_count": sum(
+                int(row.get("grader_patch_source") == "MODEL_PARTIAL_PATCH")
+                for row in result_records
+            ),
+            "canonical_noop_count": sum(
+                int(row.get("grader_patch_source") == "CANONICAL_FAILED_CELL_NOOP")
+                for row in result_records
+            ),
             "status": "PASS", "workspace_factory_hash": workspace_factory.content_hash,
         }
         write_json(output_root / f"{stream_id}.arm-summary.json", summary)
@@ -2942,6 +3062,19 @@ def main() -> int:
             approval_path=args.approval_file,
             validated=approval,
         )
+        cost = read_json(ROOT / "configs/trimem_v1/cost_plan.json")
+        protocol_canary: Optional[dict[str, Any]] = None
+        scientific_hard_cap: Mapping[str, Any] = approval["hard_cap"]
+        if args.split == "development":
+            canary_path = output / PROTOCOL_CANARY_RELATIVE_PATH
+            if not canary_path.is_file():
+                raise BenchmarkExecutionError(
+                    "successful protocol canary evidence is required before DEV"
+                )
+            protocol_canary = read_json(canary_path)
+            scientific_hard_cap = scientific_caps_after_protocol_canary(
+                approval["hard_cap"], protocol_canary
+            )
         if args.split == "development":
             selected_state = validate_selected_m2(require_frozen=False)
             if selected_state.get("status") != "PRE_DEVELOPMENT":
@@ -2987,11 +3120,10 @@ def main() -> int:
             raise BenchmarkExecutionError("admin database URL remained in runtime environment")
 
         harnesses = prepare_harnesses(ROOT / ".trimem-exec/harnesses")
-        cost = read_json(ROOT / "configs/trimem_v1/cost_plan.json")
         approval_digest = approval["approval_artifact_sha256"]
         ledger = AtomicBudgetLedger(
             output / "budget-ledger.json",
-            approval_digest=approval_digest, caps=approval["hard_cap"], pricing=cost["model_pricing"],
+            approval_digest=approval_digest, caps=scientific_hard_cap, pricing=cost["model_pricing"],
         )
         benchmark_images, _ = image_entries(require_benchmark=True)
         summaries: list[dict[str, Any]] = []
@@ -3075,9 +3207,22 @@ def main() -> int:
             split=args.split,
             summaries=summaries,
             ledger=ledger,
-            hard_cap=approval["hard_cap"],
+            hard_cap=scientific_hard_cap,
             pricing=cost["model_pricing"],
         )
+        if protocol_canary is not None:
+            phase_evidence["protocol_canary"] = protocol_canary
+            phase_evidence["global_actual_accounting"] = validate_global_phase_accounting(
+                approval["hard_cap"],
+                protocol_canary,
+                {
+                    "paid_model_calls": phase_evidence["actual_accounting"]["paid_model_calls"],
+                    "input_tokens": phase_evidence["actual_accounting"]["input_tokens"],
+                    "cached_input_tokens": phase_evidence["actual_accounting"]["cached_input_tokens"],
+                    "output_tokens": phase_evidence["actual_accounting"]["output_tokens"],
+                    "total_usd": phase_evidence["actual_usd"],
+                },
+            )
         print(json.dumps(
             {"phase_evidence": phase_evidence, "streams": summaries, "status": "PASS"},
             ensure_ascii=False,

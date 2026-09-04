@@ -476,12 +476,12 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_006.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_007.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-006" in workflow
+    assert "group: trimem-v1-development-tuning-exec-007" in workflow
     assert "group: trimem-v1-development-tuning-exec-004" not in workflow
     assert "group: trimem-v1-development-tuning-exec-002" not in workflow
     assert "group: trimem-v1-development-tuning-exec-001" not in workflow
@@ -1018,9 +1018,9 @@ def test_heldout_approval_cannot_enter_development(tmp_path: Path) -> None:
         ).hexdigest(),
         phase="HELDOUT_BENCHMARK",
         task_arm_runs=72,
-        paid_model_call_cap=1872,
-        input_token_cap=36_000_000,
-        output_token_cap=4_718_592,
+        paid_model_call_cap=1873,
+        input_token_cap=36_004_096,
+        output_token_cap=4_720_640,
         currency_hard_cap=50.0,
         grader_containers=72,
         workflow_run_id=123,
@@ -1161,9 +1161,9 @@ def test_development_external_approval_binds_two_heads_and_attempt_one(
         freeze_sha256=freeze_sha256,
         phase=trigger.EXPECTED_PHASE,
         task_arm_runs=72,
-        paid_model_call_cap=1872,
-        input_token_cap=36_000_000,
-        output_token_cap=4_718_592,
+        paid_model_call_cap=1873,
+        input_token_cap=36_004_096,
+        output_token_cap=4_720_640,
         currency_hard_cap=50.0,
         grader_containers=72,
         workflow_run_id=987654321,
@@ -1246,9 +1246,9 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         freeze_sha256=freeze_sha256,
         phase=trigger.EXPECTED_PHASE,
         task_arm_runs=72,
-        paid_model_call_cap=1872,
-        input_token_cap=36_000_000,
-        output_token_cap=4_718_592,
+        paid_model_call_cap=1873,
+        input_token_cap=36_004_096,
+        output_token_cap=4_720_640,
         currency_hard_cap=50.0,
         grader_containers=72,
         workflow_run_id=246813579,

@@ -62,7 +62,7 @@ class AsyncClient:
 
 def binding(**changes):
     value = {
-        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_006",
+        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_007",
         "execution_head": "a" * 40,
         "source_head": "b" * 40,
         "workflow_run_id": "123",
@@ -177,9 +177,9 @@ def test_d15_approval_builder_embeds_only_the_run_bound_commitment():
         freeze_sha256="2" * 64,
         phase="DEVELOPMENT_TUNING",
         task_arm_runs=72,
-        paid_model_call_cap=1872,
-        input_token_cap=36_000_000,
-        output_token_cap=4_718_592,
+        paid_model_call_cap=1873,
+        input_token_cap=36_004_096,
+        output_token_cap=4_720_640,
         currency_hard_cap=50.0,
         grader_containers=72,
         workflow_run_id=123,
@@ -197,7 +197,7 @@ def test_d15_approval_builder_embeds_only_the_run_bound_commitment():
     assert document["approval"]["approved_openai_key_commitment"] == (
         compute_openai_key_commitment(KEY, binding())
     )
-    assert d15.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_006.json")
+    assert d15.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_007.json")
 
 
 def test_exact_model_metadata_passes_without_generation_or_ledger():
@@ -337,6 +337,7 @@ def test_workflow_checks_access_before_images_and_continues_to_runner():
         workflow.index("Validate exact OpenAI credential format before network access"),
         workflow.index("Verify run-bound OpenAI credential commitment"),
         workflow.index("Retrieve exact model metadata before image materialization"),
+        workflow.index("Execute one native-action protocol canary before benchmark images"),
         workflow.index("Apply exact migration head"),
         workflow.index("Pull committed images by digest and verify local observations"),
         workflow.index("Execute frozen serial streams with one atomic phase ledger"),
@@ -354,7 +355,6 @@ def test_d14_scientific_locks_and_historical_evidence_are_unchanged():
         "configs/trimem_v1/model_lock.json": "a0a4811590d396c2bea4f0454c18c912d11579858947540a355407009a975922",
         "configs/trimem_v1/selection_plan.json": "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
         "configs/trimem_v1/solve_output_budget_contract.json": "49943aa6527bd8192c051ac72b2798f36976f66fa5aaff0d62525398494156e4",
-        "src/enterprise_memory/trimem/runtime_lock.py": "77686f1d8b58cbabee85286e1d502495fae28b70b5279ec4dbe7133ea4440ae5",
     }
     for relative, digest in expected.items():
         assert hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == digest

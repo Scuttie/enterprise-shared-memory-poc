@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_006.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_007.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-006
+  group: trimem-v1-development-tuning-exec-007
   cancel-in-progress: false
 
 permissions:
@@ -205,6 +205,14 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$TRIMEM_EVIDENCE_PASSPHRASE"
+      - name: Execute one native-action protocol canary before benchmark images
+        if: env.TRIMEM_EXEC_SPLIT == 'development'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: >-
+          python scripts/trimem_action_canary.py
+          --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
+          --output "artifacts/trimem_v1/benchmark_exec/$TRIMEM_EXEC_SPLIT/control/protocol-action-canary.json"
       - name: Apply exact migration head
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/trimem_benchmark

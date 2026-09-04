@@ -100,6 +100,9 @@ SMOKE_EXECUTION_CONTRACT_FIELDS = {
 ACCOUNTING_FIELDS = (
     "solve_calls", "decomposition_calls", "extraction_calls", "input_tokens",
     "cached_input_tokens", "output_tokens", "reasoning_tokens",
+    "actual_decomposition_output_tokens", "actual_solve_output_tokens",
+    "actual_extraction_output_tokens", "solve_output_pool_capacity",
+    "remaining_solve_output_tokens", "replace_text_calls", "write_file_calls",
     "model_wall_time_ms", "tool_wall_time_ms", "grader_wall_time_ms",
     "task_wall_time_ms",
     "model_gateway_calls", "paid_model_calls", "grader_calls", "grader_containers",
@@ -165,13 +168,32 @@ TERMINAL_LEDGER_TASK_ARM_FIELDS = {
     "outstanding_input_tokens",
     "actual_model_calls",
     "outstanding_model_calls",
+    "actual_output_tokens",
+    "outstanding_output_tokens",
+    "actual_decomposition_output_tokens",
+    "actual_solve_output_tokens",
+    "actual_extraction_output_tokens",
+    "remaining_decomposition_output_tokens",
+    "remaining_solve_output_tokens",
+    "remaining_extraction_output_tokens",
     "container_started",
 }
 MAX_LEDGER_INPUT_BOUND_PER_CALL = 262_000
 MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND = {
-    "solve": 2_048,
+    "solve": 16_384,
     "decompose": 8_192,
     "extract": 8_192,
+}
+TASK_OUTPUT_POOL_BY_CALL_KIND = {"decompose": 8_192, "solve": 49_152, "extract": 8_192}
+TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND = {
+    "decompose": "actual_decomposition_output_tokens",
+    "solve": "actual_solve_output_tokens",
+    "extract": "actual_extraction_output_tokens",
+}
+TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND = {
+    "decompose": "remaining_decomposition_output_tokens",
+    "solve": "remaining_solve_output_tokens",
+    "extract": "remaining_extraction_output_tokens",
 }
 SMOKE_ACCOUNTING_FIELDS = (
     "api_calls",
@@ -2285,7 +2307,7 @@ def _validate_budget_ledger_evidence(
         "output": float(pricing["output_per_million_tokens_usd"]),
     }
     if (
-        value.get("schema") != "trimem/atomic-budget-ledger/1.3"
+        value.get("schema") != "trimem/atomic-budget-ledger/1.4"
         or value.get("approval_digest")
         != approval_binding["approval_artifact_sha256"]
         or value.get("approved_hard_cap") != hard_cap
@@ -2367,6 +2389,10 @@ def _validate_budget_ledger_evidence(
         }
         for key in expected_task_rows
     }
+    per_task_role_output = {
+        key: {kind: 0 for kind in TASK_OUTPUT_POOL_BY_CALL_KIND}
+        for key in expected_task_rows
+    }
     for logical_id, request in requests.items():
         if (
             not isinstance(logical_id, str)
@@ -2391,9 +2417,12 @@ def _validate_budget_ledger_evidence(
             type(input_upper_bound) is not int
             or not 0 < input_upper_bound <= MAX_LEDGER_INPUT_BOUND_PER_CALL
             or type(output_cap) is not int
-            or output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[
-                str(request["call_kind"])
-            ]
+            or output_cap <= 0
+            or output_cap > MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[str(request["call_kind"])]
+            or (
+                request["call_kind"] != "solve"
+                and output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[str(request["call_kind"])]
+            )
         ):
             raise MatrixError("budget ledger request reservation bounds are invalid")
         expected_reservation_id = hashlib.sha256(_canonical({
@@ -2455,6 +2484,7 @@ def _validate_budget_ledger_evidence(
         per_task_requests[task_key]["input_tokens"] += tokens[0]
         per_task_requests[task_key]["cached_input_tokens"] += tokens[1]
         per_task_requests[task_key]["output_tokens"] += tokens[2]
+        per_task_role_output[task_key][str(request["call_kind"])] += tokens[2]
         per_task_requests[task_key][cap_name] += 1
         per_task_requests[task_key]["model_gateway_calls"] += 1
         per_task_requests[task_key]["paid_model_calls"] += 1
@@ -2502,8 +2532,16 @@ def _validate_budget_ledger_evidence(
             or row["actual_model_calls"] != accounting["model_gateway_calls"]
             or row["actual_model_calls"]
             > hard_cap["max_model_calls_per_task_arm"]
+            or row.get("outstanding_output_tokens") != 0
+            or row.get("actual_output_tokens") != accounting["output_tokens"]
         ):
             raise MatrixError("budget ledger task-arm/result accounting differs")
+        for kind, pool in TASK_OUTPUT_POOL_BY_CALL_KIND.items():
+            actual_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[kind]
+            remaining_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[kind]
+            role_actual = per_task_role_output[task_key][kind]
+            if row.get(actual_field) != role_actual or row.get(remaining_field) != pool - role_actual:
+                raise MatrixError("budget ledger task-arm role output accounting differs")
 
     return {
         "schema": "trimem/verified-budget-ledger-evidence/1.0",
@@ -3365,6 +3403,22 @@ def _aggregate_benchmark(
             raise MatrixError(f"{path.name}: common decomposition/extraction path was not used exactly once")
         if not 1 <= accounting["solve_calls"] <= 24:
             raise MatrixError(f"{path.name}: solve-call count is outside the frozen common budget")
+        if accounting["output_tokens"] != sum(
+            accounting[field]
+            for field in (
+                "actual_decomposition_output_tokens",
+                "actual_solve_output_tokens",
+                "actual_extraction_output_tokens",
+            )
+        ):
+            raise MatrixError(f"{path.name}: task role output-token totals do not add up")
+        if (
+            accounting["solve_output_pool_capacity"] != 49_152
+            or accounting["actual_solve_output_tokens"] > 49_152
+            or accounting["remaining_solve_output_tokens"]
+            != 49_152 - accounting["actual_solve_output_tokens"]
+        ):
+            raise MatrixError(f"{path.name}: solve-output-pool utilization differs")
         if accounting["model_gateway_calls"] != (
             accounting["solve_calls"] + accounting["decomposition_calls"] + accounting["extraction_calls"]
         ):

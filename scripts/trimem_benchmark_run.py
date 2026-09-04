@@ -165,13 +165,37 @@ TERMINAL_LEDGER_TASK_ARM_FIELDS = {
     "outstanding_input_tokens",
     "actual_model_calls",
     "outstanding_model_calls",
+    "actual_output_tokens",
+    "outstanding_output_tokens",
+    "actual_decomposition_output_tokens",
+    "actual_solve_output_tokens",
+    "actual_extraction_output_tokens",
+    "remaining_decomposition_output_tokens",
+    "remaining_solve_output_tokens",
+    "remaining_extraction_output_tokens",
     "container_started",
 }
 MAX_LEDGER_INPUT_BOUND_PER_CALL = 262_000
 MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND = {
-    "solve": 2_048,
+    "solve": 16_384,
     "decompose": 8_192,
     "extract": 8_192,
+}
+TASK_OUTPUT_POOL_BY_CALL_KIND = {
+    "decompose": 8_192,
+    "solve": 49_152,
+    "extract": 8_192,
+}
+TASK_TOTAL_OUTPUT_POOL = 65_536
+TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND = {
+    "decompose": "actual_decomposition_output_tokens",
+    "solve": "actual_solve_output_tokens",
+    "extract": "actual_extraction_output_tokens",
+}
+TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND = {
+    "decompose": "remaining_decomposition_output_tokens",
+    "solve": "remaining_solve_output_tokens",
+    "extract": "remaining_extraction_output_tokens",
 }
 BENCHMARK_EXEC_REQUEST = Path("configs/trimem_v1/benchmark_exec_request.json")
 GRADER_SMOKE_EXEC_REQUEST = Path(
@@ -676,7 +700,7 @@ class AtomicBudgetLedger:
 
     def _empty(self) -> dict[str, Any]:
         return {
-            "schema": "trimem/atomic-budget-ledger/1.3",
+            "schema": "trimem/atomic-budget-ledger/1.4",
             "approval_digest": self.approval_digest,
             "approved_hard_cap": self.approved_hard_cap,
             "approved_hard_cap_sha256": sha256_bytes(
@@ -701,7 +725,7 @@ class AtomicBudgetLedger:
         if not self.path.exists():
             return self._empty()
         value = read_json(self.path)
-        if (value.get("schema") != "trimem/atomic-budget-ledger/1.3" or
+        if (value.get("schema") != "trimem/atomic-budget-ledger/1.4" or
                 value.get("approval_digest") != self.approval_digest or
                 value.get("approved_hard_cap") != self.approved_hard_cap or
                 value.get("approved_hard_cap_sha256") != sha256_bytes(
@@ -782,6 +806,10 @@ class AtomicBudgetLedger:
             }
             for task_key in expected_task_arms
         }
+        per_task_role_output = {
+            task_key: {kind: 0 for kind in TASK_OUTPUT_POOL_BY_CALL_KIND}
+            for task_key in expected_task_arms
+        }
         for logical_id, request in requests.items():
             if (
                 not isinstance(logical_id, str)
@@ -806,9 +834,12 @@ class AtomicBudgetLedger:
                 type(input_upper_bound) is not int
                 or not 0 < input_upper_bound <= MAX_LEDGER_INPUT_BOUND_PER_CALL
                 or type(output_cap) is not int
-                or output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[
-                    str(request["call_kind"])
-                ]
+                or output_cap <= 0
+                or output_cap > MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[str(request["call_kind"])]
+                or (
+                    request["call_kind"] != "solve"
+                    and output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[str(request["call_kind"])]
+                )
             ):
                 raise BenchmarkExecutionError(
                     "budget ledger request reservation bounds are invalid"
@@ -873,6 +904,7 @@ class AtomicBudgetLedger:
             projection["input_tokens"] += token_values[0]
             projection["cached_input_tokens"] += token_values[1]
             projection["output_tokens"] += token_values[2]
+            per_task_role_output[str(task_key)][str(request["call_kind"])] += token_values[2]
             projection[cap_name] += 1
             projection["model_gateway_calls"] += 1
             projection["paid_model_calls"] += 1
@@ -926,10 +958,18 @@ class AtomicBudgetLedger:
                 or row["actual_model_calls"] != expected["model_gateway_calls"]
                 or row["actual_model_calls"]
                 > self.caps["max_model_calls_per_task_arm"]
+                or row.get("outstanding_output_tokens") != 0
+                or row.get("actual_output_tokens") != expected["output_tokens"]
             ):
                 raise BenchmarkExecutionError(
                     "budget ledger task-arm/result accounting differs"
                 )
+            for kind, pool in TASK_OUTPUT_POOL_BY_CALL_KIND.items():
+                actual_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[kind]
+                remaining_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[kind]
+                role_actual = per_task_role_output[task_arm_key][kind]
+                if row.get(actual_field) != role_actual or row.get(remaining_field) != pool - role_actual:
+                    raise BenchmarkExecutionError("budget ledger task-arm role output accounting differs")
 
         hard = self.approved_hard_cap
         bounded = {
@@ -984,6 +1024,14 @@ class AtomicBudgetLedger:
                 "outstanding_input_tokens": 0,
                 "actual_model_calls": 0,
                 "outstanding_model_calls": 0,
+                "actual_output_tokens": 0,
+                "outstanding_output_tokens": 0,
+                "actual_decomposition_output_tokens": 0,
+                "actual_solve_output_tokens": 0,
+                "actual_extraction_output_tokens": 0,
+                "remaining_decomposition_output_tokens": 8_192,
+                "remaining_solve_output_tokens": 49_152,
+                "remaining_extraction_output_tokens": 8_192,
             }
             write_json(self.path, state)
         return reservation_id
@@ -1014,7 +1062,7 @@ class AtomicBudgetLedger:
             if (not isinstance(row, dict) or row.get("reservation_id") != reservation_id or
                     row.get("status") != "RESERVED"):
                 raise BenchmarkExecutionError("unknown or already completed task-arm reservation")
-            if row["outstanding_input_tokens"] or row["outstanding_model_calls"]:
+            if row["outstanding_input_tokens"] or row["outstanding_model_calls"] or row["outstanding_output_tokens"]:
                 raise BenchmarkExecutionError("task-arm has unreconciled model reservations")
             state["outstanding"]["task_arm_runs"] -= 1
             state["outstanding"]["grader_containers"] -= 1
@@ -1050,7 +1098,9 @@ class AtomicBudgetLedger:
         }.get(call_kind)
         if call_cap_name is None:
             raise BenchmarkExecutionError("paid request has an unknown call kind")
-        if output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[call_kind]:
+        if output_cap > MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[call_kind] or (
+            call_kind != "solve" and output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[call_kind]
+        ):
             raise BenchmarkExecutionError(
                 "per-call output cap differs from the frozen runtime cap"
             )
@@ -1074,6 +1124,19 @@ class AtomicBudgetLedger:
             if (task_arm["actual_model_calls"] + task_arm["outstanding_model_calls"] + 1 >
                     self.caps["max_model_calls_per_task_arm"]):
                 raise BenchmarkExecutionError("paid request rejected before send: task-arm call hard cap")
+            actual_role_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[call_kind]
+            remaining_role_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[call_kind]
+            role_outstanding = sum(
+                int(row["output_cap"])
+                for row in state["requests"].values()
+                if row.get("status") == "RESERVED"
+                and row.get("task_arm_key") == task_arm_key
+                and row.get("call_kind") == call_kind
+            )
+            if task_arm[actual_role_field] + role_outstanding + output_cap > TASK_OUTPUT_POOL_BY_CALL_KIND[call_kind]:
+                raise BenchmarkExecutionError("paid request rejected before send: task-arm role output pool")
+            if task_arm["actual_output_tokens"] + task_arm["outstanding_output_tokens"] + output_cap > TASK_TOTAL_OUTPUT_POOL:
+                raise BenchmarkExecutionError("paid request rejected before send: task-arm total output pool")
             combined = {
                 "paid_model_calls": state["actual"]["paid_model_calls"] + state["outstanding"]["paid_model_calls"] + 1,
                 call_cap_name: state["actual"][call_cap_name] + state["outstanding"][call_cap_name] + 1,
@@ -1091,6 +1154,13 @@ class AtomicBudgetLedger:
             state["outstanding"]["total_usd"] += amount
             task_arm["outstanding_input_tokens"] += input_upper_bound
             task_arm["outstanding_model_calls"] += 1
+            task_arm["outstanding_output_tokens"] += output_cap
+            task_arm[remaining_role_field] = (
+                TASK_OUTPUT_POOL_BY_CALL_KIND[call_kind]
+                - task_arm[actual_role_field]
+                - role_outstanding
+                - output_cap
+            )
             state["requests"][logical_call_id] = {
                 "reservation_id": reservation_id, "status": "RESERVED",
                 "input_upper_bound": input_upper_bound, "output_cap": output_cap,
@@ -1146,8 +1216,26 @@ class AtomicBudgetLedger:
                 raise BenchmarkExecutionError("paid reservation task-arm identity mismatch")
             task_arm["outstanding_input_tokens"] -= request["input_upper_bound"]
             task_arm["outstanding_model_calls"] -= 1
+            task_arm["outstanding_output_tokens"] -= request["output_cap"]
             task_arm["actual_input_tokens"] += input_tokens
             task_arm["actual_model_calls"] += 1
+            task_arm["actual_output_tokens"] += output_tokens
+            actual_role_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[str(call_kind)]
+            remaining_role_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[str(call_kind)]
+            task_arm[actual_role_field] += output_tokens
+            role_outstanding = sum(
+                int(row["output_cap"])
+                for key, row in state["requests"].items()
+                if key != logical_call_id
+                and row.get("status") == "RESERVED"
+                and row.get("task_arm_key") == request["task_arm_key"]
+                and row.get("call_kind") == call_kind
+            )
+            task_arm[remaining_role_field] = (
+                TASK_OUTPUT_POOL_BY_CALL_KIND[str(call_kind)]
+                - task_arm[actual_role_field]
+                - role_outstanding
+            )
             state["actual"]["paid_model_calls"] += 1
             state["actual"][call_cap_name] += 1
             state["actual"]["input_tokens"] += input_tokens
@@ -1727,10 +1815,29 @@ def evidence_reference(result_dir: Path, path: Path) -> dict[str, Any]:
 def actual_accounting(value: Mapping[str, Any], *, task_wall_time_ms: int = 0) -> dict[str, int]:
     summary = value.get("summary", {})
     kinds = summary.get("by_call_kind", {})
+    tools = value.get("tools", [])
+    solve_output = int(kinds.get("solve", {}).get("output_tokens", 0))
     return {
         "solve_calls": int(kinds.get("solve", {}).get("calls", 0)),
         "decomposition_calls": int(kinds.get("decompose", {}).get("calls", 0)),
         "extraction_calls": int(kinds.get("extract", {}).get("calls", 0)),
+        "actual_decomposition_output_tokens": int(
+            kinds.get("decompose", {}).get("output_tokens", 0)
+        ),
+        "actual_solve_output_tokens": solve_output,
+        "actual_extraction_output_tokens": int(
+            kinds.get("extract", {}).get("output_tokens", 0)
+        ),
+        "solve_output_pool_capacity": 49_152,
+        "remaining_solve_output_tokens": 49_152 - solve_output,
+        "replace_text_calls": sum(
+            int(isinstance(row, Mapping) and row.get("tool_name") == "replace_text")
+            for row in tools
+        ),
+        "write_file_calls": sum(
+            int(isinstance(row, Mapping) and row.get("tool_name") == "write_file")
+            for row in tools
+        ),
         "input_tokens": int(summary.get("actual_input_tokens", 0)),
         "cached_input_tokens": int(summary.get("actual_cached_input_tokens", 0)),
         "output_tokens": int(summary.get("actual_output_tokens", 0)),
@@ -1956,6 +2063,22 @@ def validate_phase_completion(
             > hard_cap["max_model_calls_per_task_arm"]
         ):
             raise BenchmarkExecutionError("phase result exceeds a per-task-arm hard cap")
+        if accounting["output_tokens"] != sum(
+            accounting[field]
+            for field in (
+                "actual_decomposition_output_tokens",
+                "actual_solve_output_tokens",
+                "actual_extraction_output_tokens",
+            )
+        ):
+            raise BenchmarkExecutionError("phase result role output totals differ")
+        if (
+            accounting["solve_output_pool_capacity"] != 49_152
+            or accounting["actual_solve_output_tokens"] > 49_152
+            or accounting["remaining_solve_output_tokens"]
+            != 49_152 - accounting["actual_solve_output_tokens"]
+        ):
+            raise BenchmarkExecutionError("phase result solve output pool differs")
         actual_usd = actual_usd_for_accounting(accounting, pricing)
         if record.get("actual_usd") != actual_usd:
             raise BenchmarkExecutionError("phase result USD differs from tokens/pricing")

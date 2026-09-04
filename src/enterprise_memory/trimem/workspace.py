@@ -101,7 +101,7 @@ class InMemoryWorkspaceFactory:
         canonical_bytes({
             "factory": "trimem-in-memory-workspace-v1",
             "tool_names": sorted({
-                "list_files", "read_file", "search", "write_file",
+                "list_files", "read_file", "search", "write_file", "replace_text",
                 "run_public_tests", "run_command", "revise_subtask_dag", "complete_subtask",
             }),
         })
@@ -125,6 +125,7 @@ class InMemoryRepositoryWorkspace:
         "read_file",
         "search",
         "write_file",
+        "replace_text",
         "run_public_tests",
         "run_command",
         "revise_subtask_dag",
@@ -183,8 +184,17 @@ class InMemoryRepositoryWorkspace:
                 raise ToolExecutionError("path is not editable")
             if not isinstance(content, str):
                 raise ToolExecutionError("content must be text")
+            if path in self.files and len(self.files[path].encode("utf-8")) > 16_384:
+                raise ToolExecutionError("FULL_FILE_REWRITE_TOO_LARGE_USE_REPLACE_TEXT")
             self.files[path] = content
             return {"path": path, "content_hash": sha256_bytes(content.encode()), "bytes": len(content.encode())}
+        if tool == "replace_text":
+            path = _safe_path(arguments.get("path") if isinstance(arguments, dict) else None)
+            if path not in self.editable_paths or path not in self.files:
+                raise ToolExecutionError("replace_text requires an existing editable path")
+            replacement, result = _bounded_text_replacement(path, self.files[path], arguments)
+            self.files[path] = replacement
+            return result
         if tool == "run_public_tests":
             _exact_arguments(arguments, set())
             if self.public_test is None:
@@ -354,6 +364,48 @@ def _optional_arguments(arguments: object, required: set[str], optional: set[str
         )
 
 
+def _bounded_text_replacement(
+    path: str, current: str, arguments: object,
+) -> tuple[str, dict[str, Any]]:
+    """Validate and compute one exact, bounded existing-file replacement."""
+
+    _exact_arguments(
+        arguments,
+        {"path", "expected_file_sha256", "old_text", "new_text"},
+    )
+    assert isinstance(arguments, dict)
+    expected = arguments["expected_file_sha256"]
+    old_text = arguments["old_text"]
+    new_text = arguments["new_text"]
+    if not isinstance(expected, str) or len(expected) != 64 or any(
+        char not in "0123456789abcdef" for char in expected
+    ):
+        raise ToolExecutionError("expected_file_sha256 must be lowercase sha256")
+    if not isinstance(old_text, str) or not old_text:
+        raise ToolExecutionError("old_text must be non-empty text")
+    if not isinstance(new_text, str):
+        raise ToolExecutionError("new_text must be text")
+    old_bytes = old_text.encode("utf-8")
+    new_bytes = new_text.encode("utf-8")
+    if len(old_bytes) + len(new_bytes) > 48_000:
+        raise ToolExecutionError("replace_text old/new payload exceeds 48000 UTF-8 bytes")
+    prior = sha256_bytes(current.encode("utf-8"))
+    if prior != expected:
+        raise ToolExecutionError("replace_text expected file SHA-256 is stale")
+    occurrences = current.count(old_text)
+    if occurrences != 1:
+        raise ToolExecutionError("replace_text old_text must occur exactly once")
+    replacement = current.replace(old_text, new_text, 1)
+    return replacement, {
+        "path": path,
+        "prior_sha256": prior,
+        "new_sha256": sha256_bytes(replacement.encode("utf-8")),
+        "old_bytes": len(old_bytes),
+        "new_bytes": len(new_bytes),
+        "replacements": 1,
+    }
+
+
 def _validated_command_arguments(arguments: Mapping[str, Any]) -> tuple[tuple[str, ...], Optional[str], int]:
     argv = arguments.get("argv")
     if (
@@ -463,6 +515,10 @@ def _line_window(path: str, content: str, arguments: Mapping[str, Any]) -> dict[
         "content": selected,
         "start_line": start,
         "end_line": start + len(lines[start - 1:start - 1 + maximum]) - 1,
+        "returned_start_line": start,
+        "returned_end_line": start + len(lines[start - 1:start - 1 + maximum]) - 1,
+        "total_file_bytes": len(content.encode("utf-8")),
+        "full_file_sha256": sha256_bytes(content.encode("utf-8")),
         "total_lines": len(lines),
         "truncated": start - 1 + maximum < len(lines),
     }

@@ -5,10 +5,10 @@
     "version": "trimem-agent-v1",
     "prompt_hashes": {
       "decomposer_prompt": "8a2a27bb89e3747f832dd8ec2d57da5134c10526ac7e8b8bbc5c6538985ab1ec",
-      "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50",
+      "solve_prompt": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f",
       "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098"
     },
-    "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+    "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
     "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
     "limits": {
       "max_agent_steps": 24,
@@ -16,30 +16,32 @@
       "max_solve_calls": 24,
       "max_decomposition_calls": 1,
       "max_extraction_calls": 1,
-      "max_output_tokens_per_solve": 2048,
+      "max_output_tokens_per_solve": 16384,
+      "max_total_solve_output_tokens_per_task_arm": 49152,
+      "max_total_output_tokens_per_task_arm": 65536,
       "max_output_tokens_decomposition": 8192,
       "max_output_tokens_extraction": 8192,
       "max_memory_injections": 3,
       "max_memory_context_bytes": 12000
     }
   },
-  "runtime_lock_content_hash": "51835aa2ea474931a395023a4f3407299cfb5c85e0c5748ee0559c6589ddebc2",
+  "runtime_lock_content_hash": "4e9a5e8d9d39ae8665c8240fb9d823724621da9972fc64a924938ed86bec0ea8",
   "source_files": {
     "src/enterprise_memory/trimem/runtime_lock.py": {
-      "bytes": 6116,
-      "sha256": "359dbcdc6fe9b5de481ef88da7e488641bea8712067e319b131e845990c8c4ee"
+      "bytes": 6818,
+      "sha256": "77686f1d8b58cbabee85286e1d502495fae28b70b5279ec4dbe7133ea4440ae5"
     },
     "src/enterprise_memory/trimem/agent_runtime.py": {
-      "bytes": 87212,
-      "sha256": "e4162c6174cdd0594744ad0e8d9bc40a028da42f290a05511154ae1958ee1442"
+      "bytes": 90282,
+      "sha256": "692dcbd7066205a3a64ae1a85ab288ea4b592b9ab37af9c38b839013f1e5e9af"
     },
     "src/enterprise_memory/trimem/workspace.py": {
-      "bytes": 18587,
-      "sha256": "359661324335ad092c8b6c7786d42b0744148e2dc01d8c47e779ddd7a5c4f953"
+      "bytes": 21245,
+      "sha256": "046800bb40b09150f89628fa1efe4124e1efb3965ef0df03411a9a777c00a38d"
     },
     "src/enterprise_memory/trimem/git_workspace.py": {
-      "bytes": 34119,
-      "sha256": "a4b1f3d3f0265fc5a695a1d67376f3714035d498295125b8df077b5b2a00631e"
+      "bytes": 36230,
+      "sha256": "e237386ddbe6d8b991325ad341358bd8ae882ccdded8dbe6807570a0f744f54d"
     },
     "src/enterprise_memory/trimem/checkpoint.py": {
       "bytes": 6003,

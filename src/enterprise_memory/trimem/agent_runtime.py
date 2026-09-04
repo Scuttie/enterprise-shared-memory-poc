@@ -58,6 +58,20 @@ class InjectedCrash(RuntimeError):
     """Test-only crash at an explicitly fsynced evidence/checkpoint boundary."""
 
 
+def solve_output_request_cap(accounting: RunAccounting, lock: RuntimeLock) -> int:
+    """Return the next solve ceiling from provider-reported task usage."""
+
+    used = sum(
+        int(record.output_tokens or 0)
+        for record in accounting.calls
+        if record.call_kind == "solve"
+    )
+    remaining = lock.limits.max_total_solve_output_tokens_per_task_arm - used
+    if remaining <= 0:
+        raise RuntimeFailure("TASK_SOLVE_OUTPUT_POOL_EXHAUSTED")
+    return min(lock.limits.max_output_tokens_per_solve, remaining)
+
+
 def _checkpoint_active_node(checkpoint: RuntimeCheckpoint) -> Optional[str]:
     """Return the only node on which an uncheckpointed solve can operate."""
 
@@ -103,6 +117,13 @@ def _validate_model_suffix_event(
 ) -> None:
     if payload.get("logical_call_id") != logical_call_id:
         raise CheckpointMismatch("evidence suffix logical call identity mismatch")
+    request_hash = payload.get("request_sha256")
+    if request_hash is not None and (
+        not isinstance(request_hash, str)
+        or len(request_hash) != 64
+        or any(char not in "0123456789abcdef" for char in request_hash)
+    ):
+        raise CheckpointMismatch("evidence suffix request hash is malformed")
     if event_type != "model_request":
         return
     expected = {
@@ -406,6 +427,7 @@ def _model_suffix_call(
         or not isinstance(result_event.get("paid"), bool)
         or not isinstance(result_event.get("status"), str)
         or result_event.get("logical_call_id") != request_event.get("logical_call_id")
+        or result_event.get("request_sha256") != request_event.get("request_sha256")
     ):
         raise CheckpointMismatch("model suffix accounting is malformed")
     try:
@@ -899,10 +921,33 @@ class TriMemAgentRuntime:
                     str(event.get("event_type", "")) for event in suffix
                 )
                 ambiguous = suffix_events in {
-                    ("memory_recall", "model_request"),
                     ("grader_request",),
                     ("model_request",),
                 }
+                solve_request_only = suffix_events == (
+                    "memory_recall", "model_request"
+                )
+                if solve_request_only:
+                    # This is a valid solve automaton cut, not a checkpoint
+                    # mismatch. Without a durable response/failure suffix the
+                    # external call remains indeterminate and must not be sent
+                    # again. Its ledger reservation remains outstanding.
+                    self.evidence.append(
+                        "recovery_blocked",
+                        {
+                            "run_id": run_id,
+                            "task_id": task.task_id,
+                            "arm": arm,
+                            "checkpoint_state": checkpoint.state,
+                            "reason": "solve model request has no durable terminal outcome",
+                            "suffix_events": list(suffix_events),
+                            "accounting_disposition": "OUTSTANDING_RESERVATION_PRESERVED",
+                            "retry_allowed": False,
+                        },
+                    )
+                    raise RuntimeFailure(
+                        "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN; automatic retry refused"
+                    )
                 if ambiguous:
                     self.evidence.append(
                         "recovery_blocked",
@@ -984,7 +1029,7 @@ class TriMemAgentRuntime:
             accounting = RunAccounting.from_dict(checkpoint.accounting)
             if (
                 recovered_tool is not None
-                and recovered_tool["tool"] == "write_file"
+                and recovered_tool["tool"] in {"write_file", "replace_text"}
                 and recovered_tool["tool_event"]["status"] == "success"
             ):
                 recover = getattr(workspace, "recover_completed_tool", None)
@@ -1153,10 +1198,11 @@ class TriMemAgentRuntime:
                         request_event.get("prompt"),
                         media_type="text/plain; charset=utf-8",
                     ).decode("utf-8", errors="strict")
+                    request_cap = solve_output_request_cap(accounting, self.lock)
                     if (
                         recorded_prompt != expected_prompt
                         or request_event.get("max_output_tokens")
-                        != self.lock.limits.max_output_tokens_per_solve
+                        != request_cap
                     ):
                         raise CheckpointMismatch(
                             "replayed solve prompt differs from durable evidence"
@@ -1169,6 +1215,8 @@ class TriMemAgentRuntime:
                             "model": call.model,
                             "status": call.status,
                             "attempt": call.attempt,
+                            "logical_call_id": call.logical_call_id,
+                            "event": dict(result_event),
                         }
                         save_checkpoint(checkpoint.state, graph.active_node_id)
                         raise _recovered_gateway_failure(
@@ -1244,9 +1292,22 @@ class TriMemAgentRuntime:
 
         if terminal_payload.get("recovered_solve_failure") is not None:
             failure = terminal_payload["recovered_solve_failure"]
-            raise RuntimeFailure(
-                "durable solve model failure: %s" % failure.get("status", "unknown")
+            event = failure.get("event")
+            call = next(
+                (
+                    record for record in accounting.calls
+                    if record.logical_call_id == failure.get("logical_call_id")
+                ),
+                None,
             )
+            if not isinstance(event, Mapping) or call is None:
+                raise CheckpointMismatch("durable solve failure replay state is malformed")
+            response_text = _evidence_blob(
+                self.evidence,
+                event.get("response"),
+                media_type="text/plain; charset=utf-8",
+            ).decode("utf-8", errors="strict")
+            raise _recovered_gateway_failure(event, call, response_text)
 
         solve_calls = sum(1 for record in accounting.calls if record.call_kind == "solve")
         while not graph.complete:
@@ -1274,6 +1335,9 @@ class TriMemAgentRuntime:
                     raise RuntimeFailure("solve-call or global step cap reached")
                 if node_steps >= self.lock.limits.max_steps_per_subtask:
                     raise RuntimeFailure("per-subtask step cap reached")
+                request_max_output_tokens = solve_output_request_cap(
+                    accounting, self.lock
+                )
                 prompt = self._solve_prompt(task, graph, tools.history, self.memory.context_for(node.node_id))
                 logical_id = f"{task.task_id}:{arm}:solve:{next_step:04d}"
                 if logical_id in completed_call_ids:
@@ -1286,7 +1350,7 @@ class TriMemAgentRuntime:
                         call_kind="solve",
                         logical_call_id=logical_id,
                         prompt=prompt,
-                        max_output_tokens=self.lock.limits.max_output_tokens_per_solve,
+                        max_output_tokens=request_max_output_tokens,
                         org_id=task.org_id,
                         active_node_id=node.node_id,
                     )

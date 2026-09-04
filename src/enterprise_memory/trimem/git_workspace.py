@@ -26,12 +26,13 @@ from .workspace import (
     SandboxCommandRunner,
     ToolExecutionError,
     WorkspaceGraderContext,
+    _bounded_text_replacement,
     _validated_dag_revision_arguments,
 )
 
 
 TOOL_NAMES = frozenset({
-    "list_files", "read_file", "search", "write_file",
+    "list_files", "read_file", "search", "write_file", "replace_text",
     "run_public_tests", "run_command", "revise_subtask_dag", "complete_subtask",
 })
 
@@ -334,6 +335,8 @@ class GitCheckoutWorkspace:
             if not isinstance(content, str):
                 raise ToolExecutionError("content must be text")
             path = self._path(arguments["path"], must_exist=False)
+            if path.exists() and path.stat().st_size > 16_384:
+                raise ToolExecutionError("FULL_FILE_REWRITE_TOO_LARGE_USE_REPLACE_TEXT")
             path.parent.mkdir(parents=True, exist_ok=True)
             new_file = not path.exists()
             path.write_text(content, encoding="utf-8", newline="\n")
@@ -345,6 +348,30 @@ class GitCheckoutWorkspace:
                 "content_hash": sha256_bytes(content.encode("utf-8")),
                 "bytes": len(content.encode("utf-8")),
             }
+        if tool == "replace_text":
+            path = self._path(arguments.get("path") if isinstance(arguments, dict) else None, must_exist=True)
+            if not path.is_file():
+                raise ToolExecutionError("replace_text requires an existing editable file")
+            try:
+                raw = path.read_bytes()
+                current = raw.decode("utf-8", errors="strict")
+            except UnicodeDecodeError as exc:
+                raise ToolExecutionError("binary/non-UTF-8 file is not editable") from exc
+            relative = path.relative_to(self.root).as_posix()
+            replacement, result = _bounded_text_replacement(relative, current, arguments)
+            encoded = replacement.encode("utf-8")
+            descriptor, temp_name = tempfile.mkstemp(prefix=".trimem-replace-", dir=path.parent)
+            try:
+                with os.fdopen(descriptor, "wb") as stream:
+                    stream.write(encoded)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                os.chmod(temp_name, path.stat().st_mode)
+                os.replace(temp_name, path)
+            finally:
+                if os.path.exists(temp_name):
+                    os.unlink(temp_name)
+            return result
         if tool == "run_public_tests":
             _exact_arguments(arguments, set())
             if self.public_test is None:
@@ -459,31 +486,35 @@ class GitCheckoutWorkspace:
     ) -> None:
         """Prove and roll forward one fsynced tool-result crash suffix.
 
-        Only the deterministic ``write_file`` mutation is recoverable.  The
+        Only deterministic ``write_file`` and ``replace_text`` mutations are recoverable.  The
         factory marks its roots as disposable benchmark checkouts; direct
         workspaces remain fail-closed.  An unrelated dirty patch is restored to
         the prior checkpoint and rejected rather than silently preserved.
         """
 
         checkpoint_patch = self._checkpoint_patch(state)
-        if tool != "write_file":
+        if tool not in {"write_file", "replace_text"}:
             self.restore_checkpoint(state)
             return
         if not self.allow_checkpoint_recovery:
             raise ToolExecutionError(
                 "completed-tool recovery requires a disposable checkout factory"
             )
-        if set(arguments) != {"path", "content"} or not isinstance(
-            arguments.get("content"), str
-        ):
-            raise ToolExecutionError("recovered write_file arguments are invalid")
-        if set(result) != {"path", "content_hash", "bytes"}:
-            raise ToolExecutionError("recovered write_file result is invalid")
+        if tool == "write_file":
+            if set(arguments) != {"path", "content"} or not isinstance(arguments.get("content"), str):
+                raise ToolExecutionError("recovered write_file arguments are invalid")
+            if set(result) != {"path", "content_hash", "bytes"}:
+                raise ToolExecutionError("recovered write_file result is invalid")
+        else:
+            if set(arguments) != {"path", "expected_file_sha256", "old_text", "new_text"}:
+                raise ToolExecutionError("recovered replace_text arguments are invalid")
+            if set(result) != {"path", "prior_sha256", "new_sha256", "old_bytes", "new_bytes", "replacements"}:
+                raise ToolExecutionError("recovered replace_text result is invalid")
 
         observed_after_crash = self.patch()
         try:
             self._replace_patch(checkpoint_patch)
-            replayed = self.execute("write_file", dict(arguments))
+            replayed = self.execute(tool, dict(arguments))
             deterministic_patch = self.patch()
             if replayed != dict(result):
                 raise ToolExecutionError("recovered write_file result differs from evidence")
@@ -556,6 +587,10 @@ class GitCheckoutWorkspace:
             "content": "".join(selected),
             "start_line": start,
             "end_line": end,
+            "returned_start_line": start,
+            "returned_end_line": end,
+            "total_file_bytes": path.stat().st_size,
+            "full_file_sha256": sha256_bytes(path.read_bytes()),
             "total_lines": total_lines,
             "truncated": end < total_lines,
         }
@@ -664,7 +699,7 @@ class GitCheckoutWorkspaceFactory:
             "public_test_runner_hashes": self.public_test_runner_hashes,
             "sandbox_command_runner_hashes": command_runner_hashes,
             "production_capable": self.production_capable,
-            "checkpoint_crash_recovery": "deterministic-completed-write-roll-forward-v1",
+            "checkpoint_crash_recovery": "deterministic-completed-edit-roll-forward-v2",
             "max_read_bytes": self.max_read_bytes,
             "max_search_hits": self.max_search_hits,
             "tool_names": sorted(TOOL_NAMES),

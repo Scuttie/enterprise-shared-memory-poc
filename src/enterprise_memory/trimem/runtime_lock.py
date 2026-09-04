@@ -17,6 +17,9 @@ Use only the public task and repository snapshot supplied below. Never infer hid
 
 SOLVE_PROMPT = """You are a repository coding agent. Work only on the ACTIVE semantic subtask.
 Use one tool action per response and return strict JSON with exactly `tool` and `arguments`.
+Use replace_text for modifications to an existing file. Use write_file only for a new file or an
+intentionally complete small-file replacement. Never emit a full large existing file merely to
+change a local span.
 When new error, test, symbol, API, or invariant evidence reveals additional semantic work,
 call revise_subtask_dag before completing the current node; do not use generic workflow-stage subtasks.
 When the active subtask has evidence of completion, call complete_subtask with that evidence.
@@ -50,6 +53,16 @@ TOOL_SCHEMA: tuple[Mapping[str, Any], ...] = (
     },
     {"name": "search", "arguments": {"query": "str", "path": "str|null"}},
     {"name": "write_file", "arguments": {"path": "str", "content": "str"}},
+    {
+        "name": "replace_text",
+        "arguments": {
+            "path": "str",
+            "expected_file_sha256": "lowercase sha256",
+            "old_text": "str",
+            "new_text": "str",
+        },
+        "execution": "existing editable UTF-8 file; exact hash; old_text occurs exactly once; atomic replacement; old/new combined <=48000 bytes",
+    },
     {"name": "run_public_tests", "arguments": {}},
     {
         "name": "run_command",
@@ -77,7 +90,9 @@ class RuntimeLimits:
     max_solve_calls: int = 24
     max_decomposition_calls: int = 1
     max_extraction_calls: int = 1
-    max_output_tokens_per_solve: int = 2048
+    max_output_tokens_per_solve: int = 16_384
+    max_total_solve_output_tokens_per_task_arm: int = 49_152
+    max_total_output_tokens_per_task_arm: int = 65_536
     max_output_tokens_decomposition: int = 8192
     max_output_tokens_extraction: int = 8192
     max_memory_injections: int = 3

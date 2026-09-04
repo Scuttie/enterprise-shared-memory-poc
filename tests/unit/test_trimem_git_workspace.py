@@ -372,10 +372,14 @@ def _recovery_reply(request):
 
 
 class _CrashWindowGateway:
-    def __init__(self, *, crash_call=None, failure_call=None, attempt_call=None):
+    def __init__(
+        self, *, crash_call=None, failure_call=None, attempt_call=None,
+        failure_status="provider_failure",
+    ):
         self.crash_call = crash_call
         self.failure_call = failure_call
         self.attempt_call = attempt_call
+        self.failure_status = failure_status
         self.invocations = []
         self._crashed = False
         self._failed = False
@@ -390,7 +394,7 @@ class _CrashWindowGateway:
             raise GatewayInvocationFailure(
                 provider="test-provider",
                 model="test-model",
-                status="provider_failure",
+                status=self.failure_status,
                 attempt=3,
                 input_tokens=13,
                 output_tokens=5,
@@ -543,7 +547,7 @@ def test_git_runtime_marks_request_only_external_call_ambiguous(tmp_path):
     )
     with pytest.raises(InjectedCrash, match="external request"):
         runtime.run(task, arm="M0")
-    with pytest.raises(CheckpointMismatch, match="ambiguous external request"):
+    with pytest.raises(RuntimeError, match="MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"):
         runtime.run(task, arm="M0", resume=True)
     assert (root / "src/value.py").read_text(encoding="utf-8") == "VALUE = 1\n"
     assert gateway.invocations.count(logical_id) == 1
@@ -552,22 +556,38 @@ def test_git_runtime_marks_request_only_external_call_ambiguous(tmp_path):
 
 def test_git_runtime_folds_forward_durable_model_failure_without_retry(tmp_path):
     logical_id = "git-crash-matrix:M0:solve:0001"
-    runtime, task, _, gateway, _, _ = _crash_runtime(
+    terminal = "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS"
+    runtime, task, _, gateway, _, evidence = _crash_runtime(
         tmp_path,
-        gateway=_CrashWindowGateway(failure_call=logical_id),
+        gateway=_CrashWindowGateway(
+            failure_call=logical_id, failure_status=terminal
+        ),
     )
-    with pytest.raises(GatewayInvocationFailure, match="provider_failure"):
+    with pytest.raises(GatewayInvocationFailure, match=terminal):
         runtime.run(task, arm="M0")
-    with pytest.raises(GatewayInvocationFailure, match="provider_failure"):
+    with pytest.raises(GatewayInvocationFailure, match=terminal):
+        runtime.run(task, arm="M0", resume=True)
+    with pytest.raises(GatewayInvocationFailure, match=terminal):
         runtime.run(task, arm="M0", resume=True)
     assert gateway.invocations.count(logical_id) == 1
+    events = _events(evidence)
+    assert sum(
+        row["event_type"] == "model_request"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+    assert sum(
+        row["event_type"] == "model_failure"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
     checkpoint = runtime.checkpoints.load(
         "git-crash-matrix-M0", required_config_hashes=None
     )
     call = next(
         row for row in checkpoint.accounting["calls"] if row["logical_call_id"] == logical_id
     )
-    assert call["attempt"] == 3 and call["status"] == "provider_failure"
+    assert call["attempt"] == 3 and call["status"] == terminal
 
 
 def test_git_runtime_folds_forward_grader_result_without_reexecution(tmp_path):

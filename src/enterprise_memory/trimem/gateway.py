@@ -1,12 +1,12 @@
 """Model gateway boundary shared by paid providers and credential-free replay."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import json
 import time
 from typing import Any, Awaitable, Callable, Mapping, Optional, Protocol
 
-from .accounting import CallRecord, RawEvidenceLedger, RunAccounting, sha256_bytes
+from .accounting import CallRecord, RawEvidenceLedger, RunAccounting, canonical_bytes, sha256_bytes
 
 
 @dataclass(frozen=True)
@@ -371,6 +371,7 @@ class RecordingModelGateway:
         self.evidence = evidence
 
     def invoke(self, request: GatewayRequest) -> GatewayResponse:
+        request_sha256 = sha256_bytes(canonical_bytes(asdict(request)))
         replay = getattr(self.delegate, "replay_terminal", None)
         if callable(replay):
             try:
@@ -380,6 +381,7 @@ class RecordingModelGateway:
                     raise
                 self.evidence.append("model_terminal_outcome_replayed", {
                     "logical_call_id": request.logical_call_id,
+                    "request_sha256": request_sha256,
                     "attempt": failure.attempt,
                     "terminal_event_type": "model_failure",
                     "status": failure.status,
@@ -391,6 +393,7 @@ class RecordingModelGateway:
                     raise RuntimeError("journal replay did not mark its terminal outcome")
                 self.evidence.append("model_terminal_outcome_replayed", {
                     "logical_call_id": request.logical_call_id,
+                    "request_sha256": request_sha256,
                     "attempt": replayed.attempt,
                     "terminal_event_type": "model_response",
                     "status": replayed.status,
@@ -406,6 +409,7 @@ class RecordingModelGateway:
                 "step_no": request.step_no,
                 "call_kind": request.call_kind,
                 "logical_call_id": request.logical_call_id,
+                "request_sha256": request_sha256,
                 "active_node_id": request.active_node_id,
                 "org_id": request.org_id,
                     "prompt": prompt_ref,
@@ -447,6 +451,7 @@ class RecordingModelGateway:
                 "model_failure",
                 {
                     "logical_call_id": request.logical_call_id,
+                    "request_sha256": request_sha256,
                     "provider": failure.provider,
                     "model": failure.model,
                     "paid": failure.paid,
@@ -507,6 +512,7 @@ class RecordingModelGateway:
             "model_response",
             {
                 "logical_call_id": request.logical_call_id,
+                "request_sha256": request_sha256,
                 "response": response_ref,
                 "provider": response.provider,
                 "model": response.model,

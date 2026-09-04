@@ -26,20 +26,22 @@
           "max_memory_injections": 3,
           "max_output_tokens_decomposition": 8192,
           "max_output_tokens_extraction": 8192,
-          "max_output_tokens_per_solve": 2048,
+          "max_output_tokens_per_solve": 16384,
           "max_solve_calls": 24,
-          "max_steps_per_subtask": 8
+          "max_steps_per_subtask": 8,
+          "max_total_output_tokens_per_task_arm": 65536,
+          "max_total_solve_output_tokens_per_task_arm": 49152
         },
         "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
         "prompt_hashes": {
           "decomposer_prompt": "8a2a27bb89e3747f832dd8ec2d57da5134c10526ac7e8b8bbc5c6538985ab1ec",
           "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
-          "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50"
+          "solve_prompt": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f"
         },
-        "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+        "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:51835aa2ea474931a395023a4f3407299cfb5c85e0c5748ee0559c6589ddebc2"
+      "runtime_lock_sha256": "sha256:4e9a5e8d9d39ae8665c8240fb9d823724621da9972fc64a924938ed86bec0ea8"
     },
     {
       "candidate_id": "precision",
@@ -58,20 +60,22 @@
           "max_memory_injections": 3,
           "max_output_tokens_decomposition": 8192,
           "max_output_tokens_extraction": 8192,
-          "max_output_tokens_per_solve": 2048,
+          "max_output_tokens_per_solve": 16384,
           "max_solve_calls": 24,
-          "max_steps_per_subtask": 8
+          "max_steps_per_subtask": 8,
+          "max_total_output_tokens_per_task_arm": 65536,
+          "max_total_solve_output_tokens_per_task_arm": 49152
         },
         "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
         "prompt_hashes": {
           "decomposer_prompt": "f70f3055ac4ba910fa3aeef9fc944410d847e3c7741708f0d347afef5f4be013",
           "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
-          "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50"
+          "solve_prompt": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f"
         },
-        "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+        "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:8e778238a5353588e6c316ed155c8d4072734d366ba0c6334b2ddffe531908bc"
+      "runtime_lock_sha256": "sha256:860d9c49238d0cc0ea69a096c8fd8e2054d1174079d5a1d5ab8cc192950c55d7"
     },
     {
       "candidate_id": "recall",
@@ -90,20 +94,22 @@
           "max_memory_injections": 3,
           "max_output_tokens_decomposition": 8192,
           "max_output_tokens_extraction": 8192,
-          "max_output_tokens_per_solve": 2048,
+          "max_output_tokens_per_solve": 16384,
           "max_solve_calls": 24,
-          "max_steps_per_subtask": 8
+          "max_steps_per_subtask": 8,
+          "max_total_output_tokens_per_task_arm": 65536,
+          "max_total_solve_output_tokens_per_task_arm": 49152
         },
         "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
         "prompt_hashes": {
           "decomposer_prompt": "b7538ba90142b07e7cf152e990efc5e5b50de0c30889f726c09361afaf654bb8",
           "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
-          "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50"
+          "solve_prompt": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f"
         },
-        "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+        "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:0d473e72e5f08d4d234bad4614238d288e1a77f3e7a87f5e2e8fd78ab3140256"
+      "runtime_lock_sha256": "sha256:bfe26b36e4ffe01fbb7592feb664293eb73defeb99e981333fa5aed1119477dd"
     },
     {
       "candidate_id": "balanced",
@@ -122,20 +128,22 @@
           "max_memory_injections": 3,
           "max_output_tokens_decomposition": 8192,
           "max_output_tokens_extraction": 8192,
-          "max_output_tokens_per_solve": 2048,
+          "max_output_tokens_per_solve": 16384,
           "max_solve_calls": 24,
-          "max_steps_per_subtask": 8
+          "max_steps_per_subtask": 8,
+          "max_total_output_tokens_per_task_arm": 65536,
+          "max_total_solve_output_tokens_per_task_arm": 49152
         },
         "parser_hash": "6ed1935c39a85832c182eb062f759e38624bf2e3a0aad95975a40c6cff882068",
         "prompt_hashes": {
           "decomposer_prompt": "84705566bc66ed1be7d2110a2553d5f9d7bb874978b69a1b39fbb553b2cd486d",
           "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
-          "solve_prompt": "f879a11286fb8a597e5824458375a8f173cfba89553226e2118cf3fe21a7ff50"
+          "solve_prompt": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f"
         },
-        "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
+        "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:5c05756e417e12b71523974b9a15f1119991efa461502beff49e0d576aabcf6e"
+      "runtime_lock_sha256": "sha256:d65cb4eee9fa8dbab3a096237e44d6110362850353573236b602663fd38139f7"
     }
   ],
   "development_contract": {

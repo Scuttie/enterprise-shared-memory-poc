@@ -89,10 +89,14 @@ def _initialize(repository: Path, *, bind_recovery_history: bool = True) -> str:
     toolchain_amendment = json.loads(
         (ROOT / trigger.TOOLCHAIN_AMENDMENT_PATH).read_text(encoding="utf-8")
     )
+    solve_budget_lock = json.loads(
+        (ROOT / trigger.SOLVE_OUTPUT_BUDGET_LOCK_PATH).read_text(encoding="utf-8")
+    )
     additional_paths = set(amendment["preserved_contracts"]["path_sha256"])
     additional_paths.update(
         toolchain_amendment["preserved_contracts"]["path_sha256"]
     )
+    additional_paths.update(solve_budget_lock["implementation_sha256"])
     additional_paths.add(candidates["base_policy_path"])
     additional_paths.update(
         row["full_policy_path"] for row in candidates["candidates"]
@@ -393,7 +397,7 @@ def test_only_exact_dev_sentinel_commit_passes(tmp_path: Path) -> None:
             row["workflow_path"]: row["run_id"]
             for row in remote_gate_evidence["workflows"]
         },
-        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_004",
+        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_005",
         "request_payload_sha256": trigger.strict_json_object(request_raw)["request_sha256"],
         "requires_external_approval": True,
         "source_head": before,
@@ -404,10 +408,10 @@ def test_only_exact_dev_sentinel_commit_passes(tmp_path: Path) -> None:
     }
     assert request["recovery_provenance"] == trigger.RECOVERY_PROVENANCE
     assert request["required_external_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_SOLVE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert request["recovery_provenance"]["received_recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_SOLVE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert request["recovery_provenance"][
         "protected_execution_authorization_required"
@@ -472,12 +476,13 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_004.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_005.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-004" in workflow
+    assert "group: trimem-v1-development-tuning-exec-005" in workflow
+    assert "group: trimem-v1-development-tuning-exec-004" not in workflow
     assert "group: trimem-v1-development-tuning-exec-002" not in workflow
     assert "group: trimem-v1-development-tuning-exec-001" not in workflow
     assert "cancel-in-progress: false" in workflow
@@ -548,7 +553,7 @@ def test_freeze_path_literals_match_their_owner_modules() -> None:
     )
 
 
-def test_recovery_receipt_binds_exact_github_source_documents() -> None:
+def test_recovery_receipt_binds_exact_historical_provider_terminal() -> None:
     raw = (ROOT / trigger.RECOVERY_FAILURE_RECEIPT_PATH).read_bytes()
     assert hashlib.sha256(raw).hexdigest() == trigger.EXPECTED_RECOVERY_INPUT_SHA256[
         trigger.RECOVERY_FAILURE_RECEIPT_PATH
@@ -560,49 +565,18 @@ def test_recovery_receipt_binds_exact_github_source_documents() -> None:
     assert receipt["sentinel"]["raw_sha256"] == trigger.RECOVERY_PROVENANCE[
         "previous_request_raw_sha256"
     ]
-    source_documents = receipt["source_documents"]
-    assert set(source_documents) == {
-        "artifact_metadata_api",
-        "artifacts_api",
-        "deployment_statuses_api",
-        "environment_secrets_after_cleanup_api",
-        "jobs_api",
-        "matching_deployments_api",
-        "pending_deployments_api",
-        "repository_runners_after_cleanup_api",
-        "workflow_run_attempt_api",
-    }
-    assert all(
-        isinstance(document["bytes"], int)
-        and document["bytes"] > 0
-        and re.fullmatch(r"sha256:[0-9a-f]{64}", document["raw_sha256"])
-        and document["observed_at_utc"].endswith("Z")
-        for document in source_documents.values()
-    )
     assert receipt["control_plane"]["protected_environment_worked"] is True
     assert receipt["approval"]["materialization_status"] == "PASS"
     assert receipt["jobs"]["protected_execution"]["failed_step"]["name"] == (
         "Execute frozen serial streams with one atomic phase ledger"
     )
-    assert receipt["recovery_boundary"] == {
-        "attempt_2_created": False,
-        "development_request_004_created": False,
-        "future_recovery_authority_received": False,
-        "grader_smoke_rerun_performed": False,
-        "heldout_run_performed": False,
-        "old_run_33739545314_rerun_performed": False,
-        "prohibited_without_new_explicit_authority": [
-            "GitHub Actions rerun or attempt 2",
-            "DEVELOPMENT_TUNING_EXEC_REQUEST_004",
-            "another DEVELOPMENT_TUNING campaign",
-            "HELDOUT_BENCHMARK",
-            "component ablation",
-            "merge",
-            "tag",
-            "release",
-        ],
-        "run_33788493773_attempt_1_immutable": True,
-    }
+    assert receipt["root_cause"]["terminal_classification"] == (
+        "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS"
+    )
+    assert receipt["execution_accounting"]["completed_task_arm_runs"] == 0
+    assert receipt["execution_accounting"]["model_calls"] == 6
+    assert receipt["process_resume"]["additional_provider_calls"] == 0
+    assert receipt["terminal_boundary"]["github_actions_attempt_2_created"] is False
 
 
 def test_recovery_request_preserves_every_scientific_contract(tmp_path: Path) -> None:
@@ -623,15 +597,15 @@ def test_recovery_request_preserves_every_scientific_contract(tmp_path: Path) ->
     assert recovered["expected_expenditure"] == historical["expected_expenditure"]
     assert recovered["scientific_workload"] == historical["scientific_workload"]
     assert recovered["hard_caps"]["output_tokens"] == 4_718_592
-    assert historical["hard_caps"]["output_tokens"] == 3_796_992
+    assert historical["hard_caps"]["output_tokens"] == 4_718_592
     assert recovered["grader_smoke_rerun_authorized"] is False
     assert recovered["heldout_execution_authorized"] is False
     assert recovered["amendment_classification"] == (
-        "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
+        "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT"
     )
-    assert recovered["pre_execution_actuals"]["api_calls"] == 1
+    assert recovered["pre_execution_actuals"]["api_calls"] == 7
     assert recovered["pre_execution_actuals"]["provider_reported_usage"] == (
-        "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP"
+        "MIXED_ONE_HISTORICAL_UNAVAILABLE_SIX_AVAILABLE"
     )
 
 
@@ -670,6 +644,8 @@ def test_benchmark_environment_snapshot_drift_is_rejected_even_if_resealed(
         trigger.EARLIER_FAILURE_RECEIPT_PATH,
         trigger.MIDDLE_SENTINEL_PATH,
         trigger.MIDDLE_FAILURE_RECEIPT_PATH,
+        trigger.D12_SENTINEL_PATH,
+        trigger.D12_FAILURE_RECEIPT_PATH,
         trigger.PREVIOUS_SENTINEL_PATH,
         trigger.RECOVERY_FAILURE_RECEIPT_PATH,
     ],
@@ -680,6 +656,8 @@ def test_benchmark_environment_snapshot_drift_is_rejected_even_if_resealed(
         "failure-receipt-002",
         "request-003",
         "failure-receipt-003",
+        "request-004",
+        "failure-receipt-004",
     ],
 )
 def test_historical_recovery_input_drift_is_rejected_even_if_resealed(
@@ -910,7 +888,7 @@ def test_request_drift_is_rejected(
 @pytest.mark.parametrize(
     "mutate",
     [
-        lambda value: value["pre_execution_actuals"].__setitem__("model_calls", True),
+        lambda value: value["pre_execution_actuals"].__setitem__("grader_containers", False),
         lambda value: value["hard_caps"].__setitem__("total_usd", 50),
     ],
     ids=["bool-equals-zero-in-python", "integer-equals-float-in-python"],
@@ -1619,7 +1597,7 @@ def test_development_budget_ledger_carries_every_approved_call_cap(
         "extraction_calls": 72,
     }
     empty = ledger._empty()
-    assert empty["schema"] == "trimem/atomic-budget-ledger/1.3"
+    assert empty["schema"] == "trimem/atomic-budget-ledger/1.4"
     assert empty["approved_hard_cap"] == trigger.HARD_CAPS
     assert empty["approved_hard_cap_sha256"] == hashlib.sha256(
         benchmark_run.canonical_bytes(trigger.HARD_CAPS)
@@ -1666,7 +1644,7 @@ def test_role_call_cap_is_reserved_before_send_and_rejects_exact_overflow(
     before_pending_rejection = ledger.path.read_bytes()
     with pytest.raises(
         benchmark_run.BenchmarkExecutionError,
-        match=rf"{cap_name} hard cap",
+        match=rf"{cap_name} hard cap|task-arm role output pool",
     ):
         ledger.reserve(
             f"{call_kind}-while-pending",
@@ -1694,7 +1672,7 @@ def test_role_call_cap_is_reserved_before_send_and_rejects_exact_overflow(
     before_rejection = ledger.path.read_bytes()
     with pytest.raises(
         benchmark_run.BenchmarkExecutionError,
-        match=rf"{cap_name} hard cap",
+        match=rf"{cap_name} hard cap|task-arm role output pool",
     ):
         ledger.reserve(
             f"{call_kind}-002",
@@ -1736,7 +1714,7 @@ def test_unknown_provider_failure_consumes_role_reservation_conservatively(
     assert state["actual"]["output_tokens"] == 8_192
 
 
-@pytest.mark.parametrize("call_kind", ("solve", "decompose", "extract"))
+@pytest.mark.parametrize("call_kind", ("decompose", "extract"))
 def test_output_cap_must_equal_frozen_call_kind_limit_before_send(
     tmp_path: Path, call_kind: str
 ) -> None:
@@ -1856,6 +1834,11 @@ def _single_task_terminal_budget(
         "solve_calls": 1,
         "decomposition_calls": 1,
         "extraction_calls": 1,
+        "actual_decomposition_output_tokens": 3,
+        "actual_solve_output_tokens": 5,
+        "actual_extraction_output_tokens": 4,
+        "solve_output_pool_capacity": 49_152,
+        "remaining_solve_output_tokens": 49_147,
         "input_tokens": 31,
         "cached_input_tokens": 3,
         "output_tokens": 12,
@@ -1956,6 +1939,11 @@ def _two_task_terminal_budget(
             "solve_calls": solve_calls,
             "decomposition_calls": 1,
             "extraction_calls": 1,
+            "actual_decomposition_output_tokens": output_tokens,
+            "actual_solve_output_tokens": output_tokens * solve_calls,
+            "actual_extraction_output_tokens": output_tokens,
+            "solve_output_pool_capacity": 49_152,
+            "remaining_solve_output_tokens": 49_152 - output_tokens * solve_calls,
             "input_tokens": input_tokens * len(call_kinds),
             "cached_input_tokens": cached_tokens * len(call_kinds),
             "output_tokens": output_tokens * len(call_kinds),

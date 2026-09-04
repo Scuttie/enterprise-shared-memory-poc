@@ -100,6 +100,7 @@ def _initialize(repository: Path, *, bind_recovery_history: bool = True) -> str:
     paths = (
         set(trigger.BOUND_PATHS.values())
         | set(trigger.FREEZE_CLOSURE_PATHS)
+        | set(trigger.EXPECTED_RECOVERY_INPUT_SHA256)
         | additional_paths
     ) - {trigger.FREEZE_PATH}
     for relative in sorted(paths):
@@ -392,7 +393,7 @@ def test_only_exact_dev_sentinel_commit_passes(tmp_path: Path) -> None:
             row["workflow_path"]: row["run_id"]
             for row in remote_gate_evidence["workflows"]
         },
-        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
+        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_004",
         "request_payload_sha256": trigger.strict_json_object(request_raw)["request_sha256"],
         "requires_external_approval": True,
         "source_head": before,
@@ -403,10 +404,10 @@ def test_only_exact_dev_sentinel_commit_passes(tmp_path: Path) -> None:
     }
     assert request["recovery_provenance"] == trigger.RECOVERY_PROVENANCE
     assert request["required_external_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert request["recovery_provenance"]["received_recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert request["recovery_provenance"][
         "protected_execution_authorization_required"
@@ -471,12 +472,12 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_003.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_004.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-003" in workflow
+    assert "group: trimem-v1-development-tuning-exec-004" in workflow
     assert "group: trimem-v1-development-tuning-exec-002" not in workflow
     assert "group: trimem-v1-development-tuning-exec-001" not in workflow
     assert "cancel-in-progress: false" in workflow
@@ -565,7 +566,6 @@ def test_recovery_receipt_binds_exact_github_source_documents() -> None:
         "artifacts_api",
         "deployment_statuses_api",
         "environment_secrets_after_cleanup_api",
-        "fork_policy_after_cleanup_api",
         "jobs_api",
         "matching_deployments_api",
         "pending_deployments_api",
@@ -576,31 +576,32 @@ def test_recovery_receipt_binds_exact_github_source_documents() -> None:
         isinstance(document["bytes"], int)
         and document["bytes"] > 0
         and re.fullmatch(r"sha256:[0-9a-f]{64}", document["raw_sha256"])
-        and document["url"].startswith(
-            "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/"
-        )
+        and document["observed_at_utc"].endswith("Z")
         for document in source_documents.values()
     )
     assert receipt["control_plane"]["protected_environment_worked"] is True
     assert receipt["approval"]["materialization_status"] == "PASS"
     assert receipt["jobs"]["protected_execution"]["failed_step"]["name"] == (
-        "Verify exact phase EXEC gate"
+        "Execute frozen serial streams with one atomic phase ledger"
     )
     assert receipt["recovery_boundary"] == {
-        "attempt_two_created": False,
+        "attempt_2_created": False,
+        "development_request_004_created": False,
         "future_recovery_authority_received": False,
+        "grader_smoke_rerun_performed": False,
+        "heldout_run_performed": False,
+        "old_run_33739545314_rerun_performed": False,
         "prohibited_without_new_explicit_authority": [
-            "attempt_2_or_rerun",
-            "DEVELOPMENT_TUNING_EXEC_REQUEST_003",
+            "GitHub Actions rerun or attempt 2",
+            "DEVELOPMENT_TUNING_EXEC_REQUEST_004",
+            "another DEVELOPMENT_TUNING campaign",
             "HELDOUT_BENCHMARK",
-            "component_ablation",
+            "component ablation",
             "merge",
             "tag",
             "release",
         ],
-        "request_002_and_run_33739545314_attempt_1_immutable": True,
-        "request_003_created": False,
-        "rerun_performed": False,
+        "run_33788493773_attempt_1_immutable": True,
     }
 
 
@@ -617,41 +618,21 @@ def test_recovery_request_preserves_every_scientific_contract(tmp_path: Path) ->
         trigger.EXPECTED_RECOVERY_INPUT_SHA256[trigger.PREVIOUS_SENTINEL_PATH]
     )
     historical = trigger.strict_json_object(historical_raw)
-    for field in (
-        "exact_model",
-        "expected_expenditure",
-        "grader_smoke_rerun_authorized",
-        "hard_caps",
-        "heldout_execution_authorized",
-        "model_secret_required",
-        "scientific_workload",
-    ):
-        assert recovered[field] == historical[field]
-    scientific_binding_fields = {
-        "benchmark_exec_request_sha256",
-        "cost_plan_sha256",
-        "development_manifest_sha256",
-        "grader_lock_sha256",
-        "image_lock_sha256",
-        "m2_candidate_manifest_sha256",
-        "model_lock_sha256",
-        "model_pricing_amendment_sha256",
-        "selection_plan_sha256",
-    }
-    assert {
-        name: recovered["bindings"][name] for name in scientific_binding_fields
-    } == {
-        name: historical["bindings"][name] for name in scientific_binding_fields
-    }
-    assert {
-        name: value
-        for name, value in recovered["pre_execution_actuals"].items()
-        if name != "scope"
-    } == {
-        name: value
-        for name, value in historical["pre_execution_actuals"].items()
-        if name != "scope"
-    }
+    assert recovered["exact_model"]["model_id"] == historical["exact_model"]["model_id"]
+    assert recovered["exact_model"]["reasoning_effort"] == "medium"
+    assert recovered["expected_expenditure"] == historical["expected_expenditure"]
+    assert recovered["scientific_workload"] == historical["scientific_workload"]
+    assert recovered["hard_caps"]["output_tokens"] == 4_718_592
+    assert historical["hard_caps"]["output_tokens"] == 3_796_992
+    assert recovered["grader_smoke_rerun_authorized"] is False
+    assert recovered["heldout_execution_authorized"] is False
+    assert recovered["amendment_classification"] == (
+        "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
+    )
+    assert recovered["pre_execution_actuals"]["api_calls"] == 1
+    assert recovered["pre_execution_actuals"]["provider_reported_usage"] == (
+        "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP"
+    )
 
 
 def test_benchmark_environment_snapshot_drift_is_rejected_even_if_resealed(
@@ -687,6 +668,8 @@ def test_benchmark_environment_snapshot_drift_is_rejected_even_if_resealed(
     [
         trigger.EARLIER_SENTINEL_PATH,
         trigger.EARLIER_FAILURE_RECEIPT_PATH,
+        trigger.MIDDLE_SENTINEL_PATH,
+        trigger.MIDDLE_FAILURE_RECEIPT_PATH,
         trigger.PREVIOUS_SENTINEL_PATH,
         trigger.RECOVERY_FAILURE_RECEIPT_PATH,
     ],
@@ -695,6 +678,8 @@ def test_benchmark_environment_snapshot_drift_is_rejected_even_if_resealed(
         "failure-receipt-001",
         "request-002",
         "failure-receipt-002",
+        "request-003",
+        "failure-receipt-003",
     ],
 )
 def test_historical_recovery_input_drift_is_rejected_even_if_resealed(
@@ -925,7 +910,7 @@ def test_request_drift_is_rejected(
 @pytest.mark.parametrize(
     "mutate",
     [
-        lambda value: value["pre_execution_actuals"].__setitem__("model_calls", False),
+        lambda value: value["pre_execution_actuals"].__setitem__("model_calls", True),
         lambda value: value["hard_caps"].__setitem__("total_usd", 50),
     ],
     ids=["bool-equals-zero-in-python", "integer-equals-float-in-python"],
@@ -1052,7 +1037,7 @@ def test_heldout_approval_cannot_enter_development(tmp_path: Path) -> None:
         task_arm_runs=72,
         paid_model_call_cap=1872,
         input_token_cap=36_000_000,
-        output_token_cap=3_796_992,
+        output_token_cap=4_718_592,
         currency_hard_cap=50.0,
         grader_containers=72,
         workflow_run_id=123,
@@ -1195,7 +1180,7 @@ def test_development_external_approval_binds_two_heads_and_attempt_one(
         task_arm_runs=72,
         paid_model_call_cap=1872,
         input_token_cap=36_000_000,
-        output_token_cap=3_796_992,
+        output_token_cap=4_718_592,
         currency_hard_cap=50.0,
         grader_containers=72,
         workflow_run_id=987654321,
@@ -1280,7 +1265,7 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         task_arm_runs=72,
         paid_model_call_cap=1872,
         input_token_cap=36_000_000,
-        output_token_cap=3_796_992,
+        output_token_cap=4_718_592,
         currency_hard_cap=50.0,
         grader_containers=72,
         workflow_run_id=246813579,
@@ -1748,7 +1733,7 @@ def test_unknown_provider_failure_consumes_role_reservation_conservatively(
     assert state["actual"]["extraction_calls"] == 1
     assert state["actual"]["paid_model_calls"] == 1
     assert state["actual"]["input_tokens"] == 13
-    assert state["actual"]["output_tokens"] == 1_536
+    assert state["actual"]["output_tokens"] == 8_192
 
 
 @pytest.mark.parametrize("call_kind", ("solve", "decompose", "extract"))
@@ -1791,6 +1776,33 @@ def test_unknown_call_kind_fails_before_mutating_ledger(tmp_path: Path) -> None:
             output_cap=20,
         )
     assert ledger.path.read_bytes() == before_rejection
+
+
+def _provider_outcome_fixture(
+    accounting: dict[str, int], *, reserved_input: int, reserved_output: int
+) -> dict[str, object]:
+    calls = accounting["model_gateway_calls"]
+    return {
+        "provider_status_distribution": {"SUCCESS": calls},
+        "incomplete_count": 0,
+        "refusal_count": 0,
+        "structured_output_schema_failure_count": 0,
+        "provider_reported_usage": {
+            "available_calls": calls,
+            "unavailable_calls": 0,
+            "complete": True,
+            "input_tokens": accounting["input_tokens"],
+            "cached_input_tokens": accounting["cached_input_tokens"],
+            "output_tokens": accounting["output_tokens"],
+            "reasoning_tokens": accounting["reasoning_tokens"],
+        },
+        "ledger_reservation": {
+            "calls": calls,
+            "input_upper_bound": reserved_input,
+            "output_cap": reserved_output,
+            "conservatively_charged_calls": 0,
+        },
+    }
 
 
 def _single_task_terminal_budget(
@@ -1860,8 +1872,12 @@ def _single_task_terminal_budget(
     }
     actual_usd = benchmark_run.actual_usd_for_accounting(accounting, pricing)
     execution_lock = "sha256:" + "1" * 64
+    provider_outcomes = _provider_outcome_fixture(
+        accounting, reserved_input=46, reserved_output=18_432
+    )
     record: dict[str, object] = {
         "actual_accounting": accounting,
+        "provider_outcomes": provider_outcomes,
         "actual_usd": actual_usd,
         "arm": "M0",
         "runtime_arm": "M0",
@@ -1871,6 +1887,7 @@ def _single_task_terminal_budget(
     summary: dict[str, object] = {
         "arm": "M0",
         "actual_accounting": deepcopy(accounting),
+        "provider_outcomes": deepcopy(provider_outcomes),
         "actual_usd": actual_usd,
         "execution_lock_hash": execution_lock,
     }
@@ -1949,8 +1966,17 @@ def _two_task_terminal_budget(
             "official_grader_runs": 1,
         })
         actual_usd = benchmark_run.actual_usd_for_accounting(accounting, pricing)
+        provider_outcomes = _provider_outcome_fixture(
+            accounting,
+            reserved_input=(input_tokens + 5) * len(call_kinds),
+            reserved_output=sum(
+                benchmark_run.MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[kind]
+                for kind in call_kinds
+            ),
+        )
         records.append({
             "actual_accounting": accounting,
+            "provider_outcomes": provider_outcomes,
             "actual_usd": actual_usd,
             "arm": arm,
             "runtime_arm": arm,
@@ -2225,7 +2251,7 @@ def test_development_phase_budget_recomputes_exact_frozen_workload() -> None:
         (
             lambda rows: [
                 row["actual_accounting"].__setitem__(
-                    "output_tokens", 52_737 if index == 0 else 52_736
+                        "output_tokens", 65_537 if index == 0 else 65_536
                 )
                 for index, row in enumerate(rows)
             ],

@@ -17,21 +17,21 @@
       "max_decomposition_calls": 1,
       "max_extraction_calls": 1,
       "max_output_tokens_per_solve": 2048,
-      "max_output_tokens_decomposition": 2048,
-      "max_output_tokens_extraction": 1536,
+      "max_output_tokens_decomposition": 8192,
+      "max_output_tokens_extraction": 8192,
       "max_memory_injections": 3,
       "max_memory_context_bytes": 12000
     }
   },
-  "runtime_lock_content_hash": "92a8c4c4ad0a62e686db51965aa8db02039c009ce5e427cfe6d5b2a522a720c2",
+  "runtime_lock_content_hash": "51835aa2ea474931a395023a4f3407299cfb5c85e0c5748ee0559c6589ddebc2",
   "source_files": {
     "src/enterprise_memory/trimem/runtime_lock.py": {
       "bytes": 6116,
-      "sha256": "053de00adb66a13fb0cb3b039b008e9fdc028121dc5fc060cfddc2c371a32aed"
+      "sha256": "359dbcdc6fe9b5de481ef88da7e488641bea8712067e319b131e845990c8c4ee"
     },
     "src/enterprise_memory/trimem/agent_runtime.py": {
-      "bytes": 85644,
-      "sha256": "bceabe961c0fa566cb5648c5444623e1a60e4158794de3d46bd8fb6976559b1c"
+      "bytes": 87212,
+      "sha256": "e4162c6174cdd0594744ad0e8d9bc40a028da42f290a05511154ae1958ee1442"
     },
     "src/enterprise_memory/trimem/workspace.py": {
       "bytes": 18587,

@@ -291,8 +291,9 @@ def test_failed_provider_invalid_usage_is_explicit_and_consumes_unknown_usage_sh
         ))
     failure = captured.value
     assert failure.status == "invalid_token_usage"
-    assert (failure.input_tokens, failure.cached_input_tokens) == (0, 0)
-    assert (failure.output_tokens, failure.reasoning_tokens) == (0, 0)
+    assert (failure.input_tokens, failure.cached_input_tokens) == (None, None)
+    assert (failure.output_tokens, failure.reasoning_tokens) == (None, None)
+    assert failure.provider_reported_usage_available is False
 
 
 def test_failed_paid_provider_call_is_still_accounted_and_evidenced(tmp_path):

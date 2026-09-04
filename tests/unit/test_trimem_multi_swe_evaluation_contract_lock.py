@@ -114,9 +114,9 @@ EXPECTED_SOURCE_BLOBS = {
 }
 EXPECTED_LOCAL_VALIDATOR_FILES = {
     "scripts/trimem_benchmark_matrix.py": {
-        "bytes": 155892,
+        "bytes": 159370,
         "role": "independent fail-closed aggregate revalidator",
-        "sha256": "4dfb1da981e999aedac60fdb8196028ab58c5607c4324b7f6bea33f05e2038d9",
+        "sha256": "52d828b1e6ca3b2c164ffb218ac425596f43ee7826296abf198d4a83a1974048",
     },
     "scripts/trimem_grader_smoke.py": {
         "bytes": 135285,
@@ -181,13 +181,13 @@ def test_contract_lock_is_self_sealed_and_pins_exact_git_blob_bytes() -> None:
     assert lock["source_blobs"] == EXPECTED_SOURCE_BLOBS
 
     projection = hashlib.sha256(_canonical(lock["contracts"])).hexdigest()
-    assert projection == "7cd1486285c5b8e28ab521e4954c5fd4830180655eb2acae17eba9370886fe90"
+    assert projection == "2ceccbbae2c50ddfa625b82b3fa60d9c53d1854064b78ab0bab5a513da8c6b5a"
     assert lock["contract_projection_sha256"] == projection
 
     body = dict(lock)
     observed_lock = body.pop("lock_sha256")
     assert observed_lock == hashlib.sha256(_canonical(body)).hexdigest()
-    assert observed_lock == "a03993ff4f3134aa4cbe9062128fb534f037063fdd35a031fe139bb432d3ffc1"
+    assert observed_lock == "eba4cb2c4d9cec60b2e79a051c3a33833a58e1b2f1cf4dcbd49ddc46a05bbece"
 
     assert lock["evidence_basis"] == {
         "blob_reader": "git cat-file blob <revision>:<path>",

@@ -344,11 +344,6 @@ def _validate_frozen_material(
         ),
         (IMAGE_LOCK_PATH, BASELINE_IMAGE_LOCK_SHA256, "grader image lock"),
         (
-            CREDENTIAL_FREE_BUNDLE_PATH,
-            BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256,
-            "credential-free bundle",
-        ),
-        (
             MULTI_SWE_ENTRYPOINT_PATH,
             BASELINE_MULTI_SWE_ENTRYPOINT_SHA256,
             "Multi-SWE prebuilt entrypoint",

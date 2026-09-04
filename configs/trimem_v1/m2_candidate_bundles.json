@@ -24,8 +24,8 @@
           "max_extraction_calls": 1,
           "max_memory_context_bytes": 12000,
           "max_memory_injections": 3,
-          "max_output_tokens_decomposition": 2048,
-          "max_output_tokens_extraction": 1536,
+          "max_output_tokens_decomposition": 8192,
+          "max_output_tokens_extraction": 8192,
           "max_output_tokens_per_solve": 2048,
           "max_solve_calls": 24,
           "max_steps_per_subtask": 8
@@ -39,7 +39,7 @@
         "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:92a8c4c4ad0a62e686db51965aa8db02039c009ce5e427cfe6d5b2a522a720c2"
+      "runtime_lock_sha256": "sha256:51835aa2ea474931a395023a4f3407299cfb5c85e0c5748ee0559c6589ddebc2"
     },
     {
       "candidate_id": "precision",
@@ -56,8 +56,8 @@
           "max_extraction_calls": 1,
           "max_memory_context_bytes": 12000,
           "max_memory_injections": 3,
-          "max_output_tokens_decomposition": 2048,
-          "max_output_tokens_extraction": 1536,
+          "max_output_tokens_decomposition": 8192,
+          "max_output_tokens_extraction": 8192,
           "max_output_tokens_per_solve": 2048,
           "max_solve_calls": 24,
           "max_steps_per_subtask": 8
@@ -71,7 +71,7 @@
         "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:d3dbd7fb1ff2de1a9f6aaf27627a3c49a4d6bf276c79008eb47f9bef33e725d0"
+      "runtime_lock_sha256": "sha256:8e778238a5353588e6c316ed155c8d4072734d366ba0c6334b2ddffe531908bc"
     },
     {
       "candidate_id": "recall",
@@ -88,8 +88,8 @@
           "max_extraction_calls": 1,
           "max_memory_context_bytes": 12000,
           "max_memory_injections": 3,
-          "max_output_tokens_decomposition": 2048,
-          "max_output_tokens_extraction": 1536,
+          "max_output_tokens_decomposition": 8192,
+          "max_output_tokens_extraction": 8192,
           "max_output_tokens_per_solve": 2048,
           "max_solve_calls": 24,
           "max_steps_per_subtask": 8
@@ -103,7 +103,7 @@
         "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:9bf9d4514a883e4d880cce04161f9593a8672dcf395a467f374ee8cd086782a8"
+      "runtime_lock_sha256": "sha256:0d473e72e5f08d4d234bad4614238d288e1a77f3e7a87f5e2e8fd78ab3140256"
     },
     {
       "candidate_id": "balanced",
@@ -120,8 +120,8 @@
           "max_extraction_calls": 1,
           "max_memory_context_bytes": 12000,
           "max_memory_injections": 3,
-          "max_output_tokens_decomposition": 2048,
-          "max_output_tokens_extraction": 1536,
+          "max_output_tokens_decomposition": 8192,
+          "max_output_tokens_extraction": 8192,
           "max_output_tokens_per_solve": 2048,
           "max_solve_calls": 24,
           "max_steps_per_subtask": 8
@@ -135,7 +135,7 @@
         "tool_hash": "59efe16de742061fa389ebe217714b485515e19013412b253149bc5666346920",
         "version": "trimem-agent-v1"
       },
-      "runtime_lock_sha256": "sha256:ae7ccff87c1d0a4c4c32aef35ec390c3a46b041aab148809cf2718f9f0b8f15b"
+      "runtime_lock_sha256": "sha256:5c05756e417e12b71523974b9a15f1119991efa461502beff49e0d576aabcf6e"
     }
   ],
   "development_contract": {

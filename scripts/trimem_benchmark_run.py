@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import contextmanager
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 import hashlib
@@ -36,7 +36,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from enterprise_memory.providers.openai_responses import OpenAIResponsesProvider  # noqa: E402
+from enterprise_memory.providers.openai_responses import (  # noqa: E402
+    OpenAIResponsesProvider,
+    RestrictedProviderResponseStore,
+)
 from enterprise_memory.trimem.accounting import RawEvidenceLedger, strict_json_loads  # noqa: E402
 from enterprise_memory.trimem.agent_runtime import CodingTask, TriMemAgentRuntime  # noqa: E402
 from enterprise_memory.trimem.benchmark_seed import seed_benchmark_identities  # noqa: E402
@@ -167,8 +170,8 @@ TERMINAL_LEDGER_TASK_ARM_FIELDS = {
 MAX_LEDGER_INPUT_BOUND_PER_CALL = 262_000
 MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND = {
     "solve": 2_048,
-    "decompose": 2_048,
-    "extract": 1_536,
+    "decompose": 8_192,
+    "extract": 8_192,
 }
 BENCHMARK_EXEC_REQUEST = Path("configs/trimem_v1/benchmark_exec_request.json")
 GRADER_SMOKE_EXEC_REQUEST = Path(
@@ -1189,13 +1192,21 @@ class BudgetedModelGateway:
         try:
             response = self.delegate.invoke(request)
         except GatewayInvocationFailure as exc:
-            unknown_usage = not any((exc.input_tokens, exc.cached_input_tokens, exc.output_tokens))
+            unknown_usage = not exc.provider_reported_usage_available
             self.ledger.reconcile(
-                ledger_logical_call_id, reservation, input_tokens=exc.input_tokens,
-                cached_input_tokens=exc.cached_input_tokens, output_tokens=exc.output_tokens,
+                ledger_logical_call_id, reservation,
+                input_tokens=exc.input_tokens if not unknown_usage else 0,
+                cached_input_tokens=exc.cached_input_tokens if not unknown_usage else 0,
+                output_tokens=exc.output_tokens if not unknown_usage else 0,
                 status="PROVIDER_FAILURE_CONSERVATIVE" if unknown_usage else "PROVIDER_FAILURE",
                 conservative_unknown=unknown_usage,
             )
+            exc.ledger_reservation = {
+                "reservation_id": reservation,
+                "input_upper_bound": input_bound,
+                "output_cap": request.max_output_tokens,
+                "charged_conservatively": unknown_usage,
+            }
             raise
         except BaseException:
             # The request may have reached the provider without exact usage. Keep
@@ -1211,12 +1222,21 @@ class BudgetedModelGateway:
                 output_tokens=0, status="INVALID_UNPAID_RESPONSE_CONSERVATIVE", conservative_unknown=True,
             )
             raise BenchmarkExecutionError("benchmark provider response is not marked paid")
+        unknown_usage = not response.provider_reported_usage_available
         self.ledger.reconcile(
-            ledger_logical_call_id, reservation, input_tokens=response.input_tokens,
-            cached_input_tokens=response.cached_input_tokens, output_tokens=response.output_tokens,
-            status="SUCCESS",
+            ledger_logical_call_id, reservation,
+            input_tokens=response.input_tokens if not unknown_usage else 0,
+            cached_input_tokens=response.cached_input_tokens if not unknown_usage else 0,
+            output_tokens=response.output_tokens if not unknown_usage else 0,
+            status="SUCCESS_CONSERVATIVE_USAGE" if unknown_usage else "SUCCESS",
+            conservative_unknown=unknown_usage,
         )
-        return response
+        return replace(response, ledger_reservation={
+            "reservation_id": reservation,
+            "input_upper_bound": input_bound,
+            "output_cap": request.max_output_tokens,
+            "charged_conservatively": unknown_usage,
+        })
 
 
 class TerminalInvocationJournal:
@@ -1269,14 +1289,33 @@ class JournaledModelGateway:
         self.delegate = delegate
         self.journal = journal
 
+    def replay_terminal(self, request: GatewayRequest) -> Optional[GatewayResponse]:
+        request_hash = sha256_bytes(canonical_bytes(asdict(request)))
+        path = self.journal._path("model", request.logical_call_id)
+        if not path.exists():
+            return None
+        row = self.journal.load(path)
+        if row.get("key") != request.logical_call_id or row.get("request_sha256") != request_hash:
+            raise BenchmarkExecutionError("terminal journal request identity mismatch")
+        if row.get("status") == "SUCCESS":
+            return replace(
+                GatewayResponse(**row["response"]), terminal_outcome_replayed=True
+            )
+        if row.get("status") == "FAILURE":
+            raise GatewayInvocationFailure(
+                **row["failure"], terminal_outcome_replayed=True
+            )
+        if row.get("status") == "IN_FLIGHT":
+            return None
+        raise BenchmarkExecutionError("unknown model journal state")
+
     def invoke(self, request: GatewayRequest) -> GatewayResponse:
+        replayed = self.replay_terminal(request)
+        if replayed is not None:
+            return replayed
         request_hash = sha256_bytes(canonical_bytes(asdict(request)))
         path = self.journal.begin("model", request.logical_call_id, request_hash)
         row = self.journal.load(path)
-        if row.get("status") == "SUCCESS":
-            return GatewayResponse(**row["response"])
-        if row.get("status") == "FAILURE":
-            raise GatewayInvocationFailure(**row["failure"])
         if row.get("status") != "IN_FLIGHT":
             raise BenchmarkExecutionError("unknown model journal state")
         # A pre-existing write-ahead record is ambiguous.  Only the process
@@ -1294,6 +1333,23 @@ class JournaledModelGateway:
                 "cached_input_tokens": exc.cached_input_tokens,
                 "reasoning_tokens": exc.reasoning_tokens,
                 "wall_time_ms": exc.wall_time_ms, "response_text": exc.response_text,
+                "provider_request_id": exc.provider_request_id,
+                "response_id": exc.response_id,
+                "response_status": exc.response_status,
+                "response_error_code": exc.response_error_code,
+                "incomplete_reason": exc.incomplete_reason,
+                "output_item_types": list(exc.output_item_types),
+                "content_item_types": list(exc.content_item_types),
+                "refusal_present": exc.refusal_present,
+                "provider_reported_usage_available": exc.provider_reported_usage_available,
+                "raw_envelope_reference": exc.raw_envelope_reference,
+                "extracted_text_bytes": exc.extracted_text_bytes,
+                "structured_output_bytes": exc.structured_output_bytes,
+                "original_provider_terminal_classification": (
+                    exc.original_provider_terminal_classification
+                ),
+                "provider_response_envelope": exc.provider_response_envelope,
+                "ledger_reservation": exc.ledger_reservation,
             }
             self.journal.finish(path, {"status": "FAILURE", "failure": failure})
             raise
@@ -1354,7 +1410,8 @@ class _EnvironmentSecret:
 
 
 def build_paid_model_gateway(
-    session: Any, ledger: AtomicBudgetLedger, model_lock: Mapping[str, Any], *, stream_id: str
+    session: Any, ledger: AtomicBudgetLedger, model_lock: Mapping[str, Any], *,
+    stream_id: str, restricted_response_root: Path,
 ):
     import httpx
     model = model_lock.get("primary_model", {}).get("model_id")
@@ -1377,6 +1434,7 @@ def build_paid_model_gateway(
     provider = OpenAIResponsesProvider(
         "https://api.openai.com/v1", model, _EnvironmentSecret(), family="gpt5.4",
         reasoning_effort="medium", max_retries=1, http_client=client,
+        raw_response_recorder=RestrictedProviderResponseStore(restricted_response_root),
     )
     bridge = AsyncProviderModelGateway(provider, runner, expected_model=model)
     return BudgetedModelGateway(bridge, ledger, stream_id=stream_id), client
@@ -1689,6 +1747,121 @@ def actual_accounting(value: Mapping[str, Any], *, task_wall_time_ms: int = 0) -
     }
 
 
+def provider_outcome_accounting(value: Mapping[str, Any]) -> dict[str, Any]:
+    """Return a public, text-free provider outcome/usage projection."""
+
+    calls = value.get("calls", [])
+    if not isinstance(calls, list):
+        raise BenchmarkExecutionError("provider call accounting is malformed")
+    status_distribution: dict[str, int] = {}
+    known_usage = {
+        "input_tokens": 0,
+        "cached_input_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+    }
+    reservation = {
+        "calls": 0,
+        "input_upper_bound": 0,
+        "output_cap": 0,
+        "conservatively_charged_calls": 0,
+    }
+    available_calls = 0
+    unavailable_calls = 0
+    for call in calls:
+        if not isinstance(call, Mapping):
+            raise BenchmarkExecutionError("provider call record is malformed")
+        envelope = call.get("provider_response_envelope")
+        classification = (
+            envelope.get("terminal_classification")
+            if isinstance(envelope, Mapping)
+            else call.get("status")
+        )
+        if not isinstance(classification, str) or not classification:
+            raise BenchmarkExecutionError("provider terminal classification is missing")
+        status_distribution[classification] = status_distribution.get(classification, 0) + 1
+        if call.get("provider_reported_usage_available") is True:
+            available_calls += 1
+            for field in known_usage:
+                token_value = call.get(field)
+                if type(token_value) is not int or token_value < 0:
+                    raise BenchmarkExecutionError("provider reported usage is malformed")
+                known_usage[field] += token_value
+        else:
+            unavailable_calls += 1
+        ledger = call.get("ledger_reservation")
+        if not isinstance(ledger, Mapping):
+            raise BenchmarkExecutionError("provider ledger reservation is missing")
+        for field in ("input_upper_bound", "output_cap"):
+            amount = ledger.get(field)
+            if type(amount) is not int or amount < 0:
+                raise BenchmarkExecutionError("provider ledger reservation is malformed")
+            reservation[field] += amount
+        reservation["calls"] += 1
+        reservation["conservatively_charged_calls"] += int(
+            ledger.get("charged_conservatively") is True
+        )
+    return {
+        "provider_status_distribution": dict(sorted(status_distribution.items())),
+        "incomplete_count": sum(
+            count for name, count in status_distribution.items()
+            if name.startswith("RESPONSE_INCOMPLETE")
+        ),
+        "refusal_count": status_distribution.get("RESPONSE_REFUSAL", 0),
+        "structured_output_schema_failure_count": status_distribution.get(
+            "STRUCTURED_OUTPUT_SCHEMA_FAILURE", 0
+        ),
+        "provider_reported_usage": {
+            "available_calls": available_calls,
+            "unavailable_calls": unavailable_calls,
+            "complete": unavailable_calls == 0,
+            **known_usage,
+        },
+        "ledger_reservation": reservation,
+    }
+
+
+def combine_provider_outcomes(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    statuses: dict[str, int] = {}
+    usage = {
+        "available_calls": 0,
+        "unavailable_calls": 0,
+        "input_tokens": 0,
+        "cached_input_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+    }
+    reservation = {
+        "calls": 0,
+        "input_upper_bound": 0,
+        "output_cap": 0,
+        "conservatively_charged_calls": 0,
+    }
+    for row in rows:
+        for name, count in row["provider_status_distribution"].items():
+            statuses[name] = statuses.get(name, 0) + int(count)
+        for field in usage:
+            usage[field] += int(row["provider_reported_usage"][field])
+        for field in reservation:
+            reservation[field] += int(row["ledger_reservation"][field])
+    return {
+        "provider_status_distribution": dict(sorted(statuses.items())),
+        "incomplete_count": sum(
+            count for name, count in statuses.items()
+            if name.startswith("RESPONSE_INCOMPLETE")
+        ),
+        "refusal_count": statuses.get("RESPONSE_REFUSAL", 0),
+        "structured_output_schema_failure_count": statuses.get(
+            "STRUCTURED_OUTPUT_SCHEMA_FAILURE", 0
+        ),
+        "provider_reported_usage": {
+            **usage,
+            "complete": usage["unavailable_calls"] == 0,
+        },
+        "ledger_reservation": reservation,
+    }
+
+
 def actual_usd_for_accounting(
     accounting: Mapping[str, int], pricing: Mapping[str, Any]
 ) -> str:
@@ -1740,6 +1913,7 @@ def validate_phase_completion(
         arm: [] for arm in summary_by_arm
     }
     execution_locks: dict[str, str] = {}
+    phase_provider_rows: list[Mapping[str, Any]] = []
     for record in result_records:
         arm, runtime_arm, target_id = (
             record.get("arm"), record.get("runtime_arm"), record.get("target_id")
@@ -1797,6 +1971,10 @@ def validate_phase_completion(
             raise BenchmarkExecutionError("execution lock changed within a stream")
         for field in accounting_fields:
             phase_accounting[field] += accounting[field]
+        provider_outcomes = record.get("provider_outcomes")
+        if not isinstance(provider_outcomes, Mapping):
+            raise BenchmarkExecutionError("phase result provider outcomes are missing")
+        phase_provider_rows.append(provider_outcomes)
         task_arm_key = f"{arm}:{runtime_arm}:{target_id}"
         task_arm_actual[task_arm_key] = {
             "input_tokens": accounting["input_tokens"],
@@ -1821,6 +1999,11 @@ def validate_phase_completion(
         }
         if summary.get("actual_accounting") != expected_stream_accounting:
             raise BenchmarkExecutionError("stream summary/result accounting totals differ")
+        expected_provider_outcomes = combine_provider_outcomes(
+            [row["provider_outcomes"] for row in stream_records]
+        )
+        if summary.get("provider_outcomes") != expected_provider_outcomes:
+            raise BenchmarkExecutionError("stream summary/provider outcome totals differ")
         if summary.get("actual_usd") != actual_usd_for_accounting(
             expected_stream_accounting, pricing
         ):
@@ -1871,6 +2054,7 @@ def validate_phase_completion(
         "actual_accounting": phase_accounting,
         "actual_usd": actual_usd_for_accounting(phase_accounting, pricing),
         "execution_locks": execution_locks,
+        "provider_outcomes": combine_provider_outcomes(phase_provider_rows),
         "task_arm_runs": len(result_records),
     }
 
@@ -2269,7 +2453,10 @@ def run_arm_stream(
             write_json(output_root / f"{stream_id}.freshness.json", freshness)
             cursor = 0
         gateway, client = build_paid_model_gateway(
-            session, ledger, model_lock, stream_id=stream_id
+            session, ledger, model_lock, stream_id=stream_id,
+            restricted_response_root=(
+                output_root / "restricted-provider-responses" / stream_id
+            ),
         )
         # A crash after the canonical cursor advanced but before the local cap
         # ledger reconciled is repaired from the already-written task result.
@@ -2342,6 +2529,50 @@ def run_arm_stream(
             agent_checkpoint = task_dir / "agent-checkpoints" / f"{run_id}.json"
             try:
                 result = runtime.run(task, arm=arm, run_id=run_id, resume=agent_checkpoint.is_file())
+            except GatewayInvocationFailure as failure:
+                receipt = {
+                    "schema": "trimem/provider-terminal-failure-receipt/1.0",
+                    "task_id": task.task_id,
+                    "arm": arm,
+                    "stream_id": stream_id,
+                    "logical_provider_status": failure.status,
+                    "original_provider_terminal_classification": (
+                        failure.original_provider_terminal_classification
+                    ),
+                    "provider_request_id_sha256": (
+                        sha256_bytes(failure.provider_request_id.encode("utf-8"))
+                        if failure.provider_request_id
+                        else None
+                    ),
+                    "response_id": failure.response_id,
+                    "response_status": failure.response_status,
+                    "response_error_code": failure.response_error_code,
+                    "incomplete_reason": failure.incomplete_reason,
+                    "output_item_types": list(failure.output_item_types),
+                    "content_item_types": list(failure.content_item_types),
+                    "refusal_present": failure.refusal_present,
+                    "provider_reported_usage": {
+                        "available": failure.provider_reported_usage_available,
+                        "input_tokens": failure.input_tokens,
+                        "cached_input_tokens": failure.cached_input_tokens,
+                        "output_tokens": failure.output_tokens,
+                        "reasoning_tokens": failure.reasoning_tokens,
+                    },
+                    "ledger_reservation": failure.ledger_reservation,
+                    "raw_envelope_reference": failure.raw_envelope_reference,
+                    "extracted_text_bytes": failure.extracted_text_bytes,
+                    "structured_output_bytes": failure.structured_output_bytes,
+                    "provider_response_envelope": failure.provider_response_envelope,
+                    "scientific_result_available": False,
+                }
+                receipt_path = task_dir / "provider-failure-receipt.json"
+                if receipt_path.exists() and read_json(receipt_path) != receipt:
+                    raise BenchmarkExecutionError(
+                        "resumed provider failure differs from its durable receipt"
+                    ) from failure
+                if not receipt_path.exists():
+                    write_json(receipt_path, receipt)
+                raise
             except GraderInvocationFailure as failure:
                 ledger.complete_task_arm(
                     task_arm_key, task_reservation, status="OFFICIAL_GRADER_FAILURE",
@@ -2371,10 +2602,12 @@ def run_arm_stream(
             accounting = actual_accounting(
                 result.accounting, task_wall_time_ms=task_wall_time_ms
             )
+            provider_outcomes = provider_outcome_accounting(result.accounting)
             pricing = read_json(ROOT / "configs/trimem_v1/cost_plan.json")["model_pricing"]
             task_actual_usd = actual_usd_for_accounting(accounting, pricing)
             record = {
                 "actual_accounting": accounting, "actual_memory_metrics": memory_metrics,
+                "provider_outcomes": provider_outcomes,
                 "actual_usd": task_actual_usd,
                 "arm": stream_id, "runtime_arm": arm,
                 "benchmark_id": target["benchmark_id"],
@@ -2450,6 +2683,9 @@ def run_arm_stream(
             field: sum(int(row["actual_memory_metrics"][field]) for row in result_records)
             for field in result_records[0]["actual_memory_metrics"]
         }
+        provider_outcomes = combine_provider_outcomes(
+            [row["provider_outcomes"] for row in result_records]
+        )
         prices = read_json(ROOT / "configs/trimem_v1/cost_plan.json")["model_pricing"]
         actual_usd = actual_usd_for_accounting(total_accounting, prices)
         summary = {
@@ -2475,6 +2711,7 @@ def run_arm_stream(
             ),
             "actual_accounting": total_accounting,
             "actual_memory_metrics": total_memory_metrics,
+            "provider_outcomes": provider_outcomes,
             "actual_total_tokens": (
                 # Responses reasoning_tokens is a reported subset of output_tokens.
                 total_accounting["input_tokens"] + total_accounting["output_tokens"]

@@ -169,9 +169,6 @@ def test_p011_preserves_failed_trigger_and_records_nonsemantic_amendment() -> No
         "artifacts/trimem_v1/grader_image_lock.json": (
             "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb"
         ),
-        "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json": (
-            "e03e96f26b56fffb2e911504b526b6986a9148b4db620aa9b58bb5e100083e4c"
-        ),
         "scripts/trimem_grader_smoke_protocol.py": (
             "f73d7da715b3cc6a2d15e3bc39c355cfeccf585ab2014a1834c9b275839fc7b8"
         ),
@@ -355,8 +352,7 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert cost["run_counts"]["heldout_physical_task_arm_runs"] == 81
     assert cost["run_counts"]["total_physical_task_arm_runs"] == 153
     assert cost["actual_to_date_scope"] == (
-        "CUMULATIVE_INCLUDES_P0.1.4_DIAGNOSTIC_HISTORY_AND_"
-        "P0.1.5_EXEC_005_AUTHORITATIVE_PASS"
+        "CUMULATIVE_INCLUDES_GRADER_HISTORY_AND_DEV_RUN_33788493773_ATTEMPT_1"
     )
     p014_actual = {
         **_smoke_accounting(6),
@@ -415,7 +411,24 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "task_arm_runs": 0,
         "total_usd": 0,
     }
-    assert cost["actual_to_date"] == cumulative
+    assert cost["actual_to_date"] == {
+        **cumulative,
+        "api_calls": 1,
+        "decomposition_calls": 1,
+        "input_tokens": None,
+        "model_calls": 1,
+        "model_gateway_calls": 1,
+        "output_tokens": None,
+        "paid_model_calls": 1,
+        "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+        "reasoning_tokens": None,
+        "ledger_reservation": {
+            "input_tokens": 5069,
+            "output_tokens": 2048,
+            "total_usd": 0.01301775,
+        },
+        "total_usd": 0.01301775,
+    }
     assert cost["expected_cost"]["phase_totals"]["GRADER_SMOKE"][
         "grader_containers"
     ] == 12
@@ -426,9 +439,9 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert requirements["current_status"] == {
         "DEV_APPROVAL_ALLOWED": "NO",
         "DEV_EXECUTION_ALLOWED": "NO",
-        "DEV_SCIENTIFIC_STATUS": "NOT_STARTED",
+        "DEV_SCIENTIFIC_STATUS": "STARTED_NO_COMPLETED_CELL",
         "ENDPOINT": readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT,
-        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_002_FAILURE_LABEL,
+        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_003_FAILURE_SUBTYPE,
         "GRADER_EXEC_PACKAGE": "PASS",
         "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
@@ -447,19 +460,19 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["prior_failed_run_reusable"] is False
     assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert authorization["recovery_request_id"] == trigger.REQUEST_ID
     assert authorization["recovery_request_path"] == trigger.SENTINEL_PATH
-    assert authorization["request_002_final"] is True
-    assert authorization["request_003_allowed_after_exact_remote_gates"] is True
+    assert authorization["request_003_final"] is True
+    assert authorization["request_004_allowed_after_exact_remote_gates"] is True
     assert authorization["rerun_allowed"] is False
-    assert "final and consumed" in authorization["meaning"]
+    assert "is final" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     assert authorization["amendment_classification"] == (
-        "NON_SEMANTIC_RUNNER_TOOLCHAIN_DEPENDENCY_FIX"
+        "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
     )
-    assert authorization["toolchain_rehearsal_required_before_request_003"] is True
+    assert authorization["provider_contract_rehearsal_required_before_request_004"] is True
     service_boundary = requirements["credential_free_service_ci_boundary"]
     assert "ALLOWED_PRE_EXEC" in service_boundary
     assert "digest-pinned PostgreSQL and Qdrant support services" in service_boundary
@@ -554,48 +567,24 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "request_path": readiness.DEVELOPMENT_EXEC_002_SENTINEL_PATH,
         "single_new_attempt_one_run_allowed": True,
     }
+    gate_failure = requirements["historical_development_exec_gate_failure"]
+    assert gate_failure == readiness._validated_development_exec_002_failure()
     current_failure = requirements["development_execution_failure"]
-    assert current_failure == readiness._validated_development_exec_002_failure()
-    assert current_failure["status"] == (
-        "FINAL_CONSUMED_BEFORE_SCIENTIFIC_EXECUTION"
-    )
-    assert current_failure["scientific_run"] is False
+    assert current_failure == readiness._validated_development_exec_003_failure()
+    assert current_failure["dev_scientific_status"] == "STARTED_NO_COMPLETED_CELL"
     assert current_failure["performance"] == "NOT_MEASURED"
     assert current_failure["execution_accounting"] == {
-        **{
-            field: 0
-            for field in (
-                "api_calls",
-                "cached_input_tokens",
-                "decomposition_calls",
-                "extraction_calls",
-                "grader_calls",
-                "grader_containers",
-                "input_tokens",
-                "model_calls",
-                "model_gateway_calls",
-                "official_grader_runs",
-                "output_tokens",
-                "paid_model_calls",
-                "reasoning_tokens",
-                "solve_calls",
-                "target_image_pulls",
-                "task_arm_runs",
-            )
-        },
-        "support_service_containers": 2,
-        "support_service_image_pulls": 2,
-        "total_usd": 0.0,
+        "api_calls": 1,
+        "model_calls": 1,
+        "paid_model_calls": 1,
+        "completed_task_arm_runs": 0,
+        "grader_containers": 0,
+        "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
     }
-    assert current_failure["authority"] == {
-        "attempt_one_consumed": True,
-        "attempt_two_allowed": False,
-        "fresh_attempt_one_request": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
-        "future_recovery_authority_received": True,
-        "request_002_final": True,
-        "request_003_allowed_after_exact_remote_gates": True,
-        "rerun_allowed": False,
-    }
+    assert current_failure["failure_subtype"] == (
+        "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_EXTRACTED_TEXT"
+    )
+    assert current_failure["fresh_request_id"] == trigger.REQUEST_ID
 
 
 def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
@@ -610,7 +599,7 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
     assert derived["current_status"]["DEV_EXECUTION_ALLOWED"] == "NO"
     assert derived["current_status"]["PERFORMANCE"] == "NOT_MEASURED"
     assert derived["development_execution_failure"] == (
-        readiness._validated_development_exec_002_failure()
+        readiness._validated_development_exec_003_failure()
     )
     assert derived["scientific_result"] == {
         "gold_resolved": 6,
@@ -3323,11 +3312,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "D1.2 fresh-run approval boundaries" in static
+    assert "D1.3 fresh-run approval boundaries" in static
     assert '("benchmark-approval", 0, [])' in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
-    assert "expected exact D1.2 report" in static
+    assert "expected exact D1.3 report" in static
     assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service
@@ -3568,11 +3557,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in benchmark
     assert (
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_003.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_004.json"
     ) in benchmark
     assert "branch-trigger-preflight:" in benchmark
     assert "needs: branch-trigger-preflight" in benchmark
-    assert "group: trimem-v1-development-tuning-exec-003" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-004" in benchmark
     assert "group: trimem-v1-development-tuning-exec-002" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-001" not in benchmark
     assert "cancel-in-progress: false" in benchmark
@@ -4375,16 +4364,41 @@ def _stream_total_fixture() -> tuple[list[dict], dict, dict]:
         "retained_records": 1,
         "net_memory_growth": 1,
     })
+    def provider_outcomes(accounting: dict[str, int]) -> dict[str, object]:
+        calls = accounting["model_gateway_calls"]
+        return {
+            "provider_status_distribution": {"SUCCESS": calls},
+            "incomplete_count": 0,
+            "refusal_count": 0,
+            "structured_output_schema_failure_count": 0,
+            "provider_reported_usage": {
+                "available_calls": calls,
+                "unavailable_calls": 0,
+                "complete": True,
+                "input_tokens": accounting["input_tokens"],
+                "cached_input_tokens": accounting["cached_input_tokens"],
+                "output_tokens": accounting["output_tokens"],
+                "reasoning_tokens": accounting["reasoning_tokens"],
+            },
+            "ledger_reservation": {
+                "calls": calls,
+                "input_upper_bound": accounting["input_tokens"],
+                "output_cap": accounting["output_tokens"],
+                "conservatively_charged_calls": 0,
+            },
+        }
     records = [
         {
             "actual_accounting": first_accounting,
             "actual_memory_metrics": first_memory,
+            "provider_outcomes": provider_outcomes(first_accounting),
             "actual_usd": "0.001065000000",
             "resolved": True,
         },
         {
             "actual_accounting": second_accounting,
             "actual_memory_metrics": second_memory,
+            "provider_outcomes": provider_outcomes(second_accounting),
             "actual_usd": "0.002400000000",
             "resolved": False,
         },
@@ -4398,6 +4412,9 @@ def _stream_total_fixture() -> tuple[list[dict], dict, dict]:
             field: first_memory[field] + second_memory[field]
             for field in benchmark_matrix.MEMORY_FIELDS
         },
+        "provider_outcomes": benchmark_matrix._combine_provider_outcomes(
+            [provider_outcomes(first_accounting), provider_outcomes(second_accounting)]
+        ),
         "actual_total_tokens": 3_300,
         "actual_usd": "0.003465000000",
         "resolved_count": 1,
@@ -4608,6 +4625,27 @@ def test_non_m2_stream_rejects_m2_artifacts_before_session_open(
 
 def _sealed_public_aggregate(tmp_path: Path) -> Path:
     digest = "a" * 64
+    provider_outcomes = {
+        "provider_status_distribution": {"SUCCESS": 1},
+        "incomplete_count": 0,
+        "refusal_count": 0,
+        "structured_output_schema_failure_count": 0,
+        "provider_reported_usage": {
+            "available_calls": 1,
+            "unavailable_calls": 0,
+            "complete": True,
+            "input_tokens": 0,
+            "cached_input_tokens": 0,
+            "output_tokens": 0,
+            "reasoning_tokens": 0,
+        },
+        "ledger_reservation": {
+            "calls": 1,
+            "input_upper_bound": 0,
+            "output_cap": 0,
+            "conservatively_charged_calls": 0,
+        },
+    }
     body = {
         "schema": "trimem/verified-aggregate/1.0",
         "manifest": "heldout",
@@ -4620,12 +4658,14 @@ def _sealed_public_aggregate(tmp_path: Path) -> Path:
             "resolved": False,
             "actual_accounting": {"task_wall_time_ms": 17},
             "actual_memory_metrics": {"recall_attempts": 0},
+            "provider_outcomes": provider_outcomes,
             "actual_usd": "0.000000000000",
         }],
         "stream_totals": [{
             "arm": "M0",
             "actual_accounting": {"task_wall_time_ms": 17},
             "actual_memory_metrics": {"recall_attempts": 0},
+            "provider_outcomes": provider_outcomes,
             "actual_usd": "0.000000000000",
             "identity_seed_digest": "sha256:" + digest,
             "resolved_count": 0,
@@ -4658,6 +4698,7 @@ def _sealed_public_aggregate(tmp_path: Path) -> Path:
             "resolved_count": 0,
         }],
         "secondary_endpoints": [],
+        "provider_outcomes": provider_outcomes,
         "approval_binding": {
             "approval_artifact_sha256": digest,
             "approved_request_sha256": digest,

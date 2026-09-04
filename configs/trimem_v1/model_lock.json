@@ -1,9 +1,11 @@
 {
   "schema": "trimem/model-lock/1.2",
-  "status": "FROZEN_PRE_EXEC_EXECUTION_PENDING_APPROVAL",
+  "status": "FROZEN_PRE_RESULT_AMENDMENT_PENDING_APPROVAL",
   "actual_execution": {
-    "model_gateway_calls": 0,
-    "paid_model_calls": 0
+    "model_gateway_calls": 1,
+    "paid_model_calls": 1,
+    "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+    "completed_task_arm_runs": 0
   },
   "primary_model": {
     "provider": "openai",
@@ -45,26 +47,36 @@
       },
       "max_output_tokens": "per-call value from the frozen RuntimeLock"
     },
+    "role_specific_text_format": {
+      "decomposition": "strict json_schema trimem_decomposition_v1",
+      "experience_extraction": "strict json_schema trimem_experience_extraction_v1",
+      "solve": "OMITTED_TO_PRESERVE_TOOL_ACTION_PROTOCOL"
+    },
     "temperature": "OMITTED",
     "top_p": "OMITTED",
     "response_requirements": [
-      "non-empty output text",
+      "response envelope persisted before interpretation",
+      "provider terminal status classified before output consumption",
+      "role-specific structured output satisfies its frozen schema",
       "returned model exactly gpt-5.4-mini-2026-03-17",
-      "exact non-negative input_tokens",
-      "exact non-negative cached_input_tokens",
-      "exact non-negative output_tokens",
-      "exact non-negative reasoning_tokens",
+      "provider usage propagated when present and marked unavailable when absent",
       "attempt count and wall time"
     ]
   },
-  "request_schema_sha256": "ef820f9e7b0e414a3214a0dc53b96bbdb68e021016c8d0e22a133efa6c54f61c",
+  "request_schema_sha256": "480aedd6d1e33036d1f6564dcddb936fac02566bf3c1f2b47082b15ca1b1da6a",
+  "provider_output_schema_contract": {
+    "config": "configs/trimem_v1/provider_output_schemas.json",
+    "lock": "artifacts/trimem_v1/provider_output_schema_lock.json",
+    "classification": "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
+  },
   "provider_bridge": {
     "async_provider_class": "enterprise_memory.providers.openai_responses.OpenAIResponsesProvider",
     "common_runtime_bridge_class": "enterprise_memory.trimem.gateway.AsyncProviderModelGateway",
     "provider_family": "gpt5.4",
     "exact_returned_model_required": "gpt-5.4-mini-2026-03-17",
     "long_lived_coroutine_runner_required": true,
-    "provider_retry_attempt_cap": 1
+    "provider_retry_attempt_cap": 1,
+    "raw_response_store_required_for_benchmark": true
   },
   "conservative_input_guard": {
     "documented_model_context_window_tokens": 400000,

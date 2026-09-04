@@ -33,17 +33,25 @@ EXPECTED_WORKFLOW_REF = (
 )
 EXPECTED_PHASE = "DEVELOPMENT_TUNING"
 EXPECTED_BRANCH = "codex/trimem-coder-v1"
-REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003"
-REQUEST_SCHEMA = "trimem/development-tuning-branch-trigger/1.2"
+REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_004"
+REQUEST_SCHEMA = "trimem/development-tuning-branch-trigger/1.3"
 SENTINEL_PATH = (
     "artifacts/trimem_v1/exec_requests/"
-    "DEVELOPMENT_TUNING_EXEC_REQUEST_003.json"
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_004.json"
 )
 PREVIOUS_SENTINEL_PATH = (
     "artifacts/trimem_v1/exec_requests/"
-    "DEVELOPMENT_TUNING_EXEC_REQUEST_002.json"
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_003.json"
 )
 RECOVERY_FAILURE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/development_tuning_exec/exec-003/"
+    "model-parser-failure-receipt.json"
+)
+MIDDLE_SENTINEL_PATH = (
+    "artifacts/trimem_v1/exec_requests/"
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_002.json"
+)
+MIDDLE_FAILURE_RECEIPT_PATH = (
     "artifacts/trimem_v1/development_tuning_exec/exec-002/"
     "protected-exec-gate-failure-receipt.json"
 )
@@ -57,11 +65,13 @@ EARLIER_FAILURE_RECEIPT_PATH = (
 )
 EARLIER_SOURCE_HEAD = "0fe4cd70604d381f5a8d7d0a384724817c6e3a42"
 EARLIER_EXECUTION_HEAD = "6eba1b0f9462c3b29323a9ade290470551bfd0ed"
-PREVIOUS_SOURCE_HEAD = "98dd37fec7c826f6ed5b3b8734f2ca8dcab96e4a"
-PREVIOUS_EXECUTION_HEAD = "c2738cae074351927dde117b628c601b1e296cf2"
+MIDDLE_SOURCE_HEAD = "98dd37fec7c826f6ed5b3b8734f2ca8dcab96e4a"
+MIDDLE_EXECUTION_HEAD = "c2738cae074351927dde117b628c601b1e296cf2"
+PREVIOUS_SOURCE_HEAD = "763cec6c399714151860aebabc93bdbeac2e1cff"
+PREVIOUS_EXECUTION_HEAD = "bc70e1979c2987cd52347b2ef2fd7c43dc3014df"
 WORKFLOW_PATH = ".github/workflows/trimem-benchmark.yml"
 TOOLCHAIN_WORKFLOW_PATH = ".github/workflows/ci-trimem-dev-toolchain.yml"
-EXPECTED_CONCURRENCY_GROUP = "trimem-v1-development-tuning-exec-003"
+EXPECTED_CONCURRENCY_GROUP = "trimem-v1-development-tuning-exec-004"
 FREEZE_PATH = "artifacts/trimem_v1/freeze.json"
 GH_CLI_LOCK_PATH = "configs/trimem_v1/gh_cli_lock.json"
 MODEL_LOCK_PATH = "configs/trimem_v1/model_lock.json"
@@ -84,6 +94,13 @@ TOOLCHAIN_AMENDMENT_PATH = (
 CREDENTIAL_FREE_BUNDLE_PATH = (
     "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json"
 )
+RESPONSE_CONTRACT_AMENDMENT_PATH = (
+    "artifacts/trimem_v1/development_response_contract_amendment.json"
+)
+PROVIDER_OUTPUT_SCHEMA_LOCK_PATH = (
+    "artifacts/trimem_v1/provider_output_schema_lock.json"
+)
+PROVIDER_OUTPUT_SCHEMAS_PATH = "configs/trimem_v1/provider_output_schemas.json"
 PREFLIGHT_PATH = "scripts/trimem_development_trigger_preflight.py"
 GH_INSTALLER_PATH = "scripts/trimem_install_pinned_gh.py"
 GH_VERIFIER_PATH = "scripts/trimem_verify_gh_lock.py"
@@ -110,9 +127,12 @@ AUTHORIZATION_SEMANTICS = (
     "The sentinel creates one run but does not authorize protected execution."
 )
 RECOVERY_AUTHORIZATION = (
-    "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE"
+    "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
 )
 REQUIRED_EXTERNAL_AUTHORIZATION = RECOVERY_AUTHORIZATION
+D12_RECOVERY_AUTHORIZATION = (
+    "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE"
+)
 EXACT_MODEL = {
     "cached_input_price_per_million_tokens_usd": 0.075,
     "endpoint": "https://api.openai.com/v1/responses",
@@ -123,7 +143,7 @@ EXACT_MODEL = {
     "output_price_per_million_tokens_usd": 4.5,
     "provider": "openai",
     "reasoning_effort": "medium",
-    "request_schema_sha256": "ef820f9e7b0e414a3214a0dc53b96bbdb68e021016c8d0e22a133efa6c54f61c",
+    "request_schema_sha256": "480aedd6d1e33036d1f6564dcddb936fac02566bf3c1f2b47082b15ca1b1da6a",
     "temperature": "OMITTED",
     "top_p": "OMITTED",
     "roles": {
@@ -149,12 +169,12 @@ HARD_CAPS = {
     "max_input_tokens_per_task_arm": 500_000,
     "max_model_calls_per_task_arm": 26,
     "model_calls": 1_872,
-    "output_tokens": 3_796_992,
+    "output_tokens": 4_718_592,
     "paid_model_calls": 1_872,
     "solve_calls": 1_728,
     "task_arm_runs": 72,
     "total_usd": 50.0,
-    "uncached_token_cost_ceiling_usd": 44.086464,
+    "uncached_token_cost_ceiling_usd": 48.233664,
 }
 EXPECTED_EXPENDITURE = {
     "cached_input_tokens": 0,
@@ -169,52 +189,61 @@ EXPECTED_EXPENDITURE = {
     "total_usd": 10.8,
 }
 PRE_EXECUTION_ACTUALS = {
-    "api_calls": 0,
-    "cached_input_tokens": 0,
-    "decomposition_calls": 0,
+    "api_calls": 1,
+    "cached_input_tokens": None,
+    "decomposition_calls": 1,
     "extraction_calls": 0,
     "grader_calls": 0,
     "grader_containers": 0,
-    "input_tokens": 0,
-    "model_calls": 0,
-    "model_gateway_calls": 0,
+    "input_tokens": None,
+    "model_calls": 1,
+    "model_gateway_calls": 1,
     "official_grader_runs": 0,
-    "output_tokens": 0,
-    "paid_model_calls": 0,
-    "reasoning_tokens": 0,
-    "scope": "D1.2_GH_TOOLCHAIN_RECOVERY_003_BEFORE_DEVELOPMENT_EXECUTION",
+    "output_tokens": None,
+    "paid_model_calls": 1,
+    "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+    "reasoning_tokens": None,
+    "ledger_reservation": {
+        "input_tokens": 5069,
+        "output_tokens": 2048,
+        "total_usd": 0.01301775,
+    },
+    "scope": "D1.3_RESPONSE_CONTRACT_RECOVERY_004_BEFORE_FRESH_EXECUTION",
     "solve_calls": 0,
     "target_image_pulls": 0,
     "task_arm_runs": 0,
-    "total_usd": 0.0,
+    "total_usd": 0.01301775,
 }
 RECOVERY_PROVENANCE = {
     "failed_endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
     "failed_execution_head": PREVIOUS_EXECUTION_HEAD,
     "failed_run_attempt": 1,
-    "failed_run_id": 33_739_545_314,
-    "failure_label": "TRIMEM_DEV_EXEC_GATE_GH_CLI_MISSING",
+    "failed_run_id": 33_788_493_773,
+    "failure_label": "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_EXTRACTED_TEXT",
     "grader_containers": 0,
     "input_tokens": 0,
     "model_calls": 0,
     "output_tokens": 0,
     "paid_model_calls": 0,
-    "previous_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
+    "previous_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
     "previous_request_path": PREVIOUS_SENTINEL_PATH,
     "previous_request_raw_sha256": (
-        "sha256:c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98"
+        "sha256:3d6b4291f7a1ab8b72203e4756a2f7e4614c1139c9f6e0da74a3a949fa78ca56"
     ),
     "protected_execution_authorization_required": REQUIRED_EXTERNAL_AUTHORIZATION,
     "approval_materialization_reached": True,
     "protected_environment_reached": True,
     "protected_execution_reached": True,
     "received_recovery_authorization": RECOVERY_AUTHORIZATION,
+    "raw_provider_outcome_class": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+    "historical_api_calls": 1,
+    "historical_completed_task_arm_runs": 0,
     "scientific_task_arm_runs": 0,
     "total_usd": 0.0,
 }
 PROHIBITED_ACTIONS = [
-    "DEVELOPMENT_TUNING_EXEC_REQUEST_002_rerun_or_attempt_2",
-    "DEVELOPMENT_TUNING_EXEC_REQUEST_004",
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_003_rerun_or_attempt_2",
+    "DEVELOPMENT_TUNING_EXEC_REQUEST_005",
     "HELDOUT_BENCHMARK",
     "additional_development_targets",
     "automatic_next_phase_execution",
@@ -224,7 +253,7 @@ PROHIBITED_ACTIONS = [
     "fifth_M2_candidate",
     "merge_tag_or_release",
     "model_replacement",
-    "additional_development_dispatch_or_rerun_after_recovery_003",
+    "additional_development_dispatch_or_rerun_after_recovery_004",
     "target_replacement",
 ]
 EXPECTED_TARGET_SET_SHA256 = (
@@ -234,11 +263,11 @@ EXPECTED_EXECUTION_SEQUENCE_SHA256 = (
     "89d222638aa603221c1a18b8ab788ae49d51708375b1fe5ec03d1102196289dd"
 )
 EXPECTED_FROZEN_INPUT_SHA256 = {
-    MODEL_LOCK_PATH: "f5e932696d31d1cb7185b32b67c38e4c9cbbfedd79783adfb8faddc7b90abfe0",
-    COST_PLAN_PATH: "d54b70e8c700cedff987efa713aeddf724059b7320bbe8fc1970ca9c0f69a86e",
+    MODEL_LOCK_PATH: "aae9d9ddcbf0fcd12a519c388ecc468e029bc3c9de59e2471af8389c08cd7d72",
+    COST_PLAN_PATH: "bd2ef2896728597cd4f55245544ef43ffb07c63a27d5b86e5a9c577b34175910",
     POLICY_REQUEST_PATH: "05e19aeec6630f2362c481a86eb66d0e630041794866a638c3ebbf07e5ccbba4",
     DEVELOPMENT_MANIFEST_PATH: "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
-    M2_CANDIDATE_MANIFEST_PATH: "3248b15e3f9f7293cacfea1f13fcfd354dbb804d34a1ea40dce6d8c1b881a6de",
+    M2_CANDIDATE_MANIFEST_PATH: "b564ccbee8b5b9ee584835b2d7c00079e4fc23312fcfd6df286d808ee8642dcd",
     SELECTION_PLAN_PATH: "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
     GRADER_LOCK_PATH: "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb",
     IMAGE_LOCK_PATH: "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
@@ -247,8 +276,19 @@ EXPECTED_FROZEN_INPUT_SHA256 = {
 EXPECTED_RECOVERY_INPUT_SHA256 = {
     EARLIER_SENTINEL_PATH: "7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db",
     EARLIER_FAILURE_RECEIPT_PATH: "16bda3012e29d6a3659d5a96537615db7ed72fa817e541e16db2c4d5d5d79868",
-    PREVIOUS_SENTINEL_PATH: "c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98",
-    RECOVERY_FAILURE_RECEIPT_PATH: "8c9d4a8fea70e0088b7af9bb011e1e75081f4e9ddee9f7162cf05ff85c9f9d1a",
+    MIDDLE_SENTINEL_PATH: "c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98",
+    MIDDLE_FAILURE_RECEIPT_PATH: "8c9d4a8fea70e0088b7af9bb011e1e75081f4e9ddee9f7162cf05ff85c9f9d1a",
+    PREVIOUS_SENTINEL_PATH: "3d6b4291f7a1ab8b72203e4756a2f7e4614c1139c9f6e0da74a3a949fa78ca56",
+    RECOVERY_FAILURE_RECEIPT_PATH: "6fbfbf4bf169e6365439f25bb7ea14bcac114e30fde9df1f814c93ba8ebc75be",
+}
+D13_MUTABLE_PRESERVED_CONTRACT_PATHS = {
+    "configs/trimem_v1/arms.json",
+    "configs/trimem_v1/cost_plan.json",
+    "configs/trimem_v1/m2_candidate_bundles.json",
+    "configs/trimem_v1/model_lock.json",
+    "configs/trimem_v1/selected_m2.json",
+    "configs/trimem_v1/tool_environment_lock.json",
+    "src/enterprise_memory/trimem/runtime_lock.py",
 }
 EXPECTED_D12_PRESERVED_SHA256 = {
     "artifacts/trimem_v1/development_model_pricing_amendment.json": "19caede5a601f8d0ebc1267dbb393b9b707aae37e144a31a9346087d2c320cee",
@@ -304,7 +344,10 @@ BOUND_PATHS = {
     "model_lock_sha256": MODEL_LOCK_PATH,
     "model_pricing_amendment_sha256": MODEL_PRICING_AMENDMENT_PATH,
     "previous_dev_request_sha256": PREVIOUS_SENTINEL_PATH,
+    "provider_output_schema_lock_sha256": PROVIDER_OUTPUT_SCHEMA_LOCK_PATH,
+    "provider_output_schemas_sha256": PROVIDER_OUTPUT_SCHEMAS_PATH,
     "recovery_failure_receipt_sha256": RECOVERY_FAILURE_RECEIPT_PATH,
+    "response_contract_amendment_sha256": RESPONSE_CONTRACT_AMENDMENT_PATH,
     "runner_toolchain_amendment_sha256": TOOLCHAIN_AMENDMENT_PATH,
     "selection_plan_sha256": SELECTION_PLAN_PATH,
     "toolchain_workflow_sha256": TOOLCHAIN_WORKFLOW_PATH,
@@ -324,6 +367,9 @@ FREEZE_CLOSURE_PATHS = (
     BENCHMARK_ENVIRONMENT_PROTECTION_PATH,
     TOOLCHAIN_AMENDMENT_PATH,
     CREDENTIAL_FREE_BUNDLE_PATH,
+    RESPONSE_CONTRACT_AMENDMENT_PATH,
+    PROVIDER_OUTPUT_SCHEMA_LOCK_PATH,
+    PROVIDER_OUTPUT_SCHEMAS_PATH,
     PREFLIGHT_PATH,
     GH_INSTALLER_PATH,
     GH_VERIFIER_PATH,
@@ -754,7 +800,7 @@ def _validate_historical_sentinel(
 
 
 def _validate_historical_recovery_graph(repository: Path, commit: str) -> None:
-    """Bind D1.2 recovery material to immutable _001 and _002 ancestry."""
+    """Bind D1.3 recovery material to immutable _001 through _003 ancestry."""
 
     _require(HEX40.fullmatch(commit) is not None, "material commit is not a commit SHA")
     _validate_historical_sentinel(
@@ -768,15 +814,27 @@ def _validate_historical_recovery_graph(repository: Path, commit: str) -> None:
     _validate_historical_sentinel(
         repository,
         commit,
+        execution_head=MIDDLE_EXECUTION_HEAD,
+        source_head=MIDDLE_SOURCE_HEAD,
+        sentinel_path=MIDDLE_SENTINEL_PATH,
+        label="_002",
+    )
+    _validate_historical_sentinel(
+        repository,
+        commit,
         execution_head=PREVIOUS_EXECUTION_HEAD,
         source_head=PREVIOUS_SOURCE_HEAD,
         sentinel_path=PREVIOUS_SENTINEL_PATH,
-        label="_002",
+        label="_003",
     )
 
 
 def _material(repository: Path, commit: str) -> dict[str, bytes]:
-    paths = set(BOUND_PATHS.values()) | set(FREEZE_CLOSURE_PATHS)
+    paths = (
+        set(BOUND_PATHS.values())
+        | set(FREEZE_CLOSURE_PATHS)
+        | set(EXPECTED_RECOVERY_INPUT_SHA256)
+    )
     return {path: _commit_bytes(repository, commit, path) for path in paths}
 
 
@@ -811,33 +869,22 @@ def _validate_frozen_material(
         and previous_request.get("source_head")
         == PREVIOUS_SOURCE_HEAD
         and previous_request.get("one_time_workflow_run_attempt") == 1,
-        "historical _002 DEV request identity differs",
+        "historical _003 DEV request identity differs",
     )
     _require(
         failure_receipt.get("schema")
-        == "trimem/development-protected-exec-gate-failure-receipt/1.0"
+        == "trimem/development-model-parser-failure-receipt/1.0"
         and failure_receipt.get("endpoint")
         == RECOVERY_PROVENANCE["failed_endpoint"]
-        and failure_receipt.get("failure_label")
-        == RECOVERY_PROVENANCE["failure_label"]
         and failure_receipt.get("workflow_run", {}).get("id")
         == RECOVERY_PROVENANCE["failed_run_id"]
         and failure_receipt.get("workflow_run", {}).get("run_attempt")
         == RECOVERY_PROVENANCE["failed_run_attempt"]
         and failure_receipt.get("workflow_run", {}).get("head_sha")
         == RECOVERY_PROVENANCE["failed_execution_head"]
-        and failure_receipt.get("jobs", {})
-        .get("protected_execution", {})
-        .get("conclusion")
-        == "failure"
-        and failure_receipt.get("jobs", {})
-        .get("protected_execution", {})
-        .get("failed_step", {})
-        .get("name")
-        == "Verify exact phase EXEC gate"
         and failure_receipt.get("sentinel", {}).get("raw_sha256")
         == RECOVERY_PROVENANCE["previous_request_raw_sha256"],
-        "historical _002 protected-gate failure receipt differs",
+        "historical _003 first-decomposition failure receipt differs",
     )
     approval = failure_receipt.get("approval", {})
     control_plane = failure_receipt.get("control_plane", {})
@@ -851,21 +898,21 @@ def _validate_frozen_material(
         and approval.get("approved_workflow_run_attempt")
         == RECOVERY_PROVENANCE["failed_run_attempt"]
         and control_plane.get("protected_environment_worked") is True
-        and control_plane.get("protected_environment_approval_reached") is True
-        and failure_receipt.get("scientific_run") is False,
-        "historical _002 approval/environment boundary differs",
+        and control_plane.get("protected_environment_approval_count") == 1
+        and control_plane.get("exec_gate_status") == "PASS",
+        "historical _003 approval/environment boundary differs",
     )
     receipt_accounting = failure_receipt.get("execution_accounting")
     _require(
         isinstance(receipt_accounting, dict)
-        and receipt_accounting.get("task_arm_runs") == 0
-        and receipt_accounting.get("model_calls") == 0
-        and receipt_accounting.get("paid_model_calls") == 0
+        and receipt_accounting.get("completed_task_arm_runs") == 0
+        and receipt_accounting.get("model_calls") == 1
+        and receipt_accounting.get("paid_model_calls") == 1
+        and receipt_accounting.get("api_calls") == 1
         and receipt_accounting.get("grader_containers") == 0
-        and receipt_accounting.get("input_tokens") == 0
-        and receipt_accounting.get("output_tokens") == 0
-        and receipt_accounting.get("total_usd") == 0.0,
-        "historical _002 failure receipt contains scientific execution",
+        and receipt_accounting.get("provider_reported_usage_available_on_failure")
+        is False,
+        "historical _003 execution-accounting boundary differs",
     )
     model = _json_material(raw, MODEL_LOCK_PATH)
     cost = _json_material(raw, COST_PLAN_PATH)
@@ -880,6 +927,38 @@ def _validate_frozen_material(
     amendment = _json_material(raw, MODEL_PRICING_AMENDMENT_PATH)
     environment = _json_material(raw, BENCHMARK_ENVIRONMENT_PROTECTION_PATH)
     toolchain_amendment = _json_material(raw, TOOLCHAIN_AMENDMENT_PATH)
+    response_amendment = _json_material(raw, RESPONSE_CONTRACT_AMENDMENT_PATH)
+    schema_lock = _json_material(raw, PROVIDER_OUTPUT_SCHEMA_LOCK_PATH)
+    output_schemas = _json_material(raw, PROVIDER_OUTPUT_SCHEMAS_PATH)
+
+    _require(
+        response_amendment.get("classification")
+        == "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
+        and response_amendment.get("causal_boundary", {}).get(
+            "historical_run_id"
+        )
+        == RECOVERY_PROVENANCE["failed_run_id"]
+        and response_amendment.get("causal_boundary", {}).get(
+            "historical_completed_task_arm_runs"
+        )
+        == 0
+        and response_amendment.get("execution_boundary", {}).get(
+            "fresh_request_id"
+        )
+        == REQUEST_ID
+        and response_amendment.get("execution_boundary", {}).get(
+            "required_authorization"
+        )
+        == REQUIRED_EXTERNAL_AUTHORIZATION,
+        "D1.3 response-contract amendment identity differs",
+    )
+    _require(
+        output_schemas.get("schema") == "trimem/provider-output-schemas/1.0"
+        and schema_lock.get("schema") == "trimem/provider-output-schema-lock/1.0"
+        and schema_lock.get("config_sha256")
+        == hashlib.sha256(raw[PROVIDER_OUTPUT_SCHEMAS_PATH]).hexdigest(),
+        "D1.3 provider output schema lock differs",
+    )
 
     _require(
         gh_lock.get("schema") == "trimem/gh-cli-lock/1.0"
@@ -911,13 +990,13 @@ def _validate_frozen_material(
     )
     recovery_boundary = toolchain_amendment.get("authorization_boundary", {})
     _require(
-        recovery_boundary.get("authorization") == RECOVERY_AUTHORIZATION
+        recovery_boundary.get("authorization") == D12_RECOVERY_AUTHORIZATION
         and recovery_boundary.get("prior_request_final")
         == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002"
         and recovery_boundary.get("prior_run_attempt_final") == "33739545314/1"
         and recovery_boundary.get("prior_run_rerun_allowed") is False
         and recovery_boundary.get("new_request_allowed_after_conditions")
-        == REQUEST_ID,
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
         "D1.2 conditional recovery authority differs",
     )
     causal_boundary = toolchain_amendment.get("causal_boundary", {})
@@ -955,11 +1034,12 @@ def _validate_frozen_material(
             and re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is not None,
             "D1.2 preserved-contract map is malformed",
         )
-        _require(
-            hashlib.sha256(_commit_bytes(repository, commit, path)).hexdigest()
-            == expected_sha256,
-            f"D1.2 non-semantic recovery changed a preserved contract: {path}",
-        )
+        if path not in D13_MUTABLE_PRESERVED_CONTRACT_PATHS:
+            _require(
+                hashlib.sha256(_commit_bytes(repository, commit, path)).hexdigest()
+                == expected_sha256,
+                f"D1.3 changed a contract outside its authorized scope: {path}",
+            )
 
     _require(
         environment
@@ -1052,11 +1132,12 @@ def _validate_frozen_material(
             and re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is not None,
             "preserved contract map is malformed",
         )
-        committed = _commit_bytes(repository, commit, path)
-        _require(
-            hashlib.sha256(committed).hexdigest() == expected_sha256,
-            f"pre-amendment scientific contract changed: {path}",
-        )
+        if path not in D13_MUTABLE_PRESERVED_CONTRACT_PATHS:
+            committed = _commit_bytes(repository, commit, path)
+            _require(
+                hashlib.sha256(committed).hexdigest() == expected_sha256,
+                f"D1.3 changed a contract outside its authorized scope: {path}",
+            )
 
     primary = model.get("primary_model")
     roles = model.get("model_roles")
@@ -1099,7 +1180,7 @@ def _validate_frozen_material(
     )
     _require(
         model.get("request_schema_sha256")
-        == "ef820f9e7b0e414a3214a0dc53b96bbdb68e021016c8d0e22a133efa6c54f61c"
+        == EXACT_MODEL["request_schema_sha256"]
         and model.get("request_schema", {}).get("body", {}).get("model")
         == EXACT_MODEL["model_id"]
         and model.get("provider_bridge", {}).get("exact_returned_model_required")
@@ -1126,20 +1207,27 @@ def _validate_frozen_material(
     )
     actual = cost.get("actual_to_date")
     _require(isinstance(actual, dict), "historical accounting is missing")
-    for field in (
-        "api_calls",
-        "decomposition_calls",
-        "extraction_calls",
-        "input_tokens",
-        "model_calls",
-        "model_gateway_calls",
-        "output_tokens",
-        "paid_model_calls",
-        "solve_calls",
-        "task_arm_runs",
-        "total_usd",
-    ):
-        _require(actual.get(field) == 0, f"pre-DEV actual {field} is not zero")
+    _require(
+        actual.get("api_calls") == 1
+        and actual.get("decomposition_calls") == 1
+        and actual.get("model_calls") == 1
+        and actual.get("model_gateway_calls") == 1
+        and actual.get("paid_model_calls") == 1
+        and actual.get("input_tokens") is None
+        and actual.get("output_tokens") is None
+        and actual.get("reasoning_tokens") is None
+        and actual.get("provider_reported_usage")
+        == "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP"
+        and actual.get("ledger_reservation")
+        == {
+            "input_tokens": 5069,
+            "output_tokens": 2048,
+            "total_usd": 0.01301775,
+        },
+        "historical DEV provider usage/reservation boundary drifted",
+    )
+    for field in ("extraction_calls", "solve_calls", "task_arm_runs"):
+        _require(actual.get(field) == 0, f"pre-fresh-DEV actual {field} is not zero")
     _require(
         actual.get("grader_containers") == 18
         and actual.get("official_grader_runs") == 18,
@@ -1365,7 +1453,7 @@ def build_request_document(
     )
     payload: dict[str, Any] = {
         "actual_execution_authorized": False,
-        "amendment_classification": "NON_SEMANTIC_RUNNER_TOOLCHAIN_DEPENDENCY_FIX",
+        "amendment_classification": "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT",
         "authorization_semantics": AUTHORIZATION_SEMANTICS,
         "bindings": bindings,
         "branch_ref": EXPECTED_REF,

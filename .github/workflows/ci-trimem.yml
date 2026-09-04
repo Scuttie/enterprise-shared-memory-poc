@@ -37,12 +37,13 @@ jobs:
         run: python scripts/trimem_m2_candidates.py --verify
       - name: Run credential-free unit and Mini provider boundaries without skips
         run: |
-          python scripts/trimem_pytest_no_skip.py tests/unit/test_trimem_*.py tests/trimem/e2e/test_full_replay.py tests/openai/test_openai_provider.py
+          python scripts/trimem_pytest_no_skip.py tests/unit/test_trimem_*.py tests/trimem/e2e/test_full_replay.py tests/openai/test_openai_provider.py tests/openai/test_openai_response_outcomes.py
+          python scripts/trimem_provider_output_contract.py
       - name: Verify product handoff manifest remains separated and current
         run: python scripts/make_handoff_manifest.py --check
       - name: Scan tracked source for forbidden credentials and host paths
         run: python scripts/release_check.py --secrets
-      - name: Verify committed freeze and D1.2 fresh-run approval boundaries
+      - name: Verify committed freeze and D1.3 fresh-run approval boundaries
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
@@ -102,7 +103,7 @@ jobs:
               }
               if observed != expected:
                   raise SystemExit(
-                      f"{level}: expected exact D1.2 report {expected!r}, "
+                      f"{level}: expected exact D1.3 report {expected!r}, "
                       f"got {observed!r}"
                   )
           PY

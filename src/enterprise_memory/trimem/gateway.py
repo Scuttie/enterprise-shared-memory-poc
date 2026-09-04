@@ -20,6 +20,10 @@ class GatewayRequest:
     max_output_tokens: int
     org_id: str = ""
     active_node_id: Optional[str] = None
+    output_schema_name: Optional[str] = None
+    output_json_schema: Optional[Mapping[str, Any]] = None
+    output_schema_sha256: Optional[str] = None
+    strict_structured_output: bool = False
 
 
 @dataclass(frozen=True)
@@ -27,14 +31,18 @@ class GatewayResponse:
     text: str
     provider: str
     model: str
-    input_tokens: int
-    output_tokens: int
+    input_tokens: Optional[int]
+    output_tokens: Optional[int]
     wall_time_ms: int
     paid: bool
-    cached_input_tokens: int = 0
-    reasoning_tokens: int = 0
+    cached_input_tokens: Optional[int] = 0
+    reasoning_tokens: Optional[int] = 0
     attempt: int = 1
     status: str = "success"
+    provider_reported_usage_available: bool = True
+    provider_response_envelope: Optional[Mapping[str, Any]] = None
+    ledger_reservation: Optional[Mapping[str, Any]] = None
+    terminal_outcome_replayed: bool = False
 
 
 class ModelGateway(Protocol):
@@ -51,20 +59,46 @@ class GatewayInvocationFailure(RuntimeError):
         model: str,
         status: str,
         attempt: int,
-        input_tokens: int = 0,
-        output_tokens: int = 0,
-        cached_input_tokens: int = 0,
-        reasoning_tokens: int = 0,
+        input_tokens: Optional[int] = None,
+        output_tokens: Optional[int] = None,
+        cached_input_tokens: Optional[int] = None,
+        reasoning_tokens: Optional[int] = None,
         wall_time_ms: int = 0,
         response_text: str = "",
+        provider_request_id: Optional[str] = None,
+        response_id: Optional[str] = None,
+        response_status: Optional[str] = None,
+        response_error_code: Optional[str] = None,
+        incomplete_reason: Optional[str] = None,
+        output_item_types: tuple[str, ...] = (),
+        content_item_types: tuple[str, ...] = (),
+        refusal_present: bool = False,
+        provider_reported_usage_available: Optional[bool] = None,
+        raw_envelope_reference: Optional[str] = None,
+        extracted_text_bytes: int = 0,
+        structured_output_bytes: int = 0,
+        original_provider_terminal_classification: Optional[str] = None,
+        provider_response_envelope: Optional[Mapping[str, Any]] = None,
+        ledger_reservation: Optional[Mapping[str, Any]] = None,
+        terminal_outcome_replayed: bool = False,
     ):
+        if provider_reported_usage_available is None:
+            provider_reported_usage_available = all(
+                type(value) is int
+                for value in (
+                    input_tokens,
+                    output_tokens,
+                    cached_input_tokens,
+                    reasoning_tokens,
+                )
+            )
         raw_usage = {
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "cached_input_tokens": cached_input_tokens,
             "reasoning_tokens": reasoning_tokens,
         }
-        invalid_usage = (
+        invalid_usage = provider_reported_usage_available and (
             any(type(value) is not int or value < 0 for value in raw_usage.values())
             or (
                 type(input_tokens) is int
@@ -79,19 +113,42 @@ class GatewayInvocationFailure(RuntimeError):
         )
         if invalid_usage:
             status = "invalid_token_usage"
-            input_tokens = output_tokens = cached_input_tokens = reasoning_tokens = 0
+            input_tokens = output_tokens = cached_input_tokens = reasoning_tokens = None
+            provider_reported_usage_available = False
         super().__init__("model gateway invocation failed: " + status)
         self.provider = provider
         self.model = model
         self.status = status
         self.attempt = max(1, int(attempt))
-        self.input_tokens = max(0, int(input_tokens or 0))
-        self.output_tokens = max(0, int(output_tokens or 0))
-        self.cached_input_tokens = max(0, int(cached_input_tokens or 0))
-        self.reasoning_tokens = max(0, int(reasoning_tokens or 0))
+        self.input_tokens = input_tokens if provider_reported_usage_available else None
+        self.output_tokens = output_tokens if provider_reported_usage_available else None
+        self.cached_input_tokens = cached_input_tokens if provider_reported_usage_available else None
+        self.reasoning_tokens = reasoning_tokens if provider_reported_usage_available else None
         self.wall_time_ms = max(0, int(wall_time_ms or 0))
         self.response_text = response_text if isinstance(response_text, str) else ""
         self.paid = True
+        self.provider_request_id = provider_request_id
+        self.response_id = response_id
+        self.response_status = response_status
+        self.response_error_code = response_error_code
+        self.incomplete_reason = incomplete_reason
+        self.output_item_types = tuple(output_item_types)
+        self.content_item_types = tuple(content_item_types)
+        self.refusal_present = bool(refusal_present)
+        self.provider_reported_usage_available = bool(provider_reported_usage_available)
+        self.raw_envelope_reference = raw_envelope_reference
+        self.extracted_text_bytes = max(0, int(extracted_text_bytes))
+        self.structured_output_bytes = max(0, int(structured_output_bytes))
+        self.original_provider_terminal_classification = (
+            original_provider_terminal_classification or status
+        )
+        self.provider_response_envelope = (
+            dict(provider_response_envelope) if isinstance(provider_response_envelope, Mapping) else None
+        )
+        self.ledger_reservation = (
+            dict(ledger_reservation) if isinstance(ledger_reservation, Mapping) else None
+        )
+        self.terminal_outcome_replayed = bool(terminal_outcome_replayed)
 
 
 class ProviderCoroutineRunner(Protocol):
@@ -122,6 +179,10 @@ class AsyncProviderModelGateway:
             max_output_tokens=request.max_output_tokens,
             temperature=0.0,
             top_p=1.0,
+            output_schema_name=request.output_schema_name,
+            output_json_schema=request.output_json_schema,
+            output_schema_sha256=request.output_schema_sha256,
+            strict_structured_output=request.strict_structured_output,
         )
         try:
             response, record = self.runner(
@@ -135,39 +196,96 @@ class AsyncProviderModelGateway:
             record = getattr(exc, "record", None)
             if record is None:
                 raise
+            envelope = getattr(record, "response_envelope", None)
+            public_envelope = envelope.to_public_dict() if envelope is not None else None
+            usage_available = (
+                envelope.provider_reported_usage_available
+                if envelope is not None
+                else all(
+                    type(value) is int
+                    for value in (
+                        getattr(record, "input_tokens", None),
+                        getattr(record, "output_tokens", None),
+                        getattr(record, "cached_input_tokens", 0),
+                        getattr(record, "reasoning_tokens", 0),
+                    )
+                )
+            )
             raise GatewayInvocationFailure(
                 provider="openai-responses",
                 model=self.expected_model,
                 status=str(getattr(record, "final_status", "provider_failure")),
                 attempt=max(1, int(getattr(record, "attempts", 1))),
-                input_tokens=getattr(record, "input_tokens", 0) or 0,
-                output_tokens=getattr(record, "output_tokens", 0) or 0,
-                cached_input_tokens=getattr(record, "cached_input_tokens", 0) or 0,
-                reasoning_tokens=getattr(record, "reasoning_tokens", 0) or 0,
+                input_tokens=getattr(record, "input_tokens", None),
+                output_tokens=getattr(record, "output_tokens", None),
+                cached_input_tokens=getattr(record, "cached_input_tokens", 0),
+                reasoning_tokens=getattr(record, "reasoning_tokens", 0),
                 wall_time_ms=max(0, int(round(float(getattr(record, "total_latency", 0.0) or 0.0) * 1000))),
+                provider_request_id=getattr(record, "provider_request_id", None),
+                response_id=getattr(envelope, "response_id", None),
+                response_status=getattr(envelope, "response_status", None),
+                response_error_code=getattr(envelope, "response_error_code", None),
+                incomplete_reason=getattr(envelope, "incomplete_reason", None),
+                output_item_types=getattr(envelope, "output_item_types", ()),
+                content_item_types=getattr(envelope, "content_item_types", ()),
+                refusal_present=bool(getattr(envelope, "refusal_present", False)),
+                provider_reported_usage_available=usage_available,
+                raw_envelope_reference=getattr(envelope, "raw_restricted_evidence_reference", None),
+                extracted_text_bytes=getattr(envelope, "extracted_text_bytes", 0),
+                structured_output_bytes=getattr(envelope, "structured_output_bytes", 0),
+                original_provider_terminal_classification=getattr(
+                    envelope, "terminal_classification", getattr(record, "final_status", None)
+                ),
+                provider_response_envelope=public_envelope,
             ) from None
         returned = response.returned_model or record.returned_model
+        envelope = response.envelope
+        cached_input_tokens = getattr(
+            record, "cached_input_tokens", None if envelope is not None else 0
+        )
+        reasoning_tokens = getattr(
+            record, "reasoning_tokens", None if envelope is not None else 0
+        )
+        usage_available = (
+            envelope.provider_reported_usage_available
+            if envelope is not None
+            else all(
+                type(value) is int
+                for value in (
+                    response.input_tokens,
+                    response.output_tokens,
+                    cached_input_tokens,
+                    reasoning_tokens,
+                )
+            )
+        )
         if returned != self.expected_model:
             raise GatewayInvocationFailure(
                 provider="openai-responses",
                 model=str(returned or self.expected_model),
                 status="returned_model_mismatch",
                 attempt=max(1, int(record.attempts)),
-                input_tokens=_usage_or_zero(response.input_tokens),
-                output_tokens=_usage_or_zero(response.output_tokens),
-                cached_input_tokens=_usage_or_zero(getattr(record, "cached_input_tokens", 0)),
-                reasoning_tokens=_usage_or_zero(getattr(record, "reasoning_tokens", 0)),
+                input_tokens=response.input_tokens,
+                output_tokens=response.output_tokens,
+                cached_input_tokens=cached_input_tokens,
+                reasoning_tokens=reasoning_tokens,
                 wall_time_ms=max(0, int(round(float(record.total_latency or 0.0) * 1000))),
                 response_text=response.text,
+                provider_reported_usage_available=usage_available,
+                provider_response_envelope=(
+                    response.envelope.to_public_dict() if response.envelope is not None else None
+                ),
             )
         usage = {
             "input_tokens": response.input_tokens,
             "output_tokens": response.output_tokens,
-            "cached_input_tokens": getattr(record, "cached_input_tokens", 0) or 0,
-            "reasoning_tokens": getattr(record, "reasoning_tokens", 0) or 0,
+            "cached_input_tokens": cached_input_tokens,
+            "reasoning_tokens": reasoning_tokens,
         }
         if (
-            any(type(value) is not int or value < 0 for value in usage.values())
+            usage_available
+            and (
+                any(type(value) is not int or value < 0 for value in usage.values())
             or (
                 type(usage["cached_input_tokens"]) is int
                 and type(usage["input_tokens"]) is int
@@ -178,30 +296,23 @@ class AsyncProviderModelGateway:
                 and type(usage["output_tokens"]) is int
                 and usage["reasoning_tokens"] > usage["output_tokens"]
             )
+            )
         ):
             raise GatewayInvocationFailure(
                 provider="openai-responses",
                 model=str(returned),
                 status="invalid_token_usage",
                 attempt=max(1, int(record.attempts)),
-                input_tokens=_usage_or_zero(response.input_tokens),
-                output_tokens=_usage_or_zero(response.output_tokens),
-                cached_input_tokens=_usage_or_zero(getattr(record, "cached_input_tokens", 0)),
-                reasoning_tokens=_usage_or_zero(getattr(record, "reasoning_tokens", 0)),
+                input_tokens=response.input_tokens,
+                output_tokens=response.output_tokens,
+                cached_input_tokens=cached_input_tokens,
+                reasoning_tokens=reasoning_tokens,
                 wall_time_ms=max(0, int(round(float(record.total_latency or 0.0) * 1000))),
                 response_text=response.text,
-            )
-        if not isinstance(response.text, str) or not response.text:
-            raise GatewayInvocationFailure(
-                provider="openai-responses",
-                model=str(returned),
-                status="empty_response",
-                attempt=max(1, int(record.attempts)),
-                input_tokens=usage["input_tokens"],
-                output_tokens=usage["output_tokens"],
-                cached_input_tokens=usage["cached_input_tokens"],
-                reasoning_tokens=usage["reasoning_tokens"],
-                wall_time_ms=max(0, int(round(float(record.total_latency or 0.0) * 1000))),
+                provider_reported_usage_available=usage_available,
+                provider_response_envelope=(
+                    response.envelope.to_public_dict() if response.envelope is not None else None
+                ),
             )
         return GatewayResponse(
             text=response.text,
@@ -215,6 +326,10 @@ class AsyncProviderModelGateway:
             paid=True,
             attempt=max(1, int(record.attempts)),
             status=str(record.final_status),
+            provider_reported_usage_available=usage_available,
+            provider_response_envelope=(
+                response.envelope.to_public_dict() if response.envelope is not None else None
+            ),
         )
 
 
@@ -256,6 +371,32 @@ class RecordingModelGateway:
         self.evidence = evidence
 
     def invoke(self, request: GatewayRequest) -> GatewayResponse:
+        replay = getattr(self.delegate, "replay_terminal", None)
+        if callable(replay):
+            try:
+                replayed = replay(request)
+            except GatewayInvocationFailure as failure:
+                if not failure.terminal_outcome_replayed:
+                    raise
+                self.evidence.append("model_terminal_outcome_replayed", {
+                    "logical_call_id": request.logical_call_id,
+                    "attempt": failure.attempt,
+                    "terminal_event_type": "model_failure",
+                    "status": failure.status,
+                    "counted_as_model_call": False,
+                })
+                raise
+            if replayed is not None:
+                if not replayed.terminal_outcome_replayed:
+                    raise RuntimeError("journal replay did not mark its terminal outcome")
+                self.evidence.append("model_terminal_outcome_replayed", {
+                    "logical_call_id": request.logical_call_id,
+                    "attempt": replayed.attempt,
+                    "terminal_event_type": "model_response",
+                    "status": replayed.status,
+                    "counted_as_model_call": False,
+                })
+                return replayed
         prompt_ref = self.evidence.put_blob(request.prompt)
         self.evidence.append(
             "model_request",
@@ -267,9 +408,12 @@ class RecordingModelGateway:
                 "logical_call_id": request.logical_call_id,
                 "active_node_id": request.active_node_id,
                 "org_id": request.org_id,
-                "prompt": prompt_ref,
-                "max_output_tokens": request.max_output_tokens,
-            },
+                    "prompt": prompt_ref,
+                    "max_output_tokens": request.max_output_tokens,
+                    "output_schema_name": request.output_schema_name,
+                    "output_schema_sha256": request.output_schema_sha256,
+                    "strict_structured_output": request.strict_structured_output,
+                },
         )
         try:
             response = self.delegate.invoke(request)
@@ -294,6 +438,9 @@ class RecordingModelGateway:
                 paid=failure.paid,
                 attempt=failure.attempt,
                 status=failure.status,
+                provider_reported_usage_available=failure.provider_reported_usage_available,
+                provider_response_envelope=failure.provider_response_envelope,
+                ledger_reservation=failure.ledger_reservation,
             )
             self.accounting.add_call(record)
             self.evidence.append(
@@ -311,6 +458,23 @@ class RecordingModelGateway:
                     "wall_time_ms": failure.wall_time_ms,
                     "status": failure.status,
                     "response": response_ref,
+                    "provider_reported_usage_available": failure.provider_reported_usage_available,
+                    "provider_response_envelope": failure.provider_response_envelope,
+                    "ledger_reservation": failure.ledger_reservation,
+                    "original_provider_terminal_classification": (
+                        failure.original_provider_terminal_classification
+                    ),
+                    "provider_request_id": failure.provider_request_id,
+                    "response_id": failure.response_id,
+                    "response_status": failure.response_status,
+                    "response_error_code": failure.response_error_code,
+                    "incomplete_reason": failure.incomplete_reason,
+                    "output_item_types": list(failure.output_item_types),
+                    "content_item_types": list(failure.content_item_types),
+                    "refusal_present": failure.refusal_present,
+                    "raw_envelope_reference": failure.raw_envelope_reference,
+                    "extracted_text_bytes": failure.extracted_text_bytes,
+                    "structured_output_bytes": failure.structured_output_bytes,
                 },
             )
             raise
@@ -334,6 +498,9 @@ class RecordingModelGateway:
             paid=response.paid,
             attempt=response.attempt,
             status=response.status,
+            provider_reported_usage_available=response.provider_reported_usage_available,
+            provider_response_envelope=response.provider_response_envelope,
+            ledger_reservation=response.ledger_reservation,
         )
         self.accounting.add_call(record)
         self.evidence.append(
@@ -351,6 +518,9 @@ class RecordingModelGateway:
                 "reasoning_tokens": response.reasoning_tokens,
                 "wall_time_ms": response.wall_time_ms,
                 "status": response.status,
+                "provider_reported_usage_available": response.provider_reported_usage_available,
+                "provider_response_envelope": response.provider_response_envelope,
+                "ledger_reservation": response.ledger_reservation,
             },
         )
         return response

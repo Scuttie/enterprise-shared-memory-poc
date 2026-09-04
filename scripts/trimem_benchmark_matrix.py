@@ -170,8 +170,8 @@ TERMINAL_LEDGER_TASK_ARM_FIELDS = {
 MAX_LEDGER_INPUT_BOUND_PER_CALL = 262_000
 MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND = {
     "solve": 2_048,
-    "decompose": 2_048,
-    "extract": 1_536,
+    "decompose": 8_192,
+    "extract": 8_192,
 }
 SMOKE_ACCOUNTING_FIELDS = (
     "api_calls",
@@ -200,6 +200,70 @@ MEMORY_FIELDS = (
 
 class MatrixError(ValueError):
     pass
+
+
+def _combine_provider_outcomes(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    statuses: dict[str, int] = {}
+    usage_fields = (
+        "available_calls", "unavailable_calls", "input_tokens",
+        "cached_input_tokens", "output_tokens", "reasoning_tokens",
+    )
+    reservation_fields = (
+        "calls", "input_upper_bound", "output_cap",
+        "conservatively_charged_calls",
+    )
+    usage = {field: 0 for field in usage_fields}
+    reservation = {field: 0 for field in reservation_fields}
+    for row in rows:
+        if not isinstance(row, dict):
+            raise MatrixError("provider outcome projection is missing")
+        distribution = row.get("provider_status_distribution")
+        provider_usage = row.get("provider_reported_usage")
+        ledger = row.get("ledger_reservation")
+        if (
+            not isinstance(distribution, dict)
+            or not isinstance(provider_usage, dict)
+            or not isinstance(ledger, dict)
+            or set(provider_usage) != {*usage_fields, "complete"}
+            or set(ledger) != set(reservation_fields)
+        ):
+            raise MatrixError("provider outcome projection is malformed")
+        for name, count in distribution.items():
+            if not isinstance(name, str) or type(count) is not int or count < 0:
+                raise MatrixError("provider status distribution is malformed")
+            statuses[name] = statuses.get(name, 0) + count
+        for field in usage_fields:
+            value = provider_usage[field]
+            if type(value) is not int or value < 0:
+                raise MatrixError("provider usage projection is malformed")
+            usage[field] += value
+        for field in reservation_fields:
+            value = ledger[field]
+            if type(value) is not int or value < 0:
+                raise MatrixError("provider reservation projection is malformed")
+            reservation[field] += value
+        if provider_usage["complete"] is not (
+            provider_usage["unavailable_calls"] == 0
+        ):
+            raise MatrixError("provider usage completeness flag differs")
+    combined = {
+        "provider_status_distribution": dict(sorted(statuses.items())),
+        "incomplete_count": sum(
+            count for name, count in statuses.items()
+            if name.startswith("RESPONSE_INCOMPLETE")
+        ),
+        "refusal_count": statuses.get("RESPONSE_REFUSAL", 0),
+        "structured_output_schema_failure_count": statuses.get(
+            "STRUCTURED_OUTPUT_SCHEMA_FAILURE", 0
+        ),
+        "provider_reported_usage": {
+            **usage, "complete": usage["unavailable_calls"] == 0
+        },
+        "ledger_reservation": reservation,
+    }
+    if len(rows) == 1 and rows[0] != combined:
+        raise MatrixError("provider outcome derived counters differ")
+    return combined
 
 
 def _display(path: Path) -> str:
@@ -2468,6 +2532,7 @@ def _validate_stream_summary_totals(
             raise MatrixError(f"{path.name}: task actual accounting shape differs")
         if not isinstance(memory, dict) or set(memory) != set(MEMORY_FIELDS):
             raise MatrixError(f"{path.name}: task memory metric shape differs")
+        _combine_provider_outcomes([record.get("provider_outcomes")])
 
     expected_accounting = {
         field: sum(int(record["actual_accounting"][field]) for record in stream_records)
@@ -2482,6 +2547,12 @@ def _validate_stream_summary_totals(
     }
     if summary.get("actual_memory_metrics") != expected_memory:
         raise MatrixError(f"{path.name}: task/stream memory metric totals differ")
+
+    expected_provider_outcomes = _combine_provider_outcomes(
+        [record["provider_outcomes"] for record in stream_records]
+    )
+    if summary.get("provider_outcomes") != expected_provider_outcomes:
+        raise MatrixError(f"{path.name}: task/stream provider outcome totals differ")
 
     expected_resolved = sum(record["resolved"] is True for record in stream_records)
     if summary.get("resolved_count") != expected_resolved:
@@ -3331,6 +3402,7 @@ def _aggregate_benchmark(
             ),
             "resolved": value["resolved"], "target_id": value["target_id"],
             "actual_accounting": accounting, "actual_memory_metrics": memory,
+            "provider_outcomes": value["provider_outcomes"],
             "actual_usd": str(value["actual_usd"]),
         })
     if len(set(namespaces.values())) != len(expected_streams):
@@ -3428,11 +3500,15 @@ def _aggregate_benchmark(
             "observed_task_arm_count": len(records),
             "phase_budget": phase_budget,
             "budget_ledger_evidence": budget_ledger_evidence,
+            "provider_outcomes": _combine_provider_outcomes(
+                [record["provider_outcomes"] for record in record_values]
+            ),
             "outcomes": sorted(outcomes, key=lambda row: (row["arm"], row["target_id"])),
             "stream_totals": sorted(({
                 "arm": row["arm"],
                 "actual_accounting": row.get("actual_accounting"),
                 "actual_memory_metrics": row.get("actual_memory_metrics"),
+                "provider_outcomes": row.get("provider_outcomes"),
                 "actual_usd": row.get("actual_usd"),
                 "identity_seed_digest": row.get("identity_seed_digest"),
                 "reporting_scope": "DESCRIPTIVE_POOLED_ALL_BENCHMARKS",

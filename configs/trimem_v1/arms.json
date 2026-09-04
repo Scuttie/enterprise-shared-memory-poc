@@ -69,8 +69,8 @@
     "max_extraction_calls": 1,
     "max_memory_context_bytes": 12000,
     "max_memory_injections": 3,
-    "max_output_tokens_decomposition": 2048,
-    "max_output_tokens_extraction": 1536,
+    "max_output_tokens_decomposition": 8192,
+    "max_output_tokens_extraction": 8192,
     "max_output_tokens_per_solve": 2048,
     "max_solve_calls": 24,
     "max_steps_per_subtask": 8

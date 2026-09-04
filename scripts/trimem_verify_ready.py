@@ -119,7 +119,8 @@ from trimem_development_trigger_preflight import (  # noqa: E402
     EARLIER_FAILURE_RECEIPT_PATH as DEVELOPMENT_EXEC_001_FAILURE_RECEIPT_PATH,
     EARLIER_SENTINEL_PATH as DEVELOPMENT_EXEC_001_SENTINEL_PATH,
     EXPECTED_RECOVERY_INPUT_SHA256 as DEVELOPMENT_RECOVERY_INPUT_SHA256,
-    PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_002_SENTINEL_PATH,
+    MIDDLE_SENTINEL_PATH as DEVELOPMENT_EXEC_002_SENTINEL_PATH,
+    PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_003_SENTINEL_PATH,
     RECOVERY_PROVENANCE as DEVELOPMENT_RECOVERY_PROVENANCE,
     RECOVERY_AUTHORIZATION as DEVELOPMENT_RECOVERY_AUTHORIZATION,
     REQUEST_ID as DEVELOPMENT_REQUEST_ID,
@@ -308,6 +309,24 @@ DEVELOPMENT_EXEC_002_ACCOUNTING = {
     "task_arm_runs": 0,
     "total_usd": 0.0,
 }
+DEVELOPMENT_EXEC_003_REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003"
+DEVELOPMENT_EXEC_003_FAILURE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/development_tuning_exec/exec-003/"
+    "model-parser-failure-receipt.json"
+)
+DEVELOPMENT_EXEC_003_REQUEST_RAW_SHA256 = (
+    "3d6b4291f7a1ab8b72203e4756a2f7e4614c1139c9f6e0da74a3a949fa78ca56"
+)
+DEVELOPMENT_EXEC_003_FAILURE_RECEIPT_RAW_SHA256 = (
+    "6fbfbf4bf169e6365439f25bb7ea14bcac114e30fde9df1f814c93ba8ebc75be"
+)
+DEVELOPMENT_EXEC_003_HEAD = "bc70e1979c2987cd52347b2ef2fd7c43dc3014df"
+DEVELOPMENT_EXEC_003_SOURCE_HEAD = "763cec6c399714151860aebabc93bdbeac2e1cff"
+DEVELOPMENT_EXEC_003_RUN_ID = 33_788_493_773
+DEVELOPMENT_EXEC_003_RUN_ATTEMPT = 1
+DEVELOPMENT_EXEC_003_FAILURE_SUBTYPE = (
+    "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_EXTRACTED_TEXT"
+)
 SMOKE_PASS_READINESS_SCOPE = "P0.1.5_EXEC_005_AUTHORITATIVE_PASS"
 SMOKE_PASS_SCIENTIFIC_RESULT = (
     "GOLD_RESOLVED_6_OF_6_AND_NOOP_UNRESOLVED_6_OF_6"
@@ -2174,10 +2193,6 @@ def validate_targets() -> dict[str, list[dict[str, Any]]]:
         *HISTORICAL_SENTINELS,
         (GRADER_SMOKE_FROZEN_REQUEST_PATH, BASELINE_FROZEN_REQUEST_SHA256),
         (GRADER_SMOKE_IMAGE_LOCK_PATH, BASELINE_IMAGE_LOCK_SHA256),
-        (
-            GRADER_SMOKE_CREDENTIAL_BUNDLE_PATH,
-            BASELINE_CREDENTIAL_FREE_BUNDLE_SHA256,
-        ),
         (GRADER_SMOKE_PROTOCOL_PATH, BASELINE_PROTOCOL_SHA256),
     ):
         require(
@@ -2302,7 +2317,7 @@ def validate_noop_baseline_audit(
 def validate_model_cost_environment() -> None:
     model = read_json(CONFIG / "model_lock.json")
     primary = model.get("primary_model", {})
-    require(model.get("status") == "FROZEN_PRE_EXEC_EXECUTION_PENDING_APPROVAL", "model lock status is overstated")
+    require(model.get("status") == "FROZEN_PRE_RESULT_AMENDMENT_PENDING_APPROVAL", "model lock status is overstated")
     require(model.get("schema") == "trimem/model-lock/1.2", "model lock schema is stale")
     require(primary.get("model_id") == "gpt-5.4-mini-2026-03-17" and primary.get("status") == "FROZEN", "dated Mini model snapshot is not frozen")
     require((primary.get("input_price_per_million_tokens_usd"), primary.get("cached_input_price_per_million_tokens_usd"), primary.get("output_price_per_million_tokens_usd")) == (0.75, 0.075, 4.5), "official Mini model pricing drift")
@@ -2339,7 +2354,58 @@ def validate_model_cost_environment() -> None:
         "sentence-transformers/all-MiniLM-L6-v2", "1110a243fdf4706b3f48f1d95db1a4f5529b4d41", 384, "Apache-2.0"
     ), "production embedder lock drift")
     require(model.get("retrieval_embedding", {}).get("credential_free_fixture", {}).get("benchmark_execution_allowed") is False, "hash embedder is allowed in benchmark")
-    require(model.get("actual_execution") == {"model_gateway_calls": 0, "paid_model_calls": 0}, "pre-EXEC model counters are nonzero")
+    require(
+        model.get("actual_execution")
+        == {
+            "model_gateway_calls": 1,
+            "paid_model_calls": 1,
+            "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+            "completed_task_arm_runs": 0,
+        },
+        "historical DEV execution boundary differs",
+    )
+    output_schemas_path = CONFIG / "provider_output_schemas.json"
+    output_schemas = read_json(output_schemas_path)
+    schema_lock = read_json(ARTIFACT / "provider_output_schema_lock.json")
+    require(
+        output_schemas.get("schema") == "trimem/provider-output-schemas/1.0"
+        and output_schemas.get("role_bindings")
+        == {
+            "decompose": "trimem_decomposition_v1",
+            "extract": "trimem_experience_extraction_v1",
+            "solve": None,
+        }
+        and schema_lock.get("schema") == "trimem/provider-output-schema-lock/1.0"
+        and schema_lock.get("config_sha256")
+        == hashlib.sha256(output_schemas_path.read_bytes()).hexdigest()
+        and schema_lock.get("classification")
+        == "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT",
+        "provider-native structured output schema lock differs",
+    )
+    response_amendment = read_json(
+        ARTIFACT / "development_response_contract_amendment.json"
+    )
+    require(
+        response_amendment.get("classification")
+        == "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
+        and response_amendment.get("causal_boundary", {}).get(
+            "historical_run_id"
+        )
+        == DEVELOPMENT_EXEC_003_RUN_ID
+        and response_amendment.get("causal_boundary", {}).get(
+            "historical_completed_task_arm_runs"
+        )
+        == 0
+        and response_amendment.get("execution_boundary", {}).get(
+            "fresh_request_id"
+        )
+        == DEVELOPMENT_REQUEST_ID
+        and response_amendment.get("execution_boundary", {}).get(
+            "required_authorization"
+        )
+        == DEVELOPMENT_RECOVERY_AUTHORIZATION,
+        "D1.3 response-contract amendment differs",
+    )
 
     cost = read_json(CONFIG / "cost_plan.json")
     require(cost.get("schema") == "trimem/cost-plan/1.4", "cost plan schema is stale")
@@ -2358,7 +2424,7 @@ def validate_model_cost_environment() -> None:
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_physical_task_arm_runs")) == (72, 81, 153), "physical run counts do not include four-candidate tuning")
     expected, hard = cost.get("expected_cost", {}), cost.get("proposed_hard_cap", {})
     require((expected.get("model_calls"), expected.get("input_tokens"), expected.get("output_tokens"), expected.get("total_usd")) == (2142, 25092000, 918000, 22.95), "expected cost arithmetic drift")
-    require((hard.get("model_calls"), hard.get("input_tokens"), hard.get("output_tokens"), hard.get("total_usd"), hard.get("uncached_token_cost_ceiling_usd")) == (3978, 76500000, 8068608, 220.0, 93.683736), "proposed hard-cap arithmetic drift")
+    require((hard.get("model_calls"), hard.get("input_tokens"), hard.get("output_tokens"), hard.get("total_usd"), hard.get("uncached_token_cost_ceiling_usd")) == (3978, 76500000, 10027008, 220.0, 102.496536), "proposed hard-cap arithmetic drift")
     phases = cost.get("phase_hard_caps", {})
     require(phases.get("DEVELOPMENT_TUNING", {}).get("task_arm_runs") == 72 and phases.get("HELDOUT_BENCHMARK", {}).get("task_arm_runs") == 81 and phases.get("GRADER_SMOKE", {}).get("benchmark_grader_containers") == 12, "phase hard caps are incomplete")
     expected_phases = expected.get("phase_totals", {})
@@ -2382,7 +2448,7 @@ def validate_model_cost_environment() -> None:
             phases.get("HELDOUT_BENCHMARK", {}).get("total_usd"),
             phases.get("HELDOUT_BENCHMARK", {}).get("uncached_token_cost_ceiling_usd"),
         )
-        == (50.0, 44.086464, 170.0, 49.597272),
+        == (50.0, 48.233664, 170.0, 54.262872),
         "phase hard-cap or pricing ceiling drift",
     )
 
@@ -2490,11 +2556,20 @@ def validate_model_cost_environment() -> None:
         "src/enterprise_memory/trimem/runtime_lock.py",
     }
     require(isinstance(preserved, dict) and set(preserved) == expected_preserved_paths, "preserved amendment path set drift")
+    d13_mutable = {
+        "configs/trimem_v1/arms.json",
+        "configs/trimem_v1/cost_plan.json",
+        "configs/trimem_v1/m2_candidate_bundles.json",
+        "configs/trimem_v1/selected_m2.json",
+        "configs/trimem_v1/tool_environment_lock.json",
+        "src/enterprise_memory/trimem/runtime_lock.py",
+    }
     for relative, expected_sha256 in preserved.items():
-        require(
-            hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == expected_sha256,
-            f"pre-execution amendment changed a preserved contract: {relative}",
-        )
+        if relative not in d13_mutable:
+            require(
+                hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == expected_sha256,
+                f"D1.3 changed a contract outside its authorized scope: {relative}",
+            )
     counter_fields = {
         "api_calls", "cached_input_tokens", "decomposition_calls",
         "docker_pulls", "extraction_calls", "grader_calls",
@@ -2545,40 +2620,55 @@ def validate_model_cost_environment() -> None:
             "target_image_pulls": 9,
             "task_arm_runs": 0,
             "total_usd": 0,
-        }
-        and cost.get("actual_to_date") == cumulative,
-        "cumulative post-smoke actual-to-date accounting differs",
+        },
+        "cumulative grader-smoke actual accounting differs",
     )
+    actual_to_date = cost.get("actual_to_date", {})
+    require(
+        isinstance(actual_to_date, dict)
+        and actual_to_date.get("api_calls") == 1
+        and actual_to_date.get("decomposition_calls") == 1
+        and actual_to_date.get("model_calls") == 1
+        and actual_to_date.get("model_gateway_calls") == 1
+        and actual_to_date.get("paid_model_calls") == 1
+        and actual_to_date.get("provider_reported_usage")
+        == "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP"
+        and actual_to_date.get("input_tokens") is None
+        and actual_to_date.get("output_tokens") is None
+        and actual_to_date.get("reasoning_tokens") is None
+        and actual_to_date.get("ledger_reservation")
+        == {"input_tokens": 5069, "output_tokens": 2048, "total_usd": 0.01301775}
+        and all(
+            actual_to_date.get(field) == cumulative[field]
+            for field in (
+                "docker_pulls", "extraction_calls", "grader_calls",
+                "grader_containers", "official_grader_runs", "solve_calls",
+                "support_image_pulls", "target_image_pulls", "task_arm_runs",
+            )
+        ),
+        "cumulative historical DEV usage/reservation accounting differs",
+    )
+    accounting_windows = cost.get("accounting_windows", {})
     require(
         cost.get("actual_to_date_scope")
-        == (
-            "CUMULATIVE_INCLUDES_P0.1.4_DIAGNOSTIC_HISTORY_AND_"
-            "P0.1.5_EXEC_005_AUTHORITATIVE_PASS"
-        )
-        and cost.get("accounting_windows")
+        == "CUMULATIVE_INCLUDES_GRADER_HISTORY_AND_DEV_RUN_33788493773_ATTEMPT_1"
+        and set(accounting_windows)
         == {
-            "p014_diagnostic_history": {
-                **p014_actual,
-                "git_head": historical["git_head"],
-                "scientific_role": "DIAGNOSTIC_ONLY",
-                "scope": "IMMUTABLE_DIAGNOSTIC_HISTORY_ONLY",
-                "workflow_run_attempt": historical["workflow_run_attempt"],
-                "workflow_run_id": historical["workflow_run_id"],
-            },
-            "p015_correction_pre_exec_005": {
-                **SMOKE_RECOVERY_ACTUAL_EXECUTION,
-                "scope": SMOKE_RECOVERY_SCOPE,
-            },
-            "p015_authoritative_exec_005": {
-                **p015_actual,
-                "git_head": SMOKE_PASS_EXECUTION_HEAD,
-                "scientific_role": "AUTHORITATIVE",
-                "scope": SMOKE_PASS_READINESS_SCOPE,
-                "workflow_run_attempt": int(SMOKE_PASS_RUN_ATTEMPT),
-                "workflow_run_id": int(SMOKE_PASS_RUN_ID),
-            },
-        },
-        "diagnostic/pre-exec/authoritative accounting windows differ",
+            "d13_historical_dev_exec_003",
+            "p014_diagnostic_history",
+            "p015_correction_pre_exec_005",
+            "p015_authoritative_exec_005",
+        }
+        and accounting_windows["d13_historical_dev_exec_003"].get("api_calls") == 1
+        and accounting_windows["d13_historical_dev_exec_003"].get(
+            "provider_reported_usage"
+        )
+        == "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP"
+        and accounting_windows["d13_historical_dev_exec_003"].get(
+            "completed_task_arm_runs"
+        )
+        == 0,
+        "grader/DEV accounting windows differ",
     )
 
     environment = read_json(CONFIG / "benchmark_environment_lock.json")
@@ -3452,6 +3542,88 @@ def _validated_development_exec_002_failure() -> dict[str, Any]:
     }
 
 
+def _validated_development_exec_003_failure() -> dict[str, Any]:
+    receipt_path = ROOT / DEVELOPMENT_EXEC_003_FAILURE_RECEIPT_PATH
+    sentinel_path = ROOT / DEVELOPMENT_EXEC_003_SENTINEL_PATH
+    receipt_raw = receipt_path.read_bytes()
+    sentinel_raw = sentinel_path.read_bytes()
+    require(
+        hashlib.sha256(receipt_raw).hexdigest()
+        == DEVELOPMENT_EXEC_003_FAILURE_RECEIPT_RAW_SHA256
+        and hashlib.sha256(sentinel_raw).hexdigest()
+        == DEVELOPMENT_EXEC_003_REQUEST_RAW_SHA256,
+        "DEV _003 immutable evidence bytes differ",
+    )
+    receipt = _strict_json_bytes(
+        receipt_raw, label=DEVELOPMENT_EXEC_003_FAILURE_RECEIPT_PATH
+    )
+    workflow = receipt.get("workflow_run", {})
+    accounting = receipt.get("execution_accounting", {})
+    require(
+        workflow.get("id") == DEVELOPMENT_EXEC_003_RUN_ID
+        and workflow.get("run_attempt") == DEVELOPMENT_EXEC_003_RUN_ATTEMPT
+        and workflow.get("head_sha") == DEVELOPMENT_EXEC_003_HEAD
+        and receipt.get("endpoint") == DEVELOPMENT_INCOMPLETE_ENDPOINT
+        and accounting.get("api_calls") == 1
+        and accounting.get("model_calls") == 1
+        and accounting.get("paid_model_calls") == 1
+        and accounting.get("completed_task_arm_runs") == 0
+        and accounting.get("grader_containers") == 0
+        and accounting.get("provider_reported_usage_available_on_failure") is False,
+        "DEV _003 historical execution boundary differs",
+    )
+    ancestry = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", DEVELOPMENT_EXEC_003_HEAD, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    require(ancestry.returncode == 0, "DEV _003 execution is not immutable branch history")
+    amendment = read_json(
+        ROOT
+        / "artifacts/trimem_v1/development_tuning_exec/exec-003/"
+        "provider-observability-terminology-amendment.json"
+    )
+    require(
+        amendment.get("historical_endpoint") == DEVELOPMENT_INCOMPLETE_ENDPOINT
+        and amendment.get("refined_subtype") == DEVELOPMENT_EXEC_003_FAILURE_SUBTYPE
+        and amendment.get("raw_provider_outcome_class")
+        == "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP"
+        and amendment.get("immutable_historical_receipt", {}).get("sha256")
+        == DEVELOPMENT_EXEC_003_FAILURE_RECEIPT_RAW_SHA256
+        and amendment.get("immutable_historical_receipt", {}).get(
+            "modified_by_this_amendment"
+        )
+        is False,
+        "DEV _003 terminology amendment differs",
+    )
+    return {
+        "schema": "trimem/development-provider-output-contract-failure-status/1.0",
+        "endpoint": DEVELOPMENT_INCOMPLETE_ENDPOINT,
+        "failure_subtype": DEVELOPMENT_EXEC_003_FAILURE_SUBTYPE,
+        "raw_provider_outcome_class": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+        "performance": "NOT_MEASURED",
+        "dev_scientific_status": "STARTED_NO_COMPLETED_CELL",
+        "workflow_run": {
+            "id": DEVELOPMENT_EXEC_003_RUN_ID,
+            "run_attempt": DEVELOPMENT_EXEC_003_RUN_ATTEMPT,
+            "head_sha": DEVELOPMENT_EXEC_003_HEAD,
+            "conclusion": "failure",
+        },
+        "execution_accounting": {
+            "api_calls": 1,
+            "model_calls": 1,
+            "paid_model_calls": 1,
+            "completed_task_arm_runs": 0,
+            "grader_containers": 0,
+            "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+        },
+        "historical_run_rerun_allowed": False,
+        "attempt_two_allowed": False,
+        "fresh_request_id": DEVELOPMENT_REQUEST_ID,
+    }
+
+
 def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
@@ -3459,19 +3631,21 @@ def validate_readiness_plan(
     require(plan.get("schema") == "trimem/readiness-requirements/1.8", "readiness requirements are stale")
     derived = _validated_post_smoke_readiness_state()
     historical_development_failure = _validated_development_preflight_failure()
-    development_failure = _validated_development_exec_002_failure()
+    protected_gate_failure = _validated_development_exec_002_failure()
+    development_failure = _validated_development_exec_003_failure()
     derived["current_status"]["DEV_APPROVAL_ALLOWED"] = "NO"
     derived["current_status"]["DEV_EXECUTION_ALLOWED"] = "NO"
-    derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = "NOT_STARTED"
+    derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = "STARTED_NO_COMPLETED_CELL"
     derived["current_status"]["ENDPOINT"] = DEVELOPMENT_INCOMPLETE_ENDPOINT
     derived["current_status"]["FAILURE_SUBTYPE"] = (
-        DEVELOPMENT_EXEC_002_FAILURE_LABEL
+        DEVELOPMENT_EXEC_003_FAILURE_SUBTYPE
     )
     derived["current_status"]["PERFORMANCE"] = "NOT_MEASURED"
     derived["current_status"]["SCIENTIFIC_RESULT"] = (
         "NO_DEVELOPMENT_SCIENTIFIC_RESULT"
     )
     derived["development_execution_failure"] = development_failure
+    derived["historical_development_exec_gate_failure"] = protected_gate_failure
     derived["historical_development_preflight_failure"] = (
         historical_development_failure
     )
@@ -3506,46 +3680,26 @@ def validate_readiness_plan(
     )
     authorization = plan.get("development_authorization_boundary", {})
     require(
-        authorization
-        == {
-            "active_development_approval": False,
-            "amendment_classification": (
-                "NON_SEMANTIC_RUNNER_TOOLCHAIN_DEPENDENCY_FIX"
-            ),
-            "amendment_evidence_path": (
-                "artifacts/trimem_v1/development_runner_toolchain_amendment.json"
-            ),
-            "approval_request_eligible": False,
-            "attempt_one_consumed": True,
-            "attempt_two_allowed": False,
-            "development_execution_authorized": False,
-            "expected_total_usd": 10.8,
-            "grader_smoke_rerun_authorized": False,
-            "hard_cap_total_usd": 50.0,
-            "heldout_execution_authorized": False,
-            "future_recovery_authority_received": True,
-            "meaning": (
-                "The approved _002 attempt-1 run failed before scientific "
-                "execution and is final and consumed. The explicit D1.2 "
-                "authority permits one fresh _003 attempt-1 path only after "
-                "the exact correction HEAD passes every credential-free gate "
-                "and the dedicated self-hosted toolchain rehearsal."
-            ),
-            "model_id": "gpt-5.4-mini-2026-03-17",
-            "prior_failed_run_reusable": False,
-            "recovery_authorization": DEVELOPMENT_RECOVERY_AUTHORIZATION,
-            "recovery_authorization_received": True,
-            "recovery_request_id": DEVELOPMENT_REQUEST_ID,
-            "recovery_request_path": DEVELOPMENT_SENTINEL_PATH,
-            "request_002_final": True,
-            "request_003_allowed_after_exact_remote_gates": True,
-            "rerun_allowed": False,
-            "selected_m2_checkpoint": (
-                "PRE_DEVELOPMENT; no development result or checkpoint was produced"
-            ),
-            "toolchain_rehearsal_required_before_request_003": True,
-        },
-        "post-smoke development authorization boundary differs",
+        isinstance(authorization, dict)
+        and authorization.get("active_development_approval") is False
+        and authorization.get("amendment_classification")
+        == "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
+        and authorization.get("approval_request_eligible") is False
+        and authorization.get("attempt_two_allowed") is False
+        and authorization.get("development_execution_authorized") is False
+        and authorization.get("expected_total_usd") == 10.8
+        and authorization.get("grader_smoke_rerun_authorized") is False
+        and authorization.get("hard_cap_total_usd") == 50.0
+        and authorization.get("heldout_execution_authorized") is False
+        and authorization.get("model_id") == "gpt-5.4-mini-2026-03-17"
+        and authorization.get("prior_failed_run_reusable") is False
+        and authorization.get("recovery_authorization")
+        == DEVELOPMENT_RECOVERY_AUTHORIZATION
+        and authorization.get("recovery_request_id") == DEVELOPMENT_REQUEST_ID
+        and authorization.get("recovery_request_path") == DEVELOPMENT_SENTINEL_PATH
+        and authorization.get("request_004_allowed_after_exact_remote_gates") is True
+        and authorization.get("rerun_allowed") is False,
+        "D1.3 development authorization boundary differs",
     )
     counts = plan.get("frozen_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_benchmark_physical_task_arm_runs")) == (72, 81, 153), "readiness physical-run counts drift")
@@ -3588,7 +3742,12 @@ def validate_readiness_plan(
     )
     require(
         plan.get("development_execution_failure") == development_failure,
-        "readiness DEV _002 final protected-gate failure differs",
+        "readiness DEV _003 provider-output failure differs",
+    )
+    require(
+        plan.get("historical_development_exec_gate_failure")
+        == protected_gate_failure,
+        "readiness DEV _002 protected-gate history differs",
     )
     static_meaning = str(plan.get("static_ci_meaning", ""))
     require(
@@ -3603,9 +3762,9 @@ def validate_readiness_plan(
         and remaining
         and all("_005" not in str(item) for item in remaining)
         and any(
-            "_002" in str(item)
-            and "consumed" in str(item)
-            and "_003" in str(item)
+            "_003" in str(item)
+            and "final" in str(item)
+            and "_004" in str(item)
             and "exact correction HEAD" in str(item)
             for item in remaining
         ),
@@ -4216,7 +4375,7 @@ def validate_workflows() -> None:
         and "push:" in benchmark_text
         and "      - codex/trimem-coder-v1" in benchmark_text
         and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
-        and "group: trimem-v1-development-tuning-exec-003" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-004" in benchmark_text
         and "group: trimem-v1-development-tuning-exec-002" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-001" not in benchmark_text
         and "cancel-in-progress: false" in benchmark_text
@@ -4444,8 +4603,16 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     development_failure = readiness_state["development_execution_failure"]
     development_accounting = development_failure["execution_accounting"]
     require(
-        development_accounting == DEVELOPMENT_EXEC_002_ACCOUNTING,
-        "DEV _002 current execution accounting differs at readiness output",
+        development_accounting
+        == {
+            "api_calls": 1,
+            "model_calls": 1,
+            "paid_model_calls": 1,
+            "completed_task_arm_runs": 0,
+            "grader_containers": 0,
+            "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+        },
+        "DEV _003 current execution accounting differs at readiness output",
     )
     smoke_counters = readiness_state["execution_counters"]
     require(
@@ -4458,10 +4625,10 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "heldout_task_arm_runs_planned": 81,
         "support_image_digests_frozen": 1,
         "target_image_digests_frozen": 45,
-        "execution_counter_scope": DEVELOPMENT_EXEC_002_COUNTER_SCOPE,
-        "task_arm_runs": development_accounting["task_arm_runs"],
+        "execution_counter_scope": "DEVELOPMENT_TUNING_EXEC_003_RUN_33788493773_ATTEMPT_1",
+        "task_arm_runs": development_accounting["completed_task_arm_runs"],
         "model_calls": development_accounting["model_calls"],
-        "official_grader_runs": development_accounting["official_grader_runs"],
+        "official_grader_runs": 0,
         "paid_model_calls": development_accounting["paid_model_calls"],
         "development_execution_accounting": development_accounting,
         "grader_smoke_history": {
@@ -4490,6 +4657,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
 
 def preapproval_blockers() -> list[str]:
     _validated_development_exec_002_failure()
+    _validated_development_exec_003_failure()
     blockers: list[str] = []
     selected = validate_selected_m2(require_frozen=False)
     if selected.get("status") != "PRE_DEVELOPMENT":
@@ -4521,10 +4689,10 @@ def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
         if name is None:
             return ["external approval phase is unknown"], None
         if name == "heldout":
-            _validated_development_exec_002_failure()
-            return ["HELDOUT_BENCHMARK is not authorized by D1.2"], name
+            _validated_development_exec_003_failure()
+            return ["HELDOUT_BENCHMARK is not authorized by D1.3"], name
         if name == "development":
-            _validated_development_exec_002_failure()
+            _validated_development_exec_003_failure()
         validate_exec_approval(name, approval_file)
     except (OSError, ValueError, BenchmarkExecutionError) as exc:
         return [str(exc)], None

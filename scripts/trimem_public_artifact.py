@@ -82,6 +82,7 @@ BENCHMARK_OUTCOME_FIELDS = (
     "target_id",
     "actual_accounting",
     "actual_memory_metrics",
+    "provider_outcomes",
     "actual_usd",
 )
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -644,7 +645,8 @@ def package(aggregate_path: Path, output: Path) -> dict[str, Any]:
         "dataset_rows_or_gold_test_payloads": "EXCLUDED_AND_EPHEMERAL_INPUTS_PURGED",
     }
     for field in (
-        "benchmark_roles", "benchmark_totals", "primary_endpoints", "secondary_endpoints"
+        "benchmark_roles", "benchmark_totals", "primary_endpoints", "secondary_endpoints",
+        "provider_outcomes",
     ):
         if field in aggregate:
             result[field] = aggregate[field]

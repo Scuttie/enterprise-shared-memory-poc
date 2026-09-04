@@ -98,9 +98,9 @@ normalization.
 The machine-readable lock is
 [`artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json`](../artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json).
 Its contract projection SHA-256 is
-`7cd1486285c5b8e28ab521e4954c5fd4830180655eb2acae17eba9370886fe90`,
+`2ceccbbae2c50ddfa625b82b3fa60d9c53d1854064b78ab0bab5a513da8c6b5a`,
 and its self-lock SHA-256 is
-`a03993ff4f3134aa4cbe9062128fb534f037063fdd35a031fe139bb432d3ffc1`.
+`eba4cb2c4d9cec60b2e79a051c3a33833a58e1b2f1cf4dcbd49ddc46a05bbece`.
 The raw lock file SHA-256 is
 `79e2b399c56269eff1cd23f815156ba4ace259c81e12690d63377a32c107c1ae`.
 

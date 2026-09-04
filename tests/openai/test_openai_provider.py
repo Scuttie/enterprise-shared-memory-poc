@@ -13,6 +13,9 @@ class FakeResp:
     def __init__(self, status, body, headers=None):
         self.status_code = status
         self._body = body
+        self.content = body if isinstance(body, bytes) else json.dumps(
+            body, ensure_ascii=False, separators=(",", ":")
+        ).encode("utf-8")
         self.headers = headers or {"x-request-id": "req_fake_1"}
 
     def json(self):
@@ -126,12 +129,13 @@ def test_auth_error_no_key_never_leaks():
     assert "sk-" not in str(e.value)            # never carries a key
 
 
-def test_empty_response_is_parser_error():
+def test_incomplete_response_has_exact_terminal_classification():
     c = FakeClient([FakeResp(200, {"id": "r", "model": "gpt-5.6-terra", "status": "incomplete",
                                    "output_text": "", "usage": {}, "incomplete_details": {"reason": "max_output_tokens"}})])
     p = OpenAIResponsesProvider("https://fake/v1", "gpt-5.6-terra", FakeSecrets(), family="gpt5.6", http_client=c)
-    with pytest.raises(ParserError):
+    with pytest.raises(ProviderError) as captured:
         run(p.generate(ModelRequest([{"role": "user", "content": "x"}], 8), logical_request_id="L"))
+    assert captured.value.record.final_status == "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS"
 
 
 def test_unknown_family_rejected():

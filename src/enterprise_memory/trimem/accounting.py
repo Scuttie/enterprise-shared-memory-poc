@@ -54,37 +54,47 @@ class CallRecord:
     logical_call_id: str
     provider: str
     model: str
-    input_tokens: int
-    output_tokens: int
+    input_tokens: Optional[int]
+    output_tokens: Optional[int]
     wall_time_ms: int
     prompt_hash: str
     response_hash: str
     active_node_id: Optional[str] = None
     paid: bool = False
-    cached_input_tokens: int = 0
-    reasoning_tokens: int = 0
+    cached_input_tokens: Optional[int] = 0
+    reasoning_tokens: Optional[int] = 0
     attempt: int = 1
     status: str = "success"
+    provider_reported_usage_available: bool = True
+    provider_response_envelope: Optional[Mapping[str, Any]] = None
+    ledger_reservation: Optional[Mapping[str, Any]] = None
 
     def __post_init__(self) -> None:
         if self.call_kind not in {"solve", "decompose", "extract", "consolidate"}:
             raise ValueError("unsupported call_kind")
         for name in (
             "step_no",
-            "input_tokens",
-            "output_tokens",
             "wall_time_ms",
-            "cached_input_tokens",
-            "reasoning_tokens",
             "attempt",
         ):
             if getattr(self, name) < 0:
                 raise ValueError(f"{name} must be non-negative")
+        usage = (
+            self.input_tokens,
+            self.output_tokens,
+            self.cached_input_tokens,
+            self.reasoning_tokens,
+        )
+        if self.provider_reported_usage_available:
+            if any(type(value) is not int or value < 0 for value in usage):
+                raise ValueError("available provider usage must be exact non-negative integers")
+        elif any(value is not None for value in usage):
+            raise ValueError("unavailable provider usage must be represented as null")
         if self.attempt < 1:
             raise ValueError("attempt must be >= 1")
-        if self.cached_input_tokens > self.input_tokens:
+        if self.provider_reported_usage_available and self.cached_input_tokens > self.input_tokens:
             raise ValueError("cached_input_tokens cannot exceed input_tokens")
-        if self.reasoning_tokens > self.output_tokens:
+        if self.provider_reported_usage_available and self.reasoning_tokens > self.output_tokens:
             raise ValueError("reasoning_tokens cannot exceed output_tokens")
         for name in ("prompt_hash", "response_hash"):
             value = getattr(self, name)
@@ -149,6 +159,7 @@ class RunAccounting:
                 {
                     "calls": 0,
                     "paid_calls": 0,
+                    "provider_usage_unavailable_calls": 0,
                     "input_tokens": 0,
                     "cached_input_tokens": 0,
                     "output_tokens": 0,
@@ -158,11 +169,16 @@ class RunAccounting:
             )
             bucket["calls"] += 1
             bucket["paid_calls"] += int(rec.paid)
-            bucket["input_tokens"] += rec.input_tokens
-            bucket["cached_input_tokens"] += rec.cached_input_tokens
-            bucket["output_tokens"] += rec.output_tokens
-            bucket["reasoning_tokens"] += rec.reasoning_tokens
+            bucket["provider_usage_unavailable_calls"] += int(
+                not rec.provider_reported_usage_available
+            )
+            if rec.provider_reported_usage_available:
+                bucket["input_tokens"] += rec.input_tokens
+                bucket["cached_input_tokens"] += rec.cached_input_tokens
+                bucket["output_tokens"] += rec.output_tokens
+                bucket["reasoning_tokens"] += rec.reasoning_tokens
             bucket["wall_time_ms"] += rec.wall_time_ms
+        usage_available = all(rec.provider_reported_usage_available for rec in self.calls)
         return {
             "model_gateway_calls": len(self.calls),
             "paid_model_calls": sum(int(r.paid) for r in self.calls),
@@ -171,10 +187,22 @@ class RunAccounting:
             "grader_containers": sum(int(r.container_started) for r in self.graders),
             "official_grader_runs": sum(int(r.official and r.container_started) for r in self.graders),
             "by_call_kind": by_kind,
-            "actual_input_tokens": sum(r.input_tokens for r in self.calls),
-            "actual_cached_input_tokens": sum(r.cached_input_tokens for r in self.calls),
-            "actual_output_tokens": sum(r.output_tokens for r in self.calls),
-            "actual_reasoning_tokens": sum(r.reasoning_tokens for r in self.calls),
+            "provider_reported_usage_available": usage_available,
+            "provider_usage_unavailable_calls": sum(
+                int(not r.provider_reported_usage_available) for r in self.calls
+            ),
+            "actual_input_tokens": (
+                sum(r.input_tokens for r in self.calls) if usage_available else None
+            ),
+            "actual_cached_input_tokens": (
+                sum(r.cached_input_tokens for r in self.calls) if usage_available else None
+            ),
+            "actual_output_tokens": (
+                sum(r.output_tokens for r in self.calls) if usage_available else None
+            ),
+            "actual_reasoning_tokens": (
+                sum(r.reasoning_tokens for r in self.calls) if usage_available else None
+            ),
             "actual_model_wall_time_ms": sum(r.wall_time_ms for r in self.calls),
             "actual_tool_wall_time_ms": sum(r.wall_time_ms for r in self.tools),
             "actual_grader_wall_time_ms": sum(r.wall_time_ms for r in self.graders),

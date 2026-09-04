@@ -78,8 +78,8 @@ class RuntimeLimits:
     max_decomposition_calls: int = 1
     max_extraction_calls: int = 1
     max_output_tokens_per_solve: int = 2048
-    max_output_tokens_decomposition: int = 2048
-    max_output_tokens_extraction: int = 1536
+    max_output_tokens_decomposition: int = 8192
+    max_output_tokens_extraction: int = 8192
     max_memory_injections: int = 3
     max_memory_context_bytes: int = 12_000
 

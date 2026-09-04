@@ -1,27 +1,57 @@
 {
   "actual_to_date": {
-    "api_calls": 0,
+    "api_calls": 1,
     "cached_input_tokens": 0,
-    "decomposition_calls": 0,
+    "decomposition_calls": 1,
     "docker_pulls": 11,
     "extraction_calls": 0,
     "grader_calls": 18,
     "grader_containers": 18,
-    "input_tokens": 0,
-    "model_calls": 0,
-    "model_gateway_calls": 0,
+    "input_tokens": null,
+    "model_calls": 1,
+    "model_gateway_calls": 1,
     "official_grader_runs": 18,
-    "output_tokens": 0,
-    "paid_model_calls": 0,
-    "reasoning_tokens": 0,
+    "output_tokens": null,
+    "paid_model_calls": 1,
+    "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+    "reasoning_tokens": null,
+    "ledger_reservation": {
+      "input_tokens": 5069,
+      "output_tokens": 2048,
+      "total_usd": 0.01301775
+    },
     "solve_calls": 0,
     "support_image_pulls": 2,
     "target_image_pulls": 9,
     "task_arm_runs": 0,
-    "total_usd": 0
+    "total_usd": 0.01301775
   },
-  "actual_to_date_scope": "CUMULATIVE_INCLUDES_P0.1.4_DIAGNOSTIC_HISTORY_AND_P0.1.5_EXEC_005_AUTHORITATIVE_PASS",
+  "actual_to_date_scope": "CUMULATIVE_INCLUDES_GRADER_HISTORY_AND_DEV_RUN_33788493773_ATTEMPT_1",
   "accounting_windows": {
+    "d13_historical_dev_exec_003": {
+      "api_calls": 1,
+      "completed_task_arm_runs": 0,
+      "decomposition_calls": 1,
+      "git_head": "bc70e1979c2987cd52347b2ef2fd7c43dc3014df",
+      "grader_containers": 0,
+      "input_tokens": null,
+      "ledger_reservation": {
+        "input_tokens": 5069,
+        "output_tokens": 2048,
+        "total_usd": 0.01301775
+      },
+      "model_calls": 1,
+      "model_gateway_calls": 1,
+      "official_grader_runs": 0,
+      "output_tokens": null,
+      "paid_model_calls": 1,
+      "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+      "reasoning_tokens": null,
+      "scope": "IMMUTABLE_HISTORICAL_DEV_EXECUTION",
+      "task_arm_runs": 0,
+      "workflow_run_attempt": 1,
+      "workflow_run_id": 33788493773
+    },
     "p014_diagnostic_history": {
       "api_calls": 0,
       "cached_input_tokens": 0,
@@ -160,12 +190,12 @@
       "max_input_tokens_per_task_arm": 500000,
       "max_model_calls_per_task_arm": 26,
       "model_calls": 1872,
-      "output_tokens": 3796992,
+      "output_tokens": 4718592,
       "paid_model_calls": 1872,
       "solve_calls": 1728,
       "task_arm_runs": 72,
       "total_usd": 50.0,
-      "uncached_token_cost_ceiling_usd": 44.086464
+      "uncached_token_cost_ceiling_usd": 48.233664
     },
     "GRADER_SMOKE": {
       "benchmark_grader_containers": 12,
@@ -187,12 +217,12 @@
       "max_input_tokens_per_task_arm": 500000,
       "max_model_calls_per_task_arm": 26,
       "model_calls": 2106,
-      "output_tokens": 4271616,
+      "output_tokens": 5308416,
       "paid_model_calls": 2106,
       "solve_calls": 1944,
       "task_arm_runs": 81,
       "total_usd": 170.0,
-      "uncached_token_cost_ceiling_usd": 49.597272
+      "uncached_token_cost_ceiling_usd": 54.262872
     }
   },
   "proposed_hard_cap": {
@@ -205,13 +235,13 @@
     "max_input_tokens_per_task_arm": 500000,
     "max_model_calls_per_task_arm": 26,
     "model_calls": 3978,
-    "output_tokens": 8068608,
+    "output_tokens": 10027008,
     "paid_model_calls": 3978,
     "solve_calls": 3672,
     "status": "PROPOSED_PENDING_SEPARATE_PHASE_EXEC_APPROVALS",
     "task_arm_runs": 153,
     "total_usd": 220.0,
-    "uncached_token_cost_ceiling_usd": 93.683736
+    "uncached_token_cost_ceiling_usd": 102.496536
   },
   "run_counts": {
     "development_m0_m1_runs_after_selection": 24,

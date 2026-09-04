@@ -39,6 +39,7 @@ from .grader import (
     RecordingGraderGateway,
 )
 from .retrieval import MemoryInjection, RecallDecision
+from .provider_output_contracts import output_contract
 from .runtime_lock import RuntimeLock
 from .working_graph import Evidence, ShortTermWorkingGraph, SubtaskSpec
 from .workspace import (
@@ -381,16 +382,25 @@ def _model_suffix_call(
     active_node_id: Optional[str],
     failure: bool,
 ) -> tuple[CallRecord, str, bool]:
-    required_numbers = {
+    required_numbers = {"wall_time_ms", "attempt"}
+    usage_available = result_event.get("provider_reported_usage_available", True)
+    usage_fields = {
         "input_tokens",
         "output_tokens",
         "cached_input_tokens",
         "reasoning_tokens",
-        "wall_time_ms",
-        "attempt",
     }
     if (
         any(type(result_event.get(name)) is not int for name in required_numbers)
+        or type(usage_available) is not bool
+        or (
+            usage_available
+            and any(type(result_event.get(name)) is not int for name in usage_fields)
+        )
+        or (
+            not usage_available
+            and any(result_event.get(name) is not None for name in usage_fields)
+        )
         or not isinstance(result_event.get("provider"), str)
         or not isinstance(result_event.get("model"), str)
         or not isinstance(result_event.get("paid"), bool)
@@ -429,9 +439,46 @@ def _model_suffix_call(
             paid=result_event["paid"],
             attempt=result_event["attempt"],
             status=result_event["status"],
+            provider_reported_usage_available=usage_available,
+            provider_response_envelope=result_event.get("provider_response_envelope"),
+            ledger_reservation=result_event.get("ledger_reservation"),
         ),
         response_text,
         failure,
+    )
+
+
+def _recovered_gateway_failure(
+    result_event: Mapping[str, Any], call: CallRecord, response_text: str
+) -> GatewayInvocationFailure:
+    return GatewayInvocationFailure(
+        provider=call.provider,
+        model=call.model,
+        status=call.status,
+        attempt=call.attempt,
+        input_tokens=call.input_tokens,
+        output_tokens=call.output_tokens,
+        cached_input_tokens=call.cached_input_tokens,
+        reasoning_tokens=call.reasoning_tokens,
+        wall_time_ms=call.wall_time_ms,
+        response_text=response_text,
+        provider_request_id=result_event.get("provider_request_id"),
+        response_id=result_event.get("response_id"),
+        response_status=result_event.get("response_status"),
+        response_error_code=result_event.get("response_error_code"),
+        incomplete_reason=result_event.get("incomplete_reason"),
+        output_item_types=tuple(result_event.get("output_item_types", ())),
+        content_item_types=tuple(result_event.get("content_item_types", ())),
+        refusal_present=bool(result_event.get("refusal_present", False)),
+        provider_reported_usage_available=call.provider_reported_usage_available,
+        raw_envelope_reference=result_event.get("raw_envelope_reference"),
+        extracted_text_bytes=int(result_event.get("extracted_text_bytes", 0)),
+        structured_output_bytes=int(result_event.get("structured_output_bytes", 0)),
+        original_provider_terminal_classification=result_event.get(
+            "original_provider_terminal_classification"
+        ),
+        provider_response_envelope=result_event.get("provider_response_envelope"),
+        ledger_reservation=result_event.get("ledger_reservation"),
     )
 
 
@@ -1124,17 +1171,8 @@ class TriMemAgentRuntime:
                             "attempt": call.attempt,
                         }
                         save_checkpoint(checkpoint.state, graph.active_node_id)
-                        raise GatewayInvocationFailure(
-                            provider=call.provider,
-                            model=call.model,
-                            status=call.status,
-                            attempt=call.attempt,
-                            input_tokens=call.input_tokens,
-                            output_tokens=call.output_tokens,
-                            cached_input_tokens=call.cached_input_tokens,
-                            reasoning_tokens=call.reasoning_tokens,
-                            wall_time_ms=call.wall_time_ms,
-                            response_text=response_text,
+                        raise _recovered_gateway_failure(
+                            result_event, call, response_text
                         )
 
                     if recovered_tool is None:
@@ -1424,17 +1462,8 @@ class TriMemAgentRuntime:
                     "attempt": call.attempt,
                 }
                 save_checkpoint("GRADED", None)
-                raise GatewayInvocationFailure(
-                    provider=call.provider,
-                    model=call.model,
-                    status=call.status,
-                    attempt=call.attempt,
-                    input_tokens=call.input_tokens,
-                    output_tokens=call.output_tokens,
-                    cached_input_tokens=call.cached_input_tokens,
-                    reasoning_tokens=call.reasoning_tokens,
-                    wall_time_ms=call.wall_time_ms,
-                    response_text=response_text,
+                raise _recovered_gateway_failure(
+                    result_event, call, response_text
                 )
             extraction = self._extraction_from_text(
                 task,
@@ -1581,6 +1610,7 @@ class TriMemAgentRuntime:
                 prompt=prompt,
                 max_output_tokens=self.lock.limits.max_output_tokens_decomposition,
                 org_id=task.org_id,
+                **output_contract("trimem_decomposition_v1"),
             )
         )
         payload = strict_json_object(response.text)
@@ -1711,6 +1741,7 @@ class TriMemAgentRuntime:
                 prompt=prompt,
                 max_output_tokens=self.lock.limits.max_output_tokens_extraction,
                 org_id=task.org_id,
+                **output_contract("trimem_experience_extraction_v1"),
             )
         )
         if crash_after_model_response:

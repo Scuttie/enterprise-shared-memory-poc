@@ -35,6 +35,8 @@ from trimem_exec_approval import (  # noqa: E402
 
 DUMMY_KEY = "DUMMY-VISIBLE-ASCII-CREDENTIAL-00000001"
 RUN_ID = 246_813_579
+D17_SOURCE_HEAD = "f5f6b8d0c6bef4aa704e25d8e67c526d437e967b"
+D17_EXECUTION_HEAD = "8002847d0db8975dfd957a1322d31a7768fc098f"
 
 
 def _git(repository: Path, *args: str) -> str:
@@ -90,21 +92,17 @@ def _remote_gates(source_head: str) -> dict[str, Any]:
 def exact_execution_fixture(tmp_path_factory):
     fixture_root = tmp_path_factory.mktemp("d17-exact-execution")
     repository = fixture_root / "repository"
-    current_head = _git(ROOT, "rev-parse", "HEAD")
-    changes = _git(
+    source_head = D17_SOURCE_HEAD
+    assert _git(ROOT, "rev-parse", D17_EXECUTION_HEAD + "^") == source_head
+    assert _git(
         ROOT,
         "diff-tree",
         "--no-commit-id",
         "--name-status",
         "-r",
         "--no-renames",
-        current_head,
-    ).splitlines()
-    source_head = (
-        _git(ROOT, "rev-parse", current_head + "^")
-        if changes == [f"A\t{trigger.SENTINEL_PATH}"]
-        else current_head
-    )
+        D17_EXECUTION_HEAD,
+    ).splitlines() == [f"A\t{trigger.SENTINEL_PATH}"]
     subprocess.run(
         ["git", "clone", "--quiet", "--shared", str(ROOT), str(repository)],
         check=True,

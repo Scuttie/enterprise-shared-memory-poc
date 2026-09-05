@@ -30,7 +30,7 @@
     "src/enterprise_memory/trimem/scientific_terminal.py": "09f4c7066b843151a8a8a4a2ebce0bd608e9596d13332a81cf795268c7fb2120",
     "tests/unit/test_trimem_benchmark_readiness.py": "c8dae7bb8eeea8c8e226732ae0b93fa48ad67ccd233258cf17814a783f526fa2",
     "tests/unit/test_trimem_d16_native_action.py": "1333e7a10f775d43d77b4d8771b526e879b8942bad72304ac2c3716e00b20f90",
-    "tests/unit/test_trimem_d17_approval_cap_integration.py": "3950ccbc65678497cb3f75cd6dbcb528f3115d64482d61f1d109b84d0da5d8ef",
+    "tests/unit/test_trimem_d17_approval_cap_integration.py": "701936b36736bd2c9e28f36aa3411b245c0a18bf330d797d8e1da5d8ff878c06",
     "tests/unit/test_trimem_d18_public_artifact_hardening.py": "d7ea76fea3a7a55e000a05fdb870cc9c6bef39cc5def2ae78bc4101f6107e081",
     "tests/unit/test_trimem_d18_terminal_contract_integration.py": "22643d40ca3f7eb27999de7e4d4a28971a900b5a998086cd377f88f9b25b74e0",
     "tests/unit/test_trimem_dev_toolchain_workflows.py": "13c3f491cc444ca138aaeaadd3b0d23b49d1f24ee58f973b430b7fdf6742926d",
@@ -371,8 +371,8 @@
           "sha256": "7387c8b48603b220fd1197ed5d017f774682c46dcbbca2ffdf55f9d798a019f1"
         },
         "after": {
-          "bytes": 17844,
-          "sha256": "3950ccbc65678497cb3f75cd6dbcb528f3115d64482d61f1d109b84d0da5d8ef"
+          "bytes": 17908,
+          "sha256": "701936b36736bd2c9e28f36aa3411b245c0a18bf330d797d8e1da5d8ff878c06"
         }
       },
       {
@@ -692,7 +692,7 @@
     "grader_smoke_rerun_authorized": false,
     "merge_tag_or_release_authorized": false
   },
-  "frozen_at_utc": "2026-09-05T15:56:58.476Z",
+  "frozen_at_utc": "2026-09-05T16:39:50.260Z",
   "pre_execution_gate_evidence": {
     "failed_correction_source_gate": {
       "classification": "NON_SCIENTIFIC_PRE_EXECUTION_SOURCE_GATE_FAILURE",
@@ -730,16 +730,16 @@
     "full_local_suite": {
       "status": "PASS",
       "partitioning": "exact disjoint path shards over the complete tests tree",
-      "collected": 1481,
+      "collected": 1484,
       "passed": 1331,
-      "service_marked_skipped": 150,
+      "service_marked_skipped": 153,
       "failed": 0,
       "shards": [
         {
           "scope": "tests excluding tests/unit/test_trimem_*.py",
-          "collected": 517,
+          "collected": 520,
           "passed": 367,
-          "service_marked_skipped": 150,
+          "service_marked_skipped": 153,
           "failed": 0
         },
         {

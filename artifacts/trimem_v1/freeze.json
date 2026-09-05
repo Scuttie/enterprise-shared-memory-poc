@@ -378,7 +378,7 @@
     },
     "artifacts/trimem_v1/development_terminal_contract_amendment.json": {
       "bytes": 37550,
-      "sha256": "6ea66349f1f7b60bcd92a87a112c5ed2db9f5f1158f1d2790eab7aff9ae69a8f"
+      "sha256": "ebe45bdf849c5df5511d0bdc48fbf48d9580615955e9b6b7a18a8ed92fddf8f9"
     },
     "artifacts/trimem_v1/development_terminal_contract_inventory.json": {
       "bytes": 20989,
@@ -1353,8 +1353,8 @@
       "sha256": "1333e7a10f775d43d77b4d8771b526e879b8942bad72304ac2c3716e00b20f90"
     },
     "tests/unit/test_trimem_d17_approval_cap_integration.py": {
-      "bytes": 17844,
-      "sha256": "3950ccbc65678497cb3f75cd6dbcb528f3115d64482d61f1d109b84d0da5d8ef"
+      "bytes": 17908,
+      "sha256": "701936b36736bd2c9e28f36aa3411b245c0a18bf330d797d8e1da5d8ff878c06"
     },
     "tests/unit/test_trimem_d18_public_artifact_hardening.py": {
       "bytes": 9669,

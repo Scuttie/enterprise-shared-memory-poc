@@ -1,4 +1,4 @@
-"""One protected real-provider native-action canary for DEV `_007` only."""
+"""One protected real-provider native-action canary for approved DEV only."""
 from __future__ import annotations
 
 import argparse
@@ -14,6 +14,7 @@ import httpx
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "scripts"))
 
 from enterprise_memory.providers.base import ModelRequest, ProviderError, SINGLE_FUNCTION_CALL
 from enterprise_memory.providers.openai_responses import (
@@ -27,11 +28,17 @@ from enterprise_memory.trimem.function_tools import (
 )
 from enterprise_memory.trimem.gateway import GatewayResponse, parse_function_action
 from enterprise_memory.trimem.workspace import InMemoryRepositoryWorkspace
+from trimem_benchmark_run import validate_exec_approval
+from trimem_development_phase_cap import (
+    PROTOCOL_CANARY_INPUT_RESERVATION,
+    PROTOCOL_CANARY_OUTPUT_RESERVATION,
+    validate_development_phase_hard_cap,
+)
 
 
 MODEL = "gpt-5.4-mini-2026-03-17"
-INPUT_CAP = 4_096
-OUTPUT_CAP = 2_048
+INPUT_CAP = PROTOCOL_CANARY_INPUT_RESERVATION
+OUTPUT_CAP = PROTOCOL_CANARY_OUTPUT_RESERVATION
 LOGICAL_ID = "TRIMEM_V1_D16_PROTOCOL_CANARY_0001"
 
 
@@ -51,22 +58,18 @@ def write_json(path: Path, value: Any) -> None:
 def _run_strict(output: Path, approval_path: Path) -> dict[str, Any]:
     if output.exists():
         raise RuntimeError("protocol canary output already exists")
-    approval_raw = approval_path.read_bytes()
-    approval = json.loads(approval_raw)
-    hard = approval.get("hard_cap", {})
-    expected_caps = {
-        "protocol_canary_calls": 1,
-        "scientific_generation_calls": 1_872,
-        "model_calls": 1_873,
-        "paid_model_calls": 1_873,
-        "input_tokens": 36_004_096,
-        "output_tokens": 4_720_640,
-        "benchmark_grader_containers": 72,
-        "total_usd": 50.0,
-        "uncached_token_cost_ceiling_usd": 48.245952,
-    }
-    if any(hard.get(name) != value for name, value in expected_caps.items()):
-        raise RuntimeError("protocol canary approval hard caps differ")
+    validated = validate_exec_approval("development", approval_path)
+    if validated["phase"] != "DEVELOPMENT_TUNING":
+        raise RuntimeError("protocol canary phase differs")
+    hard = validate_development_phase_hard_cap(
+        validated["hard_cap"],
+        protocol_canary_input_reservation=INPUT_CAP,
+        protocol_canary_output_reservation=OUTPUT_CAP,
+    )
+    approval_binding = validated["approval"]
+    approval_sha256 = validated["approval_artifact_sha256"]
+    if not isinstance(approval_binding, dict):
+        raise RuntimeError("protocol canary approval binding is missing")
     restricted = output.parent / "restricted" / "protocol-canary"
     prompt = (
         "Protocol canary only. Call list_files exactly once for the tiny local "
@@ -121,8 +124,12 @@ def _run_strict(output: Path, approval_path: Path) -> dict[str, Any]:
         raise RuntimeError("protocol canary lacks exact provider usage")
     if response.returned_model != MODEL:
         raise RuntimeError("protocol canary returned-model mismatch")
-    if int(response.input_tokens or 0) > INPUT_CAP:
-        raise RuntimeError("protocol canary exceeded input token cap")
+    if (
+        int(envelope.input_tokens or 0) > INPUT_CAP
+        or int(envelope.output_tokens or 0) > OUTPUT_CAP
+        or int(envelope.cached_input_tokens or 0) > int(envelope.input_tokens or 0)
+    ):
+        raise RuntimeError("protocol canary usage exceeded its reservation")
     gateway_response = GatewayResponse(
         text=response.text,
         provider="openai-responses",
@@ -166,7 +173,7 @@ def _run_strict(output: Path, approval_path: Path) -> dict[str, Any]:
         "status": "PASS",
         "scientific_result": False,
         "logical_call_id": LOGICAL_ID,
-        "approval_sha256": sha256_bytes(approval_raw),
+        "approval_sha256": approval_sha256,
         "model": MODEL,
         "reasoning_effort": "medium",
         "generation_calls": 1,

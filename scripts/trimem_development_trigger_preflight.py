@@ -22,6 +22,10 @@ from typing import Any, Mapping
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from trimem_install_pinned_gh import load_gh_cli_lock, verify_installed_gh
+from trimem_development_phase_cap import (
+    DevelopmentPhaseCapError,
+    validate_development_phase_hard_cap,
+)
 
 
 EXPECTED_EVENT = "push"
@@ -126,6 +130,7 @@ PROVIDER_OUTPUT_SCHEMA_LOCK_PATH = (
 )
 PROVIDER_OUTPUT_SCHEMAS_PATH = "configs/trimem_v1/provider_output_schemas.json"
 PREFLIGHT_PATH = "scripts/trimem_development_trigger_preflight.py"
+DEVELOPMENT_PHASE_CAP_PATH = "scripts/trimem_development_phase_cap.py"
 GH_INSTALLER_PATH = "scripts/trimem_install_pinned_gh.py"
 GH_VERIFIER_PATH = "scripts/trimem_verify_gh_lock.py"
 READINESS_VERIFIER_PATH = "scripts/trimem_verify_ready.py"
@@ -199,16 +204,6 @@ HARD_CAPS = {
     "task_arm_runs": 72,
     "total_usd": 50.0,
     "uncached_token_cost_ceiling_usd": 48.233664,
-}
-D16_GLOBAL_HARD_CAPS = {
-    **HARD_CAPS,
-    "input_tokens": 36_004_096,
-    "model_calls": 1_873,
-    "output_tokens": 4_720_640,
-    "paid_model_calls": 1_873,
-    "protocol_canary_calls": 1,
-    "scientific_generation_calls": 1_872,
-    "uncached_token_cost_ceiling_usd": 48.245952,
 }
 EXPECTED_EXPENDITURE = {
     "cached_input_tokens": 0,
@@ -422,6 +417,7 @@ FREEZE_CLOSURE_PATHS = (
     PROVIDER_OUTPUT_SCHEMA_LOCK_PATH,
     PROVIDER_OUTPUT_SCHEMAS_PATH,
     PREFLIGHT_PATH,
+    DEVELOPMENT_PHASE_CAP_PATH,
     GH_INSTALLER_PATH,
     GH_VERIFIER_PATH,
     READINESS_VERIFIER_PATH,
@@ -1340,7 +1336,10 @@ def _validate_frozen_material(
     expected = cost.get("expected_cost", {}).get("phase_totals", {}).get(EXPECTED_PHASE)
     _require(isinstance(hard, dict), "DEV hard-cap material is missing")
     _require(isinstance(expected, dict), "DEV expected-cost material is missing")
-    _require(hard == D16_GLOBAL_HARD_CAPS, "DEV hard-cap dictionary drifted")
+    try:
+        validate_development_phase_hard_cap(hard)
+    except DevelopmentPhaseCapError as exc:
+        raise DevelopmentTriggerError(str(exc)) from None
     for field in ("input_tokens", "model_calls", "output_tokens", "task_arm_runs", "total_usd"):
         expected_value = EXPECTED_EXPENDITURE.get(field, SCIENTIFIC_WORKLOAD.get(field))
         if field == "model_calls":
@@ -1801,14 +1800,14 @@ def _validate_secret_free_preflight(
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_007.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_008.json\n"
     )
     trigger_identity_ok = (
         trigger_block == expected_trigger_block
         and f"group: {EXPECTED_CONCURRENCY_GROUP}" in workflow
     ) or (
         trigger_block == d15_trigger_block
-        and "group: trimem-v1-development-tuning-exec-007" in workflow
+        and "group: trimem-v1-development-tuning-exec-008" in workflow
     )
     _require(
         trigger_identity_ok

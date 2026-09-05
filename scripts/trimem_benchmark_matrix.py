@@ -40,6 +40,10 @@ from trimem_exec_approval import (  # noqa: E402
     ApprovalValidationError,
     validate_external_approval_document,
 )
+from trimem_development_phase_cap import (  # noqa: E402
+    DevelopmentPhaseCapError,
+    scientific_cap_after_protocol_canary,
+)
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
 )
@@ -3526,13 +3530,12 @@ def _aggregate_benchmark(
             selected_candidate_id=selected_candidate_id,
             summaries=summaries,
         )
-    expected_phase = {
-        "development": "DEVELOPMENT_TUNING",
-        "heldout": "HELDOUT_BENCHMARK",
-    }[name]
-    hard_cap = cost_plan.get("phase_hard_caps", {}).get(expected_phase)
-    if not isinstance(hard_cap, dict):
-        raise MatrixError("frozen benchmark phase hard cap is missing")
+    hard_cap = _scientific_hard_cap_for_aggregate(
+        name,
+        results_dir,
+        cost_plan=cost_plan,
+        approval_binding=approval_binding,
+    )
     record_values = [record for _, record in records]
     phase_budget = _validate_phase_budget(
         record_values,
@@ -3593,6 +3596,36 @@ def _aggregate_benchmark(
                 "restricted_selection_artifact_hashes": promotion_hashes,
             } if name == "development" else {}),
             "sequence_sha256": expected_sequence, "status": "PASS"}
+
+
+def _scientific_hard_cap_for_aggregate(
+    name: str,
+    results_dir: Path,
+    *,
+    cost_plan: Mapping[str, Any],
+    approval_binding: Mapping[str, str],
+) -> dict[str, Any]:
+    expected_phase = {
+        "development": "DEVELOPMENT_TUNING",
+        "heldout": "HELDOUT_BENCHMARK",
+    }[name]
+    hard_cap = cost_plan.get("phase_hard_caps", {}).get(expected_phase)
+    if not isinstance(hard_cap, dict):
+        raise MatrixError("frozen benchmark phase hard cap is missing")
+    if name != "development":
+        return dict(hard_cap)
+    try:
+        return scientific_cap_after_protocol_canary(
+            hard_cap,
+            _load(results_dir / "control/protocol-action-canary.json"),
+            expected_approval_sha256=approval_binding[
+                "approval_artifact_sha256"
+            ],
+        )
+    except (DevelopmentPhaseCapError, KeyError, OSError, ValueError) as exc:
+        raise MatrixError(
+            f"development protocol-canary cap binding failed: {exc}"
+        ) from None
 
 
 def aggregate(

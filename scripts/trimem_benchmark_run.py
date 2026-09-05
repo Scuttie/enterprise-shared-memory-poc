@@ -97,6 +97,13 @@ from trimem_exec_approval import (  # noqa: E402
     ApprovalValidationError,
     validate_external_approval_document,
 )
+from trimem_development_phase_cap import (  # noqa: E402
+    DevelopmentPhaseCapError,
+    PROTOCOL_CANARY_INPUT_RESERVATION,
+    PROTOCOL_CANARY_OUTPUT_RESERVATION,
+    scientific_cap_after_protocol_canary,
+    validate_development_phase_hard_cap,
+)
 
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -188,8 +195,6 @@ TASK_OUTPUT_POOL_BY_CALL_KIND = {
 }
 TASK_TOTAL_OUTPUT_POOL = 65_536
 PROTOCOL_CANARY_RELATIVE_PATH = Path("control/protocol-action-canary.json")
-PROTOCOL_CANARY_INPUT_RESERVATION = 4_096
-PROTOCOL_CANARY_OUTPUT_RESERVATION = 2_048
 TERMINAL_MODEL_RESERVATION_STATUSES = {
     "SUCCESS",
     "SUCCESS_CONSERVATIVE_USAGE",
@@ -561,6 +566,11 @@ def validate_exec_approval(split: str, approval_path: Path) -> dict[str, Any]:
     hard = cost.get("phase_hard_caps", {}).get(phase, {})
     if not isinstance(hard, dict) or not hard:
         raise BenchmarkExecutionError("frozen phase hard cap is missing")
+    if phase == "DEVELOPMENT_TUNING":
+        try:
+            hard = validate_development_phase_hard_cap(hard)
+        except DevelopmentPhaseCapError as exc:
+            raise BenchmarkExecutionError(str(exc)) from None
     exact = {
         "approved_task_arm_runs": hard.get("task_arm_runs"),
         "approved_paid_model_call_cap": hard.get("paid_model_calls"),
@@ -2003,58 +2013,21 @@ def actual_usd_for_accounting(
 
 
 def scientific_caps_after_protocol_canary(
-    phase_cap: Mapping[str, Any], canary: Mapping[str, Any]
+    phase_cap: Mapping[str, Any],
+    canary: Mapping[str, Any],
+    *,
+    expected_approval_sha256: str,
 ) -> dict[str, Any]:
-    """Derive a non-transferable scientific budget from the global `_007` cap."""
+    """Derive a non-transferable scientific budget after the protocol canary."""
 
-    required = {
-        "status": "PASS",
-        "scientific_result": False,
-        "generation_calls": 1,
-        "input_token_cap": PROTOCOL_CANARY_INPUT_RESERVATION,
-        "output_token_cap": PROTOCOL_CANARY_OUTPUT_RESERVATION,
-        "model": "gpt-5.4-mini-2026-03-17",
-    }
-    if any(canary.get(name) != expected for name, expected in required.items()):
-        raise BenchmarkExecutionError("protocol canary identity/status differs")
-    token_fields = ("input_tokens", "cached_input_tokens", "output_tokens")
-    if any(type(canary.get(name)) is not int or canary[name] < 0 for name in token_fields):
-        raise BenchmarkExecutionError("protocol canary usage is invalid")
-    if (
-        canary["cached_input_tokens"] > canary["input_tokens"]
-        or canary["input_tokens"] > PROTOCOL_CANARY_INPUT_RESERVATION
-        or canary["output_tokens"] > PROTOCOL_CANARY_OUTPUT_RESERVATION
-    ):
-        raise BenchmarkExecutionError("protocol canary exceeded its reservation")
     try:
-        canary_usd = Decimal(str(canary["actual_usd"]))
-    except (InvalidOperation, KeyError, TypeError, ValueError) as exc:
-        raise BenchmarkExecutionError("protocol canary USD is invalid") from exc
-    if canary_usd < 0:
-        raise BenchmarkExecutionError("protocol canary USD is negative")
-    if (
-        phase_cap.get("protocol_canary_calls") != 1
-        or phase_cap.get("scientific_generation_calls") != 1_872
-        or phase_cap.get("model_calls") != 1_873
-        or phase_cap.get("paid_model_calls") != 1_873
-        or phase_cap.get("input_tokens") != 36_004_096
-        or phase_cap.get("output_tokens") != 4_720_640
-        or Decimal(str(phase_cap.get("uncached_token_cost_ceiling_usd")))
-        != Decimal("48.245952")
-    ):
-        raise BenchmarkExecutionError("global `_007` hard caps differ")
-    scientific = dict(phase_cap)
-    scientific.pop("protocol_canary_calls", None)
-    scientific.pop("scientific_generation_calls", None)
-    scientific.update({
-        "model_calls": 1_872,
-        "paid_model_calls": 1_872,
-        "input_tokens": 36_000_000,
-        "output_tokens": 4_718_592,
-        "total_usd": float(Decimal("50.0") - canary_usd),
-        "uncached_token_cost_ceiling_usd": 48.233664,
-    })
-    return scientific
+        return scientific_cap_after_protocol_canary(
+            phase_cap,
+            canary,
+            expected_approval_sha256=expected_approval_sha256,
+        )
+    except DevelopmentPhaseCapError as exc:
+        raise BenchmarkExecutionError(str(exc)) from None
 
 
 def validate_global_phase_accounting(
@@ -3073,7 +3046,9 @@ def main() -> int:
                 )
             protocol_canary = read_json(canary_path)
             scientific_hard_cap = scientific_caps_after_protocol_canary(
-                approval["hard_cap"], protocol_canary
+                approval["hard_cap"],
+                protocol_canary,
+                expected_approval_sha256=approval["approval_artifact_sha256"],
             )
         if args.split == "development":
             selected_state = validate_selected_m2(require_frozen=False)

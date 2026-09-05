@@ -476,12 +476,12 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_007.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_008.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-007" in workflow
+    assert "group: trimem-v1-development-tuning-exec-008" in workflow
     assert "group: trimem-v1-development-tuning-exec-004" not in workflow
     assert "group: trimem-v1-development-tuning-exec-002" not in workflow
     assert "group: trimem-v1-development-tuning-exec-001" not in workflow

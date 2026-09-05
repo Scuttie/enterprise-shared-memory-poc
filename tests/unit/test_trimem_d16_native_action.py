@@ -318,12 +318,15 @@ def test_protocol_canary_and_scientific_cap_arithmetic_is_exact():
         "input_token_cap": 4_096,
         "output_token_cap": 2_048,
         "model": "gpt-5.4-mini-2026-03-17",
+        "approval_sha256": "a" * 64,
         "input_tokens": 100,
         "cached_input_tokens": 20,
         "output_tokens": 10,
         "actual_usd": "0.000120000000",
     }
-    scientific_cap = scientific_caps_after_protocol_canary(phase, canary)
+    scientific_cap = scientific_caps_after_protocol_canary(
+        phase, canary, expected_approval_sha256="a" * 64
+    )
     assert scientific_cap["paid_model_calls"] == 1_872
     assert scientific_cap["input_tokens"] == 36_000_000
     assert scientific_cap["output_tokens"] == 4_718_592
@@ -351,5 +354,5 @@ def test_workflow_orders_canary_before_images_and_scientific_runner():
     image_pull = workflow.index("Pull committed images by digest and verify local observations")
     scientific = workflow.index("Execute frozen serial streams with one atomic phase ledger")
     assert canary < image_pull < scientific
-    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_007.json" in workflow
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_008.json" in workflow
     assert "protocol-action-canary.json" in workflow

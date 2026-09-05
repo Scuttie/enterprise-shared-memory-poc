@@ -62,7 +62,7 @@ class AsyncClient:
 
 def binding(**changes):
     value = {
-        "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_007",
+        "request_id": d15.REQUEST_ID,
         "execution_head": "a" * 40,
         "source_head": "b" * 40,
         "workflow_run_id": "123",
@@ -197,7 +197,7 @@ def test_d15_approval_builder_embeds_only_the_run_bound_commitment():
     assert document["approval"]["approved_openai_key_commitment"] == (
         compute_openai_key_commitment(KEY, binding())
     )
-    assert d15.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_007.json")
+    assert d15.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_008.json")
 
 
 def test_historical_sentinel_is_hash_bound_but_not_a_freeze_member():

@@ -393,3 +393,36 @@ execution additionally requires a fresh external approval bound to the exact
 run ID, attempt 1, execution HEAD, source HEAD, freeze, request, and phase caps.
 HELDOUT, ablation, a fifth M2 candidate, model/target changes, `_004`, merge,
 tag, and release remain prohibited.
+
+Run `33914304167` attempt 1 consumed the later `_007` authorization at
+sentinel-only HEAD `d9c8560087e681b619a4ea5313451fe64257a77e`. The protected
+environment, external approval materialization, EXEC gate, exact credential
+binding, and exact-model metadata request all passed. The action canary then
+failed before provider generation because it independently parsed the external
+approval and looked for a nonexistent top-level `hard_cap`, instead of using
+the full cap returned by `validate_exec_approval`. Consequently provider
+generation, scientific cells, grader containers, target-image pulls, tokens,
+and USD were all zero. The endpoint is `TRIMEM_V1_DEV_INCOMPLETE`, scientific
+status is `NOT_STARTED`, and failure subtype is
+`TRIMEM_DEV_PROTOCOL_CANARY_APPROVAL_SCHEMA_MISMATCH`; `_007` is immutable and
+may not be rerun or gain attempt 2.
+
+D1.7 is classified as
+`NON_SEMANTIC_APPROVAL_CONSUMER_CONTRACT_FIX`. The external approval schema is
+unchanged: it carries only the approved projection while the complete
+DEVELOPMENT_TUNING cap comes from the committed cost plan. One shared pure
+validator now checks the complete global cap, the 1-call/4096-input/2048-output
+canary reservation, and the exact 1872-call scientific remainder. Both the
+runner and aggregate bind a PASS canary to the current approval artifact SHA
+and derive the same scientific ledger cap. Function tools, provider output
+items and parser, prompts, runtime/cell-containment policy, memory, DQN/PPR,
+targets, candidates, model, grader, and image locks remain unchanged.
+
+The explicit D1.7 authority is exactly
+`TRIMEM_V1_DEVELOPMENT_TUNING_CANARY_CAP_RECOVERY_EXEC_APPROVED_ONCE`. It may
+be used only after every credential-free gate passes, and then permits one
+sentinel-only `_008` child, one attempt-1 workflow run, one protected approval,
+one exact-model metadata request, one native-action canary generation, 72 DEV
+task-arm cells, and 72 official grader runs under the unchanged $50 cap. It
+does not authorize `_007` reuse, `_009`, HELDOUT, ablation, grader-smoke rerun,
+model/target/memory changes, merge, tag, or release.

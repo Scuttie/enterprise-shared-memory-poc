@@ -44,7 +44,7 @@ from enterprise_memory.trimem.production_v03_lifecycle import (  # noqa: E402
 from enterprise_memory.trimem.runtime_lock import RuntimeLock  # noqa: E402
 from trimem_benchmark_run import (  # noqa: E402
     AtomicBudgetLedger, BenchmarkExecutionError, BudgetedModelGateway, JournaledGraderGateway,
-    JournaledModelGateway, validate_exec_approval,
+    JournaledModelGateway, git_head, validate_exec_approval,
 )
 from trimem_freeze import (  # noqa: E402
     FROZEN_PATHS,
@@ -129,6 +129,13 @@ from trimem_development_trigger_preflight import (  # noqa: E402
     SENTINEL_PATH as DEVELOPMENT_EXEC_005_SENTINEL_PATH,
 )
 from trimem_development_trigger_d15 import (  # noqa: E402
+    D17_AMENDED_D16_PATHS,
+    D17_AMENDMENT_PATH,
+    D17_IMPLEMENTATION_PATHS,
+    PREVIOUS_EXECUTION_HEAD as DEVELOPMENT_EXEC_007_HEAD,
+    PREVIOUS_RUN_ID as DEVELOPMENT_EXEC_007_RUN_ID,
+    PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_007_SENTINEL_PATH,
+    PREVIOUS_SENTINEL_SHA256 as DEVELOPMENT_EXEC_007_SENTINEL_RAW_SHA256,
     REQUEST_ID as DEVELOPMENT_REQUEST_ID,
     REQUIRED_EXTERNAL_AUTHORIZATION as DEVELOPMENT_EXECUTION_AUTHORIZATION,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
@@ -367,6 +374,16 @@ DEVELOPMENT_EXEC_005_RUN_ID = 33_859_839_836
 DEVELOPMENT_EXEC_005_RUN_ATTEMPT = 1
 DEVELOPMENT_EXEC_005_FAILURE_SUBTYPE = (
     "TRIMEM_DEV_FIRST_DECOMPOSITION_HTTP_AUTH_ERROR"
+)
+DEVELOPMENT_EXEC_007_FAILURE_RECEIPT_PATH = (
+    "artifacts/trimem_v1/development_tuning_exec/exec-007/"
+    "approval-schema-mismatch-receipt.json"
+)
+DEVELOPMENT_EXEC_007_FAILURE_RECEIPT_RAW_SHA256 = (
+    "43b7dc4470cfa7142253586d85eecf27b2191898c981dacc82cd51c74d01f5de"
+)
+DEVELOPMENT_EXEC_007_FAILURE_SUBTYPE = (
+    "TRIMEM_DEV_PROTOCOL_CANARY_APPROVAL_SCHEMA_MISMATCH"
 )
 SMOKE_PASS_READINESS_SCOPE = "P0.1.5_EXEC_005_AUTHORITATIVE_PASS"
 SMOKE_PASS_SCIENTIFIC_RESULT = (
@@ -4014,6 +4031,55 @@ def _validated_development_exec_005_failure() -> dict[str, Any]:
     }
 
 
+def _validated_development_exec_007_failure() -> dict[str, Any]:
+    receipt_path = ROOT / DEVELOPMENT_EXEC_007_FAILURE_RECEIPT_PATH
+    sentinel_path = ROOT / DEVELOPMENT_EXEC_007_SENTINEL_PATH
+    require(
+        hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+        == DEVELOPMENT_EXEC_007_FAILURE_RECEIPT_RAW_SHA256,
+        "DEV _007 approval-consumer failure receipt bytes differ",
+    )
+    require(
+        hashlib.sha256(sentinel_path.read_bytes()).hexdigest()
+        == DEVELOPMENT_EXEC_007_SENTINEL_RAW_SHA256,
+        "DEV _007 sentinel bytes differ",
+    )
+    receipt = read_json(receipt_path)
+    accounting = receipt.get("execution_accounting", {})
+    require(
+        receipt.get("schema")
+        == "trimem/development-approval-schema-mismatch-receipt/1.0"
+        and receipt.get("status") == "TERMINAL_PRESERVED"
+        and receipt.get("endpoint") == DEVELOPMENT_INCOMPLETE_ENDPOINT
+        and receipt.get("scientific_status") == "NOT_STARTED"
+        and receipt.get("failure_subtype")
+        == DEVELOPMENT_EXEC_007_FAILURE_SUBTYPE
+        and receipt.get("workflow_run", {}).get("id")
+        == DEVELOPMENT_EXEC_007_RUN_ID
+        and receipt.get("workflow_run", {}).get("attempt") == 1
+        and receipt.get("workflow_run", {}).get("head_sha")
+        == DEVELOPMENT_EXEC_007_HEAD
+        and accounting.get("provider_control_plane_requests") == 1
+        and accounting.get("model_generation_calls") == 0
+        and accounting.get("paid_model_calls") == 0
+        and accounting.get("input_tokens") == 0
+        and accounting.get("output_tokens") == 0
+        and accounting.get("completed_task_arm_runs") == 0
+        and accounting.get("official_grader_runs") == 0
+        and accounting.get("benchmark_target_image_pulls") == 0
+        and accounting.get("total_usd") == 0.0,
+        "DEV _007 approval-consumer failure evidence differs",
+    )
+    ancestry = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", DEVELOPMENT_EXEC_007_HEAD, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    require(ancestry.returncode == 0, "DEV _007 execution is not immutable branch history")
+    return receipt
+
+
 def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
@@ -4025,18 +4091,20 @@ def validate_readiness_plan(
     historical_provider_failure = _validated_development_exec_003_failure()
     historical_exec_004_failure = _validated_development_exec_004_failure()
     development_failure = _validated_development_exec_005_failure()
+    current_development_failure = _validated_development_exec_007_failure()
     derived["current_status"]["DEV_APPROVAL_ALLOWED"] = "NO"
     derived["current_status"]["DEV_EXECUTION_ALLOWED"] = "NO"
-    derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = "STARTED_NO_COMPLETED_CELL"
+    derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = "NOT_STARTED"
     derived["current_status"]["ENDPOINT"] = DEVELOPMENT_INCOMPLETE_ENDPOINT
     derived["current_status"]["FAILURE_SUBTYPE"] = (
-        DEVELOPMENT_EXEC_005_FAILURE_SUBTYPE
+        DEVELOPMENT_EXEC_007_FAILURE_SUBTYPE
     )
     derived["current_status"]["PERFORMANCE"] = "NOT_MEASURED"
     derived["current_status"]["SCIENTIFIC_RESULT"] = (
         "NO_DEVELOPMENT_SCIENTIFIC_RESULT"
     )
     derived["development_execution_failure"] = development_failure
+    derived["current_development_execution_failure"] = current_development_failure
     derived["historical_development_exec_004_failure"] = (
         historical_exec_004_failure
     )
@@ -4079,9 +4147,9 @@ def validate_readiness_plan(
         isinstance(authorization, dict)
         and authorization.get("active_development_approval") is False
         and authorization.get("amendment_classification")
-        == "PRE_RESULT_ACTION_PROTOCOL_AND_CELL_CONTAINMENT_FIX"
+        == "NON_SEMANTIC_APPROVAL_CONSUMER_CONTRACT_FIX"
         and authorization.get("amendment_evidence_path")
-        == "artifacts/trimem_v1/development_action_protocol_amendment.json"
+        == D17_AMENDMENT_PATH
         and authorization.get("approval_request_eligible") is False
         and authorization.get("attempt_two_allowed") is False
         and authorization.get("development_execution_authorized") is False
@@ -4102,14 +4170,16 @@ def validate_readiness_plan(
         and authorization.get("request_005_attempt_one_consumed") is True
         and authorization.get("request_006_allowed_after_exact_remote_gates") is False
         and authorization.get("request_006_attempt_one_consumed") is True
-        and authorization.get("request_007_allowed_after_exact_remote_gates") is True
-        and authorization.get("request_007_attempt_one_consumed") is False
+        and authorization.get("request_007_allowed_after_exact_remote_gates") is False
+        and authorization.get("request_007_attempt_one_consumed") is True
+        and authorization.get("request_008_allowed_after_exact_remote_gates") is True
+        and authorization.get("request_008_attempt_one_consumed") is False
         and authorization.get(
             "solve_execution_contract_rehearsal_required_before_request_005"
         )
         is False
         and authorization.get("rerun_allowed") is False,
-        "D1.6 development authorization boundary differs",
+        "D1.7 development authorization boundary differs",
     )
     counts = plan.get("frozen_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_benchmark_physical_task_arm_runs")) == (72, 81, 153), "readiness physical-run counts drift")
@@ -4155,6 +4225,11 @@ def validate_readiness_plan(
         "readiness DEV _005 terminal authentication failure differs",
     )
     require(
+        plan.get("current_development_execution_failure")
+        == current_development_failure,
+        "readiness DEV _007 approval-consumer failure differs",
+    )
+    require(
         plan.get("historical_development_exec_004_failure")
         == historical_exec_004_failure,
         "readiness DEV _004 historical provider-output failure differs",
@@ -4172,7 +4247,7 @@ def validate_readiness_plan(
     static_meaning = str(plan.get("static_ci_meaning", ""))
     require(
         "grader-smoke PASS evidence" in static_meaning
-        and "D1.6" in static_meaning
+        and "D1.7" in static_meaning
         and "performance remains NOT_MEASURED" in static_meaning,
         "post-smoke static-CI evidence boundary differs",
     )
@@ -4180,7 +4255,7 @@ def validate_readiness_plan(
     require(
         isinstance(remaining, list)
         and remaining
-        and any("_006" in str(item) and "final" in str(item) for item in remaining),
+        and any("_007" in str(item) and "final" in str(item) for item in remaining),
         "post-smoke remaining phase gates differ",
     )
     return derived
@@ -4276,7 +4351,12 @@ def validate_d16_action_protocol_amendment() -> None:
             isinstance(relative, str)
             and isinstance(expected, str)
             and re.fullmatch(r"[0-9a-f]{64}", expected) is not None
-            and hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == expected,
+            and hashlib.sha256(
+                _historical_git_file(DEVELOPMENT_EXEC_007_HEAD, relative)
+                if relative in D17_AMENDED_D16_PATHS
+                else (ROOT / relative).read_bytes()
+            ).hexdigest()
+            == expected,
             f"D1.6 implementation seal differs: {relative}",
         )
     hard = amendment.get("hard_caps", {})
@@ -4293,8 +4373,36 @@ def validate_d16_action_protocol_amendment() -> None:
     )
 
 
+def validate_d17_approval_consumer_amendment() -> None:
+    amendment = read_json(ROOT / D17_AMENDMENT_PATH)
+    implementation = amendment.get("implementation_sha256")
+    require(
+        amendment.get("schema")
+        == "trimem/development-approval-consumer-contract-fix/1.0"
+        and amendment.get("classification")
+        == "NON_SEMANTIC_APPROVAL_CONSUMER_CONTRACT_FIX"
+        and amendment.get("completed_scientific_cells_before_amendment") == 0
+        and amendment.get("historical_run", {}).get("id")
+        == DEVELOPMENT_EXEC_007_RUN_ID
+        and amendment.get("historical_run", {}).get("head_sha")
+        == DEVELOPMENT_EXEC_007_HEAD
+        and isinstance(implementation, dict)
+        and set(implementation) == D17_IMPLEMENTATION_PATHS,
+        "D1.7 approval-consumer amendment identity differs",
+    )
+    for relative, expected in implementation.items():
+        require(
+            isinstance(expected, str)
+            and re.fullmatch(r"[0-9a-f]{64}", expected) is not None
+            and hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
+            == expected,
+            f"D1.7 implementation seal differs: {relative}",
+        )
+
+
 def validate_runtime_and_candidates() -> None:
     validate_d16_action_protocol_amendment()
+    validate_d17_approval_consumer_amendment()
     bundle = load_bundle()
     require(bundle.get("candidate_order") == list(CANDIDATE_IDS), "M2 candidate order drift")
     require(bundle.get("development_contract", {}).get("candidate_task_arm_runs") == 48, "M2 candidate run count drift")
@@ -4898,7 +5006,7 @@ def validate_workflows() -> None:
         and "push:" in benchmark_text
         and "      - codex/trimem-coder-v1" in benchmark_text
         and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
-        and "group: trimem-v1-development-tuning-exec-007" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-008" in benchmark_text
         and "group: trimem-v1-development-tuning-exec-004" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-003" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-002" not in benchmark_text
@@ -5149,32 +5257,24 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     require({"approved_workflow_run_id", "approved_workflow_run_attempt"} <= required, "single-dispatch EXEC approval binding is absent")
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
     smoke_actual = validate_grader_smoke_result(smoke)
-    development_failure = readiness_state["development_execution_failure"]
+    development_failure = readiness_state["current_development_execution_failure"]
     development_accounting = development_failure["execution_accounting"]
     require(
         development_accounting
         == {
-            "api_calls": 1,
-            "model_calls": 1,
-            "paid_model_calls": 1,
-            "decomposition_calls": 1,
-            "solve_calls": 0,
-            "extraction_calls": 0,
-            "input_tokens": None,
-            "cached_input_tokens": None,
-            "output_tokens": None,
-            "reasoning_tokens": None,
-            "provider_reported_usage": "UNAVAILABLE_HTTP_AUTH_ERROR",
-            "ledger_conservative_reservation": {
-                "input_tokens": 5069,
-                "output_tokens": 8192,
-                "total_usd": 0.04066575,
-            },
+            "provider_control_plane_requests": 1,
+            "model_generation_calls": 0,
+            "paid_model_calls": 0,
+            "input_tokens": 0,
+            "cached_input_tokens": 0,
+            "output_tokens": 0,
+            "reasoning_tokens": 0,
             "completed_task_arm_runs": 0,
-            "grader_containers": 0,
             "official_grader_runs": 0,
+            "benchmark_target_image_pulls": 0,
+            "total_usd": 0.0,
         },
-        "DEV _005 current execution accounting differs at readiness output",
+        "DEV _007 current execution accounting differs at readiness output",
     )
     smoke_counters = readiness_state["execution_counters"]
     require(
@@ -5187,9 +5287,9 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "heldout_task_arm_runs_planned": 81,
         "support_image_digests_frozen": 1,
         "target_image_digests_frozen": 45,
-        "execution_counter_scope": "DEVELOPMENT_TUNING_EXEC_005_RUN_33859839836_ATTEMPT_1",
+        "execution_counter_scope": "DEVELOPMENT_TUNING_EXEC_007_RUN_33914304167_ATTEMPT_1",
         "task_arm_runs": development_accounting["completed_task_arm_runs"],
-        "model_calls": development_accounting["model_calls"],
+        "model_calls": development_accounting["model_generation_calls"],
         "official_grader_runs": 0,
         "paid_model_calls": development_accounting["paid_model_calls"],
         "development_execution_accounting": development_accounting,
@@ -5225,12 +5325,12 @@ def preapproval_blockers() -> list[str]:
     sentinel = ROOT / DEVELOPMENT_SENTINEL_PATH
     if not sentinel.is_file():
         return [
-            "DEV _007 sentinel and exact-head remote gates are required before approval"
+            "DEV _008 sentinel and exact-head remote gates are required before approval"
         ]
     try:
         validate_development_sentinel_commit(ROOT, git_head())
     except (OSError, ValueError, subprocess.SubprocessError) as exc:
-        return [f"DEV _007 sentinel validation failed: {exc}"]
+        return [f"DEV _008 sentinel validation failed: {exc}"]
     return []
 
 

@@ -1,4 +1,4 @@
-"""Fail-closed one-time DEVELOPMENT_TUNING `_007` native-action trigger."""
+"""Fail-closed one-time DEVELOPMENT_TUNING `_008` approval-cap trigger."""
 from __future__ import annotations
 
 import argparse
@@ -23,32 +23,32 @@ EXPECTED_WORKFLOW_REF = (
     "trimem-benchmark.yml@refs/heads/codex/trimem-coder-v1"
 )
 EXPECTED_PHASE = "DEVELOPMENT_TUNING"
-REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_007"
-REQUEST_SCHEMA = "trimem/development-tuning-branch-trigger/1.6"
+REQUEST_ID = "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_008"
+REQUEST_SCHEMA = "trimem/development-tuning-branch-trigger/1.7"
 SENTINEL_PATH = (
-    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_007.json"
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_008.json"
 )
 PREVIOUS_SENTINEL_PATH = (
-    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_006.json"
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_007.json"
 )
 PREVIOUS_RECEIPT_PATH = (
-    "artifacts/trimem_v1/development_tuning_exec/exec-006/"
-    "action-protocol-failure-receipt.json"
+    "artifacts/trimem_v1/development_tuning_exec/exec-007/"
+    "approval-schema-mismatch-receipt.json"
 )
 PREVIOUS_SENTINEL_SHA256 = (
-    "9eb67d9b9ca5382a5f120108e12f767cdd51f421e1123f8cc74e18ec309cf01c"
+    "90b7cbcc43a7b1a8ce5df8413ab48d386c500aaee3f167fa3cebc064eaa33ab7"
 )
 PREVIOUS_RECEIPT_SHA256 = (
-    "66a3e8ba326d897e105f5b0ddd5c44996e166adce8439a795052725ace7cd755"
+    "43b7dc4470cfa7142253586d85eecf27b2191898c981dacc82cd51c74d01f5de"
 )
-PREVIOUS_SOURCE_HEAD = "38573cb2a499aec67b970cfcd4a7a2e119de3a70"
-PREVIOUS_EXECUTION_HEAD = "0e41ef4a73118730489c57220536287559b048b6"
-PREVIOUS_RUN_ID = 33_894_821_607
+PREVIOUS_SOURCE_HEAD = "553f7b44f4ab2762103ed06dbb87981c32ba2052"
+PREVIOUS_EXECUTION_HEAD = "d9c8560087e681b619a4ea5313451fe64257a77e"
+PREVIOUS_RUN_ID = 33_914_304_167
 MODEL_ID = "gpt-5.4-mini-2026-03-17"
 REQUIRED_EXTERNAL_AUTHORIZATION = (
-    "TRIMEM_V1_DEVELOPMENT_TUNING_NATIVE_ACTION_EXEC_APPROVED_ONCE"
+    "TRIMEM_V1_DEVELOPMENT_TUNING_CANARY_CAP_RECOVERY_EXEC_APPROVED_ONCE"
 )
-EXPECTED_CONCURRENCY_GROUP = "trimem-v1-development-tuning-exec-007"
+EXPECTED_CONCURRENCY_GROUP = "trimem-v1-development-tuning-exec-008"
 REQUIRED_REMOTE_GATE_WORKFLOWS = (
     ".github/workflows/ci-trimem.yml",
     ".github/workflows/ci-trimem-e2e.yml",
@@ -80,12 +80,19 @@ BOUND_PATHS = {
         "artifacts/trimem_v1/development_action_protocol_amendment.json"
     ),
     "approval_schema_sha256": "scripts/trimem_exec_approval.py",
+    "approval_consumer_contract_sha256": (
+        "artifacts/trimem_v1/development_approval_consumer_contract_fix.json"
+    ),
     "arms_sha256": "configs/trimem_v1/arms.json",
     "benchmark_workflow_sha256": ".github/workflows/trimem-benchmark.yml",
     "benchmark_matrix_sha256": "scripts/trimem_benchmark_matrix.py",
+    "benchmark_runner_sha256": "scripts/trimem_benchmark_run.py",
     "cost_plan_sha256": "configs/trimem_v1/cost_plan.json",
     "credential_module_sha256": (
         "src/enterprise_memory/providers/openai_credential.py"
+    ),
+    "credential_free_bundle_sha256": (
+        "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json"
     ),
     "development_manifest_sha256": "configs/trimem_v1/development_manifest.json",
     "freeze_sha256": "artifacts/trimem_v1/freeze.json",
@@ -104,6 +111,9 @@ BOUND_PATHS = {
     "gateway_contract_sha256": "src/enterprise_memory/trimem/gateway.py",
     "agent_runtime_sha256": "src/enterprise_memory/trimem/agent_runtime.py",
     "protocol_canary_sha256": "scripts/trimem_action_canary.py",
+    "shared_phase_cap_validator_sha256": (
+        "scripts/trimem_development_phase_cap.py"
+    ),
     "secret_validator_sha256": "scripts/trimem_validate_openai_credential.py",
     "selection_plan_sha256": "configs/trimem_v1/selection_plan.json",
     "solve_output_budget_contract_sha256": (
@@ -123,6 +133,38 @@ PRESERVED_SHA256 = {
     "artifacts/trimem_v1/grader_image_lock.json": "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
     "configs/trimem_v1/model_lock.json": "a0a4811590d396c2bea4f0454c18c912d11579858947540a355407009a975922",
     "configs/trimem_v1/selection_plan.json": "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
+}
+D17_AMENDMENT_PATH = (
+    "artifacts/trimem_v1/development_approval_consumer_contract_fix.json"
+)
+D17_AMENDED_D16_PATHS = {
+    ".github/workflows/trimem-benchmark.yml",
+    "scripts/trimem_action_canary.py",
+    "scripts/trimem_benchmark_run.py",
+    "scripts/trimem_development_trigger_d15.py",
+}
+D17_IMPLEMENTATION_PATHS = {
+    ".github/workflows/ci-trimem.yml",
+    ".github/workflows/trimem-benchmark.yml",
+    "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json",
+    "artifacts/trimem_v1/readiness_requirements.json",
+    "docs/TRIMEM_V1_SYSTEM.md",
+    "reports/TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md",
+    "reports/TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md",
+    "scripts/trimem_action_canary.py",
+    "scripts/trimem_benchmark_matrix.py",
+    "scripts/trimem_benchmark_run.py",
+    "scripts/trimem_development_phase_cap.py",
+    "scripts/trimem_development_trigger_d15.py",
+    "scripts/trimem_development_trigger_preflight.py",
+    "scripts/trimem_freeze.py",
+    "scripts/trimem_verify_ready.py",
+    "tests/unit/test_trimem_benchmark_readiness.py",
+    "tests/unit/test_trimem_d15_credential_control.py",
+    "tests/unit/test_trimem_d16_native_action.py",
+    "tests/unit/test_trimem_d17_approval_cap_integration.py",
+    "tests/unit/test_trimem_development_trigger.py",
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
 }
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 
@@ -205,14 +247,14 @@ def _validate_source(repository: Path, source_head: str) -> dict[str, str]:
             commit_bytes(repository, source_head, PREVIOUS_SENTINEL_PATH)
         ).hexdigest()
         == PREVIOUS_SENTINEL_SHA256,
-        "historical _006 sentinel changed",
+        "historical _007 sentinel changed",
     )
     require(
         hashlib.sha256(
             commit_bytes(repository, source_head, PREVIOUS_RECEIPT_PATH)
         ).hexdigest()
         == PREVIOUS_RECEIPT_SHA256,
-        "historical _006 receipt changed",
+        "historical _007 receipt changed",
     )
     require(
         subprocess.run(
@@ -222,20 +264,25 @@ def _validate_source(repository: Path, source_head: str) -> dict[str, str]:
             check=False,
         ).returncode
         == 0,
-        "source does not descend from immutable _006 execution",
+        "source does not descend from immutable _007 execution",
     )
     previous = strict_json(commit_bytes(repository, source_head, PREVIOUS_RECEIPT_PATH))
     require(
         previous.get("workflow_run", {}).get("id") == PREVIOUS_RUN_ID
         and previous.get("workflow_run", {}).get("head_sha")
         == PREVIOUS_EXECUTION_HEAD
-        and previous.get("root_cause", {}).get("classification")
-        == "RESPONSE_OUTPUT_ITEM_BOUNDARY_ACTION_PROTOCOL_FAILURE"
+        and previous.get("failure_subtype")
+        == "TRIMEM_DEV_PROTOCOL_CANARY_APPROVAL_SCHEMA_MISMATCH"
+        and previous.get("scientific_status") == "NOT_STARTED"
+        and previous.get("execution_accounting", {}).get(
+            "model_generation_calls"
+        )
+        == 0
         and previous.get("execution_accounting", {}).get(
             "completed_task_arm_runs"
         )
         == 0,
-        "historical _006 terminal evidence differs",
+        "historical _007 terminal evidence differs",
     )
     freeze_raw = commit_bytes(
         repository, source_head, "artifacts/trimem_v1/freeze.json"
@@ -243,7 +290,7 @@ def _validate_source(repository: Path, source_head: str) -> dict[str, str]:
     freeze = strict_json(freeze_raw)
     files = freeze.get("files")
     require(isinstance(files, dict), "research freeze inventory is missing")
-    require(SENTINEL_PATH not in files, "_007 entered the source freeze")
+    require(SENTINEL_PATH not in files, "_008 entered the source freeze")
     amendment = strict_json(
         commit_bytes(
             repository,
@@ -262,16 +309,42 @@ def _validate_source(repository: Path, source_head: str) -> dict[str, str]:
         "D1.6 amendment contract differs",
     )
     for path, expected in implementation.items():
+        material_head = (
+            PREVIOUS_EXECUTION_HEAD if path in D17_AMENDED_D16_PATHS else source_head
+        )
         require(
             isinstance(path, str)
             and isinstance(expected, str)
             and re.fullmatch(r"[0-9a-f]{64}", expected) is not None
-            and hashlib.sha256(commit_bytes(repository, source_head, path)).hexdigest()
+            and hashlib.sha256(commit_bytes(repository, material_head, path)).hexdigest()
             == expected,
             f"D1.6 implementation seal differs: {path}",
         )
     require(amendment.get("completed_scientific_cells_before_amendment") == 0,
             "D1.6 pre-result boundary differs")
+    d17 = strict_json(commit_bytes(repository, source_head, D17_AMENDMENT_PATH))
+    d17_implementation = d17.get("implementation_sha256")
+    require(
+        d17.get("schema")
+        == "trimem/development-approval-consumer-contract-fix/1.0"
+        and d17.get("classification")
+        == "NON_SEMANTIC_APPROVAL_CONSUMER_CONTRACT_FIX"
+        and d17.get("completed_scientific_cells_before_amendment") == 0
+        and d17.get("historical_run", {}).get("id") == PREVIOUS_RUN_ID
+        and d17.get("historical_run", {}).get("head_sha")
+        == PREVIOUS_EXECUTION_HEAD
+        and isinstance(d17_implementation, dict)
+        and set(d17_implementation) == D17_IMPLEMENTATION_PATHS,
+        "D1.7 approval-consumer amendment contract differs",
+    )
+    for path, expected in d17_implementation.items():
+        require(
+            isinstance(expected, str)
+            and re.fullmatch(r"[0-9a-f]{64}", expected) is not None
+            and hashlib.sha256(commit_bytes(repository, source_head, path)).hexdigest()
+            == expected,
+            f"D1.7 implementation seal differs: {path}",
+        )
     bindings: dict[str, str] = {}
     for name, path in BOUND_PATHS.items():
         raw = commit_bytes(repository, source_head, path)
@@ -337,7 +410,7 @@ def build_request(
     hard = cost["phase_hard_caps"]["DEVELOPMENT_TUNING"]
     payload = {
         "actual_execution_authorized": False,
-        "amendment_classification": "PRE_RESULT_ACTION_PROTOCOL_AND_CELL_CONTAINMENT_FIX",
+        "amendment_classification": "NON_SEMANTIC_APPROVAL_CONSUMER_CONTRACT_FIX",
         "authorization_semantics": (
             "The sentinel creates one run but protected execution requires a distinct "
             "run-bound external approval and matching OpenAI key commitment."
@@ -359,17 +432,19 @@ def build_request(
         "phase": EXPECTED_PHASE,
         "pre_execution_actuals": {
             "completed_task_arm_runs": 0,
-            "external_provider_requests": 5,
-            "known_input_tokens": None,
-            "known_cached_input_tokens": None,
-            "known_output_tokens": None,
-            "known_reasoning_tokens": None,
+            "exact_model_metadata_requests": 1,
+            "model_generation_calls": 0,
+            "input_tokens": 0,
+            "cached_input_tokens": 0,
+            "output_tokens": 0,
+            "reasoning_tokens": 0,
             "official_grader_runs": 0,
-            "known_total_usd": 0.0326529,
+            "benchmark_target_image_pulls": 0,
+            "total_usd": 0.0,
         },
         "prohibited_actions": [
-            "DEVELOPMENT_TUNING_EXEC_REQUEST_006_rerun_or_attempt_2",
-            "DEVELOPMENT_TUNING_EXEC_REQUEST_008",
+            "DEVELOPMENT_TUNING_EXEC_REQUEST_007_rerun_or_attempt_2",
+            "DEVELOPMENT_TUNING_EXEC_REQUEST_009",
             "HELDOUT_BENCHMARK",
             "component_ablation",
             "grader_smoke_rerun",
@@ -381,8 +456,8 @@ def build_request(
             "failed_execution_head": PREVIOUS_EXECUTION_HEAD,
             "failed_run_attempt": 1,
             "failed_run_id": PREVIOUS_RUN_ID,
-            "failure_label": "RESPONSE_OUTPUT_ITEM_BOUNDARY_ACTION_PROTOCOL_FAILURE",
-            "previous_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_006",
+            "failure_label": "TRIMEM_DEV_PROTOCOL_CANARY_APPROVAL_SCHEMA_MISMATCH",
+            "previous_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_007",
             "previous_request_path": PREVIOUS_SENTINEL_PATH,
             "previous_request_raw_sha256": "sha256:" + PREVIOUS_SENTINEL_SHA256,
             "completed_task_arm_runs": 0,
@@ -427,8 +502,8 @@ def validate_request(
     expected = build_request(
         repository, source_head=source_head, remote_gate_evidence=gates
     )
-    require(value == expected, "_007 request content differs")
-    require(raw == canonical_bytes(expected, trailing_lf=True), "_007 bytes differ")
+    require(value == expected, "_008 request content differs")
+    require(raw == canonical_bytes(expected, trailing_lf=True), "_008 bytes differ")
     return value
 
 
@@ -460,7 +535,7 @@ def validate_sentinel_commit(
     require(changes == [f"A\t{SENTINEL_PATH}"], "trigger commit is not sentinel-only")
     require(
         not git(repository, "log", "--format=%H", parent, "--", SENTINEL_PATH).strip(),
-        "_007 already exists in history",
+        "_008 already exists in history",
     )
     return validate_request(
         repository,
@@ -516,7 +591,7 @@ def write_request(repository: Path) -> dict[str, Any]:
     )
     source_head = git(repository, "rev-parse", "HEAD").strip()
     target = repository / SENTINEL_PATH
-    require(not target.exists(), "_007 already exists")
+    require(not target.exists(), "_008 already exists")
     gates = collect_remote_gate_evidence(source_head)
     document = build_request(
         repository, source_head=source_head, remote_gate_evidence=gates

@@ -19,9 +19,9 @@
   "current_status": {
     "DEV_APPROVAL_ALLOWED": "NO",
     "DEV_EXECUTION_ALLOWED": "NO",
-    "DEV_SCIENTIFIC_STATUS": "STARTED_NO_COMPLETED_CELL",
+    "DEV_SCIENTIFIC_STATUS": "NOT_STARTED",
     "ENDPOINT": "TRIMEM_V1_DEV_INCOMPLETE",
-    "FAILURE_SUBTYPE": "TRIMEM_DEV_FIRST_DECOMPOSITION_HTTP_AUTH_ERROR",
+    "FAILURE_SUBTYPE": "TRIMEM_DEV_PROTOCOL_CANARY_APPROVAL_SCHEMA_MISMATCH",
     "GRADER_EXEC_PACKAGE": "PASS",
     "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
     "PERFORMANCE": "NOT_MEASURED",
@@ -52,10 +52,10 @@
   },
   "development_authorization_boundary": {
     "active_development_approval": false,
-    "amendment_classification": "PRE_RESULT_ACTION_PROTOCOL_AND_CELL_CONTAINMENT_FIX",
-    "amendment_evidence_path": "artifacts/trimem_v1/development_action_protocol_amendment.json",
+    "amendment_classification": "NON_SEMANTIC_APPROVAL_CONSUMER_CONTRACT_FIX",
+    "amendment_evidence_path": "artifacts/trimem_v1/development_approval_consumer_contract_fix.json",
     "approval_request_eligible": false,
-    "attempt_one_consumed": true,
+    "attempt_one_consumed": false,
     "attempt_two_allowed": false,
     "development_execution_authorized": false,
     "expected_total_usd": 10.8,
@@ -63,13 +63,13 @@
     "hard_cap_total_usd": 50.0,
     "heldout_execution_authorized": false,
     "future_recovery_authority_received": true,
-    "meaning": "The approved _006 attempt-1 run is final and cannot be rerun. D1.6 authorizes one fresh _007 attempt-1 run only after native-action and cell-containment implementation, exact-head credential-free gates, one protected protocol canary, and a distinct run-bound HMAC approval all pass.",
+    "meaning": "The approved _007 attempt-1 run is final and cannot be rerun. D1.7 authorizes one fresh _008 attempt-1 run only after the single-source approval-cap consumer fix, exact-head credential-free gates, one protected protocol canary, and a distinct run-bound HMAC approval all pass.",
     "model_id": "gpt-5.4-mini-2026-03-17",
     "prior_failed_run_reusable": false,
-    "recovery_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_NATIVE_ACTION_EXEC_APPROVED_ONCE",
+    "recovery_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_CANARY_CAP_RECOVERY_EXEC_APPROVED_ONCE",
     "recovery_authorization_received": true,
-    "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_007",
-    "recovery_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_007.json",
+    "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_008",
+    "recovery_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_008.json",
     "request_002_final": true,
     "request_003_final": true,
     "request_004_allowed_after_exact_remote_gates": false,
@@ -78,8 +78,10 @@
     "request_005_attempt_one_consumed": true,
     "request_006_allowed_after_exact_remote_gates": false,
     "request_006_attempt_one_consumed": true,
-    "request_007_allowed_after_exact_remote_gates": true,
-    "request_007_attempt_one_consumed": false,
+    "request_007_allowed_after_exact_remote_gates": false,
+    "request_007_attempt_one_consumed": true,
+    "request_008_allowed_after_exact_remote_gates": true,
+    "request_008_attempt_one_consumed": false,
     "rerun_allowed": false,
     "selected_m2_checkpoint": "PRE_DEVELOPMENT; no development result or checkpoint was produced",
     "solve_execution_contract_rehearsal_required_before_request_005": false
@@ -233,6 +235,74 @@
     "current_run_rerun_allowed": false,
     "attempt_two_allowed": false,
     "further_execution_authorized": false
+  },
+  "current_development_execution_failure": {
+    "schema": "trimem/development-approval-schema-mismatch-receipt/1.0",
+    "status": "TERMINAL_PRESERVED",
+    "recorded_at_utc": "2026-09-05T02:18:33Z",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "scientific_status": "NOT_STARTED",
+    "failure_subtype": "TRIMEM_DEV_PROTOCOL_CANARY_APPROVAL_SCHEMA_MISMATCH",
+    "workflow_run": {
+      "id": 33914304167,
+      "attempt": 1,
+      "head_sha": "d9c8560087e681b619a4ea5313451fe64257a77e",
+      "source_head_sha": "553f7b44f4ab2762103ed06dbb87981c32ba2052",
+      "created_at_utc": "2026-09-04T20:03:29Z",
+      "started_at_utc": "2026-09-04T20:03:28Z",
+      "completed_at_utc": "2026-09-04T20:08:01Z",
+      "conclusion": "failure"
+    },
+    "passed_boundaries": {
+      "protected_environment": true,
+      "external_approval_materialization": true,
+      "exec_gate": true,
+      "credential_validation": true,
+      "run_bound_credential_commitment": true,
+      "exact_model_metadata": true
+    },
+    "root_cause": {
+      "classification": "APPROVAL_CONSUMER_SCHEMA_MISMATCH",
+      "failing_step": "Execute one native-action protocol canary before benchmark images",
+      "consumer": "scripts/trimem_action_canary.py",
+      "authoritative_contract_ignored": "validate_exec_approval returned hard_cap and approval_artifact_sha256",
+      "invalid_second_interpretation": "raw external approval was parsed for a nonexistent top-level hard_cap",
+      "approval_schema_changed": false,
+      "provider_generation_started": false
+    },
+    "execution_accounting": {
+      "provider_control_plane_requests": 1,
+      "model_generation_calls": 0,
+      "paid_model_calls": 0,
+      "input_tokens": 0,
+      "cached_input_tokens": 0,
+      "output_tokens": 0,
+      "reasoning_tokens": 0,
+      "completed_task_arm_runs": 0,
+      "official_grader_runs": 0,
+      "benchmark_target_image_pulls": 0,
+      "total_usd": 0.0
+    },
+    "evidence": {
+      "run_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/33914304167",
+      "restricted_encrypted_artifact_id": 9952668741,
+      "restricted_encrypted_zip_sha256": "11ed2179b5dad62c1a6cfaba9ee765b80bca343d6deacfc8f8a4388c8c8b5d63",
+      "public_inventory_artifact_id": 9952670077,
+      "public_inventory_zip_sha256": "a7e56e93e34719b6d8d35cb9bca3358bf6af489173b8d9428c092198c52c1093",
+      "inventory_seal_sha256": "60b1175090f87f45ed4e5dfe3fae322faf9d69cdb04967962491f1313b1b565c",
+      "inventory_files": 4,
+      "inventory_bytes": 1983,
+      "approval_plaintext_removed": true,
+      "temporary_exec_material_removed": true
+    },
+    "interpretation": {
+      "scientific_result": false,
+      "model_capability_result": false,
+      "memory_method_result": false,
+      "retrieval_result": false,
+      "grader_result": false,
+      "performance_measured": false
+    }
   },
   "historical_development_provider_failure": {
     "schema": "trimem/development-provider-output-contract-failure-status/1.0",
@@ -417,7 +487,7 @@
     }
   },
   "post_approval_gates": [
-    "the _003, _004, _005, and _006 requests and their attempt-1 runs are final; _006 ended on an output-item-boundary action-protocol failure with zero completed cells and may not be rerun",
+    "the _003, _004, _005, _006, and _007 requests and their attempt-1 runs are final; _007 ended on an approval-consumer schema mismatch before provider generation with zero completed cells and may not be rerun",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
@@ -425,7 +495,7 @@
   "schema": "trimem/readiness-requirements/2.0",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
-  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed grader-smoke PASS evidence, not static CI. DEV _006 is immutable and final. D1.6 is a pre-result action-protocol and cell-containment fix; performance remains NOT_MEASURED until a fresh authorized _007 completes 72 terminal cells.",
+  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed grader-smoke PASS evidence, not static CI. DEV _007 is immutable and final. D1.7 is a non-semantic approval-consumer contract fix; performance remains NOT_MEASURED until a fresh authorized _008 completes 72 terminal cells.",
   "target_set_sha256": {
     "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
     "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",

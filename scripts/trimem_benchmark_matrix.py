@@ -21,6 +21,17 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT / "src"))
+from enterprise_memory.trimem.scientific_terminal import (  # noqa: E402
+    SCIENTIFIC_EXECUTION_STATUS,
+    SCIENTIFIC_LEDGER_TERMINAL_STATUS,
+    SCIENTIFIC_MODEL_RESERVATION_TERMINAL_STATUSES,
+    ScientificTerminalContractError,
+    canonical_scientific_failure_class,
+    validate_result_ledger_pair,
+    validate_result_request_statuses,
+    validate_scientific_terminal_result,
+)
 from trimem_m2_candidates import (  # noqa: E402
     CANDIDATE_IDS,
     candidate_row,
@@ -47,15 +58,10 @@ from trimem_development_phase_cap import (  # noqa: E402
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
 )
-from trimem_development_trigger_d15 import (  # noqa: E402
+from trimem_development_trigger_d18 import (  # noqa: E402
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
     validate_sentinel_commit as validate_development_sentinel_commit,
-)
-from trimem_development_trigger_preflight import (  # noqa: E402
-    SENTINEL_PATH as LEGACY_DEVELOPMENT_SENTINEL_PATH,
-    DevelopmentTriggerError as LegacyDevelopmentTriggerError,
-    validate_sentinel_commit as validate_legacy_development_sentinel_commit,
 )
 from trimem_select_targets import (  # noqa: E402
     SelectionError,
@@ -1932,15 +1938,9 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
     if value.get("phase") != expected_phase:
         raise MatrixError("external approval phase differs from the aggregate manifest")
 
-    development_is_d15 = (ROOT / DEVELOPMENT_SENTINEL_PATH).is_file()
     request = {
         "grader-smoke": ROOT / GRADER_SMOKE_SENTINEL_PATH,
-        "development": ROOT
-        / (
-            DEVELOPMENT_SENTINEL_PATH
-            if development_is_d15
-            else LEGACY_DEVELOPMENT_SENTINEL_PATH
-        ),
+        "development": ROOT / DEVELOPMENT_SENTINEL_PATH,
         "heldout": ROOT / "configs/trimem_v1/benchmark_exec_request.json",
     }[name]
     freeze = ROOT / "artifacts/trimem_v1/freeze.json"
@@ -1957,13 +1957,10 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
         raise MatrixError("external approval git_head differs from aggregate HEAD")
     if name == "development":
         try:
-            validator = (
-                validate_development_sentinel_commit
-                if development_is_d15
-                else validate_legacy_development_sentinel_commit
+            validated_request = validate_development_sentinel_commit(
+                ROOT, value["git_head"]
             )
-            validated_request = validator(ROOT, value["git_head"])
-        except (DevelopmentTriggerError, LegacyDevelopmentTriggerError) as exc:
+        except DevelopmentTriggerError as exc:
             raise MatrixError(str(exc)) from None
         if validated_request.get("source_head") != value.get("source_head"):
             raise MatrixError("DEV sentinel parent differs from approval source_head")
@@ -1992,11 +1989,7 @@ def _approval_binding(name: str, results_dir: Path) -> dict[str, str]:
     if (
         restricted_value.get("schema")
         != (
-            (
-                "trimem/external-exec-approval/1.2"
-                if development_is_d15
-                else "trimem/external-exec-approval/1.1"
-            )
+            "trimem/external-exec-approval/1.2"
             if name == "development"
             else "trimem/external-exec-approval/1.0"
         )
@@ -2058,7 +2051,11 @@ def _seal_aggregate(
             else _approval_binding(name, results_dir)
         ),
         "manifest": name,
-        "schema": "trimem/verified-aggregate/1.0",
+        "schema": (
+            "trimem/verified-aggregate/1.0"
+            if name == "grader-smoke"
+            else "trimem/verified-aggregate/1.1"
+        ),
     }
     return {**body, "aggregate_sha256": hashlib.sha256(_canonical(body)).hexdigest()}
 
@@ -2368,11 +2365,20 @@ def _validate_budget_ledger_evidence(
             raise MatrixError(f"budget ledger actual {field} differs from results")
 
     expected_task_rows = {}
+    result_by_task_key: dict[str, dict[str, Any]] = {}
     for record in records:
         accounting = record["actual_accounting"]
-        expected_task_rows[
-            f"{record['arm']}:{record['runtime_arm']}:{record['target_id']}"
-        ] = {
+        task_key = f"{record['arm']}:{record['runtime_arm']}:{record['target_id']}"
+        if task_key in result_by_task_key:
+            raise MatrixError("scientific terminal result task-arm identity is duplicated")
+        try:
+            validate_scientific_terminal_result(record)
+        except ScientificTerminalContractError as exc:
+            raise MatrixError(
+                f"scientific terminal result contract failed: {exc}"
+            ) from None
+        result_by_task_key[task_key] = record
+        expected_task_rows[task_key] = {
             "input_tokens": accounting["input_tokens"],
             "cached_input_tokens": accounting["cached_input_tokens"],
             "output_tokens": accounting["output_tokens"],
@@ -2414,6 +2420,9 @@ def _validate_budget_ledger_evidence(
         key: {kind: 0 for kind in TASK_OUTPUT_POOL_BY_CALL_KIND}
         for key in expected_task_rows
     }
+    per_task_request_rows: dict[str, list[Mapping[str, Any]]] = {
+        key: [] for key in expected_task_rows
+    }
     for logical_id, request in requests.items():
         if (
             not isinstance(logical_id, str)
@@ -2425,13 +2434,15 @@ def _validate_budget_ledger_evidence(
         cap_name = call_caps.get(request.get("call_kind"))
         task_key = request.get("task_arm_key")
         if (
-            request.get("status") != "SUCCESS"
+            request.get("status")
+            not in SCIENTIFIC_MODEL_RESERVATION_TERMINAL_STATUSES
             or cap_name is None
             or request.get("call_cap_name") != cap_name
             or not isinstance(task_key, str)
             or task_key not in per_task_requests
         ):
             raise MatrixError("budget ledger request identity/status/role differs")
+        per_task_request_rows[task_key].append(request)
         input_upper_bound = request.get("input_upper_bound")
         output_cap = request.get("output_cap")
         if (
@@ -2537,14 +2548,6 @@ def _validate_budget_ledger_evidence(
             not isinstance(row, dict)
             or set(row) != TERMINAL_LEDGER_TASK_ARM_FIELDS
             or row.get("reservation_id") != expected_task_reservation_id
-            or row.get("status") not in {
-                "SUCCESS", "SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR"
-            }
-            or row.get("container_started") is not True
-            or type(row.get("outstanding_input_tokens")) is not int
-            or row["outstanding_input_tokens"] != 0
-            or type(row.get("outstanding_model_calls")) is not int
-            or row["outstanding_model_calls"] != 0
             or type(row.get("actual_input_tokens")) is not int
             or row["actual_input_tokens"] != accounting["input_tokens"]
             or row["actual_input_tokens"]
@@ -2557,6 +2560,20 @@ def _validate_budget_ledger_evidence(
             or row.get("actual_output_tokens") != accounting["output_tokens"]
         ):
             raise MatrixError("budget ledger task-arm/result accounting differs")
+        try:
+            validate_result_ledger_pair(
+                result_by_task_key[task_key],
+                row,
+                ledger_task_arm_key=task_key,
+            )
+            validate_result_request_statuses(
+                result_by_task_key[task_key],
+                per_task_request_rows[task_key],
+            )
+        except ScientificTerminalContractError as exc:
+            raise MatrixError(
+                f"scientific result/ledger terminal contract failed: {exc}"
+            ) from None
         for kind, pool in TASK_OUTPUT_POOL_BY_CALL_KIND.items():
             actual_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[kind]
             remaining_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[kind]
@@ -2572,6 +2589,8 @@ def _validate_budget_ledger_evidence(
         "model_lock_sha256": _frozen_file_hash("configs/trimem_v1/model_lock.json"),
         "ledger_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "execution_locks": dict(execution_locks),
+        "terminal_task_arm_count": len(task_arms),
+        "outstanding": dict(outstanding),
         "status": "PASS",
     }
 
@@ -2617,6 +2636,31 @@ def _validate_stream_summary_totals(
     if summary.get("resolved_count") != expected_resolved:
         raise MatrixError(f"{path.name}: task/stream resolved count differs")
 
+    terminal = scientific_terminal_summary(stream_records)
+    expected_raw_failures = Counter(
+        str(record["model_failure_class"])
+        for record in stream_records
+        if record["model_failure_class"] is not None
+    )
+    if (
+        summary.get("cell_status_counts") != terminal["cell_status_counts"]
+        or summary.get("contained_failure_count")
+        != terminal["contained_failure_count"]
+        or summary.get("model_failure_count")
+        != terminal["contained_failure_count"]
+        or summary.get("model_failure_distribution")
+        != dict(sorted(expected_raw_failures.items()))
+        or summary.get("model_failure_class_counts")
+        != terminal["model_failure_class_counts"]
+        or summary.get("partial_patch_count")
+        != terminal["model_partial_patch_count"]
+        or summary.get("canonical_noop_count")
+        != terminal["canonical_failed_cell_noop_count"]
+        or summary.get("extraction_failure_count")
+        != terminal["extraction_failure_count"]
+    ):
+        raise MatrixError(f"{path.name}: task/stream terminal classification totals differ")
+
     expected_total_tokens = (
         expected_accounting["input_tokens"] + expected_accounting["output_tokens"]
     )
@@ -2632,6 +2676,49 @@ def _validate_stream_summary_totals(
         or format(task_usd_total, ".12f") != expected_usd
     ):
         raise MatrixError(f"{path.name}: task/stream actual USD totals differ")
+
+
+def scientific_terminal_summary(
+    records: list[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Return a name-free summary without deriving scores from runtime status."""
+
+    for record in records:
+        try:
+            validate_scientific_terminal_result(record)
+        except ScientificTerminalContractError as exc:
+            raise MatrixError(f"scientific terminal summary rejected a record: {exc}") from None
+    cell_status_counts = Counter(str(record["cell_status"]) for record in records)
+    failure_counts = Counter(
+        (
+            canonical_scientific_failure_class(record["model_failure_class"])
+            if record["model_failure_class"] is not None
+            else "NONE"
+        )
+        for record in records
+    )
+    return {
+        "terminal_result_count": len(records),
+        "resolved_count": sum(record["resolved"] is True for record in records),
+        "unresolved_count": sum(record["resolved"] is False for record in records),
+        "contained_failure_count": sum(
+            record["cell_status"] != "AGENT_COMPLETED" for record in records
+        ),
+        "cell_status_counts": dict(sorted(cell_status_counts.items())),
+        "model_failure_class_counts": dict(sorted(failure_counts.items())),
+        "model_partial_patch_count": sum(
+            record["grader_patch_source"] == "MODEL_PARTIAL_PATCH"
+            for record in records
+        ),
+        "canonical_failed_cell_noop_count": sum(
+            record["grader_patch_source"] == "CANONICAL_FAILED_CELL_NOOP"
+            for record in records
+        ),
+        "extraction_failure_count": sum(
+            record["extraction_status"] == "MEMORY_EXTRACTION_FAILED"
+            for record in records
+        ),
+    }
 
 
 def _smoke_source_rows(expected_rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -3361,6 +3448,10 @@ def _aggregate_benchmark(
             raise MatrixError(str(exc)) from exc
     for path, value in records:
         arm, target = value["arm"], target_by_id[value["target_id"]]
+        try:
+            validate_scientific_terminal_result(value)
+        except ScientificTerminalContractError as exc:
+            raise MatrixError(f"{path.name}: {exc}") from None
         if value.get("benchmark_id") != target["benchmark_id"]:
             raise MatrixError(f"{path.name}: benchmark identity differs from frozen target")
         runtime_arm = "M2" if arm.startswith("M2-") else arm
@@ -3374,10 +3465,6 @@ def _aggregate_benchmark(
         if arm in namespaces and namespaces[arm] != namespace:
             raise MatrixError(f"{path.name}: arm namespace changed during stream")
         namespaces[arm] = namespace
-        if value.get("execution_status") != "SUCCESS" or value.get("grader_exit_code") != 0:
-            raise MatrixError(f"{path.name}: task-arm execution failed")
-        if value.get("official_grader") is not True or not isinstance(value.get("resolved"), bool):
-            raise MatrixError(f"{path.name}: official grader result is absent")
         prompt_candidate = arm.removeprefix("M2-") if arm.startswith("M2-") else selected_candidate_id
         if value.get("selected_prompt_candidate_id") != prompt_candidate:
             raise MatrixError(f"{path.name}: selected/candidate prompt identity mismatch")
@@ -3420,9 +3507,15 @@ def _aggregate_benchmark(
             raise MatrixError(
                 f"{path.name}: task-arm actual USD differs from frozen pricing/accounting"
             )
-        if accounting["decomposition_calls"] != 1 or accounting["extraction_calls"] != 1:
-            raise MatrixError(f"{path.name}: common decomposition/extraction path was not used exactly once")
-        if not 1 <= accounting["solve_calls"] <= 24:
+        minimum_solve_calls = 1 if value["agent_completed"] is True else 0
+        if (
+            accounting["decomposition_calls"] != 1
+            or accounting["extraction_calls"] != 1
+        ):
+            raise MatrixError(
+                f"{path.name}: common decomposition/extraction path was not used exactly once"
+            )
+        if not minimum_solve_calls <= accounting["solve_calls"] <= 24:
             raise MatrixError(f"{path.name}: solve-call count is outside the frozen common budget")
         if accounting["output_tokens"] != sum(
             accounting[field]
@@ -3558,6 +3651,15 @@ def _aggregate_benchmark(
         approval_binding=approval_binding,
         execution_locks=execution_locks,
     )
+    terminal_summary = scientific_terminal_summary(record_values)
+    terminal_contract = {
+        "schema": "trimem/scientific-terminal-contract/1.0",
+        "sha256": _frozen_file_hash(
+            "src/enterprise_memory/trimem/scientific_terminal.py"
+        ),
+        "execution_status": SCIENTIFIC_EXECUTION_STATUS,
+        "ledger_terminal_status": SCIENTIFIC_LEDGER_TERMINAL_STATUS,
+    }
     benchmark_totals = _benchmark_endpoint_totals(
         outcomes, tuple(expected_streams), benchmark_roles
     )
@@ -3574,6 +3676,8 @@ def _aggregate_benchmark(
             "observed_task_arm_count": len(records),
             "phase_budget": phase_budget,
             "budget_ledger_evidence": budget_ledger_evidence,
+            "scientific_terminal_summary": terminal_summary,
+            "scientific_terminal_contract": terminal_contract,
             "provider_outcomes": _combine_provider_outcomes(
                 [record["provider_outcomes"] for record in record_values]
             ),
@@ -3587,6 +3691,19 @@ def _aggregate_benchmark(
                 "identity_seed_digest": row.get("identity_seed_digest"),
                 "reporting_scope": "DESCRIPTIVE_POOLED_ALL_BENCHMARKS",
                 "resolved_count": row.get("resolved_count"),
+                "terminal_result_count": row.get("completed_target_count"),
+                "cell_status_counts": row.get("cell_status_counts"),
+                "contained_failure_count": row.get("contained_failure_count"),
+                "model_failure_class_counts": row.get(
+                    "model_failure_class_counts"
+                ),
+                "model_partial_patch_count": row.get("partial_patch_count"),
+                "canonical_failed_cell_noop_count": row.get(
+                    "canonical_noop_count"
+                ),
+                "extraction_failure_count": row.get(
+                    "extraction_failure_count"
+                ),
             } for row in summaries), key=lambda row: row["arm"]),
             **({
                 "development_selection": selection_evidence,

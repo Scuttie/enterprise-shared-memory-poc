@@ -226,6 +226,24 @@ def _approval_file(tmp_path: Path, value: dict[str, Any], *, raw: bytes | None =
 
 def _prepare_runtime(monkeypatch, fixture, calls):
     monkeypatch.setattr(benchmark_run, "ROOT", fixture["repository"])
+    # D1.7 is immutable historical evidence.  The production runner now imports
+    # the active D1.8 `_009` reader, while this fixture deliberately creates the
+    # frozen D1.7 `_008` sentinel-only commit.  Rebind only the injected trigger
+    # dependency so these tests continue exercising the original D1.7 contract.
+    monkeypatch.setattr(
+        benchmark_run, "DEVELOPMENT_EXEC_REQUEST", Path(trigger.SENTINEL_PATH)
+    )
+    monkeypatch.setattr(
+        benchmark_run, "DEVELOPMENT_WORKFLOW_REF", trigger.EXPECTED_WORKFLOW_REF
+    )
+    monkeypatch.setattr(
+        benchmark_run,
+        "validate_development_sentinel_commit",
+        trigger.validate_sentinel_commit,
+    )
+    monkeypatch.setattr(
+        benchmark_run, "DevelopmentTriggerError", trigger.DevelopmentTriggerError
+    )
     monkeypatch.setenv("GITHUB_EVENT_NAME", "push")
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
     monkeypatch.setenv("GITHUB_RUN_ID", str(RUN_ID))

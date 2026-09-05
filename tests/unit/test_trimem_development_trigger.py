@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_development_trigger_preflight as trigger  # noqa: E402
+import trimem_development_trigger_d18 as trigger_d18  # noqa: E402
 import trimem_exec_approval as approval_validator  # noqa: E402
 import trimem_approved_phase as approved_phase  # noqa: E402
 import trimem_benchmark_matrix as benchmark_matrix  # noqa: E402
@@ -476,12 +477,12 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_008.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-008" in workflow
+    assert "group: trimem-v1-development-tuning-exec-009" in workflow
     assert "group: trimem-v1-development-tuning-exec-004" not in workflow
     assert "group: trimem-v1-development-tuning-exec-002" not in workflow
     assert "group: trimem-v1-development-tuning-exec-001" not in workflow
@@ -490,7 +491,7 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "  frozen-serial-phase:", 1
     )[0]
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in preflight
-    assert "python -I -S scripts/trimem_development_trigger_d15.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d18.py" in preflight
     assert all(
         forbidden not in preflight
         for forbidden in (
@@ -515,11 +516,8 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
     assert "steps.approval_materialization.outcome == 'success'" in protected
     assert "steps.encrypt_evidence.outcome == 'success'" in protected
     assert "INVENTORY_UPLOAD_OUTCOME" in protected
-    assert (
-        '[ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ] || '
-        '[ "$INVENTORY_UPLOAD_OUTCOME" != "success" ]'
-    ) in protected
-    assert "preserving plaintext and ciphertext" in protected
+    assert "EXTERNAL_CUSTODY_VERIFICATION_OUTCOME" in protected
+    assert "external artifact custody was not verified; preserving plaintext and ciphertext" in protected
 
 
 def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
@@ -527,7 +525,7 @@ def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
     freeze_rehearsal = (
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
-    rehearsal = "python -I -S scripts/trimem_development_trigger_d15.py --help"
+    rehearsal = "python -I -S scripts/trimem_development_trigger_d18.py --help"
     install = "python -m pip install --require-hashes"
     assert workflow.count(freeze_rehearsal) == 1
     assert workflow.count(rehearsal) == 1
@@ -1223,28 +1221,37 @@ def test_development_external_approval_binds_two_heads_and_attempt_one(
 def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    repository, _event_path, source_head, execution_head, _environ = _trigger_repository(
-        tmp_path
-    )
-    request_path = repository / trigger.SENTINEL_PATH
+    repository = tmp_path / "repository"
+    source_head = _initialize(repository)
+    request = {
+        "phase": trigger_d18.EXPECTED_PHASE,
+        "request_id": trigger_d18.REQUEST_ID,
+        "required_external_approval_fields": list(
+            approval_validator.DEVELOPMENT_APPROVAL_FIELDS
+        ),
+        "source_head": source_head,
+    }
+    request_path = repository / trigger_d18.SENTINEL_PATH
+    _write_json(request_path, request)
+    execution_head = _commit(repository, "fixture: active D1.8 sentinel only")
     request_raw = request_path.read_bytes()
-    request = trigger.strict_json_object(request_raw)
+    request = trigger_d18.strict_json(request_raw)
     policy = json.loads((repository / trigger.POLICY_REQUEST_PATH).read_text(encoding="utf-8"))
     hard = json.loads((repository / trigger.COST_PLAN_PATH).read_text(encoding="utf-8"))[
         "phase_hard_caps"
-    ][trigger.EXPECTED_PHASE]
+    ][trigger_d18.EXPECTED_PHASE]
     freeze_sha256 = hashlib.sha256(
         (repository / trigger.FREEZE_PATH).read_bytes()
     ).hexdigest()
     request_sha256 = hashlib.sha256(request_raw).hexdigest()
     timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     document = approval_validator.build_external_approval_document(
-        request_id=trigger.REQUEST_ID,
+        request_id=trigger_d18.REQUEST_ID,
         request_sha256=request_sha256,
         git_commit=execution_head,
         source_git_commit=source_head,
         freeze_sha256=freeze_sha256,
-        phase=trigger.EXPECTED_PHASE,
+        phase=trigger_d18.EXPECTED_PHASE,
         task_arm_runs=72,
         paid_model_call_cap=1873,
         input_token_cap=36_004_096,
@@ -1256,6 +1263,9 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         legal_terms_acceptance=True,
         approval_actor="test-actor",
         approval_timestamp=timestamp,
+        openai_api_key="DUMMY-VISIBLE-ASCII-CREDENTIAL-ROUNDTRIP",
+        approval_nonce="credential-free-roundtrip-0001",
+        model_id=trigger_d18.MODEL_ID,
     )
     approval_path = tmp_path / "external-approval.json"
     approval_raw = _write_json(approval_path, document)
@@ -1263,7 +1273,7 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         document,
         request=request,
         policy_request=policy,
-        phase=trigger.EXPECTED_PHASE,
+        phase=trigger_d18.EXPECTED_PHASE,
         hard_cap=hard,
         request_sha256=request_sha256,
         freeze_sha256=freeze_sha256,
@@ -1280,7 +1290,7 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         "freeze_sha256": freeze_sha256,
         "git_head": execution_head,
         "source_head": source_head,
-        "phase": trigger.EXPECTED_PHASE,
+        "phase": trigger_d18.EXPECTED_PHASE,
     }
     results = repository / "artifacts/trimem_v1/benchmark_exec/development"
     results.mkdir(parents=True)
@@ -1301,6 +1311,16 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         "source_head",
     }
     monkeypatch.setattr(benchmark_matrix, "ROOT", repository)
+    # Keep `_009` entirely inside the disposable repository.  Dedicated trigger
+    # tests cover the complete D1.8 request builder; this evidence test injects
+    # its already-validated active request at the aggregate boundary.
+    monkeypatch.setattr(
+        benchmark_matrix,
+        "validate_development_sentinel_commit",
+        lambda selected_repository, selected_head: request
+        if selected_repository == repository and selected_head == execution_head
+        else pytest.fail("aggregate selected the wrong D1.8 fixture commit"),
+    )
     monkeypatch.setenv("GITHUB_RUN_ID", "246813579")
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
     aggregated = benchmark_matrix._approval_binding("development", results)
@@ -1831,7 +1851,7 @@ def _single_task_terminal_budget(
     ledger.complete_task_arm(
         task_key,
         task_reservation,
-        status="SUCCESS",
+        status="CELL_TERMINAL",
         container_started=True,
     )
     accounting = {field: 0 for field in benchmark_matrix.ACCOUNTING_FIELDS}
@@ -1871,6 +1891,17 @@ def _single_task_terminal_budget(
         "runtime_arm": "M0",
         "target_id": "target-001",
         "execution_lock_hash": execution_lock,
+        "execution_status": "CELL_TERMINAL",
+        "cell_status": "AGENT_COMPLETED",
+        "model_failure_class": None,
+        "agent_completed": True,
+        "grader_patch_source": "MODEL_PATCH",
+        "extraction_status": "SUCCESS",
+        "grader_status": "success",
+        "grader_exit_code": 0,
+        "official_grader": True,
+        "container_started": True,
+        "resolved": False,
     }
     summary: dict[str, object] = {
         "arm": "M0",
@@ -1936,7 +1967,7 @@ def _two_task_terminal_budget(
         ledger.complete_task_arm(
             task_key,
             task_reservation,
-            status="SUCCESS",
+            status="CELL_TERMINAL",
             container_started=True,
         )
         accounting = {field: 0 for field in benchmark_matrix.ACCOUNTING_FIELDS}
@@ -1975,6 +2006,17 @@ def _two_task_terminal_budget(
             "runtime_arm": arm,
             "target_id": target_id,
             "execution_lock_hash": "sha256:" + ("1" if arm == "M0" else "2") * 64,
+            "execution_status": "CELL_TERMINAL",
+            "cell_status": "AGENT_COMPLETED",
+            "model_failure_class": None,
+            "agent_completed": True,
+            "grader_patch_source": "MODEL_PATCH",
+            "extraction_status": "SUCCESS",
+            "grader_status": "success",
+            "grader_exit_code": 0,
+            "official_grader": True,
+            "container_started": True,
+            "resolved": False,
         })
         projections[task_key] = {
             "input_tokens": accounting["input_tokens"],
@@ -2020,7 +2062,7 @@ def test_runner_terminal_budget_binds_result_summary_session_and_ledger(
 def test_runner_terminal_budget_rejects_cross_task_token_or_role_swap(
     tmp_path: Path,
 ) -> None:
-    ledger, _records, projections, _pricing = _two_task_terminal_budget(tmp_path)
+    ledger, records, projections, _pricing = _two_task_terminal_budget(tmp_path)
     state = benchmark_run.read_json(ledger.path)
 
     token_swap = deepcopy(projections)
@@ -2036,6 +2078,7 @@ def test_runner_terminal_budget_rejects_cross_task_token_or_role_swap(
         ledger.finalize(
             expected_actual=state["actual"],
             expected_task_arms=token_swap,
+            expected_result_records=records,
         )
 
     role_swap = deepcopy(projections)
@@ -2051,6 +2094,7 @@ def test_runner_terminal_budget_rejects_cross_task_token_or_role_swap(
         ledger.finalize(
             expected_actual=state["actual"],
             expected_task_arms=role_swap,
+            expected_result_records=records,
         )
 
 
@@ -2187,6 +2231,7 @@ def test_terminal_budget_ledger_tampering_fails_closed(
                     "total_usd": record["actual_usd"],
                 }
             },
+            expected_result_records=[record],
         )
 
 
@@ -2436,3 +2481,177 @@ def test_aggregate_execution_lock_requires_result_summary_and_session_identity(
         benchmark_matrix._validate_execution_lock_evidence(
             "development", tmp_path, [record], [summary], {"git_head": head}
         )
+
+
+def _d18_receipt_fixture() -> dict[str, object]:
+    return {
+        "schema": "trimem/development-terminal-contract-mismatch-receipt/1.0",
+        "status": "TERMINAL_PRESERVED",
+        "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+        "classification": trigger_d18.AMENDMENT_CLASSIFICATION,
+        "scientific_status": "NOT_STARTED",
+        "failure_subtype": trigger_d18.PREVIOUS_FAILURE_SUBTYPE,
+        "workflow_run": {
+            "id": trigger_d18.PREVIOUS_RUN_ID,
+            "attempt": 1,
+            "head_sha": trigger_d18.PREVIOUS_EXECUTION_HEAD,
+            "source_head_sha": trigger_d18.PREVIOUS_SOURCE_HEAD,
+            "conclusion": "cancelled",
+        },
+        "execution_accounting": dict(trigger_d18.PREVIOUS_EXECUTION_ACCOUNTING),
+        "custody": {
+            "local_encrypted_custody": "PASS",
+            "remote_github_artifact_custody": "UNAVAILABLE_AFTER_FORCE_CANCEL",
+        },
+        "interpretation": {
+            "scientific_result": False,
+            "performance_measured": False,
+        },
+    }
+
+
+def test_d18_is_the_only_active_development_reader_contract() -> None:
+    assert trigger_d18.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_009"
+    assert trigger_d18.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_009.json")
+    assert (
+        trigger_d18.REQUIRED_EXTERNAL_AUTHORIZATION
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_TERMINAL_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
+    )
+    assert benchmark_run.DEVELOPMENT_EXEC_REQUEST == Path(trigger_d18.SENTINEL_PATH)
+    assert benchmark_matrix.DEVELOPMENT_SENTINEL_PATH == trigger_d18.SENTINEL_PATH
+
+
+def test_d18_preserves_the_complete_scientific_policy_lock_set() -> None:
+    expected_paths = {
+        "artifacts/trimem_v1/grader_image_lock.json",
+        "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json",
+        "artifacts/trimem_v1/multi_swe_report_semantics_lock.json",
+        "artifacts/trimem_v1/provider_output_schema_lock.json",
+        "artifacts/trimem_v1/solve_output_budget_contract_lock.json",
+        "configs/trimem_v1/arms.json",
+        "configs/trimem_v1/benchmark_environment.lock",
+        "configs/trimem_v1/benchmark_environment_lock.json",
+        "configs/trimem_v1/cost_plan.json",
+        "configs/trimem_v1/development_manifest.json",
+        "configs/trimem_v1/grader_lock.json",
+        "configs/trimem_v1/heldout_manifest.json",
+        "configs/trimem_v1/m2_candidate_bundles.json",
+        "configs/trimem_v1/m2_candidates/balanced.json",
+        "configs/trimem_v1/m2_candidates/baseline.json",
+        "configs/trimem_v1/m2_candidates/precision.json",
+        "configs/trimem_v1/m2_candidates/recall.json",
+        "configs/trimem_v1/model_lock.json",
+        "configs/trimem_v1/provider_output_schemas.json",
+        "configs/trimem_v1/selection_plan.json",
+        "configs/trimem_v1/tool_environment_lock.json",
+        "scripts/trimem_action_canary.py",
+        "scripts/trimem_exec_approval.py",
+        "scripts/trimem_harness_lock.py",
+        "scripts/trimem_m2_candidates.py",
+        "scripts/trimem_official_grader.py",
+        "scripts/trimem_run_with_resume.py",
+        "src/enterprise_memory/providers/base.py",
+        "src/enterprise_memory/providers/openai_responses.py",
+        "src/enterprise_memory/trimem/arms.py",
+        "src/enterprise_memory/trimem/agent_runtime.py",
+        "src/enterprise_memory/trimem/function_tools.py",
+        "src/enterprise_memory/trimem/gateway.py",
+        "src/enterprise_memory/trimem/git_workspace.py",
+        "src/enterprise_memory/trimem/grader.py",
+        "src/enterprise_memory/trimem/provider_output_contracts.py",
+        "src/enterprise_memory/trimem/runtime_lock.py",
+        "src/enterprise_memory/trimem/workspace.py",
+    }
+    assert set(trigger_d18.PRESERVED_SHA256) == expected_paths
+    for path, expected_sha256 in trigger_d18.PRESERVED_SHA256.items():
+        assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == expected_sha256
+
+
+def test_d18_historical_receipt_preserves_cancelled_not_failure() -> None:
+    receipt = _d18_receipt_fixture()
+    raw = trigger_d18.canonical_bytes(receipt)
+    assert trigger_d18.validate_previous_execution_receipt(raw) == receipt
+    receipt["workflow_run"]["conclusion"] = "failure"  # type: ignore[index]
+    with pytest.raises(
+        trigger_d18.DevelopmentTriggerD18Error,
+        match="workflow identity differs",
+    ):
+        trigger_d18.validate_previous_execution_receipt(
+            trigger_d18.canonical_bytes(receipt)
+        )
+
+
+def test_d18_correction_source_validation_does_not_require_sentinel(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    source = "a" * 40
+
+    def fake_git(_repository: Path, *args: str) -> str:
+        assert args == ("rev-parse", "HEAD")
+        return source + "\n"
+
+    monkeypatch.setattr(trigger_d18, "git", fake_git)
+    monkeypatch.setattr(
+        trigger_d18,
+        "_validate_source",
+        lambda _repository, selected: {"freeze_sha256": "sha256:" + "b" * 64}
+        if selected == source
+        else pytest.fail("wrong correction source"),
+    )
+    result = trigger_d18.validate_correction_source(tmp_path, source)
+    assert result["status"] == "PASS"
+    assert result["source_head"] == source
+    assert result["sentinel_present"] is False
+    assert result["model_calls"] == result["grader_containers"] == 0
+
+
+def test_d18_request_pre_execution_actuals_are_all_zero(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    source = "a" * 40
+    gates = {
+        "source_head": source,
+        "all_required_workflows_passed": True,
+        "workflows": [],
+        "scientific_execution": {},
+    }
+    development = {"targets": [{"instance_id": "target-1"}]}
+    hard_cap = {"paid_model_calls": 1873, "task_arm_runs": 72}
+
+    monkeypatch.setattr(trigger_d18, "_validate_source", lambda *_args: {})
+    monkeypatch.setattr(trigger_d18, "_remote_gates", lambda value, _source: dict(value))
+
+    def fake_commit_bytes(_repository: Path, _commit: str, path: str) -> bytes:
+        value = (
+            development
+            if path == "configs/trimem_v1/development_manifest.json"
+            else {"phase_hard_caps": {"DEVELOPMENT_TUNING": hard_cap}}
+        )
+        return trigger_d18.canonical_bytes(value)
+
+    monkeypatch.setattr(trigger_d18, "commit_bytes", fake_commit_bytes)
+    request = trigger_d18.build_request(
+        tmp_path, source_head=source, remote_gate_evidence=gates
+    )
+    assert request["control_plane"]["exact_model_metadata_requests"] == 1
+    assert request["pre_execution_actuals"] == {
+        "completed_task_arm_runs": 0,
+        "exact_model_metadata_requests": 0,
+        "protocol_canary_generation_calls": 0,
+        "provider_generation_calls": 0,
+        "model_generation_calls": 0,
+        "scientific_model_calls": 0,
+        "input_tokens": 0,
+        "cached_input_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+        "official_grader_runs": 0,
+        "grader_containers": 0,
+        "benchmark_target_image_pulls": 0,
+        "support_image_pulls": 0,
+        "total_usd": 0.0,
+    }
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_008_rerun_or_attempt_2" in request[
+        "prohibited_actions"
+    ]
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_010" in request["prohibited_actions"]

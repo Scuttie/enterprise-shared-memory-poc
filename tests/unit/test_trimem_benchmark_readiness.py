@@ -449,7 +449,7 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "DEV_EXECUTION_ALLOWED": "NO",
         "DEV_SCIENTIFIC_STATUS": "NOT_STARTED",
         "ENDPOINT": readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT,
-        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_007_FAILURE_SUBTYPE,
+        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_008_FAILURE_SUBTYPE,
         "GRADER_EXEC_PACKAGE": "PASS",
         "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
@@ -468,13 +468,13 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["prior_failed_run_reusable"] is False
     assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_CANARY_CAP_RECOVERY_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_TERMINAL_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert authorization["recovery_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_008"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_009"
     )
     assert authorization["recovery_request_path"].endswith(
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_008.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json"
     )
     assert authorization["request_003_final"] is True
     assert authorization["request_004_allowed_after_exact_remote_gates"] is False
@@ -485,16 +485,18 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["request_006_attempt_one_consumed"] is True
     assert authorization["request_007_allowed_after_exact_remote_gates"] is False
     assert authorization["request_007_attempt_one_consumed"] is True
-    assert authorization["request_008_allowed_after_exact_remote_gates"] is True
-    assert authorization["request_008_attempt_one_consumed"] is False
+    assert authorization["request_008_allowed_after_exact_remote_gates"] is False
+    assert authorization["request_008_attempt_one_consumed"] is True
+    assert authorization["request_009_allowed_after_exact_remote_gates"] is True
+    assert authorization["request_009_attempt_one_consumed"] is False
     assert authorization["rerun_allowed"] is False
-    assert "_007 attempt-1 run is final" in authorization["meaning"]
+    assert "_008 attempt-1 run is cancelled" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     assert authorization["amendment_classification"] == (
-        "NON_SEMANTIC_APPROVAL_CONSUMER_CONTRACT_FIX"
+        "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX"
     )
     assert authorization["amendment_evidence_path"].endswith(
-        "development_approval_consumer_contract_fix.json"
+        "development_terminal_contract_amendment.json"
     )
     assert authorization["solve_execution_contract_rehearsal_required_before_request_005"] is False
     service_boundary = requirements["credential_free_service_ci_boundary"]
@@ -623,10 +625,17 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     )
     assert current_failure["further_execution_authorized"] is False
     latest_failure = requirements["current_development_execution_failure"]
-    assert latest_failure == readiness._validated_development_exec_007_failure()
+    assert latest_failure == readiness._validated_development_exec_008_failure()
     assert latest_failure["scientific_status"] == "NOT_STARTED"
-    assert latest_failure["execution_accounting"]["model_generation_calls"] == 0
+    assert latest_failure["workflow_run"]["conclusion"] == "cancelled"
+    assert latest_failure["execution_accounting"] == (
+        readiness.DEVELOPMENT_EXEC_008_ACCOUNTING
+    )
+    assert latest_failure["execution_accounting"]["scientific_model_calls"] == 0
     assert latest_failure["execution_accounting"]["official_grader_runs"] == 0
+    assert requirements["historical_development_exec_007_failure"] == (
+        readiness._validated_development_exec_007_failure()
+    )
     assert requirements["historical_development_provider_failure"] == (
         readiness._validated_development_exec_003_failure()
     )
@@ -650,6 +659,9 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
         readiness._validated_development_exec_005_failure()
     )
     assert derived["current_development_execution_failure"] == (
+        readiness._validated_development_exec_008_failure()
+    )
+    assert derived["historical_development_exec_007_failure"] == (
         readiness._validated_development_exec_007_failure()
     )
     assert derived["historical_development_provider_failure"] == (
@@ -737,11 +749,11 @@ def test_development_exec_002_semantic_drift_fails_even_with_bound_bytes(
         readiness._validated_development_exec_002_failure()
 
 
-def test_d15_recovery_requires_fresh_sentinel_before_approval(
+def test_d18_recovery_requires_fresh_sentinel_before_approval(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     assert readiness.preapproval_blockers() == [
-        "DEV _008 sentinel and exact-head remote gates are required before approval"
+        "DEV _009 sentinel and exact-head remote gates are required before approval"
     ]
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
@@ -1566,7 +1578,7 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "total_usd": 0,
     }
     assert readiness.preapproval_blockers() == [
-        "DEV _008 sentinel and exact-head remote gates are required before approval"
+        "DEV _009 sentinel and exact-head remote gates are required before approval"
     ]
 
 
@@ -3370,11 +3382,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "D1.7 recovery authority boundaries" in static
-    assert '"DEV _008 sentinel and exact-head remote gates are "' in static
+    assert "D1.8 recovery authority boundaries" in static
+    assert '"DEV _009 sentinel and exact-head remote gates are "' in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
-    assert "expected exact D1.7 recovery report" in static
+    assert "expected exact D1.8 recovery report" in static
     assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service
@@ -3615,11 +3627,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in benchmark
     assert (
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_008.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json"
     ) in benchmark
     assert "branch-trigger-preflight:" in benchmark
     assert "needs: branch-trigger-preflight" in benchmark
-    assert "group: trimem-v1-development-tuning-exec-008" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-009" in benchmark
     assert "group: trimem-v1-development-tuning-exec-002" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-001" not in benchmark
     assert "cancel-in-progress: false" in benchmark
@@ -3633,9 +3645,32 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in preflight
     )
-    assert "python -I -S scripts/trimem_development_trigger_d15.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d18.py" in preflight
     assert "secrets." not in preflight
     assert "environment:" not in preflight
+    protected = benchmark.split("  frozen-serial-phase:", 1)[1]
+    protected_header = protected.split("    steps:", 1)[0]
+    assert "always() &&\n      !cancelled() &&" in protected_header
+    install = benchmark.index("- name: Install hash-locked environment")
+    round_trip = benchmark.index(
+        "- name: Verify production terminal-cell round trip before provider access"
+    )
+    pinned_gh = benchmark.index("- name: Install exact pinned GitHub CLI")
+    assert install < round_trip < pinned_gh
+    assert (
+        "tests/unit/test_trimem_d18_terminal_contract_integration.py"
+        in benchmark[round_trip:pinned_gh]
+    )
+    assert (
+        "- name: Pull committed images by digest and verify local observations\n"
+        "        if: ${{ !cancelled() && success() }}"
+    ) in benchmark
+    assert (
+        "- name: Execute frozen serial streams with one atomic phase ledger\n"
+        "        if: ${{ !cancelled() && success() }}"
+    ) in benchmark
+    assert "id: external-custody-verification" in benchmark
+    assert "EXTERNAL_CUSTODY_VERIFICATION_OUTCOME" in benchmark
     for path in workflows[2:4]:
         text = path.read_text(encoding="utf-8")
         assert "openssl enc -aes-256-cbc" in text
@@ -3644,7 +3679,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "timeout-minutes: 7200" in benchmark
     assert "matrix:" not in benchmark
     assert "permissions:\n  actions: read\n  contents: read" in benchmark
-    assert benchmark.count("GH_TOKEN: ${{ github.token }}") == 2
+    assert benchmark.count("GH_TOKEN: ${{ github.token }}") == 3
     gate_start = benchmark.index("- name: Verify exact phase EXEC gate")
     credential_format = benchmark.index(
         "- name: Validate exact OpenAI credential format before network access"
@@ -4469,6 +4504,19 @@ def _stream_total_fixture() -> tuple[list[dict], dict, dict]:
             "provider_outcomes": provider_outcomes(first_accounting),
             "actual_usd": "0.001065000000",
             "resolved": True,
+            "arm": "M1",
+            "runtime_arm": "M1",
+            "target_id": "target-1",
+            "execution_status": "CELL_TERMINAL",
+            "cell_status": "AGENT_COMPLETED",
+            "model_failure_class": None,
+            "agent_completed": True,
+            "grader_patch_source": "MODEL_PATCH",
+            "extraction_status": "SUCCESS",
+            "grader_status": "success",
+            "grader_exit_code": 0,
+            "official_grader": True,
+            "container_started": True,
         },
         {
             "actual_accounting": second_accounting,
@@ -4476,6 +4524,19 @@ def _stream_total_fixture() -> tuple[list[dict], dict, dict]:
             "provider_outcomes": provider_outcomes(second_accounting),
             "actual_usd": "0.002400000000",
             "resolved": False,
+            "arm": "M1",
+            "runtime_arm": "M1",
+            "target_id": "target-2",
+            "execution_status": "CELL_TERMINAL",
+            "cell_status": "AGENT_COMPLETED",
+            "model_failure_class": None,
+            "agent_completed": True,
+            "grader_patch_source": "MODEL_PATCH",
+            "extraction_status": "SUCCESS",
+            "grader_status": "success",
+            "grader_exit_code": 0,
+            "official_grader": True,
+            "container_started": True,
         },
     ]
     summary = {
@@ -4493,6 +4554,14 @@ def _stream_total_fixture() -> tuple[list[dict], dict, dict]:
         "actual_total_tokens": 3_300,
         "actual_usd": "0.003465000000",
         "resolved_count": 1,
+        "cell_status_counts": {"AGENT_COMPLETED": 2},
+        "contained_failure_count": 0,
+        "model_failure_count": 0,
+        "model_failure_distribution": {},
+        "model_failure_class_counts": {"NONE": 2},
+        "partial_patch_count": 0,
+        "canonical_noop_count": 0,
+        "extraction_failure_count": 0,
     }
     return records, summary, pricing
 
@@ -4698,52 +4767,132 @@ def test_non_m2_stream_rejects_m2_artifacts_before_session_open(
         )
 
 
-def _sealed_public_aggregate(tmp_path: Path) -> Path:
+def _sealed_public_aggregate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> Path:
+    # Give the public verifier a byte-real but disposable freeze.  This test is
+    # about the sealed aggregate being the sole public input; it must still
+    # satisfy the same frozen pricing/terminal-contract boundary as production.
+    public_root = tmp_path / "public-contract-root"
+    frozen_files: dict[str, dict[str, int | str]] = {}
+    for relative in (
+        "configs/trimem_v1/cost_plan.json",
+        "src/enterprise_memory/trimem/scientific_terminal.py",
+    ):
+        raw = (ROOT / relative).read_bytes()
+        target = public_root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(raw)
+        frozen_files[relative] = {
+            "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        }
+    freeze_path = public_root / "artifacts/trimem_v1/freeze.json"
+    freeze_path.parent.mkdir(parents=True, exist_ok=True)
+    freeze_path.write_text(
+        json.dumps({"files": frozen_files}, sort_keys=True), encoding="utf-8"
+    )
+    freeze_digest = hashlib.sha256(freeze_path.read_bytes()).hexdigest()
+    contract_digest = frozen_files[
+        "src/enterprise_memory/trimem/scientific_terminal.py"
+    ]["sha256"]
+    assert isinstance(contract_digest, str)
+    monkeypatch.setattr(public_artifact, "ROOT", public_root)
+
     digest = "a" * 64
+    accounting = {
+        field: 0 for field in public_artifact.SCIENTIFIC_ACCOUNTING_FIELDS
+    }
+    accounting.update({
+        "solve_calls": 1,
+        "decomposition_calls": 1,
+        "extraction_calls": 1,
+        "input_tokens": 31,
+        "cached_input_tokens": 3,
+        "output_tokens": 9,
+        "reasoning_tokens": 1,
+        "actual_decomposition_output_tokens": 2,
+        "actual_solve_output_tokens": 3,
+        "actual_extraction_output_tokens": 4,
+        "solve_output_pool_capacity": 49_152,
+        "remaining_solve_output_tokens": 49_149,
+        "task_wall_time_ms": 17,
+        "model_gateway_calls": 3,
+        "paid_model_calls": 3,
+        "grader_calls": 1,
+        "grader_containers": 1,
+        "official_grader_runs": 1,
+    })
+    memory = {field: 0 for field in public_artifact.SCIENTIFIC_MEMORY_FIELDS}
     provider_outcomes = {
-        "provider_status_distribution": {"SUCCESS": 1},
+        "provider_status_distribution": {"SUCCESS": 3},
         "incomplete_count": 0,
         "refusal_count": 0,
         "structured_output_schema_failure_count": 0,
         "provider_reported_usage": {
-            "available_calls": 1,
+            "available_calls": 3,
             "unavailable_calls": 0,
             "complete": True,
-            "input_tokens": 0,
-            "cached_input_tokens": 0,
-            "output_tokens": 0,
-            "reasoning_tokens": 0,
+            "input_tokens": 31,
+            "cached_input_tokens": 3,
+            "output_tokens": 9,
+            "reasoning_tokens": 1,
         },
         "ledger_reservation": {
-            "calls": 1,
-            "input_upper_bound": 0,
-            "output_cap": 0,
+            "calls": 3,
+            "input_upper_bound": 46,
+            "output_cap": 32768,
             "conservatively_charged_calls": 0,
         },
     }
+    pricing = _read(ROOT / "configs/trimem_v1/cost_plan.json")["model_pricing"]
+    actual_usd = public_artifact._scientific_usd(accounting, pricing)
+    uncached_usd = public_artifact._scientific_usd(
+        accounting, pricing, uncached=True
+    )
+    terminal_summary = {
+        "terminal_result_count": 1,
+        "resolved_count": 0,
+        "unresolved_count": 1,
+        "contained_failure_count": 0,
+        "cell_status_counts": {"AGENT_COMPLETED": 1},
+        "model_failure_class_counts": {"NONE": 1},
+        "model_partial_patch_count": 0,
+        "canonical_failed_cell_noop_count": 0,
+        "extraction_failure_count": 0,
+    }
     body = {
-        "schema": "trimem/verified-aggregate/1.0",
+        "schema": "trimem/verified-aggregate/1.1",
         "manifest": "heldout",
         "status": "PASS",
+        "arms": ["M0"],
         "outcomes": [{
             "target_id": "t",
             "arm": "M0",
             "benchmark_id": "swebench_verified",
             "benchmark_role": "PRIMARY",
             "resolved": False,
-            "actual_accounting": {"task_wall_time_ms": 17},
-            "actual_memory_metrics": {"recall_attempts": 0},
+            "actual_accounting": accounting,
+            "actual_memory_metrics": memory,
             "provider_outcomes": provider_outcomes,
-            "actual_usd": "0.000000000000",
+            "actual_usd": actual_usd,
         }],
         "stream_totals": [{
             "arm": "M0",
-            "actual_accounting": {"task_wall_time_ms": 17},
-            "actual_memory_metrics": {"recall_attempts": 0},
+            "actual_accounting": accounting,
+            "actual_memory_metrics": memory,
             "provider_outcomes": provider_outcomes,
-            "actual_usd": "0.000000000000",
+            "actual_usd": actual_usd,
             "identity_seed_digest": "sha256:" + digest,
+            "reporting_scope": "DESCRIPTIVE_POOLED_ALL_BENCHMARKS",
             "resolved_count": 0,
+            "terminal_result_count": 1,
+            "cell_status_counts": {"AGENT_COMPLETED": 1},
+            "contained_failure_count": 0,
+            "model_failure_class_counts": {"NONE": 1},
+            "model_partial_patch_count": 0,
+            "canonical_failed_cell_noop_count": 0,
+            "extraction_failure_count": 0,
         }],
         "benchmark_roles": [{
             "benchmark_id": "swebench_verified",
@@ -4774,10 +4923,27 @@ def _sealed_public_aggregate(tmp_path: Path) -> Path:
         }],
         "secondary_endpoints": [],
         "provider_outcomes": provider_outcomes,
+        "phase_budget": {
+            "schema": "trimem/verified-phase-budget/1.0",
+            "actual_accounting": accounting,
+            "model_calls": 3,
+            "task_arm_runs": 1,
+            "total_usd": actual_usd,
+            "uncached_token_cost_usd": uncached_usd,
+            "hard_cap": {},
+            "status": "PASS",
+        },
+        "scientific_terminal_summary": terminal_summary,
+        "scientific_terminal_contract": {
+            "schema": "trimem/scientific-terminal-contract/1.0",
+            "sha256": contract_digest,
+            "execution_status": "CELL_TERMINAL",
+            "ledger_terminal_status": "CELL_TERMINAL",
+        },
         "approval_binding": {
             "approval_artifact_sha256": digest,
             "approved_request_sha256": digest,
-            "freeze_sha256": digest,
+            "freeze_sha256": freeze_digest,
             "git_head": "b" * 40,
             "phase": "HELDOUT_BENCHMARK",
             "approved_workflow_run_id": "8123456789",
@@ -4796,7 +4962,9 @@ def _sealed_public_aggregate(tmp_path: Path) -> Path:
     return aggregate
 
 
-def test_public_artifact_consumes_only_sealed_aggregate(tmp_path: Path) -> None:
+def test_public_artifact_consumes_only_sealed_aggregate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     source = tmp_path / "restricted"
     source.mkdir()
     record = {
@@ -4807,7 +4975,7 @@ def test_public_artifact_consumes_only_sealed_aggregate(tmp_path: Path) -> None:
     }
     raw_result = source / "t.result.json"
     raw_result.write_text(json.dumps(record), encoding="utf-8")
-    aggregate = _sealed_public_aggregate(tmp_path)
+    aggregate = _sealed_public_aggregate(tmp_path, monkeypatch)
     output = tmp_path / "public.json"
     public_artifact.package(aggregate, output)
     first = output.read_bytes()
@@ -4823,14 +4991,19 @@ def test_public_artifact_consumes_only_sealed_aggregate(tmp_path: Path) -> None:
     text = output.read_text(encoding="utf-8")
     value = json.loads(text)
     assert "TOP_SECRET" not in text and "LATE_PRIVATE_TAMPER" not in text
-    assert value["outcomes"][0]["actual_usd"] == "0.000000000000"
+    assert value["outcomes"][0]["actual_usd"] == public_artifact._scientific_usd(
+        value["outcomes"][0]["actual_accounting"],
+        _read(ROOT / "configs/trimem_v1/cost_plan.json")["model_pricing"],
+    )
     assert value["outcomes"][0]["actual_accounting"]["task_wall_time_ms"] == 17
     assert value["primary_endpoints"][0]["benchmark_id"] == "swebench_verified"
     assert value["approval_binding"]["approved_workflow_run_id"] == "8123456789"
 
 
-def test_public_artifact_rejects_post_aggregate_payload_tampering(tmp_path: Path) -> None:
-    aggregate = _sealed_public_aggregate(tmp_path)
+def test_public_artifact_rejects_post_aggregate_payload_tampering(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    aggregate = _sealed_public_aggregate(tmp_path, monkeypatch)
     value = json.loads(aggregate.read_text(encoding="utf-8"))
     value["outcomes"][0]["resolved"] = True
     aggregate.write_text(json.dumps(value), encoding="utf-8")

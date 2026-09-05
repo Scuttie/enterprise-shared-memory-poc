@@ -41,7 +41,11 @@ from enterprise_memory.providers.openai_responses import (  # noqa: E402
     RestrictedProviderResponseStore,
 )
 from enterprise_memory.trimem.accounting import RawEvidenceLedger, strict_json_loads  # noqa: E402
-from enterprise_memory.trimem.agent_runtime import CodingTask, TriMemAgentRuntime  # noqa: E402
+from enterprise_memory.trimem.agent_runtime import (  # noqa: E402
+    AgentRunResult,
+    CodingTask,
+    TriMemAgentRuntime,
+)
 from enterprise_memory.trimem.benchmark_seed import seed_benchmark_identities  # noqa: E402
 from enterprise_memory.trimem.checkpoint import (  # noqa: E402
     FileCheckpointStore,
@@ -69,6 +73,18 @@ from enterprise_memory.trimem.production_v03_lifecycle import (  # noqa: E402
 )
 from enterprise_memory.trimem.runtime_lock import RuntimeLock  # noqa: E402
 from enterprise_memory.trimem.schema import canonical_hash  # noqa: E402
+from enterprise_memory.trimem.scientific_terminal import (  # noqa: E402
+    SCIENTIFIC_CELL_STATUSES,
+    SCIENTIFIC_EXECUTION_STATUS,
+    SCIENTIFIC_LEDGER_TERMINAL_STATUS,
+    SCIENTIFIC_MODEL_RESERVATION_TERMINAL_STATUSES,
+    ScientificTerminalContractError,
+    canonical_scientific_failure_class,
+    scientific_task_arm_key,
+    validate_result_ledger_pair,
+    validate_result_request_statuses,
+    validate_scientific_terminal_result,
+)
 from trimem_benchmark_matrix import sequence_sha256  # noqa: E402
 from trimem_harness_lock import prepare_harnesses  # noqa: E402
 from trimem_m2_candidates import (  # noqa: E402
@@ -87,7 +103,7 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     TriggerPreflightError,
     validate_request_document as validate_grader_smoke_request_document,
 )
-from trimem_development_trigger_d15 import (  # noqa: E402
+from trimem_development_trigger_d18 import (  # noqa: E402
     EXPECTED_WORKFLOW_REF as DEVELOPMENT_WORKFLOW_REF,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
@@ -195,17 +211,6 @@ TASK_OUTPUT_POOL_BY_CALL_KIND = {
 }
 TASK_TOTAL_OUTPUT_POOL = 65_536
 PROTOCOL_CANARY_RELATIVE_PATH = Path("control/protocol-action-canary.json")
-TERMINAL_MODEL_RESERVATION_STATUSES = {
-    "SUCCESS",
-    "SUCCESS_CONSERVATIVE_USAGE",
-    "PROVIDER_FAILURE",
-    "PROVIDER_FAILURE_CONSERVATIVE",
-}
-TERMINAL_TASK_ARM_STATUSES = {
-    "SUCCESS",
-    "SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR",
-    "CELL_TERMINAL",
-}
 TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND = {
     "decompose": "actual_decomposition_output_tokens",
     "solve": "actual_solve_output_tokens",
@@ -779,8 +784,9 @@ class AtomicBudgetLedger:
         *,
         expected_actual: Mapping[str, Any],
         expected_task_arms: Mapping[str, Mapping[str, Any]],
+        expected_result_records: Sequence[Mapping[str, Any]],
     ) -> dict[str, Any]:
-        """Validate the terminal ledger against every successful task result."""
+        """Validate the terminal ledger against every scientific task result."""
 
         with _exclusive_file_lock(self.lock_path):
             state = self._read()
@@ -838,6 +844,9 @@ class AtomicBudgetLedger:
             task_key: {kind: 0 for kind in TASK_OUTPUT_POOL_BY_CALL_KIND}
             for task_key in expected_task_arms
         }
+        per_task_request_rows: dict[str, list[Mapping[str, Any]]] = {
+            task_key: [] for task_key in expected_task_arms
+        }
         for logical_id, request in requests.items():
             if (
                 not isinstance(logical_id, str)
@@ -848,7 +857,10 @@ class AtomicBudgetLedger:
                 raise BenchmarkExecutionError(
                     "budget ledger terminal request shape differs"
                 )
-            if request.get("status") not in TERMINAL_MODEL_RESERVATION_STATUSES:
+            if (
+                request.get("status")
+                not in SCIENTIFIC_MODEL_RESERVATION_TERMINAL_STATUSES
+            ):
                 raise BenchmarkExecutionError("phase has a non-terminal model reservation")
             cap_name = CALL_CAP_BY_KIND.get(request.get("call_kind"))
             if cap_name is None or request.get("call_cap_name") != cap_name:
@@ -856,6 +868,7 @@ class AtomicBudgetLedger:
             task_key = request.get("task_arm_key")
             if not isinstance(task_key, str) or task_key not in per_task_requests:
                 raise BenchmarkExecutionError("budget ledger request task-arm binding differs")
+            per_task_request_rows[task_key].append(request)
             input_upper_bound = request.get("input_upper_bound")
             output_cap = request.get("output_cap")
             if (
@@ -943,6 +956,25 @@ class AtomicBudgetLedger:
         if any(actual[field] != count for field, count in role_counts.items()):
             raise BenchmarkExecutionError("budget ledger request/role totals differ")
 
+        result_by_task_arm: dict[str, Mapping[str, Any]] = {}
+        for record in expected_result_records:
+            try:
+                validate_scientific_terminal_result(record)
+                task_arm_key = scientific_task_arm_key(record)
+            except ScientificTerminalContractError as exc:
+                raise BenchmarkExecutionError(
+                    f"scientific terminal result contract failed: {exc}"
+                ) from None
+            if task_arm_key in result_by_task_arm:
+                raise BenchmarkExecutionError(
+                    "scientific terminal result task-arm identity is duplicated"
+                )
+            result_by_task_arm[task_arm_key] = record
+        if set(result_by_task_arm) != set(expected_task_arms):
+            raise BenchmarkExecutionError(
+                "scientific result/task projection identities differ"
+            )
+
         task_arms = state.get("task_arms")
         if not isinstance(task_arms, dict) or set(task_arms) != set(expected_task_arms):
             raise BenchmarkExecutionError("budget ledger task-arm identities differ from results")
@@ -970,12 +1002,6 @@ class AtomicBudgetLedger:
                 not isinstance(row, dict)
                 or set(row) != TERMINAL_LEDGER_TASK_ARM_FIELDS
                 or row.get("reservation_id") != expected_task_reservation_id
-                or row.get("status") not in TERMINAL_TASK_ARM_STATUSES
-                or row.get("container_started") is not True
-                or type(row.get("outstanding_input_tokens")) is not int
-                or row["outstanding_input_tokens"] != 0
-                or type(row.get("outstanding_model_calls")) is not int
-                or row["outstanding_model_calls"] != 0
                 or type(row.get("actual_input_tokens")) is not int
                 or row["actual_input_tokens"] != expected["input_tokens"]
                 or row["actual_input_tokens"]
@@ -990,6 +1016,20 @@ class AtomicBudgetLedger:
                 raise BenchmarkExecutionError(
                     "budget ledger task-arm/result accounting differs"
                 )
+            try:
+                validate_result_ledger_pair(
+                    result_by_task_arm[task_arm_key],
+                    row,
+                    ledger_task_arm_key=task_arm_key,
+                )
+                validate_result_request_statuses(
+                    result_by_task_arm[task_arm_key],
+                    per_task_request_rows[task_arm_key],
+                )
+            except ScientificTerminalContractError as exc:
+                raise BenchmarkExecutionError(
+                    f"scientific result/ledger terminal contract failed: {exc}"
+                ) from None
             for kind, pool in TASK_OUTPUT_POOL_BY_CALL_KIND.items():
                 actual_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[kind]
                 remaining_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[kind]
@@ -2091,6 +2131,12 @@ def validate_phase_completion(
     execution_locks: dict[str, str] = {}
     phase_provider_rows: list[Mapping[str, Any]] = []
     for record in result_records:
+        try:
+            validate_scientific_terminal_result(record)
+        except ScientificTerminalContractError as exc:
+            raise BenchmarkExecutionError(
+                f"phase scientific terminal result contract failed: {exc}"
+            ) from None
         arm, runtime_arm, target_id = (
             record.get("arm"), record.get("runtime_arm"), record.get("target_id")
         )
@@ -2110,10 +2156,11 @@ def validate_phase_completion(
             for field in accounting_fields
         ):
             raise BenchmarkExecutionError("phase result accounting shape/value differs")
+        minimum_solve_calls = 1 if record["agent_completed"] is True else 0
         if (
                 accounting["decomposition_calls"] != 1
                 or accounting["extraction_calls"] != 1
-                or not 0 <= accounting["solve_calls"] <= 24
+                or not minimum_solve_calls <= accounting["solve_calls"] <= 24
             or accounting["model_gateway_calls"]
             != accounting["solve_calls"]
             + accounting["decomposition_calls"]
@@ -2241,6 +2288,7 @@ def validate_phase_completion(
     ledger.finalize(
         expected_actual=expected_ledger_actual,
         expected_task_arms=task_arm_actual,
+        expected_result_records=result_records,
     )
     return {
         "actual_accounting": phase_accounting,
@@ -2527,6 +2575,78 @@ def build_execution_lock_hash(
     return "sha256:" + sha256_bytes(canonical_bytes(payload))
 
 
+_TERMINAL_RESULT_OWNED_FIELDS = frozenset(
+    {
+        "actual_accounting",
+        "actual_memory_metrics",
+        "actual_usd",
+        "agent_completed",
+        "cell_status",
+        "container_started",
+        "evidence",
+        "execution_status",
+        "extraction_status",
+        "grader_exit_code",
+        "grader_patch_source",
+        "grader_status",
+        "model_failure_class",
+        "official_grader",
+        "provider_outcomes",
+        "resolved",
+    }
+)
+
+
+def build_terminal_result_record(
+    *,
+    result: AgentRunResult,
+    actual_accounting: Mapping[str, Any],
+    actual_memory_metrics: Mapping[str, Any],
+    provider_outcomes: Mapping[str, Any],
+    actual_usd: str,
+    static_fields: Mapping[str, Any],
+    evidence: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Serialize one current scientific cell through the shared contract.
+
+    The caller supplies identity/evidence bindings, while this function owns
+    every scientific terminal-status field.  That separation prevents a test
+    fixture or resume path from silently overriding the producer semantics.
+    """
+
+    overlap = sorted(_TERMINAL_RESULT_OWNED_FIELDS & set(static_fields))
+    if overlap:
+        raise BenchmarkExecutionError(
+            f"terminal result static fields override producer fields: {overlap}"
+        )
+    record = {
+        **dict(static_fields),
+        "actual_accounting": dict(actual_accounting),
+        "actual_memory_metrics": dict(actual_memory_metrics),
+        "provider_outcomes": dict(provider_outcomes),
+        "actual_usd": actual_usd,
+        "execution_status": SCIENTIFIC_EXECUTION_STATUS,
+        "grader_exit_code": result.grade.exit_code,
+        "grader_status": result.grade.status,
+        "container_started": result.grade.container_started,
+        "cell_status": result.cell_status,
+        "model_failure_class": result.model_failure_class,
+        "agent_completed": result.agent_completed,
+        "grader_patch_source": result.grader_patch_source,
+        "extraction_status": result.extraction_status,
+        "official_grader": result.grade.official,
+        "resolved": result.resolved,
+        "evidence": dict(evidence),
+    }
+    try:
+        validate_scientific_terminal_result(record)
+    except ScientificTerminalContractError as exc:
+        raise BenchmarkExecutionError(
+            f"terminal result producer contract failed: {exc}"
+        ) from None
+    return record
+
+
 def run_arm_stream(
     *, split: str, arm: str, stream_id: str, runtime_lock: RuntimeLock,
     m2_manifest: Optional[Mapping[str, Any]], dqn_checkpoint_path: Optional[Path],
@@ -2659,12 +2779,26 @@ def run_arm_stream(
                 continue
             safe_completed = re.sub(r"[^A-Za-z0-9_.-]", "_", completed_task.task_id)
             completed_dir = output_root / stream_id / f"{completed_index:03d}-{safe_completed}"
-            if not (completed_dir / f"{safe_completed}.result.json").is_file():
+            completed_result_path = completed_dir / f"{safe_completed}.result.json"
+            if not completed_result_path.is_file():
                 raise BenchmarkExecutionError("canonical cursor is ahead without terminal task evidence")
+            completed_record = read_json(completed_result_path)
+            try:
+                validate_scientific_terminal_result(completed_record)
+                if scientific_task_arm_key(completed_record) != task_arm_key:
+                    raise ScientificTerminalContractError(
+                        "canonical cursor result/task-arm identity mismatch"
+                    )
+            except ScientificTerminalContractError as exc:
+                raise BenchmarkExecutionError(
+                    f"canonical cursor terminal result is invalid: {exc}"
+                ) from None
             task_reservation = ledger.resume_task_arm(task_arm_key)
             ledger.complete_task_arm(
-                task_arm_key, task_reservation, status="SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR",
-                container_started=True,
+                task_arm_key,
+                task_reservation,
+                status=SCIENTIFIC_LEDGER_TERMINAL_STATUS,
+                container_started=bool(completed_record["container_started"]),
             )
         for index in range(cursor, len(tasks)):
             task, target = tasks[index], targets[index]
@@ -2797,25 +2931,21 @@ def run_arm_stream(
             provider_outcomes = provider_outcome_accounting(result.accounting)
             pricing = read_json(ROOT / "configs/trimem_v1/cost_plan.json")["model_pricing"]
             task_actual_usd = actual_usd_for_accounting(accounting, pricing)
-            record = {
-                "actual_accounting": accounting, "actual_memory_metrics": memory_metrics,
-                "provider_outcomes": provider_outcomes,
-                "actual_usd": task_actual_usd,
+            record = build_terminal_result_record(
+                result=result,
+                actual_accounting=accounting,
+                actual_memory_metrics=memory_metrics,
+                provider_outcomes=provider_outcomes,
+                actual_usd=task_actual_usd,
+                static_fields={
                 "arm": stream_id, "runtime_arm": arm,
                 "benchmark_id": target["benchmark_id"],
                 "checkout_evidence_sha256": sha256_bytes(canonical_bytes(checkout_evidence[task.task_id])),
                 "execution_lock_hash": execution_lock_hash,
-                "execution_status": "CELL_TERMINAL", "grader_exit_code": result.grade.exit_code,
-                "cell_status": result.cell_status,
-                "model_failure_class": result.model_failure_class,
-                "agent_completed": result.agent_completed,
-                "grader_patch_source": result.grader_patch_source,
-                "extraction_status": result.extraction_status,
                 "evidence_tail_hash": result.evidence_tail_hash,
                 "namespace": session.namespace, "expected_image_digest": expected_digest,
                 "identity_seed_digest": identity_seed_evidence["digest"],
                 "observed_image_digest": observed_digest,
-                "official_grader": result.grade.official, "resolved": result.resolved,
                 "sequence_index": index, "sequence_sha256": digest, "target_id": target["target_id"],
                 "terminal_checkpoint_sha256": terminal_checkpoint.content_hash,
                 "terminal_state": terminal_checkpoint.state,
@@ -2825,7 +2955,9 @@ def run_arm_stream(
                     if isinstance(m2_manifest, Mapping) else None
                 ),
                 "selected_prompt_candidate_id": selected_prompt_candidate_id,
-                "evidence": {
+                "workspace_factory_hash": workspace_factory.content_hash,
+                },
+                evidence={
                     "stdout": evidence_reference(task_dir, stdout_path),
                     "stderr": evidence_reference(task_dir, stderr_path),
                     "report": evidence_reference(task_dir, report_path),
@@ -2836,8 +2968,7 @@ def run_arm_stream(
                         task_dir, task_dir / "official-grader"
                     ),
                 },
-                "workspace_factory_hash": workspace_factory.content_hash,
-            }
+            )
             result_path = task_dir / f"{re.sub(r'[^A-Za-z0-9_.-]', '_', task.task_id)}.result.json"
             write_json(result_path, record)
             advance = getattr(session, "after_task_and_checkpoint", None)
@@ -2846,7 +2977,10 @@ def run_arm_stream(
             stream_checkpoint = advance(task, result)
             save_arm_checkpoint(output_root, stream_id, stream_checkpoint)
             ledger.complete_task_arm(
-                task_arm_key, task_reservation, status="CELL_TERMINAL", container_started=True
+                task_arm_key,
+                task_reservation,
+                status=SCIENTIFIC_LEDGER_TERMINAL_STATUS,
+                container_started=result.grade.container_started,
             )
         selected_checkpoint = None
         checkpoint_file: Optional[Path] = None
@@ -2871,6 +3005,13 @@ def run_arm_stream(
         ]
         if len(result_records) != len(tasks):
             raise BenchmarkExecutionError("stream summary cannot account for every frozen target")
+        try:
+            for record in result_records:
+                validate_scientific_terminal_result(record)
+        except ScientificTerminalContractError as exc:
+            raise BenchmarkExecutionError(
+                f"stream summary rejected a scientific terminal result: {exc}"
+            ) from None
         empty_accounting = actual_accounting({"summary": {}})
         total_accounting = {
             field: sum(int(row["actual_accounting"][field]) for row in result_records)
@@ -2915,6 +3056,14 @@ def run_arm_stream(
             ),
             "actual_usd": actual_usd,
             "resolved_count": sum(int(row["resolved"]) for row in result_records),
+            "cell_status_counts": dict(sorted({
+                name: sum(int(row["cell_status"] == name) for row in result_records)
+                for name in {str(row["cell_status"]) for row in result_records}
+            }.items())),
+            "contained_failure_count": sum(
+                int(row["cell_status"] != "AGENT_COMPLETED")
+                for row in result_records
+            ),
             "model_failure_count": sum(
                 int(row.get("model_failure_class") is not None)
                 for row in result_records
@@ -2930,12 +3079,41 @@ def run_arm_stream(
                     if row.get("model_failure_class") is not None
                 }
             }.items())),
+            "model_failure_class_counts": dict(sorted({
+                name: sum(
+                    int(
+                        (
+                            canonical_scientific_failure_class(
+                                row["model_failure_class"]
+                            )
+                            if row["model_failure_class"] is not None
+                            else "NONE"
+                        )
+                        == name
+                    )
+                    for row in result_records
+                )
+                for name in {
+                    (
+                        canonical_scientific_failure_class(
+                            row["model_failure_class"]
+                        )
+                        if row["model_failure_class"] is not None
+                        else "NONE"
+                    )
+                    for row in result_records
+                }
+            }.items())),
             "partial_patch_count": sum(
                 int(row.get("grader_patch_source") == "MODEL_PARTIAL_PATCH")
                 for row in result_records
             ),
             "canonical_noop_count": sum(
                 int(row.get("grader_patch_source") == "CANONICAL_FAILED_CELL_NOOP")
+                for row in result_records
+            ),
+            "extraction_failure_count": sum(
+                int(row.get("extraction_status") == "MEMORY_EXTRACTION_FAILED")
                 for row in result_records
             ),
             "status": "PASS", "workspace_factory_hash": workspace_factory.content_hash,
@@ -2955,6 +3133,24 @@ def write_development_selection_artifacts(
 
     compact = []
     for summary in candidate_summaries:
+        completed = summary.get("completed_target_count")
+        cell_counts = summary.get("cell_status_counts")
+        failure_counts = summary.get("model_failure_class_counts")
+        if (
+            type(completed) is not int
+            or completed <= 0
+            or not isinstance(cell_counts, Mapping)
+            or set(cell_counts) - set(SCIENTIFIC_CELL_STATUSES)
+            or any(type(value) is not int or value < 0 for value in cell_counts.values())
+            or sum(cell_counts.values()) != completed
+            or summary.get("contained_failure_count")
+            != completed - int(cell_counts.get("AGENT_COMPLETED", 0))
+            or not isinstance(failure_counts, Mapping)
+            or sum(failure_counts.values()) != completed
+        ):
+            raise BenchmarkExecutionError(
+                "development candidate terminal summary is incomplete or malformed"
+            )
         checkpoint_path = ROOT / str(summary.get("selected_checkpoint_path", ""))
         checkpoint = summary.get("selected_checkpoint")
         if not checkpoint_path.is_file() or not isinstance(checkpoint, Mapping):

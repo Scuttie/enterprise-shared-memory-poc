@@ -1,0 +1,128 @@
+{
+  "schema": "trimem/development-terminal-contract-mismatch-receipt/1.0",
+  "status": "TERMINAL_PRESERVED",
+  "recorded_at_utc": "2026-09-05T13:43:37.872Z",
+  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+  "classification": "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX",
+  "scientific_status": "NOT_STARTED",
+  "failure_subtype": "TRIMEM_DEV_RUNNER_AGGREGATE_TERMINAL_STATUS_CONTRACT_MISMATCH",
+  "workflow_run": {
+    "id": 33944405409,
+    "attempt": 1,
+    "head_sha": "8002847d0db8975dfd957a1322d31a7768fc098f",
+    "source_head_sha": "f5f6b8d0c6bef4aa704e25d8e67c526d437e967b",
+    "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_008.json",
+    "request_sha256": "2eac68069e9a2cc760138eca5b9e6ae1d5438a97cd9e4918a496ab920cc584b7",
+    "conclusion": "cancelled",
+    "cancellation_requested_at_utc": "2026-09-05T04:34:07.642Z",
+    "force_cancellation_requested_at_utc": "2026-09-05T04:35:17.640Z",
+    "rerun_allowed": false,
+    "attempt_2_allowed": false
+  },
+  "passed_boundaries": {
+    "protected_environment_and_approval_path": true,
+    "exact_model_metadata": true,
+    "native_function_action_canary": true,
+    "canary_native_function": "list_files"
+  },
+  "execution_accounting": {
+    "exact_model_metadata_control_plane_requests": 1,
+    "canary_generation_calls": 1,
+    "canary_model_generations": 1,
+    "canary_paid_model_calls": 1,
+    "canary_input_tokens": 880,
+    "canary_cached_input_tokens": 0,
+    "canary_output_tokens": 14,
+    "canary_reasoning_tokens": 0,
+    "canary_total_usd": "0.000723000000",
+    "scientific_model_calls": 0,
+    "scientific_task_arm_cells": 0,
+    "scientific_terminal_cells": 0,
+    "scientific_planned_cells": 72,
+    "official_grader_runs": 0,
+    "grader_containers": 0,
+    "target_image_pulls": 12,
+    "support_image_pulls": 1,
+    "total_docker_image_pulls": 13,
+    "model_id": "gpt-5.4-mini-2026-03-17",
+    "reasoning_effort": "medium"
+  },
+  "root_cause": {
+    "classification": "PRODUCER_CONSUMER_TERMINAL_STATUS_CONTRACT_MISMATCH",
+    "detected_before_first_scientific_provider_call": true,
+    "runner_result_producer": {
+      "field": "execution_status",
+      "produced_value": "CELL_TERMINAL"
+    },
+    "runner_task_arm_ledger_producer": {
+      "field": "status",
+      "produced_value": "CELL_TERMINAL"
+    },
+    "historical_aggregate_result_consumer": {
+      "accepted_values": [
+        "SUCCESS"
+      ]
+    },
+    "historical_aggregate_task_arm_ledger_consumer": {
+      "accepted_values": [
+        "SUCCESS",
+        "SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR"
+      ]
+    },
+    "counterfactual_without_correction": "A complete 72-cell campaign would fail closed during aggregate validation despite producing terminal officially graded cell envelopes."
+  },
+  "evidence_hashes": {
+    "protocol_action_canary_json_sha256": "26d8ba49c6dc5c8480f501dfafd51717a90f0633ddb62ea13644a750cc549a4a",
+    "image_materialization_report_sha256": "8f1a239b7bda0a912629dbfaee1dc4bd350a3fd63007aa24e16273453fe8d91c",
+    "model_access_result_sha256": "30e1e5dc39c5341433653b6364d7e0ed356b079d06aa44a2c1720b78ee9ccf2a"
+  },
+  "custody": {
+    "local_encrypted_custody": "PASS",
+    "remote_github_artifact_custody": "UNAVAILABLE_AFTER_FORCE_CANCEL",
+    "github_artifact_count": 0,
+    "github_upload_failure": "403_FORBIDDEN_JOB_COMPLETED_AFTER_FORCE_CANCEL",
+    "external_local_custody_directory_committed": false,
+    "custody_manifest": {
+      "created_at_utc": "2026-09-05T04:43:50.964Z",
+      "bytes": 2963,
+      "sha256": "285234fe7522cd0e1ae0783a17104e2915b7a1d9e6d951a135f6a8e4cb22beec",
+      "ciphertext_decrypt_inventory_validation": "PASS"
+    },
+    "encrypted_restricted_archive": {
+      "bytes": 184352,
+      "sha256": "da78f888779b2a1e3b324a23dd0624142d38e1224bf32931ced5b1f045490c4a"
+    },
+    "public_inventory": {
+      "bytes": 14358,
+      "file_sha256": "d9e290020e5ca459917269964ea9d14aaa4a87294015d0657ca5550a4dfed499",
+      "canonical_sha256": "6fe0fc8003751a9c67d460483a5d32fc349061d907cba2ca5c1fcaec041413ad",
+      "inventory_files": 92,
+      "inventory_bytes": 92984
+    },
+    "approval_artifact_sha256": "aa4fb73f2a09f6a4f003f18491dd2e1fb6c0b8bf6d286515e272802ed16fbae0",
+    "reconstruction": "POST_CANCEL_REENCRYPTION_FROM_BYTE_EXACT_PLAINTEXT_COPY_WITH_REMOVED_TOP_LEVEL_APPROVAL_RESTORED_BY_APPROVAL_ARTIFACT_SHA256",
+    "plaintext_removed_after_reencryption": true,
+    "secret_material_committed": false,
+    "verification_scope": "Non-secret custody manifest and file hashes only; no secret, approval plaintext, passphrase, or encrypted payload content was accessed for this receipt."
+  },
+  "interpretation": {
+    "scientific_result": false,
+    "model_capability_result": false,
+    "memory_method_result": false,
+    "retrieval_result": false,
+    "grader_result": false,
+    "performance_measured": false,
+    "m2_candidate_selected": false,
+    "heldout_recommendation_available": false
+  },
+  "authority_boundary": {
+    "request_008_authority_consumed": true,
+    "request_008_history_mutable": false,
+    "request_009_may_be_created_only_after_all_d1_8_credential_free_gates_and_reseal": true,
+    "request_009_requires_separate_valid_execution_authorization": true,
+    "heldout_authorized": false,
+    "ablation_authorized": false,
+    "grader_smoke_rerun_authorized": false,
+    "merge_tag_or_release_authorized": false
+  }
+}

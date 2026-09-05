@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_008.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_009.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-008
+  group: trimem-v1-development-tuning-exec-009
   cancel-in-progress: false
 
 permissions:
@@ -62,7 +62,7 @@ jobs:
         run: |
           set -euo pipefail
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
-          python -I -S scripts/trimem_development_trigger_d15.py \
+          python -I -S scripts/trimem_development_trigger_d18.py \
             --repository "$GITHUB_WORKSPACE" \
             --event-path "$GITHUB_EVENT_PATH"
 
@@ -70,6 +70,7 @@ jobs:
     needs: branch-trigger-preflight
     if: >-
       always() &&
+      !cancelled() &&
       ((github.event_name == 'workflow_dispatch' &&
         github.ref == 'refs/heads/main') ||
        (github.event_name == 'push' &&
@@ -123,6 +124,10 @@ jobs:
         run: |
           python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
           python -m pip install --no-deps --no-build-isolation -e .
+      - name: Verify production terminal-cell round trip before provider access
+        run: >-
+          python scripts/trimem_pytest_no_skip.py
+          tests/unit/test_trimem_d18_terminal_contract_integration.py
       - name: Install exact pinned GitHub CLI
         run: |
           set -euo pipefail
@@ -226,12 +231,14 @@ jobs:
           python scripts/postgres_bootstrap.py
           python -m alembic upgrade head
       - name: Pull committed images by digest and verify local observations
+        if: ${{ !cancelled() && success() }}
         run: >-
           python scripts/trimem_pull_locked_images.py
           --phase "$TRIMEM_EXEC_SPLIT"
           --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
           --evidence-dir "artifacts/trimem_v1/benchmark_exec/$TRIMEM_EXEC_SPLIT/image-materialization"
       - name: Execute frozen serial streams with one atomic phase ledger
+        if: ${{ !cancelled() && success() }}
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TRIMEM_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/trimem_benchmark
@@ -287,7 +294,8 @@ jobs:
           tar -C artifacts/trimem_v1 -cf - "${evidence_paths[@]}" \
             | openssl enc -aes-256-cbc -salt -pbkdf2 -pass env:TRIMEM_EVIDENCE_PASSPHRASE -out "$RUNNER_TEMP/trimem-benchmark-restricted.tar.enc"
       - name: Upload public benchmark result
-        if: success()
+        if: ${{ always() && !cancelled() && success() }}
+        id: public-upload
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: trimem-benchmark-public
@@ -296,7 +304,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Upload encrypted restricted evidence
-        if: always() && steps.encrypt_evidence.outcome == 'success'
+        if: always() && !cancelled() && steps.encrypt_evidence.outcome == 'success'
         id: restricted-upload
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -305,7 +313,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Upload non-sensitive benchmark evidence inventories
-        if: always() && steps.benchmark_evidence_inventory.outcome == 'success'
+        if: always() && !cancelled() && steps.benchmark_evidence_inventory.outcome == 'success'
         id: inventory-upload
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -313,6 +321,70 @@ jobs:
           path: ${{ runner.temp }}/trimem-*-inventory.json
           if-no-files-found: error
           retention-days: 14
+      - name: Verify durable external artifact custody before cleanup
+        id: external-custody-verification
+        if: >-
+          always() &&
+          !cancelled() &&
+          steps.public-upload.outcome == 'success' &&
+          steps.restricted-upload.outcome == 'success' &&
+          steps.inventory-upload.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLIC_ARTIFACT_ID: ${{ steps.public-upload.outputs.artifact-id }}
+          PUBLIC_ARTIFACT_DIGEST: ${{ steps.public-upload.outputs.artifact-digest }}
+          RESTRICTED_ARTIFACT_ID: ${{ steps.restricted-upload.outputs.artifact-id }}
+          RESTRICTED_ARTIFACT_DIGEST: ${{ steps.restricted-upload.outputs.artifact-digest }}
+          INVENTORY_ARTIFACT_ID: ${{ steps.inventory-upload.outputs.artifact-id }}
+          INVENTORY_ARTIFACT_DIGEST: ${{ steps.inventory-upload.outputs.artifact-digest }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          expected_names = {
+              "PUBLIC": "trimem-benchmark-public",
+              "RESTRICTED": "trimem-benchmark-restricted-encrypted",
+              "INVENTORY": "trimem-benchmark-evidence-inventories",
+          }
+          for label, expected_name in expected_names.items():
+              artifact_id = os.environ[f"{label}_ARTIFACT_ID"]
+              artifact_digest = os.environ[f"{label}_ARTIFACT_DIGEST"]
+              if re.fullmatch(r"[1-9][0-9]*", artifact_id) is None:
+                  raise SystemExit(f"{label} artifact-id is not canonical")
+              if re.fullmatch(r"[0-9a-f]{64}", artifact_digest) is None:
+                  raise SystemExit(f"{label} artifact-digest is not a SHA-256 hex digest")
+              completed = subprocess.run(
+                  [
+                      "gh", "api", "--method", "GET",
+                      f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/artifacts/{artifact_id}",
+                  ],
+                  capture_output=True,
+                  check=False,
+                  text=True,
+              )
+              if completed.returncode != 0:
+                  raise SystemExit(f"{label} artifact is not remotely retrievable")
+              try:
+                  remote = json.loads(completed.stdout)
+              except json.JSONDecodeError as exc:
+                  raise SystemExit(f"{label} artifact metadata is invalid JSON") from exc
+              workflow_run = remote.get("workflow_run")
+              if (
+                  remote.get("id") != int(artifact_id)
+                  or remote.get("name") != expected_name
+                  or remote.get("expired") is not False
+                  or type(remote.get("size_in_bytes")) is not int
+                  or remote["size_in_bytes"] <= 0
+                  or remote.get("digest") != "sha256:" + artifact_digest
+                  or not isinstance(workflow_run, dict)
+                  or workflow_run.get("id") != int(os.environ["GITHUB_RUN_ID"])
+              ):
+                  raise SystemExit(f"{label} remote artifact custody differs")
+          PY
       - name: Remove plaintext external approval after encryption attempt
         if: always() && steps.approval_materialization.outcome == 'success'
         run: |
@@ -327,10 +399,13 @@ jobs:
         env:
           RESTRICTED_UPLOAD_OUTCOME: ${{ steps.restricted-upload.outcome }}
           INVENTORY_UPLOAD_OUTCOME: ${{ steps.inventory-upload.outcome }}
+          EXTERNAL_CUSTODY_VERIFICATION_OUTCOME: ${{ steps.external-custody-verification.outcome }}
         run: |
           set -euo pipefail
-          if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ] || [ "$INVENTORY_UPLOAD_OUTCOME" != "success" ]; then
-            echo "encrypted evidence or its inventories were not durably uploaded; preserving plaintext and ciphertext" >&2
+          if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ] || \
+             [ "$INVENTORY_UPLOAD_OUTCOME" != "success" ] || \
+             [ "$EXTERNAL_CUSTODY_VERIFICATION_OUTCOME" != "success" ]; then
+            echo "external artifact custody was not verified; preserving plaintext and ciphertext" >&2
             exit 1
           fi
           python scripts/trimem_cleanup_exec.py --phase benchmark

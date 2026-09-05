@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 from typing import Any, Iterator
 
 
@@ -12,6 +13,10 @@ REPORT_PATH = ROOT / "reports" / "TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md"
 SEMANTICS_REPORT_PATH = ROOT / "reports" / "TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md"
 
 REVISION = "24f493f8a103e72312ded4f6b9c89f081d69cb09"
+D18_STARTING_HEAD = "8002847d0db8975dfd957a1322d31a7768fc098f"
+D18_AMENDMENT_PATH = (
+    ROOT / "artifacts" / "trimem_v1" / "development_terminal_contract_amendment.json"
+)
 EXPECTED_SOURCE_BLOBS = {
     "multi_swe_bench/harness/dataset.py": {
         "bytes": 2833,
@@ -150,6 +155,19 @@ def _load_lock() -> dict[str, Any]:
     return value
 
 
+def _git_blob(commit: str, path: str) -> bytes:
+    completed = subprocess.run(
+        ["git", "cat-file", "blob", f"{commit}:{path}"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr.decode(
+        "utf-8", errors="replace"
+    )
+    return completed.stdout
+
+
 def _canonical(value: Any) -> bytes:
     return json.dumps(
         value,
@@ -207,13 +225,31 @@ def test_contract_lock_is_self_sealed_and_pins_exact_git_blob_bytes() -> None:
 
 def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -> None:
     projection = _load_lock()["contracts"]["local_validator_projection"]
+    historical_matrix = _git_blob(
+        D18_STARTING_HEAD, "scripts/trimem_benchmark_matrix.py"
+    )
 
     assert projection["files"] == EXPECTED_LOCAL_VALIDATOR_FILES
     for path, expected in EXPECTED_LOCAL_VALIDATOR_FILES.items():
-        raw = (ROOT / path).read_bytes()
+        if path == "scripts/trimem_benchmark_matrix.py":
+            # D1.8 legitimately changes the aggregate consumer.  Preserve the
+            # historical contract lock by checking it against the immutable
+            # correction starting point rather than mutable working-tree bytes.
+            raw = historical_matrix
+        else:
+            raw = (ROOT / path).read_bytes()
+            assert raw == _git_blob("HEAD", path)
         assert b"\r" not in raw
         assert len(raw) == expected["bytes"]
         assert hashlib.sha256(raw).hexdigest() == expected["sha256"]
+
+    current_matrix = (ROOT / "scripts/trimem_benchmark_matrix.py").read_bytes()
+    assert b"\r" not in current_matrix
+    assert current_matrix != historical_matrix
+    amendment = json.loads(D18_AMENDMENT_PATH.read_text(encoding="utf-8"))
+    assert amendment["implementation_sha256"]["scripts/trimem_benchmark_matrix.py"] == (
+        hashlib.sha256(current_matrix).hexdigest()
+    )
 
     assert projection["line_endings"] == {
         "gitattributes_pattern": "scripts/trimem_*.py",

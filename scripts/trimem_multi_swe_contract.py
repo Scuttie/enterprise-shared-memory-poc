@@ -28,6 +28,14 @@ from trimem_multi_swe_report_semantics import (
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK_PATH = ROOT / "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json"
+D18_AMENDMENT_PATH = (
+    ROOT / "artifacts/trimem_v1/development_terminal_contract_amendment.json"
+)
+D18_STARTING_HEAD = "8002847d0db8975dfd957a1322d31a7768fc098f"
+D18_CURRENT_AGGREGATE_PATH = "scripts/trimem_benchmark_matrix.py"
+D18_AMENDMENT_SCHEMA = "trimem/development-terminal-contract-amendment/1.0"
+D18_AMENDMENT_STATUS = "FROZEN_PRE_RESULT_PENDING_FRESH_EXECUTION"
+D18_AMENDMENT_CLASSIFICATION = "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX"
 ENTRYPOINT_PATH = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
 REPORT_SEMANTICS_MODULE_PATH = ROOT / "scripts/trimem_multi_swe_report_semantics.py"
 REPORT_SEMANTICS_LOCK_PATH = (
@@ -1124,7 +1132,28 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
         "local validator file set differs",
     )
 
-    observed_rows: dict[str, dict[str, Any]] = {}
+    amendment = _strict_json_object(D18_AMENDMENT_PATH, "D1.8 amendment")
+    implementation = amendment.get("implementation_sha256")
+    _require(
+        amendment.get("schema") == D18_AMENDMENT_SCHEMA
+        and amendment.get("status") == D18_AMENDMENT_STATUS
+        and amendment.get("classification") == D18_AMENDMENT_CLASSIFICATION
+        and isinstance(implementation, dict),
+        "D1.8 amendment identity differs",
+    )
+    current_aggregate_sha256 = implementation.get(D18_CURRENT_AGGREGATE_PATH)
+    _require(
+        isinstance(current_aggregate_sha256, str)
+        and SHA256.fullmatch(current_aggregate_sha256) is not None,
+        "D1.8 current aggregate implementation seal is missing",
+    )
+
+    # The immutable Multi-SWE contract predates D1.8.  Its aggregate row remains
+    # bound to the starting commit, while every executable validator at the
+    # correction source must still be the exact tracked HEAD bytes.  Keep the
+    # two observations separate so neither historical evidence nor current
+    # production code can silently substitute for the other.
+    locked_rows: dict[str, dict[str, Any]] = {}
     verified: list[dict[str, Any]] = []
     for path in sorted(LOCAL_VALIDATOR_ROLES):
         source_path = ROOT / path
@@ -1140,8 +1169,6 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             "role": LOCAL_VALIDATOR_ROLES[path],
             "sha256": hashlib.sha256(raw).hexdigest(),
         }
-        _require(rows.get(path) == observed, f"local validator byte lock differs: {path}")
-        observed_rows[path] = observed
 
         attributes = _git(ROOT, "check-attr", "eol", "--", path)
         assert isinstance(attributes.stdout, str)
@@ -1162,11 +1189,56 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             head_blob.stdout == raw,
             f"local validator working bytes differ from the tracked HEAD blob: {path}",
         )
+        if path == D18_CURRENT_AGGREGATE_PATH:
+            historical_blob = _git(
+                ROOT,
+                "cat-file",
+                "blob",
+                f"{D18_STARTING_HEAD}:{path}",
+                text=False,
+            )
+            assert isinstance(historical_blob.stdout, bytes)
+            historical_raw = historical_blob.stdout
+            try:
+                historical_source = historical_raw.decode("utf-8")
+                ast.parse(historical_source, filename=f"{D18_STARTING_HEAD}:{path}")
+            except (UnicodeDecodeError, SyntaxError) as exc:
+                raise ContractError(
+                    f"historical local validator is not valid UTF-8 Python: {path}"
+                ) from exc
+            _require(
+                b"\r" not in historical_raw,
+                f"historical local validator is not LF-only: {path}",
+            )
+            historical_observed = {
+                "bytes": len(historical_raw),
+                "role": LOCAL_VALIDATOR_ROLES[path],
+                "sha256": hashlib.sha256(historical_raw).hexdigest(),
+            }
+            _require(
+                rows.get(path) == historical_observed,
+                f"historical local validator byte lock differs: {path}",
+            )
+            _require(
+                raw != historical_raw,
+                "current D1.8 aggregate unexpectedly equals the historical lock blob",
+            )
+            _require(
+                observed["sha256"] == current_aggregate_sha256,
+                "current D1.8 aggregate differs from the amendment implementation seal",
+            )
+            locked_rows[path] = historical_observed
+        else:
+            _require(
+                rows.get(path) == observed,
+                f"local validator byte lock differs: {path}",
+            )
+            locked_rows[path] = observed
         verified.append({"git_blob_oid": match.group(1), "path": path, **observed})
     _require(
         projection
         == {
-            "files": observed_rows,
+            "files": locked_rows,
             "invariants": LOCAL_VALIDATOR_INVARIANTS,
             "line_endings": LOCAL_VALIDATOR_LINE_ENDINGS,
         },

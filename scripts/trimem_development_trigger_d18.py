@@ -165,6 +165,25 @@ PREVIOUS_RUN_ID = 33_944_405_409
 PREVIOUS_FAILURE_SUBTYPE = (
     "TRIMEM_DEV_RUNNER_AGGREGATE_TERMINAL_STATUS_CONTRACT_MISMATCH"
 )
+FAILED_CORRECTION_SOURCE_GATE_EVIDENCE = {
+    "classification": "NON_SCIENTIFIC_PRE_EXECUTION_SOURCE_GATE_FAILURE",
+    "conclusion": "failure",
+    "docker_calls": 0,
+    "failure_label": "local validator historical/current compatibility",
+    "failure_stage": "Verify required Git blobs and pinned control flow",
+    "grader_runs": 0,
+    "image_pulls": 0,
+    "model_api_calls": 0,
+    "paid_model_calls": 0,
+    "performance_measured": False,
+    "scientific_cells": 0,
+    "scientific_result": False,
+    "source_head": "ac290512ed9a097f61f170f241771d3f213f667d",
+    "usd": 0,
+    "workflow_path": ".github/workflows/ci-trimem-multi-swe-contract.yml",
+    "workflow_run_attempt": 1,
+    "workflow_run_id": 33_976_624_278,
+}
 MODEL_ID = "gpt-5.4-mini-2026-03-17"
 REQUIRED_EXTERNAL_AUTHORIZATION = (
     "TRIMEM_V1_DEVELOPMENT_TUNING_TERMINAL_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
@@ -362,6 +381,7 @@ D18_REQUIRED_IMPLEMENTATION_PATHS = {
     "scripts/trimem_development_trigger_d18.py",
     "scripts/trimem_development_trigger_preflight.py",
     "scripts/trimem_freeze.py",
+    "scripts/trimem_multi_swe_contract.py",
     "scripts/trimem_public_artifact.py",
     "scripts/trimem_verify_ready.py",
     "src/enterprise_memory/trimem/scientific_terminal.py",
@@ -552,6 +572,7 @@ def _validate_amendment(
     scope_inventory = amendment.get("scope_lock_inventory")
     semantic_scope = amendment.get("semantic_scope_lock")
     finalization = amendment.get("finalization_placeholders")
+    pre_execution = amendment.get("pre_execution_gate_evidence")
     require(
         amendment.get("schema") == AMENDMENT_SCHEMA
         and amendment.get("status") == AMENDMENT_STATUS
@@ -565,6 +586,17 @@ def _validate_amendment(
         and isinstance(semantic_scope, Mapping)
         and isinstance(finalization, Mapping),
         "D1.8 terminal-contract amendment differs",
+    )
+    failed_source_gate = (
+        pre_execution.get("failed_correction_source_gate")
+        if isinstance(pre_execution, Mapping)
+        else None
+    )
+    require(
+        isinstance(failed_source_gate, Mapping)
+        and canonical_bytes(dict(failed_source_gate))
+        == canonical_bytes(FAILED_CORRECTION_SOURCE_GATE_EVIDENCE),
+        "D1.8 failed correction-source gate provenance differs",
     )
     require(
         historical.get("id") == PREVIOUS_RUN_ID

@@ -282,6 +282,7 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_self_hosted() -> None
         "scripts/trimem_development_trigger_d18.py",
         "scripts/trimem_freeze.py",
         "scripts/trimem_m2_candidates.py",
+        "scripts/trimem_multi_swe_contract.py",
         "scripts/trimem_public_artifact.py",
         "scripts/trimem_pytest_no_skip.py",
         "scripts/trimem_install_pinned_gh.py",

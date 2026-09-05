@@ -4,10 +4,18 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
 from typing import Any, Iterator
+
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+import trimem_multi_swe_contract as multi_contract  # noqa: E402
+
+
 LOCK_PATH = ROOT / "artifacts" / "trimem_v1" / "multi_swe_evaluation_contract_lock.json"
 REPORT_PATH = ROOT / "reports" / "TRIMEM_MULTI_SWE_EVALUATION_CONTRACT.md"
 SEMANTICS_REPORT_PATH = ROOT / "reports" / "TRIMEM_MULTI_SWE_REPORT_SEMANTICS.md"
@@ -290,6 +298,53 @@ def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -
             "the raw inner-status sidecar, exact test domain, and published summary"
         ),
     }
+
+
+def test_production_verifier_separates_historical_lock_from_current_aggregate() -> None:
+    contracts = _load_lock()["contracts"]
+    verified = multi_contract._verify_local_validator_files(contracts)
+    verified_by_path = {row["path"]: row for row in verified}
+
+    current_raw = (ROOT / multi_contract.D18_CURRENT_AGGREGATE_PATH).read_bytes()
+    current_row = verified_by_path[multi_contract.D18_CURRENT_AGGREGATE_PATH]
+    assert current_row["bytes"] == len(current_raw)
+    assert current_row["sha256"] == hashlib.sha256(current_raw).hexdigest()
+    assert current_raw == _git_blob("HEAD", multi_contract.D18_CURRENT_AGGREGATE_PATH)
+    assert current_raw != _git_blob(
+        multi_contract.D18_STARTING_HEAD,
+        multi_contract.D18_CURRENT_AGGREGATE_PATH,
+    )
+
+
+def test_production_verifier_rejects_d18_aggregate_amendment_drift(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    amendment = json.loads(D18_AMENDMENT_PATH.read_text(encoding="utf-8"))
+    amendment["implementation_sha256"][multi_contract.D18_CURRENT_AGGREGATE_PATH] = (
+        "0" * 64
+    )
+    tampered_path = tmp_path / "development_terminal_contract_amendment.json"
+    tampered_path.write_text(json.dumps(amendment), encoding="utf-8")
+    monkeypatch.setattr(multi_contract, "D18_AMENDMENT_PATH", tampered_path)
+
+    with pytest.raises(
+        multi_contract.ContractError,
+        match="current D1.8 aggregate differs from the amendment implementation seal",
+    ):
+        multi_contract._verify_local_validator_files(_load_lock()["contracts"])
+
+
+def test_production_verifier_rejects_historical_aggregate_lock_drift() -> None:
+    contracts = json.loads(json.dumps(_load_lock()["contracts"]))
+    contracts["local_validator_projection"]["files"][
+        multi_contract.D18_CURRENT_AGGREGATE_PATH
+    ]["sha256"] = "0" * 64
+
+    with pytest.raises(
+        multi_contract.ContractError,
+        match="historical local validator byte lock differs",
+    ):
+        multi_contract._verify_local_validator_files(contracts)
 
 
 def test_default_and_existing_image_early_return_contract_is_exact() -> None:

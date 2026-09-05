@@ -15,15 +15,16 @@
     "performance_measured": false
   },
   "implementation_sha256": {
-    ".github/workflows/ci-trimem-dev-toolchain.yml": "e2937c2ddd76358e71906e3108f59d37e0a09778c90c2509cc0c4a308d0208e3",
+    ".github/workflows/ci-trimem-dev-toolchain.yml": "df4632ffbd9a267a28a241b66b0ecc4ad0e568aa014d3918a22c2673cb35b1a1",
     ".github/workflows/ci-trimem.yml": "cd694f1a0ed8732c79d4d8ee4be2405a06d1951d8157460bac761875c3a3c5ba",
     ".github/workflows/trimem-benchmark.yml": "ae4c01f520a48ca1453652f05b2399537308c5bed659db8108a6f36df633cbc6",
     "artifacts/trimem_v1/readiness_requirements.json": "90d02b6f7a5c38c146259bb95ea05f31449d757c9dc135ac692e9b087aca1dba",
     "scripts/trimem_benchmark_matrix.py": "ea5e46ac3d614284e66e0282bda573fc3449eed246c1d4e3a6ad99343da6f30b",
     "scripts/trimem_benchmark_run.py": "84a5331c2aa54a10a2846e51f7541dcd3d476a20ba93c6abf2407841902bfbec",
-    "scripts/trimem_development_trigger_d18.py": "25e4e14625c84079a3e58c5bdad5b5f89979f9ea04e79fdfde9e9c4ed2aeb244",
+    "scripts/trimem_development_trigger_d18.py": "04d8323b185a4c526b291e66871cc478c0a01ae6a03ae3afe6f8a67dab5c8990",
     "scripts/trimem_development_trigger_preflight.py": "55d17f310fff686e1ba5c0f6cbea1c0fee19cf2b75e7e7a4d939d72e388ab95f",
     "scripts/trimem_freeze.py": "15fd9861340ee4aa1f72b755fe071711c75d5f4fb56e41754041b608b340b91e",
+    "scripts/trimem_multi_swe_contract.py": "d0c17cb11f50f3c7cfa6945c13463d423a41ca45d15051bd1a185a298b0d2542",
     "scripts/trimem_public_artifact.py": "93d60c6119b2df123aa4f854fbf17ef77b77adc4f79c608c51701ef36507c743",
     "scripts/trimem_verify_ready.py": "64cad1e89721c50f633436ff6c3a49c61383a8e10d50d61cbf3e2edfce178fc3",
     "src/enterprise_memory/trimem/scientific_terminal.py": "09f4c7066b843151a8a8a4a2ebce0bd608e9596d13332a81cf795268c7fb2120",
@@ -32,9 +33,9 @@
     "tests/unit/test_trimem_d17_approval_cap_integration.py": "3950ccbc65678497cb3f75cd6dbcb528f3115d64482d61f1d109b84d0da5d8ef",
     "tests/unit/test_trimem_d18_public_artifact_hardening.py": "d7ea76fea3a7a55e000a05fdb870cc9c6bef39cc5def2ae78bc4101f6107e081",
     "tests/unit/test_trimem_d18_terminal_contract_integration.py": "22643d40ca3f7eb27999de7e4d4a28971a900b5a998086cd377f88f9b25b74e0",
-    "tests/unit/test_trimem_dev_toolchain_workflows.py": "38d9e31d563e886a9b14fa04ee7b3dafb5c4fd31a03cfdbc733dc4df791825df",
+    "tests/unit/test_trimem_dev_toolchain_workflows.py": "13c3f491cc444ca138aaeaadd3b0d23b49d1f24ee58f973b430b7fdf6742926d",
     "tests/unit/test_trimem_development_trigger.py": "654c5b9bfc70720e43a2c8304fe5bb68dbbe6d9d4f513e9b8033ad18f38ccef8",
-    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py": "54dd5c0af628e3b691259527802cb0d6f858391d933d91e217fa445b3b55cf29"
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py": "9f1d3d4169b9054c7916c6ee07da0d65f2bf03e1e5ca487e3cb444e28192594f"
   },
   "preserved_sha256": {
     "artifacts/trimem_v1/grader_image_lock.json": "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
@@ -190,8 +191,8 @@
           "sha256": "f3596a9c2d018bb2908eda83206eb65afc0d1ec68b4099314c373ff0253b62b2"
         },
         "after": {
-          "bytes": 7619,
-          "sha256": "e2937c2ddd76358e71906e3108f59d37e0a09778c90c2509cc0c4a308d0208e3"
+          "bytes": 7664,
+          "sha256": "df4632ffbd9a267a28a241b66b0ecc4ad0e568aa014d3918a22c2673cb35b1a1"
         }
       },
       {
@@ -262,8 +263,8 @@
           "sha256": null
         },
         "after": {
-          "bytes": 48613,
-          "sha256": "25e4e14625c84079a3e58c5bdad5b5f89979f9ea04e79fdfde9e9c4ed2aeb244"
+          "bytes": 49863,
+          "sha256": "04d8323b185a4c526b291e66871cc478c0a01ae6a03ae3afe6f8a67dab5c8990"
         }
       },
       {
@@ -288,6 +289,18 @@
         "after": {
           "bytes": 30518,
           "sha256": "15fd9861340ee4aa1f72b755fe071711c75d5f4fb56e41754041b608b340b91e"
+        }
+      },
+      {
+        "path": "scripts/trimem_multi_swe_contract.py",
+        "change_role": "fail-closed historical lock and current D1.8 aggregate compatibility verifier",
+        "before": {
+          "bytes": 55931,
+          "sha256": "a41a8e01704cee1cb7b5dc6fd02471cda5a2721ec912028aa3d8a39645cf7f81"
+        },
+        "after": {
+          "bytes": 59210,
+          "sha256": "d0c17cb11f50f3c7cfa6945c13463d423a41ca45d15051bd1a185a298b0d2542"
         }
       },
       {
@@ -394,8 +407,8 @@
           "sha256": "273ccb1826c4bc4873ea7e679ba014975b7f81a752a2d9af2c49437cb9421b51"
         },
         "after": {
-          "bytes": 15447,
-          "sha256": "38d9e31d563e886a9b14fa04ee7b3dafb5c4fd31a03cfdbc733dc4df791825df"
+          "bytes": 15495,
+          "sha256": "13c3f491cc444ca138aaeaadd3b0d23b49d1f24ee58f973b430b7fdf6742926d"
         }
       },
       {
@@ -418,8 +431,8 @@
           "sha256": "fe471afdfee5890115c8e3328782f7019b2a8ca89b77561c5402dc8cc9dc0733"
         },
         "after": {
-          "bytes": 31674,
-          "sha256": "54dd5c0af628e3b691259527802cb0d6f858391d933d91e217fa445b3b55cf29"
+          "bytes": 33842,
+          "sha256": "9f1d3d4169b9054c7916c6ee07da0d65f2bf03e1e5ca487e3cb444e28192594f"
         }
       }
     ],
@@ -681,6 +694,25 @@
   },
   "frozen_at_utc": "2026-09-05T15:56:58.476Z",
   "pre_execution_gate_evidence": {
+    "failed_correction_source_gate": {
+      "classification": "NON_SCIENTIFIC_PRE_EXECUTION_SOURCE_GATE_FAILURE",
+      "conclusion": "failure",
+      "docker_calls": 0,
+      "failure_label": "local validator historical/current compatibility",
+      "failure_stage": "Verify required Git blobs and pinned control flow",
+      "grader_runs": 0,
+      "image_pulls": 0,
+      "model_api_calls": 0,
+      "paid_model_calls": 0,
+      "performance_measured": false,
+      "scientific_cells": 0,
+      "scientific_result": false,
+      "source_head": "ac290512ed9a097f61f170f241771d3f213f667d",
+      "usd": 0,
+      "workflow_path": ".github/workflows/ci-trimem-multi-swe-contract.yml",
+      "workflow_run_attempt": 1,
+      "workflow_run_id": 33976624278
+    },
     "d1_8_production_shaped_integration_test": {
       "command": "python -m pytest tests/unit/test_trimem_d18_terminal_contract_integration.py -q",
       "observed_result": "26 passed",

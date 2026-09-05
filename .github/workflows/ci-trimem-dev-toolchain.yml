@@ -29,6 +29,7 @@ on:
       - scripts/trimem_benchmark_matrix.py
       - scripts/trimem_benchmark_run.py
       - scripts/trimem_m2_candidates.py
+      - scripts/trimem_multi_swe_contract.py
       - scripts/trimem_public_artifact.py
       - scripts/trimem_pytest_no_skip.py
       - scripts/trimem_exec_approval.py

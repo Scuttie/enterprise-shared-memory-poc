@@ -21,7 +21,7 @@ from . import durable as D
 from .p5deps import Unauthenticated, ref_allowed
 
 API_VERSION = "v1"
-MIGRATION_HEAD = "0013"
+MIGRATION_HEAD = "0015"
 
 ROUTE_SCOPES = {
     ("POST", "/v1/solve"): S.SOLVE_SUBMIT,
@@ -127,9 +127,14 @@ def create_app(container=None, environment=None):
         c = C()
         try:
             async with tenant_tx(c.api_engine, "00000000-0000-0000-0000-000000000000") as conn:
-                # schema proxy for "migrated to the expected head": the 0008 table must exist
+                # Check the authoritative Alembic head.  A historical table-presence
+                # proxy can stay green while newer security migrations are absent.
                 migrated = (await conn.execute(
-                    text("SELECT to_regclass('public.retrieval_candidates') IS NOT NULL"))).scalar()
+                    text(
+                        "SELECT count(*) = 1 AND min(version_num) = :head "
+                        "FROM alembic_version"
+                    ),
+                    {"head": MIGRATION_HEAD})).scalar()
             await c.index.resolve(SHARED)               # Qdrant aliases healthy
             await c.artifacts._t(c.artifacts._store.health)  # artifact store reachable
         except Exception as e:  # fail closed

@@ -1,0 +1,15 @@
+{
+  "candidate_bundle_path": "configs/trimem_v1/m2_candidate_bundles.json",
+  "development_selection_evidence_path": "PENDING_DEVELOPMENT",
+  "development_selection_evidence_sha256": "PENDING_DEVELOPMENT",
+  "heldout_execution": "PROHIBITED_UNTIL_NEW_COMMIT_FREEZE_AND_APPROVAL",
+  "schema": "trimem/selected-m2/1.0",
+  "selected_candidate_id": "PENDING_DEVELOPMENT",
+  "selected_checkpoint_digest": "PENDING_DEVELOPMENT",
+  "selected_checkpoint_file_sha256": "PENDING_DEVELOPMENT",
+  "selected_checkpoint_path": "PENDING_DEVELOPMENT",
+  "selected_full_policy_file_sha256": "PENDING_DEVELOPMENT",
+  "selected_full_policy_path": "PENDING_DEVELOPMENT",
+  "selected_runtime_lock_sha256": "PENDING_DEVELOPMENT",
+  "status": "PRE_DEVELOPMENT"
+}

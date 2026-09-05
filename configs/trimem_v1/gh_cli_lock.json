@@ -1,0 +1,28 @@
+{
+  "archive_filename": "gh_2.97.0_linux_amd64.tar.gz",
+  "archive_sha256": "a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112",
+  "archive_sha256_source_line": "a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112  gh_2.97.0_linux_amd64.tar.gz",
+  "archive_url": "https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz",
+  "checksum_file_sha256": "61905c69ec8660f310814ec98395cdd0c2d07aabf024c597ec45813984a02334",
+  "checksum_file_url": "https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_checksums.txt",
+  "expected_first_version_line": "gh version 2.97.0 (2026-07-31)",
+  "extracted_gh_binary_sha256": "141507c337e8b202ad398550c3b73d72f5af92e86f71665214538a81efd4c409",
+  "hash_source": {
+    "archive_sha256": "OFFICIAL_GITHUB_CLI_RELEASE_CHECKSUM_FILE",
+    "extracted_gh_binary_sha256": "INDEPENDENT_SHA256_OF_EXACT_REGULAR_FILE_PAYLOAD_AFTER_ARCHIVE_VERIFICATION"
+  },
+  "install_layout": {
+    "archive_binary_path": "gh_2.97.0_linux_amd64/bin/gh",
+    "archive_root": "gh_2.97.0_linux_amd64",
+    "bin_directory": "bin",
+    "installed_binary_path": "bin/gh"
+  },
+  "observed_archive_bytes": 14770812,
+  "observed_checksum_file_bytes": 1950,
+  "observed_gh_binary_bytes": 40992930,
+  "platform": "linux_amd64",
+  "release_tag": "v2.97.0",
+  "schema": "trimem/gh-cli-lock/1.0",
+  "verification_date": "2026-09-03",
+  "version": "2.97.0"
+}

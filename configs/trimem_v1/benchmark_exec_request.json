@@ -1,0 +1,53 @@
+{
+  "actual_execution": {
+    "benchmark_target_image_pulls": 0,
+    "grader_containers": 0,
+    "official_grader_runs": 0,
+    "paid_model_calls": 0,
+    "task_arm_runs": 0
+  },
+  "approval_state": "PENDING_EXEC_APPROVAL",
+  "phases": [
+    {
+      "phase": "GRADER_SMOKE",
+      "status": "PENDING_EXEC_APPROVAL",
+      "workflow": ".github/workflows/trimem-grader-smoke.yml"
+    },
+    {
+      "phase": "DEVELOPMENT_TUNING",
+      "status": "PENDING_EXEC_APPROVAL",
+      "workflow": ".github/workflows/trimem-benchmark.yml"
+    },
+    {
+      "phase": "HELDOUT_BENCHMARK",
+      "status": "PENDING_EXEC_APPROVAL",
+      "workflow": ".github/workflows/trimem-benchmark.yml"
+    }
+  ],
+  "prohibited_before_approval": [
+    "paid model invocation",
+    "official grader invocation",
+    "official grader/benchmark target image pull or run",
+    "held-out task execution"
+  ],
+  "readiness_gate": "python scripts/trimem_verify_ready.py --level benchmark-approval --require-git-tracked",
+  "phase_binding": "Each phase requires a distinct external immutable approval artifact bound to that phase's committed Git HEAD, freeze bytes, request bytes, phase_hard_caps, GitHub workflow run ID, and run attempt. A DEVELOPMENT_TUNING approval cannot authorize HELDOUT_BENCHMARK or another dispatch/attempt.",
+  "request_id": "TRIMEM_V1_BENCHMARK_EXEC_002",
+  "required_approval_fields": [
+    "approved_git_commit",
+    "approved_freeze_sha256",
+    "approved_phase",
+    "approved_task_arm_runs",
+    "approved_paid_model_call_cap",
+    "approved_input_token_cap",
+    "approved_output_token_cap",
+    "approved_currency_hard_cap",
+    "approved_grader_containers",
+    "approved_workflow_run_id",
+    "approved_workflow_run_attempt",
+    "approved_legal_terms_acceptance",
+    "approval_actor",
+    "approval_timestamp"
+  ],
+  "schema": "trimem/benchmark-exec-request/1.1"
+}

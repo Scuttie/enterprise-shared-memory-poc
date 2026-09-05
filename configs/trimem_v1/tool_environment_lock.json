@@ -1,0 +1,105 @@
+{
+  "schema": "trimem/tool-environment-lock/1.0",
+  "status": "FROZEN",
+  "runtime_lock_manifest": {
+    "version": "trimem-agent-v1",
+    "prompt_hashes": {
+      "decomposer_prompt": "8a2a27bb89e3747f832dd8ec2d57da5134c10526ac7e8b8bbc5c6538985ab1ec",
+      "solve_prompt": "1a3caba70a1f37bfb819b6c0fe8babb780343ffb409c1164196b48cc034bbb75",
+      "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098"
+    },
+    "tool_hash": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3",
+    "parser_hash": "827230b0fe620ba7c66e1c36a87f22e9517339179f109c1e2c6299f590e1d34c",
+    "function_tools_sha256": "5c035f219b9e023c2fb5c7792a7a51c0c4c783a718a9367d723e26b7253039eb",
+    "live_solve_response_mode": "SINGLE_FUNCTION_CALL",
+    "tool_choice": "required",
+    "parallel_tool_calls": false,
+    "limits": {
+      "max_agent_steps": 24,
+      "max_steps_per_subtask": 8,
+      "max_solve_calls": 24,
+      "max_decomposition_calls": 1,
+      "max_extraction_calls": 1,
+      "max_output_tokens_per_solve": 16384,
+      "max_total_solve_output_tokens_per_task_arm": 49152,
+      "max_total_output_tokens_per_task_arm": 65536,
+      "max_output_tokens_decomposition": 8192,
+      "max_output_tokens_extraction": 8192,
+      "max_memory_injections": 3,
+      "max_memory_context_bytes": 12000
+    }
+  },
+  "runtime_lock_content_hash": "4e0f63319e837a43b0d786bda78fdca684353c779f0318597a9a8e238a2fc96b",
+  "source_files": {
+    "src/enterprise_memory/trimem/runtime_lock.py": {
+      "bytes": 7399,
+      "sha256": "c31bddb29153a79cfea46f05908150834dd178b3b0e29767c04c2755d29f505e"
+    },
+    "src/enterprise_memory/trimem/agent_runtime.py": {
+      "bytes": 117140,
+      "sha256": "4098d7ac89efc82f3eff9e761f1dca234b176e074c6c4a692d6a899ab1ef66b8"
+    },
+    "src/enterprise_memory/trimem/workspace.py": {
+      "bytes": 21253,
+      "sha256": "d9048da6bf7ef31fdf6f646d3e4ace85133dc545eda3701d52caeabb8438630f"
+    },
+    "src/enterprise_memory/trimem/git_workspace.py": {
+      "bytes": 36236,
+      "sha256": "f4e91c3ceddb4d2b149b0467351a97cafca88b71fcf903580c72c1788096b949"
+    },
+    "src/enterprise_memory/trimem/checkpoint.py": {
+      "bytes": 6003,
+      "sha256": "091fc4e665ed92984f5ed2dd45ceb25fe60c0824df5c604529de959d18557ebf"
+    },
+    "src/enterprise_memory/trimem/function_tools.py": {
+      "bytes": 6808,
+      "sha256": "2776fc926e7e6995c2002849ec51ba27b784fe62346dc7b76a57ac6d6e910ae6"
+    }
+  },
+  "benchmark_workspace": {
+    "factory_class": "enterprise_memory.trimem.git_workspace.GitCheckoutWorkspaceFactory",
+    "production_capable_required": true,
+    "all_tasks_require_digest_bound_command_runner": true,
+    "same_factory_content_hash_across_arms": true,
+    "max_read_bytes": 131072,
+    "chunked_read_supported": true,
+    "max_search_hits": 100
+  },
+  "docker_command_runner": {
+    "class": "enterprise_memory.trimem.git_workspace.DockerSandboxCommandRunner",
+    "schema": "trimem/docker-command-runner/1.0",
+    "container_workspace": "/testbed",
+    "image": "per-target exact image@sha256 from grader_image_lock.json",
+    "pull": "never",
+    "network": "none",
+    "root_filesystem": "read-only",
+    "writable_mounts": [
+      "task checkout",
+      "/tmp tmpfs"
+    ],
+    "checkout_git_metadata": "nested read-only bind",
+    "host_environment_forwarded_to_container": false,
+    "container_environment": {
+      "CI": "1",
+      "HOME": "/tmp/trimem-home",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "/tmp"
+    },
+    "cap_drop": "ALL",
+    "no_new_privileges": true,
+    "pids_limit": 1024,
+    "cpu_limit": "4",
+    "memory_limit": "8g",
+    "tmpfs_size_bytes": 1073741824,
+    "max_timeout_seconds": 120,
+    "max_output_bytes_per_stream": 262144
+  },
+  "tool_authority_boundary": {
+    "gold_patch_visible_to_agent": false,
+    "hidden_tests_visible_to_agent": false,
+    "generic_host_shell": false,
+    "arbitrary_host_environment": false,
+    "public_repository_commands": "argv-only in the digest-pinned task container",
+    "dag_revision": "evidence-driven task-local topology only"
+  }
+}

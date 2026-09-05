@@ -22,6 +22,7 @@ hf_cache/
 model_cache/
 # raw experiment artifacts (never released)
 *.jsonl
+!configs/trimem_v1/sigstore_trusted_root.jsonl
 *.log
 data/
 artifacts/bigcode_r2/results/*_raw.*.json

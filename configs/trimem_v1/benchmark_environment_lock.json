@@ -1,0 +1,118 @@
+{
+  "schema": "trimem/benchmark-environment-lock/1.0",
+  "status": "FROZEN",
+  "runner": {
+    "automatic_ci_runner_label": "ubuntu-24.04",
+    "benchmark_exec_runner_labels": [
+      "self-hosted",
+      "linux",
+      "x64",
+      "ubuntu-24.04",
+      "trimem-benchmark"
+    ],
+    "benchmark_exec_max_job_minutes": 7200,
+    "benchmark_exec_runner_boundary": "protected ephemeral self-hosted runner; one serial phase job owns PostgreSQL, Qdrant and the atomic global ledger",
+    "operating_system": "linux",
+    "architecture": "x86_64",
+    "python_implementation": "CPython",
+    "python_version": "3.11.10"
+  },
+  "dependency_lock": {
+    "input_path": "configs/trimem_v1/benchmark_environment.in",
+    "input_sha256": "5c70a5af4c41d6b13819810f4a5f1df72d21dd45513d271dd28e74ead4d55bc1",
+    "lock_path": "configs/trimem_v1/benchmark_environment.lock",
+    "lock_sha256": "359b39abbc0dc07fa540b520c8ac1c6698bf3888a0f11f5eb59ee1f28f58691f",
+    "resolver": "uv 0.11.25",
+    "target_platform": "x86_64-manylinux_2_28",
+    "install_command": "uv pip sync --require-hashes configs/trimem_v1/benchmark_environment.lock",
+    "all_distributions_hash_locked": true,
+    "resolved_distribution_count": 140
+  },
+  "harness_dependency_hash_basis": "PINNED_GIT_BLOB_BYTES_AT_REVISION",
+  "harness_dependency_lock": {
+    "basis": "PINNED_GIT_BLOB_BYTES_AT_REVISION",
+    "dependency_count": 3,
+    "portable_projection_sha256": "042c8cfb2478f5515541a387575c7124312095df7e82d4e30798c7d82926df39"
+  },
+  "harness_source_environment": [
+    {
+      "benchmark_ids": ["swebench_verified"],
+      "checkout_key": "swebench_verified",
+      "repository": "https://github.com/SWE-bench/SWE-bench",
+      "revision": "7a21e05772954cc81471ae19d56f436cecf43c54",
+      "dependency_declarations": [
+        {
+          "bytes": 2131,
+          "git_blob_sha256": "a28097ccddef94f8a22d9ca4037ab066ac37462e95547f3136bf4059109aaac9",
+          "path": "pyproject.toml"
+        },
+        {
+          "bytes": 861799,
+          "git_blob_sha256": "66ada0bfcc5177def68d5307e0c6fdaf5b91b5659258faa1fb2cc4862809d39e",
+          "path": "uv.lock"
+        }
+      ]
+    },
+    {
+      "benchmark_ids": ["multi_swe_bench_mini", "multi_swe_bench_flash"],
+      "checkout_key": "multi",
+      "repository": "https://github.com/multi-swe-bench/multi-swe-bench",
+      "revision": "24f493f8a103e72312ded4f6b9c89f081d69cb09",
+      "dependency_declarations": [
+        {
+          "bytes": 921,
+          "git_blob_sha256": "7a19f0081d9feee2fa2262e215080b4daa91c452db36d6c2ddf54dfcfb971c40",
+          "path": "setup.py"
+        }
+      ]
+    }
+  ],
+  "critical_versions": {
+    "alembic": "1.13.3",
+    "asyncpg": "0.30.0",
+    "datasets": "4.1.1",
+    "docker": "7.2.0",
+    "httpx": "0.27.0",
+    "huggingface-hub": "0.24.7",
+    "numpy": "1.26.4",
+    "pyarrow": "25.0.1",
+    "psycopg2-binary": "2.9.9",
+    "pytest": "8.2.0",
+    "qdrant-client": "1.12.2",
+    "scikit-learn": "1.5.1",
+    "scipy": "1.14.1",
+    "sentence-transformers": "3.0.1",
+    "SQLAlchemy": "2.0.51",
+    "swe-rex": "1.4.0",
+    "tokenizers": "0.19.1",
+    "torch": "2.4.1",
+    "transformers": "4.44.2"
+  },
+  "credential_free_real_services": {
+    "postgres": {
+      "source_tag": "16.4-bookworm",
+      "image": "postgres@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412",
+      "registry_evidence_url": "https://hub.docker.com/v2/repositories/library/postgres/tags/16.4-bookworm"
+    },
+    "qdrant": {
+      "source_tag": "v1.12.4",
+      "image": "qdrant/qdrant@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636",
+      "registry_evidence_url": "https://hub.docker.com/v2/repositories/qdrant/qdrant/tags/v1.12.4"
+    }
+  },
+  "embedding_execution": {
+    "device": "cpu",
+    "same_environment_for_arms": ["M0", "M1", "M2"],
+    "environment": {
+      "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+      "CUDA_VISIBLE_DEVICES": "",
+      "HF_HUB_DISABLE_TELEMETRY": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "PYTHONHASHSEED": "0",
+      "TOKENIZERS_PARALLELISM": "false"
+    },
+    "torch_deterministic_algorithms": true,
+    "benchmark_hash_embedder_allowed": false
+  }
+}

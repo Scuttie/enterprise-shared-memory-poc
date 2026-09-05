@@ -1,0 +1,42 @@
+{
+  "schema": "trimem/solve-output-budget-contract/1.0",
+  "status": "FROZEN_PRE_RESULT",
+  "classification": "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT",
+  "provider_usage_basis": "usage.output_tokens_including_visible_and_reasoning_output",
+  "task_arm_role_pools": {
+    "decomposition": 8192,
+    "solve": 49152,
+    "extraction": 8192,
+    "total": 65536
+  },
+  "per_call_output_caps": {
+    "decomposition": 8192,
+    "solve_maximum": 16384,
+    "extraction": 8192
+  },
+  "solve_request_rule": "min(16384, remaining_solve_output_pool)",
+  "exhaustion_rule": {
+    "classification": "TASK_SOLVE_OUTPUT_POOL_EXHAUSTED",
+    "provider_send_allowed": false
+  },
+  "incomplete_response_retry": {
+    "automatic_retry_allowed": false,
+    "registered_call_replacement_allowed": false
+  },
+  "reservation_rule": {
+    "before_provider_send": [
+      "task_actual_plus_outstanding_plus_request_cap_lte_role_pool",
+      "task_actual_plus_outstanding_plus_request_cap_lte_total_pool",
+      "phase_actual_plus_outstanding_plus_request_cap_lte_approved_phase_cap"
+    ],
+    "settlement": "remove_request_cap_from_outstanding_then_add_provider_reported_actual_output_tokens",
+    "unknown_usage": "retain_separately_labelled_conservative_reservation",
+    "double_counting_allowed": false
+  },
+  "development_phase": {
+    "task_arm_runs": 72,
+    "output_tokens": 4718592,
+    "uncached_token_cost_ceiling_usd": 48.233664,
+    "identity": "72 * 65536 = 4718592"
+  }
+}

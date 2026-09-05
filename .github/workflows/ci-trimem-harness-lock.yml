@@ -1,0 +1,63 @@
+name: TriMem harness lock portability rehearsal
+
+on:
+  pull_request:
+  push:
+    branches:
+      - codex/trimem-coder-v1
+
+permissions:
+  contents: read
+
+jobs:
+  exact-pre-exec-rehearsal:
+    name: Harness lock rehearsal (${{ matrix.scope }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform_id: ubuntu-lf
+            scope: exact-linux-production-prep
+            runner: ubuntu-24.04
+            core_autocrlf: input
+            python_version: 3.11.10
+            rehearsal_arg: ""
+          - platform_id: windows-crlf
+            scope: windows-git-blob-portability
+            runner: windows-2025
+            core_autocrlf: "true"
+            python_version: 3.11.9
+            rehearsal_arg: --blob-only
+    steps:
+      - name: Checkout frozen source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: ${{ matrix.python_version }}
+          cache: ""
+
+      - name: Exercise frozen harness lock boundary and stop pre-EXEC
+        env:
+          GIT_CONFIG_COUNT: "1"
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: ${{ matrix.core_autocrlf }}
+        run: >-
+          python scripts/trimem_harness_lock.py
+          --checkout-root "${{ runner.temp }}/trimem-harness-lock-checkouts"
+          --output "${{ runner.temp }}/trimem-harness-lock-report-${{ matrix.platform_id }}.json"
+          ${{ matrix.rehearsal_arg }}
+
+      - name: Upload platform rehearsal report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-harness-lock-${{ matrix.platform_id }}
+          path: ${{ runner.temp }}/trimem-harness-lock-report-${{ matrix.platform_id }}.json
+          if-no-files-found: error
+          retention-days: 14

@@ -14,7 +14,7 @@ tenants. Every decision is auditable and maps back to a canonical version in Pos
 | Utility router (held-out) | `NULL` |
 | Company handoff | `READY` |
 | Production certification | `NOT_CLAIMED` |
-| Migration head | `0014` |
+| Migration head | `0015` |
 
 > **COMPANY-HANDOFF-READY — NOT YET COMPANY-STAGING-CERTIFIED.** Service correctness, research efficacy, and staging certification are tracked separately; see [`docs/STATUS.yaml`](docs/STATUS.yaml) (single source of truth) and [`docs/EVIDENCE_AND_LIMITATIONS.md`](docs/EVIDENCE_AND_LIMITATIONS.md).
 <!-- STATUS:END -->

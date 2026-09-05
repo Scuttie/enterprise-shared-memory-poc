@@ -1,0 +1,114 @@
+{
+  "schema": "trimem/model-lock/1.2",
+  "status": "FROZEN_PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT_PENDING_APPROVAL",
+  "actual_execution": {
+    "model_gateway_calls": 7,
+    "paid_model_calls": 7,
+    "provider_reported_usage": "MIXED_ONE_HISTORICAL_UNAVAILABLE_SIX_AVAILABLE",
+    "completed_task_arm_runs": 0
+  },
+  "primary_model": {
+    "provider": "openai",
+    "model_id": "gpt-5.4-mini-2026-03-17",
+    "status": "FROZEN",
+    "reason": "Officially documented dated snapshot avoids alias drift",
+    "input_price_per_million_tokens_usd": 0.75,
+    "cached_input_price_per_million_tokens_usd": 0.075,
+    "output_price_per_million_tokens_usd": 4.5
+  },
+  "model_roles": {
+    "decomposition": {
+      "model_id": "gpt-5.4-mini-2026-03-17",
+      "status": "FROZEN_EXECUTION_PENDING_APPROVAL"
+    },
+    "solve": {
+      "model_id": "gpt-5.4-mini-2026-03-17",
+      "status": "FROZEN_EXECUTION_PENDING_APPROVAL"
+    },
+    "experience_extraction": {
+      "model_id": "gpt-5.4-mini-2026-03-17",
+      "status": "FROZEN_EXECUTION_PENDING_APPROVAL"
+    }
+  },
+  "decoding_contract": {
+    "attempts": 1,
+    "reasoning_effort": "medium",
+    "temperature": "OMITTED_FOR_REASONING_MODEL",
+    "top_p": "OMITTED_FOR_REASONING_MODEL"
+  },
+  "request_schema": {
+    "endpoint": "https://api.openai.com/v1/responses",
+    "http_method": "POST",
+    "body": {
+      "model": "gpt-5.4-mini-2026-03-17",
+      "input": "one user message containing the byte-exact common-runtime prompt",
+      "reasoning": {
+        "effort": "medium"
+      },
+      "max_output_tokens": "per-call value from the frozen RuntimeLock"
+    },
+    "role_specific_text_format": {
+      "decomposition": "strict json_schema trimem_decomposition_v1",
+      "experience_extraction": "strict json_schema trimem_experience_extraction_v1",
+      "solve": "OMITTED_TO_PRESERVE_TOOL_ACTION_PROTOCOL"
+    },
+    "temperature": "OMITTED",
+    "top_p": "OMITTED",
+    "response_requirements": [
+      "response envelope persisted before interpretation",
+      "provider terminal status classified before output consumption",
+      "role-specific structured output satisfies its frozen schema",
+      "returned model exactly gpt-5.4-mini-2026-03-17",
+      "provider usage propagated when present and marked unavailable when absent",
+      "attempt count and wall time"
+    ]
+  },
+  "request_schema_sha256": "480aedd6d1e33036d1f6564dcddb936fac02566bf3c1f2b47082b15ca1b1da6a",
+  "provider_output_schema_contract": {
+    "config": "configs/trimem_v1/provider_output_schemas.json",
+    "lock": "artifacts/trimem_v1/provider_output_schema_lock.json",
+    "classification": "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT"
+  },
+  "provider_bridge": {
+    "async_provider_class": "enterprise_memory.providers.openai_responses.OpenAIResponsesProvider",
+    "common_runtime_bridge_class": "enterprise_memory.trimem.gateway.AsyncProviderModelGateway",
+    "provider_family": "gpt5.4",
+    "exact_returned_model_required": "gpt-5.4-mini-2026-03-17",
+    "long_lived_coroutine_runner_required": true,
+    "provider_retry_attempt_cap": 1,
+    "raw_response_store_required_for_benchmark": true
+  },
+  "conservative_input_guard": {
+    "documented_model_context_window_tokens": 400000,
+    "conservative_reservation_formula": "UTF-8 prompt byte length + 4096 Responses-envelope tokens",
+    "maximum_reserved_input_tokens_per_call": 262000,
+    "contract": "PRESERVED_CONSERVATIVE_INPUT_CEILING",
+    "enforcement": "reject before provider send when the conservative reservation exceeds 262000; one UTF-8 byte is treated as at least one reserved token"
+  },
+  "pricing_evidence": {
+    "model_detail_url": "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
+    "observed_date_utc": "2026-09-03",
+    "source_policy": "official OpenAI documentation only",
+    "context_note": "the official Mini model page documents a 400000-token context window; the stricter 262000 reservation ceiling remains unchanged as a benchmark runtime limit, not as a Mini surcharge claim"
+  },
+  "retrieval_embedding": {
+    "production": {
+      "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "dimension": 384,
+      "license": "Apache-2.0",
+      "model_url": "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/tree/1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "status": "FROZEN"
+    },
+    "credential_free_fixture": {
+      "implementation": "DeterministicHashEmbedder",
+      "scope": "credential-free tests and replay only",
+      "benchmark_execution_allowed": false
+    }
+  },
+  "runtime_lock_source": "src/enterprise_memory/trimem/runtime_lock.py",
+  "approval_boundary": {
+    "pre_exec_ready": "exact model, request schema, prices, expected cost, and proposed caps are frozen",
+    "execution": "a separate external immutable approval must bind the committed Git SHA, freeze digest, phase, and hard caps"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "branch_policies": {
+    "branch_policies": [
+      {
+        "id": 58983771,
+        "name": "codex/trimem-coder-v1",
+        "type": "branch"
+      },
+      {
+        "id": 58983776,
+        "name": "main",
+        "type": "branch"
+      }
+    ],
+    "total_count": 2
+  },
+  "configured_before_sentinel": true,
+  "deployment_branch_policy": {
+    "custom_branch_policies": true,
+    "protected_branches": false
+  },
+  "environment": {
+    "can_admins_bypass": false,
+    "id": 21138935165,
+    "name": "trimem-benchmark-exec"
+  },
+  "observed_at_utc": "2026-09-03T04:42:36Z",
+  "protection_rule": {
+    "id": 64484014,
+    "prevent_self_review": false,
+    "reviewers": [
+      {
+        "id": 95427459,
+        "login": "Scuttie",
+        "type": "User"
+      }
+    ],
+    "type": "required_reviewers"
+  },
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "schema": "trimem/benchmark-environment-protection/1.0",
+  "secret_state_before_sentinel": {
+    "installed_secret_names": [],
+    "required_later": [
+      "OPENAI_API_KEY",
+      "TRIMEM_EVIDENCE_PASSPHRASE",
+      "TRIMEM_EXEC_APPROVAL_B64"
+    ],
+    "total_count": 0
+  },
+  "source_api_paths": [
+    "repos/Scuttie/enterprise-shared-memory-poc/environments/trimem-benchmark-exec",
+    "repos/Scuttie/enterprise-shared-memory-poc/environments/trimem-benchmark-exec/deployment-branch-policies",
+    "repos/Scuttie/enterprise-shared-memory-poc/environments/trimem-benchmark-exec/secrets"
+  ],
+  "status": "CONFIGURED"
+}

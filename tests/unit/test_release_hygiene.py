@@ -54,13 +54,13 @@ def test_no_stale_0013_head_guard_anywhere():
                 "stale 0013 head guard in %s:%d" % (os.path.basename(path), i)
 
 
-def test_real_alembic_script_head_is_single_0014():
+def test_real_alembic_script_head_is_single_0015():
     spec = importlib.util.spec_from_file_location(
         "check_migration_head", os.path.join(ROOT, "scripts", "check_migration_head.py"))
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     heads = mod.script_heads()
-    assert heads == ["0014"], "expected single script head 0014, got %s" % heads
+    assert heads == ["0015"], "expected single script head 0015, got %s" % heads
 
 
 # ---- frozen R14/R15/R18/R19 path-only amendment ---------------------------

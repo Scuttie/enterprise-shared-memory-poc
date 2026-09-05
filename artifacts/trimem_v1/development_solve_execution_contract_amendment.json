@@ -1,0 +1,44 @@
+{
+  "schema": "trimem/development-solve-execution-contract-amendment/1.0",
+  "status": "FROZEN_PRE_RESULT_PENDING_EXACT_HEAD_GATES_AND_SEPARATE_APPROVAL",
+  "classification": "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT",
+  "edit_surface_classification": "PRE_RESULT_SOLVE_EDIT_SURFACE_AMENDMENT",
+  "causal_boundary": {
+    "historical_run_id": 33840007588,
+    "historical_run_attempt": 1,
+    "historical_execution_head": "795c589c7da0b815bbe4f6188191fd0165f85649",
+    "historical_completed_task_arm_runs": 0,
+    "scientific_status": "STARTED_NO_COMPLETED_CELL",
+    "performance": "NOT_MEASURED",
+    "api_terminal_cause": "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+    "failed_logical_call_id": "swebench_verified--django__django-16100:M2:solve:0005",
+    "forensic_class": "SOLVE_TRUNCATED_WRITE_FILE_CONTENT",
+    "forensic_paid_model_calls": 0,
+    "forensic_grader_containers": 0
+  },
+  "bindings": {
+    "historical_failure_receipt_sha256": "393bff5c1a518ea2ea487ff1c940152bc9d2e618ab300fd05fadacc179c933fc",
+    "sanitized_forensic_sha256": "7161de361d9946b914446df7f0ae3e4a838f6de0b64c7375f29baf5e279702e5",
+    "solve_output_budget_contract_lock_sha256": "81242a4a1aac4f8e74a1ca887718e976da1cc8bea5e0a7cf773ea21800364949",
+    "runtime_lock_content_sha256": "4e9a5e8d9d39ae8665c8240fb9d823724621da9972fc64a924938ed86bec0ea8",
+    "solve_prompt_sha256": "94c0d0abfdf3775cc3b03c7ac4a65276be587a48373d3df84f89db7505a5894f",
+    "tool_schema_sha256": "23650eb16d197dd6804b494ba2643188f50f5e9febb145b599e431c3f5901ad3"
+  },
+  "preserved_contract": {
+    "model_id": "gpt-5.4-mini-2026-03-17",
+    "reasoning_effort": "medium",
+    "development_targets": 12,
+    "development_task_arm_runs": 72,
+    "m2_candidates": ["baseline", "precision", "recall", "balanced"],
+    "grader_or_image_lock_change": false,
+    "decomposition_or_extraction_schema_change": false
+  },
+  "execution_boundary": {
+    "fresh_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_005",
+    "required_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_SOLVE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE",
+    "workflow_attempt": 1,
+    "automatic_incomplete_response_retry": false,
+    "heldout_authorized": false,
+    "grader_smoke_rerun_authorized": false
+  }
+}

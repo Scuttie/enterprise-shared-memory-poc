@@ -1,0 +1,785 @@
+{
+  "schema": "trimem/development-terminal-contract-amendment/1.0",
+  "status": "FROZEN_PRE_RESULT_PENDING_FRESH_EXECUTION",
+  "recorded_at_utc": "2026-09-05T13:43:37.872Z",
+  "classification": "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX",
+  "endpoint_before_fresh_execution": "TRIMEM_V1_DEV_INCOMPLETE",
+  "historical_run": {
+    "id": 33944405409,
+    "attempt": 1,
+    "source_head": "f5f6b8d0c6bef4aa704e25d8e67c526d437e967b",
+    "head_sha": "8002847d0db8975dfd957a1322d31a7768fc098f",
+    "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_008.json",
+    "request_raw_sha256": "2eac68069e9a2cc760138eca5b9e6ae1d5438a97cd9e4918a496ab920cc584b7",
+    "failure_subtype": "TRIMEM_DEV_RUNNER_AGGREGATE_TERMINAL_STATUS_CONTRACT_MISMATCH",
+    "performance_measured": false
+  },
+  "implementation_sha256": {
+    ".github/workflows/ci-trimem-dev-toolchain.yml": "df4632ffbd9a267a28a241b66b0ecc4ad0e568aa014d3918a22c2673cb35b1a1",
+    ".github/workflows/ci-trimem.yml": "cd694f1a0ed8732c79d4d8ee4be2405a06d1951d8157460bac761875c3a3c5ba",
+    ".github/workflows/trimem-benchmark.yml": "ae4c01f520a48ca1453652f05b2399537308c5bed659db8108a6f36df633cbc6",
+    "artifacts/trimem_v1/readiness_requirements.json": "90d02b6f7a5c38c146259bb95ea05f31449d757c9dc135ac692e9b087aca1dba",
+    "scripts/trimem_benchmark_matrix.py": "ea5e46ac3d614284e66e0282bda573fc3449eed246c1d4e3a6ad99343da6f30b",
+    "scripts/trimem_benchmark_run.py": "84a5331c2aa54a10a2846e51f7541dcd3d476a20ba93c6abf2407841902bfbec",
+    "scripts/trimem_development_trigger_d18.py": "04d8323b185a4c526b291e66871cc478c0a01ae6a03ae3afe6f8a67dab5c8990",
+    "scripts/trimem_development_trigger_preflight.py": "55d17f310fff686e1ba5c0f6cbea1c0fee19cf2b75e7e7a4d939d72e388ab95f",
+    "scripts/trimem_freeze.py": "15fd9861340ee4aa1f72b755fe071711c75d5f4fb56e41754041b608b340b91e",
+    "scripts/trimem_multi_swe_contract.py": "d0c17cb11f50f3c7cfa6945c13463d423a41ca45d15051bd1a185a298b0d2542",
+    "scripts/trimem_public_artifact.py": "93d60c6119b2df123aa4f854fbf17ef77b77adc4f79c608c51701ef36507c743",
+    "scripts/trimem_verify_ready.py": "64cad1e89721c50f633436ff6c3a49c61383a8e10d50d61cbf3e2edfce178fc3",
+    "src/enterprise_memory/trimem/scientific_terminal.py": "09f4c7066b843151a8a8a4a2ebce0bd608e9596d13332a81cf795268c7fb2120",
+    "tests/unit/test_trimem_benchmark_readiness.py": "c8dae7bb8eeea8c8e226732ae0b93fa48ad67ccd233258cf17814a783f526fa2",
+    "tests/unit/test_trimem_d16_native_action.py": "1333e7a10f775d43d77b4d8771b526e879b8942bad72304ac2c3716e00b20f90",
+    "tests/unit/test_trimem_d17_approval_cap_integration.py": "701936b36736bd2c9e28f36aa3411b245c0a18bf330d797d8e1da5d8ff878c06",
+    "tests/unit/test_trimem_d18_public_artifact_hardening.py": "d7ea76fea3a7a55e000a05fdb870cc9c6bef39cc5def2ae78bc4101f6107e081",
+    "tests/unit/test_trimem_d18_terminal_contract_integration.py": "22643d40ca3f7eb27999de7e4d4a28971a900b5a998086cd377f88f9b25b74e0",
+    "tests/unit/test_trimem_dev_toolchain_workflows.py": "13c3f491cc444ca138aaeaadd3b0d23b49d1f24ee58f973b430b7fdf6742926d",
+    "tests/unit/test_trimem_development_trigger.py": "654c5b9bfc70720e43a2c8304fe5bb68dbbe6d9d4f513e9b8033ad18f38ccef8",
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py": "9f1d3d4169b9054c7916c6ee07da0d65f2bf03e1e5ca487e3cb444e28192594f"
+  },
+  "preserved_sha256": {
+    "artifacts/trimem_v1/grader_image_lock.json": "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
+    "configs/trimem_v1/arms.json": "7ecc15277cc9a9041befd4ae32f99b65da63009383b22701e0aecb407fe3906c",
+    "configs/trimem_v1/cost_plan.json": "691489139bcd8d862d274a92fc9ffd26c605c54494cbed61f00ae940c05940f6",
+    "configs/trimem_v1/development_manifest.json": "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
+    "configs/trimem_v1/heldout_manifest.json": "951371ed84931b37e27929e2669aff5d06e32215d1a300e3343ba7f1bdd84fda",
+    "configs/trimem_v1/grader_lock.json": "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb",
+    "configs/trimem_v1/m2_candidate_bundles.json": "9383f70c021730a2901bd1de8e69b98082895bdaad25fe6483bfdc58a8047e68",
+    "configs/trimem_v1/model_lock.json": "a0a4811590d396c2bea4f0454c18c912d11579858947540a355407009a975922",
+    "configs/trimem_v1/provider_output_schemas.json": "2cdb1d62972776b492ee178801a91610bccadb97d9e67eb53c014ed1025562d1",
+    "configs/trimem_v1/selection_plan.json": "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
+    "configs/trimem_v1/tool_environment_lock.json": "4d0ef738d99bbfab5c4a54abba61dd6e3b50ebf2953009cfd84a5e45c7a88a4e",
+    "configs/trimem_v1/benchmark_environment_lock.json": "6636350aca389c16eb64f92465f7529ae06208ed5a8c2ceaf1c9545a1c7e6e02",
+    "configs/trimem_v1/benchmark_environment.lock": "359b39abbc0dc07fa540b520c8ac1c6698bf3888a0f11f5eb59ee1f28f58691f",
+    "configs/trimem_v1/m2_candidates/baseline.json": "f18fcc305e4d936d2337c6eca08ba1bfbb07e5ae6200f10737c11a7d5d2bc6dd",
+    "configs/trimem_v1/m2_candidates/precision.json": "1c9ea64e16986e1c93a26a5a62428dbc7fd3497d179d84fb194ff90af2eb26b5",
+    "configs/trimem_v1/m2_candidates/recall.json": "1985ca2cceaa6ebdc02d4bd320b318a47a8144f64bde5ad0da8367c777d3d85c",
+    "configs/trimem_v1/m2_candidates/balanced.json": "e0474d88505c0a75ff21914f552b71f9796274bd4939e92b299aaf75d0ab4b2d",
+    "artifacts/trimem_v1/provider_output_schema_lock.json": "fbc63a5a508fc30a6bd2e30ba1a6389cc456d5f37f30f95ff61dd1e5d93b4589",
+    "artifacts/trimem_v1/solve_output_budget_contract_lock.json": "81242a4a1aac4f8e74a1ca887718e976da1cc8bea5e0a7cf773ea21800364949",
+    "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json": "ccd0fe37f7813a5316f2c963cfa5796c7e25a3b7534ca941f6a90db5613ecad5",
+    "artifacts/trimem_v1/multi_swe_report_semantics_lock.json": "620618f967ef5e33037fccc123fcf004f63bbe656efeb61c46e85f764ef9c80e",
+    "scripts/trimem_action_canary.py": "542158dccbfb523063dc939eb44be217994cb8735a93bff6c5f510fe7f669320",
+    "scripts/trimem_official_grader.py": "fbd15718a88b4d733b313af83889aae8ef6ac7837529bba52f0bb4072f57b886",
+    "scripts/trimem_exec_approval.py": "76a7b77603aba83e0d7f39c300fd04c40a568442b1a1d294642066b2f085e3d4",
+    "scripts/trimem_harness_lock.py": "0667d68151f8d0ec82d06358132f0221d336769d057aa63dc6612baed2af6d0a",
+    "scripts/trimem_m2_candidates.py": "b5fd61cc320f129b2ee1eb8dc7de632bafe01f5ee539e673f0966ac35c1e860a",
+    "scripts/trimem_run_with_resume.py": "59f0d0a1dcfa72adfa96cd143d704fde9e8c74ad3cea49fbbe16c44c9d6b4a6d",
+    "src/enterprise_memory/providers/base.py": "657c1d76dcebb1b9bad8489e06a69d8bbb8bea3786b55a3f5b2b3c3c018c4f51",
+    "src/enterprise_memory/providers/openai_responses.py": "417693dd05414ecb98ba6d13dc1d03e2a9abc312befc9e5ebb211babf54ff34e",
+    "src/enterprise_memory/trimem/function_tools.py": "2776fc926e7e6995c2002849ec51ba27b784fe62346dc7b76a57ac6d6e910ae6",
+    "src/enterprise_memory/trimem/grader.py": "4746bac3f6530f7c82dd18c0433c1acc206c6d5732a216007ded732cc0359719",
+    "src/enterprise_memory/trimem/arms.py": "7fa3285fa52d3ad76c4ebaa19ce333f39921593597c315c815a7db0c01a88ce3",
+    "src/enterprise_memory/trimem/gateway.py": "aa3f65d52730239786b6047305bc7a5a4170a9becb5cf11e2a22621931c799eb",
+    "src/enterprise_memory/trimem/git_workspace.py": "f4e91c3ceddb4d2b149b0467351a97cafca88b71fcf903580c72c1788096b949",
+    "src/enterprise_memory/trimem/provider_output_contracts.py": "6b2e5711ae78057b7a29ce7424ad88e0c63e03e0051ac452dc96e67e4885f906",
+    "src/enterprise_memory/trimem/agent_runtime.py": "4098d7ac89efc82f3eff9e761f1dca234b176e074c6c4a692d6a899ab1ef66b8",
+    "src/enterprise_memory/trimem/runtime_lock.py": "c31bddb29153a79cfea46f05908150834dd178b3b0e29767c04c2755d29f505e",
+    "src/enterprise_memory/trimem/workspace.py": "d9048da6bf7ef31fdf6f646d3e4ace85133dc545eda3701d52caeabb8438630f"
+  },
+  "causal_boundary": {
+    "historical_run_id": 33944405409,
+    "historical_run_attempt": 1,
+    "historical_execution_head": "8002847d0db8975dfd957a1322d31a7768fc098f",
+    "historical_source_head": "f5f6b8d0c6bef4aa704e25d8e67c526d437e967b",
+    "historical_request": "DEVELOPMENT_TUNING_EXEC_REQUEST_008.json",
+    "historical_request_sha256": "2eac68069e9a2cc760138eca5b9e6ae1d5438a97cd9e4918a496ab920cc584b7",
+    "historical_conclusion": "CANCELLED",
+    "failure_subtype": "TRIMEM_DEV_RUNNER_AGGREGATE_TERMINAL_STATUS_CONTRACT_MISMATCH",
+    "dev_scientific_status": "NOT_STARTED",
+    "scientific_model_calls": 0,
+    "scientific_terminal_cells": 0,
+    "scientific_planned_cells": 72,
+    "official_grader_runs": 0,
+    "performance_measured": false
+  },
+  "historical_accounting": {
+    "metadata_control_plane_requests": 1,
+    "canary_generation_calls": 1,
+    "canary_paid_model_calls": 1,
+    "canary_usage": {
+      "input_tokens": 880,
+      "cached_input_tokens": 0,
+      "output_tokens": 14,
+      "reasoning_tokens": 0,
+      "total_usd": "0.000723000000"
+    },
+    "scientific_model_calls": 0,
+    "scientific_task_arm_cells": 0,
+    "grader_containers": 0,
+    "official_grader_runs": 0,
+    "target_image_pulls": 12,
+    "support_image_pulls": 1,
+    "total_docker_image_pulls": 13
+  },
+  "historical_custody": {
+    "local_encrypted_custody": "PASS",
+    "remote_github_artifact_custody": "UNAVAILABLE_AFTER_FORCE_CANCEL",
+    "github_artifact_count": 0,
+    "custody_manifest_sha256": "285234fe7522cd0e1ae0783a17104e2915b7a1d9e6d951a135f6a8e4cb22beec",
+    "ciphertext_sha256": "da78f888779b2a1e3b324a23dd0624142d38e1224bf32931ced5b1f045490c4a",
+    "public_inventory_file_sha256": "d9e290020e5ca459917269964ea9d14aaa4a87294015d0657ca5550a4dfed499",
+    "public_inventory_canonical_sha256": "6fe0fc8003751a9c67d460483a5d32fc349061d907cba2ca5c1fcaec041413ad",
+    "plaintext_removed": true,
+    "secret_material_committed": false
+  },
+  "corrected_semantics": {
+    "scientific_execution_status": "CELL_TERMINAL",
+    "scientific_task_arm_ledger_terminal_status": "CELL_TERMINAL",
+    "execution_status_meaning": "A terminal, officially graded scientific cell envelope; it is not a resolution or model-success claim.",
+    "resolved_meaning": "The boolean official grader Pass@1 contribution.",
+    "cell_status_meaning": "The terminal clean-completion, contained-runtime-failure, or extraction-failure classification.",
+    "allowed_cell_statuses": [
+      "AGENT_COMPLETED",
+      "CELL_SCIENTIFIC_FAILURE",
+      "MEMORY_EXTRACTION_FAILED"
+    ],
+    "accepted_grader_statuses": [
+      "success"
+    ],
+    "accepted_grader_exit_codes": [
+      0
+    ],
+    "official_grader_required": true,
+    "container_started_required": true,
+    "resolved_boolean_required": true,
+    "all_reservations_reconciled_required": true,
+    "current_scientific_legacy_success_accepted": false,
+    "grader_smoke_success_contract_isolated": true
+  },
+  "authorized_change_surface": [
+    "terminal result producer/consumer contract",
+    "terminal task-arm and request-ledger producer/consumer contract",
+    "producer-to-ledger-to-aggregate-to-public integration coverage",
+    "workflow cancellation behavior and pre-provider credential-free gate"
+  ],
+  "semantic_scope_lock": {
+    "model": "PRESERVED",
+    "reasoning_effort": "PRESERVED",
+    "prompt_text": "PRESERVED",
+    "native_function_tools": "PRESERVED",
+    "tool_schemas": "PRESERVED",
+    "tool_choice": "PRESERVED",
+    "parallel_tool_calls": "PRESERVED",
+    "parser_behavior": "PRESERVED",
+    "output_token_limits": "PRESERVED",
+    "cell_containment_policy": "PRESERVED",
+    "canonical_noop_patch": "PRESERVED",
+    "partial_patch_grading": "PRESERVED",
+    "task_order": "PRESERVED",
+    "target_identities": "PRESERVED",
+    "benchmark_roles": "PRESERVED",
+    "m2_candidates": "PRESERVED",
+    "selection_rule": "PRESERVED",
+    "memory_retrieval_ppr_dqn_parameters": "PRESERVED",
+    "grader_implementation": "PRESERVED",
+    "image_digests": "PRESERVED",
+    "phase_hard_cap_values": "PRESERVED"
+  },
+  "scope_lock_inventory": {
+    "snapshot_kind": "FINAL_CONTENT_SEAL_PRE_COMMIT",
+    "snapshot_captured_at_utc": "2026-09-05T15:56:58.476Z",
+    "before_source": "git show 8002847d0db8975dfd957a1322d31a7768fc098f:<path>",
+    "after_source": "correction-source commit bytes before the sentinel-only _009 commit",
+    "hash_algorithm": "SHA-256",
+    "changed_or_added_contract_surfaces": [
+      {
+        "path": ".github/workflows/ci-trimem-dev-toolchain.yml",
+        "change_role": "credential-free D1.8 round-trip gate",
+        "before": {
+          "bytes": 6032,
+          "sha256": "f3596a9c2d018bb2908eda83206eb65afc0d1ec68b4099314c373ff0253b62b2"
+        },
+        "after": {
+          "bytes": 7664,
+          "sha256": "df4632ffbd9a267a28a241b66b0ecc4ad0e568aa014d3918a22c2673cb35b1a1"
+        }
+      },
+      {
+        "path": ".github/workflows/ci-trimem.yml",
+        "change_role": "credential-free correction-source preflight and D1.8 authority boundary",
+        "before": {
+          "bytes": 4609,
+          "sha256": "f1fbcae91c44c2f69ed8f890d69a0f1604c3e574296874b518489b92671d0f1d"
+        },
+        "after": {
+          "bytes": 4995,
+          "sha256": "cd694f1a0ed8732c79d4d8ee4be2405a06d1951d8157460bac761875c3a3c5ba"
+        }
+      },
+      {
+        "path": ".github/workflows/trimem-benchmark.yml",
+        "change_role": "pre-provider D1.8 gate, cancellation safety, and _009 trigger contract",
+        "before": {
+          "bytes": 15023,
+          "sha256": "2e8fe33123bbba6f1911a6e8a3c63fe3d753c4a549fab549bb761e2050cc6ca8"
+        },
+        "after": {
+          "bytes": 18785,
+          "sha256": "ae4c01f520a48ca1453652f05b2399537308c5bed659db8108a6f36df633cbc6"
+        }
+      },
+      {
+        "path": "artifacts/trimem_v1/readiness_requirements.json",
+        "change_role": "immutable _008 closure and pending _009 authorization/readiness boundary",
+        "before": {
+          "bytes": 24120,
+          "sha256": "d2b1b83b523c76214c50219419facc176a80b30070481204e2a75c522348973d"
+        },
+        "after": {
+          "bytes": 30067,
+          "sha256": "90d02b6f7a5c38c146259bb95ea05f31449d757c9dc135ac692e9b087aca1dba"
+        }
+      },
+      {
+        "path": "scripts/trimem_benchmark_matrix.py",
+        "change_role": "shared current scientific result/ledger contract consumption and terminal aggregation",
+        "before": {
+          "bytes": 163837,
+          "sha256": "d5e561959f22bc0e13b59eb258fadc458bd013c84629ab7a6a260b3eae05557e"
+        },
+        "after": {
+          "bytes": 168586,
+          "sha256": "ea5e46ac3d614284e66e0282bda573fc3449eed246c1d4e3a6ad99343da6f30b"
+        }
+      },
+      {
+        "path": "scripts/trimem_benchmark_run.py",
+        "change_role": "shared serializer, task-arm ledger terminalization, and cursor recovery validation",
+        "before": {
+          "bytes": 156058,
+          "sha256": "d2c8128e05c99e90b2e1de7125b2abe49826e14999da861051c12ff8c07a5631"
+        },
+        "after": {
+          "bytes": 163752,
+          "sha256": "84a5331c2aa54a10a2846e51f7541dcd3d476a20ba93c6abf2407841902bfbec"
+        }
+      },
+      {
+        "path": "scripts/trimem_development_trigger_d18.py",
+        "change_role": "new correction-source validator and sentinel-only _009 trigger reader",
+        "before": {
+          "bytes": null,
+          "sha256": null
+        },
+        "after": {
+          "bytes": 49863,
+          "sha256": "04d8323b185a4c526b291e66871cc478c0a01ae6a03ae3afe6f8a67dab5c8990"
+        }
+      },
+      {
+        "path": "scripts/trimem_development_trigger_preflight.py",
+        "change_role": "exact-head remote gate evidence and zero-scientific-execution collection",
+        "before": {
+          "bytes": 79800,
+          "sha256": "d885dc3708540b79fa4ccc93dbfbaa8589697305b10cc4c4ee17b1e58cd18cc8"
+        },
+        "after": {
+          "bytes": 80400,
+          "sha256": "55d17f310fff686e1ba5c0f6cbea1c0fee19cf2b75e7e7a4d939d72e388ab95f"
+        }
+      },
+      {
+        "path": "scripts/trimem_freeze.py",
+        "change_role": "D1.8 receipt/report/contract/test/trigger freeze membership",
+        "before": {
+          "bytes": 29942,
+          "sha256": "c23c13eca7251de51e0ecab39918d9a3a32ba470fef274c7836747e1c93be65f"
+        },
+        "after": {
+          "bytes": 30518,
+          "sha256": "15fd9861340ee4aa1f72b755fe071711c75d5f4fb56e41754041b608b340b91e"
+        }
+      },
+      {
+        "path": "scripts/trimem_multi_swe_contract.py",
+        "change_role": "fail-closed historical lock and current D1.8 aggregate compatibility verifier",
+        "before": {
+          "bytes": 55931,
+          "sha256": "a41a8e01704cee1cb7b5dc6fd02471cda5a2721ec912028aa3d8a39645cf7f81"
+        },
+        "after": {
+          "bytes": 59210,
+          "sha256": "d0c17cb11f50f3c7cfa6945c13463d423a41ca45d15051bd1a185a298b0d2542"
+        }
+      },
+      {
+        "path": "scripts/trimem_public_artifact.py",
+        "change_role": "public scientific aggregate terminal-contract validation",
+        "before": {
+          "bytes": 27437,
+          "sha256": "34471ee57dc17a1653f78416ce537f1bd4ea7a7c48535617bd0eea007d932269"
+        },
+        "after": {
+          "bytes": 60045,
+          "sha256": "93d60c6119b2df123aa4f854fbf17ef77b77adc4f79c608c51701ef36507c743"
+        }
+      },
+      {
+        "path": "scripts/trimem_verify_ready.py",
+        "change_role": "D1.8 receipt/amendment/history validation and _009 preapproval boundary",
+        "before": {
+          "bytes": 247108,
+          "sha256": "bd299c38df088d128329f8f9058545f8d3b61c463bbf07cd9d9776ea61905a6c"
+        },
+        "after": {
+          "bytes": 253244,
+          "sha256": "64cad1e89721c50f633436ff6c3a49c61383a8e10d50d61cbf3e2edfce178fc3"
+        }
+      },
+      {
+        "path": "src/enterprise_memory/trimem/scientific_terminal.py",
+        "change_role": "new pure shared scientific terminal-cell contract",
+        "before": {
+          "bytes": null,
+          "sha256": null
+        },
+        "after": {
+          "bytes": 28635,
+          "sha256": "09f4c7066b843151a8a8a4a2ebce0bd608e9596d13332a81cf795268c7fb2120"
+        }
+      },
+      {
+        "path": "tests/unit/test_trimem_benchmark_readiness.py",
+        "change_role": "aggregate, ledger, and cursor-recovery terminal-contract regression coverage",
+        "before": {
+          "bytes": 274783,
+          "sha256": "27c52cd886f93d7be2a3540031d42da402c6b7682fe7d9f43dd760e57f17d00d"
+        },
+        "after": {
+          "bytes": 281976,
+          "sha256": "c8dae7bb8eeea8c8e226732ae0b93fa48ad67ccd233258cf17814a783f526fa2"
+        }
+      },
+      {
+        "path": "tests/unit/test_trimem_d16_native_action.py",
+        "change_role": "active DEV trigger expectation moved from immutable _008 to future _009",
+        "before": {
+          "bytes": 12558,
+          "sha256": "a74be1acf4fcedcbae8d979bd8c83d9ea69d401e47062baac579c70106873da8"
+        },
+        "after": {
+          "bytes": 12558,
+          "sha256": "1333e7a10f775d43d77b4d8771b526e879b8942bad72304ac2c3716e00b20f90"
+        }
+      },
+      {
+        "path": "tests/unit/test_trimem_d17_approval_cap_integration.py",
+        "change_role": "immutable D1.7 compatibility coverage under the active D1.8 reader",
+        "before": {
+          "bytes": 17043,
+          "sha256": "7387c8b48603b220fd1197ed5d017f774682c46dcbbca2ffdf55f9d798a019f1"
+        },
+        "after": {
+          "bytes": 17908,
+          "sha256": "701936b36736bd2c9e28f36aa3411b245c0a18bf330d797d8e1da5d8ff878c06"
+        }
+      },
+      {
+        "path": "tests/unit/test_trimem_d18_public_artifact_hardening.py",
+        "change_role": "exact public accounting, provider-status, semantic, USD, and privacy rejection coverage",
+        "before": {
+          "bytes": null,
+          "sha256": null
+        },
+        "after": {
+          "bytes": 9669,
+          "sha256": "d7ea76fea3a7a55e000a05fdb870cc9c6bef39cc5def2ae78bc4101f6107e081"
+        }
+      },
+      {
+        "path": "tests/unit/test_trimem_d18_terminal_contract_integration.py",
+        "change_role": "new production-shaped 72-cell positive/negative integration matrix",
+        "before": {
+          "bytes": null,
+          "sha256": null
+        },
+        "after": {
+          "bytes": 52024,
+          "sha256": "22643d40ca3f7eb27999de7e4d4a28971a900b5a998086cd377f88f9b25b74e0"
+        }
+      },
+      {
+        "path": "tests/unit/test_trimem_dev_toolchain_workflows.py",
+        "change_role": "pre-provider and cancellation-condition workflow regression coverage",
+        "before": {
+          "bytes": 5748,
+          "sha256": "273ccb1826c4bc4873ea7e679ba014975b7f81a752a2d9af2c49437cb9421b51"
+        },
+        "after": {
+          "bytes": 15495,
+          "sha256": "13c3f491cc444ca138aaeaadd3b0d23b49d1f24ee58f973b430b7fdf6742926d"
+        }
+      },
+      {
+        "path": "tests/unit/test_trimem_development_trigger.py",
+        "change_role": "single active _009 trigger and cancellation fail-closed regression coverage",
+        "before": {
+          "bytes": 91847,
+          "sha256": "37f61ada4c08951d78595f40c465e0b351b73c6cf90936c02cbb5151e94c6931"
+        },
+        "after": {
+          "bytes": 101318,
+          "sha256": "654c5b9bfc70720e43a2c8304fe5bb68dbbe6d9d4f513e9b8033ad18f38ccef8"
+        }
+      },
+      {
+        "path": "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
+        "change_role": "historical lock compatibility against the immutable D1.8 starting blob plus current aggregate binding",
+        "before": {
+          "bytes": 30250,
+          "sha256": "fe471afdfee5890115c8e3328782f7019b2a8ca89b77561c5402dc8cc9dc0733"
+        },
+        "after": {
+          "bytes": 33842,
+          "sha256": "9f1d3d4169b9054c7916c6ee07da0d65f2bf03e1e5ca487e3cb444e28192594f"
+        }
+      }
+    ],
+    "preserved_scientific_locks": [
+      {
+        "path": "artifacts/trimem_v1/grader_image_lock.json",
+        "before_sha256": "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
+        "after_sha256": "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
+        "bytes": 66825
+      },
+      {
+        "path": "configs/trimem_v1/arms.json",
+        "before_sha256": "7ecc15277cc9a9041befd4ae32f99b65da63009383b22701e0aecb407fe3906c",
+        "after_sha256": "7ecc15277cc9a9041befd4ae32f99b65da63009383b22701e0aecb407fe3906c",
+        "bytes": 3218
+      },
+      {
+        "path": "configs/trimem_v1/cost_plan.json",
+        "before_sha256": "691489139bcd8d862d274a92fc9ffd26c605c54494cbed61f00ae940c05940f6",
+        "after_sha256": "691489139bcd8d862d274a92fc9ffd26c605c54494cbed61f00ae940c05940f6",
+        "bytes": 11081
+      },
+      {
+        "path": "configs/trimem_v1/development_manifest.json",
+        "before_sha256": "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
+        "after_sha256": "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
+        "bytes": 8042
+      },
+      {
+        "path": "configs/trimem_v1/heldout_manifest.json",
+        "before_sha256": "951371ed84931b37e27929e2669aff5d06e32215d1a300e3343ba7f1bdd84fda",
+        "after_sha256": "951371ed84931b37e27929e2669aff5d06e32215d1a300e3343ba7f1bdd84fda",
+        "bytes": 15082
+      },
+      {
+        "path": "configs/trimem_v1/grader_lock.json",
+        "before_sha256": "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb",
+        "after_sha256": "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb",
+        "bytes": 2533
+      },
+      {
+        "path": "configs/trimem_v1/m2_candidate_bundles.json",
+        "before_sha256": "9383f70c021730a2901bd1de8e69b98082895bdaad25fe6483bfdc58a8047e68",
+        "after_sha256": "9383f70c021730a2901bd1de8e69b98082895bdaad25fe6483bfdc58a8047e68",
+        "bytes": 9455
+      },
+      {
+        "path": "configs/trimem_v1/model_lock.json",
+        "before_sha256": "a0a4811590d396c2bea4f0454c18c912d11579858947540a355407009a975922",
+        "after_sha256": "a0a4811590d396c2bea4f0454c18c912d11579858947540a355407009a975922",
+        "bytes": 4954
+      },
+      {
+        "path": "configs/trimem_v1/provider_output_schemas.json",
+        "before_sha256": "2cdb1d62972776b492ee178801a91610bccadb97d9e67eb53c014ed1025562d1",
+        "after_sha256": "2cdb1d62972776b492ee178801a91610bccadb97d9e67eb53c014ed1025562d1",
+        "bytes": 5074
+      },
+      {
+        "path": "configs/trimem_v1/selection_plan.json",
+        "before_sha256": "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
+        "after_sha256": "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
+        "bytes": 3618
+      },
+      {
+        "path": "configs/trimem_v1/tool_environment_lock.json",
+        "before_sha256": "4d0ef738d99bbfab5c4a54abba61dd6e3b50ebf2953009cfd84a5e45c7a88a4e",
+        "after_sha256": "4d0ef738d99bbfab5c4a54abba61dd6e3b50ebf2953009cfd84a5e45c7a88a4e",
+        "bytes": 4096
+      },
+      {
+        "path": "configs/trimem_v1/benchmark_environment_lock.json",
+        "before_sha256": "6636350aca389c16eb64f92465f7529ae06208ed5a8c2ceaf1c9545a1c7e6e02",
+        "after_sha256": "6636350aca389c16eb64f92465f7529ae06208ed5a8c2ceaf1c9545a1c7e6e02",
+        "bytes": 4198
+      },
+      {
+        "path": "configs/trimem_v1/benchmark_environment.lock",
+        "before_sha256": "359b39abbc0dc07fa540b520c8ac1c6698bf3888a0f11f5eb59ee1f28f58691f",
+        "after_sha256": "359b39abbc0dc07fa540b520c8ac1c6698bf3888a0f11f5eb59ee1f28f58691f",
+        "bytes": 244686
+      },
+      {
+        "path": "configs/trimem_v1/m2_candidates/baseline.json",
+        "before_sha256": "f18fcc305e4d936d2337c6eca08ba1bfbb07e5ae6200f10737c11a7d5d2bc6dd",
+        "after_sha256": "f18fcc305e4d936d2337c6eca08ba1bfbb07e5ae6200f10737c11a7d5d2bc6dd",
+        "bytes": 5180
+      },
+      {
+        "path": "configs/trimem_v1/m2_candidates/precision.json",
+        "before_sha256": "1c9ea64e16986e1c93a26a5a62428dbc7fd3497d179d84fb194ff90af2eb26b5",
+        "after_sha256": "1c9ea64e16986e1c93a26a5a62428dbc7fd3497d179d84fb194ff90af2eb26b5",
+        "bytes": 5180
+      },
+      {
+        "path": "configs/trimem_v1/m2_candidates/recall.json",
+        "before_sha256": "1985ca2cceaa6ebdc02d4bd320b318a47a8144f64bde5ad0da8367c777d3d85c",
+        "after_sha256": "1985ca2cceaa6ebdc02d4bd320b318a47a8144f64bde5ad0da8367c777d3d85c",
+        "bytes": 5182
+      },
+      {
+        "path": "configs/trimem_v1/m2_candidates/balanced.json",
+        "before_sha256": "e0474d88505c0a75ff21914f552b71f9796274bd4939e92b299aaf75d0ab4b2d",
+        "after_sha256": "e0474d88505c0a75ff21914f552b71f9796274bd4939e92b299aaf75d0ab4b2d",
+        "bytes": 5187
+      },
+      {
+        "path": "artifacts/trimem_v1/provider_output_schema_lock.json",
+        "before_sha256": "fbc63a5a508fc30a6bd2e30ba1a6389cc456d5f37f30f95ff61dd1e5d93b4589",
+        "after_sha256": "fbc63a5a508fc30a6bd2e30ba1a6389cc456d5f37f30f95ff61dd1e5d93b4589",
+        "bytes": 921
+      },
+      {
+        "path": "artifacts/trimem_v1/solve_output_budget_contract_lock.json",
+        "before_sha256": "81242a4a1aac4f8e74a1ca887718e976da1cc8bea5e0a7cf773ea21800364949",
+        "after_sha256": "81242a4a1aac4f8e74a1ca887718e976da1cc8bea5e0a7cf773ea21800364949",
+        "bytes": 1057
+      },
+      {
+        "path": "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json",
+        "before_sha256": "ccd0fe37f7813a5316f2c963cfa5796c7e25a3b7534ca941f6a90db5613ecad5",
+        "after_sha256": "ccd0fe37f7813a5316f2c963cfa5796c7e25a3b7534ca941f6a90db5613ecad5",
+        "bytes": 31088
+      },
+      {
+        "path": "artifacts/trimem_v1/multi_swe_report_semantics_lock.json",
+        "before_sha256": "620618f967ef5e33037fccc123fcf004f63bbe656efeb61c46e85f764ef9c80e",
+        "after_sha256": "620618f967ef5e33037fccc123fcf004f63bbe656efeb61c46e85f764ef9c80e",
+        "bytes": 6349
+      },
+      {
+        "path": "scripts/trimem_action_canary.py",
+        "before_sha256": "542158dccbfb523063dc939eb44be217994cb8735a93bff6c5f510fe7f669320",
+        "after_sha256": "542158dccbfb523063dc939eb44be217994cb8735a93bff6c5f510fe7f669320",
+        "bytes": 9147
+      },
+      {
+        "path": "scripts/trimem_official_grader.py",
+        "before_sha256": "fbd15718a88b4d733b313af83889aae8ef6ac7837529bba52f0bb4072f57b886",
+        "after_sha256": "fbd15718a88b4d733b313af83889aae8ef6ac7837529bba52f0bb4072f57b886",
+        "bytes": 101093
+      },
+      {
+        "path": "scripts/trimem_exec_approval.py",
+        "before_sha256": "76a7b77603aba83e0d7f39c300fd04c40a568442b1a1d294642066b2f085e3d4",
+        "after_sha256": "76a7b77603aba83e0d7f39c300fd04c40a568442b1a1d294642066b2f085e3d4",
+        "bytes": 12089
+      },
+      {
+        "path": "scripts/trimem_harness_lock.py",
+        "before_sha256": "0667d68151f8d0ec82d06358132f0221d336769d057aa63dc6612baed2af6d0a",
+        "after_sha256": "0667d68151f8d0ec82d06358132f0221d336769d057aa63dc6612baed2af6d0a",
+        "bytes": 24551
+      },
+      {
+        "path": "scripts/trimem_m2_candidates.py",
+        "before_sha256": "b5fd61cc320f129b2ee1eb8dc7de632bafe01f5ee539e673f0966ac35c1e860a",
+        "after_sha256": "b5fd61cc320f129b2ee1eb8dc7de632bafe01f5ee539e673f0966ac35c1e860a",
+        "bytes": 22481
+      },
+      {
+        "path": "scripts/trimem_run_with_resume.py",
+        "before_sha256": "59f0d0a1dcfa72adfa96cd143d704fde9e8c74ad3cea49fbbe16c44c9d6b4a6d",
+        "after_sha256": "59f0d0a1dcfa72adfa96cd143d704fde9e8c74ad3cea49fbbe16c44c9d6b4a6d",
+        "bytes": 3007
+      },
+      {
+        "path": "src/enterprise_memory/providers/base.py",
+        "before_sha256": "657c1d76dcebb1b9bad8489e06a69d8bbb8bea3786b55a3f5b2b3c3c018c4f51",
+        "after_sha256": "657c1d76dcebb1b9bad8489e06a69d8bbb8bea3786b55a3f5b2b3c3c018c4f51",
+        "bytes": 11729
+      },
+      {
+        "path": "src/enterprise_memory/providers/openai_responses.py",
+        "before_sha256": "417693dd05414ecb98ba6d13dc1d03e2a9abc312befc9e5ebb211babf54ff34e",
+        "after_sha256": "417693dd05414ecb98ba6d13dc1d03e2a9abc312befc9e5ebb211babf54ff34e",
+        "bytes": 33240
+      },
+      {
+        "path": "src/enterprise_memory/trimem/function_tools.py",
+        "before_sha256": "2776fc926e7e6995c2002849ec51ba27b784fe62346dc7b76a57ac6d6e910ae6",
+        "after_sha256": "2776fc926e7e6995c2002849ec51ba27b784fe62346dc7b76a57ac6d6e910ae6",
+        "bytes": 6808
+      },
+      {
+        "path": "src/enterprise_memory/trimem/grader.py",
+        "before_sha256": "4746bac3f6530f7c82dd18c0433c1acc206c6d5732a216007ded732cc0359719",
+        "after_sha256": "4746bac3f6530f7c82dd18c0433c1acc206c6d5732a216007ded732cc0359719",
+        "bytes": 19399
+      },
+      {
+        "path": "src/enterprise_memory/trimem/arms.py",
+        "before_sha256": "7fa3285fa52d3ad76c4ebaa19ce333f39921593597c315c815a7db0c01a88ce3",
+        "after_sha256": "7fa3285fa52d3ad76c4ebaa19ce333f39921593597c315c815a7db0c01a88ce3",
+        "bytes": 17871
+      },
+      {
+        "path": "src/enterprise_memory/trimem/gateway.py",
+        "before_sha256": "aa3f65d52730239786b6047305bc7a5a4170a9becb5cf11e2a22621931c799eb",
+        "after_sha256": "aa3f65d52730239786b6047305bc7a5a4170a9becb5cf11e2a22621931c799eb",
+        "bytes": 36992
+      },
+      {
+        "path": "src/enterprise_memory/trimem/git_workspace.py",
+        "before_sha256": "f4e91c3ceddb4d2b149b0467351a97cafca88b71fcf903580c72c1788096b949",
+        "after_sha256": "f4e91c3ceddb4d2b149b0467351a97cafca88b71fcf903580c72c1788096b949",
+        "bytes": 36236
+      },
+      {
+        "path": "src/enterprise_memory/trimem/provider_output_contracts.py",
+        "before_sha256": "6b2e5711ae78057b7a29ce7424ad88e0c63e03e0051ac452dc96e67e4885f906",
+        "after_sha256": "6b2e5711ae78057b7a29ce7424ad88e0c63e03e0051ac452dc96e67e4885f906",
+        "bytes": 11814
+      },
+      {
+        "path": "src/enterprise_memory/trimem/agent_runtime.py",
+        "before_sha256": "4098d7ac89efc82f3eff9e761f1dca234b176e074c6c4a692d6a899ab1ef66b8",
+        "after_sha256": "4098d7ac89efc82f3eff9e761f1dca234b176e074c6c4a692d6a899ab1ef66b8",
+        "bytes": 117140
+      },
+      {
+        "path": "src/enterprise_memory/trimem/runtime_lock.py",
+        "before_sha256": "c31bddb29153a79cfea46f05908150834dd178b3b0e29767c04c2755d29f505e",
+        "after_sha256": "c31bddb29153a79cfea46f05908150834dd178b3b0e29767c04c2755d29f505e",
+        "bytes": 7399
+      },
+      {
+        "path": "src/enterprise_memory/trimem/workspace.py",
+        "before_sha256": "d9048da6bf7ef31fdf6f646d3e4ace85133dc545eda3701d52caeabb8438630f",
+        "after_sha256": "d9048da6bf7ef31fdf6f646d3e4ace85133dc545eda3701d52caeabb8438630f",
+        "bytes": 21253
+      }
+    ]
+  },
+  "finalization_placeholders": {
+    "final_terminal_contract_sha256": "09f4c7066b843151a8a8a4a2ebce0bd608e9596d13332a81cf795268c7fb2120",
+    "final_runner_sha256": "84a5331c2aa54a10a2846e51f7541dcd3d476a20ba93c6abf2407841902bfbec",
+    "final_aggregate_sha256": "ea5e46ac3d614284e66e0282bda573fc3449eed246c1d4e3a6ad99343da6f30b",
+    "final_workflow_sha256": "ae4c01f520a48ca1453652f05b2399537308c5bed659db8108a6f36df633cbc6",
+    "final_d1_8_integration_test_sha256": "22643d40ca3f7eb27999de7e4d4a28971a900b5a998086cd377f88f9b25b74e0",
+    "final_credential_free_e2e_bundle_sha256": "8469c83c8aa92f8796ea45e407ef306e6969842f28c8ea0e76f2eb9233e6a847",
+    "final_company_handoff_inventory_sha256": "7362a5475447e2a2a20968da3a1365e6a70564b8a4281d89558adfd9df9aacb2",
+    "final_correction_source_head": "BOUND_EXTERNALLY_AS_009_SOURCE_HEAD",
+    "final_research_freeze_sha256": "BOUND_EXTERNALLY_BY_009_FREEZE_SHA256",
+    "development_tuning_exec_request_009_sha256": "NOT_CREATED_UNTIL_EXACT_HEAD_REMOTE_GATES_PASS",
+    "exact_head_remote_ci_evidence": "BOUND_EXTERNALLY_IN_009_REMOTE_GATE_EVIDENCE",
+    "reason": "The correction-source commit, research freeze, _009 request, and exact-head remote evidence are bound externally by the later sentinel-only request to avoid a cryptographic self-reference cycle."
+  },
+  "authority_boundary": {
+    "request_008_consumed": true,
+    "request_008_rerun_allowed": false,
+    "attempt_2_allowed": false,
+    "request_009_creation_allowed_before_all_gates": false,
+    "request_009_execution_requires_separate_valid_one_time_authorization": true,
+    "heldout_authorized": false,
+    "ablation_authorized": false,
+    "grader_smoke_rerun_authorized": false,
+    "merge_tag_or_release_authorized": false
+  },
+  "frozen_at_utc": "2026-09-05T16:39:50.260Z",
+  "pre_execution_gate_evidence": {
+    "failed_correction_source_gate": {
+      "classification": "NON_SCIENTIFIC_PRE_EXECUTION_SOURCE_GATE_FAILURE",
+      "conclusion": "failure",
+      "docker_calls": 0,
+      "failure_label": "local validator historical/current compatibility",
+      "failure_stage": "Verify required Git blobs and pinned control flow",
+      "grader_runs": 0,
+      "image_pulls": 0,
+      "model_api_calls": 0,
+      "paid_model_calls": 0,
+      "performance_measured": false,
+      "scientific_cells": 0,
+      "scientific_result": false,
+      "source_head": "ac290512ed9a097f61f170f241771d3f213f667d",
+      "usd": 0,
+      "workflow_path": ".github/workflows/ci-trimem-multi-swe-contract.yml",
+      "workflow_run_attempt": 1,
+      "workflow_run_id": 33976624278
+    },
+    "d1_8_production_shaped_integration_test": {
+      "command": "python -m pytest tests/unit/test_trimem_d18_terminal_contract_integration.py -q",
+      "observed_result": "26 passed",
+      "side_effect_boundaries_faked": [
+        "provider network",
+        "benchmark repository command execution",
+        "official grader process"
+      ],
+      "provider_generations": 0,
+      "scientific_cells": 0,
+      "official_graders": 0,
+      "target_image_pulls": 0,
+      "usd": 0
+    },
+    "full_local_suite": {
+      "status": "PASS",
+      "partitioning": "exact disjoint path shards over the complete tests tree",
+      "collected": 1484,
+      "passed": 1331,
+      "service_marked_skipped": 153,
+      "failed": 0,
+      "shards": [
+        {
+          "scope": "tests excluding tests/unit/test_trimem_*.py",
+          "collected": 520,
+          "passed": 367,
+          "service_marked_skipped": 153,
+          "failed": 0
+        },
+        {
+          "scope": "sorted tests/unit/test_trimem_*.py indices 0-10",
+          "collected": 296,
+          "passed": 296,
+          "service_marked_skipped": 0,
+          "failed": 0
+        },
+        {
+          "scope": "sorted tests/unit/test_trimem_*.py indices 11-20",
+          "collected": 365,
+          "passed": 365,
+          "service_marked_skipped": 0,
+          "failed": 0
+        },
+        {
+          "scope": "sorted tests/unit/test_trimem_*.py indices 21-43",
+          "collected": 303,
+          "passed": 303,
+          "service_marked_skipped": 0,
+          "failed": 0
+        }
+      ]
+    },
+    "exact_head_remote_gates": "PENDING_CORRECTION_SOURCE_COMMIT",
+    "freeze_check": {
+      "command": "python scripts/trimem_freeze.py --check",
+      "files": 375,
+      "status": "PASS"
+    },
+    "secret_scan": {
+      "command": "python scripts/release_check.py --secrets",
+      "status": "SECRET SCAN CLEAN"
+    },
+    "company_handoff_current": {
+      "command": "python scripts/make_handoff_manifest.py --check",
+      "status": "PASS",
+      "result": "handoff manifest separated and self-consistent"
+    },
+    "public_artifact_hardening": "14 credential-free tests PASS; 182 combined public/smoke regressions PASS"
+  }
+}

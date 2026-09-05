@@ -1,0 +1,82 @@
+{
+  "amendment": {
+    "after": {
+      "cached_input_price_per_million_tokens_usd": 0.075,
+      "input_price_per_million_tokens_usd": 0.75,
+      "model_id": "gpt-5.4-mini-2026-03-17",
+      "output_price_per_million_tokens_usd": 4.5
+    },
+    "before": {
+      "cached_input_price_per_million_tokens_usd": 0.25,
+      "input_price_per_million_tokens_usd": 2.5,
+      "model_id": "gpt-5.4-2026-03-05",
+      "output_price_per_million_tokens_usd": 15.0
+    },
+    "classification": "PRE_EXECUTION_COST_PERFORMANCE_AMENDMENT",
+    "source_freeze_raw_sha256": "971ffcd9ad25a3904f0cfa8fb82631fb3bd162bcf91c918f4f63ef9e496b90fc",
+    "source_git_head": "e40a549fcf92f270c86aaf97b3a9691c99b19fef"
+  },
+  "causal_boundary": {
+    "benchmark_model_results_observed_before_amendment": false,
+    "input_tokens_before_amendment": 0,
+    "model_gateway_calls_before_amendment": 0,
+    "output_tokens_before_amendment": 0,
+    "paid_model_calls_before_amendment": 0,
+    "task_arm_runs_before_amendment": 0,
+    "total_usd_before_amendment": 0
+  },
+  "development_contract": {
+    "benchmark_grader_containers": 72,
+    "expected_input_tokens": 11808000,
+    "expected_model_calls": 1008,
+    "expected_output_tokens": 432000,
+    "expected_total_usd": 10.8,
+    "hard_cap_input_tokens": 36000000,
+    "hard_cap_output_tokens": 3796992,
+    "hard_cap_paid_model_calls": 1872,
+    "hard_cap_total_usd": 50.0,
+    "m2_joint_candidates": 4,
+    "task_arm_runs": 72,
+    "targets": 12
+  },
+  "execution_boundary": {
+    "active_development_approval": false,
+    "development_execution_authorized": false,
+    "grader_smoke_rerun_authorized": false,
+    "heldout_execution_authorized": false,
+    "new_freeze_required_before_approval": true,
+    "separate_external_development_approval_required": true
+  },
+  "planning_consequences": {
+    "global_expected_total_usd": 22.95,
+    "global_hard_cap_total_usd": 220.0,
+    "heldout_expected_total_usd": 12.15,
+    "heldout_hard_cap_total_usd": 170.0,
+    "note": "the one global model lock also governs a future separately approved held-out phase; its expected cost changes while its independent hard cap remains unamended"
+  },
+  "preserved_contracts": {
+    "path_sha256": {
+      "artifacts/trimem_v1/grader_image_lock.json": "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
+      "configs/trimem_v1/arms.json": "88cbe12d47780509216498816fa13349f0027f239937c5f8cb54d90a17c93cb1",
+      "configs/trimem_v1/development_manifest.json": "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
+      "configs/trimem_v1/grader_lock.json": "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb",
+      "configs/trimem_v1/grader_smoke_manifest.json": "cf9a841a5509133d501dc83e7b69ddbd85770c371ab3ed9cda008f598349d409",
+      "configs/trimem_v1/heldout_manifest.json": "951371ed84931b37e27929e2669aff5d06e32215d1a300e3343ba7f1bdd84fda",
+      "configs/trimem_v1/m2_candidate_bundles.json": "3248b15e3f9f7293cacfea1f13fcfd354dbb804d34a1ea40dce6d8c1b881a6de",
+      "configs/trimem_v1/selected_m2.json": "1b9a1777515475dddaf303c2ad85e3be67eac7cfb7a1bc1918a208c740f4a8fc",
+      "configs/trimem_v1/selection_plan.json": "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
+      "configs/trimem_v1/tool_environment_lock.json": "7b4bafe0a5366fdb9277a49ebb70fe6197f3bb27fa253f75ffe686a7a44f7c6c",
+      "src/enterprise_memory/trimem/runtime_lock.py": "053de00adb66a13fb0cb3b039b008e9fdc028121dc5fc060cfddc2c371a32aed"
+    },
+    "summary": "target identities/order, M0/M1/M2 definitions, four M2 candidates, selection rule, prompts, tools, parsers, runtime limits, grader locks, image locks, and dataset revisions remain byte-identical to the pre-amendment head"
+  },
+  "recorded_at_utc": "2026-09-03T01:24:13Z",
+  "role_lock": {
+    "decomposition": "gpt-5.4-mini-2026-03-17",
+    "experience_extraction": "gpt-5.4-mini-2026-03-17",
+    "mixed_nano_model": false,
+    "solve": "gpt-5.4-mini-2026-03-17"
+  },
+  "schema": "trimem/development-model-pricing-amendment/1.0",
+  "status": "FROZEN_PRE_EXECUTION_PENDING_SEPARATE_DEVELOPMENT_APPROVAL"
+}

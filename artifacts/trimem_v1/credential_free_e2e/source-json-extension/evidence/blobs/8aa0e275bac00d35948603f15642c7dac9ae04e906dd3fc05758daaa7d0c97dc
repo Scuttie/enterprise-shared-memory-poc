@@ -1,0 +1,1 @@
+{"content":"def load_document(name):\n    if not name.endswith('.json'):\n        raise ValueError('json required')\n    return 'loaded'\n","end_line":4,"full_file_sha256":"2d3dc1bef1ace34d8204d84db2f5dd50bb65083f9ae567070da1812c40183c2d","path":"src/loader.py","returned_end_line":4,"returned_start_line":1,"start_line":1,"total_file_bytes":122,"total_lines":4,"truncated":false}

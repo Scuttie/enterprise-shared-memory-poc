@@ -1,0 +1,634 @@
+{
+  "benchmark_approval_requires": [
+    "git-tracked explicit allowlist freeze integrity with LF-stable bytes",
+    "credential-free full source-to-target E2E PASS with paid_model_calls=0 and official_grader_runs=0",
+    "public-identity-only deterministic selection reproduces frozen smoke 6, development 12, and held-out 27 with zero instance overlap",
+    "all 45 smoke/development/held-out target images plus one support image are immutable digest references sourced from official registry metadata without official grader/benchmark target image pull or run",
+    "four executable joint M2 development candidates and deterministic result-independent selection and post-development freeze rule",
+    "frozen M0/M1/M2 common runtime, workspace, tool, parser, model, dataset, harness, dependency, service, and compute-ceiling contracts",
+    "exact gpt-5.4-mini-2026-03-17 pricing and request schema plus immutable all-MiniLM-L6-v2 embedding revision",
+    "expected cost separated from proposed hard caps for 72 development and 81 held-out task-arm runs plus 12 grader-smoke containers",
+    "fail-closed per-arm/per-benchmark n, resolved, and Pass@1 aggregation with SWE-bench Verified primary, Multi-SWE-bench secondary, and pooled totals descriptive only",
+    "one shared pinned Multi-SWE two-stage report-semantics helper and one total v2 adapter evidence envelope",
+    "exactly one terminal record per attempted smoke cell with independent seven-layer failure taxonomy, mandatory content-bound campaign-finalization journal, fail-closed interrupted-authority recovery, authority-independent evidence inventory/encryption, durable upload before plaintext cleanup, and plaintext preservation on upload failure",
+    "phase-specific single-use external approval plan bound to an already committed Git HEAD, freeze digest, workflow run ID, run attempt, approval nonce, and HMAC commitment to the exact protected OpenAI key",
+    "visible-ASCII credential validation and exact model metadata access PASS before migration, benchmark image pulls, task-arm reservations, or model-generation accounting",
+    "pinned GitHub CLI archive and binary byte locks plus exact-version verification, followed by credential-free provider-contract rehearsal before request _004",
+    "public benchmark evaluation scope and no-redistribution policy documented; SWE-bench Verified dataset license remains undeclared and the EXEC actor must accept applicable source/project terms"
+  ],
+  "current_status": {
+    "DEV_APPROVAL_ALLOWED": "NO",
+    "DEV_EXECUTION_ALLOWED": "NO",
+    "DEV_SCIENTIFIC_STATUS": "NOT_STARTED",
+    "ENDPOINT": "TRIMEM_V1_DEV_INCOMPLETE",
+    "FAILURE_SUBTYPE": "TRIMEM_DEV_RUNNER_AGGREGATE_TERMINAL_STATUS_CONTRACT_MISMATCH",
+    "GRADER_EXEC_PACKAGE": "PASS",
+    "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
+    "PERFORMANCE": "NOT_MEASURED",
+    "SCIENTIFIC_RESULT": "NO_DEVELOPMENT_SCIENTIFIC_RESULT",
+    "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN"
+  },
+  "execution_counter_scope": "P0.1.5_EXEC_005_AUTHORITATIVE_PASS",
+  "execution_counters": {
+    "api_calls": 0,
+    "cached_input_tokens": 0,
+    "decomposition_calls": 0,
+    "docker_pulls": 7,
+    "extraction_calls": 0,
+    "grader_calls": 12,
+    "grader_containers": 12,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "model_gateway_calls": 0,
+    "official_grader_runs": 12,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "reasoning_tokens": 0,
+    "solve_calls": 0,
+    "support_image_pulls": 1,
+    "target_image_pulls": 6,
+    "task_arm_runs": 0,
+    "total_usd": 0
+  },
+  "development_authorization_boundary": {
+    "active_development_approval": false,
+    "amendment_classification": "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX",
+    "amendment_evidence_path": "artifacts/trimem_v1/development_terminal_contract_amendment.json",
+    "approval_request_eligible": false,
+    "attempt_one_consumed": false,
+    "attempt_two_allowed": false,
+    "development_execution_authorized": false,
+    "expected_total_usd": 10.8,
+    "grader_smoke_rerun_authorized": false,
+    "hard_cap_total_usd": 50.0,
+    "heldout_execution_authorized": false,
+    "future_recovery_authority_received": true,
+    "meaning": "The approved _008 attempt-1 run is cancelled, immutable, and cannot be rerun. D1.8 authorizes one fresh _009 attempt-1 run only after the shared scientific terminal-status contract, exact-head credential-free gates, one protected protocol canary, and a distinct run-bound HMAC approval all pass.",
+    "model_id": "gpt-5.4-mini-2026-03-17",
+    "prior_failed_run_reusable": false,
+    "recovery_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_TERMINAL_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE",
+    "recovery_authorization_received": true,
+    "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_009",
+    "recovery_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_009.json",
+    "request_002_final": true,
+    "request_003_final": true,
+    "request_004_allowed_after_exact_remote_gates": false,
+    "request_004_attempt_one_consumed": true,
+    "request_005_allowed_after_exact_remote_gates": false,
+    "request_005_attempt_one_consumed": true,
+    "request_006_allowed_after_exact_remote_gates": false,
+    "request_006_attempt_one_consumed": true,
+    "request_007_allowed_after_exact_remote_gates": false,
+    "request_007_attempt_one_consumed": true,
+    "request_008_allowed_after_exact_remote_gates": false,
+    "request_008_attempt_one_consumed": true,
+    "request_009_allowed_after_exact_remote_gates": true,
+    "request_009_attempt_one_consumed": false,
+    "rerun_allowed": false,
+    "selected_m2_checkpoint": "PRE_DEVELOPMENT; no development result or checkpoint was produced",
+    "solve_execution_contract_rehearsal_required_before_request_005": false
+  },
+  "historical_development_exec_gate_failure": {
+    "authority": {
+      "attempt_one_consumed": true,
+      "attempt_two_allowed": false,
+      "fresh_attempt_one_request": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
+      "future_recovery_authority_received": true,
+      "request_002_final": true,
+      "request_003_allowed_after_exact_remote_gates": true,
+      "rerun_allowed": false
+    },
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "evidence": {
+      "failure_receipt_path": "artifacts/trimem_v1/development_tuning_exec/exec-002/protected-exec-gate-failure-receipt.json",
+      "failure_receipt_raw_sha256": "8c9d4a8fea70e0088b7af9bb011e1e75081f4e9ddee9f7162cf05ff85c9f9d1a",
+      "failure_report_path": "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_002_PROTECTED_GATE_FAILURE.md",
+      "failure_report_raw_sha256": "cd6b5d53493854510b931625ea3bde6296351ed6b72f1274c8933b8915520719",
+      "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
+      "request_raw_sha256": "c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98"
+    },
+    "execution_accounting": {
+      "api_calls": 0,
+      "cached_input_tokens": 0,
+      "decomposition_calls": 0,
+      "extraction_calls": 0,
+      "grader_calls": 0,
+      "grader_containers": 0,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "model_gateway_calls": 0,
+      "official_grader_runs": 0,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "reasoning_tokens": 0,
+      "solve_calls": 0,
+      "support_service_containers": 2,
+      "support_service_image_pulls": 2,
+      "target_image_pulls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0.0
+    },
+    "failure_label": "TRIMEM_DEV_EXEC_GATE_GH_CLI_MISSING",
+    "performance": "NOT_MEASURED",
+    "schema": "trimem/development-protected-exec-gate-failure-status/1.0",
+    "scientific_run": false,
+    "status": "FINAL_CONSUMED_BEFORE_SCIENTIFIC_EXECUTION",
+    "support_services": [
+      {
+        "container_count": 1,
+        "image": "postgres@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412",
+        "image_pull_count": 1,
+        "role": "postgres"
+      },
+      {
+        "container_count": 1,
+        "image": "qdrant/qdrant@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636",
+        "image_pull_count": 1,
+        "role": "qdrant"
+      }
+    ],
+    "workflow_run": {
+      "conclusion": "failure",
+      "head_sha": "c2738cae074351927dde117b628c601b1e296cf2",
+      "id": 33739545314,
+      "run_attempt": 1
+    }
+  },
+  "historical_development_exec_004_failure": {
+    "schema": "trimem/development-provider-terminal-failure-status/1.0",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "failure_subtype": "TRIMEM_DEV_FIRST_TASK_SOLVE_RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+    "raw_provider_outcome_class": "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+    "performance": "NOT_MEASURED",
+    "dev_scientific_status": "STARTED_NO_COMPLETED_CELL",
+    "workflow_run": {
+      "id": 33840007588,
+      "run_attempt": 1,
+      "head_sha": "795c589c7da0b815bbe4f6188191fd0165f85649",
+      "conclusion": "failure"
+    },
+    "execution_accounting": {
+      "api_calls": 6,
+      "model_calls": 6,
+      "paid_model_calls": 6,
+      "decomposition_calls": 1,
+      "solve_calls": 5,
+      "extraction_calls": 0,
+      "input_tokens": 54620,
+      "cached_input_tokens": 17664,
+      "output_tokens": 4203,
+      "reasoning_tokens": 1485,
+      "completed_task_arm_runs": 0,
+      "grader_containers": 0,
+      "official_grader_runs": 0,
+      "total_usd": 0.0479553
+    },
+    "provider_status_distribution": {
+      "SUCCESS": 5,
+      "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS": 1
+    },
+    "failure_receipt_path": "artifacts/trimem_v1/development_tuning_exec/exec-004/provider-incomplete-max-output-tokens-receipt.json",
+    "failure_receipt_raw_sha256": "393bff5c1a518ea2ea487ff1c940152bc9d2e618ab300fd05fadacc179c933fc",
+    "historical_run_rerun_allowed": false,
+    "current_run_rerun_allowed": false,
+    "attempt_two_allowed": false,
+    "further_execution_authorized": false
+  },
+  "development_execution_failure": {
+    "schema": "trimem/development-provider-terminal-failure-status/1.1",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "failure_subtype": "TRIMEM_DEV_FIRST_DECOMPOSITION_HTTP_AUTH_ERROR",
+    "raw_provider_outcome_class": "HTTP_AUTH_ERROR",
+    "performance": "NOT_MEASURED",
+    "dev_scientific_status": "STARTED_NO_COMPLETED_CELL",
+    "workflow_run": {
+      "id": 33859839836,
+      "run_attempt": 1,
+      "head_sha": "57db1a21fca3b036a64629c439ca196fb1606638",
+      "conclusion": "failure"
+    },
+    "execution_accounting": {
+      "api_calls": 1,
+      "model_calls": 1,
+      "paid_model_calls": 1,
+      "decomposition_calls": 1,
+      "solve_calls": 0,
+      "extraction_calls": 0,
+      "input_tokens": null,
+      "cached_input_tokens": null,
+      "output_tokens": null,
+      "reasoning_tokens": null,
+      "provider_reported_usage": "UNAVAILABLE_HTTP_AUTH_ERROR",
+      "ledger_conservative_reservation": {
+        "input_tokens": 5069,
+        "output_tokens": 8192,
+        "total_usd": 0.04066575
+      },
+      "completed_task_arm_runs": 0,
+      "grader_containers": 0,
+      "official_grader_runs": 0
+    },
+    "provider_status_distribution": {
+      "HTTP_AUTH_ERROR": 1
+    },
+    "failure_receipt_path": "artifacts/trimem_v1/development_tuning_exec/exec-005/http-auth-error-receipt.json",
+    "failure_receipt_raw_sha256": "951f99472bdca153878f48ce1b18b11990e8125c15b47d529df508760939d42d",
+    "historical_run_rerun_allowed": false,
+    "current_run_rerun_allowed": false,
+    "attempt_two_allowed": false,
+    "further_execution_authorized": false
+  },
+  "historical_development_exec_007_failure": {
+    "schema": "trimem/development-approval-schema-mismatch-receipt/1.0",
+    "status": "TERMINAL_PRESERVED",
+    "recorded_at_utc": "2026-09-05T02:18:33Z",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "scientific_status": "NOT_STARTED",
+    "failure_subtype": "TRIMEM_DEV_PROTOCOL_CANARY_APPROVAL_SCHEMA_MISMATCH",
+    "workflow_run": {
+      "id": 33914304167,
+      "attempt": 1,
+      "head_sha": "d9c8560087e681b619a4ea5313451fe64257a77e",
+      "source_head_sha": "553f7b44f4ab2762103ed06dbb87981c32ba2052",
+      "created_at_utc": "2026-09-04T20:03:29Z",
+      "started_at_utc": "2026-09-04T20:03:28Z",
+      "completed_at_utc": "2026-09-04T20:08:01Z",
+      "conclusion": "failure"
+    },
+    "passed_boundaries": {
+      "protected_environment": true,
+      "external_approval_materialization": true,
+      "exec_gate": true,
+      "credential_validation": true,
+      "run_bound_credential_commitment": true,
+      "exact_model_metadata": true
+    },
+    "root_cause": {
+      "classification": "APPROVAL_CONSUMER_SCHEMA_MISMATCH",
+      "failing_step": "Execute one native-action protocol canary before benchmark images",
+      "consumer": "scripts/trimem_action_canary.py",
+      "authoritative_contract_ignored": "validate_exec_approval returned hard_cap and approval_artifact_sha256",
+      "invalid_second_interpretation": "raw external approval was parsed for a nonexistent top-level hard_cap",
+      "approval_schema_changed": false,
+      "provider_generation_started": false
+    },
+    "execution_accounting": {
+      "provider_control_plane_requests": 1,
+      "model_generation_calls": 0,
+      "paid_model_calls": 0,
+      "input_tokens": 0,
+      "cached_input_tokens": 0,
+      "output_tokens": 0,
+      "reasoning_tokens": 0,
+      "completed_task_arm_runs": 0,
+      "official_grader_runs": 0,
+      "benchmark_target_image_pulls": 0,
+      "total_usd": 0.0
+    },
+    "evidence": {
+      "run_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/33914304167",
+      "restricted_encrypted_artifact_id": 9952668741,
+      "restricted_encrypted_zip_sha256": "11ed2179b5dad62c1a6cfaba9ee765b80bca343d6deacfc8f8a4388c8c8b5d63",
+      "public_inventory_artifact_id": 9952670077,
+      "public_inventory_zip_sha256": "a7e56e93e34719b6d8d35cb9bca3358bf6af489173b8d9428c092198c52c1093",
+      "inventory_seal_sha256": "60b1175090f87f45ed4e5dfe3fae322faf9d69cdb04967962491f1313b1b565c",
+      "inventory_files": 4,
+      "inventory_bytes": 1983,
+      "approval_plaintext_removed": true,
+      "temporary_exec_material_removed": true
+    },
+    "interpretation": {
+      "scientific_result": false,
+      "model_capability_result": false,
+      "memory_method_result": false,
+      "retrieval_result": false,
+      "grader_result": false,
+      "performance_measured": false
+    }
+  },
+  "current_development_execution_failure": {
+    "schema": "trimem/development-terminal-contract-mismatch-receipt/1.0",
+    "status": "TERMINAL_PRESERVED",
+    "recorded_at_utc": "2026-09-05T13:43:37.872Z",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "classification": "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX",
+    "scientific_status": "NOT_STARTED",
+    "failure_subtype": "TRIMEM_DEV_RUNNER_AGGREGATE_TERMINAL_STATUS_CONTRACT_MISMATCH",
+    "workflow_run": {
+      "id": 33944405409,
+      "attempt": 1,
+      "head_sha": "8002847d0db8975dfd957a1322d31a7768fc098f",
+      "source_head_sha": "f5f6b8d0c6bef4aa704e25d8e67c526d437e967b",
+      "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_008.json",
+      "request_sha256": "2eac68069e9a2cc760138eca5b9e6ae1d5438a97cd9e4918a496ab920cc584b7",
+      "conclusion": "cancelled",
+      "cancellation_requested_at_utc": "2026-09-05T04:34:07.642Z",
+      "force_cancellation_requested_at_utc": "2026-09-05T04:35:17.640Z",
+      "rerun_allowed": false,
+      "attempt_2_allowed": false
+    },
+    "passed_boundaries": {
+      "protected_environment_and_approval_path": true,
+      "exact_model_metadata": true,
+      "native_function_action_canary": true,
+      "canary_native_function": "list_files"
+    },
+    "execution_accounting": {
+      "exact_model_metadata_control_plane_requests": 1,
+      "canary_generation_calls": 1,
+      "canary_model_generations": 1,
+      "canary_paid_model_calls": 1,
+      "canary_input_tokens": 880,
+      "canary_cached_input_tokens": 0,
+      "canary_output_tokens": 14,
+      "canary_reasoning_tokens": 0,
+      "canary_total_usd": "0.000723000000",
+      "scientific_model_calls": 0,
+      "scientific_task_arm_cells": 0,
+      "scientific_terminal_cells": 0,
+      "scientific_planned_cells": 72,
+      "official_grader_runs": 0,
+      "grader_containers": 0,
+      "target_image_pulls": 12,
+      "support_image_pulls": 1,
+      "total_docker_image_pulls": 13,
+      "model_id": "gpt-5.4-mini-2026-03-17",
+      "reasoning_effort": "medium"
+    },
+    "root_cause": {
+      "classification": "PRODUCER_CONSUMER_TERMINAL_STATUS_CONTRACT_MISMATCH",
+      "detected_before_first_scientific_provider_call": true,
+      "runner_result_producer": {
+        "field": "execution_status",
+        "produced_value": "CELL_TERMINAL"
+      },
+      "runner_task_arm_ledger_producer": {
+        "field": "status",
+        "produced_value": "CELL_TERMINAL"
+      },
+      "historical_aggregate_result_consumer": {
+        "accepted_values": [
+          "SUCCESS"
+        ]
+      },
+      "historical_aggregate_task_arm_ledger_consumer": {
+        "accepted_values": [
+          "SUCCESS",
+          "SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR"
+        ]
+      },
+      "counterfactual_without_correction": "A complete 72-cell campaign would fail closed during aggregate validation despite producing terminal officially graded cell envelopes."
+    },
+    "evidence_hashes": {
+      "protocol_action_canary_json_sha256": "26d8ba49c6dc5c8480f501dfafd51717a90f0633ddb62ea13644a750cc549a4a",
+      "image_materialization_report_sha256": "8f1a239b7bda0a912629dbfaee1dc4bd350a3fd63007aa24e16273453fe8d91c",
+      "model_access_result_sha256": "30e1e5dc39c5341433653b6364d7e0ed356b079d06aa44a2c1720b78ee9ccf2a"
+    },
+    "custody": {
+      "local_encrypted_custody": "PASS",
+      "remote_github_artifact_custody": "UNAVAILABLE_AFTER_FORCE_CANCEL",
+      "github_artifact_count": 0,
+      "github_upload_failure": "403_FORBIDDEN_JOB_COMPLETED_AFTER_FORCE_CANCEL",
+      "external_local_custody_directory_committed": false,
+      "custody_manifest": {
+        "created_at_utc": "2026-09-05T04:43:50.964Z",
+        "bytes": 2963,
+        "sha256": "285234fe7522cd0e1ae0783a17104e2915b7a1d9e6d951a135f6a8e4cb22beec",
+        "ciphertext_decrypt_inventory_validation": "PASS"
+      },
+      "encrypted_restricted_archive": {
+        "bytes": 184352,
+        "sha256": "da78f888779b2a1e3b324a23dd0624142d38e1224bf32931ced5b1f045490c4a"
+      },
+      "public_inventory": {
+        "bytes": 14358,
+        "file_sha256": "d9e290020e5ca459917269964ea9d14aaa4a87294015d0657ca5550a4dfed499",
+        "canonical_sha256": "6fe0fc8003751a9c67d460483a5d32fc349061d907cba2ca5c1fcaec041413ad",
+        "inventory_files": 92,
+        "inventory_bytes": 92984
+      },
+      "approval_artifact_sha256": "aa4fb73f2a09f6a4f003f18491dd2e1fb6c0b8bf6d286515e272802ed16fbae0",
+      "reconstruction": "POST_CANCEL_REENCRYPTION_FROM_BYTE_EXACT_PLAINTEXT_COPY_WITH_REMOVED_TOP_LEVEL_APPROVAL_RESTORED_BY_APPROVAL_ARTIFACT_SHA256",
+      "plaintext_removed_after_reencryption": true,
+      "secret_material_committed": false,
+      "verification_scope": "Non-secret custody manifest and file hashes only; no secret, approval plaintext, passphrase, or encrypted payload content was accessed for this receipt."
+    },
+    "interpretation": {
+      "scientific_result": false,
+      "model_capability_result": false,
+      "memory_method_result": false,
+      "retrieval_result": false,
+      "grader_result": false,
+      "performance_measured": false,
+      "m2_candidate_selected": false,
+      "heldout_recommendation_available": false
+    },
+    "authority_boundary": {
+      "request_008_authority_consumed": true,
+      "request_008_history_mutable": false,
+      "request_009_may_be_created_only_after_all_d1_8_credential_free_gates_and_reseal": true,
+      "request_009_requires_separate_valid_execution_authorization": true,
+      "heldout_authorized": false,
+      "ablation_authorized": false,
+      "grader_smoke_rerun_authorized": false,
+      "merge_tag_or_release_authorized": false
+    }
+  },
+  "historical_development_provider_failure": {
+    "schema": "trimem/development-provider-output-contract-failure-status/1.0",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "failure_subtype": "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_EXTRACTED_TEXT",
+    "raw_provider_outcome_class": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+    "performance": "NOT_MEASURED",
+    "dev_scientific_status": "STARTED_NO_COMPLETED_CELL",
+    "workflow_run": {
+      "id": 33788493773,
+      "run_attempt": 1,
+      "head_sha": "bc70e1979c2987cd52347b2ef2fd7c43dc3014df",
+      "conclusion": "failure"
+    },
+    "execution_accounting": {
+      "api_calls": 1,
+      "model_calls": 1,
+      "paid_model_calls": 1,
+      "completed_task_arm_runs": 0,
+      "grader_containers": 0,
+      "provider_reported_usage": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP"
+    },
+    "historical_run_rerun_allowed": false,
+    "attempt_two_allowed": false,
+    "fresh_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_004"
+  },
+  "frozen_counts": {
+    "development_instances": 12,
+    "development_physical_task_arm_runs": 72,
+    "grader_smoke_containers": 12,
+    "grader_smoke_unique_instances": 6,
+    "heldout_instances": 27,
+    "heldout_physical_task_arm_runs": 81,
+    "total_benchmark_physical_task_arm_runs": 153
+  },
+  "grader_smoke_exec_005_failure_closure": {
+    "failure_receipt_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/failure-receipt.json",
+    "failure_receipt_present": false,
+    "historical_p014_paths_reused": false,
+    "schema": "trimem/grader-smoke-failure-closure-status/1.0",
+    "status": "NOT_APPLICABLE_PASS"
+  },
+  "grader_smoke_exec_005_success_evidence": {
+    "aggregate_raw_sha256": "5fd116bb8266209588255e58c6dd7806ba24e2072b65fc399fb1f47b831b9f6a",
+    "approval_binding": {
+      "approval_artifact_sha256": "540c36e0bb9ff7d120d44e94c88181196a0b7f24bb92ad83626a66dcabe4bac9",
+      "approved_request_sha256": "3db77d2529f4f5bedacbf70a1de93a745034bf4642f10c0c5f2e9268e060b470",
+      "approved_workflow_run_attempt": "1",
+      "approved_workflow_run_id": "33674784590",
+      "freeze_sha256": "f1f2547ae79c9e6e19b235eb0f010509200393145299186e6bd667b7af22be63",
+      "git_head": "cc001245b8c26373b5467a0dbdcbbbda0a9542be",
+      "phase": "GRADER_SMOKE"
+    },
+    "attestation_bundle_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-bundle.json",
+    "attestation_bundle_raw_sha256": "c1cc04284b8f1be1cde006fa2309f6af918e8478485002b4556df7fcb165335e",
+    "attestation_subject_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-subject.json",
+    "attestation_subject_raw_sha256": "647d9d3eaddaf2917bfaaa8fc47c0c54f814a50ddf5e900c3176d3c895513846",
+    "evidence_inventory_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/evidence-inventory.json",
+    "evidence_inventory_raw_sha256": "b1c3ba191c4d037f4f8ee70cf8a4821592b5b25a65700d7ce3faa2d0024add8e",
+    "public_result_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/public-results.json",
+    "public_result_raw_sha256": "4a1253e69a95b3058b9433fbfe51ef3f8bee538c90b5faf29c996a841224faa4",
+    "schema": "trimem/grader-smoke-readiness-success-evidence/1.0",
+    "status": "PASS",
+    "verified_aggregate_sha256": "52c9863955b9d1b6ab5084f4671df44425406292391ff840a33e0126d73b3e0a"
+  },
+  "grader_smoke_scientific_result": {
+    "gold_resolved": 6,
+    "gold_total": 6,
+    "noop_unresolved": 6,
+    "noop_total": 6,
+    "status": "PASS"
+  },
+  "historical_grader_smoke_execution": {
+    "approval_binding": {
+      "approval_artifact_sha256": "26d65d462b09d2db6988bbe6842244278f49c58b559750a4b6455ceb1559c392",
+      "approved_request_sha256": "1cd2d983f9f140392c6c989a9a395c48d5ddc2176cb009b30a98a167c95218ef",
+      "approved_workflow_run_attempt": "1",
+      "approved_workflow_run_id": "33630256522",
+      "freeze_sha256": "583b8cf815ef78a1c29eb1f4c6cf25c01b0014cb511bd440e131e982e341eca1",
+      "git_head": "0e9ed55196da922dcebf1fb33b73940873007180",
+      "phase": "GRADER_SMOKE"
+    },
+    "campaign": {
+      "adapter_normalized_cell_count": 5,
+      "attempted_cell_count": 6,
+      "authoritative_cell_count": 0,
+      "complete_execution_evidence_count": 6,
+      "official_execution_count": 6,
+      "required_cell_count": 12,
+      "unattempted_cell_count": 6
+    },
+    "endpoint": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
+    "evidence": {
+      "evidence_inventory_path": "artifacts/trimem_v1/grader_smoke_official/evidence-inventory.json",
+      "evidence_inventory_raw_sha256": "c61ffdff2ab8857e8ebd212df9d8190b9424ebafd0c3a092b91de3a311108004",
+      "failure_receipt_path": "artifacts/trimem_v1/grader_smoke_official/failure-receipt.json",
+      "failure_receipt_raw_sha256": "fe9f98a07be06d7c5ee56110b0bc2058e9271f26ef0086b2232332aa7da42978"
+    },
+    "execution_accounting": {
+      "api_calls": 0,
+      "cached_input_tokens": 0,
+      "decomposition_calls": 0,
+      "docker_pulls": 4,
+      "extraction_calls": 0,
+      "grader_calls": 6,
+      "grader_containers": 6,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "model_gateway_calls": 0,
+      "official_grader_runs": 6,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "reasoning_tokens": 0,
+      "solve_calls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0
+    },
+    "failure_taxonomy": {
+      "adapter_contract_failures": 1,
+      "aggregate_failures": 0,
+      "environment_failures": 0,
+      "image_lifecycle_failures": 0,
+      "infrastructure_failures": 0,
+      "official_harness_failures": 0,
+      "official_report_failures": 0
+    },
+    "git_head": "0e9ed55196da922dcebf1fb33b73940873007180",
+    "image_lifecycle": {
+      "host_prepare_sh_access_count": 0,
+      "source_image_build_count": 0,
+      "support_image_pulls": 1,
+      "target_image_pulls": 3
+    },
+    "scientific_result": "NOT_AGGREGATED",
+    "status": "DIAGNOSTIC_HISTORY_ONLY",
+    "workflow_run_attempt": 1,
+    "workflow_run_id": 33630256522
+  },
+  "historical_development_preflight_failure": {
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "evidence": {
+      "failure_receipt_path": "artifacts/trimem_v1/development_tuning_exec/exec-001/preflight-failure-receipt.json",
+      "failure_receipt_raw_sha256": "16bda3012e29d6a3659d5a96537615db7ed72fa817e541e16db2c4d5d5d79868",
+      "previous_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json",
+      "previous_request_raw_sha256": "7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db"
+    },
+    "execution_accounting": {
+      "api_calls": 0,
+      "cached_input_tokens": 0,
+      "decomposition_calls": 0,
+      "extraction_calls": 0,
+      "grader_calls": 0,
+      "grader_containers": 0,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "model_gateway_calls": 0,
+      "official_grader_runs": 0,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "reasoning_tokens": 0,
+      "solve_calls": 0,
+      "support_image_pulls": 0,
+      "target_image_pulls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0.0
+    },
+    "failure_label": "TRIMEM_DEV_TRIGGER_PREFLIGHT_DEPENDENCY_IMPORT_FAILURE",
+    "recovery": {
+      "attempt_two_allowed": false,
+      "protected_execution_authorization_required": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_APPROVED_ONCE",
+      "received_recovery_authorization": "TRIMEM_V1_DEV_PREFLIGHT_RECOVERY_002_APPROVED_ONCE",
+      "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
+      "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
+      "single_new_attempt_one_run_allowed": true
+    },
+    "schema": "trimem/development-preflight-failure-status/1.0",
+    "status": "RECOVERY_002_APPROVED_PENDING_SENTINEL",
+    "workflow_run": {
+      "head_sha": "6eba1b0f9462c3b29323a9ade290470551bfd0ed",
+      "id": 33727051040,
+      "run_attempt": 1
+    }
+  },
+  "post_approval_gates": [
+    "the _003, _004, _005, _006, _007, and _008 requests and their attempt-1 runs are final; _008 was cancelled after its canary and image pulls but before scientific generation, completed cells, or graders and may not be rerun; _009 remains pending until every D1.8 credential-free gate and reseal passes",
+    "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
+    "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
+    "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
+  ],
+  "schema": "trimem/readiness-requirements/2.0",
+  "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
+  "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
+  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed grader-smoke PASS evidence, not static CI. DEV _008 is immutable, cancelled, and final. D1.8 is a non-semantic scientific terminal-status contract fix; performance remains NOT_MEASURED until a fresh authorized _009 completes 72 terminal cells.",
+  "target_set_sha256": {
+    "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
+    "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",
+    "heldout": "abd3f182acef8f37018e5f05ab9ba185b7b1efbc111dee273e66a38e6ab16267"
+  }
+}

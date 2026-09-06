@@ -167,11 +167,15 @@ from trimem_development_trigger_d19 import (  # noqa: E402
     PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_009_SENTINEL_PATH,
     PREVIOUS_SENTINEL_SHA256 as DEVELOPMENT_EXEC_009_SENTINEL_RAW_SHA256,
     PREVIOUS_SOURCE_HEAD as D18_CORRECTION_SOURCE_HEAD,
+    REQUEST_ID as DEVELOPMENT_EXEC_010_REQUEST_ID,
+    SENTINEL_PATH as DEVELOPMENT_EXEC_010_SENTINEL_PATH,
+    validate_correction_source as validate_d19_correction_source,
+    validate_previous_execution_receipt as validate_d19_previous_execution_receipt,
+)
+from trimem_development_trigger_d110 import (  # noqa: E402
     REQUEST_ID as DEVELOPMENT_REQUEST_ID,
     REQUIRED_EXTERNAL_AUTHORIZATION as DEVELOPMENT_EXECUTION_AUTHORIZATION,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
-    validate_correction_source as validate_d19_correction_source,
-    validate_previous_execution_receipt as validate_d19_previous_execution_receipt,
     validate_sentinel_commit as validate_development_sentinel_commit,
 )
 import trimem_d110_reseal as d110_reseal  # noqa: E402
@@ -4329,26 +4333,28 @@ def validate_readiness_plan(
         and authorization.get("hard_cap_total_usd") == 50.0
         and authorization.get("heldout_execution_authorized") is False
         and authorization.get("fresh_dev_execution_approval_required") is True
-        and authorization.get("future_recovery_authority_received") is False
+        and authorization.get("future_recovery_authority_received") is True
         and authorization.get("model_id") == "gpt-5.4-mini-2026-03-17"
         and authorization.get("prior_failed_run_reusable") is False
         and authorization.get("recovery_authorization")
-        == "FRESH_EXPLICIT_DEV_EXECUTION_APPROVAL_REQUIRED"
-        and authorization.get("recovery_authorization_received") is False
+        == DEVELOPMENT_EXECUTION_AUTHORIZATION
+        and authorization.get("recovery_authorization_received") is True
+        and authorization.get("required_external_authorization")
+        == DEVELOPMENT_EXECUTION_AUTHORIZATION
         and authorization.get("historical_failed_request_id")
-        == DEVELOPMENT_REQUEST_ID
+        == DEVELOPMENT_EXEC_010_REQUEST_ID
         and authorization.get("historical_failed_request_path")
-        == DEVELOPMENT_SENTINEL_PATH
+        == DEVELOPMENT_EXEC_010_SENTINEL_PATH
         and authorization.get("fresh_execution_request")
-        == "NOT_CREATED_PENDING_EXPLICIT_APPROVAL"
+        == "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
         and authorization.get("fresh_execution_request_creation_authorized")
-        is False
+        is True
         and authorization.get(
             "fresh_execution_request_requires_explicit_sentinel_authority"
         )
         is True
-        and "recovery_request_id" not in authorization
-        and "recovery_request_path" not in authorization
+        and authorization.get("recovery_request_id") == DEVELOPMENT_REQUEST_ID
+        and authorization.get("recovery_request_path") == DEVELOPMENT_SENTINEL_PATH
         and authorization.get("request_004_allowed_after_exact_remote_gates") is False
         and authorization.get("request_004_attempt_one_consumed") is True
         and authorization.get("request_005_allowed_after_exact_remote_gates") is False
@@ -4365,6 +4371,8 @@ def validate_readiness_plan(
         and authorization.get("request_010_attempt_one_consumed") is True
         and authorization.get("request_010_attempt_two_allowed") is False
         and authorization.get("request_010_rerun_allowed") is False
+        and authorization.get("request_011_allowed_after_exact_remote_gates") is True
+        and authorization.get("request_011_attempt_one_consumed") is False
         and authorization.get("request_011_created") is False
         and authorization.get(
             "solve_execution_contract_rehearsal_required_before_request_005"
@@ -4657,7 +4665,7 @@ def validate_d18_terminal_contract_amendment() -> None:
 def validate_d19_bounded_context_amendment() -> None:
     """Validate D1.9 at its immutable correction source, never at `_010`."""
 
-    sentinel = ROOT / DEVELOPMENT_SENTINEL_PATH
+    sentinel = ROOT / DEVELOPMENT_EXEC_010_SENTINEL_PATH
     if sentinel.is_file():
         request = read_json(sentinel)
         source_head = request.get("source_head")
@@ -4674,8 +4682,8 @@ def validate_d19_bounded_context_amendment() -> None:
     )
     require(
         validated.get("status") == "PASS"
-        and validated.get("request_id") == DEVELOPMENT_REQUEST_ID
-        and validated.get("sentinel_path") == DEVELOPMENT_SENTINEL_PATH,
+        and validated.get("request_id") == DEVELOPMENT_EXEC_010_REQUEST_ID
+        and validated.get("sentinel_path") == DEVELOPMENT_EXEC_010_SENTINEL_PATH,
         "D1.9 bounded-context amendment/inventory validation differs",
     )
 
@@ -4705,13 +4713,23 @@ def validate_d110_grader_launch_stream_commit_amendment() -> None:
         and authority.get("request_010_attempt_two_allowed") is False
         and authority.get("request_011_created") is False
         and authority.get("historical_failed_request_id")
-        == DEVELOPMENT_REQUEST_ID
+        == DEVELOPMENT_EXEC_010_REQUEST_ID
         and authority.get("historical_failed_request_path")
-        == DEVELOPMENT_SENTINEL_PATH
+        == DEVELOPMENT_EXEC_010_SENTINEL_PATH
         and authority.get("fresh_execution_request")
-        == "NOT_CREATED_PENDING_EXPLICIT_APPROVAL"
+        == "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
         and authority.get("fresh_execution_request_creation_authorized")
-        is False
+        is True
+        and authority.get("required_external_authorization")
+        == DEVELOPMENT_EXECUTION_AUTHORIZATION
+        and authority.get("recovery_authorization")
+        == DEVELOPMENT_EXECUTION_AUTHORIZATION
+        and authority.get("recovery_authorization_received") is True
+        and authority.get("future_recovery_authority_received") is True
+        and authority.get("recovery_request_id") == DEVELOPMENT_REQUEST_ID
+        and authority.get("recovery_request_path") == DEVELOPMENT_SENTINEL_PATH
+        and authority.get("request_011_allowed_after_exact_remote_gates") is True
+        and authority.get("request_011_attempt_one_consumed") is False
         and authority.get(
             "fresh_execution_request_requires_explicit_sentinel_authority"
         )
@@ -5360,7 +5378,8 @@ def validate_workflows() -> None:
         and "push:" in benchmark_text
         and "      - codex/trimem-coder-v1" in benchmark_text
         and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
-        and "group: trimem-v1-development-tuning-exec-010" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-011" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-010" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-009" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-008" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-004" not in benchmark_text
@@ -5370,7 +5389,8 @@ def validate_workflows() -> None:
         and "cancel-in-progress: false" in benchmark_text
         and "branch-trigger-preflight:" in benchmark_text
         and "needs: branch-trigger-preflight" in benchmark_text
-        and "trimem_development_trigger_d19.py" in benchmark_text
+        and "trimem_development_trigger_d110.py" in benchmark_text
+        and "trimem_development_trigger_d19.py" not in benchmark_text
         and "trimem_development_trigger_d18.py" not in benchmark_text
         and "trimem_development_trigger_d15.py" not in benchmark_text
         and "github.ref == 'refs/heads/main'" in benchmark_text
@@ -5386,7 +5406,7 @@ def validate_workflows() -> None:
         and "persist-credentials: false" in benchmark_preflight
         and "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in benchmark_preflight
-        and "python -I -S scripts/trimem_development_trigger_d19.py"
+        and "python -I -S scripts/trimem_development_trigger_d110.py"
         in benchmark_preflight
         and "GH_TOKEN: ${{ github.token }}" in benchmark_preflight
         and "secrets." not in benchmark_preflight
@@ -5431,11 +5451,11 @@ def validate_workflows() -> None:
     )
     install_gh = benchmark_text.find("- name: Install exact pinned GitHub CLI")
     require(
-        0 <= install_environment < terminal_round_trip < context_round_trip < install_gh
+        0 <= install_environment < context_round_trip < terminal_round_trip < install_gh
         and "python scripts/trimem_pytest_no_skip.py"
-        in benchmark_text[terminal_round_trip:install_gh]
+        in benchmark_text[context_round_trip:install_gh]
         and "tests/unit/test_trimem_d18_terminal_contract_integration.py"
-        in benchmark_text[terminal_round_trip:install_gh]
+        in benchmark_text[context_round_trip:install_gh]
         and benchmark_text.count(
             "- name: Verify bounded context round trip before provider access"
         )
@@ -5457,7 +5477,7 @@ def validate_workflows() -> None:
             "        if: ${{ always() && !cancelled() && success() }}"
         )
         in benchmark_text,
-        "D1.9 pre-provider round-trip or cancellation boundary differs",
+        "D1.10 pre-provider round-trip or cancellation boundary differs",
     )
     require(
         benchmark_secrets

@@ -21,6 +21,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import trimem_development_trigger_preflight as trigger  # noqa: E402
 import trimem_development_trigger_d18 as trigger_d18  # noqa: E402
 import trimem_development_trigger_d19 as trigger_d19  # noqa: E402
+import trimem_development_trigger_d110 as trigger_d110  # noqa: E402
 import trimem_exec_approval as approval_validator  # noqa: E402
 import trimem_approved_phase as approved_phase  # noqa: E402
 import trimem_benchmark_matrix as benchmark_matrix  # noqa: E402
@@ -145,6 +146,40 @@ def _initialize(repository: Path, *, bind_recovery_history: bool = True) -> str:
     return _commit(repository, "frozen source")
 
 
+def _initialize_d110_activation_source(repository: Path) -> str:
+    """Commit the pending activation bytes over the immutable D1.10 base."""
+
+    repository.mkdir()
+    _git(repository, "init", "-b", "codex/trimem-coder-v1")
+    _git(repository, "config", "user.name", "TriMem Test")
+    _git(repository, "config", "user.email", "trimem@example.invalid")
+    objects = Path(_git(ROOT, "rev-parse", "--git-path", "objects"))
+    if not objects.is_absolute():
+        objects = ROOT / objects
+    alternates = repository / ".git" / "objects" / "info" / "alternates"
+    alternates.write_text(
+        objects.resolve().as_posix() + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    _git(
+        repository,
+        "update-ref",
+        "refs/heads/codex/trimem-coder-v1",
+        trigger_d110.STARTING_SOURCE_HEAD,
+    )
+    _git(repository, "reset", "--hard", trigger_d110.STARTING_SOURCE_HEAD)
+    for relative in sorted(trigger_d110.ALLOWED_ACTIVATION_PATHS):
+        source = ROOT / relative
+        destination = repository / relative
+        if source.is_file():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(source.read_bytes())
+        elif destination.exists():
+            destination.unlink()
+    return _commit(repository, "fixture: D1.10-E1 activation source")
+
+
 def _rehash(value: dict[str, object]) -> None:
     payload = {key: child for key, child in value.items() if key != "request_sha256"}
     value["request_sha256"] = trigger.sha256_prefixed(trigger.canonical_bytes(payload))
@@ -191,6 +226,114 @@ def _remote_gate_evidence(
                 trigger.REQUIRED_REMOTE_GATE_WORKFLOWS, start=1
             )
         ],
+    }
+
+
+def _d110_remote_gate_evidence(source_head: str) -> dict[str, object]:
+    return {
+        "activation_actuals": dict(trigger_d110.ACTIVATION_ZERO_COUNTERS),
+        "all_required_workflows_passed": True,
+        "observed_at_utc": "2026-09-06T14:00:00.000Z",
+        "pull_request": {
+            "base_ref": trigger_d110.EXPECTED_BASE_BRANCH,
+            "base_sha": trigger_d110.EXPECTED_BASE_HEAD,
+            "draft": True,
+            "head_ref": trigger_d110.EXPECTED_BRANCH,
+            "head_repository": trigger_d110.EXPECTED_REPOSITORY,
+            "head_sha": source_head,
+            "html_url": (
+                "https://github.com/Scuttie/enterprise-shared-memory-poc/pull/18"
+            ),
+            "number": trigger_d110.PULL_REQUEST_NUMBER,
+            "state": "open",
+        },
+        "pull_request_number": trigger_d110.PULL_REQUEST_NUMBER,
+        "repository": trigger_d110.EXPECTED_REPOSITORY,
+        "schema": trigger_d110.REMOTE_GATE_SCHEMA,
+        "source_head": source_head,
+        "source_ref": trigger_d110.EXPECTED_REF,
+        "workflows": [
+            {
+                "conclusion": "success",
+                "event": event,
+                "head_branch": trigger_d110.EXPECTED_BRANCH,
+                "head_sha": source_head,
+                "html_url": (
+                    "https://github.com/Scuttie/enterprise-shared-memory-poc/"
+                    f"actions/runs/{20_000 + index}"
+                ),
+                "pull_request_number": pull_request_number,
+                "run_attempt": 1,
+                "run_id": 20_000 + index,
+                "status": "completed",
+                "workflow_path": workflow_path,
+            }
+            for index, (
+                workflow_path,
+                event,
+                pull_request_number,
+            ) in enumerate(trigger_d110.REMOTE_GATE_SPECS, start=1)
+        ],
+    }
+
+
+def _d110_runner_readiness(source_head: str) -> dict[str, object]:
+    runners = [
+        {
+            "busy": False,
+            "id": 30_000 + index,
+            "labels": [
+                "self-hosted",
+                "Linux",
+                "X64",
+                "ubuntu-24.04",
+                "trimem-benchmark",
+            ],
+            "name": name,
+            "status": "online",
+        }
+        for index, name in enumerate(trigger_d110.RUNNER_NAMES, start=1)
+    ]
+    return {
+        "activation_actuals": dict(trigger_d110.ACTIVATION_ZERO_COUNTERS),
+        "host": {
+            "architecture": "x86_64",
+            "cached_execution_images": 13,
+            "container_count": 0,
+            "disk_available_bytes": trigger_d110.MINIMUM_RUNNER_DISK_BYTES,
+            "docker_server_version": "29.1.3",
+            "exact_python_path": f"{trigger_d110.EXACT_PYTHON_ROOT}/bin/python",
+            "exact_python_version": "Python 3.11.10",
+            "forbidden_secret_names_present": [],
+            "fresh_runner_roots": list(trigger_d110.RUNNER_ROOTS),
+            "listener_bindings": [
+                {"pid": 40_000 + index, "root": root}
+                for index, root in enumerate(trigger_d110.RUNNER_ROOTS, start=1)
+            ],
+            "local_runner_bindings": [
+                {
+                    "agent_id": row["id"],
+                    "agent_name": row["name"],
+                    "root": trigger_d110.RUNNER_ROOTS[index],
+                    "work_folder": "_work",
+                }
+                for index, row in enumerate(runners)
+            ],
+            "minimum_disk_available_bytes": trigger_d110.MINIMUM_RUNNER_DISK_BYTES,
+            "stale_runner_roots_absent": list(trigger_d110.STALE_RUNNER_ROOTS),
+            "tool_cache_root": trigger_d110.RUNNER_TOOL_CACHE,
+            "wsl_distribution": trigger_d110.RUNNER_DISTRIBUTION,
+        },
+        "observed_at_utc": "2026-09-06T14:01:00.000Z",
+        "repository": trigger_d110.EXPECTED_REPOSITORY,
+        "required_labels": list(trigger_d110.REQUIRED_RUNNER_LABELS),
+        "runners": runners,
+        "schema": trigger_d110.RUNNER_READINESS_SCHEMA,
+        "sequential_self_hosted_jobs": [
+            "bounded-context-preflight",
+            "frozen-serial-phase",
+        ],
+        "source_head": source_head,
     }
 
 
@@ -488,12 +631,13 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_011.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-010" in workflow
+    assert "group: trimem-v1-development-tuning-exec-011" in workflow
+    assert "group: trimem-v1-development-tuning-exec-010" not in workflow
     assert "group: trimem-v1-development-tuning-exec-004" not in workflow
     assert "group: trimem-v1-development-tuning-exec-002" not in workflow
     assert "group: trimem-v1-development-tuning-exec-001" not in workflow
@@ -502,7 +646,8 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "  frozen-serial-phase:", 1
     )[0]
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in preflight
-    assert "python -I -S scripts/trimem_development_trigger_d19.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d110.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d19.py" not in preflight
     assert all(
         forbidden not in preflight
         for forbidden in (
@@ -1233,63 +1378,34 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     repository = tmp_path / "repository"
-    repository.mkdir()
-    _git(repository, "init", "-b", "codex/trimem-coder-v1")
-    _git(repository, "config", "user.name", "TriMem Test")
-    _git(repository, "config", "user.email", "trimem@example.invalid")
-    objects = Path(_git(ROOT, "rev-parse", "--git-path", "objects"))
-    if not objects.is_absolute():
-        objects = ROOT / objects
-    alternates = repository / ".git" / "objects" / "info" / "alternates"
-    alternates.write_text(
-        objects.resolve().as_posix() + "\n",
-        encoding="utf-8",
-        newline="\n",
-    )
-    sentinel_head = _git(
-        ROOT,
-        "log",
-        "-1",
-        "--diff-filter=A",
-        "--format=%H",
-        "--",
-        trigger_d19.SENTINEL_PATH,
-    )
-    assert sentinel_head
-    source_head = _git(ROOT, "rev-parse", f"{sentinel_head}^")
-    _git(
-        repository,
-        "update-ref",
-        "refs/heads/codex/trimem-coder-v1",
-        source_head,
-    )
-    _git(repository, "reset", "--hard", source_head)
-    request = trigger_d19.build_request(
+    source_head = _initialize_d110_activation_source(repository)
+    request = trigger_d110.build_request(
         repository,
         source_head=source_head,
-        remote_gate_evidence=_remote_gate_evidence(source_head),
+        remote_gate_evidence=_d110_remote_gate_evidence(source_head),
+        runner_readiness=_d110_runner_readiness(source_head),
     )
-    request_path = repository / trigger_d19.SENTINEL_PATH
+    request_path = repository / trigger_d110.SENTINEL_PATH
     _write_json(request_path, request)
-    execution_head = _commit(repository, "fixture: active D1.9 sentinel only")
+    execution_head = _commit(repository, "fixture: active D1.10-E1 sentinel only")
     request_raw = request_path.read_bytes()
-    request = trigger_d19.strict_json(request_raw)
+    request = trigger_d110.strict_json(request_raw)
     policy = json.loads((repository / trigger.POLICY_REQUEST_PATH).read_text(encoding="utf-8"))
     hard = json.loads((repository / trigger.COST_PLAN_PATH).read_text(encoding="utf-8"))[
         "phase_hard_caps"
-    ][trigger_d19.EXPECTED_PHASE]
+    ][trigger_d110.EXPECTED_PHASE]
     freeze_sha256 = hashlib.sha256(
         (repository / trigger.FREEZE_PATH).read_bytes()
     ).hexdigest()
     request_sha256 = hashlib.sha256(request_raw).hexdigest()
     timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     document = approval_validator.build_external_approval_document(
-        request_id=trigger_d19.REQUEST_ID,
+        request_id=trigger_d110.REQUEST_ID,
         request_sha256=request_sha256,
         git_commit=execution_head,
         source_git_commit=source_head,
         freeze_sha256=freeze_sha256,
-        phase=trigger_d19.EXPECTED_PHASE,
+        phase=trigger_d110.EXPECTED_PHASE,
         task_arm_runs=72,
         paid_model_call_cap=1873,
         input_token_cap=36_004_096,
@@ -1303,7 +1419,7 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         approval_timestamp=timestamp,
         openai_api_key="DUMMY-VISIBLE-ASCII-CREDENTIAL-ROUNDTRIP",
         approval_nonce="credential-free-roundtrip-0001",
-        model_id=trigger_d19.MODEL_ID,
+        model_id=trigger_d110.MODEL_ID,
     )
     approval_path = tmp_path / "external-approval.json"
     approval_raw = _write_json(approval_path, document)
@@ -1311,7 +1427,7 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         document,
         request=request,
         policy_request=policy,
-        phase=trigger_d19.EXPECTED_PHASE,
+        phase=trigger_d110.EXPECTED_PHASE,
         hard_cap=hard,
         request_sha256=request_sha256,
         freeze_sha256=freeze_sha256,
@@ -1328,7 +1444,7 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         "freeze_sha256": freeze_sha256,
         "git_head": execution_head,
         "source_head": source_head,
-        "phase": trigger_d19.EXPECTED_PHASE,
+        "phase": trigger_d110.EXPECTED_PHASE,
     }
     results = repository / "artifacts/trimem_v1/benchmark_exec/development"
     results.mkdir(parents=True)
@@ -2571,15 +2687,26 @@ def _d18_receipt_fixture() -> dict[str, object]:
     }
 
 
-def test_d19_is_the_only_active_development_reader_contract() -> None:
+def test_d110_is_the_only_active_development_reader_contract() -> None:
+    assert trigger_d110.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011"
+    assert trigger_d110.SENTINEL_PATH.endswith(
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
+    )
+    assert (
+        trigger_d110.REQUIRED_EXTERNAL_AUTHORIZATION
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
+    )
+    assert benchmark_run.DEVELOPMENT_EXEC_REQUEST == Path(trigger_d110.SENTINEL_PATH)
+    assert benchmark_matrix.DEVELOPMENT_SENTINEL_PATH == trigger_d110.SENTINEL_PATH
+
+    # D1.9 remains immutable execution history, not an active benchmark reader.
     assert trigger_d19.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010"
     assert trigger_d19.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_010.json")
     assert (
         trigger_d19.REQUIRED_EXTERNAL_AUTHORIZATION
         == "TRIMEM_V1_DEVELOPMENT_TUNING_CONTEXT_RECOVERY_EXEC_APPROVED_ONCE"
     )
-    assert benchmark_run.DEVELOPMENT_EXEC_REQUEST == Path(trigger_d19.SENTINEL_PATH)
-    assert benchmark_matrix.DEVELOPMENT_SENTINEL_PATH == trigger_d19.SENTINEL_PATH
+    assert trigger_d110.PREVIOUS_SENTINEL_PATH == trigger_d19.SENTINEL_PATH
 
 
 def test_d18_preserves_the_complete_scientific_policy_lock_set() -> None:

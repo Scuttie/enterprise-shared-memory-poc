@@ -55,7 +55,7 @@ def test_exec_010_failure_remains_incomplete_and_pre_result() -> None:
     }
 
 
-def test_fresh_approval_does_not_reuse_final_exec_010_request() -> None:
+def test_explicit_011_authority_does_not_reuse_final_exec_010_request() -> None:
     authority = read("artifacts/trimem_v1/readiness_requirements.json")[
         "development_authorization_boundary"
     ]
@@ -64,25 +64,40 @@ def test_fresh_approval_does_not_reuse_final_exec_010_request() -> None:
     )
     assert authority["historical_failed_request_path"] == reseal.REQUEST_PATH
     assert authority["fresh_execution_request"] == (
-        "NOT_CREATED_PENDING_EXPLICIT_APPROVAL"
+        "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
     )
-    assert authority["fresh_execution_request_creation_authorized"] is False
-    assert authority[
-        "fresh_execution_request_requires_explicit_sentinel_authority"
-    ] is True
-    assert "recovery_request_id" not in authority
-    assert "recovery_request_path" not in authority
+    assert authority["fresh_execution_request_creation_authorized"] is True
+    assert authority["recovery_authorization"] == (
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
+    )
+    assert authority["required_external_authorization"] == (
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
+    )
+    assert authority["recovery_authorization_received"] is True
+    assert authority["future_recovery_authority_received"] is True
+    assert authority["recovery_request_id"] == (
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011"
+    )
+    assert authority["recovery_request_path"] == reseal.REQUEST_011_PATH
+    assert authority["request_011_allowed_after_exact_remote_gates"] is True
+    assert authority["request_011_created"] is False
+    assert authority["active_development_approval"] is False
+    assert authority["development_execution_authorized"] is False
+    assert authority["fresh_dev_execution_approval_required"] is True
 
 
-def test_exec_001_through_010_are_byte_locked_and_011_is_absent() -> None:
+def test_exec_001_through_010_are_byte_locked_and_011_is_optional_activation() -> None:
     requests, evidence = reseal.verify_historical_boundaries()
+    request_011 = (
+        "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
+    )
     assert requests == reseal.HISTORICAL_REQUEST_SHA256
     assert len(requests) == 10
     assert evidence
-    assert not (
-        ROOT
-        / "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
-    ).exists()
+    assert request_011 == reseal.REQUEST_011_PATH
+    assert request_011 not in requests
+    assert request_011 not in reseal.D110_GENERATED_PATHS
+    assert request_011 not in reseal.IMPLEMENTATION_PATHS
 
 
 def test_d19_amendment_and_inventory_remain_immutable_history() -> None:
@@ -94,6 +109,19 @@ def test_d19_amendment_and_inventory_remain_immutable_history() -> None:
         assert reseal.source_bytes(relative) == reseal.git_blob(
             reseal.EXECUTION_HEAD, relative
         )
+
+
+def test_d19_trigger_is_immutable_history_and_d110_trigger_is_active() -> None:
+    historical = "scripts/trimem_development_trigger_d19.py"
+    active = "scripts/trimem_development_trigger_d110.py"
+
+    assert historical in reseal.PRESERVED_SCIENTIFIC_PATHS
+    assert historical not in reseal.IMPLEMENTATION_PATHS
+    assert reseal.source_bytes(historical) == reseal.git_blob(
+        reseal.EXECUTION_HEAD, historical
+    )
+    assert active in reseal.IMPLEMENTATION_PATHS
+    assert active not in reseal.PRESERVED_SCIENTIFIC_PATHS
 
 
 def test_tool_environment_lock_changes_only_d110_source_identities() -> None:
@@ -140,6 +168,27 @@ def test_d110_artifacts_are_exactly_reproducible_and_zero_cost() -> None:
         "total_usd": 0,
     }
     assert amendment["authority_boundary"]["request_011_created"] is False
+    assert amendment["authority_boundary"]["fresh_execution_request"] == (
+        "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
+    )
+    assert amendment["authority_boundary"][
+        "fresh_execution_request_creation_authorized"
+    ] is True
+    assert amendment["authority_boundary"]["recovery_authorization"] == (
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
+    )
+    assert amendment["authority_boundary"][
+        "required_external_authorization"
+    ] == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
+    assert amendment["authority_boundary"][
+        "recovery_authorization_received"
+    ] is True
+    assert amendment["authority_boundary"][
+        "future_recovery_authority_received"
+    ] is True
+    assert amendment["authority_boundary"][
+        "request_011_allowed_after_exact_remote_gates"
+    ] is True
     assert amendment["authority_boundary"][
         "fresh_dev_execution_approval_required"
     ] is True
@@ -314,7 +363,20 @@ def test_pr_merge_history_rejects_fork_head(
         reseal._immutable_history_tip({"PATH": os.environ.get("PATH", "")})
 
 
-def test_reseal_fails_closed_if_011_exists(
+def test_optional_011_boundary_accepts_absent_activation_source(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(reseal, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        reseal.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=""),
+    )
+
+    assert reseal.validate_optional_exec_011_boundary() is None
+
+
+def test_optional_011_boundary_rejects_uncommitted_request(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     fake_root = tmp_path
@@ -324,12 +386,54 @@ def test_reseal_fails_closed_if_011_exists(
     request.parent.mkdir(parents=True)
     request.write_text("{}", encoding="utf-8")
     monkeypatch.setattr(reseal, "ROOT", fake_root)
-    monkeypatch.setattr(reseal, "verify_tracked_hygiene", lambda: None)
     monkeypatch.setattr(
         reseal.subprocess,
         "run",
-        lambda *args, **kwargs: SimpleNamespace(returncode=0),
+        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=""),
     )
 
-    with pytest.raises(reseal.D110ResealError, match="_011 is prohibited"):
-        reseal.verify_historical_boundaries()
+    with pytest.raises(
+        reseal.D110ResealError,
+        match="_011 is not one immutable regular-file addition",
+    ):
+        reseal.validate_optional_exec_011_boundary()
+
+
+def test_optional_011_boundary_rejects_multifile_trigger_commit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    request = tmp_path / reseal.REQUEST_011_PATH
+    request.parent.mkdir(parents=True)
+    request.write_text("{}\n", encoding="utf-8")
+    execution_head = "1" * 40
+    source_head = "2" * 40
+
+    def git_result(argv, **_kwargs):
+        command = list(argv)
+        if "log" in command and "--format=%H" in command:
+            return SimpleNamespace(returncode=0, stdout=f"{execution_head}\n")
+        if "rev-list" in command and "--parents" in command:
+            return SimpleNamespace(
+                returncode=0,
+                stdout=f"{execution_head} {source_head}\n",
+            )
+        if "rev-parse" in command and "HEAD" in command:
+            return SimpleNamespace(returncode=0, stdout=f"{execution_head}\n")
+        if "diff-tree" in command:
+            return SimpleNamespace(
+                returncode=0,
+                stdout=(
+                    f"A\t{reseal.REQUEST_011_PATH}\n"
+                    "M\tscripts/trimem_benchmark_run.py\n"
+                ),
+            )
+        raise AssertionError(f"unexpected git command: {command!r}")
+
+    monkeypatch.setattr(reseal, "ROOT", tmp_path)
+    monkeypatch.setattr(reseal.subprocess, "run", git_result)
+
+    with pytest.raises(
+        reseal.D110ResealError,
+        match="_011 trigger commit is not sentinel-only",
+    ):
+        reseal.validate_optional_exec_011_boundary()

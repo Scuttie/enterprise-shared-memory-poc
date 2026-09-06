@@ -278,12 +278,19 @@ def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -
     current_sha256 = hashlib.sha256(current_matrix).hexdigest()
     d19_amendment = json.loads(D19_AMENDMENT_PATH.read_text(encoding="utf-8"))
     d19_inventory = json.loads(D19_INVENTORY_PATH.read_text(encoding="utf-8"))
-    assert d19_amendment["implementation_sha256"][
+    d19_sha256 = d19_amendment["implementation_sha256"][
         "scripts/trimem_benchmark_matrix.py"
-    ] == current_sha256
+    ]
     assert d19_inventory["implementation_sha256"][
         "scripts/trimem_benchmark_matrix.py"
-    ] == current_sha256
+    ] == d19_sha256
+    assert d19_sha256 == hashlib.sha256(
+        _git_blob(
+            multi_contract.D19_CORRECTION_SOURCE_HEAD,
+            "scripts/trimem_benchmark_matrix.py",
+        )
+    ).hexdigest()
+    assert d19_sha256 != current_sha256
     d110_amendment = json.loads(D110_AMENDMENT_PATH.read_text(encoding="utf-8"))
     d110_inventory = json.loads(D110_INVENTORY_PATH.read_text(encoding="utf-8"))
     assert d110_amendment["implementation_sha256"][

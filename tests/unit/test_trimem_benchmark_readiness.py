@@ -468,11 +468,11 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["development_execution_authorized"] is False
     assert authorization["grader_smoke_rerun_authorized"] is False
     assert authorization["heldout_execution_authorized"] is False
-    assert authorization["future_recovery_authority_received"] is False
+    assert authorization["future_recovery_authority_received"] is True
     assert authorization["prior_failed_run_reusable"] is False
-    assert authorization["recovery_authorization_received"] is False
+    assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
-        "FRESH_EXPLICIT_DEV_EXECUTION_APPROVAL_REQUIRED"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
     )
     assert authorization["historical_failed_request_id"] == (
         "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010"
@@ -481,14 +481,18 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
     )
     assert authorization["fresh_execution_request"] == (
-        "NOT_CREATED_PENDING_EXPLICIT_APPROVAL"
+        "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
     )
-    assert authorization["fresh_execution_request_creation_authorized"] is False
+    assert authorization["fresh_execution_request_creation_authorized"] is True
     assert authorization[
         "fresh_execution_request_requires_explicit_sentinel_authority"
     ] is True
-    assert "recovery_request_id" not in authorization
-    assert "recovery_request_path" not in authorization
+    assert authorization["recovery_request_id"] == (
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011"
+    )
+    assert authorization["recovery_request_path"].endswith(
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
+    )
     assert authorization["request_003_final"] is True
     assert authorization["request_004_allowed_after_exact_remote_gates"] is False
     assert authorization["request_004_attempt_one_consumed"] is True
@@ -506,6 +510,8 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["request_010_attempt_one_consumed"] is True
     assert authorization["request_010_attempt_two_allowed"] is False
     assert authorization["request_010_rerun_allowed"] is False
+    assert authorization["request_011_allowed_after_exact_remote_gates"] is True
+    assert authorization["request_011_attempt_one_consumed"] is False
     assert authorization["request_011_created"] is False
     assert authorization["fresh_dev_execution_approval_required"] is True
     assert authorization["rerun_allowed"] is False
@@ -3688,11 +3694,12 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in benchmark
     assert (
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
     ) in benchmark
     assert "branch-trigger-preflight:" in benchmark
     assert "needs: branch-trigger-preflight" in benchmark
-    assert "group: trimem-v1-development-tuning-exec-010" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-011" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-010" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-002" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-001" not in benchmark
     assert "cancel-in-progress: false" in benchmark
@@ -3706,7 +3713,8 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in preflight
     )
-    assert "python -I -S scripts/trimem_development_trigger_d19.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d110.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d19.py" not in preflight
     assert "secrets." not in preflight
     assert "environment:" not in preflight
     protected = benchmark.split("  frozen-serial-phase:", 1)[1]
@@ -3720,7 +3728,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         "- name: Verify bounded context round trip before provider access"
     )
     pinned_gh = benchmark.index("- name: Install exact pinned GitHub CLI")
-    assert install < round_trip < context_round_trip < pinned_gh
+    assert install < context_round_trip < round_trip < pinned_gh
     assert (
         "tests/unit/test_trimem_d18_terminal_contract_integration.py"
         in benchmark[round_trip:pinned_gh]

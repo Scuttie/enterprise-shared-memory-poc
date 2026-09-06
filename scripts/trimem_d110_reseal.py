@@ -41,6 +41,12 @@ REQUEST_PATH = (
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
 )
 REQUEST_SHA256 = "f42389df5a12c8f0d06bcd3eb2c97c69b0fde39667f8c880832e1c01bf998d9f"
+REQUEST_011_PATH = (
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
+)
+EXEC_011_AUTHORIZATION = (
+    "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
+)
 TOOL_ENVIRONMENT_LOCK_PATH = "configs/trimem_v1/tool_environment_lock.json"
 TOOL_ENVIRONMENT_SOURCE_AMENDMENTS = frozenset(
     {
@@ -142,6 +148,11 @@ PRESERVED_SCIENTIFIC_PATHS = (
 IMPLEMENTATION_PATHS = (
     ".gitattributes",
     ".github/workflows/ci.yml",
+    ".github/workflows/codeql.yml",
+    ".github/workflows/ci-docs.yml",
+    ".github/workflows/ci-company-package.yml",
+    ".github/workflows/ci-company-harness.yml",
+    ".github/workflows/ci-company-demo.yml",
     ".github/workflows/ci-trimem-dev-toolchain.yml",
     ".github/workflows/ci-trimem-grader-loader.yml",
     ".github/workflows/ci-trimem-harness-lock.yml",
@@ -156,6 +167,8 @@ IMPLEMENTATION_PATHS = (
     "scripts/trimem_benchmark_matrix.py",
     "scripts/trimem_benchmark_run.py",
     "scripts/trimem_d110_reseal.py",
+    "scripts/trimem_development_trigger_d110.py",
+    "scripts/trimem_development_trigger_preflight.py",
     "scripts/trimem_freeze.py",
     "scripts/trimem_grader_smoke.py",
     "scripts/trimem_harness_lock.py",
@@ -180,6 +193,8 @@ IMPLEMENTATION_PATHS = (
     "tests/unit/test_trimem_d110_atomic_resume.py",
     "tests/unit/test_trimem_d110_checkout_custody.py",
     "tests/unit/test_trimem_d110_status_and_reseal.py",
+    "tests/unit/test_trimem_d110_e1_trigger.py",
+    "tests/unit/test_trimem_d16_native_action.py",
     "tests/unit/test_trimem_grader_smoke_trigger.py",
     "tests/unit/test_trimem_grader_terminal_evidence.py",
     "tests/unit/test_trimem_harness_lock.py",
@@ -290,12 +305,53 @@ def write_json(path: Path, value: Any) -> None:
     path.write_bytes(pretty_bytes(value))
 
 
+def _hermetic_git_environment() -> dict[str, str]:
+    environment = {
+        key: os.environ[key]
+        for key in (
+            "COMSPEC",
+            "PATH",
+            "PATHEXT",
+            "SYSTEMROOT",
+            "TEMP",
+            "TMP",
+            "WINDIR",
+        )
+        if key in os.environ
+    }
+    environment.update(
+        {
+            "GIT_ATTR_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_NO_REPLACE_OBJECTS": "1",
+            "LANG": "C",
+            "LC_ALL": "C",
+        }
+    )
+    return environment
+
+
+def _git_prefix() -> list[str]:
+    return [
+        "git",
+        "--no-replace-objects",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        f"core.hooksPath={os.devnull}",
+        "-c",
+        "core.quotepath=false",
+    ]
+
+
 def git_blob(commit: str, relative: str) -> bytes:
     completed = subprocess.run(
-        ["git", "show", f"{commit}:{relative}"],
+        [*_git_prefix(), "cat-file", "blob", f"{commit}:{relative}"],
         cwd=ROOT,
         capture_output=True,
         check=False,
+        env=_hermetic_git_environment(),
     )
     if completed.returncode != 0:
         raise D110ResealError(f"missing immutable Git blob: {commit}:{relative}")
@@ -304,10 +360,11 @@ def git_blob(commit: str, relative: str) -> bytes:
 
 def git_paths(commit: str, prefix: str) -> tuple[str, ...]:
     completed = subprocess.run(
-        ["git", "ls-tree", "-r", "--name-only", "-z", commit, "--", prefix],
+        [*_git_prefix(), "ls-tree", "-r", "--name-only", "-z", commit, "--", prefix],
         cwd=ROOT,
         capture_output=True,
         check=False,
+        env=_hermetic_git_environment(),
     )
     if completed.returncode != 0:
         raise D110ResealError(f"cannot inventory immutable Git tree: {commit}:{prefix}")
@@ -318,7 +375,11 @@ def git_paths(commit: str, prefix: str) -> tuple[str, ...]:
 
 def verify_tracked_hygiene() -> None:
     completed = subprocess.run(
-        ["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, check=True
+        [*_git_prefix(), "ls-files", "-z"],
+        cwd=ROOT,
+        capture_output=True,
+        check=True,
+        env=_hermetic_git_environment(),
     )
     forbidden: list[str] = []
     for token in completed.stdout.split(b"\0"):
@@ -383,12 +444,16 @@ def verify_changed_path_coverage() -> tuple[str, ...]:
         )
     except UnicodeDecodeError as exc:
         raise D110ResealError("committed D1.10 path is not UTF-8") from exc
+    scope_changed = set(changed)
+    if REQUEST_011_PATH in scope_changed:
+        validate_optional_exec_011_boundary()
+        scope_changed.remove(REQUEST_011_PATH)
     allowed = (
         set(IMPLEMENTATION_PATHS)
         | D110_GENERATED_PATHS
         | PRODUCT_COMPATIBILITY_PATHS
     )
-    unexpected = sorted(set(changed) - allowed)
+    unexpected = sorted(scope_changed - allowed)
     if unexpected:
         raise D110ResealError(
             "committed D1.10 paths escape the explicit seal: "
@@ -567,19 +632,156 @@ def verify_product_status_compatibility() -> None:
         raise D110ResealError("product STATUS changed beyond workflow inventory count")
 
 
-def verify_historical_boundaries() -> tuple[dict[str, str], dict[str, str]]:
-    verify_tracked_hygiene()
-    request_011 = ROOT / (
-        "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
-    )
-    if request_011.exists() or request_011.is_symlink():
-        raise D110ResealError("_011 is prohibited and must not exist")
-    ancestry = subprocess.run(
-        ["git", "rev-list", "--parents", "-n", "1", EXECUTION_HEAD],
+def validate_optional_exec_011_boundary() -> str | None:
+    """Accept no ``_011`` at activation, or one immutable sentinel-only child.
+
+    The source freeze deliberately excludes the request bytes.  Once the
+    request exists, its sole add commit and unchanged 100644 Git blob are the
+    authority boundary; later edits, multi-file trigger commits, and a second
+    add all fail closed.
+    """
+
+    target = ROOT / REQUEST_011_PATH
+    history = subprocess.run(
+        [
+            *_git_prefix(),
+            "log",
+            "--format=%H",
+            "--diff-filter=A",
+            "HEAD",
+            "--",
+            REQUEST_011_PATH,
+        ],
         cwd=ROOT,
         capture_output=True,
         check=False,
         text=True,
+        env=_hermetic_git_environment(),
+    )
+    if history.returncode != 0:
+        raise D110ResealError("cannot audit _011 request history")
+    additions = [line for line in history.stdout.splitlines() if line]
+    if not target.exists() and not target.is_symlink():
+        if additions:
+            raise D110ResealError("_011 history exists while its blob is absent")
+        return None
+    if target.is_symlink() or not target.is_file() or len(additions) != 1:
+        raise D110ResealError("_011 is not one immutable regular-file addition")
+    execution_head = additions[0]
+    parents = subprocess.run(
+        [*_git_prefix(), "rev-list", "--parents", "-n", "1", execution_head],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+        text=True,
+        env=_hermetic_git_environment(),
+    )
+    fields = parents.stdout.strip().split() if parents.returncode == 0 else []
+    if len(fields) != 2:
+        raise D110ResealError("_011 trigger commit is not a one-parent commit")
+    current = subprocess.run(
+        [*_git_prefix(), "rev-parse", "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+        text=True,
+        env=_hermetic_git_environment(),
+    )
+    if current.returncode != 0 or execution_head != current.stdout.strip():
+        raise D110ResealError("_011 trigger commit must remain the current execution HEAD")
+    changes = subprocess.run(
+        [
+            *_git_prefix(),
+            "diff-tree",
+            "--no-ext-diff",
+            "--no-commit-id",
+            "--name-status",
+            "-r",
+            "--no-renames",
+            execution_head,
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+        text=True,
+        env=_hermetic_git_environment(),
+    )
+    if changes.returncode != 0 or changes.stdout.splitlines() != [
+        f"A\t{REQUEST_011_PATH}"
+    ]:
+        raise D110ResealError("_011 trigger commit is not sentinel-only")
+    tree = subprocess.run(
+        [*_git_prefix(), "ls-tree", execution_head, "--", REQUEST_011_PATH],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+        text=True,
+        env=_hermetic_git_environment(),
+    )
+    if tree.returncode != 0 or re.fullmatch(
+        rf"100644 blob [0-9a-f]{{40}}\t{re.escape(REQUEST_011_PATH)}\n?",
+        tree.stdout,
+    ) is None:
+        raise D110ResealError("_011 is not a regular non-executable Git blob")
+    later = subprocess.run(
+        [
+            *_git_prefix(),
+            "log",
+            "--format=%H",
+            f"{execution_head}..HEAD",
+            "--",
+            REQUEST_011_PATH,
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+        text=True,
+        env=_hermetic_git_environment(),
+    )
+    if later.returncode != 0 or later.stdout.strip():
+        raise D110ResealError("_011 was modified after its sentinel-only addition")
+    raw = source_bytes(REQUEST_011_PATH)
+    if raw != git_blob(execution_head, REQUEST_011_PATH):
+        raise D110ResealError("_011 worktree bytes differ from its immutable Git blob")
+    request = read_json(target)
+    payload = dict(request)
+    request_digest = payload.pop("request_sha256", None)
+    if (
+        request.get("schema") != "trimem/development-tuning-branch-trigger/1.10"
+        or request.get("request_id")
+        != "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011"
+        or request.get("request_path") != REQUEST_011_PATH
+        or request.get("source_head") != fields[1]
+        or request.get("required_external_authorization")
+        != EXEC_011_AUTHORIZATION
+        or request_digest != "sha256:" + sha256(canonical_bytes(payload))
+        or raw != canonical_bytes(request) + b"\n"
+    ):
+        raise D110ResealError("_011 request identity or canonical bytes differ")
+    try:
+        import trimem_development_trigger_d110 as trigger_d110
+
+        trigger_d110.validate_sentinel_commit(
+            ROOT,
+            execution_head,
+            expected_parent=fields[1],
+            require_checked_out_head=True,
+        )
+    except (ImportError, OSError, ValueError, subprocess.SubprocessError) as exc:
+        raise D110ResealError("_011 full request contract differs") from exc
+    return execution_head
+
+
+def verify_historical_boundaries() -> tuple[dict[str, str], dict[str, str]]:
+    verify_tracked_hygiene()
+    validate_optional_exec_011_boundary()
+    ancestry = subprocess.run(
+        [*_git_prefix(), "rev-list", "--parents", "-n", "1", EXECUTION_HEAD],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+        text=True,
+        env=_hermetic_git_environment(),
     )
     if (
         ancestry.returncode != 0
@@ -589,8 +791,9 @@ def verify_historical_boundaries() -> tuple[dict[str, str], dict[str, str]]:
         raise D110ResealError("_010 execution head is not the exact sentinel-only child")
     sentinel_diff = subprocess.run(
         [
-            "git",
+            *_git_prefix(),
             "diff-tree",
+            "--no-ext-diff",
             "--no-commit-id",
             "--name-status",
             "-r",
@@ -601,6 +804,7 @@ def verify_historical_boundaries() -> tuple[dict[str, str], dict[str, str]]:
         capture_output=True,
         check=False,
         text=True,
+        env=_hermetic_git_environment(),
     )
     if (
         sentinel_diff.returncode != 0
@@ -608,7 +812,9 @@ def verify_historical_boundaries() -> tuple[dict[str, str], dict[str, str]]:
     ):
         raise D110ResealError("_010 execution commit is not sentinel-only")
     descendant = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", EXECUTION_HEAD, "HEAD"], cwd=ROOT
+        [*_git_prefix(), "merge-base", "--is-ancestor", EXECUTION_HEAD, "HEAD"],
+        cwd=ROOT,
+        env=_hermetic_git_environment(),
     )
     if descendant.returncode != 0:
         raise D110ResealError("D1.10 tree does not descend from immutable _010 head")
@@ -952,10 +1158,20 @@ def build_amendment(
             "historical_failed_request_path": REQUEST_PATH,
             "request_010_rerun_allowed": False,
             "request_010_attempt_two_allowed": False,
+            "request_011_allowed_after_exact_remote_gates": True,
+            "request_011_attempt_one_consumed": False,
             "request_011_created": False,
-            "fresh_execution_request": "NOT_CREATED_PENDING_EXPLICIT_APPROVAL",
-            "fresh_execution_request_creation_authorized": False,
+            "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011",
+            "recovery_request_path": REQUEST_011_PATH,
+            "fresh_execution_request": (
+                "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
+            ),
+            "fresh_execution_request_creation_authorized": True,
             "fresh_execution_request_requires_explicit_sentinel_authority": True,
+            "required_external_authorization": EXEC_011_AUTHORIZATION,
+            "recovery_authorization": EXEC_011_AUTHORIZATION,
+            "recovery_authorization_received": True,
+            "future_recovery_authority_received": True,
             "fresh_dev_execution_approval_required": True,
             "dev_execution_authorized": False,
             "heldout_authorized": False,
@@ -1042,10 +1258,20 @@ def build_inventory(
             "request_010_final": True,
             "request_010_rerun_allowed": False,
             "request_010_attempt_two_allowed": False,
+            "request_011_allowed_after_exact_remote_gates": True,
+            "request_011_attempt_one_consumed": False,
             "request_011_created": False,
-            "fresh_execution_request": "NOT_CREATED_PENDING_EXPLICIT_APPROVAL",
-            "fresh_execution_request_creation_authorized": False,
+            "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011",
+            "recovery_request_path": REQUEST_011_PATH,
+            "fresh_execution_request": (
+                "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
+            ),
+            "fresh_execution_request_creation_authorized": True,
             "fresh_execution_request_requires_explicit_sentinel_authority": True,
+            "required_external_authorization": EXEC_011_AUTHORIZATION,
+            "recovery_authorization": EXEC_011_AUTHORIZATION,
+            "recovery_authorization_received": True,
+            "future_recovery_authority_received": True,
             "fresh_dev_execution_approval_required": True,
             "dev_execution_authorized": False,
         },
@@ -1073,22 +1299,30 @@ def validate_readiness() -> None:
         and authority.get("approval_request_eligible") is True
         and authority.get("active_development_approval") is False
         and authority.get("development_execution_authorized") is False
+        and authority.get("future_recovery_authority_received") is True
+        and authority.get("recovery_authorization") == EXEC_011_AUTHORIZATION
+        and authority.get("recovery_authorization_received") is True
         and authority.get("request_010_attempt_one_consumed") is True
         and authority.get("request_010_rerun_allowed") is False
         and authority.get("request_010_attempt_two_allowed") is False
+        and authority.get("request_011_allowed_after_exact_remote_gates") is True
+        and authority.get("request_011_attempt_one_consumed") is False
         and authority.get("request_011_created") is False
         and authority.get("historical_failed_request_id")
         == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010"
         and authority.get("historical_failed_request_path") == REQUEST_PATH
         and authority.get("fresh_execution_request")
-        == "NOT_CREATED_PENDING_EXPLICIT_APPROVAL"
-        and authority.get("fresh_execution_request_creation_authorized") is False
+        == "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
+        and authority.get("fresh_execution_request_creation_authorized") is True
         and authority.get(
             "fresh_execution_request_requires_explicit_sentinel_authority"
         )
         is True
-        and "recovery_request_id" not in authority
-        and "recovery_request_path" not in authority
+        and authority.get("required_external_authorization")
+        == EXEC_011_AUTHORIZATION
+        and authority.get("recovery_request_id")
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011"
+        and authority.get("recovery_request_path") == REQUEST_011_PATH
         and authority.get("fresh_dev_execution_approval_required") is True
     ):
         raise D110ResealError("readiness D1.10 status/authority boundary differs")
@@ -1138,6 +1372,7 @@ def check_all() -> dict[str, Any]:
 
     trimem_freeze.check_freeze(ROOT)
     freeze_raw = source_bytes("artifacts/trimem_v1/freeze.json")
+    request_011_created = validate_optional_exec_011_boundary() is not None
     return {
         "status": "PASS",
         "classification": CLASSIFICATION,
@@ -1155,7 +1390,7 @@ def check_all() -> dict[str, Any]:
         "official_graders": 0,
         "benchmark_images": 0,
         "total_usd": 0,
-        "request_011_created": False,
+        "request_011_created": request_011_created,
         "fresh_dev_execution_approval_required": True,
     }
 

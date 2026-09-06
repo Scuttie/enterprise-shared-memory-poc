@@ -36,6 +36,7 @@ on:
       - scripts/trimem_development_trigger_d15.py
       - scripts/trimem_development_trigger_d18.py
       - scripts/trimem_development_trigger_d19.py
+      - scripts/trimem_development_trigger_d110.py
       - scripts/trimem_context_roundtrip.py
       - scripts/trimem_d19_reseal.py
       - scripts/trimem_d110_reseal.py
@@ -99,6 +100,7 @@ on:
       - tests/unit/test_trimem_d110_official_harness_loader.py
       - tests/unit/test_trimem_d110_resume_fail_closed.py
       - tests/unit/test_trimem_d110_status_and_reseal.py
+      - tests/unit/test_trimem_d110_e1_trigger.py
       - tests/unit/test_trimem_evidence_custody.py
       - tests/unit/test_trimem_remote_custody.py
       - tests/unit/test_trimem_git_workspace.py

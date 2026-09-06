@@ -8,12 +8,19 @@ Credential-free endpoint:
 
 `TRIMEM_V1_GRADER_LAUNCH_AND_STREAM_COMMIT_READY_FOR_DEV_APPROVAL`
 
-This endpoint does not authorize execution. A fresh, explicit DEV execution
-approval remains required. Request `_010` and run 34008674563 attempt 1 are
-final and immutable; they may not be rerun. `_010` is recorded only as the
-historical failed request, not as a recovery request. No fresh execution request
-exists and no `_011` request was created; separate explicit sentinel-creation
-authority is required before any later execution approval can bind a new request.
+Request `_010` and run 34008674563 attempt 1 are final and immutable; they may
+not be rerun. D1.10-E1 has now received the exact one-time authority
+`TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE`. That authority permits
+creation of `_011` only after the exact activation-source workflows and runner
+readiness pass. At the activation source, `_011` is not yet created, no
+run-bound protected approval exists, and DEV execution remains disabled.
+
+The new request uses schema
+`trimem/development-tuning-branch-trigger/1.10` and a distinct D1.10 trigger.
+It does not rewrite the historical D1.9 `_010` validator. The activation freeze
+includes the new reader and all required gate-workflow bytes but excludes the
+future `_011` sentinel; the sentinel's raw bytes are bound separately by the
+external approval.
 
 ## Correct status boundary
 
@@ -51,6 +58,18 @@ grader infrastructure state from scientific results, and commits validated cell
 result, ledger terminal, and stream cursor through the hash-bound
 `trimem/cell-commit-journal/1.0` protocol. Same-attempt resume is permitted only
 for explicit durable-suffix or cell-journal recovery dispositions.
+
+The `_011` request also binds a source-head-specific observation of exactly two
+fresh idle repository runners. Its timestamp is accepted at activation only
+within a one-hour age limit and five-minute future-clock tolerance. Before any
+dependency install or harness materialization, the assigned self-hosted
+bounded-context job re-observes exact Ubuntu 24.04 from `/etc/os-release`, the
+exact Python, Docker daemon, disk floor,
+zero-container state, all 13 cached digest images, absent stale roots, local
+runner registrations, and two distinct listener PIDs. All stable host facts
+must equal the committed readiness evidence; the live disk value must still
+meet the frozen 500 GiB floor. This probe has no protected secrets and performs
+no image pull, model call, grader run, or task-arm run.
 
 The hosted setup-python 3.11.10 executable has an embedded loader RPATH, so a
 stripped live child can start without `LD_LIBRARY_PATH`; that hosted behavior is

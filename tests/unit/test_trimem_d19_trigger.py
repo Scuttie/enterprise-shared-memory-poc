@@ -351,10 +351,19 @@ def test_d19_branch_trigger_requires_exact_push_identity(
         trigger.validate_branch_trigger(ROOT, event, environ=environment)
 
 
-def test_shared_secret_free_preflight_recognizes_active_d19_workflow(
+def test_shared_secret_free_preflight_recognizes_immutable_d19_workflow(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    workflow = (ROOT / preflight.WORKFLOW_PATH).read_bytes()
+    execution_head = _git(
+        ROOT,
+        "log",
+        "-1",
+        "--diff-filter=A",
+        "--format=%H",
+        "--",
+        trigger.SENTINEL_PATH,
+    )
+    workflow = trigger.commit_bytes(ROOT, execution_head, preflight.WORKFLOW_PATH)
     monkeypatch.setattr(
         preflight,
         "_commit_bytes",

@@ -108,9 +108,7 @@ def _assert_context_round_trip_precedes(
 ) -> None:
     marker = f"- name: {CONTEXT_ROUND_TRIP_STEP}"
     assert text.count(marker) == 1
-    terminal_round_trip = text.index(f"- name: {ROUND_TRIP_STEP}")
     context_round_trip = text.index(marker)
-    assert terminal_round_trip < context_round_trip
     assert CONTEXT_ROUND_TRIP_COMMAND in _step_block(
         text, CONTEXT_ROUND_TRIP_STEP
     )
@@ -134,7 +132,7 @@ def test_benchmark_installs_and_byte_verifies_pinned_gh_before_exec_gate() -> No
     assert "--approval-file" in gate_block
 
 
-def test_benchmark_has_only_the_d19_010_active_development_trigger() -> None:
+def test_benchmark_has_only_the_d110_011_active_development_trigger() -> None:
     text = _read(BENCHMARK_WORKFLOW)
     trigger = text[text.index("on:"):text.index("\nconcurrency:")]
     assert trigger == (
@@ -145,20 +143,19 @@ def test_benchmark_has_only_the_d19_010_active_development_trigger() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_011.json\n"
     )
     assert (
         "- artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
     ) in text
-    assert "group: trimem-v1-development-tuning-exec-010" in text
+    assert "group: trimem-v1-development-tuning-exec-011" in text
     preflight = _step_block(text, "Verify one-time zero-authority DEV trigger")
-    assert "scripts/trimem_development_trigger_d19.py" in preflight
+    assert "scripts/trimem_development_trigger_d110.py" in preflight
+    assert "scripts/trimem_development_trigger_d19.py" not in preflight
     assert "scripts/trimem_development_trigger_d18.py" not in preflight
-    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json" not in text
-    assert "trimem-v1-development-tuning-exec-009" not in text
-    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_008.json" not in text
-    assert "trimem-v1-development-tuning-exec-008" not in text
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json" not in trigger
+    assert "trimem-v1-development-tuning-exec-010" not in text
     assert "scripts/trimem_development_trigger_d15.py" not in text
 
 
@@ -173,6 +170,9 @@ def test_production_round_trip_runs_before_any_benchmark_provider_access() -> No
     assert "secrets." not in context_job
     assert "OPENAI_API_KEY" not in context_job
     assert "TRIMEM_EXEC_APPROVAL" not in context_job
+    assert text.index(f"- name: {CONTEXT_ROUND_TRIP_STEP}") < text.index(
+        f"- name: {ROUND_TRIP_STEP}"
+    )
     _assert_production_round_trip_precedes(
         text,
         "Install exact pinned GitHub CLI",
@@ -370,6 +370,7 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> No
         "scripts/trimem_development_trigger_preflight.py",
         "scripts/trimem_development_trigger_d18.py",
         "scripts/trimem_development_trigger_d19.py",
+        "scripts/trimem_development_trigger_d110.py",
         "scripts/trimem_context_roundtrip.py",
         "scripts/trimem_d19_reseal.py",
         "scripts/trimem_d110_reseal.py",

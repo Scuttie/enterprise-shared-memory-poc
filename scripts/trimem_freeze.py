@@ -157,6 +157,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_development_trigger_d15.py",
     "scripts/trimem_development_trigger_d18.py",
     "scripts/trimem_development_trigger_d19.py",
+    "scripts/trimem_development_trigger_d110.py",
     "scripts/trimem_development_phase_cap.py",
     "scripts/trimem_context_roundtrip.py",
     "scripts/trimem_d110_reseal.py",
@@ -301,6 +302,7 @@ TEST_PATHS = (
     "tests/unit/test_trimem_d110_atomic_resume.py",
     "tests/unit/test_trimem_d110_checkout_custody.py",
     "tests/unit/test_trimem_d110_status_and_reseal.py",
+    "tests/unit/test_trimem_d110_e1_trigger.py",
     "tests/unit/test_trimem_grader_smoke_trigger.py",
     "tests/unit/test_trimem_grader_smoke_authority.py",
     "tests/unit/test_trimem_grader_smoke_execution_accounting.py",
@@ -349,6 +351,12 @@ FIXTURE_PATHS = (
     "tests/fixtures/trimem_d110/exec_010_sanitized.json",
 )
 WORKFLOW_PATHS = (
+    ".github/workflows/ci.yml",
+    ".github/workflows/codeql.yml",
+    ".github/workflows/ci-docs.yml",
+    ".github/workflows/ci-company-package.yml",
+    ".github/workflows/ci-company-harness.yml",
+    ".github/workflows/ci-company-demo.yml",
     ".github/workflows/ci-trimem.yml",
     ".github/workflows/ci-trimem-e2e.yml",
     ".github/workflows/ci-trimem-harness-lock.yml",

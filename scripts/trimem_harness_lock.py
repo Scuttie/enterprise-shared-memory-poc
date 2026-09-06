@@ -697,11 +697,11 @@ def _prepare_harness_sources(
     root: Path,
     *,
     materialize_worktrees: bool,
-    checkout_core_autocrlf: str = "input",
+    checkout_core_autocrlf: str | None = None,
 ) -> dict[str, Path]:
     if not isinstance(root, Path):
         raise HarnessLockError("harness checkout root must be a pathlib.Path")
-    if checkout_core_autocrlf not in {"false", "input", "true"}:
+    if checkout_core_autocrlf not in {None, "false", "input", "true"}:
         raise HarnessLockError("checkout core.autocrlf value is invalid")
     environment, rows = _load_lock_rows()
     del environment
@@ -725,7 +725,21 @@ def _prepare_harness_sources(
                 raise HarnessLockError("harness Git metadata is not local")
         if not existed:
             _clone(row["repository"], target)
-        if existed:
+        if not existed:
+            _run_git(
+                target,
+                [
+                    "config",
+                    "--local",
+                    "core.autocrlf",
+                    checkout_core_autocrlf or "input",
+                ],
+            )
+        if materialize_worktrees and not existed:
+            _run_git(target, ["checkout", "--detach", row["revision"]], timeout=900)
+        if materialize_worktrees:
+            validate_pristine_checkout(target.absolute(), row["revision"])
+        if existed and checkout_core_autocrlf is not None:
             observed_autocrlf = _run_git(
                 target, ["config", "--get", "core.autocrlf"]
             ).decode("utf-8").strip()
@@ -733,20 +747,6 @@ def _prepare_harness_sources(
                 raise HarnessLockError(
                     "existing harness core.autocrlf differs from rehearsal"
                 )
-        else:
-            _run_git(
-                target,
-                [
-                    "config",
-                    "--local",
-                    "core.autocrlf",
-                    checkout_core_autocrlf,
-                ],
-            )
-        if materialize_worktrees and not existed:
-            _run_git(target, ["checkout", "--detach", row["revision"]], timeout=900)
-        if materialize_worktrees:
-            validate_pristine_checkout(target.absolute(), row["revision"])
         origin = _run_git(target, ["remote", "get-url", "origin"]).decode("utf-8").strip()
         if _normalized_repository_url(origin) != _normalized_repository_url(row["repository"]):
             raise HarnessLockError("official harness checkout origin mismatch")
@@ -759,7 +759,7 @@ def _prepare_harness_sources(
 
 
 def prepare_harnesses(
-    root: Path, *, checkout_core_autocrlf: str = "input"
+    root: Path, *, checkout_core_autocrlf: str | None = None
 ) -> dict[str, Path]:
     """Run the exact production clone, checkout, and Git-blob validation path."""
 
@@ -771,7 +771,7 @@ def prepare_harnesses(
 
 
 def prepare_harness_blob_sources(
-    root: Path, *, checkout_core_autocrlf: str = "input"
+    root: Path, *, checkout_core_autocrlf: str | None = None
 ) -> dict[str, Path]:
     """Validate portable object locks without materializing a case-sensitive tree."""
 

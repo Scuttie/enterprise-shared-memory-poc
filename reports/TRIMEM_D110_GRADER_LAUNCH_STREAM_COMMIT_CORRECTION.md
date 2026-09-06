@@ -66,6 +66,10 @@ explicit CLI value and stores it in each fresh checkout; ambient hostile Git
 configuration remains excluded. Generic product CI is pinned to the same exact
 Python 3.11.10 and exact PR head so its live loader tests exercise the D1.10
 toolchain rather than a floating Python build or GitHub merge checkout.
+Fresh production clones default to `core.autocrlf=input`; an existing resumed
+checkout is first subjected to the complete pristine-tree/config audit, so an
+explicit rehearsal setting cannot mask index-hidden, ignored, or redirected
+worktree tampering.
 
 The production-runtime checkpoint validator now also requires and verifies the
 hash-bound `inventory_sha256` proof field. This is checkpoint-proof schema

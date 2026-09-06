@@ -39,6 +39,7 @@
     "multi_swe_loader_self_check_sha256": "8b90c34682db8b4635754cbe2fb228e88c7d042b3b68e8b1462953e297b7b134",
     "official_grader_adapter_sha256": "ad744043a6ee09c65a9f4c281e4cb884f9ba5835bdb2e2e3e524b34f58d306bb",
     "resume_disposition_sha256": "68ea9af3e4374b343705d06cf30a61c007f50ded2a0e1cbd98f9ffbeab0a002d",
+    "tool_environment_lock_sha256": "a8e495788c0f38786e8660d8cd7690af9a9e1903747181ad528814e482fbf4cd",
     "workflow_sha256": "2c7e791f6bc5777b928ebae2d6dad5f063c2f0e028e5a6546a1bf3f79c2a02a2"
   },
   "correction_contracts": {
@@ -177,18 +178,19 @@
   },
   "implementation_sha256": {
     ".gitattributes": "f5c1838db6bfedfbb9718659c01c2fd970f526e462d218433e1c732571e6f491",
-    ".github/workflows/ci-trimem-dev-toolchain.yml": "7e0a7d5af6b26253ce3d815579ab298a02e00b3cab2aaf3a31cd3648b4418ed6",
+    ".github/workflows/ci-trimem-dev-toolchain.yml": "c1321b7589db3ba8b2701b0f440684241cd84a830711732e22db53be180848ad",
     ".github/workflows/ci-trimem-grader-loader.yml": "247a662ba259f3647f69b540373c3bcfc0510f205543e990a73a0dcf3e6a2c95",
     ".github/workflows/ci-trimem.yml": "5d20223fcbe3b67fc371d3a081d80310c4434107e1b02d9f5faef662cd00dbaf",
     ".github/workflows/trimem-benchmark.yml": "2c7e791f6bc5777b928ebae2d6dad5f063c2f0e028e5a6546a1bf3f79c2a02a2",
     "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json": "6c9f0192c4ffba6fa2ed67066d5b45edd30cd8e96ec14af68cf6fb258290a3d5",
     "artifacts/trimem_v1/readiness_requirements.json": "55b660453b0c93e786b19ded1711126631567e91a928eabb3109c94edecf44f7",
+    "configs/trimem_v1/tool_environment_lock.json": "a8e495788c0f38786e8660d8cd7690af9a9e1903747181ad528814e482fbf4cd",
     "docs/TRIMEM_V1_SYSTEM.md": "bcbf8d0fd3b422e5feaa9590d3140a93ca88d6814b7e52a3b71f5d6ec8863b4e",
-    "reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md": "43e54f1d21a38204a2e13a3de084e64487db464fff6f6245f091dbaf35c723a5",
+    "reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md": "e9a94e3bd6dbffac2e8381e7fa097a2424882d779751f12b30b113059cb8cbf0",
     "scripts/make_handoff_manifest.py": "9a54a3ba20b26ce248b55ee1a459e431fbd3af879b78a0a602c536d08b1a38c1",
     "scripts/trimem_benchmark_matrix.py": "0b69b8e16d74d0968dcd17c6e28cfd5c97f4555d066db0d9548edbd882cff372",
     "scripts/trimem_benchmark_run.py": "5e713f4da1fa48f43c41502d0720b32d62a72c19d2d06ac4ed7b6c5ccc4b47ab",
-    "scripts/trimem_d110_reseal.py": "fd0c370cf6dceb15c7789b15e5658ab451957ff74b17bdce59609ee1fd5e2465",
+    "scripts/trimem_d110_reseal.py": "140af2f3154bbeeb7d263351303ac3685fc7b90a09d73229b8fc412f51f9c4de",
     "scripts/trimem_freeze.py": "38601ba94e45e897e3a62daf11101fcfc5c5c68dffb08693acc5c63b13b89741",
     "scripts/trimem_grader_smoke.py": "15b1bae4a14ac74f53de016882e20f6962d0b5e2818b6a158ab26373c7fb748a",
     "scripts/trimem_harness_lock.py": "91472b833a14f47638192b41661eab5bce72debb6bb0c225294cffff323c2a7c",
@@ -209,7 +211,7 @@
     "tests/unit/test_trimem_d110_checkout_custody.py": "396f7d9587132ba324e35abfd763fee909f03113fef29d512d48110ae89df1ef",
     "tests/unit/test_trimem_d110_official_harness_loader.py": "70658da8368467850038e2e753596a63ae31334597c6071190a6a9180654d587",
     "tests/unit/test_trimem_d110_resume_fail_closed.py": "c8f8371397ea788867b4e1c94f43e1f8af57e1a14523bc32400bd7b823b44eca",
-    "tests/unit/test_trimem_d110_status_and_reseal.py": "6b2859f764e87a6d9c7872dc38fe8c83282c806388190c27ce8def11b2e182fa",
+    "tests/unit/test_trimem_d110_status_and_reseal.py": "afe5d536e258bca88968bbab3e25fa12e3bc3163171edba44d68aca8cfc0c4b5",
     "tests/unit/test_trimem_dev_toolchain_workflows.py": "d7b76c410817833c331d0ad473e25adab5d23686313faa959f368cf6f147c677",
     "tests/unit/test_trimem_development_trigger.py": "f31c82d4d1715ed40d38e59d8b39e05582bcad05ef3691ced9f0b4e27b12e655",
     "tests/unit/test_trimem_grader_smoke_trigger.py": "6410be7f96b9034e37ca95fa2ac224e2309f2ec0125e47b3e295cd294a619b8e",
@@ -231,7 +233,9 @@
     "memory_parameters_changed": false,
     "model_id": "gpt-5.4-mini-2026-03-17",
     "output_token_pools_changed": false,
+    "prompt_tool_parser_or_limits_changed": false,
     "reasoning_effort": "medium",
+    "runtime_lock_manifest_changed": false,
     "streams": [
       "M2-baseline",
       "M2-precision",
@@ -240,7 +244,11 @@
       "M0",
       "M1"
     ],
-    "task_arm_runs": 72
+    "task_arm_runs": 72,
+    "tool_source_identity_amendment": [
+      "src/enterprise_memory/trimem/git_workspace.py",
+      "src/enterprise_memory/trimem/production_runtime.py"
+    ]
   },
   "status": "FROZEN_CREDENTIAL_FREE_READY_FOR_DEV_APPROVAL"
 }

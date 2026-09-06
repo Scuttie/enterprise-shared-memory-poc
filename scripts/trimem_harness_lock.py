@@ -694,10 +694,15 @@ def validate_harness_lock_configuration() -> dict[str, Any]:
 
 
 def _prepare_harness_sources(
-    root: Path, *, materialize_worktrees: bool
+    root: Path,
+    *,
+    materialize_worktrees: bool,
+    checkout_core_autocrlf: str = "input",
 ) -> dict[str, Path]:
     if not isinstance(root, Path):
         raise HarnessLockError("harness checkout root must be a pathlib.Path")
+    if checkout_core_autocrlf not in {"false", "input", "true"}:
+        raise HarnessLockError("checkout core.autocrlf value is invalid")
     environment, rows = _load_lock_rows()
     del environment
     root = validate_lexical_directory_chain(root, label="harness checkout root")
@@ -720,6 +725,24 @@ def _prepare_harness_sources(
                 raise HarnessLockError("harness Git metadata is not local")
         if not existed:
             _clone(row["repository"], target)
+        if existed:
+            observed_autocrlf = _run_git(
+                target, ["config", "--get", "core.autocrlf"]
+            ).decode("utf-8").strip()
+            if observed_autocrlf != checkout_core_autocrlf:
+                raise HarnessLockError(
+                    "existing harness core.autocrlf differs from rehearsal"
+                )
+        else:
+            _run_git(
+                target,
+                [
+                    "config",
+                    "--local",
+                    "core.autocrlf",
+                    checkout_core_autocrlf,
+                ],
+            )
         if materialize_worktrees and not existed:
             _run_git(target, ["checkout", "--detach", row["revision"]], timeout=900)
         if materialize_worktrees:
@@ -735,20 +758,35 @@ def _prepare_harness_sources(
     return result
 
 
-def prepare_harnesses(root: Path) -> dict[str, Path]:
+def prepare_harnesses(
+    root: Path, *, checkout_core_autocrlf: str = "input"
+) -> dict[str, Path]:
     """Run the exact production clone, checkout, and Git-blob validation path."""
 
-    return _prepare_harness_sources(root, materialize_worktrees=True)
+    return _prepare_harness_sources(
+        root,
+        materialize_worktrees=True,
+        checkout_core_autocrlf=checkout_core_autocrlf,
+    )
 
 
-def prepare_harness_blob_sources(root: Path) -> dict[str, Path]:
+def prepare_harness_blob_sources(
+    root: Path, *, checkout_core_autocrlf: str = "input"
+) -> dict[str, Path]:
     """Validate portable object locks without materializing a case-sensitive tree."""
 
-    return _prepare_harness_sources(root, materialize_worktrees=False)
+    return _prepare_harness_sources(
+        root,
+        materialize_worktrees=False,
+        checkout_core_autocrlf=checkout_core_autocrlf,
+    )
 
 
 def build_rehearsal(
-    checkout_root: Path, *, materialize_worktrees: bool = True
+    checkout_root: Path,
+    *,
+    materialize_worktrees: bool = True,
+    checkout_core_autocrlf: str = "input",
 ) -> dict[str, Any]:
     """Exercise the selected full-production or object-only boundary, then stop."""
 
@@ -756,9 +794,15 @@ def build_rehearsal(
         raise HarnessLockError("exact rehearsal checkout root must be fresh")
     environment, rows = _load_lock_rows()
     harnesses = (
-        prepare_harnesses(checkout_root)
+        prepare_harnesses(
+            checkout_root,
+            checkout_core_autocrlf=checkout_core_autocrlf,
+        )
         if materialize_worktrees
-        else prepare_harness_blob_sources(checkout_root)
+        else prepare_harness_blob_sources(
+            checkout_root,
+            checkout_core_autocrlf=checkout_core_autocrlf,
+        )
     )
     dependencies: list[dict[str, Any]] = []
     harness_rows: list[dict[str, Any]] = []
@@ -770,10 +814,13 @@ def build_rehearsal(
             raise HarnessLockError("rehearsal harness row does not share one repository")
         repository = repository_paths.pop()
         core_autocrlf = _run_git(repository, ["config", "--get", "core.autocrlf"])
+        observed_core_autocrlf = core_autocrlf.decode("utf-8").strip()
+        if observed_core_autocrlf != checkout_core_autocrlf:
+            raise HarnessLockError("rehearsal core.autocrlf identity differs")
         harness_row: dict[str, Any] = {
             "benchmark_ids": list(row["benchmark_ids"]),
             "checkout_key": row["checkout_key"],
-            "core_autocrlf": core_autocrlf.decode("utf-8").strip(),
+            "core_autocrlf": observed_core_autocrlf,
             "pinned_commit": row["revision"],
             "repository": row["repository"],
             "working_tree_materialized": materialize_worktrees,
@@ -868,9 +915,12 @@ def write_rehearsal(
     output: Path,
     *,
     materialize_worktrees: bool = True,
+    checkout_core_autocrlf: str = "input",
 ) -> dict[str, Any]:
     value = build_rehearsal(
-        checkout_root, materialize_worktrees=materialize_worktrees
+        checkout_root,
+        materialize_worktrees=materialize_worktrees,
+        checkout_core_autocrlf=checkout_core_autocrlf,
     )
     _write_exclusive_json(output, value)
     return value
@@ -915,6 +965,12 @@ def main() -> int:
         action="store_true",
         help="validate object locks without a full working tree (Windows portability row)",
     )
+    parser.add_argument(
+        "--checkout-core-autocrlf",
+        choices=("false", "input", "true"),
+        required=True,
+        help="explicit trusted checkout conversion mode for this rehearsal row",
+    )
     args = parser.parse_args()
     materialize_worktrees = not args.blob_only
     try:
@@ -922,6 +978,7 @@ def main() -> int:
             args.checkout_root.resolve(),
             args.output.resolve(),
             materialize_worktrees=materialize_worktrees,
+            checkout_core_autocrlf=args.checkout_core_autocrlf,
         )
     except (OSError, HarnessLockError) as exc:
         failure = failure_rehearsal(

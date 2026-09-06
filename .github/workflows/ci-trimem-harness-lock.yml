@@ -43,14 +43,11 @@ jobs:
           cache: ""
 
       - name: Exercise frozen harness lock boundary and stop pre-EXEC
-        env:
-          GIT_CONFIG_COUNT: "1"
-          GIT_CONFIG_KEY_0: core.autocrlf
-          GIT_CONFIG_VALUE_0: ${{ matrix.core_autocrlf }}
         run: >-
           python scripts/trimem_harness_lock.py
           --checkout-root "${{ runner.temp }}/trimem-harness-lock-checkouts"
           --output "${{ runner.temp }}/trimem-harness-lock-report-${{ matrix.platform_id }}.json"
+          --checkout-core-autocrlf "${{ matrix.core_autocrlf }}"
           ${{ matrix.rehearsal_arg }}
 
       - name: Upload platform rehearsal report

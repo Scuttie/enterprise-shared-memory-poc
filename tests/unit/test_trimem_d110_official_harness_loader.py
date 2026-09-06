@@ -37,10 +37,18 @@ def _toolcache_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
 
 
 class _LoaderProbeRunner:
-    def __init__(self, *, binary: Path, prefix: Path, libdir: Path | None = None):
+    def __init__(
+        self,
+        *,
+        binary: Path,
+        prefix: Path,
+        libdir: Path | None = None,
+        ldlibrary: str = loader.EXPECTED_LIBPYTHON,
+    ):
         self.binary = binary.resolve()
         self.prefix = prefix.resolve()
         self.libdir = (libdir or prefix / "lib").resolve()
+        self.ldlibrary = ldlibrary
         self.calls: list[dict[str, Any]] = []
 
     def __call__(self, argv: list[str], **kwargs: Any) -> subprocess.CompletedProcess[bytes]:
@@ -51,7 +59,7 @@ class _LoaderProbeRunner:
             "prefix": str(self.prefix),
             "base_prefix": str(self.prefix),
             "libdir": str(self.libdir),
-            "ldlibrary": loader.EXPECTED_LIBPYTHON,
+            "ldlibrary": self.ldlibrary,
         }
         return subprocess.CompletedProcess(
             argv,
@@ -125,6 +133,64 @@ def test_two_distinct_verified_libdirs_fail_closed(tmp_path: Path) -> None:
     with pytest.raises(
         loader.OfficialHarnessPythonLoaderError,
         match="exactly one trusted Python library directory",
+    ):
+        loader.build_official_harness_python_loader(
+            {"PATH": os.environ.get("PATH", "")},
+            python_binary=binary,
+            runner=runner,
+        )
+
+
+def test_sysconfig_link_name_resolves_to_required_versioned_libpython(
+    tmp_path: Path,
+) -> None:
+    prefix, binary, library = _toolcache_fixture(tmp_path)
+    link_name = prefix / "lib/libpython3.11.so"
+    link_name.parent.chmod(0o755)
+    try:
+        link_name.symlink_to(library.name)
+    except OSError as exc:  # pragma: no cover - Windows policy dependent.
+        pytest.skip(f"symbolic links unavailable: {exc}")
+    finally:
+        link_name.parent.chmod(0o555)
+    runner = _LoaderProbeRunner(
+        binary=binary,
+        prefix=prefix,
+        ldlibrary=link_name.name,
+    )
+
+    built = loader.build_official_harness_python_loader(
+        {"PATH": os.environ.get("PATH", "")},
+        python_binary=binary,
+        runner=runner,
+    )
+
+    assert built.evidence["libpython_realpath"] == str(library.resolve())
+
+
+def test_sysconfig_link_name_cannot_resolve_to_different_library(
+    tmp_path: Path,
+) -> None:
+    prefix, binary, _library = _toolcache_fixture(tmp_path)
+    other = prefix / "lib/other.so"
+    other.parent.chmod(0o755)
+    other.write_bytes(b"different-library")
+    link_name = prefix / "lib/libpython3.11.so"
+    try:
+        link_name.symlink_to(other.name)
+    except OSError as exc:  # pragma: no cover - Windows policy dependent.
+        pytest.skip(f"symbolic links unavailable: {exc}")
+    finally:
+        link_name.parent.chmod(0o555)
+    runner = _LoaderProbeRunner(
+        binary=binary,
+        prefix=prefix,
+        ldlibrary=link_name.name,
+    )
+
+    with pytest.raises(
+        loader.OfficialHarnessPythonLoaderError,
+        match="does not bind the required libpython",
     ):
         loader.build_official_harness_python_loader(
             {"PATH": os.environ.get("PATH", "")},

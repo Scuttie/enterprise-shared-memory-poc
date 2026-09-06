@@ -75,6 +75,42 @@ def _git(
     return completed.stdout.strip()
 
 
+def test_harness_git_commands_ignore_ambient_config_triplets(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+    monkeypatch.setenv("GIT_CONFIG_COUNT", "1")
+    monkeypatch.setenv("GIT_CONFIG_KEY_0", "core.autocrlf")
+    monkeypatch.setenv("GIT_CONFIG_VALUE_0", "malicious")
+
+    def fake_run(argv, **kwargs):
+        captured["argv"] = list(argv)
+        captured["env"] = dict(kwargs["env"])
+        return subprocess.CompletedProcess(argv, 0, stdout=b"", stderr=b"")
+
+    monkeypatch.setattr(harness_lock.subprocess, "run", fake_run)
+    assert harness_lock._run_git(tmp_path, ["status", "--porcelain=v1"]) == b""
+    environment = captured["env"]
+    assert isinstance(environment, dict)
+    assert not {
+        "GIT_CONFIG_COUNT",
+        "GIT_CONFIG_KEY_0",
+        "GIT_CONFIG_VALUE_0",
+    }.intersection(environment)
+
+
+def test_harness_preparation_rejects_untrusted_autocrlf_value(
+    tmp_path: Path,
+) -> None:
+    with pytest.raises(harness_lock.HarnessLockError, match="autocrlf value"):
+        harness_lock._prepare_harness_sources(
+            tmp_path / "unused",
+            materialize_worktrees=False,
+            checkout_core_autocrlf="malicious",
+        )
+
+
 @pytest.fixture
 def git_blob_fixture(tmp_path: Path) -> dict[str, Any]:
     """Create regular, tree, and symlink entries without OS symlink support."""
@@ -456,11 +492,13 @@ def test_blob_only_rehearsal_reports_zero_execution_and_no_worktree(
     monkeypatch.setattr(
         harness_lock,
         "prepare_harness_blob_sources",
-        lambda _root: {"fixture_benchmark": repository},
+        lambda _root, **_kwargs: {"fixture_benchmark": repository},
     )
 
     report = harness_lock.build_rehearsal(
-        tmp_path / "fresh-report-root", materialize_worktrees=False
+        tmp_path / "fresh-report-root",
+        materialize_worktrees=False,
+        checkout_core_autocrlf="false",
     )
 
     assert report["status"] == "PASS"
@@ -523,11 +561,13 @@ def test_full_rehearsal_report_rechecks_head_cleanliness_and_working_observation
     monkeypatch.setattr(
         harness_lock,
         "prepare_harnesses",
-        lambda _root: {"fixture_benchmark": repository},
+        lambda _root, **_kwargs: {"fixture_benchmark": repository},
     )
 
     report = harness_lock.build_rehearsal(
-        tmp_path / "fresh-full-root", materialize_worktrees=True
+        tmp_path / "fresh-full-root",
+        materialize_worktrees=True,
+        checkout_core_autocrlf="false",
     )
 
     assert report["rehearsal_boundary"] == "EXACT_PRODUCTION_PREPARE_HARNESSES"
@@ -576,7 +616,7 @@ def test_rehearsal_fails_if_evidence_reread_differs_from_lock(
     monkeypatch.setattr(
         harness_lock,
         "prepare_harness_blob_sources",
-        lambda _root: {"fixture_benchmark": repository},
+        lambda _root, **_kwargs: {"fixture_benchmark": repository},
     )
     monkeypatch.setattr(
         harness_lock, "read_pinned_git_blob", lambda *_args: b"tampered\n"
@@ -584,7 +624,9 @@ def test_rehearsal_fails_if_evidence_reread_differs_from_lock(
 
     with pytest.raises(harness_lock.HarnessLockError, match="evidence blob"):
         harness_lock.build_rehearsal(
-            tmp_path / "fresh-tamper-root", materialize_worktrees=False
+            tmp_path / "fresh-tamper-root",
+            materialize_worktrees=False,
+            checkout_core_autocrlf="false",
         )
 
 
@@ -600,6 +642,8 @@ def test_cli_failure_still_writes_zero_counter_report(tmp_path: Path) -> None:
             str(existing_checkout_root),
             "--output",
             str(report_path),
+            "--checkout-core-autocrlf",
+            "false",
             "--blob-only",
         ],
         cwd=ROOT,
@@ -637,6 +681,8 @@ def test_cross_platform_rehearsal_workflow_is_credential_free_and_pinned() -> No
     assert "scope: windows-git-blob-portability" in workflow
     assert "python scripts/trimem_harness_lock.py" in workflow
     assert "--checkout-root \"${{ runner.temp }}/trimem-harness-lock-checkouts\"" in workflow
+    assert '--checkout-core-autocrlf "${{ matrix.core_autocrlf }}"' in workflow
+    assert "GIT_CONFIG_COUNT" not in workflow
     assert "workflow_dispatch" not in workflow
     assert "if: always()" in workflow
     for forbidden in (

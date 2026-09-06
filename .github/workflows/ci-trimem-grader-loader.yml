@@ -38,6 +38,7 @@ jobs:
           set -euo pipefail
           exact_python="$pythonLocation/bin/python"
           "$exact_python" - "$exact_python" "$RUNNER_TEMP/trimem-d110-loader-regression.json" <<'PY'
+          import atexit
           import hashlib
           import json
           import os
@@ -52,9 +53,45 @@ jobs:
               SAFE_ENV_KEYS,
               build_official_harness_python_loader,
           )
+          from trimem_d110_reseal import validate_exec_010_sanitized_fixture
 
           exact_python = str(Path(sys.argv[1]).resolve(strict=True))
           output = Path(sys.argv[2])
+          zero = {
+              "grader_attempts": 0,
+              "grader_containers": 0,
+              "image_pulls": 0,
+              "model_generation_calls": 0,
+              "model_metadata_requests": 0,
+              "paid_calls": 0,
+              "usd": 0,
+          }
+
+          def preserve_failure_evidence() -> None:
+              if output.exists():
+                  return
+              failure = {
+                  "schema": "trimem/d110-exact-010-loader-regression/1.0",
+                  "status": "NOT_READY",
+                  "marker": "TRIMEM_D110_EXACT_010_LOADER_REGRESSION_NOT_READY",
+                  "failure_reason": "credential-free loader regression failed",
+                  "counters": zero,
+              }
+              atomic_write_bytes(
+                  output,
+                  (
+                      json.dumps(
+                          failure,
+                          ensure_ascii=False,
+                          sort_keys=True,
+                          separators=(",", ":"),
+                          allow_nan=False,
+                      )
+                      + "\n"
+                  ).encode("utf-8"),
+              )
+
+          atexit.register(preserve_failure_evidence)
           historical = {
               key: str(value)
               for key, value in os.environ.items()
@@ -62,6 +99,18 @@ jobs:
           }
           historical["PYTHONUNBUFFERED"] = "1"
           probe = [exact_python, "-c", "print('TRIMEM_EXACT_PYTHON_STARTED')"]
+          fixture = validate_exec_010_sanitized_fixture()
+          expected_regression = fixture["expected_regression"]
+          expected_stderr = expected_regression["process_stderr_utf8"].encode("utf-8")
+          if (
+              expected_regression["process_count"] != 1
+              or expected_regression["first_disposition"]
+              != "GLOBAL_GRADER_INFRA_FAILURE"
+              or expected_regression["resume_eligible"] is not False
+              or expected_regression["resume_started"] is not False
+              or b"libpython3.11.so.1.0" not in expected_stderr
+          ):
+              raise SystemExit("sanitized exact _010 loader regression differs")
           before = subprocess.run(
               probe,
               env=historical,
@@ -70,8 +119,11 @@ jobs:
               timeout=30,
               check=False,
           )
-          if before.returncode != 127 or b"libpython3.11.so.1.0" not in before.stderr:
-              raise SystemExit("historical stripped loader did not reproduce exact exit 127")
+          if before.returncode == 0:
+              if before.stdout != b"TRIMEM_EXACT_PYTHON_STARTED\n" or before.stderr:
+                  raise SystemExit("toolcache stripped-loader success was malformed")
+          elif before.returncode != 127 or b"libpython3.11.so.1.0" not in before.stderr:
+              raise SystemExit("toolcache stripped-loader behavior was unexpected")
           corrected = minimal_subprocess_env(
               os.environ, python_binary=exact_python
           )
@@ -90,25 +142,24 @@ jobs:
           )
           if after.returncode != 0 or after.stdout != b"TRIMEM_EXACT_PYTHON_STARTED\n":
               raise SystemExit("corrected loader did not start exact Python")
-          zero = {
-              "grader_attempts": 0,
-              "grader_containers": 0,
-              "image_pulls": 0,
-              "model_generation_calls": 0,
-              "model_metadata_requests": 0,
-              "paid_calls": 0,
-              "usd": 0,
-          }
           report = {
               "schema": "trimem/d110-exact-010-loader-regression/1.0",
               "status": "PASS",
               "marker": "TRIMEM_D110_EXACT_010_LOADER_REGRESSION_PASS",
               "exact_python": exact_python,
+              "historical_evidence_source": (
+                  "SEALED_SANITIZED_EXEC_010_PRODUCTION_SHAPED_REGRESSION"
+              ),
               "historical_environment_keys": sorted(historical),
               "historical_ld_library_path_present": "LD_LIBRARY_PATH" in historical,
-              "historical_exit_code": before.returncode,
-              "historical_stdout_sha256": hashlib.sha256(before.stdout).hexdigest(),
-              "historical_stderr_sha256": hashlib.sha256(before.stderr).hexdigest(),
+              "historical_exit_code": fixture["historical_failure_boundary"][
+                  "exact_child_python_exit_code"
+              ],
+              "historical_stderr_sha256": hashlib.sha256(expected_stderr).hexdigest(),
+              "toolcache_stripped_exit_code": before.returncode,
+              "toolcache_stripped_has_embedded_loader_path": before.returncode == 0,
+              "toolcache_stripped_stdout_sha256": hashlib.sha256(before.stdout).hexdigest(),
+              "toolcache_stripped_stderr_sha256": hashlib.sha256(before.stderr).hexdigest(),
               "corrected_environment_keys": sorted(corrected),
               "corrected_environment_sha256": hashlib.sha256(
                   json.dumps(corrected, sort_keys=True, separators=(",", ":")).encode()

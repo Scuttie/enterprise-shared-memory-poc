@@ -133,13 +133,27 @@ def test_d19_contract_selects_only_fresh_010_authority() -> None:
 
 
 def test_d19_preserves_history_across_source_and_exact_010_trigger_phases() -> None:
-    head = _git(ROOT, "rev-parse", "HEAD")
+    head = _git(
+        ROOT,
+        "log",
+        "-1",
+        "--diff-filter=A",
+        "--format=%H",
+        "--",
+        trigger.SENTINEL_PATH,
+    )
+    assert head
+    assert _git(ROOT, "merge-base", "--is-ancestor", head, "HEAD") == ""
     assert len(trigger.HISTORICAL_REQUEST_SHA256) == 9
     for path, expected in trigger.HISTORICAL_REQUEST_SHA256.items():
         assert hashlib.sha256(trigger.commit_bytes(ROOT, head, path)).hexdigest() == expected
     sentinel = ROOT / trigger.SENTINEL_PATH
     if sentinel.exists():
-        validated = trigger.validate_sentinel_commit(ROOT, head)
+        validated = trigger.validate_sentinel_commit(
+            ROOT,
+            head,
+            require_checked_out_head=False,
+        )
         assert validated["request_id"] == trigger.REQUEST_ID
         assert validated["source_head"] == _git(ROOT, "rev-parse", f"{head}^")
     else:

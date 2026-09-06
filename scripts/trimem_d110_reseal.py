@@ -141,8 +141,10 @@ PRESERVED_SCIENTIFIC_PATHS = (
 # deliberately added.
 IMPLEMENTATION_PATHS = (
     ".gitattributes",
+    ".github/workflows/ci.yml",
     ".github/workflows/ci-trimem-dev-toolchain.yml",
     ".github/workflows/ci-trimem-grader-loader.yml",
+    ".github/workflows/ci-trimem-harness-lock.yml",
     ".github/workflows/ci-trimem.yml",
     ".github/workflows/trimem-benchmark.yml",
     "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json",
@@ -172,6 +174,7 @@ IMPLEMENTATION_PATHS = (
     "tests/unit/test_trimem_benchmark_readiness.py",
     "tests/unit/test_trimem_dev_toolchain_workflows.py",
     "tests/unit/test_trimem_development_trigger.py",
+    "tests/unit/test_trimem_d19_trigger.py",
     "tests/unit/test_trimem_d110_official_harness_loader.py",
     "tests/unit/test_trimem_d110_resume_fail_closed.py",
     "tests/unit/test_trimem_d110_atomic_resume.py",
@@ -181,6 +184,7 @@ IMPLEMENTATION_PATHS = (
     "tests/unit/test_trimem_grader_terminal_evidence.py",
     "tests/unit/test_trimem_harness_lock.py",
     "tests/unit/test_trimem_multi_prebuilt_evaluation.py",
+    "tests/unit/test_trimem_multi_swe_preexec.py",
     "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
     "tests/unit/test_trimem_production_runtime.py",
     "tests/unit/test_trimem_remote_custody.py",

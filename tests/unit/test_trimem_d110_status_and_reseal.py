@@ -209,6 +209,8 @@ def test_changed_path_coverage_rejects_an_unsealed_commit_path(
 def test_reseal_rejects_intermediate_touch_then_revert_of_history(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+    monkeypatch.delenv("GITHUB_EVENT_NAME", raising=False)
     calls: list[list[str]] = []
 
     def touched_history(argv, **_kwargs):

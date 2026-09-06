@@ -52,6 +52,21 @@ result, ledger terminal, and stream cursor through the hash-bound
 `trimem/cell-commit-journal/1.0` protocol. Same-attempt resume is permitted only
 for explicit durable-suffix or cell-journal recovery dispositions.
 
+The hosted setup-python 3.11.10 executable has an embedded loader RPATH, so a
+stripped live child can start without `LD_LIBRARY_PATH`; that hosted behavior is
+not misreported as a reproduction of the historical self-hosted exit 127. The
+historical failure remains proven by the sealed sanitized `_010`
+production-shaped regression. The live rehearsal proves the corrected hermetic
+launch and binds sysconfig's `libpython3.11.so` link name to the required,
+in-prefix `libpython3.11.so.1.0` bytes and digest. Writable library directories
+or files remain fail-closed.
+
+Harness portability rehearsal now passes `core.autocrlf` as a validated,
+explicit CLI value and stores it in each fresh checkout; ambient hostile Git
+configuration remains excluded. Generic product CI is pinned to the same exact
+Python 3.11.10 and exact PR head so its live loader tests exercise the D1.10
+toolchain rather than a floating Python build or GitHub merge checkout.
+
 The production-runtime checkpoint validator now also requires and verifies the
 hash-bound `inventory_sha256` proof field. This is checkpoint-proof schema
 hardening only: scientific runtime behavior, model behavior, and every memory

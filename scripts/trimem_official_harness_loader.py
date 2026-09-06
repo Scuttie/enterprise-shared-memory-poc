@@ -248,6 +248,36 @@ def _validated_sysconfig_libdir(value: str, prefix: Path) -> tuple[Path, Path, P
         ) from exc
 
 
+def _validate_reported_ldlibrary(
+    value: str,
+    *,
+    libdir: Path,
+    expected_real_library: Path,
+    prefix: Path,
+) -> None:
+    """Bind CPython's link-name to the required versioned libpython bytes."""
+
+    accepted_names = {EXPECTED_LIBPYTHON, "libpython3.11.so"}
+    if value not in accepted_names or Path(value).name != value:
+        raise OfficialHarnessPythonLoaderError("loader probe LDLIBRARY differs")
+    reported_path = libdir / value
+    try:
+        reported_real = reported_path.resolve(strict=True)
+    except OSError as exc:
+        raise OfficialHarnessPythonLoaderError(
+            "loader probe LDLIBRARY is unavailable"
+        ) from exc
+    if (
+        not reported_real.is_file()
+        or not _is_within(reported_real, prefix)
+        or reported_real != expected_real_library
+    ):
+        raise OfficialHarnessPythonLoaderError(
+            "loader probe LDLIBRARY does not bind the required libpython"
+        )
+    _require_secure(reported_real, kind="loader probe LDLIBRARY")
+
+
 def _sanitized_base_environment(source: Mapping[str, str]) -> dict[str, str]:
     result: dict[str, str] = {}
     for key, value in source.items():
@@ -365,8 +395,8 @@ def build_official_harness_python_loader(
             raise OfficialHarnessPythonLoaderError("loader probe prefix does not resolve") from exc
         if observed_prefix != derived_prefix or observed_base_prefix != derived_prefix:
             raise OfficialHarnessPythonLoaderError("loader probe Python prefix differs")
-        if payload["ldlibrary"] != EXPECTED_LIBPYTHON:
-            raise OfficialHarnessPythonLoaderError("loader probe LDLIBRARY differs")
+        if not payload["ldlibrary"]:
+            raise OfficialHarnessPythonLoaderError("loader probe LDLIBRARY is unavailable")
         if not payload["libdir"]:
             raise OfficialHarnessPythonLoaderError("loader probe LIBDIR is unavailable")
         accepted: dict[Path, tuple[Path, Path, Path]] = {}
@@ -389,6 +419,12 @@ def build_official_harness_python_loader(
                 "exactly one trusted Python library directory is required"
             )
         libdir, libpython_path, libpython_realpath = next(iter(accepted.values()))
+        _validate_reported_ldlibrary(
+            payload["ldlibrary"],
+            libdir=libdir,
+            expected_real_library=libpython_realpath,
+            prefix=derived_prefix,
+        )
         environment["LD_LIBRARY_PATH"] = str(libdir)
         libpython_sha256, libpython_bytes = _sha256_file(libpython_realpath)
         libdir_value: str | None = str(libdir)

@@ -5101,6 +5101,9 @@ def validate_workflows() -> None:
         and "python_version: 3.11.10" in portable
         and "python_version: 3.11.9" in portable
         and "rehearsal_arg: --blob-only" in portable
+        and '--checkout-core-autocrlf "${{ matrix.core_autocrlf }}"'
+        in portable
+        and "GIT_CONFIG_COUNT" not in portable
         and "trimem_harness_lock.py" in portable
         and "environment:" not in portable
         and "secrets." not in portable,

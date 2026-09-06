@@ -1246,7 +1246,17 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         encoding="utf-8",
         newline="\n",
     )
-    source_head = _git(ROOT, "rev-parse", "HEAD")
+    sentinel_head = _git(
+        ROOT,
+        "log",
+        "-1",
+        "--diff-filter=A",
+        "--format=%H",
+        "--",
+        trigger_d19.SENTINEL_PATH,
+    )
+    assert sentinel_head
+    source_head = _git(ROOT, "rev-parse", f"{sentinel_head}^")
     _git(
         repository,
         "update-ref",

@@ -8,6 +8,7 @@ BENCHMARK_WORKFLOW = ROOT / ".github/workflows/trimem-benchmark.yml"
 TOOLCHAIN_WORKFLOW = ROOT / ".github/workflows/ci-trimem-dev-toolchain.yml"
 STATIC_WORKFLOW = ROOT / ".github/workflows/ci-trimem.yml"
 LOADER_WORKFLOW = ROOT / ".github/workflows/ci-trimem-grader-loader.yml"
+GENERIC_WORKFLOW = ROOT / ".github/workflows/ci.yml"
 
 INSTALL_COMMAND = "python scripts/trimem_install_pinned_gh.py"
 VERIFY_COMMAND = "python scripts/trimem_verify_gh_lock.py"
@@ -499,6 +500,15 @@ def test_required_static_gate_includes_company_handoff_and_secret_scan() -> None
     assert "python scripts/release_check.py --secrets" in text
 
 
+def test_generic_ci_uses_exact_head_and_d110_python() -> None:
+    text = _read(GENERIC_WORKFLOW)
+    assert "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683" in text
+    assert "persist-credentials: false" in text
+    assert "ref: ${{ github.event.pull_request.head.sha || github.sha }}" in text
+    assert "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065" in text
+    assert 'python-version: "3.11.10"' in text
+
+
 def test_d110_loader_workflow_is_exact_ubuntu_credential_free_preflight() -> None:
     text = _read(LOADER_WORKFLOW)
     assert "runs-on: ubuntu-24.04" in text
@@ -517,8 +527,12 @@ def test_d110_loader_workflow_is_exact_ubuntu_credential_free_preflight() -> Non
     assert "scripts/trimem_official_harness_loader_preflight.py" in text
     assert "TRIMEM_OFFICIAL_HARNESS_LOADER_PREFLIGHT_PASS" in text
     assert "Reproduce exact _010 loader failure and corrected launch" in text
-    assert "historical stripped loader did not reproduce exact exit 127" in text
+    assert "validate_exec_010_sanitized_fixture" in text
+    assert "toolcache_stripped_has_embedded_loader_path" in text
+    assert "toolcache stripped-loader behavior was unexpected" in text
     assert "TRIMEM_D110_EXACT_010_LOADER_REGRESSION_PASS" in text
+    assert "TRIMEM_D110_EXACT_010_LOADER_REGRESSION_NOT_READY" in text
+    assert "preserve_failure_evidence" in text
     assert "libpython3.11.so.1.0" in text
     assert "historical_exit_code" in text
     assert "corrected_exit_code" in text

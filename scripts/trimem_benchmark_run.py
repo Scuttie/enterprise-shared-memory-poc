@@ -6080,7 +6080,7 @@ def _secure_retained_path(
         current = current / part
         if _is_link_or_reparse(current):
             raise BenchmarkExecutionError(
-                "cell-commit retained evidence path contains a link or reparse point"
+                "cell-commit retained evidence path contains a symlink or reparse point"
             )
     try:
         resolved_root = lexical_root.resolve(strict=True)
@@ -6336,9 +6336,13 @@ def _validate_cell_session_result_against_done_checkpoint_impl(
     events_path = evidence_root / "events.jsonl"
     _secure_retained_path(task_dir, events_path, directory=False)
     checkpoint_entries = list(checkpoint_dir.iterdir())
-    if any(
-        entry.is_symlink() or not entry.is_file() for entry in checkpoint_entries
-    ) or {entry.name for entry in checkpoint_entries} != {
+    if any(_is_link_or_reparse(entry) for entry in checkpoint_entries):
+        raise BenchmarkExecutionError(
+            "cell-commit agent checkpoint contains a symlink or reparse point"
+        )
+    if any(not entry.is_file() for entry in checkpoint_entries) or {
+        entry.name for entry in checkpoint_entries
+    } != {
         f"{expected_run_id}.json",
         f"{expected_run_id}.sha256",
     }:

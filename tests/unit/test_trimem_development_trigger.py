@@ -35,6 +35,13 @@ import trimem_public_artifact as public_artifact  # noqa: E402
 
 REAL_COLLECT_REMOTE_GATE_EVIDENCE = trigger.collect_remote_gate_evidence
 
+# The tests above the D1.9 section exercise the retired ``_005`` reader.  Its
+# fixture must therefore be assembled from the last committed pre-D1.9 tree,
+# not from whichever files happen to be checked out while the D1.9 seal is
+# being edited.  In particular, the historical recovery inputs are immutable
+# Git blobs even when a later freeze happens to carry those paths too.
+LEGACY_PREFLIGHT_FIXTURE_HEAD = trigger_d19.PREVIOUS_EXECUTION_HEAD
+
 
 def _git(repository: Path, *args: str) -> str:
     completed = subprocess.run(
@@ -82,17 +89,20 @@ def _initialize(repository: Path, *, bind_recovery_history: bool = True) -> str:
             "refs/heads/codex/trimem-coder-v1",
             trigger.PREVIOUS_EXECUTION_HEAD,
         )
-    amendment = json.loads(
-        (ROOT / trigger.MODEL_PRICING_AMENDMENT_PATH).read_text(encoding="utf-8")
+    def legacy_blob(path: str) -> bytes:
+        return trigger._commit_bytes(ROOT, LEGACY_PREFLIGHT_FIXTURE_HEAD, path)
+
+    amendment = trigger.strict_json_object(
+        legacy_blob(trigger.MODEL_PRICING_AMENDMENT_PATH)
     )
-    candidates = json.loads(
-        (ROOT / trigger.M2_CANDIDATE_MANIFEST_PATH).read_text(encoding="utf-8")
+    candidates = trigger.strict_json_object(
+        legacy_blob(trigger.M2_CANDIDATE_MANIFEST_PATH)
     )
-    toolchain_amendment = json.loads(
-        (ROOT / trigger.TOOLCHAIN_AMENDMENT_PATH).read_text(encoding="utf-8")
+    toolchain_amendment = trigger.strict_json_object(
+        legacy_blob(trigger.TOOLCHAIN_AMENDMENT_PATH)
     )
-    solve_budget_lock = json.loads(
-        (ROOT / trigger.SOLVE_OUTPUT_BUDGET_LOCK_PATH).read_text(encoding="utf-8")
+    solve_budget_lock = trigger.strict_json_object(
+        legacy_blob(trigger.SOLVE_OUTPUT_BUDGET_LOCK_PATH)
     )
     additional_paths = set(amendment["preserved_contracts"]["path_sha256"])
     additional_paths.update(
@@ -112,7 +122,7 @@ def _initialize(repository: Path, *, bind_recovery_history: bool = True) -> str:
     for relative in sorted(paths):
         destination = repository / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes((ROOT / relative).read_bytes())
+        destination.write_bytes(legacy_blob(relative))
     closure = {}
     for relative in sorted(paths):
         raw = (repository / relative).read_bytes()
@@ -1223,36 +1233,53 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     repository = tmp_path / "repository"
-    source_head = _initialize(repository)
-    request = {
-        "phase": trigger_d18.EXPECTED_PHASE,
-        "request_id": trigger_d18.REQUEST_ID,
-        "required_external_approval_fields": list(
-            approval_validator.DEVELOPMENT_APPROVAL_FIELDS
-        ),
-        "source_head": source_head,
-    }
-    request_path = repository / trigger_d18.SENTINEL_PATH
+    repository.mkdir()
+    _git(repository, "init", "-b", "codex/trimem-coder-v1")
+    _git(repository, "config", "user.name", "TriMem Test")
+    _git(repository, "config", "user.email", "trimem@example.invalid")
+    objects = Path(_git(ROOT, "rev-parse", "--git-path", "objects"))
+    if not objects.is_absolute():
+        objects = ROOT / objects
+    alternates = repository / ".git" / "objects" / "info" / "alternates"
+    alternates.write_text(
+        objects.resolve().as_posix() + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    source_head = _git(ROOT, "rev-parse", "HEAD")
+    _git(
+        repository,
+        "update-ref",
+        "refs/heads/codex/trimem-coder-v1",
+        source_head,
+    )
+    _git(repository, "reset", "--hard", source_head)
+    request = trigger_d19.build_request(
+        repository,
+        source_head=source_head,
+        remote_gate_evidence=_remote_gate_evidence(source_head),
+    )
+    request_path = repository / trigger_d19.SENTINEL_PATH
     _write_json(request_path, request)
-    execution_head = _commit(repository, "fixture: active D1.8 sentinel only")
+    execution_head = _commit(repository, "fixture: active D1.9 sentinel only")
     request_raw = request_path.read_bytes()
-    request = trigger_d18.strict_json(request_raw)
+    request = trigger_d19.strict_json(request_raw)
     policy = json.loads((repository / trigger.POLICY_REQUEST_PATH).read_text(encoding="utf-8"))
     hard = json.loads((repository / trigger.COST_PLAN_PATH).read_text(encoding="utf-8"))[
         "phase_hard_caps"
-    ][trigger_d18.EXPECTED_PHASE]
+    ][trigger_d19.EXPECTED_PHASE]
     freeze_sha256 = hashlib.sha256(
         (repository / trigger.FREEZE_PATH).read_bytes()
     ).hexdigest()
     request_sha256 = hashlib.sha256(request_raw).hexdigest()
     timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     document = approval_validator.build_external_approval_document(
-        request_id=trigger_d18.REQUEST_ID,
+        request_id=trigger_d19.REQUEST_ID,
         request_sha256=request_sha256,
         git_commit=execution_head,
         source_git_commit=source_head,
         freeze_sha256=freeze_sha256,
-        phase=trigger_d18.EXPECTED_PHASE,
+        phase=trigger_d19.EXPECTED_PHASE,
         task_arm_runs=72,
         paid_model_call_cap=1873,
         input_token_cap=36_004_096,
@@ -1266,7 +1293,7 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         approval_timestamp=timestamp,
         openai_api_key="DUMMY-VISIBLE-ASCII-CREDENTIAL-ROUNDTRIP",
         approval_nonce="credential-free-roundtrip-0001",
-        model_id=trigger_d18.MODEL_ID,
+        model_id=trigger_d19.MODEL_ID,
     )
     approval_path = tmp_path / "external-approval.json"
     approval_raw = _write_json(approval_path, document)
@@ -1274,7 +1301,7 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         document,
         request=request,
         policy_request=policy,
-        phase=trigger_d18.EXPECTED_PHASE,
+        phase=trigger_d19.EXPECTED_PHASE,
         hard_cap=hard,
         request_sha256=request_sha256,
         freeze_sha256=freeze_sha256,
@@ -1291,7 +1318,7 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         "freeze_sha256": freeze_sha256,
         "git_head": execution_head,
         "source_head": source_head,
-        "phase": trigger_d18.EXPECTED_PHASE,
+        "phase": trigger_d19.EXPECTED_PHASE,
     }
     results = repository / "artifacts/trimem_v1/benchmark_exec/development"
     results.mkdir(parents=True)
@@ -1312,16 +1339,6 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         "source_head",
     }
     monkeypatch.setattr(benchmark_matrix, "ROOT", repository)
-    # Keep `_009` entirely inside the disposable repository.  Dedicated trigger
-    # tests cover the complete D1.8 request builder; this evidence test injects
-    # its already-validated active request at the aggregate boundary.
-    monkeypatch.setattr(
-        benchmark_matrix,
-        "validate_development_sentinel_commit",
-        lambda selected_repository, selected_head: request
-        if selected_repository == repository and selected_head == execution_head
-        else pytest.fail("aggregate selected the wrong D1.8 fixture commit"),
-    )
     monkeypatch.setenv("GITHUB_RUN_ID", "246813579")
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
     aggregated = benchmark_matrix._approval_binding("development", results)
@@ -1716,28 +1733,61 @@ def test_unknown_provider_failure_consumes_role_reservation_conservatively(
     ledger = _development_budget_ledger(tmp_path, extraction_calls=1)
     task_arm_key = "M2-baseline:M2:target-001"
     ledger.reserve_task_arm(task_arm_key)
-    reservation = ledger.reserve(
-        "extract-001",
-        task_arm_key=task_arm_key,
-        call_kind="extract",
-        input_upper_bound=13,
-        output_cap=benchmark_run.MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND["extract"],
+    bridge = benchmark_run.AsyncProviderModelGateway(
+        object(), lambda coroutine: coroutine, expected_model="fixture-model"
     )
-    ledger.reconcile(
-        "extract-001",
-        reservation,
-        input_tokens=0,
-        cached_input_tokens=0,
-        output_tokens=0,
-        status="UNKNOWN_FAILURE_CONSERVATIVE",
-        conservative_unknown=True,
+    bridge.invoke = lambda _request: pytest.fail(  # type: ignore[method-assign]
+        "an already-started provider request must never be sent again"
+    )
+    budgeted = benchmark_run.BudgetedModelGateway(
+        bridge, ledger, stream_id="M2-baseline"
+    )
+    request = benchmark_run.GatewayRequest(
+        task_id="target-001",
+        arm="M2",
+        step_no=1,
+        call_kind="extract",
+        logical_call_id="extract-001",
+        prompt="bounded extraction prompt",
+        max_output_tokens=benchmark_run.MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[
+            "extract"
+        ],
+        org_id="benchmark",
+        active_node_id="S1",
+    )
+    preflight = budgeted.preview_reservation(request)
+    journal = benchmark_run.TerminalInvocationJournal(tmp_path / "journal")
+    journaled = benchmark_run.JournaledModelGateway(budgeted, journal)
+    journal_path = journal.begin_model_request(
+        request.logical_call_id,
+        benchmark_run.gateway_request_sha256(request),
+        preflight,
+    )
+    budgeted.reserve_preflighted(request, preflight)
+    journal.transition_model(
+        journal_path,
+        expected=("REQUEST_RECORDED",),
+        status="PROVIDER_SEND_STARTED",
+        values={"provider_send_started": True},
+    )
+    assert journaled.request_lifecycle(request)["state"] == "PROVIDER_SEND_STARTED"
+
+    with pytest.raises(benchmark_run.GatewayInvocationFailure) as caught:
+        journaled.replay_terminal(request)
+    assert caught.value.status == "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"
+    assert caught.value.terminal_outcome_replayed is True
+    assert benchmark_run.read_json(journal_path)["status"] == (
+        "PROVIDER_OUTCOME_UNKNOWN"
     )
     state = benchmark_run.read_json(ledger.path)
     assert state["outstanding"]["extraction_calls"] == 0
     assert state["actual"]["extraction_calls"] == 1
     assert state["actual"]["paid_model_calls"] == 1
-    assert state["actual"]["input_tokens"] == 13
-    assert state["actual"]["output_tokens"] == 8_192
+    assert state["actual"]["input_tokens"] == preflight.input_upper_bound
+    assert state["actual"]["output_tokens"] == preflight.output_cap
+    assert state["requests"][preflight.ledger_logical_call_id]["status"] == (
+        "PROVIDER_FAILURE_CONSERVATIVE"
+    )
 
 
 @pytest.mark.parametrize("call_kind", ("decompose", "extract"))

@@ -25,6 +25,16 @@ D18_STARTING_HEAD = "8002847d0db8975dfd957a1322d31a7768fc098f"
 D18_AMENDMENT_PATH = (
     ROOT / "artifacts" / "trimem_v1" / "development_terminal_contract_amendment.json"
 )
+D18_CORRECTION_SOURCE_HEAD = "ef10493a7352bd6cf914e5e465a9580be6462eb0"
+D18_AMENDMENT_SHA256 = (
+    "ebe45bdf849c5df5511d0bdc48fbf48d9580615955e9b6b7a18a8ed92fddf8f9"
+)
+D19_AMENDMENT_PATH = (
+    ROOT / "artifacts" / "trimem_v1" / "development_bounded_context_amendment.json"
+)
+D19_INVENTORY_PATH = (
+    ROOT / "artifacts" / "trimem_v1" / "development_bounded_context_inventory.json"
+)
 EXPECTED_SOURCE_BLOBS = {
     "multi_swe_bench/harness/dataset.py": {
         "bytes": 2833,
@@ -254,10 +264,25 @@ def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -
     current_matrix = (ROOT / "scripts/trimem_benchmark_matrix.py").read_bytes()
     assert b"\r" not in current_matrix
     assert current_matrix != historical_matrix
-    amendment = json.loads(D18_AMENDMENT_PATH.read_text(encoding="utf-8"))
-    assert amendment["implementation_sha256"]["scripts/trimem_benchmark_matrix.py"] == (
-        hashlib.sha256(current_matrix).hexdigest()
+    d18_matrix = _git_blob(
+        D18_CORRECTION_SOURCE_HEAD, "scripts/trimem_benchmark_matrix.py"
     )
+    d18_amendment_raw = D18_AMENDMENT_PATH.read_bytes()
+    d18_amendment = json.loads(d18_amendment_raw.decode("utf-8"))
+    assert hashlib.sha256(d18_amendment_raw).hexdigest() == D18_AMENDMENT_SHA256
+    assert d18_amendment["implementation_sha256"][
+        "scripts/trimem_benchmark_matrix.py"
+    ] == hashlib.sha256(d18_matrix).hexdigest()
+
+    current_sha256 = hashlib.sha256(current_matrix).hexdigest()
+    d19_amendment = json.loads(D19_AMENDMENT_PATH.read_text(encoding="utf-8"))
+    d19_inventory = json.loads(D19_INVENTORY_PATH.read_text(encoding="utf-8"))
+    assert d19_amendment["implementation_sha256"][
+        "scripts/trimem_benchmark_matrix.py"
+    ] == current_sha256
+    assert d19_inventory["implementation_sha256"][
+        "scripts/trimem_benchmark_matrix.py"
+    ] == current_sha256
 
     assert projection["line_endings"] == {
         "gitattributes_pattern": "scripts/trimem_*.py",
@@ -314,9 +339,13 @@ def test_production_verifier_separates_historical_lock_from_current_aggregate() 
         multi_contract.D18_STARTING_HEAD,
         multi_contract.D18_CURRENT_AGGREGATE_PATH,
     )
+    assert current_raw != _git_blob(
+        multi_contract.D18_CORRECTION_SOURCE_HEAD,
+        multi_contract.D18_CURRENT_AGGREGATE_PATH,
+    )
 
 
-def test_production_verifier_rejects_d18_aggregate_amendment_drift(
+def test_production_verifier_rejects_historical_d18_amendment_drift(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     amendment = json.loads(D18_AMENDMENT_PATH.read_text(encoding="utf-8"))
@@ -329,7 +358,43 @@ def test_production_verifier_rejects_d18_aggregate_amendment_drift(
 
     with pytest.raises(
         multi_contract.ContractError,
-        match="current D1.8 aggregate differs from the amendment implementation seal",
+        match="historical D1.8 amendment byte seal differs",
+    ):
+        multi_contract._verify_local_validator_files(_load_lock()["contracts"])
+
+
+def test_production_verifier_rejects_d19_amendment_aggregate_drift(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    amendment = json.loads(D19_AMENDMENT_PATH.read_text(encoding="utf-8"))
+    amendment["implementation_sha256"][multi_contract.D18_CURRENT_AGGREGATE_PATH] = (
+        "0" * 64
+    )
+    tampered_path = tmp_path / "development_bounded_context_amendment.json"
+    tampered_path.write_text(json.dumps(amendment), encoding="utf-8")
+    monkeypatch.setattr(multi_contract, "D19_AMENDMENT_PATH", tampered_path)
+
+    with pytest.raises(
+        multi_contract.ContractError,
+        match="D1.9 aggregate implementation seals disagree",
+    ):
+        multi_contract._verify_local_validator_files(_load_lock()["contracts"])
+
+
+def test_production_verifier_rejects_d19_inventory_aggregate_drift(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    inventory = json.loads(D19_INVENTORY_PATH.read_text(encoding="utf-8"))
+    inventory["implementation_sha256"][multi_contract.D18_CURRENT_AGGREGATE_PATH] = (
+        "0" * 64
+    )
+    tampered_path = tmp_path / "development_bounded_context_inventory.json"
+    tampered_path.write_text(json.dumps(inventory), encoding="utf-8")
+    monkeypatch.setattr(multi_contract, "D19_INVENTORY_PATH", tampered_path)
+
+    with pytest.raises(
+        multi_contract.ContractError,
+        match="D1.9 aggregate implementation seals disagree",
     ):
         multi_contract._verify_local_validator_files(_load_lock()["contracts"])
 

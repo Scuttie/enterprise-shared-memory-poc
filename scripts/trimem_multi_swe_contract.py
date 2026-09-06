@@ -32,10 +32,24 @@ D18_AMENDMENT_PATH = (
     ROOT / "artifacts/trimem_v1/development_terminal_contract_amendment.json"
 )
 D18_STARTING_HEAD = "8002847d0db8975dfd957a1322d31a7768fc098f"
+D18_CORRECTION_SOURCE_HEAD = "ef10493a7352bd6cf914e5e465a9580be6462eb0"
+D18_AMENDMENT_SHA256 = (
+    "ebe45bdf849c5df5511d0bdc48fbf48d9580615955e9b6b7a18a8ed92fddf8f9"
+)
 D18_CURRENT_AGGREGATE_PATH = "scripts/trimem_benchmark_matrix.py"
 D18_AMENDMENT_SCHEMA = "trimem/development-terminal-contract-amendment/1.0"
 D18_AMENDMENT_STATUS = "FROZEN_PRE_RESULT_PENDING_FRESH_EXECUTION"
 D18_AMENDMENT_CLASSIFICATION = "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX"
+D19_AMENDMENT_PATH = (
+    ROOT / "artifacts/trimem_v1/development_bounded_context_amendment.json"
+)
+D19_INVENTORY_PATH = (
+    ROOT / "artifacts/trimem_v1/development_bounded_context_inventory.json"
+)
+D19_AMENDMENT_SCHEMA = "trimem/development-bounded-context-amendment/1.0"
+D19_INVENTORY_SCHEMA = "trimem/development-bounded-context-inventory/1.0"
+D19_STATUS = "FROZEN_PRE_RESULT_PENDING_FRESH_EXECUTION"
+D19_CLASSIFICATION = "PRE_RESULT_BOUNDED_SHORT_TERM_CONTEXT_AND_PREFLIGHT_FIX"
 ENTRYPOINT_PATH = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
 REPORT_SEMANTICS_MODULE_PATH = ROOT / "scripts/trimem_multi_swe_report_semantics.py"
 REPORT_SEMANTICS_LOCK_PATH = (
@@ -1132,20 +1146,82 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
         "local validator file set differs",
     )
 
-    amendment = _strict_json_object(D18_AMENDMENT_PATH, "D1.8 amendment")
-    implementation = amendment.get("implementation_sha256")
+    d18_amendment = _strict_json_object(D18_AMENDMENT_PATH, "D1.8 amendment")
+    try:
+        d18_amendment_raw = D18_AMENDMENT_PATH.read_bytes()
+    except OSError as exc:
+        raise ContractError("D1.8 amendment bytes are unavailable") from exc
     _require(
-        amendment.get("schema") == D18_AMENDMENT_SCHEMA
-        and amendment.get("status") == D18_AMENDMENT_STATUS
-        and amendment.get("classification") == D18_AMENDMENT_CLASSIFICATION
-        and isinstance(implementation, dict),
+        hashlib.sha256(d18_amendment_raw).hexdigest() == D18_AMENDMENT_SHA256,
+        "historical D1.8 amendment byte seal differs",
+    )
+    d18_implementation = d18_amendment.get("implementation_sha256")
+    _require(
+        d18_amendment.get("schema") == D18_AMENDMENT_SCHEMA
+        and d18_amendment.get("status") == D18_AMENDMENT_STATUS
+        and d18_amendment.get("classification") == D18_AMENDMENT_CLASSIFICATION
+        and isinstance(d18_implementation, dict),
         "D1.8 amendment identity differs",
     )
-    current_aggregate_sha256 = implementation.get(D18_CURRENT_AGGREGATE_PATH)
+    d18_aggregate_sha256 = d18_implementation.get(D18_CURRENT_AGGREGATE_PATH)
     _require(
-        isinstance(current_aggregate_sha256, str)
-        and SHA256.fullmatch(current_aggregate_sha256) is not None,
-        "D1.8 current aggregate implementation seal is missing",
+        isinstance(d18_aggregate_sha256, str)
+        and SHA256.fullmatch(d18_aggregate_sha256) is not None,
+        "historical D1.8 aggregate implementation seal is missing",
+    )
+    d18_aggregate_blob = _git(
+        ROOT,
+        "cat-file",
+        "blob",
+        f"{D18_CORRECTION_SOURCE_HEAD}:{D18_CURRENT_AGGREGATE_PATH}",
+        text=False,
+    )
+    assert isinstance(d18_aggregate_blob.stdout, bytes)
+    _require(
+        hashlib.sha256(d18_aggregate_blob.stdout).hexdigest()
+        == d18_aggregate_sha256,
+        "historical D1.8 aggregate differs from the terminal amendment seal",
+    )
+
+    d19_amendment = _strict_json_object(D19_AMENDMENT_PATH, "D1.9 amendment")
+    d19_inventory = _strict_json_object(D19_INVENTORY_PATH, "D1.9 inventory")
+    d19_amendment_implementation = d19_amendment.get("implementation_sha256")
+    d19_inventory_implementation = d19_inventory.get("implementation_sha256")
+    _require(
+        d19_amendment.get("schema") == D19_AMENDMENT_SCHEMA
+        and d19_amendment.get("status") == D19_STATUS
+        and d19_amendment.get("classification") == D19_CLASSIFICATION
+        and isinstance(d19_amendment_implementation, dict),
+        "D1.9 bounded-context amendment identity differs",
+    )
+    _require(
+        d19_inventory.get("schema") == D19_INVENTORY_SCHEMA
+        and d19_inventory.get("status") == D19_STATUS
+        and d19_inventory.get("classification") == D19_CLASSIFICATION
+        and isinstance(d19_inventory_implementation, dict),
+        "D1.9 bounded-context inventory identity differs",
+    )
+    d19_amendment_aggregate_sha256 = d19_amendment_implementation.get(
+        D18_CURRENT_AGGREGATE_PATH
+    )
+    d19_inventory_aggregate_sha256 = d19_inventory_implementation.get(
+        D18_CURRENT_AGGREGATE_PATH
+    )
+    _require(
+        isinstance(d19_amendment_aggregate_sha256, str)
+        and SHA256.fullmatch(d19_amendment_aggregate_sha256) is not None
+        and isinstance(d19_inventory_aggregate_sha256, str)
+        and SHA256.fullmatch(d19_inventory_aggregate_sha256) is not None,
+        "D1.9 current aggregate implementation seal is missing",
+    )
+    _require(
+        d19_amendment_aggregate_sha256 == d19_inventory_aggregate_sha256,
+        "D1.9 aggregate implementation seals disagree",
+    )
+    current_aggregate_sha256 = d19_amendment_aggregate_sha256
+    _require(
+        current_aggregate_sha256 != d18_aggregate_sha256,
+        "D1.9 aggregate unexpectedly equals the historical D1.8 aggregate",
     )
 
     # The immutable Multi-SWE contract predates D1.8.  Its aggregate row remains
@@ -1225,7 +1301,7 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             )
             _require(
                 observed["sha256"] == current_aggregate_sha256,
-                "current D1.8 aggregate differs from the amendment implementation seal",
+                "current D1.9 aggregate differs from the bounded-context implementation seal",
             )
             locked_rows[path] = historical_observed
         else:

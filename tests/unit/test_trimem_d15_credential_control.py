@@ -200,15 +200,18 @@ def test_d15_approval_builder_embeds_only_the_run_bound_commitment():
     assert d15.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_008.json")
 
 
-def test_historical_sentinel_is_hash_bound_but_not_a_freeze_member():
+def test_historical_sentinel_is_hash_bound_and_current_freeze_tracks_its_bytes():
     freeze = json.loads((ROOT / "artifacts/trimem_v1/freeze.json").read_text())
     path = d15.PREVIOUS_SENTINEL_PATH
-    assert path not in freeze["files"]
+    raw = (ROOT / path).read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    assert freeze["files"][path] == {"bytes": len(raw), "sha256": digest}
     assert d15.BOUND_PATHS["previous_dev_request_sha256"] == path
+    # D1.5's historical validator deliberately permits this path outside its
+    # own old freeze.  Keep that compatibility contract even though the active
+    # D1.9 freeze now inventories the immutable bytes.
     assert path in d15.FREEZE_MEMBERSHIP_EXEMPT_PATHS
-    assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == (
-        d15.PREVIOUS_SENTINEL_SHA256
-    )
+    assert digest == d15.PREVIOUS_SENTINEL_SHA256
 
 
 def test_exact_model_metadata_passes_without_generation_or_ledger():

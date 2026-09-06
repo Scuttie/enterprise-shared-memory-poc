@@ -40,6 +40,11 @@ MODEL = "gpt-5.4-mini-2026-03-17"
 INPUT_CAP = PROTOCOL_CANARY_INPUT_RESERVATION
 OUTPUT_CAP = PROTOCOL_CANARY_OUTPUT_RESERVATION
 LOGICAL_ID = "TRIMEM_V1_D16_PROTOCOL_CANARY_0001"
+LIST_FILES_ARGUMENTS = {
+    "path_prefix": None,
+    "start_after": None,
+    "limit": 100,
+}
 
 
 class EnvironmentSecret:
@@ -73,7 +78,8 @@ def _run_strict(output: Path, approval_path: Path) -> dict[str, Any]:
     restricted = output.parent / "restricted" / "protocol-canary"
     prompt = (
         "Protocol canary only. Call list_files exactly once for the tiny local "
-        "synthetic workspace. Do not emit a message."
+        "synthetic workspace with path_prefix=null, start_after=null, and "
+        "limit=100. Do not emit a message."
     )
     request = ModelRequest(
         messages=[{"role": "user", "content": prompt}],
@@ -151,14 +157,27 @@ def _run_strict(output: Path, approval_path: Path) -> dict[str, Any]:
         gateway_response,
         {str(tool["name"]) for tool in detached_function_tools()},
     )
-    if name != "list_files" or arguments != {}:
-        raise RuntimeError("protocol canary did not produce list_files({})")
+    if name != "list_files" or arguments != LIST_FILES_ARGUMENTS:
+        raise RuntimeError(
+            "protocol canary did not produce the explicit paginated list_files request"
+        )
     workspace = InMemoryRepositoryWorkspace(
         {"README.md": "synthetic protocol canary\n"},
         editable_paths=("README.md",),
     )
     tool_result = workspace.execute(name, arguments)
-    if tool_result != {"files": ["README.md"]}:
+    if tool_result != {
+        "path_prefix": None,
+        "start_after": None,
+        "files": ["README.md"],
+        "returned_count": 1,
+        "total_matching_count": 1,
+        "next_start_after": None,
+        "truncated": False,
+        "full_matching_listing_sha256": sha256_bytes(
+            canonical_bytes(["README.md"])
+        ),
+    }:
         raise RuntimeError("protocol canary function execution failed")
     input_tokens = int(envelope.input_tokens)
     cached_tokens = int(envelope.cached_input_tokens)

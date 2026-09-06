@@ -46,6 +46,38 @@ SCIENTIFIC_MODEL_RESERVATION_TERMINAL_STATUSES = frozenset(
     }
 )
 
+# D1.9 failures are deliberately separate from provider-response failures.  A
+# prompt projection or read-only budget preflight can terminate a cell before
+# a request is recorded or reserved, so the old "one decomposition and one
+# extraction request per cell" invariant does not hold for these cells.  The
+# sanitized failure metadata below proves exactly where the missing call was
+# stopped without exposing prompt or tool-result contents.
+SCIENTIFIC_D19_CONTAINED_FAILURE_CLASSES = frozenset(
+    {
+        "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN",
+        "TASK_ARM_INPUT_POOL_EXHAUSTED",
+        "TASK_ARM_MODEL_CALL_POOL_EXHAUSTED",
+        "TASK_INPUT_CONTEXT_BUDGET_EXCEEDED",
+        "TASK_ROLE_OUTPUT_POOL_EXHAUSTED",
+        "TASK_TOOL_RESULT_PROJECTION_FAILURE",
+        "TASK_TOTAL_OUTPUT_POOL_EXHAUSTED",
+    }
+)
+SCIENTIFIC_FAILURE_METADATA_STAGES = frozenset(
+    {"PRE_PROMPT_PROJECTION", "PREFLIGHT", "PROVIDER_LIFECYCLE"}
+)
+SCIENTIFIC_FAILURE_METADATA_CALL_KINDS = frozenset(
+    {"decompose", "solve", "extract"}
+)
+SCIENTIFIC_FAILURE_METADATA_FIELDS = frozenset(
+    {
+        "stage",
+        "call_kind",
+        "provider_request_started",
+        "ledger_reservation_created",
+    }
+)
+
 _RESULT_REQUIRED_FIELDS = frozenset(
     {
         "agent_completed",
@@ -90,7 +122,9 @@ _CELL_GATEWAY_FAILURE_PREFIXES = (
     "SOLVE_",
     "STRUCTURED_OUTPUT_",
 )
-_CELL_GATEWAY_FAILURE_EXACT = frozenset({"HTTP_200_INVALID_JSON"})
+_CELL_GATEWAY_FAILURE_EXACT = frozenset(
+    {"HTTP_200_INVALID_JSON", "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"}
+)
 _CELL_FAILURE_CLASS_EXACT = frozenset({"MEMORY_EXTRACTION_SCHEMA_FAILURE"})
 _LOCAL_POST_RESPONSE_SOLVE_FAILURES = frozenset(
     {
@@ -135,6 +169,7 @@ _PROVIDER_RESERVATION_FIELDS = frozenset(
     }
 )
 _PRE_AGENT_RUNTIME_FAILURE_FRAGMENTS = (
+    *tuple(sorted(SCIENTIFIC_D19_CONTAINED_FAILURE_CLASSES)),
     "TASK_SOLVE_OUTPUT_POOL_EXHAUSTED",
     "solve-call or global step cap reached",
     "per-subtask step cap reached",
@@ -157,6 +192,25 @@ _CELL_RUNTIME_FAILURE_FRAGMENTS = (
     *_POST_AGENT_EXTRACTION_FAILURE_FRAGMENTS,
 )
 _CELL_RUNTIME_FAILURE_CLASSES = (
+    (
+        "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN",
+        "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN",
+    ),
+    ("TASK_ARM_INPUT_POOL_EXHAUSTED", "TASK_ARM_INPUT_POOL_EXHAUSTED"),
+    (
+        "TASK_ARM_MODEL_CALL_POOL_EXHAUSTED",
+        "TASK_ARM_MODEL_CALL_POOL_EXHAUSTED",
+    ),
+    (
+        "TASK_INPUT_CONTEXT_BUDGET_EXCEEDED",
+        "TASK_INPUT_CONTEXT_BUDGET_EXCEEDED",
+    ),
+    ("TASK_ROLE_OUTPUT_POOL_EXHAUSTED", "TASK_ROLE_OUTPUT_POOL_EXHAUSTED"),
+    (
+        "TASK_TOOL_RESULT_PROJECTION_FAILURE",
+        "TASK_TOOL_RESULT_PROJECTION_FAILURE",
+    ),
+    ("TASK_TOTAL_OUTPUT_POOL_EXHAUSTED", "TASK_TOTAL_OUTPUT_POOL_EXHAUSTED"),
     ("TASK_SOLVE_OUTPUT_POOL_EXHAUSTED", "TASK_SOLVE_OUTPUT_POOL_EXHAUSTED"),
     ("solve-call or global step cap reached", "SOLVE_OR_GLOBAL_STEP_CAP_REACHED"),
     ("per-subtask step cap reached", "PER_SUBTASK_STEP_CAP_REACHED"),
@@ -264,6 +318,172 @@ def _require_nonempty_failure(value: object) -> None:
         )
 
 
+def _d19_failure_class(value: object) -> str | None:
+    """Return the exact D1.9 class from a possibly detailed failure string."""
+
+    if not isinstance(value, str):
+        return None
+    matches = tuple(
+        classification
+        for classification in SCIENTIFIC_D19_CONTAINED_FAILURE_CLASSES
+        if classification in value
+    )
+    if len(matches) > 1:
+        raise ScientificTerminalContractError(
+            "D1.9 contained failure classification is ambiguous"
+        )
+    return matches[0] if matches else None
+
+
+def validate_scientific_failure_metadata(
+    record: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Validate the sanitized proof for a request-free D1.9 cell boundary.
+
+    Historical D1.8 terminal records remain valid without this optional field.
+    Every D1.9 context/preflight/lifecycle failure must carry it, however, so a
+    zero decomposition or extraction count cannot be explained by an
+    unauditable free-form error string.
+    """
+
+    failure_class = _d19_failure_class(record.get("model_failure_class"))
+    metadata = record.get("failure_metadata")
+    if failure_class is None:
+        if metadata is not None:
+            raise ScientificTerminalContractError(
+                "scientific failure metadata is present for a non-D1.9 failure"
+            )
+        return None
+    if not isinstance(metadata, Mapping) or set(metadata) != set(
+        SCIENTIFIC_FAILURE_METADATA_FIELDS
+    ):
+        raise ScientificTerminalContractError(
+            "D1.9 contained failure metadata is absent or malformed"
+        )
+    stage = metadata.get("stage")
+    call_kind = metadata.get("call_kind")
+    provider_started = metadata.get("provider_request_started")
+    reservation_created = metadata.get("ledger_reservation_created")
+    if (
+        stage not in SCIENTIFIC_FAILURE_METADATA_STAGES
+        or call_kind not in SCIENTIFIC_FAILURE_METADATA_CALL_KINDS
+        or type(provider_started) is not bool
+        or type(reservation_created) is not bool
+    ):
+        raise ScientificTerminalContractError(
+            "D1.9 contained failure metadata values are malformed"
+        )
+    expected_stages = (
+        {"PROVIDER_LIFECYCLE"}
+        if failure_class == "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"
+        else (
+            {"PRE_PROMPT_PROJECTION", "PREFLIGHT"}
+            if failure_class == "TASK_INPUT_CONTEXT_BUDGET_EXCEEDED"
+            else (
+                {"PRE_PROMPT_PROJECTION"}
+                if failure_class == "TASK_TOOL_RESULT_PROJECTION_FAILURE"
+                else {"PREFLIGHT"}
+            )
+        )
+    )
+    if stage not in expected_stages:
+        raise ScientificTerminalContractError(
+            "D1.9 contained failure metadata stage contradicts its classification"
+        )
+    if stage in {"PRE_PROMPT_PROJECTION", "PREFLIGHT"} and (
+        provider_started or reservation_created
+    ):
+        raise ScientificTerminalContractError(
+            "pre-provider D1.9 failure claims a provider request or reservation"
+        )
+    if stage == "PROVIDER_LIFECYCLE" and provider_started is not True:
+        raise ScientificTerminalContractError(
+            "provider-lifecycle D1.9 failure does not prove provider send start"
+        )
+    return {
+        "stage": str(stage),
+        "call_kind": str(call_kind),
+        "provider_request_started": bool(provider_started),
+        "ledger_reservation_created": bool(reservation_created),
+    }
+
+
+def validate_scientific_role_call_accounting(
+    record: Mapping[str, Any],
+    accounting: Mapping[str, Any] | None = None,
+) -> dict[str, int]:
+    """Validate per-cell role counts, including request-free D1.9 failures."""
+
+    validate_scientific_terminal_result(record)
+    source = accounting if accounting is not None else record.get("actual_accounting")
+    if not isinstance(source, Mapping):
+        raise ScientificTerminalContractError(
+            "scientific result role-call accounting is absent"
+        )
+    names = (
+        "decomposition_calls",
+        "solve_calls",
+        "extraction_calls",
+        "model_gateway_calls",
+        "paid_model_calls",
+    )
+    if any(type(source.get(name)) is not int or source[name] < 0 for name in names):
+        raise ScientificTerminalContractError(
+            "scientific result role-call accounting is malformed"
+        )
+    counts = {name: int(source[name]) for name in names}
+    metadata = validate_scientific_failure_metadata(record)
+    if metadata is None:
+        if counts["decomposition_calls"] != 1 or counts["extraction_calls"] != 1:
+            raise ScientificTerminalContractError(
+                "scientific result did not use the common decomposition/extraction path exactly once"
+            )
+    else:
+        if counts["decomposition_calls"] > 1 or counts["extraction_calls"] > 1:
+            raise ScientificTerminalContractError(
+                "D1.9 contained result exceeds the bounded decomposition/extraction path"
+            )
+        failed_kind = metadata["call_kind"]
+        pre_provider = metadata["stage"] in {
+            "PRE_PROMPT_PROJECTION",
+            "PREFLIGHT",
+        }
+        reservation_created = metadata["ledger_reservation_created"]
+        if failed_kind == "decompose":
+            expected = int(not pre_provider and reservation_created)
+            if counts["decomposition_calls"] != expected or counts["solve_calls"] != 0:
+                raise ScientificTerminalContractError(
+                    "D1.9 decomposition failure contradicts role-call accounting"
+                )
+        elif failed_kind == "solve" and counts["decomposition_calls"] != 1:
+            raise ScientificTerminalContractError(
+                "D1.9 solve failure lacks its completed decomposition call"
+            )
+        elif failed_kind == "extract":
+            expected = int(not pre_provider and reservation_created)
+            if counts["decomposition_calls"] != 1 or counts["extraction_calls"] != expected:
+                raise ScientificTerminalContractError(
+                    "D1.9 extraction failure contradicts role-call accounting"
+                )
+    minimum_solve_calls = 1 if record.get("agent_completed") is True else 0
+    if not minimum_solve_calls <= counts["solve_calls"] <= 24:
+        raise ScientificTerminalContractError(
+            "scientific result solve-call count contradicts completion"
+        )
+    if counts["model_gateway_calls"] != sum(
+        counts[name]
+        for name in ("decomposition_calls", "solve_calls", "extraction_calls")
+    ):
+        raise ScientificTerminalContractError(
+            "scientific result model/role call totals do not add up"
+        )
+    if counts["paid_model_calls"] != counts["model_gateway_calls"]:
+        raise ScientificTerminalContractError(
+            "scientific result model calls are not provider-accounted paid calls"
+        )
+    return counts
+
+
 def validate_scientific_terminal_result(
     record: Mapping[str, Any],
 ) -> dict[str, Any]:
@@ -331,6 +551,7 @@ def validate_scientific_terminal_result(
             "scientific result extraction status is unknown or malformed"
         )
     failure_class = record.get("model_failure_class")
+    failure_metadata = validate_scientific_failure_metadata(record)
 
     if cell_status == "AGENT_COMPLETED":
         if (
@@ -355,16 +576,32 @@ def validate_scientific_terminal_result(
             )
     else:
         _require_nonempty_failure(failure_class)
-        if (
-            record["agent_completed"] is not False
-            or patch_source not in {
-                "MODEL_PARTIAL_PATCH", "CANONICAL_FAILED_CELL_NOOP"
-            }
-            or is_post_agent_extraction_failure(failure_class)
-        ):
+        completed_extraction_boundary = (
+            failure_metadata is not None
+            and failure_metadata["call_kind"] == "extract"
+        )
+        valid_d19_extraction = (
+            completed_extraction_boundary
+            and record["agent_completed"] is True
+            and patch_source in {"MODEL_PATCH", "CANONICAL_FAILED_CELL_NOOP"}
+            and extraction_status == "MEMORY_EXTRACTION_FAILED"
+        )
+        valid_pre_completion = (
+            not completed_extraction_boundary
+            and record["agent_completed"] is False
+            and patch_source
+            in {"MODEL_PARTIAL_PATCH", "CANONICAL_FAILED_CELL_NOOP"}
+            and not is_post_agent_extraction_failure(failure_class)
+        )
+        if not (valid_d19_extraction or valid_pre_completion):
             raise ScientificTerminalContractError(
                 "CELL_SCIENTIFIC_FAILURE result has an impossible terminal-field combination"
             )
+
+    if failure_metadata is not None and cell_status != "CELL_SCIENTIFIC_FAILURE":
+        raise ScientificTerminalContractError(
+            "D1.9 contained failure is not a CELL_SCIENTIFIC_FAILURE"
+        )
 
     return dict(record)
 
@@ -480,7 +717,12 @@ def validate_result_request_statuses(
     """
 
     validate_scientific_terminal_result(record)
-    if not isinstance(requests, (list, tuple)) or not requests:
+    failure_metadata = validate_scientific_failure_metadata(record)
+    if not isinstance(requests, (list, tuple)):
+        raise ScientificTerminalContractError(
+            "scientific terminal model request projection is malformed"
+        )
+    if not requests and failure_metadata is None:
         raise ScientificTerminalContractError(
             "scientific result has no terminal model request projection"
         )
@@ -510,14 +752,18 @@ def validate_result_request_statuses(
             "scientific model request role has multiple provider failures"
         )
 
-    minimum_solve_calls = 1 if record.get("agent_completed") is True else 0
-    if (
-        role_counts["decompose"] != 1
-        or role_counts["extract"] != 1
-        or not minimum_solve_calls <= role_counts["solve"] <= 24
+    accounting = record.get("actual_accounting")
+    validated_counts = validate_scientific_role_call_accounting(record, accounting)
+    if any(
+        role_counts[role] != validated_counts[field]
+        for role, field in {
+            "decompose": "decomposition_calls",
+            "solve": "solve_calls",
+            "extract": "extraction_calls",
+        }.items()
     ):
         raise ScientificTerminalContractError(
-            "scientific model request roles contradict result completion"
+            "scientific model request roles contradict result accounting"
         )
 
     if failed_role_counts["decompose"] and role_counts["solve"]:
@@ -537,7 +783,6 @@ def validate_result_request_statuses(
     reservation = provider_outcomes.get("ledger_reservation")
     if (
         not isinstance(distribution, Mapping)
-        or not distribution
         or not isinstance(usage, Mapping)
         or set(usage) != _PROVIDER_USAGE_FIELDS
         or not isinstance(reservation, Mapping)
@@ -623,7 +868,6 @@ def validate_result_request_statuses(
         raise ScientificTerminalContractError(
             "scientific provider outcomes contradict terminal requests"
         )
-    accounting = record.get("actual_accounting")
     if usage["complete"] is True:
         if not isinstance(accounting, Mapping) or any(
             type(accounting.get(field)) is not int
@@ -663,9 +907,19 @@ def validate_result_request_statuses(
     if record.get("cell_status") == "CELL_SCIENTIFIC_FAILURE":
         if is_scientific_gateway_failure(failure_class):
             locally_derivable = failure_class in _LOCAL_POST_RESPONSE_SOLVE_FAILURES
+            requestless_unknown = (
+                failure_class == "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"
+                and failure_metadata is not None
+                and failure_metadata["ledger_reservation_created"] is False
+            )
             if (
-                (not locally_derivable and len(pre_agent_failed_roles) != 1)
+                (
+                    not locally_derivable
+                    and not requestless_unknown
+                    and len(pre_agent_failed_roles) != 1
+                )
                 or (locally_derivable and len(pre_agent_failed_roles) > 1)
+                or (requestless_unknown and pre_agent_failed_roles)
                 or (
                     pre_agent_failed_roles
                     and distribution.get(str(failure_class), 0) < 1
@@ -723,8 +977,12 @@ def validate_result_request_statuses(
 __all__ = [
     "SCIENTIFIC_ACCEPTED_GRADER_EXIT_CODES",
     "SCIENTIFIC_CELL_STATUSES",
+    "SCIENTIFIC_D19_CONTAINED_FAILURE_CLASSES",
     "SCIENTIFIC_EXECUTION_STATUS",
     "SCIENTIFIC_EXTRACTION_STATUSES",
+    "SCIENTIFIC_FAILURE_METADATA_CALL_KINDS",
+    "SCIENTIFIC_FAILURE_METADATA_FIELDS",
+    "SCIENTIFIC_FAILURE_METADATA_STAGES",
     "SCIENTIFIC_GRADER_PATCH_SOURCES",
     "SCIENTIFIC_GRADER_STATUSES",
     "SCIENTIFIC_LEDGER_TERMINAL_STATUS",
@@ -739,6 +997,8 @@ __all__ = [
     "scientific_task_arm_key",
     "validate_result_ledger_pair",
     "validate_result_request_statuses",
+    "validate_scientific_failure_metadata",
+    "validate_scientific_role_call_accounting",
     "validate_scientific_terminal_ledger_row",
     "validate_scientific_terminal_result",
 ]

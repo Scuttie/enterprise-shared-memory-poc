@@ -17,6 +17,8 @@ ROUND_TRIP_COMMAND = (
     "python scripts/trimem_pytest_no_skip.py\n"
     "          tests/unit/test_trimem_d18_terminal_contract_integration.py"
 )
+CONTEXT_ROUND_TRIP_STEP = "Verify bounded context round trip before provider access"
+CONTEXT_ROUND_TRIP_COMMAND = "python scripts/trimem_context_roundtrip.py"
 EXACT_RUNNER_LABELS = (
     "runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]"
 )
@@ -100,6 +102,22 @@ def _assert_production_round_trip_precedes(
         assert round_trip < text.index(f"- name: {name}")
 
 
+def _assert_context_round_trip_precedes(
+    text: str,
+    *later_step_names: str,
+) -> None:
+    marker = f"- name: {CONTEXT_ROUND_TRIP_STEP}"
+    assert text.count(marker) == 1
+    terminal_round_trip = text.index(f"- name: {ROUND_TRIP_STEP}")
+    context_round_trip = text.index(marker)
+    assert terminal_round_trip < context_round_trip
+    assert CONTEXT_ROUND_TRIP_COMMAND in _step_block(
+        text, CONTEXT_ROUND_TRIP_STEP
+    )
+    for name in later_step_names:
+        assert context_round_trip < text.index(f"- name: {name}")
+
+
 def test_benchmark_installs_and_byte_verifies_pinned_gh_before_exec_gate() -> None:
     text = _read(BENCHMARK_WORKFLOW)
     _install_and_verify_contract(text)
@@ -116,14 +134,18 @@ def test_benchmark_installs_and_byte_verifies_pinned_gh_before_exec_gate() -> No
     assert "--approval-file" in gate_block
 
 
-def test_benchmark_has_only_the_d18_009_active_development_trigger() -> None:
+def test_benchmark_has_only_the_d19_010_active_development_trigger() -> None:
     text = _read(BENCHMARK_WORKFLOW)
     assert (
         "- artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
     ) in text
-    assert "group: trimem-v1-development-tuning-exec-009" in text
-    assert "scripts/trimem_development_trigger_d18.py" in text
+    assert "group: trimem-v1-development-tuning-exec-010" in text
+    preflight = _step_block(text, "Verify one-time zero-authority DEV trigger")
+    assert "scripts/trimem_development_trigger_d19.py" in preflight
+    assert "scripts/trimem_development_trigger_d18.py" not in preflight
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json" not in text
+    assert "trimem-v1-development-tuning-exec-009" not in text
     assert "DEVELOPMENT_TUNING_EXEC_REQUEST_008.json" not in text
     assert "trimem-v1-development-tuning-exec-008" not in text
     assert "scripts/trimem_development_trigger_d15.py" not in text
@@ -131,7 +153,26 @@ def test_benchmark_has_only_the_d18_009_active_development_trigger() -> None:
 
 def test_production_round_trip_runs_before_any_benchmark_provider_access() -> None:
     text = _read(BENCHMARK_WORKFLOW)
+    context_job = text[
+        text.index("  bounded-context-preflight:"):
+        text.index("  frozen-serial-phase:")
+    ]
+    assert "services:" not in context_job
+    assert "environment:" not in context_job
+    assert "secrets." not in context_job
+    assert "OPENAI_API_KEY" not in context_job
+    assert "TRIMEM_EXEC_APPROVAL" not in context_job
     _assert_production_round_trip_precedes(
+        text,
+        "Install exact pinned GitHub CLI",
+        "Materialize protected external approval",
+        "Validate exact OpenAI credential format before network access",
+        "Retrieve exact model metadata before image materialization",
+        "Execute one native-action protocol canary before benchmark images",
+        "Pull committed images by digest and verify local observations",
+        "Execute frozen serial streams with one atomic phase ledger",
+    )
+    _assert_context_round_trip_precedes(
         text,
         "Install exact pinned GitHub CLI",
         "Materialize protected external approval",
@@ -151,6 +192,7 @@ def test_benchmark_paid_job_and_scientific_steps_respect_cancellation() -> None:
     assert "always() &&\n      !cancelled() &&" in job_header
     assert "github.event_name == 'workflow_dispatch'" in job_header
     assert "needs.branch-trigger-preflight.result == 'success'" in job_header
+    assert "needs.bounded-context-preflight.result == 'success'" in job_header
 
     cancellation_safe_steps = (
         "Pull committed images by digest and verify local observations",
@@ -267,12 +309,17 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_self_hosted() -> None
     assert "pull_request:" not in text
     assert "artifacts/trimem_v1/exec_requests/" not in text
     for path in (
+        ".gitattributes",
         ".github/workflows/ci-trimem-dev-toolchain.yml",
         ".github/workflows/ci-trimem.yml",
         ".github/workflows/trimem-benchmark.yml",
         "artifacts/trimem_v1/development_terminal_contract_amendment.json",
         "artifacts/trimem_v1/development_terminal_contract_inventory.json",
+        "artifacts/trimem_v1/development_bounded_context_amendment.json",
+        "artifacts/trimem_v1/development_bounded_context_inventory.json",
         "artifacts/trimem_v1/development_tuning_exec/exec-008/terminal-status-contract-mismatch-receipt.json",
+        "artifacts/trimem_v1/development_tuning_exec/exec-009/bounded-short-term-context-failure-receipt.json",
+        "artifacts/trimem_v1/development_tuning_exec/exec-009/request-only-boundary-fixture.json",
         "artifacts/trimem_v1/freeze.json",
         "artifacts/trimem_v1/readiness_requirements.json",
         "configs/trimem_v1/cost_plan.json",
@@ -280,6 +327,10 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_self_hosted() -> None
         "configs/trimem_v1/gh_cli_lock.json",
         "scripts/trimem_development_trigger_preflight.py",
         "scripts/trimem_development_trigger_d18.py",
+        "scripts/trimem_development_trigger_d19.py",
+        "scripts/trimem_context_roundtrip.py",
+        "scripts/trimem_d19_reseal.py",
+        "scripts/trimem_action_canary.py",
         "scripts/trimem_freeze.py",
         "scripts/trimem_m2_candidates.py",
         "scripts/trimem_multi_swe_contract.py",
@@ -296,9 +347,29 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_self_hosted() -> None
         "tests/unit/test_trimem_d17_approval_cap_integration.py",
         "tests/unit/test_trimem_d18_public_artifact_hardening.py",
         "tests/unit/test_trimem_d18_terminal_contract_integration.py",
+        "tests/unit/test_trimem_d19_bounded_short_term_context.py",
+        "tests/unit/test_trimem_d19_list_files_pagination.py",
+        "tests/unit/test_trimem_d19_model_preflight.py",
+        "tests/unit/test_trimem_d19_request_only_resume.py",
+        "tests/unit/test_trimem_d19_terminal_contract.py",
+        "tests/unit/test_trimem_d19_trigger.py",
+        "tests/unit/test_trimem_git_workspace.py",
+        "tests/unit/test_trimem_runtime_boundaries.py",
+        "tests/openai/test_openai_response_outcomes.py",
         "tests/unit/test_trimem_smoke_attestation_only.py",
+        "src/enterprise_memory/trimem/accounting.py",
+        "src/enterprise_memory/trimem/agent_runtime.py",
+        "src/enterprise_memory/trimem/checkpoint.py",
+        "src/enterprise_memory/trimem/context_projection.py",
+        "src/enterprise_memory/trimem/function_tools.py",
+        "src/enterprise_memory/trimem/gateway.py",
+        "src/enterprise_memory/trimem/git_workspace.py",
+        "src/enterprise_memory/trimem/production_runtime.py",
+        "src/enterprise_memory/trimem/runtime_lock.py",
         "src/enterprise_memory/trimem/scientific_terminal.py",
+        "src/enterprise_memory/trimem/workspace.py",
         "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_008_TERMINAL_STATUS_CONTRACT_MISMATCH.md",
+        "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_009_BOUNDED_CONTEXT_FAILURE.md",
     ):
         assert f"- {path}" in text
     assert "environment:" not in text
@@ -325,19 +396,27 @@ def test_toolchain_runs_production_round_trip_before_credentialed_attestation() 
     text = _read(TOOLCHAIN_WORKFLOW)
     _assert_production_round_trip_precedes(
         text,
-        "Validate D1.8 correction source before trigger",
+        "Validate D1.9 correction source before trigger",
+        "Install exact pinned GitHub CLI",
+        "Verify official smoke attestation only with zero scientific work",
+    )
+    _assert_context_round_trip_precedes(
+        text,
+        "Validate D1.9 correction source before trigger",
         "Install exact pinned GitHub CLI",
         "Verify official smoke attestation only with zero scientific work",
     )
     round_trip = _step_block(text, ROUND_TRIP_STEP)
+    context_round_trip = _step_block(text, CONTEXT_ROUND_TRIP_STEP)
     source_validation = _step_block(
         text,
-        "Validate D1.8 correction source before trigger",
+        "Validate D1.9 correction source before trigger",
     )
-    assert "secrets." not in round_trip
-    assert "OPENAI_API_KEY" not in round_trip
-    assert "GH_TOKEN" not in round_trip
-    assert "python -I -S scripts/trimem_development_trigger_d18.py" in source_validation
+    for block in (round_trip, context_round_trip):
+        assert "secrets." not in block
+        assert "OPENAI_API_KEY" not in block
+        assert "GH_TOKEN" not in block
+    assert "python -I -S scripts/trimem_development_trigger_d19.py" in source_validation
     assert "--repository ." in source_validation
     assert "--validate-source" in source_validation
     assert '--source-head "$GITHUB_SHA"' in source_validation

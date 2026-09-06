@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_development_trigger_preflight as trigger  # noqa: E402
 import trimem_development_trigger_d18 as trigger_d18  # noqa: E402
+import trimem_development_trigger_d19 as trigger_d19  # noqa: E402
 import trimem_exec_approval as approval_validator  # noqa: E402
 import trimem_approved_phase as approved_phase  # noqa: E402
 import trimem_benchmark_matrix as benchmark_matrix  # noqa: E402
@@ -477,12 +478,12 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-009" in workflow
+    assert "group: trimem-v1-development-tuning-exec-010" in workflow
     assert "group: trimem-v1-development-tuning-exec-004" not in workflow
     assert "group: trimem-v1-development-tuning-exec-002" not in workflow
     assert "group: trimem-v1-development-tuning-exec-001" not in workflow
@@ -491,7 +492,7 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "  frozen-serial-phase:", 1
     )[0]
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in preflight
-    assert "python -I -S scripts/trimem_development_trigger_d18.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d19.py" in preflight
     assert all(
         forbidden not in preflight
         for forbidden in (
@@ -525,7 +526,7 @@ def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
     freeze_rehearsal = (
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
-    rehearsal = "python -I -S scripts/trimem_development_trigger_d18.py --help"
+    rehearsal = "python -I -S scripts/trimem_development_trigger_d19.py --help"
     install = "python -m pip install --require-hashes"
     assert workflow.count(freeze_rehearsal) == 1
     assert workflow.count(rehearsal) == 1
@@ -2510,15 +2511,15 @@ def _d18_receipt_fixture() -> dict[str, object]:
     }
 
 
-def test_d18_is_the_only_active_development_reader_contract() -> None:
-    assert trigger_d18.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_009"
-    assert trigger_d18.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_009.json")
+def test_d19_is_the_only_active_development_reader_contract() -> None:
+    assert trigger_d19.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010"
+    assert trigger_d19.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_010.json")
     assert (
-        trigger_d18.REQUIRED_EXTERNAL_AUTHORIZATION
-        == "TRIMEM_V1_DEVELOPMENT_TUNING_TERMINAL_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
+        trigger_d19.REQUIRED_EXTERNAL_AUTHORIZATION
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_CONTEXT_RECOVERY_EXEC_APPROVED_ONCE"
     )
-    assert benchmark_run.DEVELOPMENT_EXEC_REQUEST == Path(trigger_d18.SENTINEL_PATH)
-    assert benchmark_matrix.DEVELOPMENT_SENTINEL_PATH == trigger_d18.SENTINEL_PATH
+    assert benchmark_run.DEVELOPMENT_EXEC_REQUEST == Path(trigger_d19.SENTINEL_PATH)
+    assert benchmark_matrix.DEVELOPMENT_SENTINEL_PATH == trigger_d19.SENTINEL_PATH
 
 
 def test_d18_preserves_the_complete_scientific_policy_lock_set() -> None:
@@ -2564,7 +2565,10 @@ def test_d18_preserves_the_complete_scientific_policy_lock_set() -> None:
     }
     assert set(trigger_d18.PRESERVED_SHA256) == expected_paths
     for path, expected_sha256 in trigger_d18.PRESERVED_SHA256.items():
-        assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == expected_sha256
+        historical = trigger_d19.commit_bytes(
+            ROOT, trigger_d19.PREVIOUS_SOURCE_HEAD, path
+        )
+        assert hashlib.sha256(historical).hexdigest() == expected_sha256
 
 
 def test_d18_historical_receipt_preserves_cancelled_not_failure() -> None:

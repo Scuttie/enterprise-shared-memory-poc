@@ -5,11 +5,10 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import shutil
 import subprocess
 import sys
 from types import SimpleNamespace
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 import pytest
 
@@ -21,6 +20,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import trimem_benchmark_matrix as benchmark_matrix  # noqa: E402
 import trimem_benchmark_run as benchmark_run  # noqa: E402
 import trimem_development_trigger_d18 as development_trigger  # noqa: E402
+import trimem_m2_candidates as m2_candidates  # noqa: E402
 import trimem_public_artifact as public_artifact  # noqa: E402
 from trimem_exec_approval import (  # noqa: E402
     build_external_approval_document,
@@ -44,6 +44,7 @@ RESOLVED_COUNTS = {
     "M0": 2,
     "M1": 3,
 }
+D18_CORRECTION_SOURCE_HEAD = "ef10493a7352bd6cf914e5e465a9580be6462eb0"
 
 
 def _canonical(value: Any) -> bytes:
@@ -77,10 +78,18 @@ def _git(repository: Path, *args: str) -> str:
 
 
 def _copy_repository_input(repository: Path, relative: str) -> None:
-    source = ROOT / relative
+    completed = subprocess.run(
+        ["git", "show", f"{D18_CORRECTION_SOURCE_HEAD}:{relative}"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr.decode(
+        "utf-8", errors="replace"
+    )
     target = repository / relative
     target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(source, target)
+    target.write_bytes(completed.stdout)
 
 
 def _initialize_disposable_execution_repository(
@@ -118,9 +127,10 @@ def _initialize_disposable_execution_repository(
         development_trigger.PREVIOUS_EXECUTION_HEAD,
     )
 
-    # Overlay the sealed D1.8 implementation and evidence bytes on top of
-    # immutable _008 history. A disposable freeze is generated below, so the
-    # real correction-source and sentinel validators can run unchanged.
+    # Overlay the exact Git blobs from the sealed D1.8 correction source on
+    # immutable _008 history. Later D1.9 worktree changes must not rewrite a
+    # historical fixture. A disposable freeze is generated below, so the real
+    # correction-source and sentinel validators can run unchanged.
     for relative in sorted(development_trigger.D18_REQUIRED_IMPLEMENTATION_PATHS):
         if relative == development_trigger.INVENTORY_PATH:
             continue
@@ -179,12 +189,12 @@ def _initialize_disposable_execution_repository(
         source_head=source_head,
         remote_gate_evidence=remote_gates,
     )
-    request_path = repository / benchmark_matrix.DEVELOPMENT_SENTINEL_PATH
+    request_path = repository / development_trigger.SENTINEL_PATH
     request_path.parent.mkdir(parents=True, exist_ok=True)
     request_path.write_bytes(
         development_trigger.canonical_bytes(request, trailing_lf=True)
     )
-    _git(repository, "add", "--", benchmark_matrix.DEVELOPMENT_SENTINEL_PATH)
+    _git(repository, "add", "--", development_trigger.SENTINEL_PATH)
     _git(repository, "commit", "--quiet", "-m", "fixture sentinel only")
     execution_head = _git(repository, "rev-parse", "HEAD")
     request_sha256 = _sha256(request_path.read_bytes())
@@ -229,6 +239,71 @@ def _initialize_disposable_execution_repository(
         "request": request,
         "request_path": request_path,
     }, approval_binding
+
+
+def _bind_historical_candidate_accessors(
+    monkeypatch: pytest.MonkeyPatch,
+    fixture_repository: Path,
+) -> None:
+    """Bind production consumers to the D1.8 fixture's own frozen candidate data.
+
+    D1.9 legitimately changes the live runtime lock.  A historical D1.8
+    aggregate fixture must continue to resolve the candidate identities frozen
+    inside its disposable repository instead of consulting the newer checkout.
+    """
+
+    bundle = _read_json(
+        fixture_repository / "configs/trimem_v1/m2_candidate_bundles.json"
+    )
+
+    def load_bundle() -> dict[str, Any]:
+        return deepcopy(bundle)
+
+    def candidate_row(candidate_id: str) -> dict[str, Any]:
+        rows = [
+            row for row in bundle["candidates"]
+            if row.get("candidate_id") == candidate_id
+        ]
+        assert len(rows) == 1
+        return deepcopy(rows[0])
+
+    def load_candidate_policy(candidate_id: str) -> dict[str, Any]:
+        row = candidate_row(candidate_id)
+        path = fixture_repository / str(row["full_policy_path"])
+        raw = path.read_bytes()
+        assert _sha256(raw) == row["full_policy_file_sha256"]
+        value = json.loads(raw.decode("utf-8"))
+        assert _sha256(_canonical(value)) == str(
+            row["full_policy_manifest_sha256"]
+        ).removeprefix("sha256:")
+        return value
+
+    def runtime_lock_for(candidate_id: str) -> SimpleNamespace:
+        row = candidate_row(candidate_id)
+        return SimpleNamespace(
+            content_hash=str(row["runtime_lock_sha256"]).removeprefix("sha256:")
+        )
+
+    for module in (benchmark_run, benchmark_matrix):
+        monkeypatch.setattr(module, "load_m2_candidate_bundle", load_bundle)
+        monkeypatch.setattr(module, "candidate_row", candidate_row)
+        monkeypatch.setattr(module, "load_candidate_policy", load_candidate_policy)
+        monkeypatch.setattr(module, "runtime_lock_for", runtime_lock_for)
+    monkeypatch.setattr(public_artifact, "load_m2_candidate_bundle", load_bundle)
+    monkeypatch.setattr(m2_candidates, "load_bundle", load_bundle)
+    monkeypatch.setattr(m2_candidates, "candidate_row", candidate_row)
+    monkeypatch.setattr(m2_candidates, "load_candidate_policy", load_candidate_policy)
+    monkeypatch.setattr(m2_candidates, "runtime_lock_for", runtime_lock_for)
+    monkeypatch.setattr(
+        benchmark_matrix,
+        "DEVELOPMENT_SENTINEL_PATH",
+        development_trigger.SENTINEL_PATH,
+    )
+    monkeypatch.setattr(
+        benchmark_matrix,
+        "validate_development_sentinel_commit",
+        development_trigger.validate_sentinel_commit,
+    )
 
 
 def _write_evidence(
@@ -366,8 +441,34 @@ def _write_evidence(
     }
 
 
-def _accounting() -> dict[str, int]:
+def _is_zero_call_preflight(semantics: Mapping[str, Any] | None) -> bool:
+    if semantics is None:
+        return False
+    metadata = semantics.get("failure_metadata")
+    return (
+        semantics.get("cell_status") == "CELL_SCIENTIFIC_FAILURE"
+        and isinstance(metadata, Mapping)
+        and metadata.get("stage") == "PREFLIGHT"
+        and metadata.get("provider_request_started") is False
+        and metadata.get("ledger_reservation_created") is False
+    )
+
+
+def _accounting(
+    semantics: Mapping[str, Any] | None = None,
+) -> dict[str, int]:
     value = {field: 0 for field in benchmark_matrix.ACCOUNTING_FIELDS}
+    if _is_zero_call_preflight(semantics):
+        value.update(
+            {
+                "solve_output_pool_capacity": 49_152,
+                "remaining_solve_output_tokens": 49_152,
+                "grader_calls": 1,
+                "grader_containers": 1,
+                "official_grader_runs": 1,
+            }
+        )
+        return value
     value.update(
         {
             "solve_calls": 1,
@@ -448,7 +549,10 @@ def _semantics(sequence_index: int) -> dict[str, Any]:
 def _provider_outcomes(
     accounting: Mapping[str, int], semantics: Mapping[str, Any]
 ) -> dict[str, Any]:
-    if semantics["cell_status"] in {
+    calls = int(accounting["model_gateway_calls"])
+    if calls == 0:
+        distribution: dict[str, int] = {}
+    elif semantics["cell_status"] in {
         "MEMORY_EXTRACTION_FAILED",
         "CELL_SCIENTIFIC_FAILURE",
     }:
@@ -465,7 +569,7 @@ def _provider_outcomes(
             "STRUCTURED_OUTPUT_SCHEMA_FAILURE", 0
         ),
         "provider_reported_usage": {
-            "available_calls": 3,
+            "available_calls": calls,
             "unavailable_calls": 0,
             "complete": True,
             "input_tokens": accounting["input_tokens"],
@@ -474,9 +578,9 @@ def _provider_outcomes(
             "reasoning_tokens": accounting["reasoning_tokens"],
         },
         "ledger_reservation": {
-            "calls": 3,
-            "input_upper_bound": 46,
-            "output_cap": 32_768,
+            "calls": calls,
+            "input_upper_bound": 46 if calls else 0,
+            "output_cap": 32_768 if calls else 0,
             "conservatively_charged_calls": 0,
         },
     }
@@ -503,6 +607,14 @@ def _reserve_and_reconcile_cell(
     semantics: Mapping[str, Any],
 ) -> None:
     task_reservation = ledger.reserve_task_arm(task_arm_key)
+    if _is_zero_call_preflight(semantics):
+        ledger.complete_task_arm(
+            task_arm_key,
+            task_reservation,
+            status=SCIENTIFIC_LEDGER_TERMINAL_STATUS,
+            container_started=True,
+        )
+        return
     calls = (
         ("decompose", 7, 1, 2),
         ("solve", 11, 2, 3),
@@ -561,6 +673,7 @@ def _write_stream(
     pricing: Mapping[str, Any],
     ledger: benchmark_run.AtomicBudgetLedger,
     approval_binding: Mapping[str, str],
+    semantics_factory: Callable[[str, int], Mapping[str, Any]] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     runtime_arm = "M2" if stream.startswith("M2-") else stream
     prompt_candidate = (
@@ -584,11 +697,15 @@ def _write_stream(
     records: list[dict[str, Any]] = []
     for target in targets:
         index = int(target["order_index"])
-        semantics = _semantics(index)
+        semantics = dict(
+            semantics_factory(stream, index)
+            if semantics_factory is not None
+            else _semantics(index)
+        )
         resolved = index < RESOLVED_COUNTS[stream]
         if semantics["grader_patch_source"] == "CANONICAL_FAILED_CELL_NOOP":
             resolved = False
-        accounting = _accounting()
+        accounting = _accounting(semantics)
         memory = _memory_metrics(runtime_arm, index)
         provider_outcomes = _provider_outcomes(accounting, semantics)
         task_arm_key = f"{stream}:{runtime_arm}:{target['target_id']}"
@@ -752,9 +869,12 @@ def _canary(approval_digest: str) -> dict[str, Any]:
     }
 
 
-def test_production_shaped_72_cell_terminal_round_trip(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def run_production_shaped_72_cell_terminal_round_trip(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    *,
+    semantics_factory: Callable[[str, int], Mapping[str, Any]] | None = None,
+) -> dict[str, Any]:
     fixture_repository = tmp_path / "repository"
     fixture_material, approval_binding = (
         _initialize_disposable_execution_repository(fixture_repository)
@@ -829,6 +949,7 @@ def test_production_shaped_72_cell_terminal_round_trip(
     monkeypatch.setattr(benchmark_run, "ROOT", fixture_repository)
     monkeypatch.setattr(benchmark_matrix, "ROOT", fixture_repository)
     monkeypatch.setattr(public_artifact, "ROOT", fixture_repository)
+    _bind_historical_candidate_accessors(monkeypatch, fixture_repository)
     monkeypatch.setenv("GITHUB_RUN_ID", approval_binding["approved_workflow_run_id"])
     monkeypatch.setenv(
         "GITHUB_RUN_ATTEMPT", approval_binding["approved_workflow_run_attempt"]
@@ -860,6 +981,7 @@ def test_production_shaped_72_cell_terminal_round_trip(
             pricing=pricing,
             ledger=ledger,
             approval_binding=approval_binding,
+            semantics_factory=semantics_factory,
         )
         summaries.append(summary)
         candidate_summaries.append(summary)
@@ -883,6 +1005,7 @@ def test_production_shaped_72_cell_terminal_round_trip(
             pricing=pricing,
             ledger=ledger,
             approval_binding=approval_binding,
+            semantics_factory=semantics_factory,
         )
         summaries.append(summary)
         records.extend(stream_records)
@@ -1027,6 +1150,23 @@ def test_production_shaped_72_cell_terminal_round_trip(
         public_artifact.PublicArtifactError, match="terminal contract binding"
     ):
         public_artifact.package(wrong_contract_path, tmp_path / "must-not-exist-2.json")
+
+    return {
+        "aggregate": aggregate,
+        "aggregate_path": aggregate_path,
+        "fixture_repository": fixture_repository,
+        "ledger_state": ledger_state,
+        "public": public,
+        "public_path": public_path,
+        "records": records,
+        "results_dir": results_dir,
+    }
+
+
+def test_production_shaped_72_cell_terminal_round_trip(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    run_production_shaped_72_cell_terminal_round_trip(monkeypatch, tmp_path)
 
 
 def _contract_record(

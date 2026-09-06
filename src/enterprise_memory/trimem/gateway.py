@@ -8,7 +8,10 @@ from typing import Any, Awaitable, Callable, Mapping, Optional, Protocol
 
 from .accounting import CallRecord, RawEvidenceLedger, RunAccounting, canonical_bytes, sha256_bytes
 from enterprise_memory.providers.base import SINGLE_FUNCTION_CALL, STRUCTURED_TEXT
-from .function_tools import validate_function_arguments
+from .function_tools import (
+    PRE_D19_REPLAY_ONLY_FUNCTION_TOOLS_SHA256,
+    validate_function_arguments,
+)
 
 
 ACTION_CONTRACT_FAILURE_STATUSES = frozenset({
@@ -20,6 +23,180 @@ ACTION_CONTRACT_FAILURE_STATUSES = frozenset({
     "SOLVE_FUNCTION_ARGUMENT_SCHEMA_FAILURE",
     "SOLVE_FUNCTION_CALL_ID_MISSING",
 })
+
+PREFLIGHT_PASSED = "PREFLIGHT_PASSED"
+CELL_MODEL_PREFLIGHT_FAILURES = frozenset({
+    "TASK_INPUT_CONTEXT_BUDGET_EXCEEDED",
+    "TASK_ARM_INPUT_POOL_EXHAUSTED",
+    "TASK_ARM_MODEL_CALL_POOL_EXHAUSTED",
+    "TASK_ROLE_OUTPUT_POOL_EXHAUSTED",
+    "TASK_TOTAL_OUTPUT_POOL_EXHAUSTED",
+})
+GLOBAL_MODEL_PREFLIGHT_FAILURES = frozenset({
+    "PHASE_MODEL_CALL_CAP_EXHAUSTED",
+    "PHASE_INPUT_CAP_EXHAUSTED",
+    "PHASE_OUTPUT_CAP_EXHAUSTED",
+    "PHASE_USD_CAP_EXHAUSTED",
+    "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+})
+
+REQUEST_LIFECYCLE_CONTRACT: Mapping[str, Any] = {
+    "schema": "trimem/request-lifecycle-contract/1.0",
+    "covered_call_kinds": ["decompose", "solve", "extract"],
+    "prepared_checkpoint_phases": {
+        "decompose": "DECOMPOSE_PREPARED",
+        "solve": "RECALL_PREPARED",
+        "extract": "GRADED_OR_CELL_FAILURE_GRADED_REQUEST_SUFFIX",
+    },
+    "states": [
+        "NOT_PREPARED",
+        "NOT_STARTED",
+        "PREFLIGHT_PASSED",
+        "REQUEST_RECORDED",
+        "PROVIDER_SEND_STARTED",
+        "PROVIDER_TERMINAL_SUCCESS",
+        "PROVIDER_TERMINAL_FAILURE",
+        "PROVIDER_OUTCOME_UNKNOWN",
+    ],
+    "durable_journal_states": [
+        "REQUEST_RECORDED",
+        "PROVIDER_SEND_STARTED",
+        "PROVIDER_TERMINAL_SUCCESS",
+        "PROVIDER_TERMINAL_FAILURE",
+        "PROVIDER_OUTCOME_UNKNOWN",
+    ],
+    "ordering": [
+        "construct_exact_request",
+        "deterministic_prompt_projection",
+        "read_only_budget_preflight",
+        "record_model_request",
+        "record_journal_request",
+        "atomic_reservation_recheck",
+        "record_provider_send_started",
+        "provider_invocation",
+        "record_provider_terminal_outcome",
+        "reconcile_atomic_ledger",
+        "record_terminal_evidence_and_accounting",
+    ],
+    "resume_authorization": {
+        "source": "HASH_BOUND_REQUEST_LIFECYCLE_SNAPSHOT",
+        "not_started_requires_no_ledger_reservation": True,
+        "provider_started_requires_terminal_or_unknown_replay": True,
+        "replay_none_after_provider_start": "GLOBAL_INTEGRITY_FAILURE_NO_SEND",
+    },
+}
+REQUEST_LIFECYCLE_CONTRACT_SHA256 = sha256_bytes(
+    canonical_bytes(REQUEST_LIFECYCLE_CONTRACT)
+)
+
+RESUME_AUTOMATON: Mapping[str, Any] = {
+    "schema": "trimem/request-resume-automaton/1.0",
+    "covered_call_kinds": ["decompose", "solve", "extract"],
+    "rules": {
+        "A": {
+            "evidence": "REQUEST_RECORDED",
+            "journal": "ABSENT",
+            "ledger": "ABSENT",
+            "action": "PREFLIGHT_AND_SEND_ONCE_WITHOUT_DUPLICATE_REQUEST",
+        },
+        "B": {
+            "journal": "REQUEST_RECORDED",
+            "provider_send_started": False,
+            "action": "RESERVE_OR_RESUME_AND_SEND_ONCE",
+        },
+        "C": {
+            "journal": "PROVIDER_SEND_STARTED",
+            "terminal": "ABSENT",
+            "action": "DO_NOT_RETRY_SETTLE_UNKNOWN",
+        },
+        "D": {
+            "journal": ["PROVIDER_TERMINAL_SUCCESS", "PROVIDER_TERMINAL_FAILURE"],
+            "action": "RECONCILE_OR_VERIFY_AND_REPLAY_WITH_ZERO_PROVIDER_CALLS",
+        },
+        "E": {
+            "preflight": "FAILED",
+            "action": "NO_REQUEST_NO_RESERVATION_CELL_OR_GLOBAL_FAILURE",
+        },
+    },
+}
+RESUME_AUTOMATON_SHA256 = sha256_bytes(canonical_bytes(RESUME_AUTOMATON))
+
+
+@dataclass(frozen=True)
+class ReservationPreflight:
+    """Immutable, hash-bound result of a read-only local budget preview."""
+
+    status: str
+    request_sha256: str
+    ledger_logical_call_id: str
+    task_arm_key: str
+    call_kind: str
+    input_upper_bound: int
+    output_cap: int
+    reserved_usd: float
+    reservation_id: str
+    ledger_state_sha256: str
+    plan_sha256: str
+
+    def __post_init__(self) -> None:
+        if self.status != PREFLIGHT_PASSED:
+            raise ValueError("reservation preflight status must be PREFLIGHT_PASSED")
+        for name in (
+            "request_sha256",
+            "reservation_id",
+            "ledger_state_sha256",
+            "plan_sha256",
+        ):
+            value = getattr(self, name)
+            if (
+                not isinstance(value, str)
+                or len(value) != 64
+                or any(character not in "0123456789abcdef" for character in value)
+            ):
+                raise ValueError(f"reservation preflight {name} is not a sha256 digest")
+        if (
+            not self.ledger_logical_call_id
+            or not self.task_arm_key
+            or self.call_kind not in {"solve", "decompose", "extract"}
+            or type(self.input_upper_bound) is not int
+            or self.input_upper_bound <= 0
+            or type(self.output_cap) is not int
+            or self.output_cap <= 0
+            or isinstance(self.reserved_usd, bool)
+            or not isinstance(self.reserved_usd, (int, float))
+            or self.reserved_usd < 0
+        ):
+            raise ValueError("reservation preflight fields are malformed")
+
+
+class ModelPreflightFailure(RuntimeError):
+    """Sanitized local rejection proven to occur before provider transmission."""
+
+    def __init__(
+        self,
+        classification: str,
+        *,
+        details: Optional[Mapping[str, Any]] = None,
+        request_sha256: Optional[str] = None,
+        logical_call_id: Optional[str] = None,
+    ) -> None:
+        if classification in CELL_MODEL_PREFLIGHT_FAILURES:
+            scope = "CELL"
+        elif classification in GLOBAL_MODEL_PREFLIGHT_FAILURES:
+            scope = "GLOBAL"
+        else:
+            raise ValueError("unknown model preflight failure classification")
+        super().__init__(classification)
+        self.classification = classification
+        self.status = classification
+        self.scope = scope
+        self.details = dict(details or {})
+        self.request_sha256 = request_sha256
+        self.logical_call_id = logical_call_id
+
+    @property
+    def cell_scoped(self) -> bool:
+        return self.scope == "CELL"
 
 
 @dataclass(frozen=True)
@@ -42,6 +219,7 @@ class GatewayRequest:
     function_tools_sha256: Optional[str] = None
     tool_choice: Optional[Any] = None
     parallel_tool_calls: Optional[bool] = None
+    prompt_projection: Optional[Mapping[str, Any]] = None
 
     def __post_init__(self) -> None:
         if self.response_mode not in {STRUCTURED_TEXT, SINGLE_FUNCTION_CALL}:
@@ -70,6 +248,23 @@ class GatewayRequest:
                 raise ValueError("single-function mode forbids parallel tool calls")
         elif any(function_contract):
             raise ValueError("structured-text mode cannot carry function tools")
+        if self.prompt_projection is not None:
+            if not isinstance(self.prompt_projection, Mapping):
+                raise ValueError("prompt_projection must be a mapping")
+            if self.prompt_projection.get("final_prompt_sha256") != sha256_bytes(
+                self.prompt.encode("utf-8")
+            ):
+                raise ValueError("prompt_projection final prompt hash differs")
+
+
+def gateway_request_sha256(request: GatewayRequest) -> str:
+    payload = asdict(request)
+    # Preserve the exact pre-D1.9 identity for historical requests.  A bounded
+    # D1.9 projection is hash-bound when present, while an absent optional field
+    # must not silently rewrite old journal/evidence identities.
+    if request.prompt_projection is None:
+        payload.pop("prompt_projection")
+    return sha256_bytes(canonical_bytes(payload))
 
 
 @dataclass(frozen=True)
@@ -459,49 +654,211 @@ class RecordingModelGateway:
         self.accounting = accounting
         self.evidence = evidence
 
-    def invoke(self, request: GatewayRequest) -> GatewayResponse:
-        request_sha256 = sha256_bytes(canonical_bytes(asdict(request)))
+    def _recorded_events(
+        self, request: GatewayRequest, request_sha256: str
+    ) -> tuple[Optional[Mapping[str, Any]], Optional[Mapping[str, Any]]]:
+        request_event: Optional[Mapping[str, Any]] = None
+        terminal_event: Optional[Mapping[str, Any]] = None
+        for event in self.evidence.verified_suffix("0" * 64):
+            payload = event.get("payload")
+            if not isinstance(payload, Mapping):
+                continue
+            if payload.get("logical_call_id") != request.logical_call_id:
+                continue
+            event_type = event.get("event_type")
+            if event_type not in {"model_request", "model_response", "model_failure"}:
+                continue
+            if payload.get("request_sha256") != request_sha256:
+                raise RuntimeError("recorded model request identity mismatch")
+            if event_type == "model_request":
+                if request_event is not None:
+                    raise RuntimeError("duplicate recorded model request")
+                request_event = event
+            else:
+                if terminal_event is not None:
+                    raise RuntimeError("duplicate recorded model terminal outcome")
+                terminal_event = event
+        if terminal_event is not None and request_event is None:
+            raise RuntimeError("model terminal outcome has no recorded request")
+        return request_event, terminal_event
+
+    @staticmethod
+    def _prompt_reference(
+        request_event: Mapping[str, Any], request: GatewayRequest
+    ) -> Mapping[str, Any]:
+        payload = request_event.get("payload")
+        prompt = payload.get("prompt") if isinstance(payload, Mapping) else None
+        if (
+            not isinstance(prompt, Mapping)
+            or prompt.get("sha256") != sha256_bytes(request.prompt.encode("utf-8"))
+            or prompt.get("bytes") != len(request.prompt.encode("utf-8"))
+        ):
+            raise RuntimeError("recorded model prompt identity mismatch")
+        return prompt
+
+    def invoke(
+        self,
+        request: GatewayRequest,
+        *,
+        request_already_recorded: bool = False,
+        required_request_lifecycle_state: Optional[str] = None,
+    ) -> GatewayResponse:
+        request_sha256 = gateway_request_sha256(request)
+        request_event, terminal_event = self._recorded_events(request, request_sha256)
+        if request_already_recorded and request_event is None:
+            raise RuntimeError("request_already_recorded has no matching evidence event")
+        if request_already_recorded and required_request_lifecycle_state is None:
+            raise RuntimeError(
+                "recorded-request recovery requires an explicit lifecycle state"
+            )
+        if required_request_lifecycle_state is not None and not request_already_recorded:
+            raise RuntimeError(
+                "request lifecycle recovery requires a recorded request event"
+            )
+        lifecycle_states = {
+            "NOT_PREPARED", "NOT_STARTED", "REQUEST_RECORDED",
+            "PROVIDER_SEND_STARTED", "PROVIDER_TERMINAL_SUCCESS",
+            "PROVIDER_TERMINAL_FAILURE", "PROVIDER_OUTCOME_UNKNOWN",
+        }
+        if (
+            required_request_lifecycle_state is not None
+            and required_request_lifecycle_state not in lifecycle_states
+        ):
+            raise RuntimeError("unknown required request lifecycle state")
         replay = getattr(self.delegate, "replay_terminal", None)
+        replayed_response: Optional[GatewayResponse] = None
+        replayed_failure: Optional[GatewayInvocationFailure] = None
         if callable(replay):
+            replayed: Optional[GatewayResponse] = None
             try:
                 replayed = replay(request)
             except GatewayInvocationFailure as failure:
                 if not failure.terminal_outcome_replayed:
                     raise
-                self.evidence.append("model_terminal_outcome_replayed", {
-                    "logical_call_id": request.logical_call_id,
-                    "request_sha256": request_sha256,
-                    "attempt": failure.attempt,
-                    "terminal_event_type": "model_failure",
-                    "status": failure.status,
-                    "counted_as_model_call": False,
-                })
-                raise
+                if terminal_event is not None:
+                    self.evidence.append("model_terminal_outcome_replayed", {
+                        "logical_call_id": request.logical_call_id,
+                        "request_sha256": request_sha256,
+                        "attempt": failure.attempt,
+                        "terminal_event_type": "model_failure",
+                        "status": failure.status,
+                        "counted_as_model_call": False,
+                    })
+                    raise
+                replayed_failure = failure
             if replayed is not None:
                 if not replayed.terminal_outcome_replayed:
                     raise RuntimeError("journal replay did not mark its terminal outcome")
-                self.evidence.append("model_terminal_outcome_replayed", {
+                if terminal_event is not None:
+                    self.evidence.append("model_terminal_outcome_replayed", {
+                        "logical_call_id": request.logical_call_id,
+                        "request_sha256": request_sha256,
+                        "attempt": replayed.attempt,
+                        "terminal_event_type": "model_response",
+                        "status": replayed.status,
+                        "counted_as_model_call": False,
+                    })
+                    return replayed
+                replayed_response = replayed
+
+        # A lifecycle snapshot is the authorization boundary for resuming a
+        # durable request-only suffix.  Never interpret a broken/partial
+        # replay implementation as permission to send.  In particular, a
+        # provider-started request must settle/replay a terminal outcome; a
+        # None result is a global integrity failure, not a retry signal.
+        if required_request_lifecycle_state is not None:
+            expected = required_request_lifecycle_state
+            if expected in {"NOT_PREPARED", "NOT_STARTED", "REQUEST_RECORDED"}:
+                if replayed_response is not None or replayed_failure is not None:
+                    raise RuntimeError(
+                        "request lifecycle changed after its recovery snapshot"
+                    )
+            elif expected == "PROVIDER_TERMINAL_SUCCESS":
+                if replayed_response is None or replayed_failure is not None:
+                    raise RuntimeError(
+                        "terminal-success lifecycle did not replay exact success"
+                    )
+            elif expected == "PROVIDER_TERMINAL_FAILURE":
+                if replayed_failure is None or replayed_response is not None:
+                    raise RuntimeError(
+                        "terminal-failure lifecycle did not replay exact failure"
+                    )
+            else:
+                if (
+                    replayed_failure is None
+                    or replayed_response is not None
+                    or replayed_failure.status
+                    != "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"
+                ):
+                    raise RuntimeError(
+                        "provider-started lifecycle did not settle unknown outcome"
+                    )
+
+        preflight: Optional[ReservationPreflight] = None
+        if replayed_response is None and replayed_failure is None:
+            preview = getattr(self.delegate, "preview_reservation", None)
+            if callable(preview):
+                try:
+                    preflight = preview(request)
+                except ModelPreflightFailure as failure:
+                    if failure.request_sha256 not in {None, request_sha256}:
+                        raise RuntimeError("preflight failure request identity mismatch") from None
+                    self.evidence.append(
+                        "model_preflight_failure",
+                        {
+                            "task_id": request.task_id,
+                            "arm": request.arm,
+                            "step_no": request.step_no,
+                            "call_kind": request.call_kind,
+                            "logical_call_id": request.logical_call_id,
+                            "request_sha256": request_sha256,
+                            "prompt_sha256": sha256_bytes(request.prompt.encode("utf-8")),
+                            "prompt_bytes": len(request.prompt.encode("utf-8")),
+                            "prompt_projection": (
+                                dict(request.prompt_projection)
+                                if request.prompt_projection is not None
+                                else None
+                            ),
+                            "classification": failure.classification,
+                            "scope": failure.scope,
+                            "details": failure.details,
+                            "model_calls": 0,
+                            "input_tokens": 0,
+                            "output_tokens": 0,
+                            "total_usd": 0,
+                        },
+                    )
+                    raise
+                if preflight is not None and (
+                    not isinstance(preflight, ReservationPreflight)
+                    or preflight.request_sha256 != request_sha256
+                    or preflight.status != PREFLIGHT_PASSED
+                ):
+                    raise RuntimeError("model reservation preflight contract differs")
+
+        if request_event is not None:
+            prompt_ref = self._prompt_reference(request_event, request)
+        else:
+            if replayed_response is not None or replayed_failure is not None:
+                raise RuntimeError("journal terminal outcome has no recorded model request")
+            prompt_ref = self.evidence.put_blob(request.prompt)
+            self.evidence.append(
+                "model_request",
+                {
+                    "task_id": request.task_id,
+                    "arm": request.arm,
+                    "step_no": request.step_no,
+                    "call_kind": request.call_kind,
                     "logical_call_id": request.logical_call_id,
                     "request_sha256": request_sha256,
-                    "attempt": replayed.attempt,
-                    "terminal_event_type": "model_response",
-                    "status": replayed.status,
-                    "counted_as_model_call": False,
-                })
-                return replayed
-        prompt_ref = self.evidence.put_blob(request.prompt)
-        self.evidence.append(
-            "model_request",
-            {
-                "task_id": request.task_id,
-                "arm": request.arm,
-                "step_no": request.step_no,
-                "call_kind": request.call_kind,
-                "logical_call_id": request.logical_call_id,
-                "request_sha256": request_sha256,
-                "active_node_id": request.active_node_id,
-                "org_id": request.org_id,
+                    "active_node_id": request.active_node_id,
+                    "org_id": request.org_id,
                     "prompt": prompt_ref,
+                    "prompt_projection": (
+                        dict(request.prompt_projection)
+                        if request.prompt_projection is not None
+                        else None
+                    ),
                     "max_output_tokens": request.max_output_tokens,
                     "output_schema_name": request.output_schema_name,
                     "output_schema_sha256": request.output_schema_sha256,
@@ -511,9 +868,18 @@ class RecordingModelGateway:
                     "tool_choice": request.tool_choice,
                     "parallel_tool_calls": request.parallel_tool_calls,
                 },
-        )
+            )
         try:
-            response = self.delegate.invoke(request)
+            if replayed_failure is not None:
+                raise replayed_failure
+            if replayed_response is not None:
+                response = replayed_response
+            else:
+                invoke_preflighted = getattr(self.delegate, "invoke_preflighted", None)
+                if callable(invoke_preflighted):
+                    response = invoke_preflighted(request, preflight)
+                else:
+                    response = self.delegate.invoke(request)
         except GatewayInvocationFailure as failure:
             response_ref = self.evidence.put_blob(failure.response_text)
             record = CallRecord(
@@ -731,7 +1097,12 @@ def parse_function_action(
     return response.function_name, arguments
 
 
-def _complete_legacy_nullable_arguments(name: str, value: Any) -> Any:
+def _complete_legacy_nullable_arguments(
+    name: str,
+    value: Any,
+    *,
+    allow_pre_d19_unpaginated_list_files: bool = False,
+) -> Any:
     """Adapt immutable pre-D1.6 text fixtures, never live provider output."""
 
     if not isinstance(value, dict):
@@ -744,6 +1115,18 @@ def _complete_legacy_nullable_arguments(name: str, value: Any) -> Any:
     }
     for field in nullable.get(name, ()):
         result.setdefault(field, None)
+    if (
+        name == "list_files"
+        and not result
+        and allow_pre_d19_unpaginated_list_files
+    ):
+        # Immutable pre-D1.9 fixtures used `{}`.  Live provider output still
+        # traverses the strict native schema and cannot use this adapter.
+        result.update({
+            "path_prefix": None,
+            "start_after": None,
+            "limit": 100,
+        })
     if name == "revise_subtask_dag":
         rows = []
         for original in result.get("new_subtasks", ()):
@@ -767,8 +1150,19 @@ def _adapt_credential_free_legacy_response(
     value = strict_json_object(response.text)
     if set(value) != {"tool", "arguments"}:
         raise ValueError("credential-free function replay requires tool/arguments")
+    actual_function_tools_sha256 = sha256_bytes(
+        canonical_bytes(request.function_tools)
+    )
+    explicit_pre_d19_replay = (
+        request.function_tools_sha256
+        == PRE_D19_REPLAY_ONLY_FUNCTION_TOOLS_SHA256
+        and actual_function_tools_sha256
+        == PRE_D19_REPLAY_ONLY_FUNCTION_TOOLS_SHA256
+    )
     arguments = _complete_legacy_nullable_arguments(
-        str(value["tool"]), value["arguments"]
+        str(value["tool"]),
+        value["arguments"],
+        allow_pre_d19_unpaginated_list_files=explicit_pre_d19_replay,
     )
     raw = json.dumps(
         arguments, ensure_ascii=False, sort_keys=True, separators=(",", ":")

@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_009.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-009
+  group: trimem-v1-development-tuning-exec-010
   cancel-in-progress: false
 
 permissions:
@@ -62,11 +62,11 @@ jobs:
         run: |
           set -euo pipefail
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
-          python -I -S scripts/trimem_development_trigger_d18.py \
+          python -I -S scripts/trimem_development_trigger_d19.py \
             --repository "$GITHUB_WORKSPACE" \
             --event-path "$GITHUB_EVENT_PATH"
 
-  frozen-serial-phase:
+  bounded-context-preflight:
     needs: branch-trigger-preflight
     if: >-
       always() &&
@@ -77,6 +77,45 @@ jobs:
         github.ref == 'refs/heads/codex/trimem-coder-v1' &&
         github.run_attempt == 1 &&
         needs.branch-trigger-preflight.result == 'success'))
+    runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]
+    timeout-minutes: 45
+    steps:
+      - name: Checkout bounded-context correction
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.11.10
+          cache: ""
+      - name: Install hash-locked environment
+        run: |
+          python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Verify production terminal-cell round trip before provider access
+        run: >-
+          python scripts/trimem_pytest_no_skip.py
+          tests/unit/test_trimem_d18_terminal_contract_integration.py
+          tests/unit/test_trimem_d19_bounded_short_term_context.py::test_mixed_72_cell_aggregate_public_and_terminal_ledger_round_trip
+      - name: Verify bounded context round trip before provider access
+        run: python scripts/trimem_context_roundtrip.py
+
+  frozen-serial-phase:
+    needs: [branch-trigger-preflight, bounded-context-preflight]
+    if: >-
+      always() &&
+      !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
+        github.ref == 'refs/heads/main' &&
+        needs.bounded-context-preflight.result == 'success') ||
+       (github.event_name == 'push' &&
+        github.ref == 'refs/heads/codex/trimem-coder-v1' &&
+        github.run_attempt == 1 &&
+        needs.branch-trigger-preflight.result == 'success' &&
+        needs.bounded-context-preflight.result == 'success'))
     runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]
     timeout-minutes: 7200
     environment: trimem-benchmark-exec
@@ -124,10 +163,6 @@ jobs:
         run: |
           python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
           python -m pip install --no-deps --no-build-isolation -e .
-      - name: Verify production terminal-cell round trip before provider access
-        run: >-
-          python scripts/trimem_pytest_no_skip.py
-          tests/unit/test_trimem_d18_terminal_contract_integration.py
       - name: Install exact pinned GitHub CLI
         run: |
           set -euo pipefail

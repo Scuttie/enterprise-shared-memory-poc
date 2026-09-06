@@ -151,10 +151,27 @@ from trimem_development_trigger_d18 import (  # noqa: E402
     PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_008_SENTINEL_PATH,
     PREVIOUS_SENTINEL_SHA256 as DEVELOPMENT_EXEC_008_SENTINEL_RAW_SHA256,
     PRESERVED_SHA256 as D18_PRESERVED_SHA256,
+    validate_previous_execution_receipt as validate_d18_previous_execution_receipt,
+)
+from trimem_development_trigger_d19 import (  # noqa: E402
+    AMENDMENT_CLASSIFICATION as D19_AMENDMENT_CLASSIFICATION,
+    AMENDMENT_PATH as D19_AMENDMENT_PATH,
+    AMENDMENT_SCHEMA as D19_AMENDMENT_SCHEMA,
+    AMENDMENT_STATUS as D19_AMENDMENT_STATUS,
+    INVENTORY_PATH as D19_INVENTORY_PATH,
+    INVENTORY_SCHEMA as D19_INVENTORY_SCHEMA,
+    PREVIOUS_EXECUTION_HEAD as DEVELOPMENT_EXEC_009_HEAD,
+    PREVIOUS_FAILURE_SUBTYPE as DEVELOPMENT_EXEC_009_FAILURE_SUBTYPE,
+    PREVIOUS_RECEIPT_PATH as DEVELOPMENT_EXEC_009_FAILURE_RECEIPT_PATH,
+    PREVIOUS_RUN_ID as DEVELOPMENT_EXEC_009_RUN_ID,
+    PREVIOUS_SENTINEL_PATH as DEVELOPMENT_EXEC_009_SENTINEL_PATH,
+    PREVIOUS_SENTINEL_SHA256 as DEVELOPMENT_EXEC_009_SENTINEL_RAW_SHA256,
+    PREVIOUS_SOURCE_HEAD as D18_CORRECTION_SOURCE_HEAD,
     REQUEST_ID as DEVELOPMENT_REQUEST_ID,
     REQUIRED_EXTERNAL_AUTHORIZATION as DEVELOPMENT_EXECUTION_AUTHORIZATION,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
-    validate_previous_execution_receipt,
+    validate_correction_source as validate_d19_correction_source,
+    validate_previous_execution_receipt as validate_d19_previous_execution_receipt,
     validate_sentinel_commit as validate_development_sentinel_commit,
 )
 from trimem_harness_lock import (  # noqa: E402
@@ -4104,7 +4121,7 @@ def _validated_development_exec_008_failure() -> dict[str, Any]:
         == DEVELOPMENT_EXEC_008_SENTINEL_RAW_SHA256,
         "DEV _008 sentinel bytes differ",
     )
-    receipt = validate_previous_execution_receipt(receipt_path.read_bytes())
+    receipt = validate_d18_previous_execution_receipt(receipt_path.read_bytes())
     ancestry = subprocess.run(
         ["git", "merge-base", "--is-ancestor", DEVELOPMENT_EXEC_008_HEAD, "HEAD"],
         cwd=ROOT,
@@ -4112,6 +4129,26 @@ def _validated_development_exec_008_failure() -> dict[str, Any]:
         check=False,
     )
     require(ancestry.returncode == 0, "DEV _008 execution is not immutable branch history")
+    return receipt
+
+
+def _validated_development_exec_009_failure() -> dict[str, Any]:
+    receipt_path = ROOT / DEVELOPMENT_EXEC_009_FAILURE_RECEIPT_PATH
+    sentinel_path = ROOT / DEVELOPMENT_EXEC_009_SENTINEL_PATH
+    require(receipt_path.is_file(), "DEV _009 bounded-context receipt is missing")
+    require(
+        hashlib.sha256(sentinel_path.read_bytes()).hexdigest()
+        == DEVELOPMENT_EXEC_009_SENTINEL_RAW_SHA256,
+        "DEV _009 sentinel bytes differ",
+    )
+    receipt = validate_d19_previous_execution_receipt(receipt_path.read_bytes())
+    ancestry = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", DEVELOPMENT_EXEC_009_HEAD, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    require(ancestry.returncode == 0, "DEV _009 execution is not immutable branch history")
     return receipt
 
 
@@ -4127,13 +4164,16 @@ def validate_readiness_plan(
     historical_exec_004_failure = _validated_development_exec_004_failure()
     development_failure = _validated_development_exec_005_failure()
     historical_exec_007_failure = _validated_development_exec_007_failure()
-    current_development_failure = _validated_development_exec_008_failure()
+    historical_exec_008_failure = _validated_development_exec_008_failure()
+    current_development_failure = _validated_development_exec_009_failure()
     derived["current_status"]["DEV_APPROVAL_ALLOWED"] = "NO"
     derived["current_status"]["DEV_EXECUTION_ALLOWED"] = "NO"
-    derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = "NOT_STARTED"
+    derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = (
+        "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL"
+    )
     derived["current_status"]["ENDPOINT"] = DEVELOPMENT_INCOMPLETE_ENDPOINT
     derived["current_status"]["FAILURE_SUBTYPE"] = (
-        DEVELOPMENT_EXEC_008_FAILURE_SUBTYPE
+        DEVELOPMENT_EXEC_009_FAILURE_SUBTYPE
     )
     derived["current_status"]["PERFORMANCE"] = "NOT_MEASURED"
     derived["current_status"]["SCIENTIFIC_RESULT"] = (
@@ -4141,6 +4181,7 @@ def validate_readiness_plan(
     )
     derived["development_execution_failure"] = development_failure
     derived["current_development_execution_failure"] = current_development_failure
+    derived["historical_development_exec_008_failure"] = historical_exec_008_failure
     derived["historical_development_exec_007_failure"] = (
         historical_exec_007_failure
     )
@@ -4186,9 +4227,9 @@ def validate_readiness_plan(
         isinstance(authorization, dict)
         and authorization.get("active_development_approval") is False
         and authorization.get("amendment_classification")
-        == D18_AMENDMENT_CLASSIFICATION
+        == D19_AMENDMENT_CLASSIFICATION
         and authorization.get("amendment_evidence_path")
-        == D18_AMENDMENT_PATH
+        == D19_AMENDMENT_PATH
         and authorization.get("approval_request_eligible") is False
         and authorization.get("attempt_one_consumed") is False
         and authorization.get("attempt_two_allowed") is False
@@ -4214,14 +4255,16 @@ def validate_readiness_plan(
         and authorization.get("request_007_attempt_one_consumed") is True
         and authorization.get("request_008_allowed_after_exact_remote_gates") is False
         and authorization.get("request_008_attempt_one_consumed") is True
-        and authorization.get("request_009_allowed_after_exact_remote_gates") is True
-        and authorization.get("request_009_attempt_one_consumed") is False
+        and authorization.get("request_009_allowed_after_exact_remote_gates") is False
+        and authorization.get("request_009_attempt_one_consumed") is True
+        and authorization.get("request_010_allowed_after_exact_remote_gates") is True
+        and authorization.get("request_010_attempt_one_consumed") is False
         and authorization.get(
             "solve_execution_contract_rehearsal_required_before_request_005"
         )
         is False
         and authorization.get("rerun_allowed") is False,
-        "D1.8 development authorization boundary differs",
+        "D1.9 development authorization boundary differs",
     )
     counts = plan.get("frozen_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_benchmark_physical_task_arm_runs")) == (72, 81, 153), "readiness physical-run counts drift")
@@ -4267,9 +4310,14 @@ def validate_readiness_plan(
         "readiness DEV _005 terminal authentication failure differs",
     )
     require(
+        plan.get("historical_development_exec_008_failure")
+        == historical_exec_008_failure,
+        "readiness DEV _008 terminal-contract failure history differs",
+    )
+    require(
         plan.get("current_development_execution_failure")
         == current_development_failure,
-        "readiness DEV _008 terminal-contract failure differs",
+        "readiness DEV _009 bounded-context failure differs",
     )
     require(
         plan.get("historical_development_exec_007_failure")
@@ -4294,7 +4342,7 @@ def validate_readiness_plan(
     static_meaning = str(plan.get("static_ci_meaning", ""))
     require(
         "grader-smoke PASS evidence" in static_meaning
-        and "D1.8" in static_meaning
+        and "D1.9" in static_meaning
         and "performance remains NOT_MEASURED" in static_meaning,
         "post-smoke static-CI evidence boundary differs",
     )
@@ -4303,7 +4351,7 @@ def validate_readiness_plan(
         isinstance(remaining, list)
         and remaining
         and any(
-            "_009" in str(item) and "pending" in str(item).lower()
+            "_010" in str(item) and "pending" in str(item).lower()
             for item in remaining
         ),
         "post-smoke remaining phase gates differ",
@@ -4453,7 +4501,10 @@ def validate_d17_approval_consumer_amendment() -> None:
 
 
 def validate_d18_terminal_contract_amendment() -> None:
-    amendment = read_json(ROOT / D18_AMENDMENT_PATH)
+    amendment = _strict_json_bytes(
+        _historical_git_file(D18_CORRECTION_SOURCE_HEAD, D18_AMENDMENT_PATH),
+        label=f"{D18_AMENDMENT_PATH}@{D18_CORRECTION_SOURCE_HEAD}",
+    )
     implementation = amendment.get("implementation_sha256")
     historical = amendment.get("historical_run")
     require(
@@ -4480,16 +4531,45 @@ def validate_d18_terminal_contract_amendment() -> None:
             isinstance(relative, str)
             and isinstance(expected, str)
             and re.fullmatch(r"[0-9a-f]{64}", expected) is not None
-            and hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
+            and hashlib.sha256(
+                _historical_git_file(D18_CORRECTION_SOURCE_HEAD, relative)
+            ).hexdigest()
             == expected,
             f"D1.8 implementation seal differs: {relative}",
         )
+
+
+def validate_d19_bounded_context_amendment() -> None:
+    """Validate D1.9 at its immutable correction source, never at `_010`."""
+
+    sentinel = ROOT / DEVELOPMENT_SENTINEL_PATH
+    if sentinel.is_file():
+        request = read_json(sentinel)
+        source_head = request.get("source_head")
+        require(
+            isinstance(source_head, str) and HEX40.fullmatch(source_head) is not None,
+            "DEV _010 source binding is malformed",
+        )
+    else:
+        source_head = git_head()
+    validated = validate_d19_correction_source(
+        ROOT,
+        source_head,
+        require_checked_out_head=False,
+    )
+    require(
+        validated.get("status") == "PASS"
+        and validated.get("request_id") == DEVELOPMENT_REQUEST_ID
+        and validated.get("sentinel_path") == DEVELOPMENT_SENTINEL_PATH,
+        "D1.9 bounded-context amendment/inventory validation differs",
+    )
 
 
 def validate_runtime_and_candidates() -> None:
     validate_d16_action_protocol_amendment()
     validate_d17_approval_consumer_amendment()
     validate_d18_terminal_contract_amendment()
+    validate_d19_bounded_context_amendment()
     bundle = load_bundle()
     require(bundle.get("candidate_order") == list(CANDIDATE_IDS), "M2 candidate order drift")
     require(bundle.get("development_contract", {}).get("candidate_task_arm_runs") == 48, "M2 candidate run count drift")
@@ -4791,7 +4871,7 @@ def validate_workflows() -> None:
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
     stdlib_preflight_rehearsal = (
-        "python -I -S scripts/trimem_development_trigger_d18.py --help"
+        "python -I -S scripts/trimem_development_trigger_d19.py --help"
     )
     require(
         static.count(stdlib_freeze_rehearsal) == 1
@@ -5093,7 +5173,8 @@ def validate_workflows() -> None:
         and "push:" in benchmark_text
         and "      - codex/trimem-coder-v1" in benchmark_text
         and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
-        and "group: trimem-v1-development-tuning-exec-009" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-010" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-009" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-008" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-004" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-003" not in benchmark_text
@@ -5102,7 +5183,8 @@ def validate_workflows() -> None:
         and "cancel-in-progress: false" in benchmark_text
         and "branch-trigger-preflight:" in benchmark_text
         and "needs: branch-trigger-preflight" in benchmark_text
-        and "trimem_development_trigger_d18.py" in benchmark_text
+        and "trimem_development_trigger_d19.py" in benchmark_text
+        and "trimem_development_trigger_d18.py" not in benchmark_text
         and "trimem_development_trigger_d15.py" not in benchmark_text
         and "github.ref == 'refs/heads/main'" in benchmark_text
         and "github.ref == 'refs/heads/codex/trimem-coder-v1'" in benchmark_text,
@@ -5117,7 +5199,7 @@ def validate_workflows() -> None:
         and "persist-credentials: false" in benchmark_preflight
         and "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in benchmark_preflight
-        and "python -I -S scripts/trimem_development_trigger_d18.py"
+        and "python -I -S scripts/trimem_development_trigger_d19.py"
         in benchmark_preflight
         and "GH_TOKEN: ${{ github.token }}" in benchmark_preflight
         and "secrets." not in benchmark_preflight
@@ -5157,13 +5239,22 @@ def validate_workflows() -> None:
     terminal_round_trip = benchmark_text.find(
         "- name: Verify production terminal-cell round trip before provider access"
     )
+    context_round_trip = benchmark_text.find(
+        "- name: Verify bounded context round trip before provider access"
+    )
     install_gh = benchmark_text.find("- name: Install exact pinned GitHub CLI")
     require(
-        0 <= install_environment < terminal_round_trip < install_gh
+        0 <= install_environment < terminal_round_trip < context_round_trip < install_gh
         and "python scripts/trimem_pytest_no_skip.py"
         in benchmark_text[terminal_round_trip:install_gh]
         and "tests/unit/test_trimem_d18_terminal_contract_integration.py"
         in benchmark_text[terminal_round_trip:install_gh]
+        and benchmark_text.count(
+            "- name: Verify bounded context round trip before provider access"
+        )
+        == 1
+        and "python scripts/trimem_context_roundtrip.py"
+        in benchmark_text[context_round_trip:install_gh]
         and (
             "- name: Pull committed images by digest and verify local observations\n"
             "        if: ${{ !cancelled() && success() }}"
@@ -5179,7 +5270,7 @@ def validate_workflows() -> None:
             "        if: ${{ always() && !cancelled() && success() }}"
         )
         in benchmark_text,
-        "D1.8 pre-provider round-trip or cancellation boundary differs",
+        "D1.9 pre-provider round-trip or cancellation boundary differs",
     )
     require(
         benchmark_secrets
@@ -5448,12 +5539,12 @@ def preapproval_blockers() -> list[str]:
     sentinel = ROOT / DEVELOPMENT_SENTINEL_PATH
     if not sentinel.is_file():
         return [
-            "DEV _009 sentinel and exact-head remote gates are required before approval"
+            "DEV _010 sentinel and exact-head remote gates are required before approval"
         ]
     try:
         validate_development_sentinel_commit(ROOT, git_head())
     except (OSError, ValueError, subprocess.SubprocessError) as exc:
-        return [f"DEV _009 sentinel validation failed: {exc}"]
+        return [f"DEV _010 sentinel validation failed: {exc}"]
     return []
 
 

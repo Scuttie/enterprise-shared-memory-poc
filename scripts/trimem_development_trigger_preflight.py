@@ -1811,6 +1811,15 @@ def _validate_secret_free_preflight(
         "      - artifacts/trimem_v1/exec_requests/"
         "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json\n"
     )
+    d19_trigger_block = (
+        "  workflow_dispatch:\n"
+        "  push:\n"
+        "    branches:\n"
+        "      - codex/trimem-coder-v1\n"
+        "    paths:\n"
+        "      - artifacts/trimem_v1/exec_requests/"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json\n"
+    )
     trigger_identity_ok = (
         trigger_block == expected_trigger_block
         and f"group: {EXPECTED_CONCURRENCY_GROUP}" in workflow
@@ -1820,6 +1829,11 @@ def _validate_secret_free_preflight(
     ) or (
         trigger_block == d18_trigger_block
         and "group: trimem-v1-development-tuning-exec-009" in workflow
+        and "group: trimem-v1-development-tuning-exec-008" not in workflow
+    ) or (
+        trigger_block == d19_trigger_block
+        and "group: trimem-v1-development-tuning-exec-010" in workflow
+        and "group: trimem-v1-development-tuning-exec-009" not in workflow
         and "group: trimem-v1-development-tuning-exec-008" not in workflow
     )
     _require(
@@ -1849,6 +1863,9 @@ def _validate_secret_free_preflight(
             )
             + preflight.count(
                 "python -I -S scripts/trimem_development_trigger_d18.py"
+            )
+            + preflight.count(
+                "python -I -S scripts/trimem_development_trigger_d19.py"
             )
             == 1
         ),

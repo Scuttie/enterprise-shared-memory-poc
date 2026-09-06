@@ -139,8 +139,13 @@ def _replay_resolver(request):
         if step == 1:
             # This assertion proves retrieval happened at activation and that
             # the exact memory was placed in the solve request, not merely logged.
-            assert '"memory_for_active_subtask_only": [{"' in request.prompt
-            assert "casefold" in request.prompt
+            _, marker, state_text = request.prompt.partition("\n\nSTATE:\n")
+            assert marker
+            active_memory = json.loads(state_text)[
+                "memory_for_active_subtask_only"
+            ]
+            assert active_memory
+            assert any("casefold" in row["exact_text"] for row in active_memory)
         if step == 2:
             assert "def load_config(name)" in request.prompt
             assert "name.endswith" in request.prompt

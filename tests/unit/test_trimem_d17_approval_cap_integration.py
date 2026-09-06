@@ -171,7 +171,11 @@ class FakeResponse:
                 "type": "function_call",
                 "call_id": "call-canary",
                 "name": "list_files",
-                "arguments": "{}",
+                "arguments": json.dumps(
+                    action_canary.LIST_FILES_ARGUMENTS,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ),
             }],
             "usage": {
                 "input_tokens": 100,

@@ -8,7 +8,13 @@ from pathlib import Path
 import tempfile
 from typing import Any, Mapping, Optional
 
-from .accounting import canonical_bytes, sha256_bytes, strict_json_loads, utc_now
+from .accounting import (
+    RunAccounting,
+    canonical_bytes,
+    sha256_bytes,
+    strict_json_loads,
+    utc_now,
+)
 
 
 @dataclass(frozen=True)
@@ -34,6 +40,7 @@ class RuntimeCheckpoint:
     lifecycle_state: Mapping[str, Any] = field(default_factory=dict)
     terminal_payload: Mapping[str, Any] = field(default_factory=dict)
     pending_policy_transition: Optional[Mapping[str, Any]] = None
+    prepared_request: Optional[Mapping[str, Any]] = None
     previous_checkpoint_hash: str = "0" * 64
     created_at: str = field(default_factory=utc_now)
 
@@ -49,6 +56,123 @@ class RuntimeCheckpoint:
         }.items():
             if len(value) != 64 or any(ch not in "0123456789abcdef" for ch in value):
                 raise ValueError(f"{name} is not a sha256 digest")
+        if self.state == "DECOMPOSE_PREPARED":
+            if not isinstance(self.prepared_request, Mapping):
+                raise ValueError(
+                    "DECOMPOSE_PREPARED requires a prepared request binding"
+                )
+            if (
+                self.generation != 1
+                or self.next_step_no != 1
+                or self.previous_checkpoint_hash != "0" * 64
+                or self.evidence_event_hash == "0" * 64
+                or self.active_node_id is not None
+                or self.injected_memory_ids
+                or self.injected_bytes != 0
+                or self.injection_ledger
+                or self.tool_history
+                or self.completed_call_ids
+                or canonical_bytes(self.accounting)
+                != canonical_bytes(RunAccounting().to_dict())
+                or self.terminal_payload
+                or self.pending_policy_transition is not None
+            ):
+                raise ValueError(
+                    "DECOMPOSE_PREPARED requires pristine pre-model state"
+                )
+            required = {
+                "schema", "run_id", "task_id", "arm", "active_node_id",
+                "next_step_no", "request_step_no", "logical_call_id", "prompt_sha256",
+                "request_sha256", "max_output_tokens",
+            }
+            if set(self.prepared_request) != required:
+                raise ValueError("decomposition request binding shape differs")
+            if (
+                self.prepared_request.get("schema")
+                != "trimem/decompose-prepared-request/1.0"
+                or self.prepared_request.get("run_id") != self.run_id
+                or self.prepared_request.get("task_id") != self.task_id
+                or self.prepared_request.get("arm") != self.arm
+                or self.prepared_request.get("active_node_id") is not None
+                or self.active_node_id is not None
+                or self.prepared_request.get("next_step_no") != self.next_step_no
+                or self.prepared_request.get("request_step_no") != 0
+                or self.prepared_request.get("logical_call_id")
+                != f"{self.task_id}:{self.arm}:decompose:0001"
+                or type(self.prepared_request.get("max_output_tokens")) is not int
+                or self.prepared_request["max_output_tokens"] <= 0
+            ):
+                raise ValueError(
+                    "decomposition request identity differs from checkpoint"
+                )
+            for name in ("prompt_sha256", "request_sha256"):
+                value = self.prepared_request.get(name)
+                if (
+                    not isinstance(value, str)
+                    or len(value) != 64
+                    or any(ch not in "0123456789abcdef" for ch in value)
+                ):
+                    raise ValueError(
+                        f"decomposition request {name} is not a sha256 digest"
+                    )
+        elif self.state == "RECALL_PREPARED":
+            if not isinstance(self.prepared_request, Mapping):
+                raise ValueError("RECALL_PREPARED requires a prepared request binding")
+            required = {
+                "run_id", "task_id", "arm", "active_node_id", "next_step_no",
+                "logical_call_id", "recall_decision", "recall_decision_sha256",
+                "memory_injection_sha256", "projection_sha256",
+                "prompt_sha256", "request_sha256", "projection_record",
+            }
+            if set(self.prepared_request) != required:
+                raise ValueError("prepared request binding shape differs")
+            if (
+                self.prepared_request.get("run_id") != self.run_id
+                or self.prepared_request.get("task_id") != self.task_id
+                or self.prepared_request.get("arm") != self.arm
+                or self.prepared_request.get("active_node_id") != self.active_node_id
+                or self.prepared_request.get("next_step_no") != self.next_step_no
+            ):
+                raise ValueError("prepared request identity differs from checkpoint")
+            for name in (
+                "recall_decision_sha256", "memory_injection_sha256",
+                "projection_sha256", "prompt_sha256", "request_sha256",
+            ):
+                value = self.prepared_request.get(name)
+                if (
+                    not isinstance(value, str)
+                    or len(value) != 64
+                    or any(ch not in "0123456789abcdef" for ch in value)
+                ):
+                    raise ValueError(f"prepared request {name} is not a sha256 digest")
+            recall_decision = self.prepared_request.get("recall_decision")
+            if (
+                not isinstance(recall_decision, Mapping)
+                or recall_decision.get("task_id") != self.task_id
+                or recall_decision.get("arm") != self.arm
+                or recall_decision.get("active_node_id") != self.active_node_id
+                or not isinstance(recall_decision.get("injections"), list)
+                or not isinstance(recall_decision.get("bank_trace"), list)
+                or not isinstance(recall_decision.get("rejections"), list)
+                or sha256_bytes(canonical_bytes(recall_decision))
+                != self.prepared_request.get("recall_decision_sha256")
+                or sha256_bytes(canonical_bytes(recall_decision["injections"]))
+                != self.prepared_request.get("memory_injection_sha256")
+            ):
+                raise ValueError("prepared request recall decision differs")
+            projection_record = self.prepared_request.get("projection_record")
+            if (
+                not isinstance(projection_record, Mapping)
+                or projection_record.get("projection_sha256")
+                != self.prepared_request.get("projection_sha256")
+                or projection_record.get("final_prompt_sha256")
+                != self.prepared_request.get("prompt_sha256")
+            ):
+                raise ValueError("prepared request projection record differs")
+        elif self.prepared_request is not None:
+            raise ValueError(
+                "prepared request binding is only valid in a prepared phase"
+            )
 
     def payload(self) -> dict[str, Any]:
         return asdict(self)
@@ -122,7 +246,10 @@ class FileCheckpointStore:
             "completed_call_ids",
         ):
             payload[name] = tuple(payload.get(name, ()))
-        checkpoint = RuntimeCheckpoint(**payload)
+        try:
+            checkpoint = RuntimeCheckpoint(**payload)
+        except (TypeError, ValueError) as exc:
+            raise CheckpointMismatch("checkpoint payload is invalid") from exc
         if required_config_hashes is not None and dict(checkpoint.config_hashes) != dict(required_config_hashes):
             raise CheckpointMismatch("runtime lock changed; resume refused")
         if required_evidence_hash is not None and checkpoint.evidence_event_hash != required_evidence_hash:

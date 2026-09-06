@@ -131,9 +131,17 @@ class ScenarioReplayModel:
             }
         elif request.task_id == "target-yaml-extension":
             if step == 1:
+                _, marker, state_text = request.prompt.partition("\n\nSTATE:\n")
+                state = json.loads(state_text) if marker else {}
+                active_memory = state.get("memory_for_active_subtask_only", [])
                 self.target_memory_seen = (
-                    '"memory_for_active_subtask_only": [{"' in request.prompt
-                    and "casefold" in request.prompt
+                    isinstance(active_memory, list)
+                    and bool(active_memory)
+                    and any(
+                        isinstance(row, Mapping)
+                        and "casefold" in str(row.get("exact_text", ""))
+                        for row in active_memory
+                    )
                 )
                 if not self.target_memory_seen:
                     raise AssertionError("target solve request did not contain active-node memory")

@@ -1,17 +1,53 @@
 """Credential-free in-memory repository tools used by the shared agent loop."""
 from __future__ import annotations
 
+from bisect import bisect_right
 from dataclasses import dataclass
 import difflib
+import hashlib
+import json
+import ntpath
 import posixpath
 import time
-from typing import Any, Callable, Mapping, Optional, Protocol, runtime_checkable
+from typing import Any, Callable, Iterable, Mapping, Optional, Protocol, runtime_checkable
 
 from .accounting import RawEvidenceLedger, RunAccounting, ToolRecord, canonical_bytes, sha256_bytes
 
 
 class ToolExecutionError(RuntimeError):
     pass
+
+
+LIST_FILES_MAX_LIMIT = 200
+LIST_FILES_MAX_RESPONSE_BYTES = 32_768
+LIST_FILES_ARGUMENTS = frozenset({"path_prefix", "start_after", "limit"})
+LIST_FILES_PAGINATION_CONTRACT: dict[str, Any] = {
+    "schema": "trimem/list-files-pagination/1.0",
+    "arguments": {
+        "required": ["path_prefix", "start_after", "limit"],
+        "path_prefix": "normalized relative POSIX prefix or null",
+        "start_after": "normalized matching repository path or null",
+        "limit": {"minimum": 1, "maximum": LIST_FILES_MAX_LIMIT},
+    },
+    "ordering": "unique normalized paths; Unicode lexicographic ascending",
+    "cursor": "exclusive; must name a path in the full matching listing",
+    "full_matching_listing_sha256": (
+        "lowercase sha256 of canonical JSON UTF-8 for the complete sorted matching path list"
+    ),
+    "serialized_response": {
+        "encoding": "canonical JSON UTF-8",
+        "maximum_bytes": LIST_FILES_MAX_RESPONSE_BYTES,
+    },
+}
+LIST_FILES_PAGINATION_CONTRACT_SHA256 = hashlib.sha256(
+    json.dumps(
+        LIST_FILES_PAGINATION_CONTRACT,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -152,8 +188,7 @@ class InMemoryRepositoryWorkspace:
         if tool not in self.TOOL_NAMES:
             raise ToolExecutionError("unknown tool")
         if tool == "list_files":
-            _exact_arguments(arguments, set())
-            return {"files": sorted(self.files)}
+            return list_files_page(self.files, arguments)
         if tool == "read_file":
             _optional_arguments(arguments, {"path"}, {"start_line", "max_lines"})
             path = _safe_path(arguments["path"])
@@ -347,6 +382,137 @@ def _safe_path(path: object) -> str:
     if normalized in (".", "..") or normalized.startswith("../") or normalized.startswith("/"):
         raise ToolExecutionError("path traversal refused")
     return normalized
+
+
+def _normalized_list_files_path(value: object, *, field: str) -> str:
+    """Return one canonical repository path/prefix without touching the host."""
+
+    if (
+        not isinstance(value, str)
+        or not value
+        or "\\" in value
+        or "\x00" in value
+        or value.startswith("/")
+        or ntpath.splitdrive(value)[0]
+    ):
+        raise ToolExecutionError(f"{field} must be a normalized relative POSIX path")
+    normalized = posixpath.normpath(value)
+    parts = value.split("/")
+    if (
+        normalized != value
+        or normalized in {".", ".."}
+        or any(part in {"", ".", "..", ".git"} for part in parts)
+    ):
+        raise ToolExecutionError(f"{field} must be a normalized relative POSIX path")
+    return value
+
+
+def _list_files_result(
+    *,
+    path_prefix: Optional[str],
+    start_after: Optional[str],
+    files: list[str],
+    total_matching_count: int,
+    full_matching_listing_sha256: str,
+    has_more: bool,
+) -> dict[str, Any]:
+    return {
+        "path_prefix": path_prefix,
+        "start_after": start_after,
+        "files": files,
+        "returned_count": len(files),
+        "total_matching_count": total_matching_count,
+        "next_start_after": files[-1] if has_more and files else None,
+        "truncated": has_more,
+        "full_matching_listing_sha256": full_matching_listing_sha256,
+    }
+
+
+def list_files_page(paths: Iterable[str], arguments: object) -> dict[str, Any]:
+    """Build one deterministic, cursor-addressable, model-bounded file page.
+
+    The full-list digest is deliberately computed before pagination, so every
+    page for a fixed repository/prefix binds to the same complete listing.
+    start_after is statelessly verifiable: it must be an actual matching
+    repository path, which is exactly the kind of cursor this function emits.
+    """
+
+    _exact_arguments(arguments, set(LIST_FILES_ARGUMENTS))
+    assert isinstance(arguments, dict)
+    path_prefix_value = arguments["path_prefix"]
+    start_after_value = arguments["start_after"]
+    limit = arguments["limit"]
+    if path_prefix_value is not None:
+        path_prefix = _normalized_list_files_path(
+            path_prefix_value, field="path_prefix"
+        )
+    else:
+        path_prefix = None
+    if start_after_value is not None:
+        start_after = _normalized_list_files_path(
+            start_after_value, field="start_after"
+        )
+    else:
+        start_after = None
+    if (
+        isinstance(limit, bool)
+        or not isinstance(limit, int)
+        or not 1 <= limit <= LIST_FILES_MAX_LIMIT
+    ):
+        raise ToolExecutionError(
+            f"list_files limit must be an integer in 1..{LIST_FILES_MAX_LIMIT}"
+        )
+
+    normalized_paths = [
+        _normalized_list_files_path(path, field="repository path") for path in paths
+    ]
+    if len(normalized_paths) != len(set(normalized_paths)):
+        raise ToolExecutionError("repository listing contains duplicate paths")
+    matching = sorted(
+        path
+        for path in normalized_paths
+        if (
+            path_prefix is None
+            or path == path_prefix
+            or path.startswith(path_prefix + "/")
+        )
+    )
+    if start_after is not None and start_after not in matching:
+        raise ToolExecutionError(
+            "start_after must be a previously returned path in the matching listing"
+        )
+    start_index = 0 if start_after is None else bisect_right(matching, start_after)
+    full_digest = sha256_bytes(canonical_bytes(matching))
+    candidates = matching[start_index : start_index + limit]
+    selected: list[str] = []
+    for path in candidates:
+        trial = [*selected, path]
+        has_more = start_index + len(trial) < len(matching)
+        result = _list_files_result(
+            path_prefix=path_prefix,
+            start_after=start_after,
+            files=trial,
+            total_matching_count=len(matching),
+            full_matching_listing_sha256=full_digest,
+            has_more=has_more,
+        )
+        if len(canonical_bytes(result)) > LIST_FILES_MAX_RESPONSE_BYTES:
+            break
+        selected = trial
+    if candidates and not selected:
+        raise ToolExecutionError("one repository path exceeds the list_files response cap")
+    has_more = start_index + len(selected) < len(matching)
+    result = _list_files_result(
+        path_prefix=path_prefix,
+        start_after=start_after,
+        files=selected,
+        total_matching_count=len(matching),
+        full_matching_listing_sha256=full_digest,
+        has_more=has_more,
+    )
+    if len(canonical_bytes(result)) > LIST_FILES_MAX_RESPONSE_BYTES:
+        raise ToolExecutionError("list_files metadata exceeds the response cap")
+    return result
 
 
 def _exact_arguments(arguments: object, expected: set[str]) -> None:

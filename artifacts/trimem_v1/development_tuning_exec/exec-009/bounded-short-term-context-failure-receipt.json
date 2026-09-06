@@ -1,0 +1,91 @@
+{
+  "schema": "trimem/development-bounded-context-failure-receipt/1.0",
+  "status": "TERMINAL_PRESERVED",
+  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+  "primary_failure": "UNBOUNDED_MODEL_VISIBLE_TOOL_HISTORY",
+  "classification": "PRE_RESULT_BOUNDED_SHORT_TERM_CONTEXT_AND_PREFLIGHT_FIX",
+  "scientific_status": "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL",
+  "workflow_run": {
+    "id": 33979936824,
+    "attempt": 1,
+    "head_sha": "db548919f29fd044cce1e066c74d2a7040a28f49",
+    "source_head_sha": "ef10493a7352bd6cf914e5e465a9580be6462eb0",
+    "conclusion": "failure"
+  },
+  "evidence_artifacts": {
+    "custody": "PRESERVED_IN_GITHUB_ACTIONS_ARTIFACT_STORAGE",
+    "restricted_encrypted": {
+      "id": 9973677497,
+      "name": "trimem-benchmark-restricted-encrypted",
+      "size_in_bytes": 11810541,
+      "digest": "sha256:92546b5cda2fff8964068a530a50421627b0e896a5f9a3006cf772f6dab6ec0b",
+      "expired": false,
+      "created_at": "2026-09-05T17:22:51Z"
+    },
+    "evidence_inventories": {
+      "id": 9973678034,
+      "name": "trimem-benchmark-evidence-inventories",
+      "size_in_bytes": 7159,
+      "digest": "sha256:268200ad6c9319013269960e795f7c4f8715d558f829bb7a97a7e4f88d05e37a",
+      "expired": false,
+      "created_at": "2026-09-05T17:22:53Z"
+    }
+  },
+  "failure_boundary": {
+    "stream": "M2-baseline",
+    "target": "swebench_verified--django__django-16100",
+    "tool": "list_files",
+    "tool_result_utf8_bytes": 319417,
+    "next_prompt_utf8_bytes": 709714,
+    "conservative_input_bound": 713810,
+    "frozen_per_call_conservative_bound": 262000,
+    "provider_transmission_started": false
+  },
+  "contributing_factors": [
+    "UNPAGINATED_LIST_FILES",
+    "EXACT_TOOL_RESULT_REINJECTED_IN_FULL",
+    "ALL_PRIOR_TOOL_HISTORY_REINJECTED_EVERY_TURN",
+    "TEXTUAL_TOOL_SCHEMA_DUPLICATES_NATIVE_FUNCTION_SCHEMA",
+    "REQUEST_EVENT_WRITTEN_BEFORE_LOCAL_BUDGET_PREFLIGHT",
+    "SOLVE_REQUEST_ONLY_SUFFIX_NOT_RECOVERABLE"
+  ],
+  "scientific_usage": {
+    "decomposition_calls": 1,
+    "solve_calls": 7,
+    "extraction_calls": 0,
+    "paid_model_calls": 8,
+    "input_tokens": 60546,
+    "cached_input_tokens": 0,
+    "output_tokens": 7448,
+    "reasoning_tokens": 1597,
+    "total_usd": "0.078925500000"
+  },
+  "canary_usage": {
+    "paid_model_calls": 1,
+    "input_tokens": 880,
+    "cached_input_tokens": 0,
+    "output_tokens": 51,
+    "reasoning_tokens": 35,
+    "total_usd": "0.000889500000"
+  },
+  "total_usage": {
+    "paid_model_calls": 9,
+    "input_tokens": 61426,
+    "cached_input_tokens": 0,
+    "output_tokens": 7499,
+    "reasoning_tokens": 1632,
+    "total_usd": "0.079815000000"
+  },
+  "terminal_cells": 0,
+  "planned_cells": 72,
+  "official_grader_runs": 0,
+  "performance_measured": false,
+  "interpretation": {
+    "model_failure": false,
+    "memory_method_failure": false,
+    "official_grader_failure": false,
+    "benchmark_performance_result": false,
+    "context_window_failure": false,
+    "local_short_term_context_contract_failure": true
+  }
+}

@@ -44,6 +44,14 @@ from trimem_benchmark_run import JournaledModelGateway, TerminalInvocationJourna
 
 
 MODEL = "gpt-5.4-mini-2026-03-17"
+LIST_FILES_ARGUMENTS = {
+    "path_prefix": None,
+    "start_after": None,
+    "limit": 100,
+}
+LIST_FILES_ARGUMENTS_JSON = json.dumps(
+    LIST_FILES_ARGUMENTS, sort_keys=True, separators=(",", ":")
+)
 
 
 class Secrets:
@@ -379,7 +387,7 @@ def test_extraction_request_contains_exact_strict_schema(tmp_path):
 def test_solve_request_uses_frozen_native_function_contract(tmp_path):
     output = [{
         "id": "fc-1", "type": "function_call", "call_id": "call-1",
-        "name": "list_files", "arguments": "{}",
+        "name": "list_files", "arguments": LIST_FILES_ARGUMENTS_JSON,
     }]
     p, client, _ = provider(tmp_path, completed("", output=output))
     invoke_direct(p, request("solve"))
@@ -402,7 +410,11 @@ def test_all_arms_share_role_contracts_and_output_ceilings():
 
 
 def function_item(
-    *, name="list_files", arguments="{}", call_id="call-1", item_id="fc-1"
+    *,
+    name="list_files",
+    arguments=LIST_FILES_ARGUMENTS_JSON,
+    call_id="call-1",
+    item_id="fc-1",
 ):
     row = {
         "id": item_id,
@@ -474,7 +486,7 @@ def test_d16_reasoning_plus_one_function_call_succeeds(tmp_path):
     p, _, _ = provider(tmp_path, completed("", output=output))
     response, record = invoke_direct(p, request("solve"))
     assert response.function_name == "list_files"
-    assert response.function_arguments == "{}"
+    assert response.function_arguments == LIST_FILES_ARGUMENTS_JSON
     assert response.function_call_id == "call-1"
     assert record.final_status == "success"
 

@@ -447,9 +447,9 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert requirements["current_status"] == {
         "DEV_APPROVAL_ALLOWED": "NO",
         "DEV_EXECUTION_ALLOWED": "NO",
-        "DEV_SCIENTIFIC_STATUS": "NOT_STARTED",
+        "DEV_SCIENTIFIC_STATUS": "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL",
         "ENDPOINT": readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT,
-        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_008_FAILURE_SUBTYPE,
+        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_009_FAILURE_SUBTYPE,
         "GRADER_EXEC_PACKAGE": "PASS",
         "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
         "PERFORMANCE": "NOT_MEASURED",
@@ -468,13 +468,13 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["prior_failed_run_reusable"] is False
     assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_TERMINAL_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_CONTEXT_RECOVERY_EXEC_APPROVED_ONCE"
     )
     assert authorization["recovery_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_009"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010"
     )
     assert authorization["recovery_request_path"].endswith(
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
     )
     assert authorization["request_003_final"] is True
     assert authorization["request_004_allowed_after_exact_remote_gates"] is False
@@ -487,16 +487,19 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["request_007_attempt_one_consumed"] is True
     assert authorization["request_008_allowed_after_exact_remote_gates"] is False
     assert authorization["request_008_attempt_one_consumed"] is True
-    assert authorization["request_009_allowed_after_exact_remote_gates"] is True
-    assert authorization["request_009_attempt_one_consumed"] is False
+    assert authorization["request_009_allowed_after_exact_remote_gates"] is False
+    assert authorization["request_009_attempt_one_consumed"] is True
+    assert authorization["request_010_allowed_after_exact_remote_gates"] is True
+    assert authorization["request_010_attempt_one_consumed"] is False
     assert authorization["rerun_allowed"] is False
-    assert "_008 attempt-1 run is cancelled" in authorization["meaning"]
+    assert "_009" in authorization["meaning"]
+    assert "not reusable" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     assert authorization["amendment_classification"] == (
-        "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX"
+        "PRE_RESULT_BOUNDED_SHORT_TERM_CONTEXT_AND_PREFLIGHT_FIX"
     )
     assert authorization["amendment_evidence_path"].endswith(
-        "development_terminal_contract_amendment.json"
+        "development_bounded_context_amendment.json"
     )
     assert authorization["solve_execution_contract_rehearsal_required_before_request_005"] is False
     service_boundary = requirements["credential_free_service_ci_boundary"]
@@ -624,15 +627,23 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "TRIMEM_DEV_FIRST_DECOMPOSITION_HTTP_AUTH_ERROR"
     )
     assert current_failure["further_execution_authorized"] is False
-    latest_failure = requirements["current_development_execution_failure"]
-    assert latest_failure == readiness._validated_development_exec_008_failure()
-    assert latest_failure["scientific_status"] == "NOT_STARTED"
-    assert latest_failure["workflow_run"]["conclusion"] == "cancelled"
-    assert latest_failure["execution_accounting"] == (
+    historical_exec_008 = requirements["historical_development_exec_008_failure"]
+    assert historical_exec_008 == readiness._validated_development_exec_008_failure()
+    assert historical_exec_008["scientific_status"] == "NOT_STARTED"
+    assert historical_exec_008["workflow_run"]["conclusion"] == "cancelled"
+    assert historical_exec_008["execution_accounting"] == (
         readiness.DEVELOPMENT_EXEC_008_ACCOUNTING
     )
-    assert latest_failure["execution_accounting"]["scientific_model_calls"] == 0
-    assert latest_failure["execution_accounting"]["official_grader_runs"] == 0
+    assert historical_exec_008["execution_accounting"]["scientific_model_calls"] == 0
+    assert historical_exec_008["execution_accounting"]["official_grader_runs"] == 0
+    latest_failure = requirements["current_development_execution_failure"]
+    assert latest_failure == readiness._validated_development_exec_009_failure()
+    assert latest_failure["scientific_status"] == (
+        "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL"
+    )
+    assert latest_failure["workflow_run"]["conclusion"] == "failure"
+    assert latest_failure["scientific_usage"]["paid_model_calls"] == 8
+    assert latest_failure["official_grader_runs"] == 0
     assert requirements["historical_development_exec_007_failure"] == (
         readiness._validated_development_exec_007_failure()
     )
@@ -659,6 +670,9 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
         readiness._validated_development_exec_005_failure()
     )
     assert derived["current_development_execution_failure"] == (
+        readiness._validated_development_exec_009_failure()
+    )
+    assert derived["historical_development_exec_008_failure"] == (
         readiness._validated_development_exec_008_failure()
     )
     assert derived["historical_development_exec_007_failure"] == (
@@ -753,7 +767,7 @@ def test_d18_recovery_requires_fresh_sentinel_before_approval(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     assert readiness.preapproval_blockers() == [
-        "DEV _009 sentinel and exact-head remote gates are required before approval"
+        "DEV _010 sentinel and exact-head remote gates are required before approval"
     ]
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
@@ -1578,7 +1592,7 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "total_usd": 0,
     }
     assert readiness.preapproval_blockers() == [
-        "DEV _009 sentinel and exact-head remote gates are required before approval"
+        "DEV _010 sentinel and exact-head remote gates are required before approval"
     ]
 
 
@@ -3382,11 +3396,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "D1.8 recovery authority boundaries" in static
-    assert '"DEV _009 sentinel and exact-head remote gates are "' in static
+    assert "D1.9 recovery authority boundaries" in static
+    assert '"DEV _010 sentinel and exact-head remote gates are "' in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
-    assert "expected exact D1.8 recovery report" in static
+    assert "expected exact D1.9 recovery report" in static
     assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service
@@ -3627,11 +3641,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in benchmark
     assert (
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
     ) in benchmark
     assert "branch-trigger-preflight:" in benchmark
     assert "needs: branch-trigger-preflight" in benchmark
-    assert "group: trimem-v1-development-tuning-exec-009" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-010" in benchmark
     assert "group: trimem-v1-development-tuning-exec-002" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-001" not in benchmark
     assert "cancel-in-progress: false" in benchmark
@@ -3645,7 +3659,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in preflight
     )
-    assert "python -I -S scripts/trimem_development_trigger_d18.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d19.py" in preflight
     assert "secrets." not in preflight
     assert "environment:" not in preflight
     protected = benchmark.split("  frozen-serial-phase:", 1)[1]
@@ -3655,12 +3669,18 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     round_trip = benchmark.index(
         "- name: Verify production terminal-cell round trip before provider access"
     )
+    context_round_trip = benchmark.index(
+        "- name: Verify bounded context round trip before provider access"
+    )
     pinned_gh = benchmark.index("- name: Install exact pinned GitHub CLI")
-    assert install < round_trip < pinned_gh
+    assert install < round_trip < context_round_trip < pinned_gh
     assert (
         "tests/unit/test_trimem_d18_terminal_contract_integration.py"
         in benchmark[round_trip:pinned_gh]
     )
+    assert "python scripts/trimem_context_roundtrip.py" in benchmark[
+        context_round_trip:pinned_gh
+    ]
     assert (
         "- name: Pull committed images by digest and verify local observations\n"
         "        if: ${{ !cancelled() && success() }}"

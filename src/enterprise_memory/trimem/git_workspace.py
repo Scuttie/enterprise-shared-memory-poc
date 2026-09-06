@@ -28,6 +28,7 @@ from .workspace import (
     WorkspaceGraderContext,
     _bounded_text_replacement,
     _validated_dag_revision_arguments,
+    list_files_page,
 )
 
 
@@ -296,8 +297,7 @@ class GitCheckoutWorkspace:
         if tool not in TOOL_NAMES:
             raise ToolExecutionError("unknown tool")
         if tool == "list_files":
-            _exact_arguments(arguments, set())
-            return {"files": self._repository_files()}
+            return list_files_page(self._repository_files(), arguments)
         if tool == "read_file":
             _optional_arguments(arguments, {"path"}, {"start_line", "max_lines"})
             path = self._path(arguments["path"], must_exist=True)

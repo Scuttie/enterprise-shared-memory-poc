@@ -56,6 +56,10 @@ from enterprise_memory.trimem.gateway import (  # noqa: E402
     GatewayInvocationFailure,
     GatewayRequest,
     GatewayResponse,
+    ModelPreflightFailure,
+    PREFLIGHT_PASSED,
+    ReservationPreflight,
+    gateway_request_sha256,
 )
 from enterprise_memory.trimem.git_workspace import (  # noqa: E402
     DockerSandboxCommandRunner,
@@ -83,6 +87,7 @@ from enterprise_memory.trimem.scientific_terminal import (  # noqa: E402
     scientific_task_arm_key,
     validate_result_ledger_pair,
     validate_result_request_statuses,
+    validate_scientific_role_call_accounting,
     validate_scientific_terminal_result,
 )
 from trimem_benchmark_matrix import sequence_sha256  # noqa: E402
@@ -103,7 +108,7 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     TriggerPreflightError,
     validate_request_document as validate_grader_smoke_request_document,
 )
-from trimem_development_trigger_d18 import (  # noqa: E402
+from trimem_development_trigger_d19 import (  # noqa: E402
     EXPECTED_WORKFLOW_REF as DEVELOPMENT_WORKFLOW_REF,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
@@ -181,6 +186,12 @@ TERMINAL_LEDGER_REQUEST_FIELDS = {
     "output_tokens",
     "actual_usd",
 }
+RESERVED_LEDGER_REQUEST_FIELDS = TERMINAL_LEDGER_REQUEST_FIELDS - {
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "actual_usd",
+}
 TERMINAL_LEDGER_TASK_ARM_FIELDS = {
     "reservation_id",
     "status",
@@ -198,6 +209,12 @@ TERMINAL_LEDGER_TASK_ARM_FIELDS = {
     "remaining_extraction_output_tokens",
     "container_started",
 }
+RESERVED_LEDGER_TASK_ARM_FIELDS = TERMINAL_LEDGER_TASK_ARM_FIELDS - {
+    "container_started",
+}
+LEDGER_TASK_ARM_TERMINAL_STATUSES = frozenset(
+    {SCIENTIFIC_LEDGER_TERMINAL_STATUS, "OFFICIAL_GRADER_FAILURE"}
+)
 MAX_LEDGER_INPUT_BOUND_PER_CALL = 262_000
 MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND = {
     "solve": 16_384,
@@ -755,9 +772,7 @@ class AtomicBudgetLedger:
         }
 
     def _read(self) -> dict[str, Any]:
-        if not self.path.exists():
-            return self._empty()
-        value = read_json(self.path)
+        value = self._empty() if not self.path.exists() else read_json(self.path)
         if (value.get("schema") != "trimem/atomic-budget-ledger/1.4" or
                 value.get("approval_digest") != self.approval_digest or
                 value.get("approved_hard_cap") != self.approved_hard_cap or
@@ -766,7 +781,7 @@ class AtomicBudgetLedger:
                 ) or
                 value.get("caps") != self.caps or value.get("pricing") != self.pricing):
             raise BenchmarkExecutionError("budget ledger approval/cap identity mismatch")
-        return value
+        return self._validate_dynamic_state(value)
 
     @staticmethod
     def _money_equal(left: Any, right: Any) -> bool:
@@ -778,6 +793,391 @@ class AtomicBudgetLedger:
             )
         except (InvalidOperation, ValueError, TypeError):
             return False
+
+    def _validate_dynamic_state(
+        self, state: Mapping[str, Any]
+    ) -> dict[str, Any]:
+        """Reconstruct every mutable counter without modifying the ledger.
+
+        Cap checks are meaningful only after the persisted request/task graph
+        proves the counters used by those checks.  This validator therefore
+        treats any shape, identity, lifecycle, or arithmetic disagreement as
+        ledger corruption before a caller can classify ordinary cell/phase
+        exhaustion.
+        """
+
+        def fail(reason: str) -> None:
+            raise BenchmarkExecutionError(f"budget ledger integrity failure: {reason}")
+
+        expected_top = {
+            "schema",
+            "approval_digest",
+            "approved_hard_cap",
+            "approved_hard_cap_sha256",
+            "caps",
+            "pricing",
+            "actual",
+            "outstanding",
+            "requests",
+            "task_arms",
+        }
+        if not isinstance(state, Mapping) or set(state) != expected_top:
+            fail("top-level field set differs")
+        actual = state.get("actual")
+        outstanding = state.get("outstanding")
+        requests = state.get("requests")
+        task_arms = state.get("task_arms")
+        if not isinstance(actual, Mapping) or set(actual) != set(
+            LEDGER_ACTUAL_FIELDS
+        ):
+            fail("actual counter shape differs")
+        if not isinstance(outstanding, Mapping) or set(outstanding) != set(
+            LEDGER_OUTSTANDING_FIELDS
+        ):
+            fail("outstanding counter shape differs")
+        if not isinstance(requests, Mapping) or not isinstance(task_arms, Mapping):
+            fail("request/task-arm collections are malformed")
+
+        integer_actual = set(LEDGER_ACTUAL_FIELDS) - {"total_usd"}
+        integer_outstanding = set(LEDGER_OUTSTANDING_FIELDS) - {"total_usd"}
+        if any(
+            type(actual.get(name)) is not int or actual[name] < 0
+            for name in integer_actual
+        ):
+            fail("actual counters must be non-negative integers")
+        if any(
+            type(outstanding.get(name)) is not int or outstanding[name] < 0
+            for name in integer_outstanding
+        ):
+            fail("outstanding counters must be non-negative integers")
+
+        def money(value: Any, label: str) -> Decimal:
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                fail(f"{label} is not finite non-negative money")
+            try:
+                amount = Decimal(str(value))
+            except (InvalidOperation, TypeError, ValueError):
+                fail(f"{label} is not finite non-negative money")
+            if not amount.is_finite() or amount < 0:
+                fail(f"{label} is not finite non-negative money")
+            return amount
+
+        actual_usd = money(actual.get("total_usd"), "actual total_usd")
+        outstanding_usd = money(
+            outstanding.get("total_usd"), "outstanding total_usd"
+        )
+        if actual["cached_input_tokens"] > actual["input_tokens"]:
+            fail("cached input exceeds actual input")
+        if actual["paid_model_calls"] != sum(
+            int(actual[name]) for name in CALL_CAP_BY_KIND.values()
+        ):
+            fail("actual paid/role call counters disagree")
+        if outstanding["paid_model_calls"] != sum(
+            int(outstanding[name]) for name in CALL_CAP_BY_KIND.values()
+        ):
+            fail("outstanding paid/role call counters disagree")
+
+        phase_cap_fields = {
+            "paid_model_calls",
+            "solve_calls",
+            "decomposition_calls",
+            "extraction_calls",
+            "input_tokens",
+            "output_tokens",
+            "task_arm_runs",
+            "grader_containers",
+        }
+        for name in phase_cap_fields:
+            if actual[name] + outstanding[name] > self.caps[name]:
+                fail(f"{name} counters exceed the approved cap")
+        if actual_usd + outstanding_usd > (
+            Decimal(str(self.caps["total_usd"])) + Decimal("0.000000000001")
+        ):
+            fail("total_usd counters exceed the approved cap")
+
+        task_numeric_fields = RESERVED_LEDGER_TASK_ARM_FIELDS - {
+            "reservation_id",
+            "status",
+        }
+        task_projection: dict[str, dict[str, Any]] = {}
+        active_task_count = 0
+        completed_task_count = 0
+        completed_container_count = 0
+        for task_key, row in task_arms.items():
+            if not isinstance(task_key, str) or not task_key or not isinstance(row, Mapping):
+                fail("task-arm identity or row is malformed")
+            status = row.get("status")
+            if not isinstance(status, str):
+                fail(f"task-arm lifecycle status is malformed: {task_key}")
+            expected_fields = (
+                RESERVED_LEDGER_TASK_ARM_FIELDS
+                if status == "RESERVED"
+                else TERMINAL_LEDGER_TASK_ARM_FIELDS
+                if status in LEDGER_TASK_ARM_TERMINAL_STATUSES
+                else set()
+            )
+            if not expected_fields or set(row) != expected_fields:
+                fail(
+                    "task-arm/result accounting differs "
+                    f"(lifecycle/field shape): {task_key}"
+                )
+            expected_reservation_id = sha256_bytes(
+                canonical_bytes(
+                    {"approval": self.approval_digest, "task_arm_key": task_key}
+                )
+            )
+            if row.get("reservation_id") != expected_reservation_id:
+                fail(
+                    "task-arm/result accounting differs "
+                    f"(reservation identity): {task_key}"
+                )
+            if any(
+                type(row.get(name)) is not int or row[name] < 0
+                for name in task_numeric_fields
+            ):
+                fail(f"task-arm counters are malformed: {task_key}")
+            if status == "RESERVED":
+                active_task_count += 1
+            else:
+                if type(row.get("container_started")) is not bool:
+                    fail(f"terminal task-arm container state is malformed: {task_key}")
+                completed_task_count += 1
+                completed_container_count += int(bool(row["container_started"]))
+            task_projection[task_key] = {
+                "actual_input_tokens": 0,
+                "outstanding_input_tokens": 0,
+                "actual_model_calls": 0,
+                "outstanding_model_calls": 0,
+                "actual_output_tokens": 0,
+                "outstanding_output_tokens": 0,
+                "actual_role_output": {
+                    kind: 0 for kind in TASK_OUTPUT_POOL_BY_CALL_KIND
+                },
+                "outstanding_role_output": {
+                    kind: 0 for kind in TASK_OUTPUT_POOL_BY_CALL_KIND
+                },
+            }
+
+        reconstructed_actual = {
+            "paid_model_calls": 0,
+            "solve_calls": 0,
+            "decomposition_calls": 0,
+            "extraction_calls": 0,
+            "input_tokens": 0,
+            "cached_input_tokens": 0,
+            "output_tokens": 0,
+            "total_usd": Decimal(0),
+            "task_arm_runs": completed_task_count,
+            "grader_containers": completed_container_count,
+        }
+        reconstructed_outstanding = {
+            "paid_model_calls": 0,
+            "solve_calls": 0,
+            "decomposition_calls": 0,
+            "extraction_calls": 0,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_usd": Decimal(0),
+            "task_arm_runs": active_task_count,
+            "grader_containers": active_task_count,
+        }
+        conservative_statuses = {
+            "SUCCESS_CONSERVATIVE_USAGE",
+            "PROVIDER_FAILURE_CONSERVATIVE",
+        }
+        for logical_id, row in requests.items():
+            if (
+                not isinstance(logical_id, str)
+                or not logical_id
+                or not isinstance(row, Mapping)
+            ):
+                fail("model request identity or row is malformed")
+            status = row.get("status")
+            if not isinstance(status, str):
+                fail(f"request lifecycle status is malformed: {logical_id}")
+            terminal = status in SCIENTIFIC_MODEL_RESERVATION_TERMINAL_STATUSES
+            expected_fields = (
+                RESERVED_LEDGER_REQUEST_FIELDS
+                if status == "RESERVED"
+                else TERMINAL_LEDGER_REQUEST_FIELDS
+                if terminal
+                else set()
+            )
+            if not expected_fields or set(row) != expected_fields:
+                label = "terminal" if terminal else "reserved"
+                fail(
+                    f"{label} request shape differs "
+                    f"(lifecycle/field shape): {logical_id}"
+                )
+            call_kind = row.get("call_kind")
+            if not isinstance(call_kind, str):
+                fail(f"request role binding differs: {logical_id}")
+            cap_name = CALL_CAP_BY_KIND.get(call_kind)
+            if cap_name is None or row.get("call_cap_name") != cap_name:
+                fail(f"request role binding differs: {logical_id}")
+            task_key = row.get("task_arm_key")
+            if not isinstance(task_key, str) or task_key not in task_projection:
+                fail(f"request has no task-arm reservation: {logical_id}")
+            task_row = task_arms[task_key]
+            if status == "RESERVED" and task_row.get("status") != "RESERVED":
+                fail(f"reserved request belongs to a terminal task-arm: {logical_id}")
+
+            input_upper_bound = row.get("input_upper_bound")
+            output_cap = row.get("output_cap")
+            if (
+                type(input_upper_bound) is not int
+                or not 0 < input_upper_bound <= MAX_LEDGER_INPUT_BOUND_PER_CALL
+                or type(output_cap) is not int
+                or output_cap <= 0
+                or output_cap > MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[str(call_kind)]
+                or (
+                    call_kind != "solve"
+                    and output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[str(call_kind)]
+                )
+            ):
+                fail(f"request reservation bounds are invalid: {logical_id}")
+            expected_reservation_id = sha256_bytes(
+                canonical_bytes(
+                    {
+                        "approval": self.approval_digest,
+                        "logical_call_id": logical_id,
+                        "task_arm_key": task_key,
+                        "call_kind": call_kind,
+                        "input_upper_bound": input_upper_bound,
+                        "output_cap": output_cap,
+                    }
+                )
+            )
+            if row.get("reservation_id") != expected_reservation_id:
+                fail(f"request reservation identity differs: {logical_id}")
+            expected_reserved_usd = (
+                Decimal(input_upper_bound) * Decimal(str(self.pricing["input"]))
+                + Decimal(output_cap) * Decimal(str(self.pricing["output"]))
+            ) / Decimal(1_000_000)
+            reserved_usd = money(
+                row.get("reserved_usd"), f"request reserved_usd: {logical_id}"
+            )
+            if not self._money_equal(reserved_usd, expected_reserved_usd):
+                fail(f"request reserved USD differs: {logical_id}")
+
+            projection = task_projection[str(task_key)]
+            if status == "RESERVED":
+                reconstructed_outstanding["paid_model_calls"] += 1
+                reconstructed_outstanding[str(cap_name)] += 1
+                reconstructed_outstanding["input_tokens"] += input_upper_bound
+                reconstructed_outstanding["output_tokens"] += output_cap
+                reconstructed_outstanding["total_usd"] += reserved_usd
+                projection["outstanding_input_tokens"] += input_upper_bound
+                projection["outstanding_model_calls"] += 1
+                projection["outstanding_output_tokens"] += output_cap
+                projection["outstanding_role_output"][str(call_kind)] += output_cap
+                continue
+
+            usage_names = ("input_tokens", "cached_input_tokens", "output_tokens")
+            if any(
+                type(row.get(name)) is not int or row[name] < 0
+                for name in usage_names
+            ):
+                fail(f"terminal request usage is malformed: {logical_id}")
+            if (
+                row["cached_input_tokens"] > row["input_tokens"]
+                or row["input_tokens"] > input_upper_bound
+                or row["output_tokens"] > output_cap
+            ):
+                fail(
+                    "terminal request actual usage exceeds its reservation: "
+                    f"{logical_id}"
+                )
+            if status in conservative_statuses and (
+                row["input_tokens"] != input_upper_bound
+                or row["cached_input_tokens"] != 0
+                or row["output_tokens"] != output_cap
+            ):
+                fail(f"conservative terminal request is not cap-charged: {logical_id}")
+            expected_actual_usd = (
+                Decimal(row["input_tokens"] - row["cached_input_tokens"])
+                * Decimal(str(self.pricing["input"]))
+                + Decimal(row["cached_input_tokens"])
+                * Decimal(str(self.pricing["cached"]))
+                + Decimal(row["output_tokens"])
+                * Decimal(str(self.pricing["output"]))
+            ) / Decimal(1_000_000)
+            request_actual_usd = money(
+                row.get("actual_usd"), f"request actual_usd: {logical_id}"
+            )
+            if not self._money_equal(request_actual_usd, expected_actual_usd):
+                fail(f"terminal request actual USD differs: {logical_id}")
+            if request_actual_usd > reserved_usd + Decimal("0.000000000001"):
+                fail(f"terminal request actual USD exceeds reservation: {logical_id}")
+
+            reconstructed_actual["paid_model_calls"] += 1
+            reconstructed_actual[str(cap_name)] += 1
+            reconstructed_actual["input_tokens"] += row["input_tokens"]
+            reconstructed_actual["cached_input_tokens"] += row[
+                "cached_input_tokens"
+            ]
+            reconstructed_actual["output_tokens"] += row["output_tokens"]
+            reconstructed_actual["total_usd"] += request_actual_usd
+            projection["actual_input_tokens"] += row["input_tokens"]
+            projection["actual_model_calls"] += 1
+            projection["actual_output_tokens"] += row["output_tokens"]
+            projection["actual_role_output"][str(call_kind)] += row["output_tokens"]
+
+        for task_key, projection in task_projection.items():
+            row = task_arms[task_key]
+            for name in (
+                "actual_input_tokens",
+                "outstanding_input_tokens",
+                "actual_model_calls",
+                "outstanding_model_calls",
+                "actual_output_tokens",
+                "outstanding_output_tokens",
+            ):
+                if row.get(name) != projection[name]:
+                    fail(f"task-arm {name} disagrees with requests: {task_key}")
+            for kind, pool in TASK_OUTPUT_POOL_BY_CALL_KIND.items():
+                actual_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[kind]
+                remaining_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[kind]
+                actual_role = projection["actual_role_output"][kind]
+                outstanding_role = projection["outstanding_role_output"][kind]
+                if row.get(actual_field) != actual_role:
+                    fail(f"task-arm {actual_field} disagrees with requests: {task_key}")
+                if row.get(remaining_field) != pool - actual_role - outstanding_role:
+                    fail(f"task-arm {remaining_field} disagrees with requests: {task_key}")
+                if actual_role + outstanding_role > pool:
+                    fail(f"task-arm {kind} output pool exceeds its cap: {task_key}")
+            if (
+                projection["actual_input_tokens"]
+                + projection["outstanding_input_tokens"]
+                > self.caps["max_input_tokens_per_task_arm"]
+                or projection["actual_model_calls"]
+                + projection["outstanding_model_calls"]
+                > self.caps["max_model_calls_per_task_arm"]
+                or projection["actual_output_tokens"]
+                + projection["outstanding_output_tokens"]
+                > TASK_TOTAL_OUTPUT_POOL
+            ):
+                fail(f"task-arm counters exceed a frozen pool: {task_key}")
+            if row.get("status") != "RESERVED" and (
+                projection["outstanding_input_tokens"]
+                or projection["outstanding_model_calls"]
+                or projection["outstanding_output_tokens"]
+            ):
+                fail(f"terminal task-arm retains a live request: {task_key}")
+
+        for name in set(LEDGER_ACTUAL_FIELDS) - {"total_usd"}:
+            if actual[name] != reconstructed_actual[name]:
+                fail(f"actual {name} differs from request/task reconstruction")
+        for name in set(LEDGER_OUTSTANDING_FIELDS) - {"total_usd"}:
+            if outstanding[name] != reconstructed_outstanding[name]:
+                fail(f"outstanding {name} disagrees with request/task reconstruction")
+        if not self._money_equal(actual_usd, reconstructed_actual["total_usd"]):
+            fail("actual total_usd disagrees with request reconstruction")
+        if not self._money_equal(
+            outstanding_usd, reconstructed_outstanding["total_usd"]
+        ):
+            fail("outstanding total_usd disagrees with request reconstruction")
+        return dict(state)
 
     def finalize(
         self,
@@ -1052,7 +1452,7 @@ class AtomicBudgetLedger:
         for field, value in bounded.items():
             if value > hard[field]:
                 raise BenchmarkExecutionError(f"terminal {field} exceeds approved hard cap")
-        for field in ("task_arm_runs", "decomposition_calls", "extraction_calls"):
+        for field in ("task_arm_runs",):
             if bounded[field] != hard[field]:
                 raise BenchmarkExecutionError(f"terminal {field} differs from exact workload")
         if bounded["benchmark_grader_containers"] != hard[
@@ -1099,6 +1499,7 @@ class AtomicBudgetLedger:
                 "remaining_solve_output_tokens": 49_152,
                 "remaining_extraction_output_tokens": 8_192,
             }
+            self._validate_dynamic_state(state)
             write_json(self.path, state)
         return reservation_id
 
@@ -1138,15 +1539,57 @@ class AtomicBudgetLedger:
             # failure records zero but can never release task-arm capacity.
             state["actual"]["grader_containers"] += int(bool(container_started))
             row.update({"status": status, "container_started": bool(container_started)})
+            self._validate_dynamic_state(state)
             write_json(self.path, state)
 
-    def reserve(
-        self, logical_call_id: str, *, task_arm_key: str,
-        call_kind: str, input_upper_bound: int, output_cap: int,
-    ) -> str:
+    @staticmethod
+    def _preflight_failure(
+        classification: str,
+        *,
+        reason: str,
+        request_sha256: str,
+        logical_call_id: str,
+        **details: Any,
+    ) -> ModelPreflightFailure:
+        return ModelPreflightFailure(
+            classification,
+            request_sha256=request_sha256,
+            logical_call_id=logical_call_id,
+            details={"reason": reason, **details},
+        )
+
+    @staticmethod
+    def _preflight_payload(preflight: ReservationPreflight) -> dict[str, Any]:
+        value = asdict(preflight)
+        value.pop("plan_sha256")
+        return value
+
+    @classmethod
+    def _validate_preflight_plan(cls, preflight: ReservationPreflight) -> None:
+        if sha256_bytes(canonical_bytes(cls._preflight_payload(preflight))) != preflight.plan_sha256:
+            raise ModelPreflightFailure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                request_sha256=preflight.request_sha256,
+                logical_call_id=preflight.ledger_logical_call_id,
+                details={"reason": "reservation preflight plan hash mismatch"},
+            )
+
+    def _preview_reservation_from_state(
+        self,
+        state: Mapping[str, Any],
+        logical_call_id: str,
+        *,
+        request_sha256: str,
+        task_arm_key: str,
+        call_kind: str,
+        input_upper_bound: int,
+        output_cap: int,
+    ) -> ReservationPreflight:
         if (
             not isinstance(logical_call_id, str)
             or not logical_call_id
+            or not isinstance(request_sha256, str)
+            or SHA256.fullmatch(request_sha256) is None
             or not isinstance(task_arm_key, str)
             or not task_arm_key
             or type(input_upper_bound) is not int
@@ -1156,19 +1599,37 @@ class AtomicBudgetLedger:
         ):
             raise ValueError("reservation requires a logical call and positive bounds")
         if input_upper_bound > MAX_LEDGER_INPUT_BOUND_PER_CALL:
-            raise BenchmarkExecutionError("per-call conservative input bound exceeds the frozen runtime cap")
+            raise self._preflight_failure(
+                "TASK_INPUT_CONTEXT_BUDGET_EXCEEDED",
+                reason="per-call conservative input bound exceeds the frozen runtime cap",
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+                input_upper_bound=input_upper_bound,
+                maximum=MAX_LEDGER_INPUT_BOUND_PER_CALL,
+            )
         call_cap_name = {
             "solve": "solve_calls",
             "decompose": "decomposition_calls",
             "extract": "extraction_calls",
         }.get(call_kind)
         if call_cap_name is None:
-            raise BenchmarkExecutionError("paid request has an unknown call kind")
+            raise self._preflight_failure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                reason="paid request has an unknown call kind",
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+                call_kind=call_kind,
+            )
         if output_cap > MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[call_kind] or (
             call_kind != "solve" and output_cap != MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[call_kind]
         ):
-            raise BenchmarkExecutionError(
-                "per-call output cap differs from the frozen runtime cap"
+            raise self._preflight_failure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                reason="per-call output cap differs from the frozen runtime cap",
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+                output_cap=output_cap,
+                expected_output_cap=MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND[call_kind],
             )
         amount = input_upper_bound * self.pricing["input"] / 1_000_000 + output_cap * self.pricing["output"] / 1_000_000
         reservation_id = sha256_bytes(canonical_bytes({
@@ -1177,64 +1638,298 @@ class AtomicBudgetLedger:
             "call_kind": call_kind, "input_upper_bound": input_upper_bound,
             "output_cap": output_cap,
         }))
+        if logical_call_id in state["requests"]:
+            raise self._preflight_failure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                reason="duplicate paid logical call reservation",
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+            )
+        task_arm = state["task_arms"].get(task_arm_key)
+        if not isinstance(task_arm, dict) or task_arm.get("status") != "RESERVED":
+            raise self._preflight_failure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                reason="paid call has no active task-arm reservation",
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+                task_arm_key=task_arm_key,
+            )
+        task_input_total = (
+            task_arm["actual_input_tokens"]
+            + task_arm["outstanding_input_tokens"]
+            + input_upper_bound
+        )
+        if task_input_total > self.caps["max_input_tokens_per_task_arm"]:
+            raise self._preflight_failure(
+                "TASK_ARM_INPUT_POOL_EXHAUSTED",
+                reason="paid request rejected before send: task-arm input hard cap",
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+                projected_total=task_input_total,
+                maximum=self.caps["max_input_tokens_per_task_arm"],
+            )
+        task_call_total = (
+            task_arm["actual_model_calls"]
+            + task_arm["outstanding_model_calls"]
+            + 1
+        )
+        if task_call_total > self.caps["max_model_calls_per_task_arm"]:
+            raise self._preflight_failure(
+                "TASK_ARM_MODEL_CALL_POOL_EXHAUSTED",
+                reason="paid request rejected before send: task-arm call hard cap",
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+                projected_total=task_call_total,
+                maximum=self.caps["max_model_calls_per_task_arm"],
+            )
+        actual_role_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[call_kind]
+        role_outstanding = sum(
+            int(row["output_cap"])
+            for row in state["requests"].values()
+            if row.get("status") == "RESERVED"
+            and row.get("task_arm_key") == task_arm_key
+            and row.get("call_kind") == call_kind
+        )
+        role_output_total = task_arm[actual_role_field] + role_outstanding + output_cap
+        if role_output_total > TASK_OUTPUT_POOL_BY_CALL_KIND[call_kind]:
+            raise self._preflight_failure(
+                "TASK_ROLE_OUTPUT_POOL_EXHAUSTED",
+                reason="paid request rejected before send: task-arm role output pool",
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+                projected_total=role_output_total,
+                maximum=TASK_OUTPUT_POOL_BY_CALL_KIND[call_kind],
+            )
+        task_output_total = (
+            task_arm["actual_output_tokens"]
+            + task_arm["outstanding_output_tokens"]
+            + output_cap
+        )
+        if task_output_total > TASK_TOTAL_OUTPUT_POOL:
+            raise self._preflight_failure(
+                "TASK_TOTAL_OUTPUT_POOL_EXHAUSTED",
+                reason="paid request rejected before send: task-arm total output pool",
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+                projected_total=task_output_total,
+                maximum=TASK_TOTAL_OUTPUT_POOL,
+            )
+        combined = {
+            "paid_model_calls": state["actual"]["paid_model_calls"] + state["outstanding"]["paid_model_calls"] + 1,
+            call_cap_name: state["actual"][call_cap_name] + state["outstanding"][call_cap_name] + 1,
+            "input_tokens": state["actual"]["input_tokens"] + state["outstanding"]["input_tokens"] + input_upper_bound,
+            "output_tokens": state["actual"]["output_tokens"] + state["outstanding"]["output_tokens"] + output_cap,
+            "total_usd": state["actual"]["total_usd"] + state["outstanding"]["total_usd"] + amount,
+        }
+        phase_classification = {
+            "paid_model_calls": "PHASE_MODEL_CALL_CAP_EXHAUSTED",
+            call_cap_name: "PHASE_MODEL_CALL_CAP_EXHAUSTED",
+            "input_tokens": "PHASE_INPUT_CAP_EXHAUSTED",
+            "output_tokens": "PHASE_OUTPUT_CAP_EXHAUSTED",
+            "total_usd": "PHASE_USD_CAP_EXHAUSTED",
+        }
+        for name, total in combined.items():
+            if total > self.caps[name] + (1e-12 if name == "total_usd" else 0):
+                raise self._preflight_failure(
+                    phase_classification[name],
+                    reason=f"paid request rejected before send: {name} hard cap",
+                    request_sha256=request_sha256,
+                    logical_call_id=logical_call_id,
+                    cap_name=name,
+                    projected_total=total,
+                    maximum=self.caps[name],
+                )
+        payload = {
+            "status": PREFLIGHT_PASSED,
+            "request_sha256": request_sha256,
+            "ledger_logical_call_id": logical_call_id,
+            "task_arm_key": task_arm_key,
+            "call_kind": call_kind,
+            "input_upper_bound": input_upper_bound,
+            "output_cap": output_cap,
+            "reserved_usd": amount,
+            "reservation_id": reservation_id,
+            "ledger_state_sha256": sha256_bytes(canonical_bytes(state)),
+        }
+        return ReservationPreflight(
+            **payload,
+            plan_sha256=sha256_bytes(canonical_bytes(payload)),
+        )
+
+    def preview_reservation(
+        self,
+        logical_call_id: str,
+        *,
+        request_sha256: str,
+        task_arm_key: str,
+        call_kind: str,
+        input_upper_bound: int,
+        output_cap: int,
+    ) -> ReservationPreflight:
+        """Check every local request cap under lock without writing any bytes."""
+
+        try:
+            with _exclusive_file_lock(self.lock_path):
+                state = self._read()
+                return self._preview_reservation_from_state(
+                    state,
+                    logical_call_id,
+                    request_sha256=request_sha256,
+                    task_arm_key=task_arm_key,
+                    call_kind=call_kind,
+                    input_upper_bound=input_upper_bound,
+                    output_cap=output_cap,
+                )
+        except ModelPreflightFailure:
+            raise
+        except BenchmarkExecutionError as exc:
+            raise self._preflight_failure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                reason=str(exc),
+                request_sha256=request_sha256,
+                logical_call_id=logical_call_id,
+            ) from None
+
+    def reserve_preflighted(self, preflight: ReservationPreflight) -> str:
+        """Atomically repeat an exact preview and reserve its frozen bounds."""
+
+        self._validate_preflight_plan(preflight)
         with _exclusive_file_lock(self.lock_path):
-            state = self._read()
-            if logical_call_id in state["requests"]:
-                raise BenchmarkExecutionError("duplicate paid logical call reservation")
-            task_arm = state["task_arms"].get(task_arm_key)
-            if not isinstance(task_arm, dict) or task_arm.get("status") != "RESERVED":
-                raise BenchmarkExecutionError("paid call has no active task-arm reservation")
-            if (task_arm["actual_input_tokens"] + task_arm["outstanding_input_tokens"] +
-                    input_upper_bound > self.caps["max_input_tokens_per_task_arm"]):
-                raise BenchmarkExecutionError("paid request rejected before send: task-arm input hard cap")
-            if (task_arm["actual_model_calls"] + task_arm["outstanding_model_calls"] + 1 >
-                    self.caps["max_model_calls_per_task_arm"]):
-                raise BenchmarkExecutionError("paid request rejected before send: task-arm call hard cap")
-            actual_role_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[call_kind]
-            remaining_role_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[call_kind]
+            try:
+                state = self._read()
+            except BenchmarkExecutionError as exc:
+                raise self._preflight_failure(
+                    "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                    reason=str(exc),
+                    request_sha256=preflight.request_sha256,
+                    logical_call_id=preflight.ledger_logical_call_id,
+                ) from None
+            existing = state["requests"].get(preflight.ledger_logical_call_id)
+            if existing is not None:
+                if (
+                    isinstance(existing, Mapping)
+                    and existing.get("status") == "RESERVED"
+                    and existing.get("reservation_id") == preflight.reservation_id
+                    and existing.get("task_arm_key") == preflight.task_arm_key
+                    and existing.get("call_kind") == preflight.call_kind
+                    and existing.get("input_upper_bound") == preflight.input_upper_bound
+                    and existing.get("output_cap") == preflight.output_cap
+                    and self._money_equal(existing.get("reserved_usd"), preflight.reserved_usd)
+                ):
+                    return preflight.reservation_id
+                raise self._preflight_failure(
+                    "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                    reason="preflight reservation identity differs from existing ledger request",
+                    request_sha256=preflight.request_sha256,
+                    logical_call_id=preflight.ledger_logical_call_id,
+                )
+            if sha256_bytes(canonical_bytes(state)) != preflight.ledger_state_sha256:
+                raise self._preflight_failure(
+                    "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                    reason="ledger changed between read-only preview and atomic reservation",
+                    request_sha256=preflight.request_sha256,
+                    logical_call_id=preflight.ledger_logical_call_id,
+                )
+            try:
+                repeated = self._preview_reservation_from_state(
+                    state,
+                    preflight.ledger_logical_call_id,
+                    request_sha256=preflight.request_sha256,
+                    task_arm_key=preflight.task_arm_key,
+                    call_kind=preflight.call_kind,
+                    input_upper_bound=preflight.input_upper_bound,
+                    output_cap=preflight.output_cap,
+                )
+            except ModelPreflightFailure as exc:
+                raise self._preflight_failure(
+                    "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                    reason="atomic reservation disagreed with successful preview",
+                    request_sha256=preflight.request_sha256,
+                    logical_call_id=preflight.ledger_logical_call_id,
+                    atomic_classification=exc.classification,
+                ) from None
+            if repeated != preflight:
+                raise self._preflight_failure(
+                    "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                    reason="atomic reservation plan differs from successful preview",
+                    request_sha256=preflight.request_sha256,
+                    logical_call_id=preflight.ledger_logical_call_id,
+                )
+            call_cap_name = CALL_CAP_BY_KIND[preflight.call_kind]
+            task_arm = state["task_arms"][preflight.task_arm_key]
+            actual_role_field = TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND[preflight.call_kind]
+            remaining_role_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[preflight.call_kind]
             role_outstanding = sum(
                 int(row["output_cap"])
                 for row in state["requests"].values()
                 if row.get("status") == "RESERVED"
-                and row.get("task_arm_key") == task_arm_key
-                and row.get("call_kind") == call_kind
+                and row.get("task_arm_key") == preflight.task_arm_key
+                and row.get("call_kind") == preflight.call_kind
             )
-            if task_arm[actual_role_field] + role_outstanding + output_cap > TASK_OUTPUT_POOL_BY_CALL_KIND[call_kind]:
-                raise BenchmarkExecutionError("paid request rejected before send: task-arm role output pool")
-            if task_arm["actual_output_tokens"] + task_arm["outstanding_output_tokens"] + output_cap > TASK_TOTAL_OUTPUT_POOL:
-                raise BenchmarkExecutionError("paid request rejected before send: task-arm total output pool")
-            combined = {
-                "paid_model_calls": state["actual"]["paid_model_calls"] + state["outstanding"]["paid_model_calls"] + 1,
-                call_cap_name: state["actual"][call_cap_name] + state["outstanding"][call_cap_name] + 1,
-                "input_tokens": state["actual"]["input_tokens"] + state["outstanding"]["input_tokens"] + input_upper_bound,
-                "output_tokens": state["actual"]["output_tokens"] + state["outstanding"]["output_tokens"] + output_cap,
-                "total_usd": state["actual"]["total_usd"] + state["outstanding"]["total_usd"] + amount,
-            }
-            for name, total in combined.items():
-                if total > self.caps[name] + (1e-12 if name == "total_usd" else 0):
-                    raise BenchmarkExecutionError(f"paid request rejected before send: {name} hard cap")
             state["outstanding"]["paid_model_calls"] += 1
             state["outstanding"][call_cap_name] += 1
-            state["outstanding"]["input_tokens"] += input_upper_bound
-            state["outstanding"]["output_tokens"] += output_cap
-            state["outstanding"]["total_usd"] += amount
-            task_arm["outstanding_input_tokens"] += input_upper_bound
+            state["outstanding"]["input_tokens"] += preflight.input_upper_bound
+            state["outstanding"]["output_tokens"] += preflight.output_cap
+            state["outstanding"]["total_usd"] += preflight.reserved_usd
+            task_arm["outstanding_input_tokens"] += preflight.input_upper_bound
             task_arm["outstanding_model_calls"] += 1
-            task_arm["outstanding_output_tokens"] += output_cap
+            task_arm["outstanding_output_tokens"] += preflight.output_cap
             task_arm[remaining_role_field] = (
-                TASK_OUTPUT_POOL_BY_CALL_KIND[call_kind]
+                TASK_OUTPUT_POOL_BY_CALL_KIND[preflight.call_kind]
                 - task_arm[actual_role_field]
                 - role_outstanding
-                - output_cap
+                - preflight.output_cap
             )
-            state["requests"][logical_call_id] = {
-                "reservation_id": reservation_id, "status": "RESERVED",
-                "input_upper_bound": input_upper_bound, "output_cap": output_cap,
-                "reserved_usd": amount, "task_arm_key": task_arm_key,
-                "call_kind": call_kind, "call_cap_name": call_cap_name,
+            state["requests"][preflight.ledger_logical_call_id] = {
+                "reservation_id": preflight.reservation_id, "status": "RESERVED",
+                "input_upper_bound": preflight.input_upper_bound,
+                "output_cap": preflight.output_cap,
+                "reserved_usd": preflight.reserved_usd,
+                "task_arm_key": preflight.task_arm_key,
+                "call_kind": preflight.call_kind, "call_cap_name": call_cap_name,
             }
+            self._validate_dynamic_state(state)
             write_json(self.path, state)
-        return reservation_id
+        return preflight.reservation_id
+
+    def reserve(
+        self, logical_call_id: str, *, task_arm_key: str,
+        call_kind: str, input_upper_bound: int, output_cap: int,
+    ) -> str:
+        """Compatibility entry point; paid gateways use explicit preview/reserve."""
+
+        request_sha256 = sha256_bytes(canonical_bytes({
+            "logical_call_id": logical_call_id,
+            "task_arm_key": task_arm_key,
+            "call_kind": call_kind,
+            "input_upper_bound": input_upper_bound,
+            "output_cap": output_cap,
+        }))
+        try:
+            preflight = self.preview_reservation(
+                logical_call_id,
+                request_sha256=request_sha256,
+                task_arm_key=task_arm_key,
+                call_kind=call_kind,
+                input_upper_bound=input_upper_bound,
+                output_cap=output_cap,
+            )
+            return self.reserve_preflighted(preflight)
+        except ModelPreflightFailure as exc:
+            reason = str(exc.details.get("reason") or exc.classification)
+            raise BenchmarkExecutionError(f"{reason} [{exc.classification}]") from None
+
+    def request_row(self, logical_call_id: str) -> Optional[dict[str, Any]]:
+        try:
+            with _exclusive_file_lock(self.lock_path):
+                row = self._read()["requests"].get(logical_call_id)
+        except BenchmarkExecutionError as exc:
+            raise ModelPreflightFailure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                logical_call_id=logical_call_id,
+                details={"reason": str(exc)},
+            ) from None
+        return dict(row) if isinstance(row, Mapping) else None
 
     def reconcile(
         self,
@@ -1247,10 +1942,57 @@ class AtomicBudgetLedger:
         status: str,
         conservative_unknown: bool = False,
     ) -> None:
+        self._reconcile(
+            logical_call_id,
+            reservation_id,
+            input_tokens=input_tokens,
+            cached_input_tokens=cached_input_tokens,
+            output_tokens=output_tokens,
+            status=status,
+            conservative_unknown=conservative_unknown,
+            allow_existing=False,
+        )
+
+    def reconcile_or_verify(
+        self,
+        logical_call_id: str,
+        reservation_id: str,
+        *,
+        input_tokens: int,
+        cached_input_tokens: int,
+        output_tokens: int,
+        status: str,
+        conservative_unknown: bool = False,
+    ) -> None:
+        """Reconcile once, or prove an identical durable reconciliation exists."""
+
+        self._reconcile(
+            logical_call_id,
+            reservation_id,
+            input_tokens=input_tokens,
+            cached_input_tokens=cached_input_tokens,
+            output_tokens=output_tokens,
+            status=status,
+            conservative_unknown=conservative_unknown,
+            allow_existing=True,
+        )
+
+    def _reconcile(
+        self,
+        logical_call_id: str,
+        reservation_id: str,
+        *,
+        input_tokens: int,
+        cached_input_tokens: int,
+        output_tokens: int,
+        status: str,
+        conservative_unknown: bool = False,
+        allow_existing: bool = False,
+    ) -> None:
         with _exclusive_file_lock(self.lock_path):
             state = self._read()
             request = state["requests"].get(logical_call_id)
-            if not isinstance(request, dict) or request.get("reservation_id") != reservation_id or request.get("status") != "RESERVED":
+            if not isinstance(request, dict) or request.get("reservation_id") != reservation_id:
                 raise BenchmarkExecutionError("unknown or already reconciled paid reservation")
             call_kind = request.get("call_kind")
             call_cap_name = {
@@ -1272,6 +2014,16 @@ class AtomicBudgetLedger:
                 uncached * self.pricing["input"] + cached_input_tokens * self.pricing["cached"] +
                 output_tokens * self.pricing["output"]
             ) / 1_000_000
+            if request.get("status") != "RESERVED":
+                if allow_existing and (
+                    request.get("status") == status
+                    and request.get("input_tokens") == input_tokens
+                    and request.get("cached_input_tokens") == cached_input_tokens
+                    and request.get("output_tokens") == output_tokens
+                    and self._money_equal(request.get("actual_usd"), actual_usd)
+                ):
+                    return
+                raise BenchmarkExecutionError("unknown or already reconciled paid reservation")
             state["outstanding"]["paid_model_calls"] -= 1
             state["outstanding"][call_cap_name] -= 1
             state["outstanding"]["input_tokens"] -= request["input_upper_bound"]
@@ -1317,6 +2069,7 @@ class AtomicBudgetLedger:
             ):
                 if state["actual"][name] > self.caps[name] + (1e-12 if name == "total_usd" else 0):
                     raise BenchmarkExecutionError(f"reconciled provider usage exceeded {name} hard cap")
+            self._validate_dynamic_state(state)
             write_json(self.path, state)
 
 
@@ -1332,75 +2085,214 @@ class BudgetedModelGateway:
         self.ledger = ledger
         self.stream_id = stream_id
 
-    def invoke(self, request: GatewayRequest) -> GatewayResponse:
+    def _request_values(self, request: GatewayRequest) -> dict[str, Any]:
         # UTF-8 bytes upper-bound prompt tokens for this text-only envelope;
         # 4096 additional tokens conservatively cover role/schema framing.
         input_bound = max(1, len(request.prompt.encode("utf-8"))) + 4_096
-        task_arm_key = f"{self.stream_id}:{request.arm}:{request.task_id}"
-        ledger_logical_call_id = f"{self.stream_id}:{request.logical_call_id}"
-        reservation = self.ledger.reserve(
-            ledger_logical_call_id, task_arm_key=task_arm_key,
-            call_kind=request.call_kind,
-            input_upper_bound=input_bound, output_cap=request.max_output_tokens
+        return {
+            "request_sha256": gateway_request_sha256(request),
+            "task_arm_key": f"{self.stream_id}:{request.arm}:{request.task_id}",
+            "ledger_logical_call_id": f"{self.stream_id}:{request.logical_call_id}",
+            "call_kind": request.call_kind,
+            "input_upper_bound": input_bound,
+            "output_cap": request.max_output_tokens,
+        }
+
+    @staticmethod
+    def _reservation_metadata(
+        preflight: ReservationPreflight, *, charged_conservatively: bool
+    ) -> dict[str, Any]:
+        return {
+            "reservation_id": preflight.reservation_id,
+            "input_upper_bound": preflight.input_upper_bound,
+            "output_cap": preflight.output_cap,
+            "charged_conservatively": bool(charged_conservatively),
+        }
+
+    def _validate_request_preflight(
+        self, request: GatewayRequest, preflight: ReservationPreflight
+    ) -> None:
+        values = self._request_values(request)
+        expected = {
+            name: getattr(preflight, name)
+            for name in values
+        }
+        if expected != values:
+            raise ModelPreflightFailure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                request_sha256=values["request_sha256"],
+                logical_call_id=values["ledger_logical_call_id"],
+                details={"reason": "request differs from its reservation preflight"},
+            )
+        self.ledger._validate_preflight_plan(preflight)
+
+    def preview_reservation(self, request: GatewayRequest) -> ReservationPreflight:
+        values = self._request_values(request)
+        return self.ledger.preview_reservation(
+            values["ledger_logical_call_id"],
+            request_sha256=values["request_sha256"],
+            task_arm_key=values["task_arm_key"],
+            call_kind=values["call_kind"],
+            input_upper_bound=values["input_upper_bound"],
+            output_cap=values["output_cap"],
         )
+
+    def request_row(self, request: GatewayRequest) -> Optional[dict[str, Any]]:
+        return self.ledger.request_row(self._request_values(request)["ledger_logical_call_id"])
+
+    def reserve_preflighted(
+        self, request: GatewayRequest, preflight: ReservationPreflight
+    ) -> str:
+        self._validate_request_preflight(request, preflight)
+        return self.ledger.reserve_preflighted(preflight)
+
+    def send_reserved(
+        self, request: GatewayRequest, preflight: ReservationPreflight
+    ) -> GatewayResponse:
+        """Perform only the provider side effect; the caller owns reconciliation."""
+
+        self._validate_request_preflight(request, preflight)
         try:
             response = self.delegate.invoke(request)
         except GatewayInvocationFailure as exc:
-            unknown_usage = not exc.provider_reported_usage_available
-            self.ledger.reconcile(
-                ledger_logical_call_id, reservation,
-                input_tokens=exc.input_tokens if not unknown_usage else 0,
-                cached_input_tokens=exc.cached_input_tokens if not unknown_usage else 0,
-                output_tokens=exc.output_tokens if not unknown_usage else 0,
-                status="PROVIDER_FAILURE_CONSERVATIVE" if unknown_usage else "PROVIDER_FAILURE",
-                conservative_unknown=unknown_usage,
-            )
-            exc.ledger_reservation = {
-                "reservation_id": reservation,
-                "input_upper_bound": input_bound,
-                "output_cap": request.max_output_tokens,
-                "charged_conservatively": unknown_usage,
-            }
-            raise
-        except BaseException:
-            # The request may have reached the provider without exact usage. Keep
-            # the entire conservative reservation consumed; never release it.
-            self.ledger.reconcile(
-                ledger_logical_call_id, reservation, input_tokens=0, cached_input_tokens=0,
-                output_tokens=0, status="UNKNOWN_FAILURE_CONSERVATIVE", conservative_unknown=True,
+            exc.ledger_reservation = self._reservation_metadata(
+                preflight,
+                charged_conservatively=not exc.provider_reported_usage_available,
             )
             raise
         if response.paid is not True:
-            self.ledger.reconcile(
-                ledger_logical_call_id, reservation, input_tokens=0, cached_input_tokens=0,
-                output_tokens=0, status="INVALID_UNPAID_RESPONSE_CONSERVATIVE", conservative_unknown=True,
-            )
             raise BenchmarkExecutionError("benchmark provider response is not marked paid")
         unknown_usage = not response.provider_reported_usage_available
-        self.ledger.reconcile(
-            ledger_logical_call_id, reservation,
+        return replace(
+            response,
+            ledger_reservation=self._reservation_metadata(
+                preflight, charged_conservatively=unknown_usage
+            ),
+        )
+
+    def reconcile_success(
+        self,
+        preflight: ReservationPreflight,
+        response: GatewayResponse,
+    ) -> None:
+        unknown_usage = not response.provider_reported_usage_available
+        self.ledger.reconcile_or_verify(
+            preflight.ledger_logical_call_id,
+            preflight.reservation_id,
             input_tokens=response.input_tokens if not unknown_usage else 0,
             cached_input_tokens=response.cached_input_tokens if not unknown_usage else 0,
             output_tokens=response.output_tokens if not unknown_usage else 0,
             status="SUCCESS_CONSERVATIVE_USAGE" if unknown_usage else "SUCCESS",
             conservative_unknown=unknown_usage,
         )
-        return replace(response, ledger_reservation={
-            "reservation_id": reservation,
-            "input_upper_bound": input_bound,
-            "output_cap": request.max_output_tokens,
-            "charged_conservatively": unknown_usage,
-        })
+
+    def reconcile_failure(
+        self,
+        preflight: ReservationPreflight,
+        failure: GatewayInvocationFailure,
+    ) -> None:
+        unknown_usage = not failure.provider_reported_usage_available
+        self.ledger.reconcile_or_verify(
+            preflight.ledger_logical_call_id,
+            preflight.reservation_id,
+            input_tokens=failure.input_tokens if not unknown_usage else 0,
+            cached_input_tokens=failure.cached_input_tokens if not unknown_usage else 0,
+            output_tokens=failure.output_tokens if not unknown_usage else 0,
+            status="PROVIDER_FAILURE_CONSERVATIVE" if unknown_usage else "PROVIDER_FAILURE",
+            conservative_unknown=unknown_usage,
+        )
+
+    def settle_unknown(
+        self, request: GatewayRequest, preflight: ReservationPreflight
+    ) -> Mapping[str, Any]:
+        self._validate_request_preflight(request, preflight)
+        self.ledger.reconcile_or_verify(
+            preflight.ledger_logical_call_id,
+            preflight.reservation_id,
+            input_tokens=0,
+            cached_input_tokens=0,
+            output_tokens=0,
+            status="PROVIDER_FAILURE_CONSERVATIVE",
+            conservative_unknown=True,
+        )
+        return self._reservation_metadata(preflight, charged_conservatively=True)
+
+    def settle_existing_unknown(self, request: GatewayRequest) -> Mapping[str, Any]:
+        """Conservatively settle a legacy reservation that predates preflight plans."""
+
+        values = self._request_values(request)
+        row = self.ledger.request_row(values["ledger_logical_call_id"])
+        if not isinstance(row, Mapping):
+            raise ModelPreflightFailure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                request_sha256=values["request_sha256"],
+                logical_call_id=values["ledger_logical_call_id"],
+                details={"reason": "provider send marker has no matching ledger reservation"},
+            )
+        if (
+            row.get("task_arm_key") != values["task_arm_key"]
+            or row.get("call_kind") != values["call_kind"]
+            or row.get("input_upper_bound") != values["input_upper_bound"]
+            or row.get("output_cap") != values["output_cap"]
+            or not isinstance(row.get("reservation_id"), str)
+        ):
+            raise ModelPreflightFailure(
+                "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                request_sha256=values["request_sha256"],
+                logical_call_id=values["ledger_logical_call_id"],
+                details={"reason": "legacy provider send/reservation identity differs"},
+            )
+        if row.get("status") == "RESERVED":
+            self.ledger.reconcile_or_verify(
+                values["ledger_logical_call_id"],
+                str(row["reservation_id"]),
+                input_tokens=0,
+                cached_input_tokens=0,
+                output_tokens=0,
+                status="PROVIDER_FAILURE_CONSERVATIVE",
+                conservative_unknown=True,
+            )
+        return {
+            "reservation_id": row["reservation_id"],
+            "input_upper_bound": row["input_upper_bound"],
+            "output_cap": row["output_cap"],
+            "charged_conservatively": (
+                row.get("status") == "RESERVED"
+                or "CONSERVATIVE" in str(row.get("status", ""))
+            ),
+        }
+
+    def invoke_preflighted(
+        self,
+        request: GatewayRequest,
+        preflight: Optional[ReservationPreflight],
+    ) -> GatewayResponse:
+        if preflight is None:
+            preflight = self.preview_reservation(request)
+        self.reserve_preflighted(request, preflight)
+        try:
+            response = self.send_reserved(request, preflight)
+        except GatewayInvocationFailure as exc:
+            self.reconcile_failure(preflight, exc)
+            raise
+        except Exception:
+            self.settle_unknown(request, preflight)
+            raise
+        self.reconcile_success(preflight, response)
+        return response
+
+    def invoke(self, request: GatewayRequest) -> GatewayResponse:
+        return self.invoke_preflighted(request, self.preview_reservation(request))
 
 
 class TerminalInvocationJournal:
     """Write-ahead, hash-bound cache for paid model and official grader calls.
 
-    A completed record is replayed locally after a process restart.  An
-    IN_FLIGHT record is deliberately not retried: the external side effect may
-    have happened, so automatic repetition would violate the paid/container
-    caps.  That ambiguous case requires evidence reconciliation instead of an
-    unsafe second invocation.
+    Model calls use an explicit v2 request/send/terminal lifecycle.  A recorded
+    request with no send marker is safe to continue; a send marker with no
+    terminal outcome is never retried and is conservatively settled.  The v1
+    IN_FLIGHT format remains readable for historical calls and for the separate
+    grader boundary.
     """
 
     def __init__(self, root: Path):
@@ -1426,6 +2318,71 @@ class TerminalInvocationJournal:
         })
         return path
 
+    def begin_model_request(
+        self,
+        key: str,
+        request_hash: str,
+        preflight: Optional[ReservationPreflight],
+    ) -> Path:
+        """Durably record a model request after its read-only preflight passed."""
+
+        path = self._path("model", key)
+        if path.exists():
+            row = read_json(path)
+            if row.get("key") != key or row.get("request_sha256") != request_hash:
+                raise BenchmarkExecutionError("terminal journal request identity mismatch")
+            return path
+        write_json(path, {
+            "schema": "trimem/terminal-invocation-journal/2.0",
+            "kind": "model",
+            "key": key,
+            "request_sha256": request_hash,
+            "status": "REQUEST_RECORDED",
+            "provider_send_started": False,
+            "preflight": asdict(preflight) if preflight is not None else None,
+        })
+        return path
+
+    @staticmethod
+    def transition_model(
+        path: Path,
+        *,
+        expected: Sequence[str],
+        status: str,
+        values: Optional[Mapping[str, Any]] = None,
+    ) -> None:
+        current = read_json(path)
+        if current.get("schema") != "trimem/terminal-invocation-journal/2.0":
+            raise BenchmarkExecutionError("model journal schema is not lifecycle v2")
+        if current.get("status") not in set(expected):
+            raise BenchmarkExecutionError("model journal lifecycle transition is invalid")
+        write_json(path, {**current, **dict(values or {}), "status": status})
+
+    @staticmethod
+    def upgrade_legacy_model_request(
+        path: Path,
+        *,
+        preflight: Optional[ReservationPreflight],
+    ) -> None:
+        current = read_json(path)
+        if (
+            current.get("schema") != "trimem/terminal-invocation-journal/1.0"
+            or current.get("kind") != "model"
+            or current.get("status") != "IN_FLIGHT"
+        ):
+            raise BenchmarkExecutionError("legacy model journal cannot be upgraded")
+        write_json(path, {
+            "schema": "trimem/terminal-invocation-journal/2.0",
+            "kind": "model",
+            "key": current["key"],
+            "request_sha256": current["request_sha256"],
+            "status": "REQUEST_RECORDED",
+            "provider_send_started": False,
+            "preflight": asdict(preflight) if preflight is not None else None,
+            "legacy_schema": current["schema"],
+            "legacy_delegate_started": bool(current.get("delegate_started")),
+        })
+
     @staticmethod
     def load(path: Path) -> dict[str, Any]:
         return read_json(path)
@@ -1439,76 +2396,356 @@ class TerminalInvocationJournal:
 
 
 class JournaledModelGateway:
-    def __init__(self, delegate: BudgetedModelGateway, journal: TerminalInvocationJournal):
+    def __init__(self, delegate: Any, journal: TerminalInvocationJournal):
         self.delegate = delegate
         self.journal = journal
 
-    def replay_terminal(self, request: GatewayRequest) -> Optional[GatewayResponse]:
-        request_hash = sha256_bytes(canonical_bytes(asdict(request)))
+    @staticmethod
+    def _failure_dict(exc: GatewayInvocationFailure) -> dict[str, Any]:
+        return {
+            "provider": exc.provider, "model": exc.model, "status": exc.status,
+            "attempt": exc.attempt, "input_tokens": exc.input_tokens,
+            "output_tokens": exc.output_tokens,
+            "cached_input_tokens": exc.cached_input_tokens,
+            "reasoning_tokens": exc.reasoning_tokens,
+            "wall_time_ms": exc.wall_time_ms, "response_text": exc.response_text,
+            "provider_request_id": exc.provider_request_id,
+            "response_id": exc.response_id,
+            "response_status": exc.response_status,
+            "response_error_code": exc.response_error_code,
+            "incomplete_reason": exc.incomplete_reason,
+            "output_item_types": list(exc.output_item_types),
+            "content_item_types": list(exc.content_item_types),
+            "refusal_present": exc.refusal_present,
+            "provider_reported_usage_available": exc.provider_reported_usage_available,
+            "raw_envelope_reference": exc.raw_envelope_reference,
+            "extracted_text_bytes": exc.extracted_text_bytes,
+            "structured_output_bytes": exc.structured_output_bytes,
+            "original_provider_terminal_classification": (
+                exc.original_provider_terminal_classification
+            ),
+            "provider_response_envelope": exc.provider_response_envelope,
+            "ledger_reservation": exc.ledger_reservation,
+        }
+
+    def _path_and_row(
+        self, request: GatewayRequest
+    ) -> tuple[Path, Optional[dict[str, Any]]]:
+        request_hash = gateway_request_sha256(request)
         path = self.journal._path("model", request.logical_call_id)
         if not path.exists():
-            return None
+            return path, None
         row = self.journal.load(path)
-        if row.get("key") != request.logical_call_id or row.get("request_sha256") != request_hash:
+        if (
+            row.get("key") != request.logical_call_id
+            or row.get("request_sha256") != request_hash
+        ):
             raise BenchmarkExecutionError("terminal journal request identity mismatch")
-        if row.get("status") == "SUCCESS":
-            return replace(
-                GatewayResponse(**row["response"]), terminal_outcome_replayed=True
-            )
-        if row.get("status") == "FAILURE":
-            raise GatewayInvocationFailure(
-                **row["failure"], terminal_outcome_replayed=True
-            )
-        if row.get("status") == "IN_FLIGHT":
+        return path, row
+
+    @staticmethod
+    def _stored_preflight(row: Mapping[str, Any]) -> Optional[ReservationPreflight]:
+        value = row.get("preflight")
+        if value is None:
+            return None
+        if not isinstance(value, Mapping):
+            raise BenchmarkExecutionError("model journal preflight is malformed")
+        try:
+            return ReservationPreflight(**dict(value))
+        except (TypeError, ValueError) as exc:
+            raise BenchmarkExecutionError("model journal preflight is malformed") from exc
+
+    def _ledger_row(self, request: GatewayRequest) -> tuple[bool, Optional[dict[str, Any]]]:
+        getter = getattr(self.delegate, "request_row", None)
+        if not callable(getter):
+            return False, None
+        return True, getter(request)
+
+    def request_lifecycle(self, request: GatewayRequest) -> Mapping[str, Any]:
+        """Return one explicit, hash-bound lifecycle state without mutation."""
+
+        _, row = self._path_and_row(request)
+        has_ledger, ledger_row = self._ledger_row(request)
+        if row is None:
+            state = "NOT_PREPARED"
+            send_started = False
+        elif row.get("schema") == "trimem/terminal-invocation-journal/2.0":
+            state = str(row.get("status"))
+            if state not in {
+                "REQUEST_RECORDED",
+                "PROVIDER_SEND_STARTED",
+                "PROVIDER_TERMINAL_SUCCESS",
+                "PROVIDER_TERMINAL_FAILURE",
+                "PROVIDER_OUTCOME_UNKNOWN",
+            }:
+                raise BenchmarkExecutionError("unknown model journal lifecycle state")
+            send_started = bool(row.get("provider_send_started"))
+            if send_started != (state in {
+                "PROVIDER_SEND_STARTED",
+                "PROVIDER_TERMINAL_SUCCESS",
+                "PROVIDER_TERMINAL_FAILURE",
+                "PROVIDER_OUTCOME_UNKNOWN",
+            }):
+                raise BenchmarkExecutionError("model journal send-state marker differs")
+        elif row.get("schema") == "trimem/terminal-invocation-journal/1.0":
+            legacy = str(row.get("status"))
+            if legacy == "SUCCESS":
+                state, send_started = "PROVIDER_TERMINAL_SUCCESS", True
+            elif legacy == "FAILURE":
+                state, send_started = "PROVIDER_TERMINAL_FAILURE", True
+            elif legacy == "IN_FLIGHT" and row.get("delegate_started") is not True:
+                state, send_started = "REQUEST_RECORDED", False
+            elif legacy == "IN_FLIGHT" and has_ledger and ledger_row is None:
+                # In v1, delegate_started was persisted before atomic reserve.
+                # Absence from that exact ledger therefore proves no send.
+                state, send_started = "REQUEST_RECORDED", False
+            elif legacy == "IN_FLIGHT":
+                state, send_started = "PROVIDER_SEND_STARTED", True
+            else:
+                raise BenchmarkExecutionError("unknown legacy model journal state")
+        else:
+            raise BenchmarkExecutionError("unknown model journal schema")
+        return {
+            "state": state,
+            "request_sha256": gateway_request_sha256(request),
+            "journal_present": row is not None,
+            "ledger_reservation_present": ledger_row is not None,
+            "provider_send_started": send_started,
+        }
+
+    def preview_reservation(
+        self, request: GatewayRequest
+    ) -> Optional[ReservationPreflight]:
+        lifecycle = self.request_lifecycle(request)
+        _, row = self._path_and_row(request)
+        if lifecycle["state"] in {
+            "PROVIDER_SEND_STARTED",
+            "PROVIDER_OUTCOME_UNKNOWN",
+        }:
+            raise self.settle_unknown(request)
+        if lifecycle["state"] in {
+            "PROVIDER_TERMINAL_SUCCESS",
+            "PROVIDER_TERMINAL_FAILURE",
+        }:
+            raise BenchmarkExecutionError("terminal model request cannot be preflighted")
+        if row is not None:
+            stored = self._stored_preflight(row)
+            if stored is not None:
+                validator = getattr(self.delegate, "_validate_request_preflight", None)
+                if callable(validator):
+                    validator(request, stored)
+                return stored
+        preview = getattr(self.delegate, "preview_reservation", None)
+        return preview(request) if callable(preview) else None
+
+    def _reconcile_replayed_success(
+        self, row: Mapping[str, Any], response: GatewayResponse
+    ) -> None:
+        preflight = self._stored_preflight(row)
+        reconcile = getattr(self.delegate, "reconcile_success", None)
+        if preflight is not None and callable(reconcile):
+            reconcile(preflight, response)
+
+    def _reconcile_replayed_failure(
+        self, row: Mapping[str, Any], failure: GatewayInvocationFailure
+    ) -> None:
+        preflight = self._stored_preflight(row)
+        reconcile = getattr(self.delegate, "reconcile_failure", None)
+        if preflight is not None and callable(reconcile):
+            reconcile(preflight, failure)
+
+    def replay_terminal(self, request: GatewayRequest) -> Optional[GatewayResponse]:
+        _, row = self._path_and_row(request)
+        if row is None:
+            return None
+        lifecycle = self.request_lifecycle(request)
+        state = lifecycle["state"]
+        if state == "PROVIDER_TERMINAL_SUCCESS":
+            response = GatewayResponse(**row["response"])
+            self._reconcile_replayed_success(row, response)
+            return replace(response, terminal_outcome_replayed=True)
+        if state == "PROVIDER_TERMINAL_FAILURE":
+            failure = GatewayInvocationFailure(**row["failure"])
+            self._reconcile_replayed_failure(row, failure)
+            failure.terminal_outcome_replayed = True
+            raise failure
+        if state in {"PROVIDER_SEND_STARTED", "PROVIDER_OUTCOME_UNKNOWN"}:
+            raise self.settle_unknown(request)
+        if state == "REQUEST_RECORDED":
             return None
         raise BenchmarkExecutionError("unknown model journal state")
 
-    def invoke(self, request: GatewayRequest) -> GatewayResponse:
+    def settle_unknown(self, request: GatewayRequest) -> GatewayInvocationFailure:
+        path, row = self._path_and_row(request)
+        if row is None:
+            raise BenchmarkExecutionError("cannot settle an absent model journal")
+        lifecycle = self.request_lifecycle(request)
+        if lifecycle["state"] not in {
+            "PROVIDER_SEND_STARTED", "PROVIDER_OUTCOME_UNKNOWN"
+        }:
+            raise BenchmarkExecutionError("model request is not in an unknown outcome state")
+        if row.get("schema") == "trimem/terminal-invocation-journal/2.0":
+            if row.get("status") == "PROVIDER_SEND_STARTED":
+                self.journal.transition_model(
+                    path,
+                    expected=("PROVIDER_SEND_STARTED",),
+                    status="PROVIDER_OUTCOME_UNKNOWN",
+                    values={"provider_send_started": True},
+                )
+                row = self.journal.load(path)
+        else:
+            write_json(path, {
+                "schema": "trimem/terminal-invocation-journal/2.0",
+                "kind": "model",
+                "key": row["key"],
+                "request_sha256": row["request_sha256"],
+                "status": "PROVIDER_OUTCOME_UNKNOWN",
+                "provider_send_started": True,
+                "preflight": None,
+                "legacy_schema": row["schema"],
+                "legacy_delegate_started": bool(row.get("delegate_started")),
+            })
+            row = self.journal.load(path)
+        preflight = self._stored_preflight(row)
+        if preflight is not None and callable(getattr(self.delegate, "settle_unknown", None)):
+            ledger_reservation = self.delegate.settle_unknown(request, preflight)
+        elif callable(getattr(self.delegate, "settle_existing_unknown", None)):
+            ledger_reservation = self.delegate.settle_existing_unknown(request)
+        elif lifecycle["ledger_reservation_present"]:
+            raise BenchmarkExecutionError("unknown model reservation cannot be settled")
+        else:
+            ledger_reservation = None
+        model = getattr(getattr(self.delegate, "delegate", None), "expected_model", "unknown")
+        return GatewayInvocationFailure(
+            provider="openai-responses",
+            model=str(model),
+            status="MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN",
+            attempt=1,
+            input_tokens=None,
+            output_tokens=None,
+            cached_input_tokens=None,
+            reasoning_tokens=None,
+            provider_reported_usage_available=False,
+            original_provider_terminal_classification=(
+                "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"
+            ),
+            ledger_reservation=ledger_reservation,
+            terminal_outcome_replayed=True,
+        )
+
+    def invoke_preflighted(
+        self,
+        request: GatewayRequest,
+        preflight: Optional[ReservationPreflight],
+    ) -> GatewayResponse:
         replayed = self.replay_terminal(request)
         if replayed is not None:
             return replayed
-        request_hash = sha256_bytes(canonical_bytes(asdict(request)))
-        path = self.journal.begin("model", request.logical_call_id, request_hash)
-        row = self.journal.load(path)
-        if row.get("status") != "IN_FLIGHT":
-            raise BenchmarkExecutionError("unknown model journal state")
-        # A pre-existing write-ahead record is ambiguous.  Only the process
-        # that created it may issue the delegate call.
-        if row.get("delegate_started") is True:
-            raise BenchmarkExecutionError("model invocation is indeterminate; automatic retry refused")
-        write_json(path, {**row, "delegate_started": True})
-        try:
-            response = self.delegate.invoke(request)
-        except GatewayInvocationFailure as exc:
-            failure = {
-                "provider": exc.provider, "model": exc.model, "status": exc.status,
-                "attempt": exc.attempt, "input_tokens": exc.input_tokens,
-                "output_tokens": exc.output_tokens,
-                "cached_input_tokens": exc.cached_input_tokens,
-                "reasoning_tokens": exc.reasoning_tokens,
-                "wall_time_ms": exc.wall_time_ms, "response_text": exc.response_text,
-                "provider_request_id": exc.provider_request_id,
-                "response_id": exc.response_id,
-                "response_status": exc.response_status,
-                "response_error_code": exc.response_error_code,
-                "incomplete_reason": exc.incomplete_reason,
-                "output_item_types": list(exc.output_item_types),
-                "content_item_types": list(exc.content_item_types),
-                "refusal_present": exc.refusal_present,
-                "provider_reported_usage_available": exc.provider_reported_usage_available,
-                "raw_envelope_reference": exc.raw_envelope_reference,
-                "extracted_text_bytes": exc.extracted_text_bytes,
-                "structured_output_bytes": exc.structured_output_bytes,
-                "original_provider_terminal_classification": (
-                    exc.original_provider_terminal_classification
+        request_hash = gateway_request_sha256(request)
+        path, row = self._path_and_row(request)
+        if row is None:
+            path = self.journal.begin_model_request(
+                request.logical_call_id, request_hash, preflight
+            )
+            row = self.journal.load(path)
+        elif row.get("schema") == "trimem/terminal-invocation-journal/1.0":
+            lifecycle = self.request_lifecycle(request)
+            if lifecycle["state"] != "REQUEST_RECORDED":
+                raise self.settle_unknown(request)
+            self.journal.upgrade_legacy_model_request(path, preflight=preflight)
+            row = self.journal.load(path)
+        if row.get("status") != "REQUEST_RECORDED":
+            raise BenchmarkExecutionError("model request is not safe to send")
+        stored_preflight = self._stored_preflight(row)
+        if stored_preflight is not None:
+            if preflight is not None and stored_preflight != preflight:
+                raise ModelPreflightFailure(
+                    "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                    request_sha256=request_hash,
+                    logical_call_id=request.logical_call_id,
+                    details={"reason": "journal and caller preflight plans differ"},
+                )
+            preflight = stored_preflight
+        reserve = getattr(self.delegate, "reserve_preflighted", None)
+        if callable(reserve):
+            if preflight is None:
+                raise ModelPreflightFailure(
+                    "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE",
+                    request_sha256=request_hash,
+                    logical_call_id=request.logical_call_id,
+                    details={"reason": "paid model request has no preflight plan"},
+                )
+            reserve(request, preflight)
+        self.journal.transition_model(
+            path,
+            expected=("REQUEST_RECORDED",),
+            status="PROVIDER_SEND_STARTED",
+            values={
+                "provider_send_started": True,
+                "ledger_reservation": (
+                    BudgetedModelGateway._reservation_metadata(
+                        preflight, charged_conservatively=False
+                    )
+                    if preflight is not None else None
                 ),
-                "provider_response_envelope": exc.provider_response_envelope,
-                "ledger_reservation": exc.ledger_reservation,
-            }
-            self.journal.finish(path, {"status": "FAILURE", "failure": failure})
+            },
+        )
+        try:
+            send = getattr(self.delegate, "send_reserved", None)
+            response = (
+                send(request, preflight)
+                if callable(send) and preflight is not None
+                else self.delegate.invoke(request)
+            )
+        except GatewayInvocationFailure as exc:
+            self.journal.transition_model(
+                path,
+                expected=("PROVIDER_SEND_STARTED",),
+                status="PROVIDER_TERMINAL_FAILURE",
+                values={
+                    "provider_send_started": True,
+                    "failure": self._failure_dict(exc),
+                },
+            )
+            reconcile = getattr(self.delegate, "reconcile_failure", None)
+            if preflight is not None and callable(reconcile):
+                reconcile(preflight, exc)
             raise
-        self.journal.finish(path, {"status": "SUCCESS", "response": asdict(response)})
+        except BenchmarkExecutionError:
+            self.journal.transition_model(
+                path,
+                expected=("PROVIDER_SEND_STARTED",),
+                status="PROVIDER_OUTCOME_UNKNOWN",
+                values={"provider_send_started": True},
+            )
+            # Settle conservatively, but retain the global local-integrity
+            # classification (for example, an impossible unpaid response).
+            self.settle_unknown(request)
+            raise
+        except Exception:
+            self.journal.transition_model(
+                path,
+                expected=("PROVIDER_SEND_STARTED",),
+                status="PROVIDER_OUTCOME_UNKNOWN",
+                values={"provider_send_started": True},
+            )
+            raise self.settle_unknown(request) from None
+        self.journal.transition_model(
+            path,
+            expected=("PROVIDER_SEND_STARTED",),
+            status="PROVIDER_TERMINAL_SUCCESS",
+            values={
+                "provider_send_started": True,
+                "response": asdict(response),
+            },
+        )
+        reconcile = getattr(self.delegate, "reconcile_success", None)
+        if preflight is not None and callable(reconcile):
+            reconcile(preflight, response)
         return response
+
+    def invoke(self, request: GatewayRequest) -> GatewayResponse:
+        return self.invoke_preflighted(request, self.preview_reservation(request))
 
 
 class JournaledGraderGateway:
@@ -1882,17 +3119,73 @@ def actual_accounting(value: Mapping[str, Any], *, task_wall_time_ms: int = 0) -
     summary = value.get("summary", {})
     kinds = summary.get("by_call_kind", {})
     tools = value.get("tools", [])
-    solve_output = int(kinds.get("solve", {}).get("output_tokens", 0))
+    calls = value.get("calls", [])
+    if not isinstance(calls, list):
+        raise BenchmarkExecutionError("call accounting is malformed")
+
+    def charged_tokens(call: Mapping[str, Any], field: str) -> int:
+        if call.get("provider_reported_usage_available") is True:
+            amount = call.get(field)
+            if type(amount) is not int or amount < 0:
+                raise BenchmarkExecutionError("provider token accounting is malformed")
+            return amount
+        reservation = call.get("ledger_reservation")
+        if (
+            not isinstance(reservation, Mapping)
+            or reservation.get("charged_conservatively") is not True
+        ):
+            raise BenchmarkExecutionError(
+                "unknown provider usage lacks conservative ledger accounting"
+            )
+        if field == "input_tokens":
+            amount = reservation.get("input_upper_bound")
+        elif field == "output_tokens":
+            amount = reservation.get("output_cap")
+        else:
+            amount = 0
+        if type(amount) is not int or amount < 0:
+            raise BenchmarkExecutionError("conservative token accounting is malformed")
+        return amount
+
+    charged = {
+        field: sum(
+            charged_tokens(call, field)
+            for call in calls
+            if isinstance(call, Mapping)
+        )
+        for field in (
+            "input_tokens", "cached_input_tokens", "output_tokens", "reasoning_tokens"
+        )
+    }
+    if len(calls) != sum(isinstance(call, Mapping) for call in calls):
+        raise BenchmarkExecutionError("call accounting row is malformed")
+    role_output = {
+        kind: sum(
+            charged_tokens(call, "output_tokens")
+            for call in calls
+            if call.get("call_kind") == kind
+        )
+        for kind in ("decompose", "solve", "extract")
+    }
+    solve_output = (
+        role_output["solve"]
+        if calls
+        else int(kinds.get("solve", {}).get("output_tokens", 0))
+    )
     return {
         "solve_calls": int(kinds.get("solve", {}).get("calls", 0)),
         "decomposition_calls": int(kinds.get("decompose", {}).get("calls", 0)),
         "extraction_calls": int(kinds.get("extract", {}).get("calls", 0)),
-        "actual_decomposition_output_tokens": int(
-            kinds.get("decompose", {}).get("output_tokens", 0)
+        "actual_decomposition_output_tokens": (
+            role_output["decompose"]
+            if calls
+            else int(kinds.get("decompose", {}).get("output_tokens", 0))
         ),
         "actual_solve_output_tokens": solve_output,
-        "actual_extraction_output_tokens": int(
-            kinds.get("extract", {}).get("output_tokens", 0)
+        "actual_extraction_output_tokens": (
+            role_output["extract"]
+            if calls
+            else int(kinds.get("extract", {}).get("output_tokens", 0))
         ),
         "solve_output_pool_capacity": 49_152,
         "remaining_solve_output_tokens": 49_152 - solve_output,
@@ -1904,10 +3197,22 @@ def actual_accounting(value: Mapping[str, Any], *, task_wall_time_ms: int = 0) -
             int(isinstance(row, Mapping) and row.get("tool_name") == "write_file")
             for row in tools
         ),
-        "input_tokens": int(summary.get("actual_input_tokens", 0)),
-        "cached_input_tokens": int(summary.get("actual_cached_input_tokens", 0)),
-        "output_tokens": int(summary.get("actual_output_tokens", 0)),
-        "reasoning_tokens": int(summary.get("actual_reasoning_tokens", 0)),
+        "input_tokens": (
+            charged["input_tokens"]
+            if calls else int(summary.get("actual_input_tokens", 0))
+        ),
+        "cached_input_tokens": (
+            charged["cached_input_tokens"]
+            if calls else int(summary.get("actual_cached_input_tokens", 0))
+        ),
+        "output_tokens": (
+            charged["output_tokens"]
+            if calls else int(summary.get("actual_output_tokens", 0))
+        ),
+        "reasoning_tokens": (
+            charged["reasoning_tokens"]
+            if calls else int(summary.get("actual_reasoning_tokens", 0))
+        ),
         "model_wall_time_ms": int(summary.get("actual_model_wall_time_ms", 0)),
         "tool_wall_time_ms": int(summary.get("actual_tool_wall_time_ms", 0)),
         "grader_wall_time_ms": int(summary.get("actual_grader_wall_time_ms", 0)),
@@ -2156,12 +3461,14 @@ def validate_phase_completion(
             for field in accounting_fields
         ):
             raise BenchmarkExecutionError("phase result accounting shape/value differs")
-        minimum_solve_calls = 1 if record["agent_completed"] is True else 0
+        try:
+            validate_scientific_role_call_accounting(record, accounting)
+        except ScientificTerminalContractError as exc:
+            raise BenchmarkExecutionError(
+                f"phase scientific role-call accounting failed: {exc}"
+            ) from None
         if (
-                accounting["decomposition_calls"] != 1
-                or accounting["extraction_calls"] != 1
-                or not minimum_solve_calls <= accounting["solve_calls"] <= 24
-            or accounting["model_gateway_calls"]
+            accounting["model_gateway_calls"]
             != accounting["solve_calls"]
             + accounting["decomposition_calls"]
             + accounting["extraction_calls"]
@@ -2586,6 +3893,7 @@ _TERMINAL_RESULT_OWNED_FIELDS = frozenset(
         "evidence",
         "execution_status",
         "extraction_status",
+        "failure_metadata",
         "grader_exit_code",
         "grader_patch_source",
         "grader_status",
@@ -2631,6 +3939,11 @@ def build_terminal_result_record(
         "container_started": result.grade.container_started,
         "cell_status": result.cell_status,
         "model_failure_class": result.model_failure_class,
+        "failure_metadata": (
+            dict(getattr(result, "failure_metadata"))
+            if getattr(result, "failure_metadata", None) is not None
+            else None
+        ),
         "agent_completed": result.agent_completed,
         "grader_patch_source": result.grader_patch_source,
         "extraction_status": result.extraction_status,

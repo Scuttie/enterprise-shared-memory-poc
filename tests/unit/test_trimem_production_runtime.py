@@ -9,7 +9,11 @@ import uuid
 
 import pytest
 
-from enterprise_memory.trimem.accounting import canonical_bytes, sha256_bytes
+from enterprise_memory.trimem.accounting import (
+    RunAccounting,
+    canonical_bytes,
+    sha256_bytes,
+)
 from enterprise_memory.trimem.agent_runtime import NoMemoryController
 from enterprise_memory.trimem.arms import (
     ActiveNodeTriMemController,
@@ -39,6 +43,7 @@ from enterprise_memory.trimem.production_runtime import (
     ProductionDependencyError,
     ProductionRuntimeError,
     SessionStateError,
+    _validated_runtime_checkpoint_proof,
     benchmark_namespace,
     open_benchmark_arm,
 )
@@ -99,6 +104,7 @@ class _Task:
     org_id: str = "org-a"
     user_id: str = "alice"
     repository: str = "owner/repository"
+    commit: str = "c" * 40
 
 
 class _Embedder:
@@ -533,9 +539,61 @@ def _agent_proof(task, *, arm, lifecycle_state, state="DECOMPOSED", ledger=()):
                 "grader", "workspace", "lifecycle",
             )
         },
-        evidence_event_hash="0" * 64,
+        evidence_event_hash=sha256_bytes(b"agent_run_started"),
         memory_controller_state={"mode": arm, "ledger": list(rows)},
         lifecycle_state=lifecycle_state,
+        created_at=NOW,
+    )
+
+
+def _decompose_prepared_proof(task, *, arm="M0", lifecycle_state=None):
+    graph = ShortTermWorkingGraph(
+        task.task_id, "repair exact parser behavior", task.repository
+    )
+    return RuntimeCheckpoint(
+        run_id="proof-%s" % task.task_id,
+        task_id=task.task_id,
+        arm=arm,
+        generation=1,
+        next_step_no=1,
+        state="DECOMPOSE_PREPARED",
+        active_node_id=None,
+        graph_snapshot=graph.snapshot(),
+        workspace_state={
+            "kind": "trimem-git-checkout-workspace-v1",
+            "base_commit": "c" * 40,
+            "patch": "",
+            "patch_sha256": sha256_bytes(b""),
+        },
+        injected_memory_ids=(),
+        injected_bytes=0,
+        injection_ledger=(),
+        tool_history=(),
+        completed_call_ids=(),
+        accounting=RunAccounting().to_dict(),
+        config_hashes={
+            name: sha256_bytes(name.encode("utf-8"))
+            for name in (
+                "runtime", "task", "model", "memory_controller",
+                "grader", "workspace", "lifecycle",
+            )
+        },
+        evidence_event_hash=sha256_bytes(b"decompose_agent_run_started"),
+        memory_controller_state={"mode": arm, "ledger": []},
+        lifecycle_state=dict(lifecycle_state or {}),
+        prepared_request={
+            "schema": "trimem/decompose-prepared-request/1.0",
+            "run_id": "proof-%s" % task.task_id,
+            "task_id": task.task_id,
+            "arm": arm,
+            "active_node_id": None,
+            "next_step_no": 1,
+            "request_step_no": 0,
+            "logical_call_id": f"{task.task_id}:{arm}:decompose:0001",
+            "prompt_sha256": sha256_bytes(b"decompose-prompt"),
+            "request_sha256": sha256_bytes(b"decompose-request"),
+            "max_output_tokens": 16_384,
+        },
         created_at=NOW,
     )
 
@@ -582,6 +640,62 @@ def _append_receipts(store, *rows):
     for row in rows:
         for table, delta in row["canonical_row_deltas"].items():
             store.counts[table] += delta["inserted"] - delta["deleted"]
+
+
+def test_decompose_prepared_proof_is_pristine_and_admits_no_access_receipt():
+    task = _Task("target")
+    pristine = _decompose_prepared_proof(task, arm="M1")
+    proof = _validated_runtime_checkpoint_proof(pristine)
+    assert proof[0].state == "DECOMPOSE_PREPARED"
+
+    for mutation in (
+        {"completed_call_ids": ("forged-call",)},
+        {"terminal_payload": {"cell_status": "forged"}},
+        {"accounting": {"calls": [], "tools": [], "graders": []}},
+        {"generation": 2},
+        {"previous_checkpoint_hash": "f" * 64},
+        {"evidence_event_hash": "0" * 64},
+    ):
+        with pytest.raises(ValueError, match="pristine pre-model state"):
+            replace(pristine, **mutation)
+
+    namespace = benchmark_namespace(
+        "experiment-recovery", "credential_free_replay", "M1"
+    )
+    store = _FakeCanonicalStore(namespace)
+    qdrant = _FakeQdrant()
+    session = _memory_session(store, qdrant, tasks=(task,), arm="M1")
+    try:
+        assert session._current_inflight_proof(
+            pristine, task_cursor=0
+        )[0] == pristine
+        wrong_base = replace(
+            pristine,
+            workspace_state={
+                **pristine.workspace_state,
+                "base_commit": "d" * 40,
+            },
+        )
+        with pytest.raises(CheckpointTamperError, match="base commit mismatch"):
+            session._current_inflight_proof(wrong_base, task_cursor=0)
+        extra_workspace_key = replace(
+            pristine,
+            workspace_state={**pristine.workspace_state, "forged": True},
+        )
+        with pytest.raises(CheckpointTamperError, match="phase disagrees"):
+            _validated_runtime_checkpoint_proof(extra_workspace_key)
+
+        receipt = _receipt_row(
+            store,
+            kind="ACCESS",
+            task_id=task.task_id,
+            active_node_ids=["__TASK__"],
+            inserted={"trimem_memory_access_events": 1},
+        )
+        with pytest.raises(CheckpointTamperError, match="not bound"):
+            session._validate_task_receipt_suffix([receipt], proof)
+    finally:
+        session.close()
 
 
 def test_dedicated_loop_reuses_one_thread_and_never_uses_per_call_runner():

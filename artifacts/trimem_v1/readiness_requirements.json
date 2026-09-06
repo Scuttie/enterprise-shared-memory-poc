@@ -2,6 +2,7 @@
   "benchmark_approval_requires": [
     "git-tracked explicit allowlist freeze integrity with LF-stable bytes",
     "credential-free full source-to-target E2E PASS with paid_model_calls=0 and official_grader_runs=0",
+    "production-shaped bounded-context round trip PASS with paginated list_files, deterministic model-visible projection, pre-send budget preflight, and request-only resume using a fake provider with zero paid calls, graders, and benchmark images",
     "public-identity-only deterministic selection reproduces frozen smoke 6, development 12, and held-out 27 with zero instance overlap",
     "all 45 smoke/development/held-out target images plus one support image are immutable digest references sourced from official registry metadata without official grader/benchmark target image pull or run",
     "four executable joint M2 development candidates and deterministic result-independent selection and post-development freeze rule",
@@ -19,9 +20,9 @@
   "current_status": {
     "DEV_APPROVAL_ALLOWED": "NO",
     "DEV_EXECUTION_ALLOWED": "NO",
-    "DEV_SCIENTIFIC_STATUS": "NOT_STARTED",
+    "DEV_SCIENTIFIC_STATUS": "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL",
     "ENDPOINT": "TRIMEM_V1_DEV_INCOMPLETE",
-    "FAILURE_SUBTYPE": "TRIMEM_DEV_RUNNER_AGGREGATE_TERMINAL_STATUS_CONTRACT_MISMATCH",
+    "FAILURE_SUBTYPE": "UNBOUNDED_MODEL_VISIBLE_TOOL_HISTORY",
     "GRADER_EXEC_PACKAGE": "PASS",
     "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
     "PERFORMANCE": "NOT_MEASURED",
@@ -52,8 +53,8 @@
   },
   "development_authorization_boundary": {
     "active_development_approval": false,
-    "amendment_classification": "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX",
-    "amendment_evidence_path": "artifacts/trimem_v1/development_terminal_contract_amendment.json",
+    "amendment_classification": "PRE_RESULT_BOUNDED_SHORT_TERM_CONTEXT_AND_PREFLIGHT_FIX",
+    "amendment_evidence_path": "artifacts/trimem_v1/development_bounded_context_amendment.json",
     "approval_request_eligible": false,
     "attempt_one_consumed": false,
     "attempt_two_allowed": false,
@@ -63,13 +64,13 @@
     "hard_cap_total_usd": 50.0,
     "heldout_execution_authorized": false,
     "future_recovery_authority_received": true,
-    "meaning": "The approved _008 attempt-1 run is cancelled, immutable, and cannot be rerun. D1.8 authorizes one fresh _009 attempt-1 run only after the shared scientific terminal-status contract, exact-head credential-free gates, one protected protocol canary, and a distinct run-bound HMAC approval all pass.",
+    "meaning": "The approved _009 attempt-1 run is failed, immutable, cannot be rerun, and is not reusable. D1.9 allows one fresh _010 attempt-1 run only after the bounded short-term context, pre-send request preflight, request-only resume recovery, exact-head credential-free gates, one protected protocol canary, and a distinct run-bound HMAC approval all pass.",
     "model_id": "gpt-5.4-mini-2026-03-17",
     "prior_failed_run_reusable": false,
-    "recovery_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_TERMINAL_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE",
+    "recovery_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_CONTEXT_RECOVERY_EXEC_APPROVED_ONCE",
     "recovery_authorization_received": true,
-    "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_009",
-    "recovery_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_009.json",
+    "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010",
+    "recovery_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json",
     "request_002_final": true,
     "request_003_final": true,
     "request_004_allowed_after_exact_remote_gates": false,
@@ -82,8 +83,10 @@
     "request_007_attempt_one_consumed": true,
     "request_008_allowed_after_exact_remote_gates": false,
     "request_008_attempt_one_consumed": true,
-    "request_009_allowed_after_exact_remote_gates": true,
-    "request_009_attempt_one_consumed": false,
+    "request_009_allowed_after_exact_remote_gates": false,
+    "request_009_attempt_one_consumed": true,
+    "request_010_allowed_after_exact_remote_gates": true,
+    "request_010_attempt_one_consumed": false,
     "rerun_allowed": false,
     "selected_m2_checkpoint": "PRE_DEVELOPMENT; no development result or checkpoint was produced",
     "solve_execution_contract_rehearsal_required_before_request_005": false
@@ -306,7 +309,7 @@
       "performance_measured": false
     }
   },
-  "current_development_execution_failure": {
+  "historical_development_exec_008_failure": {
     "schema": "trimem/development-terminal-contract-mismatch-receipt/1.0",
     "status": "TERMINAL_PRESERVED",
     "recorded_at_utc": "2026-09-05T13:43:37.872Z",
@@ -432,6 +435,97 @@
       "ablation_authorized": false,
       "grader_smoke_rerun_authorized": false,
       "merge_tag_or_release_authorized": false
+    }
+  },
+  "current_development_execution_failure": {
+    "schema": "trimem/development-bounded-context-failure-receipt/1.0",
+    "status": "TERMINAL_PRESERVED",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "primary_failure": "UNBOUNDED_MODEL_VISIBLE_TOOL_HISTORY",
+    "classification": "PRE_RESULT_BOUNDED_SHORT_TERM_CONTEXT_AND_PREFLIGHT_FIX",
+    "scientific_status": "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL",
+    "workflow_run": {
+      "id": 33979936824,
+      "attempt": 1,
+      "head_sha": "db548919f29fd044cce1e066c74d2a7040a28f49",
+      "source_head_sha": "ef10493a7352bd6cf914e5e465a9580be6462eb0",
+      "conclusion": "failure"
+    },
+    "evidence_artifacts": {
+      "custody": "PRESERVED_IN_GITHUB_ACTIONS_ARTIFACT_STORAGE",
+      "restricted_encrypted": {
+        "id": 9973677497,
+        "name": "trimem-benchmark-restricted-encrypted",
+        "size_in_bytes": 11810541,
+        "digest": "sha256:92546b5cda2fff8964068a530a50421627b0e896a5f9a3006cf772f6dab6ec0b",
+        "expired": false,
+        "created_at": "2026-09-05T17:22:51Z"
+      },
+      "evidence_inventories": {
+        "id": 9973678034,
+        "name": "trimem-benchmark-evidence-inventories",
+        "size_in_bytes": 7159,
+        "digest": "sha256:268200ad6c9319013269960e795f7c4f8715d558f829bb7a97a7e4f88d05e37a",
+        "expired": false,
+        "created_at": "2026-09-05T17:22:53Z"
+      }
+    },
+    "failure_boundary": {
+      "stream": "M2-baseline",
+      "target": "swebench_verified--django__django-16100",
+      "tool": "list_files",
+      "tool_result_utf8_bytes": 319417,
+      "next_prompt_utf8_bytes": 709714,
+      "conservative_input_bound": 713810,
+      "frozen_per_call_conservative_bound": 262000,
+      "provider_transmission_started": false
+    },
+    "contributing_factors": [
+      "UNPAGINATED_LIST_FILES",
+      "EXACT_TOOL_RESULT_REINJECTED_IN_FULL",
+      "ALL_PRIOR_TOOL_HISTORY_REINJECTED_EVERY_TURN",
+      "TEXTUAL_TOOL_SCHEMA_DUPLICATES_NATIVE_FUNCTION_SCHEMA",
+      "REQUEST_EVENT_WRITTEN_BEFORE_LOCAL_BUDGET_PREFLIGHT",
+      "SOLVE_REQUEST_ONLY_SUFFIX_NOT_RECOVERABLE"
+    ],
+    "scientific_usage": {
+      "decomposition_calls": 1,
+      "solve_calls": 7,
+      "extraction_calls": 0,
+      "paid_model_calls": 8,
+      "input_tokens": 60546,
+      "cached_input_tokens": 0,
+      "output_tokens": 7448,
+      "reasoning_tokens": 1597,
+      "total_usd": "0.078925500000"
+    },
+    "canary_usage": {
+      "paid_model_calls": 1,
+      "input_tokens": 880,
+      "cached_input_tokens": 0,
+      "output_tokens": 51,
+      "reasoning_tokens": 35,
+      "total_usd": "0.000889500000"
+    },
+    "total_usage": {
+      "paid_model_calls": 9,
+      "input_tokens": 61426,
+      "cached_input_tokens": 0,
+      "output_tokens": 7499,
+      "reasoning_tokens": 1632,
+      "total_usd": "0.079815000000"
+    },
+    "terminal_cells": 0,
+    "planned_cells": 72,
+    "official_grader_runs": 0,
+    "performance_measured": false,
+    "interpretation": {
+      "model_failure": false,
+      "memory_method_failure": false,
+      "official_grader_failure": false,
+      "benchmark_performance_result": false,
+      "context_window_failure": false,
+      "local_short_term_context_contract_failure": true
     }
   },
   "historical_development_provider_failure": {
@@ -617,7 +711,7 @@
     }
   },
   "post_approval_gates": [
-    "the _003, _004, _005, _006, _007, and _008 requests and their attempt-1 runs are final; _008 was cancelled after its canary and image pulls but before scientific generation, completed cells, or graders and may not be rerun; _009 remains pending until every D1.8 credential-free gate and reseal passes",
+    "the _003 through _009 requests and their attempt-1 runs are final; _009 failed after one canary and eight scientific calls but before any terminal cell or official grader and may not be rerun; _010 remains pending until every D1.9 credential-free gate and reseal passes",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
@@ -625,7 +719,7 @@
   "schema": "trimem/readiness-requirements/2.0",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
-  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed grader-smoke PASS evidence, not static CI. DEV _008 is immutable, cancelled, and final. D1.8 is a non-semantic scientific terminal-status contract fix; performance remains NOT_MEASURED until a fresh authorized _009 completes 72 terminal cells.",
+  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed grader-smoke PASS evidence, not static CI. DEV _009 attempt 1 is immutable, failed, and final. D1.9 is a pre-result bounded short-term context, pre-send preflight, and request-only resume correction; performance remains NOT_MEASURED until a fresh authorized _010 completes 72 terminal cells.",
   "target_set_sha256": {
     "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
     "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",

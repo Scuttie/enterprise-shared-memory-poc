@@ -5,7 +5,16 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Mapping
 
 from .accounting import canonical_bytes, sha256_bytes
+from .context_projection import (
+    MODEL_VISIBLE_OBSERVATION_PROJECTION_SHA256,
+    PROMPT_CONTEXT_CONTRACT_SHA256,
+)
 from .function_tools import FUNCTION_TOOLS_SHA256, detached_function_tools
+from .gateway import (
+    REQUEST_LIFECYCLE_CONTRACT_SHA256,
+    RESUME_AUTOMATON_SHA256,
+)
+from .workspace import LIST_FILES_PAGINATION_CONTRACT_SHA256
 
 
 DECOMPOSITION_PROMPT = """You decompose a coding task into evidence-grounded semantic subtasks.
@@ -47,7 +56,14 @@ ACTION_PARSER = {
 }
 
 TOOL_SCHEMA: tuple[Mapping[str, Any], ...] = (
-    {"name": "list_files", "arguments": {}},
+    {
+        "name": "list_files",
+        "arguments": {
+            "path_prefix": "str|null",
+            "start_after": "str|null",
+            "limit": "int[1,200]",
+        },
+    },
     {
         "name": "read_file",
         "arguments": {"path": "str", "start_line": "int|null", "max_lines": "int|null"},
@@ -147,6 +163,17 @@ class RuntimeLock:
             "parser_hash": self.parser_hash,
             "live_solve_response_mode": "SINGLE_FUNCTION_CALL",
             "function_tools_sha256": self.function_tools_sha256,
+            "list_files_pagination_contract_sha256": (
+                LIST_FILES_PAGINATION_CONTRACT_SHA256
+            ),
+            "model_visible_observation_projection_sha256": (
+                MODEL_VISIBLE_OBSERVATION_PROJECTION_SHA256
+            ),
+            "prompt_context_contract_sha256": PROMPT_CONTEXT_CONTRACT_SHA256,
+            "request_lifecycle_contract_sha256": (
+                REQUEST_LIFECYCLE_CONTRACT_SHA256
+            ),
+            "resume_automaton_sha256": RESUME_AUTOMATON_SHA256,
             "tool_choice": "required",
             "parallel_tool_calls": False,
             "limits": asdict(self.limits),

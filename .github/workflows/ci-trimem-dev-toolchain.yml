@@ -1,11 +1,12 @@
 name: TriMem V1 credential-free DEV toolchain rehearsal
-# D1.8 exact-head pre-execution credential-free gate.
+# D1.9 exact-head pre-execution credential-free gate.
 
 on:
   push:
     branches:
       - codex/trimem-coder-v1
     paths:
+      - .gitattributes
       - .github/workflows/ci-trimem-dev-toolchain.yml
       - .github/workflows/ci-trimem.yml
       - .github/workflows/trimem-benchmark.yml
@@ -17,15 +18,24 @@ on:
       - artifacts/trimem_v1/development_credential_control_plane_amendment.json
       - artifacts/trimem_v1/development_terminal_contract_amendment.json
       - artifacts/trimem_v1/development_terminal_contract_inventory.json
+      - artifacts/trimem_v1/development_bounded_context_amendment.json
+      - artifacts/trimem_v1/development_bounded_context_inventory.json
       - artifacts/trimem_v1/development_tuning_exec/exec-008/terminal-status-contract-mismatch-receipt.json
+      - artifacts/trimem_v1/development_tuning_exec/exec-009/bounded-short-term-context-failure-receipt.json
+      - artifacts/trimem_v1/development_tuning_exec/exec-009/request-only-boundary-fixture.json
       - artifacts/trimem_v1/freeze.json
       - artifacts/trimem_v1/readiness_requirements.json
       - artifacts/trimem_v1/solve_output_budget_contract_lock.json
       - reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_008_TERMINAL_STATUS_CONTRACT_MISMATCH.md
+      - reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_009_BOUNDED_CONTEXT_FAILURE.md
       - scripts/trimem_development_trigger_preflight.py
       - scripts/trimem_development_trigger_d15.py
       - scripts/trimem_development_trigger_d18.py
+      - scripts/trimem_development_trigger_d19.py
+      - scripts/trimem_context_roundtrip.py
+      - scripts/trimem_d19_reseal.py
       - scripts/trimem_audit_encrypted_evidence.py
+      - scripts/trimem_action_canary.py
       - scripts/trimem_benchmark_matrix.py
       - scripts/trimem_benchmark_run.py
       - scripts/trimem_m2_candidates.py
@@ -43,9 +53,15 @@ on:
       - src/enterprise_memory/providers/base.py
       - src/enterprise_memory/providers/openai_credential.py
       - src/enterprise_memory/providers/openai_responses.py
+      - src/enterprise_memory/trimem/accounting.py
       - src/enterprise_memory/trimem/agent_runtime.py
+      - src/enterprise_memory/trimem/checkpoint.py
+      - src/enterprise_memory/trimem/context_projection.py
+      - src/enterprise_memory/trimem/credential_free.py
+      - src/enterprise_memory/trimem/function_tools.py
       - src/enterprise_memory/trimem/gateway.py
       - src/enterprise_memory/trimem/git_workspace.py
+      - src/enterprise_memory/trimem/production_runtime.py
       - src/enterprise_memory/trimem/runtime_lock.py
       - src/enterprise_memory/trimem/solve_forensics.py
       - src/enterprise_memory/trimem/scientific_terminal.py
@@ -60,8 +76,20 @@ on:
       - tests/unit/test_trimem_d17_approval_cap_integration.py
       - tests/unit/test_trimem_d18_public_artifact_hardening.py
       - tests/unit/test_trimem_d18_terminal_contract_integration.py
+      - tests/unit/test_trimem_d19_bounded_short_term_context.py
+      - tests/unit/test_trimem_d19_failed_cell_resume.py
+      - tests/unit/test_trimem_d19_list_files_pagination.py
+      - tests/unit/test_trimem_d19_model_preflight.py
+      - tests/unit/test_trimem_d19_request_only_resume.py
+      - tests/unit/test_trimem_d19_terminal_contract.py
+      - tests/unit/test_trimem_d19_trigger.py
       - tests/unit/test_trimem_evidence_custody.py
+      - tests/unit/test_trimem_git_workspace.py
+      - tests/unit/test_trimem_production_runtime.py
+      - tests/unit/test_trimem_runtime_boundaries.py
       - tests/unit/test_trimem_smoke_attestation_only.py
+      - tests/openai/test_openai_response_outcomes.py
+      - tests/trimem/e2e/test_full_replay.py
 
 permissions:
   actions: read
@@ -91,9 +119,12 @@ jobs:
         run: >-
           python scripts/trimem_pytest_no_skip.py
           tests/unit/test_trimem_d18_terminal_contract_integration.py
-      - name: Validate D1.8 correction source before trigger
+          tests/unit/test_trimem_d19_bounded_short_term_context.py::test_mixed_72_cell_aggregate_public_and_terminal_ledger_round_trip
+      - name: Verify bounded context round trip before provider access
+        run: python scripts/trimem_context_roundtrip.py
+      - name: Validate D1.9 correction source before trigger
         run: >-
-          python -I -S scripts/trimem_development_trigger_d18.py
+          python -I -S scripts/trimem_development_trigger_d19.py
           --repository .
           --validate-source
           --source-head "$GITHUB_SHA"

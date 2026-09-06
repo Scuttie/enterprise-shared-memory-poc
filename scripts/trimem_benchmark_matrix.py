@@ -30,6 +30,7 @@ from enterprise_memory.trimem.scientific_terminal import (  # noqa: E402
     canonical_scientific_failure_class,
     validate_result_ledger_pair,
     validate_result_request_statuses,
+    validate_scientific_role_call_accounting,
     validate_scientific_terminal_result,
 )
 from trimem_m2_candidates import (  # noqa: E402
@@ -58,7 +59,7 @@ from trimem_development_phase_cap import (  # noqa: E402
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
 )
-from trimem_development_trigger_d18 import (  # noqa: E402
+from trimem_development_trigger_d19 import (  # noqa: E402
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
     validate_sentinel_commit as validate_development_sentinel_commit,
@@ -2149,13 +2150,11 @@ def _validate_phase_budget(
     model_calls = totals["model_gateway_calls"]
     if (
         task_arm_runs != hard_cap["task_arm_runs"]
-        or totals["decomposition_calls"] != hard_cap["decomposition_calls"]
-        or totals["extraction_calls"] != hard_cap["extraction_calls"]
         or totals["grader_calls"] != hard_cap["benchmark_grader_containers"]
         or totals["grader_containers"] != hard_cap["benchmark_grader_containers"]
         or totals["official_grader_runs"] != hard_cap["benchmark_grader_containers"]
     ):
-        raise MatrixError("phase exact task/decomposition/extraction/grader workload differs")
+        raise MatrixError("phase exact task/grader workload differs")
     if (
         model_calls != totals["paid_model_calls"]
         or model_calls
@@ -3507,16 +3506,10 @@ def _aggregate_benchmark(
             raise MatrixError(
                 f"{path.name}: task-arm actual USD differs from frozen pricing/accounting"
             )
-        minimum_solve_calls = 1 if value["agent_completed"] is True else 0
-        if (
-            accounting["decomposition_calls"] != 1
-            or accounting["extraction_calls"] != 1
-        ):
-            raise MatrixError(
-                f"{path.name}: common decomposition/extraction path was not used exactly once"
-            )
-        if not minimum_solve_calls <= accounting["solve_calls"] <= 24:
-            raise MatrixError(f"{path.name}: solve-call count is outside the frozen common budget")
+        try:
+            validate_scientific_role_call_accounting(value, accounting)
+        except ScientificTerminalContractError as exc:
+            raise MatrixError(f"{path.name}: {exc}") from None
         if accounting["output_tokens"] != sum(
             accounting[field]
             for field in (

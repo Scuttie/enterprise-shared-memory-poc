@@ -21,6 +21,7 @@ from enterprise_memory.trimem.gateway import (
     GatewayInvocationFailure,
     GatewayResponse,
     ReplayModelGateway,
+    gateway_request_sha256,
 )
 from enterprise_memory.trimem.grader import GradeResult
 from enterprise_memory.trimem.runtime_lock import RuntimeLock
@@ -66,7 +67,9 @@ def _repository(tmp_path):
 def test_git_workspace_edits_tracked_and_new_files_and_restores_patch(tmp_path):
     root, commit = _repository(tmp_path)
     workspace = GitCheckoutWorkspace(root, base_commit=commit)
-    assert ".github/policy.txt" in workspace.execute("list_files", {})["files"]
+    assert ".github/policy.txt" in workspace.execute("list_files", {
+        "path_prefix": None, "start_after": None, "limit": 100,
+    })["files"]
     assert workspace.execute("read_file", {"path": "src/value.py"})["content"] == "VALUE = 1\n"
     workspace.execute("write_file", {"path": "src/value.py", "content": "VALUE = 2\n"})
     workspace.execute("write_file", {"path": "src/new.py", "content": "NEW = True\n"})
@@ -305,7 +308,7 @@ def test_git_runtime_rolls_forward_fsynced_write_tool_after_precheckpoint_crash(
     interrupted = checkpoints.load(
         "git-crash-window-M0", required_config_hashes=None
     )
-    assert interrupted.state == "DECOMPOSED"
+    assert interrupted.state == "RECALL_PREPARED"
     assert interrupted.next_step_no == 1
     assert interrupted.workspace_state["patch"] == ""
     assert evidence.verify()["last_event_hash"] != interrupted.evidence_event_hash
@@ -381,6 +384,7 @@ class _CrashWindowGateway:
         self.attempt_call = attempt_call
         self.failure_status = failure_status
         self.invocations = []
+        self.provider_sends = []
         self._crashed = False
         self._failed = False
 
@@ -389,6 +393,7 @@ class _CrashWindowGateway:
         if request.logical_call_id == self.crash_call and not self._crashed:
             self._crashed = True
             raise InjectedCrash("injected after external request")
+        self.provider_sends.append(request.logical_call_id)
         if request.logical_call_id == self.failure_call and not self._failed:
             self._failed = True
             raise GatewayInvocationFailure(
@@ -416,6 +421,96 @@ class _CrashWindowGateway:
             paid=False,
             attempt=3 if request.logical_call_id == self.attempt_call else 1,
         )
+
+
+class _RuleAExtractionGateway(_CrashWindowGateway):
+    """Proves the durable request exists before this local provider boundary."""
+
+    def replay_terminal(self, request):
+        return None
+
+    def request_lifecycle(self, request):
+        return {
+            "state": "NOT_PREPARED",
+            "request_sha256": gateway_request_sha256(request),
+            "journal_present": False,
+            "ledger_reservation_present": False,
+            "provider_send_started": False,
+        }
+
+
+class _DecompositionLifecycleGateway(_CrashWindowGateway):
+    """Credential-free B/C/D journal states at the first model-call cut."""
+
+    def __init__(self, lifecycle_state, *, broken_replay=False):
+        super().__init__()
+        self.lifecycle_state = lifecycle_state
+        self.broken_replay = broken_replay
+        self.decomposition_interrupted = False
+        self.replay_calls = []
+
+    @staticmethod
+    def _terminal_response(request):
+        return GatewayResponse(
+            text=_recovery_reply(request),
+            provider="credential-free-replay",
+            model="crash-window-v1",
+            input_tokens=13,
+            output_tokens=7,
+            cached_input_tokens=2,
+            reasoning_tokens=1,
+            wall_time_ms=3,
+            paid=False,
+            terminal_outcome_replayed=True,
+        )
+
+    def invoke(self, request):
+        if request.call_kind != "decompose" or self.decomposition_interrupted:
+            return super().invoke(request)
+        self.invocations.append(request.logical_call_id)
+        self.decomposition_interrupted = True
+        if self.lifecycle_state in {
+            "PROVIDER_SEND_STARTED",
+            "PROVIDER_TERMINAL_SUCCESS",
+        }:
+            self.provider_sends.append(request.logical_call_id)
+        raise InjectedCrash("injected at decomposition lifecycle boundary")
+
+    def request_lifecycle(self, request):
+        if request.call_kind != "decompose" or not self.decomposition_interrupted:
+            state = "NOT_PREPARED"
+        else:
+            state = self.lifecycle_state
+        started = state in {
+            "PROVIDER_SEND_STARTED",
+            "PROVIDER_TERMINAL_SUCCESS",
+        }
+        return {
+            "state": state,
+            "request_sha256": gateway_request_sha256(request),
+            "journal_present": state != "NOT_PREPARED",
+            "ledger_reservation_present": started,
+            "provider_send_started": started,
+        }
+
+    def replay_terminal(self, request):
+        if request.call_kind != "decompose" or not self.decomposition_interrupted:
+            return None
+        self.replay_calls.append(request.logical_call_id)
+        if self.lifecycle_state == "PROVIDER_TERMINAL_SUCCESS":
+            return self._terminal_response(request)
+        if self.lifecycle_state == "PROVIDER_SEND_STARTED":
+            if self.broken_replay:
+                return None
+            raise GatewayInvocationFailure(
+                provider="credential-free-replay",
+                model="crash-window-v1",
+                status="MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN",
+                attempt=1,
+                provider_reported_usage_available=False,
+                terminal_outcome_replayed=True,
+            )
+        return None
 
 
 class _CountingCheckoutGrader:
@@ -539,6 +634,163 @@ def test_git_runtime_folds_forward_model_response_with_exact_attempt_accounting(
     ) == 1
 
 
+def test_git_runtime_rule_a_resumes_decomposition_without_duplicate_send(tmp_path):
+    logical_id = "git-crash-matrix:M0:decompose:0001"
+    gateway = _RuleAExtractionGateway(crash_call=logical_id)
+    runtime, task, _, gateway, grader, evidence = _crash_runtime(
+        tmp_path, gateway=gateway
+    )
+
+    with pytest.raises(InjectedCrash, match="external request"):
+        runtime.run(task, arm="M0")
+    interrupted = runtime.checkpoints.load(
+        "git-crash-matrix-M0", required_config_hashes=None
+    )
+    assert interrupted.state == "DECOMPOSE_PREPARED"
+
+    result = runtime.run(task, arm="M0", resume=True)
+
+    assert result.resolved is True
+    assert gateway.invocations.count(logical_id) == 2
+    assert gateway.provider_sends.count(logical_id) == 1
+    assert grader.calls == 1
+    events = _events(evidence)
+    assert sum(
+        row["event_type"] == "model_request"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+    assert sum(
+        row["event_type"] == "model_response"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+
+
+def test_git_runtime_rule_b_resumes_recorded_decomposition_and_sends_once(tmp_path):
+    logical_id = "git-crash-matrix:M0:decompose:0001"
+    gateway = _DecompositionLifecycleGateway("REQUEST_RECORDED")
+    runtime, task, _, gateway, grader, evidence = _crash_runtime(
+        tmp_path, gateway=gateway
+    )
+
+    with pytest.raises(InjectedCrash, match="decomposition lifecycle"):
+        runtime.run(task, arm="M0")
+    assert gateway.provider_sends.count(logical_id) == 0
+
+    result = runtime.run(task, arm="M0", resume=True)
+
+    assert result.resolved is True
+    assert gateway.invocations.count(logical_id) == 2
+    assert gateway.provider_sends.count(logical_id) == 1
+    assert grader.calls == 1
+    events = _events(evidence)
+    assert sum(
+        row["event_type"] == "model_request"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+    assert sum(
+        row["event_type"] == "model_response"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+
+
+def test_git_runtime_rule_c_contains_started_decomposition_without_resend(tmp_path):
+    logical_id = "git-crash-matrix:M0:decompose:0001"
+    gateway = _DecompositionLifecycleGateway("PROVIDER_SEND_STARTED")
+    runtime, task, _, gateway, grader, evidence = _crash_runtime(
+        tmp_path, gateway=gateway
+    )
+
+    with pytest.raises(InjectedCrash, match="decomposition lifecycle"):
+        runtime.run(task, arm="M0")
+    sends_before_resume = gateway.provider_sends.count(logical_id)
+
+    result = runtime.run(task, arm="M0", resume=True)
+
+    assert result.cell_status == "CELL_SCIENTIFIC_FAILURE"
+    assert result.model_failure_class == "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"
+    assert result.resolved is False
+    assert sends_before_resume == 1
+    assert gateway.provider_sends.count(logical_id) == sends_before_resume
+    assert gateway.invocations.count(logical_id) == 1
+    assert gateway.replay_calls.count(logical_id) == 1
+    assert grader.calls == 1
+    events = _events(evidence)
+    assert sum(
+        row["event_type"] == "model_request"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+    assert sum(
+        row["event_type"] == "model_failure"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+
+
+def test_git_runtime_rule_c_broken_decomposition_replay_fails_closed(tmp_path):
+    logical_id = "git-crash-matrix:M0:decompose:0001"
+    gateway = _DecompositionLifecycleGateway(
+        "PROVIDER_SEND_STARTED", broken_replay=True
+    )
+    runtime, task, _, gateway, grader, evidence = _crash_runtime(
+        tmp_path, gateway=gateway
+    )
+
+    with pytest.raises(InjectedCrash, match="decomposition lifecycle"):
+        runtime.run(task, arm="M0")
+    sends_before_resume = gateway.provider_sends.count(logical_id)
+
+    with pytest.raises(RuntimeError, match="did not settle unknown outcome"):
+        runtime.run(task, arm="M0", resume=True)
+
+    assert sends_before_resume == 1
+    assert gateway.provider_sends.count(logical_id) == sends_before_resume
+    assert gateway.invocations.count(logical_id) == 1
+    assert gateway.replay_calls.count(logical_id) == 1
+    assert grader.calls == 0
+    assert sum(
+        row["event_type"] == "model_request"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in _events(evidence)
+    ) == 1
+
+
+def test_git_runtime_rule_d_replays_decomposition_terminal_without_new_send(tmp_path):
+    logical_id = "git-crash-matrix:M0:decompose:0001"
+    gateway = _DecompositionLifecycleGateway("PROVIDER_TERMINAL_SUCCESS")
+    runtime, task, _, gateway, grader, evidence = _crash_runtime(
+        tmp_path, gateway=gateway
+    )
+
+    with pytest.raises(InjectedCrash, match="decomposition lifecycle"):
+        runtime.run(task, arm="M0")
+    sends_before_resume = gateway.provider_sends.count(logical_id)
+
+    result = runtime.run(task, arm="M0", resume=True)
+
+    assert result.resolved is True
+    assert sends_before_resume == 1
+    assert gateway.provider_sends.count(logical_id) == sends_before_resume
+    assert gateway.invocations.count(logical_id) == 1
+    assert gateway.replay_calls.count(logical_id) == 1
+    assert grader.calls == 1
+    events = _events(evidence)
+    assert sum(
+        row["event_type"] == "model_request"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+    assert sum(
+        row["event_type"] == "model_response"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+
+
 def test_git_runtime_marks_request_only_external_call_ambiguous(tmp_path):
     logical_id = "git-crash-matrix:M0:solve:0001"
     runtime, task, root, gateway, _, evidence = _crash_runtime(
@@ -547,11 +799,15 @@ def test_git_runtime_marks_request_only_external_call_ambiguous(tmp_path):
     )
     with pytest.raises(InjectedCrash, match="external request"):
         runtime.run(task, arm="M0")
-    with pytest.raises(RuntimeError, match="MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"):
-        runtime.run(task, arm="M0", resume=True)
+    result = runtime.run(task, arm="M0", resume=True)
+    assert result.cell_status == "CELL_SCIENTIFIC_FAILURE"
+    assert result.model_failure_class == "MODEL_REQUEST_TERMINAL_OUTCOME_UNKNOWN"
+    assert result.resolved is False
     assert (root / "src/value.py").read_text(encoding="utf-8") == "VALUE = 1\n"
     assert gateway.invocations.count(logical_id) == 1
-    assert _events(evidence)[-1]["event_type"] == "recovery_blocked"
+    assert any(
+        row["event_type"] == "recovery_blocked" for row in _events(evidence)
+    )
 
 
 def test_git_runtime_folds_forward_durable_model_failure_without_retry(tmp_path):
@@ -635,7 +891,7 @@ def test_git_runtime_folds_forward_extraction_without_duplicate_model_call(
     ) == 1
 
 
-def test_git_runtime_refuses_ambiguous_extraction_request_only_suffix(tmp_path):
+def test_git_runtime_contains_unprovable_extraction_request_only_suffix(tmp_path):
     logical_id = "git-crash-matrix:M0:extract:0001"
     runtime, task, _, gateway, grader, evidence = _crash_runtime(
         tmp_path,
@@ -643,11 +899,45 @@ def test_git_runtime_refuses_ambiguous_extraction_request_only_suffix(tmp_path):
     )
     with pytest.raises(InjectedCrash, match="external request"):
         runtime.run(task, arm="M0")
-    with pytest.raises(CheckpointMismatch, match="ambiguous external request"):
-        runtime.run(task, arm="M0", resume=True)
+    result = runtime.run(task, arm="M0", resume=True)
+    assert result.cell_status == "CELL_SCIENTIFIC_FAILURE"
+    assert result.extraction_status == "MEMORY_EXTRACTION_FAILED"
     assert gateway.invocations.count(logical_id) == 1
     assert grader.calls == 1
-    assert _events(evidence)[-1]["event_type"] == "recovery_blocked"
+    assert any(
+        row["event_type"] == "recovery_blocked" for row in _events(evidence)
+    )
+
+
+def test_git_runtime_rule_a_resumes_extraction_request_without_duplicate_send(
+    tmp_path,
+):
+    logical_id = "git-crash-matrix:M0:extract:0001"
+    gateway = _RuleAExtractionGateway(crash_call=logical_id)
+    runtime, task, _, gateway, grader, evidence = _crash_runtime(
+        tmp_path, gateway=gateway
+    )
+    with pytest.raises(InjectedCrash, match="external request"):
+        runtime.run(task, arm="M0")
+
+    result = runtime.run(task, arm="M0", resume=True)
+
+    assert result.resolved is True
+    assert result.extraction_status == "SUCCESS"
+    assert gateway.invocations.count(logical_id) == 2
+    assert gateway.provider_sends.count(logical_id) == 1
+    assert grader.calls == 1
+    events = _events(evidence)
+    assert sum(
+        row["event_type"] == "model_request"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
+    assert sum(
+        row["event_type"] == "model_response"
+        and row["payload"].get("logical_call_id") == logical_id
+        for row in events
+    ) == 1
 
 
 def test_git_runtime_folds_forward_patch_and_finished_evidence(tmp_path):

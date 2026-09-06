@@ -404,8 +404,12 @@ def test_workspace_supports_multifile_edit_and_never_exposes_hidden_grader(tmp_p
     accounting = RunAccounting()
     evidence = RawEvidenceLedger(tmp_path / "evidence", clock=lambda: "2026-08-31T00:00:00Z")
     tools = RecordingToolExecutor(workspace, accounting, evidence, task_id="t", arm="M2")
-    files = tools.execute(1, "n", "list_files", {})
-    assert files == {"files": ["src/a.py", "src/b.py"]}
+    files = tools.execute(1, "n", "list_files", {
+        "path_prefix": None, "start_after": None, "limit": 100,
+    })
+    assert files["files"] == ["src/a.py", "src/b.py"]
+    assert files["returned_count"] == files["total_matching_count"] == 2
+    assert files["truncated"] is False
     tools.execute(2, "n", "write_file", {"path": "src/a.py", "content": "value = 2\n"})
     result = tools.execute(3, "n", "run_public_tests", {})
     assert result["passed"] is True

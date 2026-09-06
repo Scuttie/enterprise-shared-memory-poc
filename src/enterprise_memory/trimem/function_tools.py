@@ -90,9 +90,13 @@ def _tool(name: str, description: str, properties: Mapping[str, Any], required: 
 FUNCTION_TOOLS: tuple[dict[str, Any], ...] = (
     _tool(
         "list_files",
-        "List repository files in deterministic path order.",
-        {},
-        [],
+        "List one bounded page of repository files in deterministic lexicographic path order.",
+        {
+            "path_prefix": _nullable({"type": "string", "minLength": 1}),
+            "start_after": _nullable({"type": "string", "minLength": 1}),
+            "limit": {"type": "integer", "minimum": 1, "maximum": 200},
+        },
+        ["path_prefix", "start_after", "limit"],
     ),
     _tool(
         "read_file",
@@ -192,9 +196,40 @@ FUNCTION_TOOL_BY_NAME: dict[str, dict[str, Any]] = {
 }
 FUNCTION_TOOLS_SHA256 = hashlib.sha256(canonical_bytes(FUNCTION_TOOLS)).hexdigest()
 
+# Immutable compatibility contract for evidence produced before D1.9.  It is
+# intentionally not consulted by live argument validation or RuntimeLock; its
+# sole consumer is the explicit request-only resume adapter.  The only delta
+# from the live contract is the historical unpaginated ``list_files {}``
+# declaration.
+PRE_D19_REPLAY_ONLY_FUNCTION_TOOLS: tuple[dict[str, Any], ...] = (
+    _tool(
+        "list_files",
+        "List repository files in deterministic path order.",
+        {},
+        [],
+    ),
+    *FUNCTION_TOOLS[1:],
+)
+PRE_D19_REPLAY_ONLY_FUNCTION_TOOLS_SHA256 = hashlib.sha256(
+    canonical_bytes(PRE_D19_REPLAY_ONLY_FUNCTION_TOOLS)
+).hexdigest()
+if PRE_D19_REPLAY_ONLY_FUNCTION_TOOLS_SHA256 != (
+    "5c035f219b9e023c2fb5c7792a7a51c0c4c783a718a9367d723e26b7253039eb"
+):
+    raise RuntimeError("pre-D1.9 replay-only function-tool contract drifted")
+
 
 def detached_function_tools() -> tuple[dict[str, Any], ...]:
     return tuple(json.loads(canonical_bytes(item)) for item in FUNCTION_TOOLS)
+
+
+def detached_pre_d19_replay_only_function_tools() -> tuple[dict[str, Any], ...]:
+    """Return the historical tool tuple only for immutable evidence replay."""
+
+    return tuple(
+        json.loads(canonical_bytes(item))
+        for item in PRE_D19_REPLAY_ONLY_FUNCTION_TOOLS
+    )
 
 
 def validate_function_arguments(name: str, arguments: Any) -> dict[str, Any]:

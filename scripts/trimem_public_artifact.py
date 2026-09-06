@@ -571,8 +571,12 @@ def _validate_scientific_accounting(
         or result["solve_output_pool_capacity"] != 49_152 * task_count
         or result["remaining_solve_output_tokens"]
         != result["solve_output_pool_capacity"] - result["actual_solve_output_tokens"]
-        or result["decomposition_calls"] != task_count
-        or result["extraction_calls"] != task_count
+        # D1.9 context/preflight cells can terminate before either role is
+        # reserved.  The restricted result/ledger pair carries the exact
+        # failure metadata proof; this public projection preserves only the
+        # verified bounded totals.
+        or result["decomposition_calls"] > task_count
+        or result["extraction_calls"] > task_count
         or result["solve_calls"] > 24 * task_count
         or result["model_gateway_calls"]
         != result["solve_calls"]
@@ -635,7 +639,6 @@ def _validate_provider_outcomes(
     reservation = value.get("ledger_reservation")
     if (
         not isinstance(distribution, Mapping)
-        or not distribution
         or any(
             not isinstance(name, str)
             or (name != "SUCCESS" and not is_scientific_gateway_failure(name))

@@ -264,7 +264,8 @@ def test_secret_looking_source_is_not_mutated_and_public_events_hide_it(tmp_path
                 "tool": "write_file",
                 "arguments": {"path": "value.py", "content": code},
             })
-        assert "result_payload" in request.prompt
+        assert "trimem/model-visible-tool-history/1.0" in request.prompt
+        assert code.strip() not in request.prompt
         assert sha256_bytes(code.encode("utf-8")) in request.prompt
         return json.dumps({
             "tool": "complete_subtask", "arguments": {"evidence": "exact code written"}
@@ -354,5 +355,5 @@ def test_workflow_orders_canary_before_images_and_scientific_runner():
     image_pull = workflow.index("Pull committed images by digest and verify local observations")
     scientific = workflow.index("Execute frozen serial streams with one atomic phase ledger")
     assert canary < image_pull < scientific
-    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_009.json" in workflow
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json" in workflow
     assert "protocol-action-canary.json" in workflow

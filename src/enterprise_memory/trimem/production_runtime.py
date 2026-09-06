@@ -23,8 +23,17 @@ from typing import Any, Callable, Mapping, Optional, Sequence
 from urllib.parse import urlparse
 import uuid
 
-from .accounting import canonical_bytes, sha256_bytes, strict_json_loads
-from .agent_runtime import NoMemoryController, NullExperienceLifecycle
+from .accounting import (
+    RunAccounting,
+    canonical_bytes,
+    sha256_bytes,
+    strict_json_loads,
+)
+from .agent_runtime import (
+    FAILED_CELL_CHECKPOINT_STATES,
+    NoMemoryController,
+    NullExperienceLifecycle,
+)
 from .arms import ActiveNodeTriMemController
 from .checkpoint import RuntimeCheckpoint
 from .policy import CheckpointError, DoubleDQNMemoryPolicy
@@ -58,8 +67,10 @@ _CHECKPOINT_SCHEMA = "trimem/benchmark-arm-checkpoint/1.0"
 _PREPARED_TASK_SCHEMA = "trimem/benchmark-prepared-task-checkpoint/1.0"
 _RECEIPT_TABLE = "trimem_lifecycle_operation_receipts"
 _AGENT_CHECKPOINT_STATES = frozenset({
+    "DECOMPOSE_PREPARED",
     "DECOMPOSED",
     "RUNNING",
+    "RECALL_PREPARED",
     "AGENT_COMPLETE",
     "PATCH_FINALIZED",
     "GRADED",
@@ -68,7 +79,7 @@ _AGENT_CHECKPOINT_STATES = frozenset({
     "LIFECYCLE_STORED",
     "LIFECYCLE_CREDITED",
     "DONE",
-})
+}) | FAILED_CELL_CHECKPOINT_STATES
 
 
 class ProductionRuntimeError(RuntimeError):
@@ -474,12 +485,63 @@ def _validated_runtime_checkpoint_proof(
         or graph.active_node_id != checkpoint.active_node_id
     ):
         raise CheckpointTamperError("in-flight working graph identity mismatch")
-    terminal_phases = _AGENT_CHECKPOINT_STATES - {"DECOMPOSED", "RUNNING"}
+    terminal_phases = _AGENT_CHECKPOINT_STATES - {
+        "DECOMPOSE_PREPARED", "DECOMPOSED", "RUNNING", "RECALL_PREPARED"
+    } - FAILED_CELL_CHECKPOINT_STATES
+    failed_done = (
+        checkpoint.state == "DONE"
+        and checkpoint.terminal_payload.get("cell_status")
+        in {"CELL_SCIENTIFIC_FAILURE", "MEMORY_EXTRACTION_FAILED"}
+    )
+    decompose_workspace = checkpoint.workspace_state
+    decompose_pristine = (
+        checkpoint.state != "DECOMPOSE_PREPARED"
+        or (
+            checkpoint.next_step_no == 1
+            and not checkpoint.injected_memory_ids
+            and checkpoint.injected_bytes == 0
+            and not checkpoint.injection_ledger
+            and not checkpoint.tool_history
+            and not checkpoint.completed_call_ids
+            and canonical_bytes(checkpoint.accounting)
+            == canonical_bytes(RunAccounting().to_dict())
+            and not checkpoint.terminal_payload
+            and checkpoint.pending_policy_transition is None
+            and isinstance(decompose_workspace, Mapping)
+            and set(decompose_workspace) == {
+                "kind", "base_commit", "patch", "patch_sha256"
+            }
+            and decompose_workspace.get("kind")
+            == "trimem-git-checkout-workspace-v1"
+            and decompose_workspace.get("patch") == ""
+            and decompose_workspace.get("patch_sha256")
+            == sha256_bytes(b"")
+            and isinstance(decompose_workspace.get("base_commit"), str)
+            and bool(decompose_workspace.get("base_commit"))
+        )
+    )
     if (
-        (checkpoint.state == "DECOMPOSED" and (graph.complete or graph.active_node_id))
-        or (checkpoint.state == "RUNNING" and graph.complete)
+        not decompose_pristine
+        or (
+            checkpoint.state == "DECOMPOSE_PREPARED"
+            and (graph.nodes or graph.complete or graph.active_node_id)
+        )
+        or (checkpoint.state == "DECOMPOSED" and (graph.complete or graph.active_node_id))
+        or (checkpoint.state in {"RUNNING", "RECALL_PREPARED"} and graph.complete)
+        or (
+            checkpoint.state == "RECALL_PREPARED"
+            and (
+                graph.active_node_id is None
+                or not isinstance(checkpoint.prepared_request, Mapping)
+            )
+        )
+        or (
+            checkpoint.state not in {"DECOMPOSE_PREPARED", "RECALL_PREPARED"}
+            and checkpoint.prepared_request is not None
+        )
         or (
             checkpoint.state in terminal_phases
+            and not failed_done
             and (not graph.complete or graph.active_node_id is not None)
         )
     ):
@@ -1538,9 +1600,10 @@ class BenchmarkArmSession:
 
         Production lifecycle adapters capture the task's event timestamp and,
         for M2, the immutable feature-history snapshot in ``before_task``.  The
-        agent's first checkpoint is necessarily later than decomposition, so
-        the driver must durably write this envelope immediately after
-        ``before_task`` and before model/controller execution.
+        agent's first request-bound checkpoint is written immediately
+        before decomposition.  The driver must durably write this outer
+        lifecycle envelope immediately after ``before_task`` and before the
+        agent constructs or invokes that decomposition request.
         """
 
         if (
@@ -1994,6 +2057,14 @@ class BenchmarkArmSession:
             raise CheckpointTamperError("in-flight checkpoint cursor mismatch")
         if graph.repository != _task_value(self._tasks[task_cursor], "repository"):
             raise CheckpointTamperError("in-flight working graph repository mismatch")
+        if (
+            checkpoint.state == "DECOMPOSE_PREPARED"
+            and checkpoint.workspace_state.get("base_commit")
+            != _task_value(self._tasks[task_cursor], "commit")
+        ):
+            raise CheckpointTamperError(
+                "prepared decomposition workspace base commit mismatch"
+            )
         return checkpoint, graph, ledger
 
     @staticmethod
@@ -2015,8 +2086,10 @@ class BenchmarkArmSession:
     ) -> frozenset[str]:
         checkpoint, graph, ledger = proof
         allowed_by_phase = {
+            "DECOMPOSE_PREPARED": set(),
             "DECOMPOSED": {"ACCESS"},
             "RUNNING": {"ACCESS"},
+            "RECALL_PREPARED": {"ACCESS"},
             "AGENT_COMPLETE": {"ACCESS"},
             "PATCH_FINALIZED": {"ACCESS"},
             "GRADED": {"ACCESS"},
@@ -2026,6 +2099,18 @@ class BenchmarkArmSession:
             "LIFECYCLE_CREDITED": {"ACCESS", "LIFECYCLE_STORE", "CREDIT"},
             "DONE": {"ACCESS", "LIFECYCLE_STORE", "CREDIT"},
         }
+        allowed_by_phase.update({
+            "CELL_FAILURE_PREPARED": {"ACCESS"},
+            "CELL_FAILURE_MARKED": {"ACCESS"},
+            "CELL_FAILURE_GRADED": {"ACCESS"},
+            "CELL_FAILURE_EXTRACTED": {"ACCESS", "LIFECYCLE_STORE"},
+            "CELL_FAILURE_LIFECYCLE_STORED": {
+                "ACCESS", "LIFECYCLE_STORE", "CREDIT",
+            },
+            "CELL_FAILURE_LIFECYCLE_CREDITED": {
+                "ACCESS", "LIFECYCLE_STORE", "CREDIT",
+            },
+        })
         ledger_active: set[str] = set()
         for row in ledger:
             active_node_id = row.get("active_node_id")
@@ -2035,7 +2120,7 @@ class BenchmarkArmSession:
                 raise CheckpointTamperError("in-flight injection namespace mismatch")
             ledger_active.add(active_node_id)
         next_active: Optional[str] = None
-        if checkpoint.state in {"DECOMPOSED", "RUNNING"} and not graph.complete:
+        if checkpoint.state in {"DECOMPOSED", "RUNNING", "RECALL_PREPARED"} and not graph.complete:
             if graph.active_node is not None:
                 next_active = graph.active_node.node_id
             else:

@@ -644,6 +644,14 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert latest_failure["workflow_run"]["conclusion"] == "failure"
     assert latest_failure["scientific_usage"]["paid_model_calls"] == 8
     assert latest_failure["official_grader_runs"] == 0
+    assert readiness._development_exec_009_static_accounting(latest_failure) == {
+        "scientific_usage": latest_failure["scientific_usage"],
+        "canary_usage": latest_failure["canary_usage"],
+        "total_usage": latest_failure["total_usage"],
+        "terminal_task_arm_runs": 0,
+        "planned_task_arm_runs": 72,
+        "official_grader_runs": 0,
+    }
     assert requirements["historical_development_exec_007_failure"] == (
         readiness._validated_development_exec_007_failure()
     )

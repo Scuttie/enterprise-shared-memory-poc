@@ -4152,6 +4152,30 @@ def _validated_development_exec_009_failure() -> dict[str, Any]:
     return receipt
 
 
+def _development_exec_009_static_accounting(
+    receipt: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Expose the exact `_009` evidence without projecting the `_008` schema."""
+
+    scientific = receipt.get("scientific_usage")
+    canary = receipt.get("canary_usage")
+    totals = receipt.get("total_usage")
+    require(
+        isinstance(scientific, Mapping)
+        and isinstance(canary, Mapping)
+        and isinstance(totals, Mapping),
+        "DEV _009 static accounting evidence is malformed",
+    )
+    return {
+        "scientific_usage": dict(scientific),
+        "canary_usage": dict(canary),
+        "total_usage": dict(totals),
+        "terminal_task_arm_runs": receipt.get("terminal_cells"),
+        "planned_task_arm_runs": receipt.get("planned_cells"),
+        "official_grader_runs": receipt.get("official_grader_runs"),
+    }
+
+
 def validate_readiness_plan(
     targets: Mapping[str, list[dict[str, Any]]],
 ) -> dict[str, Any]:
@@ -5482,10 +5506,15 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     smoke = read_json(ARTIFACT / "grader_smoke_result.json")
     smoke_actual = validate_grader_smoke_result(smoke)
     development_failure = readiness_state["current_development_execution_failure"]
-    development_accounting = development_failure["execution_accounting"]
+    development_accounting = _development_exec_009_static_accounting(
+        development_failure
+    )
     require(
-        development_accounting == DEVELOPMENT_EXEC_008_ACCOUNTING,
-        "DEV _008 current execution accounting differs at readiness output",
+        development_accounting
+        == _development_exec_009_static_accounting(
+            _validated_development_exec_009_failure()
+        ),
+        "DEV _009 current execution accounting differs at readiness output",
     )
     smoke_counters = readiness_state["execution_counters"]
     require(
@@ -5498,14 +5527,17 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "heldout_task_arm_runs_planned": 81,
         "support_image_digests_frozen": 1,
         "target_image_digests_frozen": 45,
-        "execution_counter_scope": "DEVELOPMENT_TUNING_EXEC_008_RUN_33944405409_ATTEMPT_1",
-        "task_arm_runs": development_accounting["scientific_task_arm_cells"],
-        "model_calls": (
-            development_accounting["canary_model_generations"]
-            + development_accounting["scientific_model_calls"]
+        "execution_counter_scope": (
+            "DEVELOPMENT_TUNING_EXEC_009_RUN_33979936824_ATTEMPT_1"
         ),
+        "task_arm_runs": development_accounting["terminal_task_arm_runs"],
+        "model_calls": development_accounting["total_usage"][
+            "paid_model_calls"
+        ],
         "official_grader_runs": development_accounting["official_grader_runs"],
-        "paid_model_calls": development_accounting["canary_paid_model_calls"],
+        "paid_model_calls": development_accounting["total_usage"][
+            "paid_model_calls"
+        ],
         "development_execution_accounting": development_accounting,
         "grader_smoke_history": {
             "execution_counter_scope": readiness_state["execution_counter_scope"],

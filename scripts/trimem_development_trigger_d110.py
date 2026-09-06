@@ -478,6 +478,21 @@ def strict_json(raw: bytes) -> dict[str, Any]:
     return value
 
 
+def strict_runner_config_json(raw: bytes) -> dict[str, Any]:
+    """Parse the Actions runner's JSON config without relaxing contract JSON.
+
+    Actions Runner 2.337.0 writes ``.runner`` with a single UTF-8 BOM.  Only
+    that runner-owned file format gets this narrowly scoped normalization;
+    approval, request, and evidence documents continue to use ``strict_json``
+    directly and therefore continue to reject a BOM.
+    """
+
+    utf8_bom = b"\xef\xbb\xbf"
+    if raw.startswith(utf8_bom):
+        raw = raw[len(utf8_bom) :]
+    return strict_json(raw)
+
+
 def _safe_git_path(path: str) -> str:
     candidate = PurePosixPath(path)
     require(
@@ -1786,7 +1801,27 @@ import sys
 
 root = Path(sys.argv[1])
 names = [name.encode('ascii') + b'=' for name in json.loads(sys.argv[2])]
-config = json.loads((root / '.runner').read_bytes().decode('utf-8', errors='strict'))
+config_raw = (root / '.runner').read_bytes()
+utf8_bom = b'\\xef\\xbb\\xbf'
+if config_raw.startswith(utf8_bom):
+    config_raw = config_raw[len(utf8_bom):]
+
+def reject_duplicates(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError('duplicate runner config key')
+        result[key] = value
+    return result
+
+def reject_constant(value):
+    raise ValueError('invalid runner config constant')
+
+config = json.loads(
+    config_raw.decode('utf-8', errors='strict'),
+    object_pairs_hook=reject_duplicates,
+    parse_constant=reject_constant,
+)
 for filename in ('.env', '.path'):
     path = root / filename
     if not path.exists():
@@ -1999,7 +2034,7 @@ def collect_local_runner_host_readiness(
             == Path(RUNNER_TOOL_CACHE).resolve(strict=True),
             "runner tool cache differs",
         )
-        config = strict_json((root_path / ".runner").read_bytes())
+        config = strict_runner_config_json((root_path / ".runner").read_bytes())
         for filename in (".env", ".path"):
             path = root_path / filename
             if not path.exists():

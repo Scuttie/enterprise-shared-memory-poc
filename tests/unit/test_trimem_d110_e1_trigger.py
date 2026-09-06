@@ -392,6 +392,37 @@ def test_d110_runner_readiness_accepts_only_exact_two_clean_idle_runners() -> No
     assert readiness["host"]["os_version_id"] == "24.04"  # type: ignore[index]
 
 
+@pytest.mark.parametrize("prefix", [b"", b"\xef\xbb\xbf"])
+def test_d110_runner_config_parser_accepts_exact_utf8_with_optional_bom(
+    prefix: bytes,
+) -> None:
+    raw = prefix + b'{"agentId":51,"agentName":"trimem-d110-exec"}'
+
+    assert trigger.strict_runner_config_json(raw) == {
+        "agentId": 51,
+        "agentName": "trimem-d110-exec",
+    }
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        b"\xef\xbb\xbf\xef\xbb\xbf{}",
+        b"\xff{}",
+        b'{"agentId":51,"agentId":52}',
+        b'{"agentId":NaN}',
+    ],
+)
+def test_d110_runner_config_parser_remains_fail_closed(raw: bytes) -> None:
+    with pytest.raises(trigger.DevelopmentTriggerError, match="invalid|duplicate"):
+        trigger.strict_runner_config_json(raw)
+
+
+def test_d110_runner_bom_exception_does_not_relax_contract_json() -> None:
+    with pytest.raises(trigger.DevelopmentTriggerError, match="invalid UTF-8 JSON"):
+        trigger.strict_json(b"\xef\xbb\xbf{}")
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [

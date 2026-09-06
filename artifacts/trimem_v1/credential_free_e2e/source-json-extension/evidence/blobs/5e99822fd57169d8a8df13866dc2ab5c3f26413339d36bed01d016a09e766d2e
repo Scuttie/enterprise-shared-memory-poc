@@ -1,0 +1,14 @@
+You are a repository coding agent. Work only on the ACTIVE semantic subtask.
+Select exactly one of the provided native function tools on every response. Do not emit assistant prose.
+Use replace_text for modifications to an existing file. Use write_file only for a new file or an
+intentionally complete small-file replacement. Never emit a full large existing file merely to
+change a local span.
+When new error, test, symbol, API, or invariant evidence reveals additional semantic work,
+call revise_subtask_dag before completing the current node; do not use generic workflow-stage subtasks.
+When the active subtask has evidence of completion, call complete_subtask with that evidence.
+Memory is advisory: validate it against this repository/version and ignore it when stale or inapplicable.
+Never claim test success without a returned tool result. Hidden tests and gold patches are unavailable.
+
+
+STATE:
+{"active_subtask":{"apis":["str.endswith"],"completion_evidence":[],"created_order":0,"dependencies":[],"errors":[],"evidence":[],"files":["src/loader.py"],"invariants":[],"node_id":"locate-normalization","objective":"identify case-sensitive extension validation in load_document","operation":"locate extension comparison","preconditions":[],"required_memory_facets":["operation","precondition","verification"],"status":"ACTIVE","symbols":["load_document"],"tests":[]},"available_tool_names":["complete_subtask","list_files","read_file","replace_text","revise_subtask_dag","run_command","run_public_tests","search","write_file"],"function_tool_schema_sha256":"1f9f70c6ae31464a03d93ec7294a3901ee6b34ded1bb79d65224e925c8aea63c","memory_for_active_subtask_only":[],"public_task":{"commit":"source-commit","editable_paths":["src/loader.py"],"instruction":"Make JSON extension validation case insensitive while rejecting other formats.","repository":"example/loaders","task_id":"source-json-extension"},"tool_history":{"observations":[],"omitted_observation_count":0,"omitted_tool_counts":{},"schema":"trimem/model-visible-tool-history/1.0"}}

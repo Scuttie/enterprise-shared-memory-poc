@@ -1,8 +1,8 @@
 {
   "files": {
     ".gitattributes": {
-      "bytes": 2909,
-      "sha256": "697d8d0c6115c480403d8791f7ee444429cba56b48d2d3b8e9104a1a445485f9"
+      "bytes": 2947,
+      "sha256": "9fac89a294d04bef6f4ddfd0c7b8e69d72a7fa4b949a095ab715f49a7231104c"
     },
     ".github/workflows/ci-trimem-dev-toolchain.yml": {
       "bytes": 10705,
@@ -13,12 +13,12 @@
       "sha256": "b6eaa40355e32f422fd069fc26551049ff30fdbeada1d5a2ce5e00ed5b238287"
     },
     ".github/workflows/ci-trimem-grader-loader.yml": {
-      "bytes": 9712,
-      "sha256": "247a662ba259f3647f69b540373c3bcfc0510f205543e990a73a0dcf3e6a2c95"
+      "bytes": 12125,
+      "sha256": "1aa527bf7fc7ab5c4dbcf5418f3fd57a35454b2b69624c6994381507fe7cdc03"
     },
     ".github/workflows/ci-trimem-harness-lock.yml": {
-      "bytes": 2042,
-      "sha256": "6dc018bd1ab598c977de3e34706993c91f5ac616d6351877f6fd2ae38d3f1285"
+      "bytes": 1962,
+      "sha256": "1e2b752cef933ea7a1c5aa11a315de106ccf96997ca4cfce4fbc26fb5f8f6536"
     },
     ".github/workflows/ci-trimem-multi-swe-contract.yml": {
       "bytes": 5604,
@@ -373,12 +373,12 @@
       "sha256": "1b131b7f7ca7992499e4fca93545e2452e6e6d26ce4d954cbebc337f50d7c03e"
     },
     "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json": {
-      "bytes": 16988,
-      "sha256": "f79fdafb44f14bb01ab66414c7a8ff8721fb82ec3a5e327bb1f2f623926a86fe"
+      "bytes": 17440,
+      "sha256": "9d9d3e307d82a42fc19770f6068c122ff0edb858b6d6c4e90b8701ed38bc4c85"
     },
     "artifacts/trimem_v1/development_grader_launch_stream_commit_inventory.json": {
-      "bytes": 17512,
-      "sha256": "740083b596bc1cd0c8396d5ba90aaca561e68994b951bb350992a98727df33e9"
+      "bytes": 17965,
+      "sha256": "6e659bd13151d5a7a36f76e69cf6164303e9aeaf6b0c937ec794cfc4d84e7443"
     },
     "artifacts/trimem_v1/development_model_pricing_amendment.json": {
       "bytes": 4126,
@@ -881,8 +881,8 @@
       "sha256": "10f56591c08c6cdf069508f161473dc5b4f93df8452cfa1bc9b012080c5e87b4"
     },
     "reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md": {
-      "bytes": 4854,
-      "sha256": "be767ce989026430cdad38947dbdea3acaeeca09f79314f6fdce3328c7619985"
+      "bytes": 5799,
+      "sha256": "7797601dfcb17c72964a86fee4ecfdd79a9d503817cd59cee5b799deb4055abc"
     },
     "reports/TRIMEM_D14_SOLVE_0005_OUTPUT_SHAPE_FORENSICS.md": {
       "bytes": 2591,
@@ -965,8 +965,8 @@
       "sha256": "0b69b8e16d74d0968dcd17c6e28cfd5c97f4555d066db0d9548edbd882cff372"
     },
     "scripts/trimem_benchmark_run.py": {
-      "bytes": 369382,
-      "sha256": "5e713f4da1fa48f43c41502d0720b32d62a72c19d2d06ac4ed7b6c5ccc4b47ab"
+      "bytes": 369563,
+      "sha256": "2e626f5c969161377a11e6aec89874219d1b75f84a2731eb7ec5ae3498aa882b"
     },
     "scripts/trimem_cleanup_exec.py": {
       "bytes": 2472,
@@ -977,8 +977,8 @@
       "sha256": "d6830b75f11f2f6f4eb93bcfdbb252f5c49eb288b1d727edd5ba28487720e56e"
     },
     "scripts/trimem_d110_reseal.py": {
-      "bytes": 47551,
-      "sha256": "0583f6bbf66f030d32c43cd65e8cdc7dcf9587e1eeb4a10ec23dcf10cd9242da"
+      "bytes": 47731,
+      "sha256": "fe941a3f9931ed18b7323d708ce9636f5f6ffebfbb04f09c16e31f9e61fd7666"
     },
     "scripts/trimem_d19_reseal.py": {
       "bytes": 29922,
@@ -1049,8 +1049,8 @@
       "sha256": "4a347ff77cb8673b3dbf970df42800ccb773afced506f33a6cb4f942f6ded131"
     },
     "scripts/trimem_harness_lock.py": {
-      "bytes": 36950,
-      "sha256": "91472b833a14f47638192b41661eab5bce72debb6bb0c225294cffff323c2a7c"
+      "bytes": 38799,
+      "sha256": "e2c7bf2aa10dd999a153155d67710948e149f7bc2f322f7ff53b15ab4500b47e"
     },
     "scripts/trimem_install_pinned_gh.py": {
       "bytes": 22195,
@@ -1093,8 +1093,8 @@
       "sha256": "ad744043a6ee09c65a9f4c281e4cb884f9ba5835bdb2e2e3e524b34f58d306bb"
     },
     "scripts/trimem_official_harness_loader.py": {
-      "bytes": 18628,
-      "sha256": "d6dcd7eb7883762dba326f2abaf3913762ff1541af2c02571726a6254ea8d301"
+      "bytes": 19839,
+      "sha256": "b988a2afe1740d1c9767736dae72daf96238d2b306786a6b765b6f423411f20d"
     },
     "scripts/trimem_official_harness_loader_preflight.py": {
       "bytes": 19172,
@@ -1149,8 +1149,8 @@
       "sha256": "f988b0e5229073a2935e26beee40190f2083e74fa155fdbe3373c6af52b91eca"
     },
     "scripts/trimem_verify_ready.py": {
-      "bytes": 265353,
-      "sha256": "eac786a83efa0673c6000616d53dac274815f54fbdd6260697384a8bb7b57d40"
+      "bytes": 265489,
+      "sha256": "6a202909d4c6c593b03a874f68ccf406b8fe3324949183a1ff0980ece6245448"
     },
     "scripts/trimem_verify_remote_custody.py": {
       "bytes": 7571,
@@ -1449,16 +1449,16 @@
       "sha256": "396f7d9587132ba324e35abfd763fee909f03113fef29d512d48110ae89df1ef"
     },
     "tests/unit/test_trimem_d110_official_harness_loader.py": {
-      "bytes": 17875,
-      "sha256": "70658da8368467850038e2e753596a63ae31334597c6071190a6a9180654d587"
+      "bytes": 19815,
+      "sha256": "29cded61b99b7afc433f439046be9a6203a2ecfeda6a9c56b7e1dbbda1daacbe"
     },
     "tests/unit/test_trimem_d110_resume_fail_closed.py": {
       "bytes": 10252,
       "sha256": "c8f8371397ea788867b4e1c94f43e1f8af57e1a14523bc32400bd7b823b44eca"
     },
     "tests/unit/test_trimem_d110_status_and_reseal.py": {
-      "bytes": 11655,
-      "sha256": "ce955854360906da6ee06e0a289f1e4a674db3d4adb4c99de8e2cc1193b2c9a5"
+      "bytes": 11770,
+      "sha256": "d12742873163aa49d360107efd58536f84fb3540a566f45e9083b57160712ecf"
     },
     "tests/unit/test_trimem_d14_solve_contract.py": {
       "bytes": 14829,
@@ -1509,16 +1509,16 @@
       "sha256": "5bb050f011a55e6dfbc2cd04a32e8745bf19e1e07e95c74831216c478f088577"
     },
     "tests/unit/test_trimem_d19_trigger.py": {
-      "bytes": 12803,
-      "sha256": "9467d832669128af126f550469c0d5e84d43ef0f2f24acd72b1dc5c31a98cb5c"
+      "bytes": 13089,
+      "sha256": "b7625111e3e3ddb4f8b09567150e677bd426fe191f2d8aad714a5e9cf263ac7f"
     },
     "tests/unit/test_trimem_dev_toolchain_workflows.py": {
-      "bytes": 27023,
-      "sha256": "6d84cf9f2b9ca56b9b7e98d4498b826bacb0cf9e52444e6f50215434b618c51e"
+      "bytes": 27745,
+      "sha256": "508242e0c051ccd5cb74826587ead1f432d85700cc372ab1ce9d2b613243c145"
     },
     "tests/unit/test_trimem_development_trigger.py": {
-      "bytes": 103593,
-      "sha256": "f31c82d4d1715ed40d38e59d8b39e05582bcad05ef3691ced9f0b4e27b12e655"
+      "bytes": 103805,
+      "sha256": "2040134769cf82eaf3e9660788efb87730def1d507bceec9ccb6b97e6b691bf6"
     },
     "tests/unit/test_trimem_evidence_custody.py": {
       "bytes": 5160,
@@ -1549,8 +1549,8 @@
       "sha256": "2c9acdbd3d4eca645255aea4b213df2dfb030fe188ed1e3cd55cd2f46c6c4ab4"
     },
     "tests/unit/test_trimem_harness_lock.py": {
-      "bytes": 22899,
-      "sha256": "805364099ad93bb4a048867ff587935edd46015f09eaf676a926bfa7d8f7d943"
+      "bytes": 24515,
+      "sha256": "6c3ea747d5fbae46602bcd1c40fcb949e18f190b2f2fde548fc7481972c62715"
     },
     "tests/unit/test_trimem_m1_postwrite_recovery.py": {
       "bytes": 27768,

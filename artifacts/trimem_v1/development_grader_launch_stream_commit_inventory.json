@@ -213,7 +213,7 @@
   },
   "implementation_sha256": {
     ".gitattributes": "f5c1838db6bfedfbb9718659c01c2fd970f526e462d218433e1c732571e6f491",
-    ".github/workflows/ci-trimem-dev-toolchain.yml": "c1321b7589db3ba8b2701b0f440684241cd84a830711732e22db53be180848ad",
+    ".github/workflows/ci-trimem-dev-toolchain.yml": "588ace69433946b89a6f1b553371059b1418b70dc95c830db83e695e6a0d3f16",
     ".github/workflows/ci-trimem-grader-loader.yml": "247a662ba259f3647f69b540373c3bcfc0510f205543e990a73a0dcf3e6a2c95",
     ".github/workflows/ci-trimem.yml": "5d20223fcbe3b67fc371d3a081d80310c4434107e1b02d9f5faef662cd00dbaf",
     ".github/workflows/trimem-benchmark.yml": "2c7e791f6bc5777b928ebae2d6dad5f063c2f0e028e5a6546a1bf3f79c2a02a2",
@@ -247,7 +247,7 @@
     "tests/unit/test_trimem_d110_official_harness_loader.py": "70658da8368467850038e2e753596a63ae31334597c6071190a6a9180654d587",
     "tests/unit/test_trimem_d110_resume_fail_closed.py": "c8f8371397ea788867b4e1c94f43e1f8af57e1a14523bc32400bd7b823b44eca",
     "tests/unit/test_trimem_d110_status_and_reseal.py": "afe5d536e258bca88968bbab3e25fa12e3bc3163171edba44d68aca8cfc0c4b5",
-    "tests/unit/test_trimem_dev_toolchain_workflows.py": "d7b76c410817833c331d0ad473e25adab5d23686313faa959f368cf6f147c677",
+    "tests/unit/test_trimem_dev_toolchain_workflows.py": "6d84cf9f2b9ca56b9b7e98d4498b826bacb0cf9e52444e6f50215434b618c51e",
     "tests/unit/test_trimem_development_trigger.py": "f31c82d4d1715ed40d38e59d8b39e05582bcad05ef3691ced9f0b4e27b12e655",
     "tests/unit/test_trimem_grader_smoke_trigger.py": "6410be7f96b9034e37ca95fa2ac224e2309f2ec0125e47b3e295cd294a619b8e",
     "tests/unit/test_trimem_grader_terminal_evidence.py": "2c9acdbd3d4eca645255aea4b213df2dfb030fe188ed1e3cd55cd2f46c6c4ab4",

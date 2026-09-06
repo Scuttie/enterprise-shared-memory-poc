@@ -174,11 +174,18 @@ def test_product_handoff_inventory_is_separate_from_research_freeze() -> None:
         "artifacts/trimem_v1/freeze.json"
     )
     assert company["manifest_scope"] == inventory["product_manifest_authority"]
+    assert "docs/STATUS.yaml" not in reseal.IMPLEMENTATION_PATHS
+    assert "docs/STATUS.yaml" in reseal.PRODUCT_COMPATIBILITY_PATHS
+    reseal.verify_product_status_compatibility()
 
 
 def test_committed_d110_paths_are_closed_under_the_explicit_seal() -> None:
     changed = reseal.verify_changed_path_coverage()
-    allowed = set(reseal.IMPLEMENTATION_PATHS) | reseal.D110_GENERATED_PATHS
+    allowed = (
+        set(reseal.IMPLEMENTATION_PATHS)
+        | reseal.D110_GENERATED_PATHS
+        | reseal.PRODUCT_COMPATIBILITY_PATHS
+    )
     assert changed
     assert set(changed) <= allowed
 

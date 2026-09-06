@@ -64,6 +64,12 @@ the exact raw-file contract hashes; `artifacts/trimem_v1/freeze.json` remains th
 research-state authority. `COMPANY_HANDOFF_MANIFEST.json` remains a separate
 product-only inventory and is not used as research status.
 
+Adding the dedicated loader workflow mechanically changes the product
+`docs/STATUS.yaml` workflow inventory count from 73 to 74. D1.10 validates that
+single-field compatibility change exactly but excludes product STATUS from the
+research implementation hash and authority. The company handoff manifest is
+not regenerated on this research branch.
+
 The tool-environment lock changes only the raw source identities for
 `git_workspace.py` and `production_runtime.py`, reflecting checkout-inventory
 and checkpoint-proof hardening. Its prompt, parser, tool, step/token limits,

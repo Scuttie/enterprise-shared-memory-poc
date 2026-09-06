@@ -48,6 +48,7 @@ TOOL_ENVIRONMENT_SOURCE_AMENDMENTS = frozenset(
         "src/enterprise_memory/trimem/production_runtime.py",
     }
 )
+PRODUCT_COMPATIBILITY_PATHS = frozenset({"docs/STATUS.yaml"})
 EXEC_010_SANITIZED_FIXTURE_PATH = (
     "tests/fixtures/trimem_d110/exec_010_sanitized.json"
 )
@@ -377,7 +378,11 @@ def verify_changed_path_coverage() -> tuple[str, ...]:
         )
     except UnicodeDecodeError as exc:
         raise D110ResealError("committed D1.10 path is not UTF-8") from exc
-    allowed = set(IMPLEMENTATION_PATHS) | D110_GENERATED_PATHS
+    allowed = (
+        set(IMPLEMENTATION_PATHS)
+        | D110_GENERATED_PATHS
+        | PRODUCT_COMPATIBILITY_PATHS
+    )
     unexpected = sorted(set(changed) - allowed)
     if unexpected:
         raise D110ResealError(
@@ -538,6 +543,25 @@ def verify_tool_environment_lock_amendment() -> None:
             raise D110ResealError(f"tool source lock is stale: {relative}")
 
 
+def verify_product_status_compatibility() -> None:
+    """Allow only the mechanical workflow-count refresh; never research status."""
+
+    historical = git_blob(EXECUTION_HEAD, "docs/STATUS.yaml")
+    marker = (
+        b"workflow_count: 73                     # structural tree inventory; "
+        b"research readiness is separately sealed"
+    )
+    replacement = marker.replace(b"workflow_count: 73", b"workflow_count: 74")
+    if historical.count(marker) != 1:
+        raise D110ResealError("historical product workflow count is unexpected")
+    expected = historical.replace(marker, replacement)
+    observed = source_bytes("docs/STATUS.yaml")
+    if b"\r" in observed.replace(b"\r\n", b""):
+        raise D110ResealError("product STATUS contains a non-CRLF carriage return")
+    if observed.replace(b"\r\n", b"\n") != expected:
+        raise D110ResealError("product STATUS changed beyond workflow inventory count")
+
+
 def verify_historical_boundaries() -> tuple[dict[str, str], dict[str, str]]:
     verify_tracked_hygiene()
     request_011 = ROOT / (
@@ -608,6 +632,7 @@ def verify_historical_boundaries() -> tuple[dict[str, str], dict[str, str]]:
     ):
         raise D110ResealError("product COMPANY_HANDOFF_MANIFEST.json was rewritten")
     verify_tool_environment_lock_amendment()
+    verify_product_status_compatibility()
     for relative in PRESERVED_SCIENTIFIC_PATHS:
         if source_bytes(relative) != git_blob(EXECUTION_HEAD, relative):
             raise D110ResealError(f"D1.10 changed frozen scientific input: {relative}")

@@ -64,6 +64,12 @@ the exact raw-file contract hashes; `artifacts/trimem_v1/freeze.json` remains th
 research-state authority. `COMPANY_HANDOFF_MANIFEST.json` remains a separate
 product-only inventory and is not used as research status.
 
+The tool-environment lock changes only the raw source identities for
+`git_workspace.py` and `production_runtime.py`, reflecting checkout-inventory
+and checkpoint-proof hardening. Its prompt, parser, tool, step/token limits,
+container policy, runtime-lock manifest, and authority boundary remain
+byte-for-byte equal to the immutable `_010` lock.
+
 The credential-free source-to-target E2E bundle is rehashed as byte-stable
 preserved evidence; it is not represented as a D1.10 loader or cell-commit
 rehearsal. A separately sealed, provenance-bound sanitized `_010` fixture keeps

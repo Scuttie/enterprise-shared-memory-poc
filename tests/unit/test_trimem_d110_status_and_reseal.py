@@ -96,6 +96,30 @@ def test_d19_amendment_and_inventory_remain_immutable_history() -> None:
         )
 
 
+def test_tool_environment_lock_changes_only_d110_source_identities() -> None:
+    reseal.verify_tool_environment_lock_amendment()
+    current = read(reseal.TOOL_ENVIRONMENT_LOCK_PATH)
+    historical = json.loads(
+        reseal.git_blob(
+            reseal.EXECUTION_HEAD,
+            reseal.TOOL_ENVIRONMENT_LOCK_PATH,
+        ).decode("utf-8")
+    )
+    assert current["runtime_lock_manifest"] == historical["runtime_lock_manifest"]
+    assert current["runtime_lock_content_hash"] == historical[
+        "runtime_lock_content_hash"
+    ]
+    assert current["tool_authority_boundary"] == historical[
+        "tool_authority_boundary"
+    ]
+    changed = {
+        relative
+        for relative, record in current["source_files"].items()
+        if record != historical["source_files"][relative]
+    }
+    assert changed == reseal.TOOL_ENVIRONMENT_SOURCE_AMENDMENTS
+
+
 def test_d110_artifacts_are_exactly_reproducible_and_zero_cost() -> None:
     expected_amendment, expected_inventory = reseal.build_artifacts()
     amendment = read(

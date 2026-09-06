@@ -14,6 +14,7 @@ on:
       - configs/trimem_v1/cost_plan.json
       - configs/trimem_v1/development_manifest.json
       - configs/trimem_v1/solve_output_budget_contract.json
+      - configs/trimem_v1/tool_environment_lock.json
       - artifacts/trimem_v1/development_solve_execution_contract_amendment.json
       - artifacts/trimem_v1/development_credential_control_plane_amendment.json
       - artifacts/trimem_v1/development_terminal_contract_amendment.json

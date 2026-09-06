@@ -41,6 +41,13 @@ REQUEST_PATH = (
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
 )
 REQUEST_SHA256 = "f42389df5a12c8f0d06bcd3eb2c97c69b0fde39667f8c880832e1c01bf998d9f"
+TOOL_ENVIRONMENT_LOCK_PATH = "configs/trimem_v1/tool_environment_lock.json"
+TOOL_ENVIRONMENT_SOURCE_AMENDMENTS = frozenset(
+    {
+        "src/enterprise_memory/trimem/git_workspace.py",
+        "src/enterprise_memory/trimem/production_runtime.py",
+    }
+)
 EXEC_010_SANITIZED_FIXTURE_PATH = (
     "tests/fixtures/trimem_d110/exec_010_sanitized.json"
 )
@@ -101,7 +108,6 @@ PRESERVED_SCIENTIFIC_PATHS = (
     "configs/trimem_v1/selected_m2.json",
     "configs/trimem_v1/selection_plan.json",
     "configs/trimem_v1/solve_output_budget_contract.json",
-    "configs/trimem_v1/tool_environment_lock.json",
     "scripts/trimem_exec_approval.py",
     "scripts/trimem_context_roundtrip.py",
     "scripts/trimem_d19_reseal.py",
@@ -140,6 +146,7 @@ IMPLEMENTATION_PATHS = (
     ".github/workflows/trimem-benchmark.yml",
     "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json",
     "artifacts/trimem_v1/readiness_requirements.json",
+    "configs/trimem_v1/tool_environment_lock.json",
     "docs/TRIMEM_V1_SYSTEM.md",
     "reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md",
     "scripts/make_handoff_manifest.py",
@@ -189,6 +196,7 @@ CONTRACT_PATHS = {
     "checkpoint_proof_schema_sha256": (
         "src/enterprise_memory/trimem/production_runtime.py"
     ),
+    "tool_environment_lock_sha256": "configs/trimem_v1/tool_environment_lock.json",
     "resume_disposition_sha256": "scripts/trimem_run_with_resume.py",
     "benchmark_runner_sha256": "scripts/trimem_benchmark_run.py",
     "workflow_sha256": ".github/workflows/trimem-benchmark.yml",
@@ -483,6 +491,53 @@ def verify_immutable_history_untouched(paths: tuple[str, ...]) -> None:
         )
 
 
+def verify_tool_environment_lock_amendment() -> None:
+    """Permit only source-identity refreshes required by D1.10 hardening."""
+
+    current = read_json(ROOT / TOOL_ENVIRONMENT_LOCK_PATH)
+    try:
+        historical = json.loads(
+            git_blob(EXECUTION_HEAD, TOOL_ENVIRONMENT_LOCK_PATH).decode("utf-8")
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise D110ResealError("historical tool environment lock is invalid") from exc
+    if not isinstance(historical, Mapping):
+        raise D110ResealError("historical tool environment lock is not an object")
+    current_static = {
+        key: value for key, value in current.items() if key != "source_files"
+    }
+    historical_static = {
+        key: value for key, value in historical.items() if key != "source_files"
+    }
+    current_sources = current.get("source_files")
+    historical_sources = historical.get("source_files")
+    if (
+        current_static != historical_static
+        or not isinstance(current_sources, Mapping)
+        or not isinstance(historical_sources, Mapping)
+        or set(current_sources) != set(historical_sources)
+    ):
+        raise D110ResealError(
+            "D1.10 changed tool/runtime semantics or source inventory"
+        )
+    changed = {
+        relative
+        for relative in current_sources
+        if current_sources[relative] != historical_sources[relative]
+    }
+    if changed != TOOL_ENVIRONMENT_SOURCE_AMENDMENTS:
+        raise D110ResealError("D1.10 tool source-lock amendment scope differs")
+    for relative, record in current_sources.items():
+        raw = source_bytes(str(relative))
+        if (
+            not isinstance(record, Mapping)
+            or set(record) != {"bytes", "sha256"}
+            or record.get("bytes") != len(raw)
+            or record.get("sha256") != sha256(raw)
+        ):
+            raise D110ResealError(f"tool source lock is stale: {relative}")
+
+
 def verify_historical_boundaries() -> tuple[dict[str, str], dict[str, str]]:
     verify_tracked_hygiene()
     request_011 = ROOT / (
@@ -552,6 +607,7 @@ def verify_historical_boundaries() -> tuple[dict[str, str], dict[str, str]]:
         EXECUTION_HEAD, "COMPANY_HANDOFF_MANIFEST.json"
     ):
         raise D110ResealError("product COMPANY_HANDOFF_MANIFEST.json was rewritten")
+    verify_tool_environment_lock_amendment()
     for relative in PRESERVED_SCIENTIFIC_PATHS:
         if source_bytes(relative) != git_blob(EXECUTION_HEAD, relative):
             raise D110ResealError(f"D1.10 changed frozen scientific input: {relative}")
@@ -841,6 +897,11 @@ def build_amendment(
             "output_token_pools_changed": False,
             "development_hard_caps_changed": False,
             "grader_or_image_revision_changed": False,
+            "prompt_tool_parser_or_limits_changed": False,
+            "runtime_lock_manifest_changed": False,
+            "tool_source_identity_amendment": sorted(
+                TOOL_ENVIRONMENT_SOURCE_AMENDMENTS
+            ),
         },
         "implementation_sha256": dict(sorted(implementation.items())),
         "contracts": dict(sorted(contracts.items())),

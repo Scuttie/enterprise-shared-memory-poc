@@ -102,12 +102,12 @@
       "sha256": "77ff9ef190d9b5837f66c71e24eb2f50b45645c3856db45a66995362e3a9035c"
     },
     "src/enterprise_memory/trimem/git_workspace.py": {
-      "bytes": 36227,
-      "sha256": "aafcfb11496363ce391e2ef2e8cf22a8a0c10ecc14c78a5f95d660cd4ae449de"
+      "bytes": 45919,
+      "sha256": "0975569dce86ebcebf5dd1781b621e57d7145ef933aa8d729d01d4fe209400da"
     },
     "src/enterprise_memory/trimem/production_runtime.py": {
-      "bytes": 136306,
-      "sha256": "7234eb424b0f551d11d69eea53c0410753a6fdee88c58227efa6144fe9b6c9c2"
+      "bytes": 136643,
+      "sha256": "cf502d265281d2abe12b19c204214e256dfe23d7702958ee3fe47fefa69a7247"
     },
     "src/enterprise_memory/trimem/runtime_lock.py": {
       "bytes": 8337,

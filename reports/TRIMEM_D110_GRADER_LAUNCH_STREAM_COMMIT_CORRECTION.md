@@ -71,6 +71,15 @@ checkout is first subjected to the complete pristine-tree/config audit, so an
 explicit rehearsal setting cannot mask index-hidden, ignored, or redirected
 worktree tampering.
 
+The first hosted D1.10 follow-up preflight established both exact harness
+imports and the hermetic Python launch, then exposed a post-preflight evidence
+validator mismatch: the pinned Multi-SWE parser has the 21 production-config
+destinations plus its parser-only `config` destination. The producer and
+validator now share one exact 22-destination constant and reject both missing
+and unexpected parser arguments. The generic product-CI assertion likewise
+binds the already pinned checkout action SHA while retaining `fetch-depth: 0`;
+neither correction relaxes the marker-history audit.
+
 The production-runtime checkpoint validator now also requires and verifies the
 hash-bound `inventory_sha256` proof field. This is checkpoint-proof schema
 hardening only: scientific runtime behavior, model behavior, and every memory

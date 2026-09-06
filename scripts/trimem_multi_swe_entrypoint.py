@@ -55,6 +55,11 @@ EXPECTED_CONFIG_FIELDS = frozenset(
         "workdir",
     }
 )
+# The pinned upstream parser exposes one parser-only destination in addition to
+# every field materialized from the production config.  Pin the complete
+# surface so a missing, renamed, or newly introduced upstream argument fails
+# closed during the credential-free loader self-check.
+EXPECTED_CLI_ARGUMENT_DESTINATIONS = EXPECTED_CONFIG_FIELDS | {"config"}
 LOADER_SELF_CHECK_SCHEMA = "trimem/multi-swe-loader-self-check/1.0"
 LOADER_SELF_CHECK_MODULES = (
     UPSTREAM_MODULE,
@@ -197,7 +202,7 @@ def loader_self_check(harness_root: Path) -> dict[str, Any]:
             if str(getattr(action, "dest", "")) not in {"", "help"}
         }
     )
-    if not EXPECTED_CONFIG_FIELDS <= set(destinations):
+    if set(destinations) != EXPECTED_CLI_ARGUMENT_DESTINATIONS:
         raise MultiSWEEntrypointError("pinned Multi-SWE parser schema differs")
     return {
         "schema": LOADER_SELF_CHECK_SCHEMA,

@@ -18,7 +18,7 @@ import trimem_multi_swe_probe_request as request  # noqa: E402
 def test_product_ci_checks_out_complete_history_for_marker_audit() -> None:
     workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     assert (
-        "- uses: actions/checkout@v4\n"
+        "- uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683\n"
         "        with:\n"
         "          fetch-depth: 0\n"
     ) in workflow.replace("\r\n", "\n")

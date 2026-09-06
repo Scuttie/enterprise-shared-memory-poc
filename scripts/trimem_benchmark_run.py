@@ -127,7 +127,7 @@ from trimem_official_harness_loader_preflight import (  # noqa: E402
     build_invocation_construction_evidence,
 )
 from trimem_multi_swe_entrypoint import (  # noqa: E402
-    EXPECTED_CONFIG_FIELDS as MULTI_EXPECTED_CONFIG_FIELDS,
+    EXPECTED_CLI_ARGUMENT_DESTINATIONS as MULTI_EXPECTED_CLI_ARGUMENT_DESTINATIONS,
     LOADER_SELF_CHECK_MODULES as MULTI_LOADER_SELF_CHECK_MODULES,
 )
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
@@ -795,7 +795,7 @@ def validate_official_harness_loader_preflight_evidence(
         or not isinstance(multi_payload.get("modules"), Mapping)
         or set(multi_payload["modules"]) != expected_multi_modules
         or multi_payload.get("cli_argument_destinations")
-        != sorted(MULTI_EXPECTED_CONFIG_FIELDS)
+        != sorted(MULTI_EXPECTED_CLI_ARGUMENT_DESTINATIONS)
         or any(
             multi_payload.get(name) != expected
             for name, expected in OFFICIAL_HARNESS_PREFLIGHT_ZERO_COUNTERS.items()

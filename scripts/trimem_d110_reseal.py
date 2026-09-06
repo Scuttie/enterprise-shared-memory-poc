@@ -184,6 +184,7 @@ IMPLEMENTATION_PATHS = (
     "tests/unit/test_trimem_grader_terminal_evidence.py",
     "tests/unit/test_trimem_harness_lock.py",
     "tests/unit/test_trimem_multi_prebuilt_evaluation.py",
+    "tests/unit/test_trimem_multi_swe_probe_request.py",
     "tests/unit/test_trimem_multi_swe_preexec.py",
     "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
     "tests/unit/test_trimem_production_runtime.py",

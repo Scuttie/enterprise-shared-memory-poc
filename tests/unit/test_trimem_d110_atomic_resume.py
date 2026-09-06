@@ -172,7 +172,7 @@ def _preflight(
         "harness_revision": benchmark.MULTI_HARNESS_REVISION,
         "modules": multi_modules,
         "cli_argument_destinations": sorted(
-            multi_entrypoint.EXPECTED_CONFIG_FIELDS
+            multi_entrypoint.EXPECTED_CLI_ARGUMENT_DESTINATIONS
         ),
         **zero,
     }
@@ -437,6 +437,25 @@ def test_loader_preflight_binds_exact_python_and_zero_execution_counters(
         _runtime_loader_evidence=evidence["python_loader"],
         _runtime_environment=_preflight_environment(evidence),
     )
+    evidence["multi_self_check"]["payload"][
+        "cli_argument_destinations"
+    ].remove("config")
+    with pytest.raises(
+        benchmark.BenchmarkProcessFailure,
+        match="Multi-SWE self-check identity differs",
+    ):
+        benchmark.validate_official_harness_loader_preflight_evidence(
+            evidence,
+            python_binary=python_binary,
+            _runtime_loader_evidence=evidence["python_loader"],
+            _runtime_environment=_preflight_environment(evidence),
+        )
+    evidence["multi_self_check"]["payload"][
+        "cli_argument_destinations"
+    ].append("config")
+    evidence["multi_self_check"]["payload"][
+        "cli_argument_destinations"
+    ].sort()
     evidence["counters"] = {**evidence["counters"], "grader_containers": 1}
     with pytest.raises(
         benchmark.BenchmarkProcessFailure, match="zero-execution counters"

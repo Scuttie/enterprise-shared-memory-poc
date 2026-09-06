@@ -323,7 +323,9 @@ class _PreflightRunner:
                     "status": "PASS",
                     "harness_revision": official_grader.MULTI_HARNESS_REVISION,
                     "modules": {},
-                    "cli_argument_destinations": [],
+                    "cli_argument_destinations": sorted(
+                        multi_entrypoint.EXPECTED_CLI_ARGUMENT_DESTINATIONS
+                    ),
                     **dict(preflight.ZERO_COUNTERS),
                 },
                 sort_keys=True,
@@ -458,7 +460,10 @@ def test_multi_loader_self_check_imports_only_and_never_runs_cli(
 ) -> None:
     root = tmp_path.resolve()
     monkeypatch.setattr(multi_entrypoint, "_verify_checkout", lambda _path: root)
-    actions = [SimpleNamespace(dest=name) for name in sorted(multi_entrypoint.EXPECTED_CONFIG_FIELDS)]
+    actions = [
+        SimpleNamespace(dest=name)
+        for name in sorted(multi_entrypoint.EXPECTED_CLI_ARGUMENT_DESTINATIONS)
+    ]
     modules: dict[str, object] = {}
     for index, name in enumerate(multi_entrypoint.LOADER_SELF_CHECK_MODULES):
         path = root / (name.replace(".", "/") + ".py")
@@ -487,6 +492,45 @@ def test_multi_loader_self_check_imports_only_and_never_runs_cli(
     assert result["grader_attempts"] == 0
     assert result["grader_containers"] == 0
     assert set(result["modules"]) == set(multi_entrypoint.LOADER_SELF_CHECK_MODULES)
+    assert result["cli_argument_destinations"] == sorted(
+        multi_entrypoint.EXPECTED_CLI_ARGUMENT_DESTINATIONS
+    )
+
+
+@pytest.mark.parametrize("mutation", ["missing", "unexpected"])
+def test_multi_loader_self_check_rejects_any_parser_surface_drift(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    mutation: str,
+) -> None:
+    root = tmp_path.resolve()
+    monkeypatch.setattr(multi_entrypoint, "_verify_checkout", lambda _path: root)
+    destinations = set(multi_entrypoint.EXPECTED_CLI_ARGUMENT_DESTINATIONS)
+    if mutation == "missing":
+        destinations.remove("config")
+    else:
+        destinations.add("unexpected_upstream_argument")
+    actions = [SimpleNamespace(dest=name) for name in sorted(destinations)]
+    modules: dict[str, object] = {}
+    for index, name in enumerate(multi_entrypoint.LOADER_SELF_CHECK_MODULES):
+        path = root / (name.replace(".", "/") + ".py")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"# module {index}\n", encoding="utf-8")
+        module = SimpleNamespace(__file__=str(path))
+        if name == multi_entrypoint.UPSTREAM_MODULE:
+            module.get_parser = lambda: SimpleNamespace(_actions=actions)
+        modules[name] = module
+    monkeypatch.setattr(
+        multi_entrypoint.importlib,
+        "import_module",
+        lambda name: modules[name],
+    )
+
+    with pytest.raises(
+        multi_entrypoint.MultiSWEEntrypointError,
+        match="pinned Multi-SWE parser schema differs",
+    ):
+        multi_entrypoint.loader_self_check(root)
 
 
 def test_multi_loader_self_check_cli_is_disjoint_from_execution_arguments(

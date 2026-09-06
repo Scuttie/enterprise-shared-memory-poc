@@ -1,0 +1,244 @@
+name: TriMem official harness Python loader preflight
+
+on:
+  pull_request:
+  push:
+    branches:
+      - codex/trimem-coder-v1
+
+permissions:
+  contents: read
+
+jobs:
+  exact-toolcache-loader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact TriMem source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.11.10
+          cache: ""
+
+      - name: Install hash-locked benchmark environment
+        run: |
+          set -euo pipefail
+          python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
+          python -m pip install --no-deps --no-build-isolation -e .
+
+      - name: Reproduce exact _010 loader failure and corrected launch
+        run: |
+          set -euo pipefail
+          exact_python="$pythonLocation/bin/python"
+          "$exact_python" - "$exact_python" "$RUNNER_TEMP/trimem-d110-loader-regression.json" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from trimem_atomic_evidence import atomic_write_bytes
+          from trimem_official_grader import SECRET_ENV_NAME, minimal_subprocess_env
+          from trimem_official_harness_loader import (
+              SAFE_ENV_KEYS,
+              build_official_harness_python_loader,
+          )
+
+          exact_python = str(Path(sys.argv[1]).resolve(strict=True))
+          output = Path(sys.argv[2])
+          historical = {
+              key: str(value)
+              for key, value in os.environ.items()
+              if key.upper() in SAFE_ENV_KEYS and not SECRET_ENV_NAME.search(key)
+          }
+          historical["PYTHONUNBUFFERED"] = "1"
+          probe = [exact_python, "-c", "print('TRIMEM_EXACT_PYTHON_STARTED')"]
+          before = subprocess.run(
+              probe,
+              env=historical,
+              capture_output=True,
+              text=False,
+              timeout=30,
+              check=False,
+          )
+          if before.returncode != 127 or b"libpython3.11.so.1.0" not in before.stderr:
+              raise SystemExit("historical stripped loader did not reproduce exact exit 127")
+          corrected = minimal_subprocess_env(
+              os.environ, python_binary=exact_python
+          )
+          loader = build_official_harness_python_loader(
+              os.environ, python_binary=exact_python
+          )
+          if corrected != dict(loader.environment):
+              raise SystemExit("corrected environment differs from canonical loader")
+          after = subprocess.run(
+              probe,
+              env=corrected,
+              capture_output=True,
+              text=False,
+              timeout=30,
+              check=False,
+          )
+          if after.returncode != 0 or after.stdout != b"TRIMEM_EXACT_PYTHON_STARTED\n":
+              raise SystemExit("corrected loader did not start exact Python")
+          zero = {
+              "grader_attempts": 0,
+              "grader_containers": 0,
+              "image_pulls": 0,
+              "model_generation_calls": 0,
+              "model_metadata_requests": 0,
+              "paid_calls": 0,
+              "usd": 0,
+          }
+          report = {
+              "schema": "trimem/d110-exact-010-loader-regression/1.0",
+              "status": "PASS",
+              "marker": "TRIMEM_D110_EXACT_010_LOADER_REGRESSION_PASS",
+              "exact_python": exact_python,
+              "historical_environment_keys": sorted(historical),
+              "historical_ld_library_path_present": "LD_LIBRARY_PATH" in historical,
+              "historical_exit_code": before.returncode,
+              "historical_stdout_sha256": hashlib.sha256(before.stdout).hexdigest(),
+              "historical_stderr_sha256": hashlib.sha256(before.stderr).hexdigest(),
+              "corrected_environment_keys": sorted(corrected),
+              "corrected_environment_sha256": hashlib.sha256(
+                  json.dumps(corrected, sort_keys=True, separators=(",", ":")).encode()
+              ).hexdigest(),
+              "corrected_exit_code": after.returncode,
+              "corrected_stdout_sha256": hashlib.sha256(after.stdout).hexdigest(),
+              "corrected_stderr_sha256": hashlib.sha256(after.stderr).hexdigest(),
+              "python_sha256": loader.evidence["python_binary_sha256"],
+              "libpython_sha256": loader.evidence["libpython_sha256"],
+              "inherited_ld_library_path_used": loader.evidence[
+                  "inherited_ld_library_path_used"
+              ],
+              "ld_preload_present": loader.evidence["ld_preload_present"],
+              "counters": zero,
+          }
+          atomic_write_bytes(
+              output,
+              (
+                  json.dumps(
+                      report,
+                      ensure_ascii=False,
+                      sort_keys=True,
+                      separators=(",", ":"),
+                      allow_nan=False,
+                  )
+                  + "\n"
+              ).encode("utf-8"),
+          )
+          print(report["marker"])
+          PY
+
+      - name: Materialize exact pinned harness sources without Docker
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from trimem_harness_lock import prepare_harnesses
+
+          checkout_root = Path(os.environ["RUNNER_TEMP"]) / "trimem-d110-harnesses"
+          observed = prepare_harnesses(checkout_root)
+          if set(observed) != {
+              "swebench_verified",
+              "multi_swe_bench_mini",
+              "multi_swe_bench_flash",
+          }:
+              raise SystemExit("pinned harness set differs")
+          PY
+
+      - name: Run exact hermetic loader and harness preflight
+        run: |
+          set -euo pipefail
+          exact_python="$pythonLocation/bin/python"
+          test -x "$exact_python"
+          test "$(readlink -f "$exact_python")" = "$(readlink -f "$(command -v python)")"
+          "$exact_python" scripts/trimem_official_harness_loader_preflight.py \
+            --python-binary "$exact_python" \
+            --swe-harness-root "$RUNNER_TEMP/trimem-d110-harnesses/swebench_verified" \
+            --multi-harness-root "$RUNNER_TEMP/trimem-d110-harnesses/multi" \
+            --output "$RUNNER_TEMP/trimem-official-harness-loader-preflight.json"
+
+      - name: Verify zero-execution boundary
+        run: |
+          set -euo pipefail
+          exact_python="$pythonLocation/bin/python"
+          "$exact_python" - \
+            "$RUNNER_TEMP/trimem-official-harness-loader-preflight.json" \
+            "$exact_python" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from trimem_benchmark_run import (
+              validate_official_harness_loader_preflight_evidence,
+          )
+
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          validate_official_harness_loader_preflight_evidence(
+              report,
+              python_binary=sys.argv[2],
+          )
+          if report.get("status") != "PASS" or report.get("marker") != (
+              "TRIMEM_OFFICIAL_HARNESS_LOADER_PREFLIGHT_PASS"
+          ):
+              raise SystemExit("official harness loader preflight did not pass")
+          if report.get("environment_constructor") != (
+              "trimem_official_grader.minimal_subprocess_env"
+          ):
+              raise SystemExit("actual minimal_subprocess_env was not exercised")
+          counters = report.get("counters")
+          expected = {
+              "grader_attempts": 0,
+              "grader_containers": 0,
+              "image_pulls": 0,
+              "model_generation_calls": 0,
+              "model_metadata_requests": 0,
+              "paid_calls": 0,
+              "usd": 0,
+          }
+          if counters != expected:
+              raise SystemExit(f"preflight execution counters differ: {counters!r}")
+          regression = json.loads(
+              Path(
+                  Path(sys.argv[1]).parent / "trimem-d110-loader-regression.json"
+              ).read_text(encoding="utf-8")
+          )
+          if (
+              regression.get("marker")
+              != "TRIMEM_D110_EXACT_010_LOADER_REGRESSION_PASS"
+              or regression.get("historical_exit_code") != 127
+              or regression.get("historical_ld_library_path_present") is not False
+              or regression.get("corrected_exit_code") != 0
+              or regression.get("inherited_ld_library_path_used") is not False
+              or regression.get("ld_preload_present") is not False
+              or regression.get("counters") != expected
+          ):
+              raise SystemExit("exact _010 loader regression evidence differs")
+          PY
+
+      - name: Upload sanitized loader evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-official-harness-loader-preflight
+          path: |
+            ${{ runner.temp }}/trimem-official-harness-loader-preflight.json
+            ${{ runner.temp }}/trimem-d110-loader-regression.json
+          if-no-files-found: error
+          retention-days: 30

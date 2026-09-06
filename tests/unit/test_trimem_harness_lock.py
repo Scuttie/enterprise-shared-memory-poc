@@ -465,7 +465,11 @@ def test_blob_only_rehearsal_reports_zero_execution_and_no_worktree(
 
     assert report["status"] == "PASS"
     assert report["rehearsal_boundary"] == "CROSS_PLATFORM_GIT_BLOB_LOCK_ONLY"
-    assert report["official_grader_viability"] == "NOT_YET_ESTABLISHED"
+    assert report["harness_dependency_lock_status"] == "ESTABLISHED"
+    assert report["official_grader_execution_status"] == (
+        "NOT_PERFORMED_CREDENTIAL_FREE_REHEARSAL"
+    )
+    assert "official_grader_viability" not in report
     assert report["dependencies"] == [
         {
             "benchmark_ids": ["fixture_benchmark"],
@@ -608,7 +612,11 @@ def test_cli_failure_still_writes_zero_counter_report(tmp_path: Path) -> None:
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["status"] == "FAIL_CLOSED"
     assert report["endpoint"] == harness_lock.REHEARSAL_FAILURE_ENDPOINT
-    assert report["official_grader_viability"] == "NOT_YET_ESTABLISHED"
+    assert report["harness_dependency_lock_status"] == "NOT_ESTABLISHED"
+    assert report["official_grader_execution_status"] == (
+        "NOT_PERFORMED_CREDENTIAL_FREE_REHEARSAL"
+    )
+    assert "official_grader_viability" not in report
     assert all(value == 0 for value in report["execution_counters"].values())
 
 

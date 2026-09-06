@@ -1,5 +1,5 @@
 name: TriMem V1 credential-free DEV toolchain rehearsal
-# D1.9 exact-head pre-execution credential-free gate.
+# D1.10 grader-launch, atomic-cell, and failure-aware-resume gate.
 
 on:
   push:
@@ -20,6 +20,8 @@ on:
       - artifacts/trimem_v1/development_terminal_contract_inventory.json
       - artifacts/trimem_v1/development_bounded_context_amendment.json
       - artifacts/trimem_v1/development_bounded_context_inventory.json
+      - artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json
+      - artifacts/trimem_v1/development_grader_launch_stream_commit_inventory.json
       - artifacts/trimem_v1/development_tuning_exec/exec-008/terminal-status-contract-mismatch-receipt.json
       - artifacts/trimem_v1/development_tuning_exec/exec-009/bounded-short-term-context-failure-receipt.json
       - artifacts/trimem_v1/development_tuning_exec/exec-009/request-only-boundary-fixture.json
@@ -28,18 +30,24 @@ on:
       - artifacts/trimem_v1/solve_output_budget_contract_lock.json
       - reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_008_TERMINAL_STATUS_CONTRACT_MISMATCH.md
       - reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_009_BOUNDED_CONTEXT_FAILURE.md
+      - reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md
       - scripts/trimem_development_trigger_preflight.py
       - scripts/trimem_development_trigger_d15.py
       - scripts/trimem_development_trigger_d18.py
       - scripts/trimem_development_trigger_d19.py
       - scripts/trimem_context_roundtrip.py
       - scripts/trimem_d19_reseal.py
+      - scripts/trimem_d110_reseal.py
       - scripts/trimem_audit_encrypted_evidence.py
       - scripts/trimem_action_canary.py
       - scripts/trimem_benchmark_matrix.py
       - scripts/trimem_benchmark_run.py
       - scripts/trimem_m2_candidates.py
       - scripts/trimem_multi_swe_contract.py
+      - scripts/trimem_multi_swe_entrypoint.py
+      - scripts/trimem_official_grader.py
+      - scripts/trimem_official_harness_loader.py
+      - scripts/trimem_official_harness_loader_preflight.py
       - scripts/trimem_public_artifact.py
       - scripts/trimem_pytest_no_skip.py
       - scripts/trimem_exec_approval.py
@@ -47,6 +55,8 @@ on:
       - scripts/trimem_install_pinned_gh.py
       - scripts/trimem_verify_gh_lock.py
       - scripts/trimem_verify_ready.py
+      - scripts/trimem_verify_remote_custody.py
+      - scripts/trimem_run_with_resume.py
       - scripts/trimem_openai_model_access_check.py
       - scripts/trimem_validate_openai_credential.py
       - scripts/trimem_verify_openai_key_binding.py
@@ -83,7 +93,13 @@ on:
       - tests/unit/test_trimem_d19_request_only_resume.py
       - tests/unit/test_trimem_d19_terminal_contract.py
       - tests/unit/test_trimem_d19_trigger.py
+      - tests/unit/test_trimem_d110_atomic_resume.py
+      - tests/unit/test_trimem_d110_checkout_custody.py
+      - tests/unit/test_trimem_d110_official_harness_loader.py
+      - tests/unit/test_trimem_d110_resume_fail_closed.py
+      - tests/unit/test_trimem_d110_status_and_reseal.py
       - tests/unit/test_trimem_evidence_custody.py
+      - tests/unit/test_trimem_remote_custody.py
       - tests/unit/test_trimem_git_workspace.py
       - tests/unit/test_trimem_production_runtime.py
       - tests/unit/test_trimem_runtime_boundaries.py
@@ -119,15 +135,18 @@ jobs:
         run: >-
           python scripts/trimem_pytest_no_skip.py
           tests/unit/test_trimem_d18_terminal_contract_integration.py
+          tests/unit/test_trimem_d110_atomic_resume.py
+          tests/unit/test_trimem_d110_checkout_custody.py
+          tests/unit/test_trimem_d110_official_harness_loader.py
+          tests/unit/test_trimem_d110_resume_fail_closed.py
+          tests/unit/test_trimem_remote_custody.py
           tests/unit/test_trimem_d19_bounded_short_term_context.py::test_mixed_72_cell_aggregate_public_and_terminal_ledger_round_trip
       - name: Verify bounded context round trip before provider access
         run: python scripts/trimem_context_roundtrip.py
-      - name: Validate D1.9 correction source before trigger
-        run: >-
-          python -I -S scripts/trimem_development_trigger_d19.py
-          --repository .
-          --validate-source
-          --source-head "$GITHUB_SHA"
+      - name: Validate exact D1.10 credential-free seal
+        run: |
+          python -I -S scripts/trimem_freeze.py --check --require-git-tracked
+          python scripts/trimem_d110_reseal.py --check
       - name: Install exact pinned GitHub CLI
         run: |
           set -euo pipefail

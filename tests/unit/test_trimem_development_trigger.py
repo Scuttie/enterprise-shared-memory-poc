@@ -536,7 +536,7 @@ def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
     freeze_rehearsal = (
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
-    rehearsal = "python -I -S scripts/trimem_development_trigger_d19.py --help"
+    rehearsal = "python -I -S scripts/trimem_d110_reseal.py --help"
     install = "python -m pip install --require-hashes"
     assert workflow.count(freeze_rehearsal) == 1
     assert workflow.count(rehearsal) == 1

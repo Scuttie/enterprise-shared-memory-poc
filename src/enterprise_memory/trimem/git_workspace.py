@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import posixpath
 import re
+import stat
 import subprocess
 import tempfile
 import threading
@@ -38,6 +39,71 @@ TOOL_NAMES = frozenset({
 })
 
 _DIGEST_IMAGE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/:@-]*@sha256:[0-9a-f]{64}$")
+
+
+def validate_safe_local_git_configuration(root: Path) -> None:
+    """Reject repository-local configuration capable of host code execution."""
+
+    environment = {
+        "PATH": os.environ.get("PATH", ""),
+        "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+        "WINDIR": os.environ.get("WINDIR", ""),
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_PAGER": "cat",
+        "LC_ALL": "C",
+        "LANG": "C",
+    }
+    completed = subprocess.run(
+        [
+            "git",
+            "--no-replace-objects",
+            f"--git-dir={root / '.git'}",
+            "config",
+            "--local",
+            "--no-includes",
+            "--null",
+            "--name-only",
+            "--list",
+        ],
+        cwd=root,
+        env=environment,
+        capture_output=True,
+        text=False,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise ToolExecutionError("local Git configuration could not be inspected")
+    try:
+        keys = [
+            value.decode("utf-8", errors="strict").lower()
+            for value in completed.stdout.split(b"\0")
+            if value
+        ]
+    except UnicodeDecodeError as exc:
+        raise ToolExecutionError("local Git configuration is not UTF-8") from exc
+    forbidden_exact = {
+        "core.attributesfile",
+        "core.fsmonitor",
+        "core.hookspath",
+        "core.pager",
+        "core.worktree",
+        "interactive.difffilter",
+    }
+    if any(
+        key in forbidden_exact
+        or key.startswith("filter.")
+        or key.startswith("include.")
+        or key.startswith("includeif.")
+        or (
+            key.startswith("diff.")
+            and (key.endswith(".command") or key.endswith(".textconv"))
+        )
+        for key in keys
+    ):
+        raise ToolExecutionError("local Git configuration can execute host code")
 
 
 class DockerSandboxCommandRunner:
@@ -285,6 +351,7 @@ class GitCheckoutWorkspace:
                 or not re.fullmatch(r"[0-9a-f]{64}", digest)
             ):
                 raise ValueError("sandbox command runner must expose a sha256 content hash")
+        self._validate_local_git_configuration()
         observed = self._git("rev-parse", "HEAD").stdout.strip()
         if observed != self.base_commit:
             raise ToolExecutionError("workspace HEAD differs from frozen base commit")
@@ -338,11 +405,8 @@ class GitCheckoutWorkspace:
             if path.exists() and path.stat().st_size > 16_384:
                 raise ToolExecutionError("FULL_FILE_REWRITE_TOO_LARGE_USE_REPLACE_TEXT")
             path.parent.mkdir(parents=True, exist_ok=True)
-            new_file = not path.exists()
             path.write_text(content, encoding="utf-8", newline="\n")
             relative = path.relative_to(self.root).as_posix()
-            if new_file:
-                self._git("add", "--intent-to-add", "--", relative)
             return {
                 "path": relative,
                 "content_hash": sha256_bytes(content.encode("utf-8")),
@@ -418,22 +482,65 @@ class GitCheckoutWorkspace:
         raise AssertionError("unreachable")
 
     def patch(self) -> str:
-        # Intent-to-add makes new files visible without staging their content.
-        for relative in self._untracked_files():
-            self._git("add", "--intent-to-add", "--", relative)
-        return self._git("diff", "--binary", "--no-ext-diff", "--", check=True).stdout
+        # Rebuild an isolated index from the immutable base tree.  The task
+        # checkout's mutable index (including assume-unchanged/skip-worktree)
+        # and ignore configuration must not change checkpoint evidence.
+        self._validate_local_git_configuration()
+        with tempfile.TemporaryDirectory(prefix="trimem-workspace-index-") as directory:
+            index_file = Path(directory) / "index"
+            self._git("read-tree", self.base_commit, index_file=index_file)
+            untracked = self._git(
+                "ls-files",
+                "--others",
+                "-z",
+                index_file=index_file,
+            ).stdout.split("\0")
+            untracked_paths = sorted(item for item in untracked if item)
+            if untracked_paths:
+                self._git(
+                    "add",
+                    "-f",
+                    "--intent-to-add",
+                    "--pathspec-from-file=-",
+                    "--pathspec-file-nul",
+                    input_text="\0".join(untracked_paths) + "\0",
+                    index_file=index_file,
+                )
+            return self._git(
+                "diff",
+                "--binary",
+                "--no-ext-diff",
+                "--no-textconv",
+                "--",
+                check=True,
+                index_file=index_file,
+            ).stdout
 
     def checkpoint_state(self) -> Mapping[str, Any]:
+        self._validate_local_git_configuration()
+        inventory_before = self._inventory_sha256()
         patch = self.patch()
+        inventory_after = self._inventory_sha256()
+        if inventory_before != inventory_after:
+            raise ToolExecutionError(
+                "workspace changed while checkpoint evidence was constructed"
+            )
         return {
             "kind": "trimem-git-checkout-workspace-v1",
             "base_commit": self.base_commit,
             "patch": patch,
             "patch_sha256": hashlib.sha256(patch.encode("utf-8")).hexdigest(),
+            "inventory_sha256": inventory_after,
         }
 
     def _checkpoint_patch(self, state: Mapping[str, Any]) -> str:
-        if set(state) != {"kind", "base_commit", "patch", "patch_sha256"}:
+        if set(state) != {
+            "kind",
+            "base_commit",
+            "patch",
+            "patch_sha256",
+            "inventory_sha256",
+        }:
             raise ToolExecutionError("Git workspace checkpoint shape mismatch")
         if state.get("kind") != "trimem-git-checkout-workspace-v1" or state.get("base_commit") != self.base_commit:
             raise ToolExecutionError("Git workspace checkpoint identity mismatch")
@@ -441,6 +548,12 @@ class GitCheckoutWorkspace:
         digest = state.get("patch_sha256")
         if not isinstance(patch, str) or hashlib.sha256(patch.encode("utf-8")).hexdigest() != digest:
             raise ToolExecutionError("Git workspace checkpoint patch hash mismatch")
+        inventory_digest = state.get("inventory_sha256")
+        if (
+            not isinstance(inventory_digest, str)
+            or re.fullmatch(r"[0-9a-f]{64}", inventory_digest) is None
+        ):
+            raise ToolExecutionError("Git workspace inventory hash is invalid")
         return patch
 
     def _replace_patch(self, patch: str) -> None:
@@ -466,15 +579,24 @@ class GitCheckoutWorkspace:
 
     def restore_checkpoint(self, state: Mapping[str, Any]) -> None:
         patch = self._checkpoint_patch(state)
-        current = self.patch()
-        if current == patch:
+        current_state = self.checkpoint_state()
+        if canonical_bytes(current_state) == canonical_bytes(state):
             return
-        if current:
+        if current_state["patch"]:
             raise ToolExecutionError("Git workspace is neither clean nor checkpoint-identical")
         if patch:
             self._git("apply", "--binary", "--whitespace=nowarn", "-", input_text=patch)
-            if self.patch() != patch:
-                raise ToolExecutionError("restored Git patch differs from checkpoint")
+        if canonical_bytes(self.checkpoint_state()) != canonical_bytes(state):
+            if patch:
+                self._git(
+                    "apply",
+                    "--reverse",
+                    "--binary",
+                    "--whitespace=nowarn",
+                    "-",
+                    input_text=patch,
+                )
+            raise ToolExecutionError("restored Git workspace differs from checkpoint")
 
     def recover_completed_tool(
         self,
@@ -534,6 +656,8 @@ class GitCheckoutWorkspace:
                 "checkpoint rollback requires a disposable checkout factory"
             )
         self._replace_patch(self._checkpoint_patch(state))
+        if canonical_bytes(self.checkpoint_state()) != canonical_bytes(state):
+            raise ToolExecutionError("rolled-back Git workspace differs from checkpoint")
 
     def grader_context(self, *, base_commit: str) -> WorkspaceGraderContext:
         if base_commit != self.base_commit:
@@ -546,12 +670,111 @@ class GitCheckoutWorkspace:
         )
 
     def _repository_files(self) -> list[str]:
-        tracked = self._git("ls-files", "-z").stdout.split("\0")
+        tracked = self._git(
+            "ls-tree", "-rz", "--name-only", self.base_commit
+        ).stdout.split("\0")
         return sorted(set(item for item in tracked if item) | set(self._untracked_files()))
 
     def _untracked_files(self) -> list[str]:
-        values = self._git("ls-files", "--others", "--exclude-standard", "-z").stdout.split("\0")
-        return sorted(item for item in values if item)
+        with tempfile.TemporaryDirectory(prefix="trimem-workspace-index-") as directory:
+            index_file = Path(directory) / "index"
+            self._git("read-tree", self.base_commit, index_file=index_file)
+            values = self._git(
+                "ls-files", "--others", "-z", index_file=index_file
+            ).stdout.split("\0")
+            return sorted(item for item in values if item)
+
+    def _inventory_sha256(self) -> str:
+        """Hash every lexical work-tree entry without consulting Git ignores."""
+
+        rows: list[dict[str, object]] = []
+        for current_root, directory_names, file_names in os.walk(
+            self.root,
+            topdown=True,
+            followlinks=False,
+        ):
+            current = Path(current_root)
+            if current == self.root and ".git" in directory_names:
+                directory_names.remove(".git")
+            directory_names.sort()
+            for name in sorted(list(directory_names)):
+                candidate = current / name
+                relative = candidate.relative_to(self.root).as_posix()
+                status = os.lstat(candidate)
+                reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+                attributes = getattr(status, "st_file_attributes", 0)
+                if stat.S_ISLNK(status.st_mode):
+                    directory_names.remove(name)
+                    target = os.readlink(candidate)
+                    raw_target = (
+                        target
+                        if isinstance(target, bytes)
+                        else os.fsencode(target)
+                    )
+                    rows.append(
+                        {
+                            "kind": "symlink",
+                            "path": relative,
+                            "sha256": hashlib.sha256(raw_target).hexdigest(),
+                        }
+                    )
+                elif bool(reparse_flag & attributes):
+                    raise ToolExecutionError(
+                        "workspace inventory contains an unsupported reparse point"
+                    )
+                elif stat.S_ISDIR(status.st_mode):
+                    rows.append({"kind": "directory", "path": relative})
+                else:
+                    raise ToolExecutionError(
+                        "workspace inventory contains a special directory entry"
+                    )
+            for name in sorted(file_names):
+                candidate = current / name
+                relative = candidate.relative_to(self.root).as_posix()
+                status = os.lstat(candidate)
+                reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+                attributes = getattr(status, "st_file_attributes", 0)
+                if stat.S_ISLNK(status.st_mode):
+                    target = os.readlink(candidate)
+                    raw_target = (
+                        target
+                        if isinstance(target, bytes)
+                        else os.fsencode(target)
+                    )
+                    rows.append(
+                        {
+                            "kind": "symlink",
+                            "path": relative,
+                            "sha256": hashlib.sha256(raw_target).hexdigest(),
+                        }
+                    )
+                elif bool(reparse_flag & attributes):
+                    raise ToolExecutionError(
+                        "workspace inventory contains an unsupported reparse point"
+                    )
+                elif stat.S_ISREG(status.st_mode):
+                    rows.append(
+                        {
+                            "executable": bool(status.st_mode & stat.S_IXUSR)
+                            if os.name != "nt"
+                            else False,
+                            "kind": "file",
+                            "path": relative,
+                            "sha256": hashlib.sha256(
+                                candidate.read_bytes()
+                            ).hexdigest(),
+                        }
+                    )
+                else:
+                    raise ToolExecutionError(
+                        "workspace inventory contains a special file"
+                    )
+        return sha256_bytes(canonical_bytes(rows))
+
+    def _validate_local_git_configuration(self) -> None:
+        """Reject repository-local command hooks before any workspace Git read."""
+
+        validate_safe_local_git_configuration(self.root)
 
     def _read_file_window(self, path: Path, arguments: Mapping[str, Any]) -> dict[str, Any]:
         start = arguments.get("start_line") or 1
@@ -621,18 +844,53 @@ class GitCheckoutWorkspace:
                 raise ToolExecutionError("symlink repository paths are refused")
         return target
 
-    def _git(self, *args: str, check: bool = True, input_text: Optional[str] = None):
+    def _git(
+        self,
+        *args: str,
+        check: bool = True,
+        input_text: Optional[str] = None,
+        index_file: Optional[Path] = None,
+    ):
+        environment = {
+            "PATH": os.environ.get("PATH", ""),
+            "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+            "WINDIR": os.environ.get("WINDIR", ""),
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_NO_REPLACE_OBJECTS": "1",
+            "GIT_TERMINAL_PROMPT": "0",
+            "GIT_PAGER": "cat",
+            "LC_ALL": "C",
+            "LANG": "C",
+        }
+        if index_file is not None:
+            environment["GIT_INDEX_FILE"] = str(index_file)
+        command = [
+            "git",
+            "--no-replace-objects",
+            f"--git-dir={self.root / '.git'}",
+            f"--work-tree={self.root}",
+            "-c",
+            "core.fsmonitor=false",
+            "-c",
+            f"core.hooksPath={os.devnull}",
+            *args,
+        ]
         if input_text is None:
             raw = subprocess.run(
-                ["git", "-C", str(self.root), *args],
+                command,
+                cwd=self.root,
+                env=environment,
                 capture_output=True, text=True, encoding="utf-8", errors="strict", check=False,
             )
             completed = raw
         else:
-            # Text-mode stdin translates LF to CRLF on Windows and corrupts a
-            # canonical Git patch. Send exact UTF-8 bytes on every platform.
+            # Text-mode stdin translates LF to CRLF on Windows and can corrupt
+            # canonical patches/pathspec streams. Send exact UTF-8 bytes.
             raw = subprocess.run(
-                ["git", "-C", str(self.root), *args],
+                command,
+                cwd=self.root,
+                env=environment,
                 input=input_text.encode("utf-8"), capture_output=True, check=False,
             )
             completed = SimpleNamespace(

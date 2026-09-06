@@ -16,11 +16,13 @@ from dataclasses import asdict, replace
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
 import platform
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -44,6 +46,7 @@ from enterprise_memory.trimem.accounting import RawEvidenceLedger, strict_json_l
 from enterprise_memory.trimem.agent_runtime import (  # noqa: E402
     AgentRunResult,
     CodingTask,
+    ExperienceExtraction,
     TriMemAgentRuntime,
 )
 from enterprise_memory.trimem.benchmark_seed import seed_benchmark_identities  # noqa: E402
@@ -64,6 +67,7 @@ from enterprise_memory.trimem.gateway import (  # noqa: E402
 from enterprise_memory.trimem.git_workspace import (  # noqa: E402
     DockerSandboxCommandRunner,
     GitCheckoutWorkspaceFactory,
+    validate_safe_local_git_configuration,
 )
 from enterprise_memory.trimem.grader import (  # noqa: E402
     GradeRequest,
@@ -91,7 +95,12 @@ from enterprise_memory.trimem.scientific_terminal import (  # noqa: E402
     validate_scientific_terminal_result,
 )
 from trimem_benchmark_matrix import sequence_sha256  # noqa: E402
-from trimem_harness_lock import prepare_harnesses  # noqa: E402
+from trimem_harness_lock import (  # noqa: E402
+    HarnessLockError,
+    prepare_harnesses,
+    validate_lexical_directory_chain,
+    validate_pristine_checkout,
+)
 from trimem_m2_candidates import (  # noqa: E402
     CANDIDATE_IDS,
     candidate_row,
@@ -101,7 +110,26 @@ from trimem_m2_candidates import (  # noqa: E402
     select_development_candidate,
     validate_selected_m2,
 )
-from trimem_official_grader import FrozenOfficialTarget, OfficialHarnessGraderGateway  # noqa: E402
+from trimem_official_grader import (  # noqa: E402
+    MULTI_HARNESS_REVISION,
+    SWE_HARNESS_REVISION,
+    FrozenOfficialTarget,
+    OfficialHarnessGraderGateway,
+    minimal_subprocess_env,
+)
+from trimem_official_harness_loader import (  # noqa: E402
+    EXPECTED_LIBPYTHON,
+    LOADER_PROBE_CODE,
+    build_official_harness_python_loader,
+)
+from trimem_official_harness_loader_preflight import (  # noqa: E402
+    SWE_IMPORT_PROBE_CODE,
+    build_invocation_construction_evidence,
+)
+from trimem_multi_swe_entrypoint import (  # noqa: E402
+    EXPECTED_CONFIG_FIELDS as MULTI_EXPECTED_CONFIG_FIELDS,
+    LOADER_SELF_CHECK_MODULES as MULTI_LOADER_SELF_CHECK_MODULES,
+)
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     REQUEST_SCHEMA as GRADER_SMOKE_REQUEST_SCHEMA,
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
@@ -213,7 +241,7 @@ RESERVED_LEDGER_TASK_ARM_FIELDS = TERMINAL_LEDGER_TASK_ARM_FIELDS - {
     "container_started",
 }
 LEDGER_TASK_ARM_TERMINAL_STATUSES = frozenset(
-    {SCIENTIFIC_LEDGER_TERMINAL_STATUS, "OFFICIAL_GRADER_FAILURE"}
+    {SCIENTIFIC_LEDGER_TERMINAL_STATUS}
 )
 MAX_LEDGER_INPUT_BOUND_PER_CALL = 262_000
 MAX_LEDGER_OUTPUT_CAP_BY_CALL_KIND = {
@@ -243,6 +271,27 @@ GRADER_SMOKE_EXEC_REQUEST = Path(
     GRADER_SMOKE_SENTINEL_PATH
 )
 DEVELOPMENT_EXEC_REQUEST = Path(DEVELOPMENT_SENTINEL_PATH)
+OFFICIAL_HARNESS_LOADER_PREFLIGHT = Path(
+    "artifacts/trimem_v1/benchmark_exec/control/official-harness-loader-preflight.json"
+)
+OFFICIAL_HARNESS_LOADER_PREFLIGHT_SCHEMA = (
+    "trimem/official-harness-loader-preflight/1.0"
+)
+OFFICIAL_HARNESS_LOADER_PREFLIGHT_PASS = (
+    "TRIMEM_OFFICIAL_HARNESS_LOADER_PREFLIGHT_PASS"
+)
+OFFICIAL_HARNESS_PYTHON_LOADER_SCHEMA = (
+    "trimem/official-harness-python-loader/1.0"
+)
+OFFICIAL_HARNESS_PREFLIGHT_ZERO_COUNTERS = {
+    "model_metadata_requests": 0,
+    "model_generation_calls": 0,
+    "paid_calls": 0,
+    "image_pulls": 0,
+    "grader_attempts": 0,
+    "grader_containers": 0,
+    "usd": 0,
+}
 OFFICIAL_DATASET_URLS = {
     "swebench_verified": "https://huggingface.co/datasets/SWE-bench/SWE-bench_Verified/resolve/{revision}/{path}",
     "multi_swe_bench_mini": "https://huggingface.co/datasets/ByteDance-Seed/Multi-SWE-bench_mini/resolve/{revision}/{path}",
@@ -252,6 +301,53 @@ OFFICIAL_DATASET_URLS = {
 
 class BenchmarkExecutionError(RuntimeError):
     pass
+
+
+PROCESS_DISPOSITIONS = frozenset(
+    {
+        "SUCCESS",
+        "RESUME_SAFE_DURABLE_SUFFIX",
+        "RESUME_SAFE_CELL_COMMIT_JOURNAL",
+        "GLOBAL_ENVIRONMENT_FAILURE",
+        "GLOBAL_CREDENTIAL_FAILURE",
+        "GLOBAL_MODEL_IDENTITY_FAILURE",
+        "GLOBAL_LEDGER_INTEGRITY_FAILURE",
+        "GLOBAL_GRADER_INFRA_FAILURE",
+        "GLOBAL_EVIDENCE_FAILURE",
+        "UNKNOWN_FAILURE",
+    }
+)
+RESUME_SAFE_PROCESS_DISPOSITIONS = frozenset(
+    {"RESUME_SAFE_DURABLE_SUFFIX", "RESUME_SAFE_CELL_COMMIT_JOURNAL"}
+)
+GRADER_LIFECYCLE_STATES = (
+    "GRADER_NOT_PREPARED",
+    "GRADER_PREFLIGHT_PASSED",
+    "GRADER_REQUEST_RECORDED",
+    "GRADER_PROCESS_STARTED",
+    "GRADER_CONTAINER_STARTED",
+    "GRADER_TERMINAL_RESULT_CAPTURED",
+    "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+    "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+    "GRADER_RESULT_VALIDATED",
+)
+CELL_COMMIT_STATES = (
+    "PREPARED",
+    "RESULT_WRITTEN",
+    "LEDGER_TERMINAL",
+    "CURSOR_ADVANCED",
+    "COMMITTED",
+)
+
+
+class BenchmarkProcessFailure(BenchmarkExecutionError):
+    """Failure carrying the only disposition the same-attempt driver may trust."""
+
+    def __init__(self, disposition: str, message: str):
+        if disposition not in PROCESS_DISPOSITIONS - {"SUCCESS"}:
+            raise ValueError("invalid benchmark process disposition")
+        super().__init__(message)
+        self.disposition = disposition
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -279,6 +375,522 @@ def read_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def validate_official_harness_loader_preflight_evidence(
+    value: Mapping[str, Any],
+    *,
+    python_binary: str | Path = sys.executable,
+    _runtime_loader_evidence: Optional[Mapping[str, Any]] = None,
+    _runtime_environment: Optional[Mapping[str, str]] = None,
+) -> dict[str, Any]:
+    """Validate the workflow's no-container preflight against this process.
+
+    The report is not a generic PASS flag.  It is accepted only when its
+    producer contract, zero-execution counters, pinned harness revisions, and
+    exact interpreter bytes all agree with the benchmark process that will
+    construct the official grader.
+    """
+
+    def fail(message: str) -> None:
+        raise BenchmarkProcessFailure(
+            "GLOBAL_ENVIRONMENT_FAILURE",
+            "official harness loader preflight " + message,
+        )
+
+    if not isinstance(value, Mapping):
+        fail("is not an object")
+    evidence = dict(value)
+    required_top_level = {
+        "schema",
+        "status",
+        "marker",
+        "environment_constructor",
+        "python_loader",
+        "environment_identity_sha256",
+        "environment_keys",
+        "swe_revision",
+        "multi_revision",
+        "swe_import_check",
+        "multi_self_check",
+        "invocation_construction",
+        "counters",
+    }
+    if (
+        set(evidence) != required_top_level
+        or evidence.get("schema") != OFFICIAL_HARNESS_LOADER_PREFLIGHT_SCHEMA
+        or evidence.get("status") != "PASS"
+        or evidence.get("marker") != OFFICIAL_HARNESS_LOADER_PREFLIGHT_PASS
+        or evidence.get("environment_constructor")
+        != "trimem_official_grader.minimal_subprocess_env"
+        or not isinstance(evidence.get("environment_identity_sha256"), str)
+        or SHA256.fullmatch(evidence["environment_identity_sha256"]) is None
+        or not isinstance(evidence.get("environment_keys"), list)
+        or evidence["environment_keys"] != sorted(set(evidence["environment_keys"]))
+        or any(
+            not isinstance(name, str) or not name
+            for name in evidence["environment_keys"]
+        )
+    ):
+        fail("schema/status marker differs")
+    environment_identity = evidence.get("environment_identity_sha256")
+    environment_keys = evidence.get("environment_keys")
+    forbidden_environment_keys = {
+        "LD_PRELOAD",
+        "PYTHONHOME",
+        "PYTHONPATH",
+        "VIRTUAL_ENV",
+    }
+    if (
+        not isinstance(environment_identity, str)
+        or SHA256.fullmatch(environment_identity) is None
+        or not isinstance(environment_keys, list)
+        or environment_keys != sorted(set(environment_keys))
+        or not all(isinstance(name, str) and name for name in environment_keys)
+        or forbidden_environment_keys.intersection(environment_keys)
+    ):
+        fail("generated environment identity differs")
+    counters = evidence.get("counters")
+    if (
+        not isinstance(counters, Mapping)
+        or set(counters) != set(OFFICIAL_HARNESS_PREFLIGHT_ZERO_COUNTERS)
+        or any(
+            type(counters.get(name)) is not int
+            or counters.get(name) != expected
+            for name, expected in OFFICIAL_HARNESS_PREFLIGHT_ZERO_COUNTERS.items()
+        )
+    ):
+        fail("zero-execution counters differ")
+
+    try:
+        expected_python = Path(python_binary).resolve(strict=True)
+    except OSError:
+        fail("exact Python binary does not resolve")
+        raise AssertionError("unreachable")
+    if not expected_python.is_file():
+        fail("exact Python binary is not a file")
+    expected_python_raw = expected_python.read_bytes()
+    loader = evidence.get("python_loader")
+    if not isinstance(loader, Mapping):
+        fail("Python-loader evidence is absent")
+    required_loader_fields = {
+        "schema",
+        "python_binary",
+        "python_binary_realpath",
+        "python_binary_sha256",
+        "python_binary_bytes",
+        "python_binary_mode",
+        "python_version",
+        "python_prefix",
+        "libdir",
+        "libdir_mode",
+        "libpython_path",
+        "libpython_realpath",
+        "libpython_sha256",
+        "libpython_bytes",
+        "libpython_mode",
+        "inherited_ld_library_path_used",
+        "ld_preload_present",
+        "generated_environment_keys",
+        "loader_probe_argv",
+        "loader_probe_exit_code",
+        "loader_probe_stdout_sha256",
+        "loader_probe_stderr_sha256",
+        "status",
+    }
+    if set(loader) != required_loader_fields:
+        fail("Python-loader evidence field set differs")
+    try:
+        observed_python = Path(str(loader.get("python_binary_realpath"))).resolve(
+            strict=True
+        )
+        supplied_python = Path(str(loader.get("python_binary"))).resolve(strict=True)
+    except OSError:
+        fail("Python-loader identity does not resolve")
+        raise AssertionError("unreachable")
+    probe_argv = loader.get("loader_probe_argv")
+    if (
+        loader.get("schema") != OFFICIAL_HARNESS_PYTHON_LOADER_SCHEMA
+        or loader.get("status") != "PASS"
+        or observed_python != expected_python
+        or supplied_python != expected_python
+        or loader.get("python_binary_realpath") != str(expected_python)
+        or loader.get("python_binary_sha256")
+        != sha256_bytes(expected_python_raw)
+        or loader.get("python_binary_bytes") != len(expected_python_raw)
+        or loader.get("python_version") != sys.version
+        or loader.get("loader_probe_exit_code") != 0
+        or probe_argv != [str(expected_python), "-c", LOADER_PROBE_CODE]
+        or not isinstance(loader.get("python_binary_mode"), str)
+        or re.fullmatch(r"[0-7]{4}", loader["python_binary_mode"]) is None
+        or not isinstance(loader.get("loader_probe_stdout_sha256"), str)
+        or SHA256.fullmatch(loader["loader_probe_stdout_sha256"]) is None
+        or not isinstance(loader.get("loader_probe_stderr_sha256"), str)
+        or SHA256.fullmatch(loader["loader_probe_stderr_sha256"]) is None
+        or loader.get("inherited_ld_library_path_used") is not False
+        or loader.get("ld_preload_present") is not False
+        or loader.get("generated_environment_keys") != environment_keys
+    ):
+        fail("exact Python-loader identity differs")
+
+    try:
+        python_prefix = Path(str(loader.get("python_prefix"))).resolve(strict=True)
+    except OSError:
+        fail("Python installation prefix does not resolve")
+        raise AssertionError("unreachable")
+    if not python_prefix.is_dir():
+        fail("Python installation prefix is not a directory")
+    if os.name == "posix":
+        try:
+            libdir = Path(str(loader.get("libdir"))).resolve(strict=True)
+            libpython_path = Path(str(loader.get("libpython_path")))
+            libpython_realpath = Path(
+                str(loader.get("libpython_realpath"))
+            ).resolve(strict=True)
+        except OSError:
+            fail("Python loader library identity does not resolve")
+            raise AssertionError("unreachable")
+        try:
+            libdir.relative_to(python_prefix)
+            libpython_realpath.relative_to(python_prefix)
+        except ValueError:
+            fail("Python loader library escaped its installation prefix")
+        try:
+            resolved_declared_library = libpython_path.resolve(strict=True)
+        except OSError:
+            fail("declared libpython path does not resolve")
+            raise AssertionError("unreachable")
+        libpython_raw = libpython_realpath.read_bytes()
+        current_libdir_mode = stat.S_IMODE(libdir.stat().st_mode)
+        current_libpython_mode = stat.S_IMODE(libpython_realpath.stat().st_mode)
+        if (
+            not libdir.is_dir()
+            or not libpython_realpath.is_file()
+            or libpython_path.name != EXPECTED_LIBPYTHON
+            or libpython_path.parent.resolve(strict=True) != libdir
+            or resolved_declared_library != libpython_realpath
+            or loader.get("libdir") != str(libdir)
+            or loader.get("libpython_realpath") != str(libpython_realpath)
+            or loader.get("libpython_sha256") != sha256_bytes(libpython_raw)
+            or loader.get("libpython_bytes") != len(libpython_raw)
+            or loader.get("libdir_mode") != f"{current_libdir_mode:04o}"
+            or loader.get("libpython_mode") != f"{current_libpython_mode:04o}"
+            or current_libdir_mode & (stat.S_IWGRP | stat.S_IWOTH)
+            or current_libpython_mode & (stat.S_IWGRP | stat.S_IWOTH)
+            or "LD_LIBRARY_PATH" not in environment_keys
+        ):
+            fail("exact libpython loader identity differs")
+    elif any(
+        loader.get(name) is not None
+        for name in (
+            "libdir",
+            "libdir_mode",
+            "libpython_path",
+            "libpython_realpath",
+            "libpython_sha256",
+            "libpython_bytes",
+            "libpython_mode",
+        )
+    ) or "LD_LIBRARY_PATH" in environment_keys:
+        fail("non-ELF developer loader unexpectedly supplied a library path")
+
+    if (_runtime_loader_evidence is None) != (_runtime_environment is None):
+        fail("runtime loader/environment test binding is incomplete")
+    if _runtime_loader_evidence is None:
+        try:
+            runtime_loader = build_official_harness_python_loader(
+                os.environ,
+                python_binary=str(loader["python_binary"]),
+                probe_cwd=python_prefix,
+            )
+            current_loader = dict(runtime_loader.evidence)
+            current_environment = minimal_subprocess_env(
+                os.environ, python_binary=str(loader["python_binary"])
+            )
+        except Exception as exc:
+            fail(f"cannot reconstruct the current exact loader: {type(exc).__name__}")
+            raise AssertionError("unreachable")
+        if current_environment != dict(runtime_loader.environment):
+            fail("current minimal environment differs from canonical loader")
+    else:
+        current_loader = dict(_runtime_loader_evidence)
+        current_environment = {
+            str(name): str(child)
+            for name, child in dict(_runtime_environment).items()
+        }
+    if (
+        canonical_bytes(current_loader) != canonical_bytes(dict(loader))
+        or sorted(current_environment) != environment_keys
+        or sha256_bytes(canonical_bytes(current_environment))
+        != environment_identity
+    ):
+        fail("current exact loader/environment identity differs")
+
+    injected_runtime = _runtime_loader_evidence is not None
+    harness_roots: dict[str, Path] = {}
+    revision_contracts = (
+        ("swe_revision", SWE_HARNESS_REVISION),
+        ("multi_revision", MULTI_HARNESS_REVISION),
+    )
+    for name, revision in revision_contracts:
+        row = evidence.get(name)
+        if (
+            not isinstance(row, Mapping)
+            or set(row)
+            != {"cwd", "revision", "status", "stdout_sha256", "stderr_sha256"}
+            or row.get("status") != "PASS"
+            or row.get("revision") != revision
+            or not isinstance(row.get("cwd"), str)
+            or not isinstance(row.get("stdout_sha256"), str)
+            or SHA256.fullmatch(row["stdout_sha256"]) is None
+            or not isinstance(row.get("stderr_sha256"), str)
+            or SHA256.fullmatch(row["stderr_sha256"]) is None
+        ):
+            fail(f"{name.replace('_', ' ')} differs")
+        try:
+            root = Path(row["cwd"]).resolve(strict=True)
+        except OSError:
+            fail(f"{name.replace('_', ' ')} cwd does not resolve")
+            raise AssertionError("unreachable")
+        if not root.is_dir():
+            fail(f"{name.replace('_', ' ')} cwd is not a directory")
+        harness_roots[name] = root
+        if not injected_runtime:
+            try:
+                validate_pristine_checkout(root, revision)
+            except HarnessLockError:
+                fail(f"{name.replace('_', ' ')} cannot be reverified")
+                raise AssertionError("unreachable")
+            expected_revision_stdout = (revision + "\n").encode("ascii")
+            if (
+                sha256_bytes(expected_revision_stdout) != row["stdout_sha256"]
+                or sha256_bytes(b"") != row["stderr_sha256"]
+            ):
+                fail(f"{name.replace('_', ' ')} checkout identity differs")
+
+    swe_root = harness_roots["swe_revision"]
+    multi_root = harness_roots["multi_revision"]
+    invocation = evidence.get("invocation_construction")
+    try:
+        expected_invocation = build_invocation_construction_evidence(
+            python_binary=str(expected_python),
+            swe_root=swe_root,
+            multi_root=multi_root,
+            environment_identity_sha256=environment_identity,
+        )
+    except Exception as exc:
+        fail(f"invocation construction cannot be reproduced: {type(exc).__name__}")
+        raise AssertionError("unreachable")
+    if (
+        not isinstance(invocation, Mapping)
+        or dict(invocation) != expected_invocation
+    ):
+        fail("invocation-construction identity differs")
+    for name in ("swe_import_check", "multi_self_check"):
+        row = evidence.get(name)
+        if not isinstance(row, Mapping) or row.get("status") != "PASS":
+            fail(f"{name.replace('_', ' ')} did not pass")
+    swe_import = evidence["swe_import_check"]
+    swe_modules = swe_import.get("modules")
+    expected_swe_modules = {
+        "swebench.harness.run_evaluation",
+        "docker",
+        "datasets",
+        "unidiff",
+    }
+    if (
+        set(swe_import)
+        != {"argv", "cwd", "exit_code", "modules", "status", "stderr_sha256", "stdout_sha256"}
+        or swe_import.get("exit_code") != 0
+        or swe_import.get("cwd") != str(swe_root)
+        or swe_import.get("argv")
+        != [str(expected_python), "-c", SWE_IMPORT_PROBE_CODE]
+        or not isinstance(swe_modules, Mapping)
+        or set(swe_modules) != expected_swe_modules
+        or not isinstance(swe_import.get("stdout_sha256"), str)
+        or SHA256.fullmatch(swe_import["stdout_sha256"]) is None
+        or not isinstance(swe_import.get("stderr_sha256"), str)
+        or SHA256.fullmatch(swe_import["stderr_sha256"]) is None
+    ):
+        fail("SWE-bench import probe identity differs")
+    for name, module in swe_modules.items():
+        if (
+            not isinstance(module, Mapping)
+            or set(module) != {"bytes", "path", "sha256"}
+            or type(module.get("bytes")) is not int
+            or module["bytes"] <= 0
+            or not isinstance(module.get("sha256"), str)
+            or SHA256.fullmatch(module["sha256"]) is None
+            or (
+                name == "swebench.harness.run_evaluation"
+                and module.get("path")
+                != "swebench/harness/run_evaluation.py"
+            )
+        ):
+            fail(f"SWE-bench import module evidence differs: {name}")
+        if not injected_runtime:
+            if name == "swebench.harness.run_evaluation":
+                module_path = swe_root / "swebench/harness/run_evaluation.py"
+            else:
+                spec = importlib.util.find_spec(name)
+                origin = None if spec is None else spec.origin
+                if not isinstance(origin, str):
+                    fail(f"SWE-bench dependency module cannot be resolved: {name}")
+                module_path = Path(origin).resolve(strict=True)
+                if module.get("path") is not None:
+                    fail(f"SWE-bench external module path leaked into evidence: {name}")
+            raw_module = module_path.read_bytes()
+            if (
+                module.get("bytes") != len(raw_module)
+                or module.get("sha256") != sha256_bytes(raw_module)
+            ):
+                fail(f"SWE-bench import module bytes differ: {name}")
+    expected_swe_stdout = (
+        json.dumps(
+            {
+                "modules": dict(swe_modules),
+                "schema": "trimem/swe-bench-loader-import-probe/1.0",
+                "status": "PASS",
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        + b"\n"
+    )
+    if (
+        swe_import["stdout_sha256"] != sha256_bytes(expected_swe_stdout)
+        or swe_import["stderr_sha256"] != sha256_bytes(b"")
+    ):
+        fail("SWE-bench import probe stream hashes differ")
+
+    multi_check = evidence["multi_self_check"]
+    multi_payload = multi_check.get("payload")
+    expected_multi_modules = {
+        "multi_swe_bench.harness.run_evaluation",
+        "multi_swe_bench.harness.gen_report",
+        "multi_swe_bench.harness.dataset",
+        "multi_swe_bench.harness.report",
+        "multi_swe_bench.harness.test_result",
+    }
+    if (
+        set(multi_check)
+        != {"argv", "cwd", "exit_code", "payload", "status", "stderr_sha256", "stdout_sha256"}
+        or multi_check.get("exit_code") != 0
+        or multi_check.get("cwd") != str(multi_root)
+        or not isinstance(multi_check.get("argv"), list)
+        or len(multi_check["argv"]) != 5
+        or multi_check["argv"][0] != str(expected_python)
+        or multi_check["argv"][1]
+        != str((ROOT / "scripts/trimem_multi_swe_entrypoint.py").resolve(strict=True))
+        or multi_check["argv"][2] != "--loader-self-check"
+        or multi_check["argv"][3] != "--harness-root"
+        or multi_check["argv"][4] != str(multi_root)
+        or not isinstance(multi_check.get("stdout_sha256"), str)
+        or SHA256.fullmatch(multi_check["stdout_sha256"]) is None
+        or not isinstance(multi_check.get("stderr_sha256"), str)
+        or SHA256.fullmatch(multi_check["stderr_sha256"]) is None
+        or not isinstance(multi_payload, Mapping)
+        or multi_payload.get("schema")
+        != "trimem/multi-swe-loader-self-check/1.0"
+        or multi_payload.get("status") != "PASS"
+        or multi_payload.get("harness_revision") != MULTI_HARNESS_REVISION
+        or not isinstance(multi_payload.get("modules"), Mapping)
+        or set(multi_payload["modules"]) != expected_multi_modules
+        or multi_payload.get("cli_argument_destinations")
+        != sorted(MULTI_EXPECTED_CONFIG_FIELDS)
+        or any(
+            multi_payload.get(name) != expected
+            for name, expected in OFFICIAL_HARNESS_PREFLIGHT_ZERO_COUNTERS.items()
+        )
+    ):
+        fail("Multi-SWE self-check identity differs")
+    for name, module in multi_payload["modules"].items():
+        if (
+            not isinstance(module, Mapping)
+            or set(module) != {"bytes", "path", "sha256"}
+            or type(module.get("bytes")) is not int
+            or module["bytes"] <= 0
+            or not isinstance(module.get("path"), str)
+            or not module["path"]
+            or not isinstance(module.get("sha256"), str)
+            or SHA256.fullmatch(module["sha256"]) is None
+        ):
+            fail(f"Multi-SWE import module evidence differs: {name}")
+        if not injected_runtime:
+            expected_relative = name.replace(".", "/") + ".py"
+            module_path = multi_root / expected_relative
+            raw_module = module_path.read_bytes()
+            if (
+                module.get("path") != expected_relative
+                or module.get("bytes") != len(raw_module)
+                or module.get("sha256") != sha256_bytes(raw_module)
+            ):
+                fail(f"Multi-SWE import module bytes differ: {name}")
+    if set(expected_multi_modules) != set(MULTI_LOADER_SELF_CHECK_MODULES):
+        fail("Multi-SWE local loader module contract differs")
+    expected_multi_stdout = (
+        json.dumps(
+            dict(multi_payload),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        + b"\n"
+    )
+    if (
+        multi_check["stdout_sha256"] != sha256_bytes(expected_multi_stdout)
+        or multi_check["stderr_sha256"] != sha256_bytes(b"")
+    ):
+        fail("Multi-SWE self-check stream hashes differ")
+    return evidence
+
+
+def load_official_harness_loader_preflight(
+    path: Path = ROOT / OFFICIAL_HARNESS_LOADER_PREFLIGHT,
+) -> dict[str, Any]:
+    """Load the fixed workflow-produced report before any task reservation."""
+
+    try:
+        evidence = read_json(path)
+    except BenchmarkExecutionError as exc:
+        raise BenchmarkProcessFailure(
+            "GLOBAL_ENVIRONMENT_FAILURE",
+            "official harness loader preflight evidence is missing or malformed",
+        ) from exc
+    return validate_official_harness_loader_preflight_evidence(evidence)
+
+
+def validate_preflight_harness_root_binding(
+    evidence: Mapping[str, Any],
+    harnesses: Mapping[str, Path],
+) -> None:
+    """Bind preflight cwd evidence to the exact production checkout objects."""
+
+    try:
+        swe_evidence_root = Path(
+            str(evidence["swe_revision"]["cwd"])
+        ).resolve(strict=True)
+        multi_evidence_root = Path(
+            str(evidence["multi_revision"]["cwd"])
+        ).resolve(strict=True)
+        swe_runtime_root = harnesses["swebench_verified"].resolve(strict=True)
+        multi_mini_root = harnesses["multi_swe_bench_mini"].resolve(strict=True)
+        multi_flash_root = harnesses["multi_swe_bench_flash"].resolve(strict=True)
+    except (KeyError, TypeError, OSError) as exc:
+        raise BenchmarkProcessFailure(
+            "GLOBAL_ENVIRONMENT_FAILURE",
+            "official harness preflight/runtime cwd binding is incomplete",
+        ) from exc
+    if (
+        swe_evidence_root != swe_runtime_root
+        or multi_evidence_root != multi_mini_root
+        or multi_evidence_root != multi_flash_root
+    ):
+        raise BenchmarkProcessFailure(
+            "GLOBAL_ENVIRONMENT_FAILURE",
+            "official harness runtime cwd differs from exact preflight",
+        )
+
+
 def atomic_write(path: Path, raw: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
@@ -294,7 +906,14 @@ def atomic_write(path: Path, raw: bytes) -> None:
 
 
 def write_json(path: Path, value: Any) -> None:
-    atomic_write(path, json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8") + b"\n")
+    atomic_write(path, json_file_bytes(value))
+
+
+def json_file_bytes(value: Any) -> bytes:
+    return (
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
+        + b"\n"
+    )
 
 
 def git_head() -> str:
@@ -677,6 +1296,8 @@ def write_external_approval_evidence(
 
 @contextmanager
 def _exclusive_file_lock(path: Path):
+    if path.is_symlink():
+        raise BenchmarkExecutionError("budget ledger lock path is a symbolic link")
     path.parent.mkdir(parents=True, exist_ok=True)
     stream = path.open("a+b")
     try:
@@ -712,8 +1333,12 @@ class AtomicBudgetLedger:
     """
 
     def __init__(self, path: Path, *, approval_digest: str, caps: Mapping[str, Any], pricing: Mapping[str, Any]):
+        if path.is_symlink():
+            raise BenchmarkExecutionError("budget ledger path is a symbolic link")
         self.path = path.resolve()
         self.lock_path = self.path.with_suffix(self.path.suffix + ".lock")
+        if self.lock_path.is_symlink():
+            raise BenchmarkExecutionError("budget ledger lock path is a symbolic link")
         self.approval_digest = approval_digest
         self.approved_hard_cap = dict(caps)
         self.caps = {
@@ -1519,6 +2144,11 @@ class AtomicBudgetLedger:
             row = self._read()["task_arms"].get(task_arm_key)
             return str(row.get("status")) if isinstance(row, dict) else None
 
+    def task_arm_row(self, task_arm_key: str) -> Optional[dict[str, Any]]:
+        with _exclusive_file_lock(self.lock_path):
+            row = self._read()["task_arms"].get(task_arm_key)
+            return dict(row) if isinstance(row, Mapping) else None
+
     def complete_task_arm(
         self, task_arm_key: str, reservation_id: str, *, status: str,
         container_started: bool = True,
@@ -2296,6 +2926,8 @@ class TerminalInvocationJournal:
     """
 
     def __init__(self, root: Path):
+        if root.is_symlink():
+            raise BenchmarkExecutionError("terminal invocation journal is a symbolic link")
         self.root = root.resolve()
         self.root.mkdir(parents=True, exist_ok=True)
 
@@ -2342,6 +2974,245 @@ class TerminalInvocationJournal:
             "preflight": asdict(preflight) if preflight is not None else None,
         })
         return path
+
+    @staticmethod
+    def _sealed_row(value: Mapping[str, Any]) -> dict[str, Any]:
+        row = dict(value)
+        row.pop("journal_sha256", None)
+        row["journal_sha256"] = sha256_bytes(canonical_bytes(row))
+        return row
+
+    @classmethod
+    def _validated_grader_row(cls, path: Path) -> dict[str, Any]:
+        if path.is_symlink() or not path.is_file():
+            raise BenchmarkExecutionError(
+                "grader lifecycle journal is not one regular file"
+            )
+        row = read_json(path)
+        supplied = row.get("journal_sha256")
+        expected = cls._sealed_row(row).get("journal_sha256")
+        if (
+            row.get("schema") != "trimem/grader-lifecycle-journal/1.0"
+            or row.get("kind") != "grader"
+            or row.get("status") not in GRADER_LIFECYCLE_STATES
+            or not isinstance(row.get("key"), str)
+            or not isinstance(row.get("request_sha256"), str)
+            or SHA256.fullmatch(str(row.get("request_sha256"))) is None
+            or not isinstance(row.get("transitions"), list)
+            or not row["transitions"]
+            or row["transitions"][-1] != row.get("status")
+            or supplied != expected
+        ):
+            raise BenchmarkExecutionError("grader lifecycle journal integrity failure")
+        common = [
+            "GRADER_NOT_PREPARED",
+            "GRADER_PREFLIGHT_PASSED",
+            "GRADER_REQUEST_RECORDED",
+            "GRADER_PROCESS_STARTED",
+        ]
+        valid_transitions = {
+            tuple(common[:1]),
+            tuple(common[:2]),
+            tuple(common[:3]),
+            tuple(common),
+            (*common, "GRADER_INFRA_FAILURE_BEFORE_CONTAINER"),
+            (*common, "GRADER_CONTAINER_STARTED"),
+            (
+                *common,
+                "GRADER_CONTAINER_STARTED",
+                "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+            ),
+            (
+                *common,
+                "GRADER_CONTAINER_STARTED",
+                "GRADER_TERMINAL_RESULT_CAPTURED",
+            ),
+            (
+                *common,
+                "GRADER_CONTAINER_STARTED",
+                "GRADER_TERMINAL_RESULT_CAPTURED",
+                "GRADER_RESULT_VALIDATED",
+            ),
+        }
+        if tuple(row["transitions"]) not in valid_transitions:
+            raise BenchmarkExecutionError(
+                "grader lifecycle transition history is invalid"
+            )
+        state = row["status"]
+        request_suffix = ":" + row["request_sha256"]
+        if not row["key"].endswith(request_suffix) or len(row["key"]) <= len(
+            request_suffix
+        ):
+            raise BenchmarkExecutionError(
+                "grader lifecycle task/request binding is invalid"
+            )
+        task_id = row["key"][: -len(request_suffix)]
+        base_fields = {
+            "schema",
+            "kind",
+            "key",
+            "request_sha256",
+            "status",
+            "transitions",
+            "official_grader_runs",
+            "grader_containers",
+            "grader_capacity_disposition",
+            "journal_sha256",
+        }
+        allowed_fields = set(base_fields)
+        if state != "GRADER_NOT_PREPARED":
+            allowed_fields.add("loader_preflight_evidence_sha256")
+        terminal_states = {
+            "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+            "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+            "GRADER_TERMINAL_RESULT_CAPTURED",
+            "GRADER_RESULT_VALIDATED",
+        }
+        if state in terminal_states:
+            allowed_fields.add("result")
+        if state in {
+            "GRADER_CONTAINER_STARTED",
+            "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+        }:
+            allowed_fields.add("container_start_observed")
+        if not base_fields <= set(row) or not set(row) <= allowed_fields:
+            raise BenchmarkExecutionError(
+                "grader lifecycle journal field set differs"
+            )
+        counters = (row.get("official_grader_runs"), row.get("grader_containers"))
+        capacity = row.get("grader_capacity_disposition")
+        expected_accounting = (
+            (1, 1, "CONSERVATIVELY_CONSUMED")
+            if state
+            in {
+                "GRADER_CONTAINER_STARTED",
+                "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+            }
+            else (1, 1, "AUTHORITATIVE_RESULT")
+            if state
+            in {"GRADER_TERMINAL_RESULT_CAPTURED", "GRADER_RESULT_VALIDATED"}
+            else (0, 0, "NOT_CONSUMED")
+        )
+        if (*counters, capacity) != expected_accounting:
+            raise BenchmarkExecutionError(
+                "grader lifecycle capacity accounting differs"
+            )
+        if state != "GRADER_NOT_PREPARED" and (
+            not isinstance(row.get("loader_preflight_evidence_sha256"), str)
+            or SHA256.fullmatch(row["loader_preflight_evidence_sha256"]) is None
+        ):
+            raise BenchmarkExecutionError(
+                "grader lifecycle preflight evidence binding is absent"
+            )
+        if state in terminal_states and not isinstance(row.get("result"), Mapping):
+            raise BenchmarkExecutionError("grader lifecycle terminal result is absent")
+        if state in terminal_states:
+            result = row["result"]
+            result_fields = {
+                "task_id",
+                "resolved",
+                "exit_code",
+                "stdout",
+                "stderr",
+                "report",
+                "grader_id",
+                "container_digest",
+                "official",
+                "wall_time_ms",
+                "container_started",
+                "status",
+            }
+            expected_container_started = state != (
+                "GRADER_INFRA_FAILURE_BEFORE_CONTAINER"
+            )
+            if (
+                set(result) != result_fields
+                or result.get("task_id") != task_id
+                or type(result.get("resolved")) is not bool
+                or (
+                    state
+                    in {
+                        "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+                        "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+                    }
+                    and result.get("resolved") is not False
+                )
+                or type(result.get("exit_code")) is not int
+                or not isinstance(result.get("stdout"), str)
+                or not isinstance(result.get("stderr"), str)
+                or not isinstance(result.get("report"), Mapping)
+                or not isinstance(result.get("grader_id"), str)
+                or not result["grader_id"]
+                or not isinstance(result.get("container_digest"), str)
+                or not result["container_digest"]
+                or result.get("official") is not True
+                or type(result.get("wall_time_ms")) is not int
+                or result["wall_time_ms"] < 0
+                or result.get("container_started") is not expected_container_started
+                or not isinstance(result.get("status"), str)
+                or not result["status"]
+            ):
+                raise BenchmarkExecutionError(
+                    "grader lifecycle terminal result binding differs"
+                )
+        return row
+
+    def begin_grader_request(self, key: str, request_hash: str) -> Path:
+        """Create the fail-closed official-grader lifecycle before any process."""
+
+        path = self._path("grader", key)
+        if path.exists():
+            row = self._validated_grader_row(path)
+            if row.get("key") != key or row.get("request_sha256") != request_hash:
+                raise BenchmarkExecutionError(
+                    "grader lifecycle journal request identity mismatch"
+                )
+            return path
+        write_json(
+            path,
+            self._sealed_row(
+                {
+                    "schema": "trimem/grader-lifecycle-journal/1.0",
+                    "kind": "grader",
+                    "key": key,
+                    "request_sha256": request_hash,
+                    "status": "GRADER_NOT_PREPARED",
+                    "transitions": ["GRADER_NOT_PREPARED"],
+                    "official_grader_runs": 0,
+                    "grader_containers": 0,
+                    "grader_capacity_disposition": "NOT_CONSUMED",
+                }
+            ),
+        )
+        return path
+
+    @classmethod
+    def transition_grader(
+        cls,
+        path: Path,
+        *,
+        expected: Sequence[str],
+        status: str,
+        values: Optional[Mapping[str, Any]] = None,
+    ) -> dict[str, Any]:
+        if status not in GRADER_LIFECYCLE_STATES:
+            raise BenchmarkExecutionError("unknown grader lifecycle transition")
+        current = cls._validated_grader_row(path)
+        additions = dict(values or {})
+        if current.get("status") == status:
+            if any(current.get(name) != value for name, value in additions.items()):
+                raise BenchmarkExecutionError(
+                    "grader lifecycle idempotent evidence differs"
+                )
+            return current
+        if current.get("status") not in set(expected):
+            raise BenchmarkExecutionError("grader lifecycle transition is invalid")
+        transitions = [*current["transitions"], status]
+        updated = cls._sealed_row(
+            {**current, **additions, "status": status, "transitions": transitions}
+        )
+        write_json(path, updated)
+        return updated
 
     @staticmethod
     def transition_model(
@@ -2748,10 +3619,869 @@ class JournaledModelGateway:
         return self.invoke_preflighted(request, self.preview_reservation(request))
 
 
+class CellCommitJournal:
+    """Hash-bound local transaction record for result/ledger/cursor finalization."""
+
+    SCHEMA = "trimem/cell-commit-journal/1.0"
+    BASE_FIELDS = frozenset(
+        {
+            "schema",
+            "status",
+            "binding",
+            "binding_sha256",
+            "result_record",
+            "session_result",
+            "transitions",
+            "journal_sha256",
+        }
+    )
+    CHECKPOINT_FIELDS = frozenset({"stream_checkpoint_sha256"})
+    BINDING_FIELDS = frozenset(
+        {
+            "stream_id",
+            "arm",
+            "target_id",
+            "expected_cursor",
+            "task_arm_key",
+            "task_arm_reservation_id",
+            "result_sha256",
+            "accounting_projection_sha256",
+            "grader_result_sha256",
+            "session_result_sha256",
+            "next_cursor",
+        }
+    )
+
+    def __init__(self, path: Path, binding: Mapping[str, Any]):
+        if path.is_symlink():
+            raise BenchmarkExecutionError("cell-commit journal path is a symbolic link")
+        self.path = path.resolve()
+        self.binding = dict(binding)
+        self._validate_binding(self.binding)
+        self.binding_sha256 = sha256_bytes(canonical_bytes(self.binding))
+
+    @classmethod
+    def _validate_binding(cls, value: Mapping[str, Any]) -> None:
+        if set(value) != cls.BINDING_FIELDS:
+            raise BenchmarkExecutionError("cell-commit binding field set differs")
+        if any(
+            not isinstance(value.get(name), str) or not value[name]
+            for name in ("stream_id", "arm", "target_id", "task_arm_key")
+        ):
+            raise BenchmarkExecutionError("cell-commit identity is malformed")
+        if any(
+            not isinstance(value.get(name), str)
+            or SHA256.fullmatch(str(value[name])) is None
+            for name in (
+                "task_arm_reservation_id",
+                "result_sha256",
+                "accounting_projection_sha256",
+                "grader_result_sha256",
+                "session_result_sha256",
+            )
+        ):
+            raise BenchmarkExecutionError("cell-commit digest is malformed")
+        cursor = value.get("expected_cursor")
+        if (
+            type(cursor) is not int
+            or cursor < 0
+            or value.get("next_cursor") != cursor + 1
+        ):
+            raise BenchmarkExecutionError("cell-commit cursor binding is malformed")
+
+    @staticmethod
+    def _sealed(value: Mapping[str, Any]) -> dict[str, Any]:
+        row = dict(value)
+        row.pop("journal_sha256", None)
+        row["journal_sha256"] = sha256_bytes(canonical_bytes(row))
+        return row
+
+    @classmethod
+    def read_verified(cls, path: Path) -> dict[str, Any]:
+        if path.is_symlink() or not path.is_file():
+            raise BenchmarkExecutionError(
+                "cell-commit journal is not one regular file"
+            )
+        row = read_json(path)
+        supplied = row.get("journal_sha256")
+        expected = cls._sealed(row).get("journal_sha256")
+        status = row.get("status")
+        expected_transitions = (
+            list(CELL_COMMIT_STATES[: CELL_COMMIT_STATES.index(status) + 1])
+            if status in CELL_COMMIT_STATES
+            else None
+        )
+        expected_fields = cls.BASE_FIELDS | (
+            cls.CHECKPOINT_FIELDS
+            if status in {"CURSOR_ADVANCED", "COMMITTED"}
+            else frozenset()
+        )
+        if (
+            row.get("schema") != cls.SCHEMA
+            or status not in CELL_COMMIT_STATES
+            or set(row) != expected_fields
+            or not isinstance(row.get("binding"), Mapping)
+            or not isinstance(row.get("binding_sha256"), str)
+            or not isinstance(row.get("result_record"), Mapping)
+            or not isinstance(row.get("session_result"), Mapping)
+            or not isinstance(row.get("transitions"), list)
+            or row["transitions"] != expected_transitions
+            or supplied != expected
+        ):
+            raise BenchmarkExecutionError("cell-commit journal integrity failure")
+        cls._validate_binding(row["binding"])
+        if row["binding_sha256"] != sha256_bytes(
+            canonical_bytes(row["binding"])
+        ):
+            raise BenchmarkExecutionError("cell-commit binding hash mismatch")
+        if status in {"CURSOR_ADVANCED", "COMMITTED"} and (
+            not isinstance(row.get("stream_checkpoint_sha256"), str)
+            or SHA256.fullmatch(row["stream_checkpoint_sha256"]) is None
+        ):
+            raise BenchmarkExecutionError(
+                "cell-commit stream checkpoint hash is malformed"
+            )
+        if (
+            sha256_bytes(json_file_bytes(row["result_record"]))
+            != row["binding"]["result_sha256"]
+            or sha256_bytes(canonical_bytes(row["session_result"]))
+            != row["binding"]["session_result_sha256"]
+        ):
+            raise BenchmarkExecutionError("cell-commit durable payload hash mismatch")
+        session_grade = row["session_result"].get("grade")
+        if (
+            not isinstance(session_grade, Mapping)
+            or sha256_bytes(canonical_bytes(session_grade))
+            != row["binding"]["grader_result_sha256"]
+        ):
+            raise BenchmarkExecutionError(
+                "cell-commit durable grader payload hash mismatch"
+            )
+        return row
+
+    def prepare(
+        self,
+        *,
+        result_record: Optional[Mapping[str, Any]] = None,
+        session_result: Optional[Mapping[str, Any]] = None,
+    ) -> dict[str, Any]:
+        if self.path.exists():
+            row = self.read_verified(self.path)
+            if (
+                row.get("binding") != self.binding
+                or row.get("binding_sha256") != self.binding_sha256
+                or (
+                    result_record is not None
+                    and canonical_bytes(row["result_record"])
+                    != canonical_bytes(result_record)
+                )
+                or (
+                    session_result is not None
+                    and canonical_bytes(row["session_result"])
+                    != canonical_bytes(session_result)
+                )
+            ):
+                raise BenchmarkExecutionError("cell-commit resume binding differs")
+            return row
+        if not isinstance(result_record, Mapping) or not isinstance(
+            session_result, Mapping
+        ):
+            raise BenchmarkExecutionError(
+                "new cell-commit journal requires both durable payloads"
+            )
+        row = self._sealed(
+            {
+                "schema": self.SCHEMA,
+                "status": "PREPARED",
+                "binding": self.binding,
+                "binding_sha256": self.binding_sha256,
+                "result_record": dict(result_record),
+                "session_result": dict(session_result),
+                "transitions": ["PREPARED"],
+            }
+        )
+        write_json(self.path, row)
+        return row
+
+    def state(self) -> str:
+        row = self.prepare()
+        return str(row["status"])
+
+    def transition(
+        self,
+        *,
+        expected: Sequence[str],
+        status: str,
+        values: Optional[Mapping[str, Any]] = None,
+    ) -> dict[str, Any]:
+        if status not in CELL_COMMIT_STATES:
+            raise BenchmarkExecutionError("unknown cell-commit state")
+        row = self.prepare()
+        additions = dict(values or {})
+        if status == "CURSOR_ADVANCED":
+            checkpoint_sha256 = additions.get("stream_checkpoint_sha256")
+            if (
+                set(additions) != self.CHECKPOINT_FIELDS
+                or not isinstance(checkpoint_sha256, str)
+                or SHA256.fullmatch(checkpoint_sha256) is None
+            ):
+                raise BenchmarkExecutionError(
+                    "cursor-advanced transition requires one checkpoint hash"
+                )
+        elif additions:
+            raise BenchmarkExecutionError(
+                "cell-commit transition contains unexpected evidence"
+            )
+        if row.get("status") == status:
+            if any(row.get(name) != value for name, value in additions.items()):
+                raise BenchmarkExecutionError(
+                    "cell-commit idempotent transition evidence differs"
+                )
+            return row
+        if row.get("status") not in set(expected):
+            raise BenchmarkExecutionError("cell-commit transition order differs")
+        updated = self._sealed(
+            {
+                **row,
+                **additions,
+                "status": status,
+                "transitions": [*row["transitions"], status],
+            }
+        )
+        write_json(self.path, updated)
+        return updated
+
+    def verify_result(
+        self,
+        result_path: Path,
+        *,
+        grader_result: GradeResult | Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        row = self.prepare()
+        if (
+            result_path.is_symlink()
+            or not result_path.is_file()
+            or sha256_bytes(result_path.read_bytes())
+            != row["binding"]["result_sha256"]
+        ):
+            raise BenchmarkExecutionError("cell-commit canonical result hash differs")
+        result = read_json(result_path)
+        try:
+            validate_scientific_terminal_result(result)
+        except ScientificTerminalContractError as exc:
+            raise BenchmarkExecutionError(
+                f"cell-commit scientific result is invalid: {exc}"
+            ) from None
+        if scientific_task_arm_key(result) != row["binding"]["task_arm_key"]:
+            raise BenchmarkExecutionError("cell-commit result task-arm differs")
+        if result.get("target_id") != row["binding"]["target_id"]:
+            raise BenchmarkExecutionError("cell-commit result target differs")
+        accounting = result.get("actual_accounting")
+        if (
+            not isinstance(accounting, Mapping)
+            or sha256_bytes(canonical_bytes(accounting))
+            != row["binding"]["accounting_projection_sha256"]
+        ):
+            raise BenchmarkExecutionError(
+                "cell-commit accounting projection hash differs"
+            )
+        if grader_result is not None:
+            grader_payload = (
+                asdict(grader_result)
+                if isinstance(grader_result, GradeResult)
+                else dict(grader_result)
+            )
+            if (
+                sha256_bytes(canonical_bytes(grader_payload))
+                != row["binding"]["grader_result_sha256"]
+            ):
+                raise BenchmarkExecutionError("cell-commit grader-result hash differs")
+        return result
+
+
+DEVELOPMENT_FINALIZATION_BINDING_SCHEMA = (
+    "trimem/development-finalized-stream-binding/1.0"
+)
+
+
+def _development_finalization_binding_path(root: Path, stream_id: str) -> Path:
+    return root / f"{stream_id}.development-finalization-binding.json"
+
+
+def _development_pre_finalization_checkpoint_path(
+    root: Path, stream_id: str
+) -> Path:
+    return root / f"{stream_id}.pre-development-finalization-checkpoint.json"
+
+
+def _sealed_development_finalization_binding(
+    value: Mapping[str, Any],
+) -> dict[str, Any]:
+    row = dict(value)
+    row.pop("binding_sha256", None)
+    row["binding_sha256"] = sha256_bytes(canonical_bytes(row))
+    return row
+
+
+def _validated_checkpoint_envelope(value: Mapping[str, Any]) -> Mapping[str, Any]:
+    if set(value) != {"payload", "digest"} or not isinstance(
+        value.get("payload"), Mapping
+    ):
+        raise BenchmarkExecutionError("stream checkpoint envelope is malformed")
+    payload = value["payload"]
+    payload_sha256 = sha256_bytes(canonical_bytes(payload))
+    if value.get("digest") not in {payload_sha256, "sha256:" + payload_sha256}:
+        raise BenchmarkExecutionError("stream checkpoint envelope digest differs")
+    return payload
+
+
+def _expected_finalized_m2_policy_checkpoint(
+    prior_payload: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Deterministically replay M2's no-reuse credit from its task frontier."""
+
+    from enterprise_memory.trimem.policy import (
+        DoubleDQNConfig,
+        DoubleDQNMemoryPolicy,
+        MemoryState,
+    )
+
+    try:
+        lifecycle_state = prior_payload.get("lifecycle_state")
+        if (
+            prior_payload.get("arm_id") != "M2"
+            or prior_payload.get("split") != "development"
+            or not isinstance(lifecycle_state, Mapping)
+            or set(lifecycle_state) != {"persistence", "lifecycle"}
+        ):
+            raise ValueError("M2 task-stream lifecycle state is malformed")
+        lifecycle_checkpoint = lifecycle_state.get("lifecycle")
+        if (
+            not isinstance(lifecycle_checkpoint, Mapping)
+            or set(lifecycle_checkpoint) != {"payload", "digest"}
+            or not isinstance(lifecycle_checkpoint.get("payload"), Mapping)
+            or lifecycle_checkpoint.get("digest")
+            != "sha256:"
+            + sha256_bytes(canonical_bytes(lifecycle_checkpoint["payload"]))
+        ):
+            raise ValueError("M2 lifecycle checkpoint integrity differs")
+        lifecycle_payload = lifecycle_checkpoint["payload"]
+        policy_state = lifecycle_payload.get("policy")
+        pending_by_memory_id = lifecycle_payload.get("pending_by_memory_id")
+        reward_config = lifecycle_payload.get("reward_config")
+        if (
+            lifecycle_payload.get("schema")
+            != "trimem/postgres-dqn-lifecycle/1.0"
+            or lifecycle_payload.get("split") != "development"
+            or lifecycle_payload.get("evaluation") is not False
+            or not isinstance(policy_state, Mapping)
+            or not isinstance(policy_state.get("payload"), Mapping)
+            or not isinstance(pending_by_memory_id, Mapping)
+            or not isinstance(reward_config, Mapping)
+        ):
+            raise ValueError("M2 lifecycle finalization inputs are malformed")
+        policy_payload = policy_state["payload"]
+        config_value = policy_payload.get("config")
+        runtime_pending = policy_payload.get("pending")
+        coefficient = reward_config.get("context_cost_coefficient")
+        if (
+            not isinstance(config_value, Mapping)
+            or not isinstance(runtime_pending, Mapping)
+            or isinstance(coefficient, bool)
+            or not isinstance(coefficient, (int, float))
+        ):
+            raise ValueError("M2 policy finalization inputs are malformed")
+        policy = DoubleDQNMemoryPolicy(DoubleDQNConfig.from_dict(config_value))
+        policy.restore_runtime_state(policy_state)
+        credit_ids: list[str] = []
+        for pending_key in sorted(pending_by_memory_id):
+            if not isinstance(pending_key, str):
+                raise ValueError("M2 pending-memory identity is malformed")
+            pending = pending_by_memory_id[pending_key]
+            if not isinstance(pending, Mapping):
+                raise ValueError("M2 pending-memory row is malformed")
+            credit_id = pending.get("credit_id")
+            state_value = pending.get("state")
+            context_cost = pending.get("context_cost")
+            if (
+                not isinstance(credit_id, str)
+                or not credit_id
+                or not isinstance(state_value, Mapping)
+                or isinstance(context_cost, bool)
+                or not isinstance(context_cost, (int, float))
+            ):
+                raise ValueError("M2 pending-credit row is malformed")
+            credit_ids.append(credit_id)
+            state = MemoryState(**dict(state_value))
+            policy.credit_delayed_reward(
+                credit_id,
+                float(coefficient) * float(context_cost),
+                state,
+                done=True,
+                split="development",
+                train_updates=1,
+            )
+        if (
+            len(credit_ids) != len(set(credit_ids))
+            or set(credit_ids) != set(runtime_pending)
+            or policy.pending_credit_count != 0
+        ):
+            raise ValueError("M2 pending-credit ledgers differ")
+        return asdict(policy.freeze_checkpoint())
+    except BenchmarkExecutionError:
+        raise
+    except Exception as exc:
+        raise BenchmarkExecutionError(
+            "development final policy cannot be derived from its task frontier"
+        ) from exc
+
+
+def _load_development_pre_finalization_checkpoint(
+    root: Path,
+    stream_id: str,
+    *,
+    last_cell: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Load the exact pre-finalization bytes anchored by the last cell."""
+
+    path = _secure_retained_path(
+        root,
+        _development_pre_finalization_checkpoint_path(root, stream_id),
+        directory=False,
+    )
+    raw = path.read_bytes()
+    expected_sha256 = last_cell.get("stream_checkpoint_sha256")
+    try:
+        value = strict_json_loads(raw)
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise BenchmarkExecutionError(
+            "development pre-finalization checkpoint is malformed"
+        ) from exc
+    if (
+        not isinstance(value, dict)
+        or raw != canonical_bytes(value)
+        or not isinstance(expected_sha256, str)
+        or sha256_bytes(raw) != expected_sha256
+    ):
+        raise BenchmarkExecutionError(
+            "development pre-finalization checkpoint differs from predecessor cell"
+        )
+    _validated_checkpoint_envelope(value)
+    return value
+
+
+def _retain_development_pre_finalization_checkpoint(
+    root: Path,
+    stream_id: str,
+    *,
+    last_cell: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Atomically retain the live TASK_STREAM checkpoint before replacement."""
+
+    live_path, _sidecar_path = _arm_checkpoint_paths(root, stream_id)
+    live_path = _secure_retained_path(root, live_path, directory=False)
+    raw = live_path.read_bytes()
+    retained_path = _development_pre_finalization_checkpoint_path(
+        root, stream_id
+    )
+    if retained_path.exists() or retained_path.is_symlink():
+        retained = _secure_retained_path(
+            root, retained_path, directory=False
+        )
+        if retained.read_bytes() != raw:
+            raise BenchmarkExecutionError(
+                "development pre-finalization checkpoint changed during recovery"
+            )
+    else:
+        atomic_write(retained_path, raw)
+    return _load_development_pre_finalization_checkpoint(
+        root,
+        stream_id,
+        last_cell=last_cell,
+    )
+
+
+def save_development_finalized_arm_checkpoint(
+    root: Path,
+    stream_id: str,
+    checkpoint: Mapping[str, Any],
+    *,
+    last_cell_journal_path: Path,
+) -> dict[str, Any]:
+    """Hash-chain an M2 final envelope to its last committed task checkpoint."""
+
+    last_cell = CellCommitJournal.read_verified(last_cell_journal_path)
+    last_binding = last_cell["binding"]
+    if (
+        last_cell.get("status") != "COMMITTED"
+        or last_binding.get("stream_id") != stream_id
+        or last_binding.get("arm") != "M2"
+    ):
+        raise BenchmarkExecutionError(
+            "development finalization predecessor cell differs"
+        )
+    prior_checkpoint = load_arm_checkpoint(root, stream_id)
+    prior_payload = _validated_checkpoint_envelope(prior_checkpoint)
+    if prior_payload.get("stream_state") == "DEVELOPMENT_FINALIZED":
+        if canonical_bytes(prior_checkpoint) != canonical_bytes(checkpoint):
+            raise BenchmarkExecutionError(
+                "development finalized checkpoint changed during recovery"
+            )
+        return load_development_finalization_binding(
+            root,
+            stream_id,
+            last_cell_journal_path=last_cell_journal_path,
+        )
+    _verified_cell_stream_checkpoint(root, stream_id, last_cell)
+    retained_prior_checkpoint = _retain_development_pre_finalization_checkpoint(
+        root,
+        stream_id,
+        last_cell=last_cell,
+    )
+    if canonical_bytes(retained_prior_checkpoint) != canonical_bytes(
+        prior_checkpoint
+    ):
+        raise BenchmarkExecutionError(
+            "development retained task-stream checkpoint differs"
+        )
+    final_payload = _validated_checkpoint_envelope(checkpoint)
+    task_cursor = last_binding["next_cursor"]
+    static_fields = (
+        "schema",
+        "namespace",
+        "experiment_id",
+        "split",
+        "arm_id",
+        "task_order_hash",
+        "config_hash",
+        "run_nonce",
+    )
+    if (
+        prior_payload.get("stream_state") != "TASK_STREAM"
+        or prior_payload.get("task_cursor") != task_cursor
+        or prior_payload.get("next_sequence_index") != task_cursor
+        or final_payload.get("stream_state") != "DEVELOPMENT_FINALIZED"
+        or final_payload.get("task_cursor") != task_cursor
+        or final_payload.get("next_sequence_index") != task_cursor + 1
+        or final_payload.get("arm_id") != "M2"
+        or not isinstance(final_payload.get("final_policy_checkpoint"), Mapping)
+        or any(
+            final_payload.get(name) != prior_payload.get(name)
+            for name in static_fields
+        )
+        or final_payload.get("completed_task_digests")
+        != prior_payload.get("completed_task_digests")
+    ):
+        raise BenchmarkExecutionError(
+            "development finalization checkpoint continuity differs"
+        )
+    expected_final_policy = _expected_finalized_m2_policy_checkpoint(
+        prior_payload
+    )
+    if canonical_bytes(final_payload["final_policy_checkpoint"]) != (
+        canonical_bytes(expected_final_policy)
+    ):
+        raise BenchmarkExecutionError(
+            "development final policy differs from deterministic task frontier"
+        )
+    final_checkpoint_sha256 = sha256_bytes(canonical_bytes(checkpoint))
+    row = _sealed_development_finalization_binding(
+        {
+            "schema": DEVELOPMENT_FINALIZATION_BINDING_SCHEMA,
+            "stream_id": stream_id,
+            "task_cursor": task_cursor,
+            "last_cell_commit_journal_sha256": last_cell["journal_sha256"],
+            "prior_stream_checkpoint_sha256": last_cell[
+                "stream_checkpoint_sha256"
+            ],
+            "finalized_stream_checkpoint_sha256": final_checkpoint_sha256,
+            "static_identity_sha256": sha256_bytes(
+                canonical_bytes(
+                    {name: final_payload.get(name) for name in static_fields}
+                )
+            ),
+            "completed_task_digests_sha256": sha256_bytes(
+                canonical_bytes(final_payload.get("completed_task_digests"))
+            ),
+        }
+    )
+    # Seal the predecessor bridge before replacing the local task-stream
+    # checkpoint.  Either half of an interrupted pair fails closed.
+    binding_path = _development_finalization_binding_path(root, stream_id)
+    if binding_path.exists() or binding_path.is_symlink():
+        secured_binding_path = _secure_retained_path(
+            root, binding_path, directory=False
+        )
+        if read_json(secured_binding_path) != row:
+            raise BenchmarkExecutionError(
+                "development finalization binding changed during recovery"
+            )
+    else:
+        write_json(binding_path, row)
+    save_arm_checkpoint(root, stream_id, checkpoint)
+    return load_development_finalization_binding(
+        root,
+        stream_id,
+        last_cell_journal_path=last_cell_journal_path,
+    )
+
+
+def load_development_finalization_binding(
+    root: Path,
+    stream_id: str,
+    *,
+    last_cell_journal_path: Path,
+) -> dict[str, Any]:
+    """Verify the local final envelope/predecessor cell hash chain."""
+
+    path = _secure_retained_path(
+        root,
+        _development_finalization_binding_path(root, stream_id),
+        directory=False,
+    )
+    row = read_json(path)
+    expected_fields = {
+        "schema",
+        "stream_id",
+        "task_cursor",
+        "last_cell_commit_journal_sha256",
+        "prior_stream_checkpoint_sha256",
+        "finalized_stream_checkpoint_sha256",
+        "static_identity_sha256",
+        "completed_task_digests_sha256",
+        "binding_sha256",
+    }
+    supplied = row.get("binding_sha256")
+    if (
+        set(row) != expected_fields
+        or row.get("schema") != DEVELOPMENT_FINALIZATION_BINDING_SCHEMA
+        or row.get("stream_id") != stream_id
+        or supplied
+        != _sealed_development_finalization_binding(row)["binding_sha256"]
+        or any(
+            not isinstance(row.get(name), str)
+            or SHA256.fullmatch(row[name]) is None
+            for name in (
+                "last_cell_commit_journal_sha256",
+                "prior_stream_checkpoint_sha256",
+                "finalized_stream_checkpoint_sha256",
+                "static_identity_sha256",
+                "completed_task_digests_sha256",
+            )
+        )
+    ):
+        raise BenchmarkExecutionError(
+            "development finalization binding integrity failure"
+        )
+    last_cell = CellCommitJournal.read_verified(last_cell_journal_path)
+    last_binding = last_cell["binding"]
+    checkpoint = load_arm_checkpoint(root, stream_id)
+    payload = _validated_checkpoint_envelope(checkpoint)
+    retained_prior_checkpoint = _load_development_pre_finalization_checkpoint(
+        root,
+        stream_id,
+        last_cell=last_cell,
+    )
+    retained_prior_payload = _validated_checkpoint_envelope(
+        retained_prior_checkpoint
+    )
+    static_fields = (
+        "schema",
+        "namespace",
+        "experiment_id",
+        "split",
+        "arm_id",
+        "task_order_hash",
+        "config_hash",
+        "run_nonce",
+    )
+    if (
+        last_cell.get("status") != "COMMITTED"
+        or last_binding.get("stream_id") != stream_id
+        or last_binding.get("arm") != "M2"
+        or row.get("task_cursor") != last_binding.get("next_cursor")
+        or row.get("last_cell_commit_journal_sha256")
+        != last_cell.get("journal_sha256")
+        or row.get("prior_stream_checkpoint_sha256")
+        != last_cell.get("stream_checkpoint_sha256")
+        or row.get("finalized_stream_checkpoint_sha256")
+        != sha256_bytes(canonical_bytes(checkpoint))
+        or payload.get("stream_state") != "DEVELOPMENT_FINALIZED"
+        or payload.get("task_cursor") != row.get("task_cursor")
+        or payload.get("next_sequence_index") != row["task_cursor"] + 1
+        or payload.get("arm_id") != "M2"
+        or row.get("static_identity_sha256")
+        != sha256_bytes(
+            canonical_bytes({name: payload.get(name) for name in static_fields})
+        )
+        or row.get("completed_task_digests_sha256")
+        != sha256_bytes(canonical_bytes(payload.get("completed_task_digests")))
+        or retained_prior_payload.get("stream_state") != "TASK_STREAM"
+        or retained_prior_payload.get("task_cursor") != row.get("task_cursor")
+        or retained_prior_payload.get("next_sequence_index")
+        != row.get("task_cursor")
+        or any(
+            retained_prior_payload.get(name) != payload.get(name)
+            for name in static_fields
+        )
+        or retained_prior_payload.get("completed_task_digests")
+        != payload.get("completed_task_digests")
+    ):
+        raise BenchmarkExecutionError(
+            "development finalization predecessor binding differs"
+        )
+    expected_final_policy = _expected_finalized_m2_policy_checkpoint(
+        retained_prior_payload
+    )
+    if canonical_bytes(payload.get("final_policy_checkpoint")) != canonical_bytes(
+        expected_final_policy
+    ):
+        raise BenchmarkExecutionError(
+            "development final policy differs from deterministic task frontier"
+        )
+    return row
+
+
+def _unknown_grader_result(
+    *, task_id: str, container_digest: str | None = None
+) -> GradeResult:
+    """Create the canonical non-scientific result for an ambiguous launch."""
+
+    return GradeResult(
+        task_id=task_id,
+        resolved=False,
+        exit_code=-1,
+        stdout="",
+        stderr="",
+        report={
+            "schema": "trimem/grader-outcome-unknown/1.0",
+            "task_id": task_id,
+            "resolved": False,
+            "failure_stage": "grader_process_started_without_terminal_result",
+            "container_start_observed": None,
+            "grader_capacity_consumed_conservatively": True,
+            "terminal_streams_available": False,
+        },
+        grader_id="official-grader-lifecycle-recovery-v1",
+        container_digest=(
+            container_digest or "UNKNOWN_AFTER_GRADER_PROCESS_START"
+        ),
+        official=True,
+        wall_time_ms=0,
+        container_started=True,
+        status="grader_outcome_unknown_after_process_start",
+    )
+
+
+def close_ambiguous_grader_journal(
+    path: Path,
+    *,
+    container_digest: str | None = None,
+) -> GradeResult:
+    """Close a killed grader process without starting or retrying anything."""
+
+    row = TerminalInvocationJournal._validated_grader_row(path)
+    state = row["status"]
+    request_sha256 = row["request_sha256"]
+    suffix = ":" + request_sha256
+    key = row["key"]
+    if not key.endswith(suffix) or len(key) <= len(suffix):
+        raise BenchmarkExecutionError(
+            "grader lifecycle task identity cannot be recovered"
+        )
+    task_id = key[: -len(suffix)]
+    result = _unknown_grader_result(
+        task_id=task_id, container_digest=container_digest
+    )
+    if state == "GRADER_PROCESS_STARTED":
+        TerminalInvocationJournal.transition_grader(
+            path,
+            expected=("GRADER_PROCESS_STARTED",),
+            status="GRADER_CONTAINER_STARTED",
+            values={
+                "official_grader_runs": 1,
+                "grader_containers": 1,
+                "grader_capacity_disposition": "CONSERVATIVELY_CONSUMED",
+                "container_start_observed": None,
+            },
+        )
+        state = "GRADER_CONTAINER_STARTED"
+    if state != "GRADER_CONTAINER_STARTED":
+        raise BenchmarkExecutionError(
+            "grader outcome-unknown recovery state is invalid"
+        )
+    TerminalInvocationJournal.transition_grader(
+        path,
+        expected=("GRADER_CONTAINER_STARTED",),
+        status="GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+        values={
+            "result": asdict(result),
+            "official_grader_runs": 1,
+            "grader_containers": 1,
+            "grader_capacity_disposition": "CONSERVATIVELY_CONSUMED",
+            "container_start_observed": None,
+        },
+    )
+    return result
+
+
 class JournaledGraderGateway:
-    def __init__(self, delegate: OfficialHarnessGraderGateway, journal: TerminalInvocationJournal):
+    def __init__(
+        self,
+        delegate: OfficialHarnessGraderGateway,
+        journal: TerminalInvocationJournal,
+        *,
+        preflight_evidence: Optional[Mapping[str, Any]] = None,
+        python_binary: str | Path = sys.executable,
+    ):
         self.delegate = delegate
         self.journal = journal
+        self.preflight_evidence = preflight_evidence
+        self.python_binary = python_binary
+
+    def _preflight_sha256(self) -> str:
+        evidence = self.preflight_evidence
+        if evidence is None:
+            evidence = getattr(self.delegate, "loader_preflight_evidence", None)
+        if not isinstance(evidence, Mapping):
+            raise BenchmarkProcessFailure(
+                "GLOBAL_ENVIRONMENT_FAILURE",
+                "official grader exact loader preflight evidence is absent",
+            )
+        delegate_loader = getattr(self.delegate, "python_loader_evidence", None)
+        delegate_environment = getattr(self.delegate, "execution_env", None)
+        validated = validate_official_harness_loader_preflight_evidence(
+            evidence,
+            python_binary=self.python_binary,
+            _runtime_loader_evidence=(
+                delegate_loader if isinstance(delegate_loader, Mapping) else None
+            ),
+            _runtime_environment=(
+                delegate_environment
+                if isinstance(delegate_environment, Mapping)
+                else None
+            ),
+        )
+        if delegate_loader is not None or delegate_environment is not None:
+            if not isinstance(delegate_loader, Mapping) or not isinstance(
+                delegate_environment, Mapping
+            ):
+                raise BenchmarkProcessFailure(
+                    "GLOBAL_ENVIRONMENT_FAILURE",
+                    "official grader runtime loader binding is incomplete",
+                )
+            if (
+                canonical_bytes(dict(delegate_loader))
+                != canonical_bytes(dict(validated["python_loader"]))
+                or sorted(delegate_environment) != validated["environment_keys"]
+                or sha256_bytes(canonical_bytes(dict(delegate_environment)))
+                != validated["environment_identity_sha256"]
+            ):
+                raise BenchmarkProcessFailure(
+                    "GLOBAL_ENVIRONMENT_FAILURE",
+                    "official grader runtime loader differs from exact preflight",
+                )
+        return sha256_bytes(canonical_bytes(validated))
 
     @staticmethod
     def _request_hash(request: GradeRequest) -> str:
@@ -2768,27 +4498,231 @@ class JournaledGraderGateway:
 
     @staticmethod
     def _result(value: Mapping[str, Any]) -> GradeResult:
-        return GradeResult(**dict(value))
+        try:
+            return GradeResult(**dict(value))
+        except (TypeError, ValueError) as exc:
+            raise BenchmarkExecutionError(
+                "grader lifecycle result payload is malformed"
+            ) from exc
+
+    def _validate_result(self, request: GradeRequest, result: GradeResult) -> None:
+        if (
+            result.task_id != request.task_id
+            or result.official is not True
+            or result.container_started is not True
+            or type(result.resolved) is not bool
+            or type(result.exit_code) is not int
+            or type(result.wall_time_ms) is not int
+            or result.wall_time_ms < 0
+            or not isinstance(result.report, Mapping)
+            or not isinstance(result.stdout, str)
+            or not isinstance(result.stderr, str)
+            or not isinstance(result.status, str)
+            or not result.status
+        ):
+            raise BenchmarkProcessFailure(
+                "GLOBAL_GRADER_INFRA_FAILURE",
+                "official grader terminal result is not authoritative",
+            )
+        validator = getattr(self.delegate, "validate_captured_result", None)
+        if not callable(validator):
+            raise BenchmarkProcessFailure(
+                "GLOBAL_GRADER_INFRA_FAILURE",
+                "official grader has no retained-evidence validator",
+            )
+        try:
+            validator(request, result)
+        except Exception as exc:
+            raise BenchmarkProcessFailure(
+                "GLOBAL_GRADER_INFRA_FAILURE",
+                "official grader retained evidence did not validate: "
+                + type(exc).__name__,
+            ) from exc
+
+    def _unknown_after_process_start(
+        self,
+        request: GradeRequest,
+        path: Path,
+        *,
+        state: str,
+    ) -> GraderInvocationFailure:
+        """Conservatively close a launched process with no terminal result.
+
+        ``GRADER_PROCESS_STARTED`` is the durable before-delegate marker.  A
+        process death after that marker cannot prove that no container was
+        created, so recovery consumes exactly one grader/container slot and
+        records an outcome-unknown result.  It must never call the delegate a
+        second time.
+        """
+
+        target = getattr(self.delegate, "target", None)
+        container_digest = getattr(target, "image", None)
+        if not isinstance(container_digest, str) or not container_digest:
+            container_digest = None
+        result = close_ambiguous_grader_journal(
+            path, container_digest=container_digest
+        )
+        if result.task_id != request.task_id:
+            raise BenchmarkExecutionError(
+                "grader outcome-unknown task identity differs"
+            )
+        return GraderInvocationFailure(result)
+
+    def lifecycle(self, request: GradeRequest) -> Mapping[str, Any]:
+        request_hash = self._request_hash(request)
+        key = f"{request.task_id}:{request_hash}"
+        path = self.journal._path("grader", key)
+        if not path.exists():
+            return {
+                "state": "GRADER_NOT_PREPARED",
+                "request_sha256": request_hash,
+                "journal_present": False,
+            }
+        row = self.journal._validated_grader_row(path)
+        if row.get("key") != key or row.get("request_sha256") != request_hash:
+            raise BenchmarkExecutionError(
+                "grader lifecycle journal request identity mismatch"
+            )
+        return {
+            "state": row["status"],
+            "request_sha256": request_hash,
+            "journal_present": True,
+        }
 
     def grade(self, request: GradeRequest) -> GradeResult:
-        key = f"{request.task_id}:{self._request_hash(request)}"
-        path = self.journal.begin("grader", key, self._request_hash(request))
-        row = self.journal.load(path)
-        if row.get("status") == "SUCCESS":
-            return self._result(row["result"])
-        if row.get("status") == "FAILURE":
+        request_hash = self._request_hash(request)
+        key = f"{request.task_id}:{request_hash}"
+        path = self.journal.begin_grader_request(key, request_hash)
+        row = self.journal._validated_grader_row(path)
+        state = row["status"]
+        if state == "GRADER_RESULT_VALIDATED":
+            result = self._result(row["result"])
+            self._validate_result(request, result)
+            return result
+        if state in {
+            "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+            "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+        }:
             raise GraderInvocationFailure(self._result(row["result"]))
-        if row.get("status") != "IN_FLIGHT":
-            raise BenchmarkExecutionError("unknown grader journal state")
-        if row.get("delegate_started") is True:
-            raise BenchmarkExecutionError("grader invocation is indeterminate; automatic retry refused")
-        write_json(path, {**row, "delegate_started": True})
+        if state == "GRADER_TERMINAL_RESULT_CAPTURED":
+            result = self._result(row["result"])
+            self._validate_result(request, result)
+            self.journal.transition_grader(
+                path,
+                expected=("GRADER_TERMINAL_RESULT_CAPTURED",),
+                status="GRADER_RESULT_VALIDATED",
+            )
+            return result
+        if state in {"GRADER_PROCESS_STARTED", "GRADER_CONTAINER_STARTED"}:
+            raise self._unknown_after_process_start(
+                request, path, state=state
+            )
+        if state == "GRADER_NOT_PREPARED":
+            preflight_sha256 = self._preflight_sha256()
+            self.journal.transition_grader(
+                path,
+                expected=("GRADER_NOT_PREPARED",),
+                status="GRADER_PREFLIGHT_PASSED",
+                values={"loader_preflight_evidence_sha256": preflight_sha256},
+            )
+            state = "GRADER_PREFLIGHT_PASSED"
+        if state == "GRADER_PREFLIGHT_PASSED":
+            self.journal.transition_grader(
+                path,
+                expected=("GRADER_PREFLIGHT_PASSED",),
+                status="GRADER_REQUEST_RECORDED",
+            )
+            state = "GRADER_REQUEST_RECORDED"
+        if state != "GRADER_REQUEST_RECORDED":
+            raise BenchmarkExecutionError("unknown grader lifecycle state")
+        self.journal.transition_grader(
+            path,
+            expected=("GRADER_REQUEST_RECORDED",),
+            status="GRADER_PROCESS_STARTED",
+        )
         try:
             result = self.delegate.grade(request)
         except GraderInvocationFailure as exc:
-            self.journal.finish(path, {"status": "FAILURE", "result": asdict(exc.result)})
+            result_payload = asdict(exc.result)
+            if exc.result.container_started:
+                self.journal.transition_grader(
+                    path,
+                    expected=("GRADER_PROCESS_STARTED",),
+                    status="GRADER_CONTAINER_STARTED",
+                    values={
+                        "official_grader_runs": 1,
+                        "grader_containers": 1,
+                        "grader_capacity_disposition": "CONSERVATIVELY_CONSUMED",
+                    },
+                )
+                self.journal.transition_grader(
+                    path,
+                    expected=("GRADER_CONTAINER_STARTED",),
+                    status="GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+                    values={
+                        "result": result_payload,
+                        "official_grader_runs": 1,
+                        "grader_containers": 1,
+                        "grader_capacity_disposition": "CONSERVATIVELY_CONSUMED",
+                    },
+                )
+            else:
+                self.journal.transition_grader(
+                    path,
+                    expected=("GRADER_PROCESS_STARTED",),
+                    status="GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+                    values={
+                        "result": result_payload,
+                        "official_grader_runs": 0,
+                        "grader_containers": 0,
+                        "grader_capacity_disposition": "NOT_CONSUMED",
+                    },
+                )
             raise
-        self.journal.finish(path, {"status": "SUCCESS", "result": asdict(result)})
+        except Exception as exc:
+            raise self._unknown_after_process_start(
+                request, path, state="GRADER_PROCESS_STARTED"
+            ) from exc
+        if not result.container_started:
+            self.journal.transition_grader(
+                path,
+                expected=("GRADER_PROCESS_STARTED",),
+                status="GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+                values={
+                    "result": asdict(result),
+                    "official_grader_runs": 0,
+                    "grader_containers": 0,
+                    "grader_capacity_disposition": "NOT_CONSUMED",
+                },
+            )
+            raise GraderInvocationFailure(result)
+        self.journal.transition_grader(
+            path,
+            expected=("GRADER_PROCESS_STARTED",),
+            status="GRADER_CONTAINER_STARTED",
+            values={
+                "official_grader_runs": 1,
+                "grader_containers": 1,
+                "grader_capacity_disposition": "CONSERVATIVELY_CONSUMED",
+            },
+        )
+        self.journal.transition_grader(
+            path,
+            expected=("GRADER_CONTAINER_STARTED",),
+            status="GRADER_TERMINAL_RESULT_CAPTURED",
+            values={
+                "result": asdict(result),
+                "official_grader_runs": 1,
+                "grader_containers": 1,
+                "grader_capacity_disposition": "AUTHORITATIVE_RESULT",
+            },
+        )
+        self._validate_result(request, result)
+        self.journal.transition_grader(
+            path,
+            expected=("GRADER_TERMINAL_RESULT_CAPTURED",),
+            status="GRADER_RESULT_VALIDATED",
+        )
         return result
 
 
@@ -2989,34 +4923,120 @@ def _run_command(argv: Sequence[str], *, cwd: Path | None = None) -> subprocess.
     return completed
 
 
+def _hermetic_git_command(arguments: Sequence[str]) -> list[str]:
+    return [
+        "git",
+        "--no-replace-objects",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        f"core.hooksPath={os.devnull}",
+        *arguments,
+    ]
+
+
+def _run_hermetic_git(arguments: Sequence[str]) -> subprocess.CompletedProcess[str]:
+    environment = {
+        "PATH": os.environ.get("PATH", ""),
+        "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+        "WINDIR": os.environ.get("WINDIR", ""),
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "LC_ALL": "C",
+        "LANG": "C",
+    }
+    argv = _hermetic_git_command(arguments)
+    completed = subprocess.run(
+        argv,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=environment,
+    )
+    if completed.returncode != 0:
+        raise BenchmarkExecutionError(
+            f"command failed ({argv[0]}): {completed.stderr.strip()}"
+        )
+    return completed
+
+
 def prepare_checkouts(
     tasks: Sequence[CodingTask], targets: Sequence[Mapping[str, Any]],
     images: Mapping[str, Mapping[str, Any]], root: Path, *, resume: bool,
 ) -> tuple[GitCheckoutWorkspaceFactory, dict[str, dict[str, Any]]]:
     if len(tasks) != len(targets):
         raise BenchmarkExecutionError("task/target workspace binding length mismatch")
+    try:
+        root = validate_lexical_directory_chain(
+            root, label="task checkout root"
+        )
+        root.mkdir(parents=True, exist_ok=True)
+        root = validate_lexical_directory_chain(
+            root, label="task checkout root"
+        )
+    except HarnessLockError as exc:
+        raise BenchmarkExecutionError("task checkout root is unsafe") from exc
     roots, commits, evidence = {}, {}, {}
     command_runners = {}
     for task, target in zip(tasks, targets):
         safe = re.sub(r"[^A-Za-z0-9_.-]", "_", task.task_id)
-        checkout = (root / safe).resolve()
+        lexical_checkout = (root / safe).absolute()
+        if _is_link_or_reparse(lexical_checkout):
+            raise BenchmarkExecutionError(
+                f"task checkout is linked or reparsed: {task.task_id}"
+            )
+        checkout = lexical_checkout.resolve()
         stdout_parts, stderr_parts, argv_rows = [], [], []
         if not checkout.exists():
             if resume:
                 raise BenchmarkExecutionError(f"resume checkout is missing: {task.task_id}")
-            clone = ["git", "clone", "--no-checkout", "--filter=blob:none",
-                     f"https://github.com/{task.repository}.git", str(checkout)]
-            result = _run_command(clone)
+            clone_arguments = ["clone", "--no-checkout", "--filter=blob:none",
+                               f"https://github.com/{task.repository}.git", str(checkout)]
+            clone = _hermetic_git_command(clone_arguments)
+            result = _run_hermetic_git(clone_arguments)
             stdout_parts.append(result.stdout); stderr_parts.append(result.stderr); argv_rows.append(clone)
-            checkout_cmd = ["git", "-C", str(checkout), "checkout", "--detach", task.commit]
-            result = _run_command(checkout_cmd)
+            checkout_arguments = [
+                f"--git-dir={checkout / '.git'}",
+                f"--work-tree={checkout}",
+                "checkout",
+                "--detach",
+                task.commit,
+            ]
+            checkout_cmd = _hermetic_git_command(checkout_arguments)
+            result = _run_hermetic_git(checkout_arguments)
             stdout_parts.append(result.stdout); stderr_parts.append(result.stderr); argv_rows.append(checkout_cmd)
-        head = _run_command(["git", "-C", str(checkout), "rev-parse", "HEAD"]).stdout.strip()
+        git_dir = checkout / ".git"
+        if _is_link_or_reparse(git_dir) or not git_dir.is_dir():
+            raise BenchmarkExecutionError(
+                f"task checkout Git metadata is not local: {task.task_id}"
+            )
+        try:
+            validate_safe_local_git_configuration(checkout)
+        except Exception as exc:
+            raise BenchmarkExecutionError(
+                f"task checkout Git configuration is unsafe: {task.task_id}"
+            ) from exc
+        head = _run_hermetic_git(
+            [
+                f"--git-dir={git_dir}",
+                f"--work-tree={checkout}",
+                "rev-parse",
+                "--verify",
+                "HEAD",
+            ]
+        ).stdout.strip()
         if head != task.commit:
             raise BenchmarkExecutionError(f"checkout HEAD mismatch: {task.task_id}")
-        status = _run_command(["git", "-C", str(checkout), "status", "--porcelain=v1"]).stdout
-        if status and not resume:
-            raise BenchmarkExecutionError(f"new checkout is not clean: {task.task_id}")
+        status = ""
+        if not resume:
+            try:
+                validate_pristine_checkout(checkout, task.commit)
+            except HarnessLockError as exc:
+                raise BenchmarkExecutionError(
+                    f"new checkout is not exact and clean: {task.task_id}"
+                ) from exc
         roots[task.task_id], commits[task.task_id] = checkout, task.commit
         image = images.get(str(target.get("instance_id")), {}).get("image")
         if not isinstance(image, str):
@@ -3057,11 +5077,20 @@ def image_entries(*, require_benchmark: bool) -> tuple[dict[str, dict[str, Any]]
 def grader_factory(
     target: Mapping[str, Any], row: Mapping[str, Any], image: Mapping[str, Any],
     harnesses: Mapping[str, Path], output_root: Path, arm: str, support: Sequence[tuple[str, str]],
+    *,
+    loader_preflight_evidence: Optional[Mapping[str, Any]] = None,
 ):
+    if loader_preflight_evidence is not None:
+        validate_official_harness_loader_preflight_evidence(
+            loader_preflight_evidence
+        )
+        validate_preflight_harness_root_binding(
+            loader_preflight_evidence, harnesses
+        )
     harness_revision = (
-        "7a21e05772954cc81471ae19d56f436cecf43c54"
+        SWE_HARNESS_REVISION
         if target["benchmark_id"] == "swebench_verified"
-        else "24f493f8a103e72312ded4f6b9c89f081d69cb09"
+        else MULTI_HARNESS_REVISION
     )
     frozen = FrozenOfficialTarget(
         target_id=target["target_id"], benchmark_id=target["benchmark_id"],
@@ -3071,10 +5100,40 @@ def grader_factory(
         harness_image_tag=image["harness_image_tag"], harness_revision=harness_revision,
     )
     multi_support = support if target["benchmark_id"].startswith("multi_swe_bench") else ()
-    return OfficialHarnessGraderGateway(
+    grader = OfficialHarnessGraderGateway(
         frozen, source_row=row, harness_root=harnesses[target["benchmark_id"]],
         output_root=output_root, model_name=f"trimem-v1-{arm}", support_images=multi_support,
     )
+    if loader_preflight_evidence is not None:
+        expected_loader = loader_preflight_evidence["python_loader"]
+        observed_loader = grader.python_loader_evidence
+        identity_fields = (
+            "schema",
+            "status",
+            "python_binary_realpath",
+            "python_binary_sha256",
+            "python_binary_bytes",
+            "python_version",
+            "python_prefix",
+            "libdir",
+            "libpython_realpath",
+            "libpython_sha256",
+            "libpython_bytes",
+        )
+        if any(
+            observed_loader.get(name) != expected_loader.get(name)
+            for name in identity_fields
+        ) or (
+            sorted(grader.execution_env)
+            != loader_preflight_evidence.get("environment_keys")
+        ) or sha256_bytes(canonical_bytes(grader.execution_env)) != (
+            loader_preflight_evidence.get("environment_identity_sha256")
+        ):
+            raise BenchmarkProcessFailure(
+                "GLOBAL_ENVIRONMENT_FAILURE",
+                "official grader loader identity differs from workflow preflight",
+            )
+    return grader
 
 
 def observed_target_digest(grade: GradeResult) -> str:
@@ -3643,6 +5702,20 @@ def actual_memory_metrics(result: Any, events_path: Path) -> dict[str, int]:
     }
 
 
+def task_configuration_sha256(task: CodingTask) -> str:
+    """Return the exact task component hash used by runtime checkpoints."""
+
+    return sha256_bytes(
+        canonical_bytes(
+            {
+                "org_id": task.org_id,
+                "user_id": task.user_id,
+                "public_payload": task.public_payload(),
+            }
+        )
+    )
+
+
 def _arm_checkpoint_paths(root: Path, arm: str) -> tuple[Path, Path]:
     return root / f"{arm}.stream-checkpoint.json", root / f"{arm}.stream-checkpoint.sha256"
 
@@ -3656,8 +5729,8 @@ def save_arm_checkpoint(root: Path, arm: str, checkpoint: Mapping[str, Any]) -> 
 
 def load_arm_checkpoint(root: Path, arm: str) -> dict[str, Any]:
     target, sidecar = _arm_checkpoint_paths(root, arm)
-    if not target.is_file() or not sidecar.is_file():
-        raise BenchmarkExecutionError("resume stream checkpoint is missing")
+    target = _secure_retained_path(root, target, directory=False)
+    sidecar = _secure_retained_path(root, sidecar, directory=False)
     raw = target.read_bytes()
     if sha256_bytes(raw) != sidecar.read_text(encoding="ascii").strip():
         raise BenchmarkExecutionError("resume stream checkpoint sidecar mismatch")
@@ -3665,6 +5738,56 @@ def load_arm_checkpoint(root: Path, arm: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise BenchmarkExecutionError("resume stream checkpoint is invalid")
     return value
+
+
+def _cell_stream_checkpoint_sha256(
+    root: Path,
+    stream_id: str,
+    binding: Mapping[str, Any],
+) -> str:
+    """Validate the current stream checkpoint and return its canonical SHA-256."""
+
+    next_cursor = binding.get("next_cursor")
+    checkpoint = load_arm_checkpoint(root, stream_id)
+    payload = checkpoint.get("payload")
+    if (
+        type(next_cursor) is not int
+        or not isinstance(payload, Mapping)
+        or payload.get("task_cursor") != next_cursor
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit stream checkpoint cursor differs"
+        )
+    next_sequence_index = payload.get("next_sequence_index")
+    if next_sequence_index is not None and next_sequence_index != next_cursor:
+        raise BenchmarkExecutionError(
+            "cell-commit stream checkpoint sequence differs"
+        )
+    embedded_digest = checkpoint.get("digest")
+    if embedded_digest is not None:
+        payload_sha256 = sha256_bytes(canonical_bytes(payload))
+        if embedded_digest not in {payload_sha256, "sha256:" + payload_sha256}:
+            raise BenchmarkExecutionError(
+                "cell-commit stream checkpoint envelope digest differs"
+            )
+    return sha256_bytes(canonical_bytes(checkpoint))
+
+
+def _verified_cell_stream_checkpoint(
+    root: Path,
+    stream_id: str,
+    journal_row: Mapping[str, Any],
+) -> None:
+    """Bind a cursor-advanced cell to the exact durable stream checkpoint."""
+
+    binding = journal_row.get("binding")
+    if not isinstance(binding, Mapping):
+        raise BenchmarkExecutionError("cell-commit checkpoint binding is absent")
+    observed = _cell_stream_checkpoint_sha256(root, stream_id, binding)
+    if journal_row.get("stream_checkpoint_sha256") != observed:
+        raise BenchmarkExecutionError(
+            "cell-commit stream checkpoint hash differs"
+        )
 
 
 def _task_recovery_paths(
@@ -3677,6 +5800,1641 @@ def _task_recovery_paths(
     task_dir = root / stream_id / f"{sequence_index:03d}-{safe_task_id}"
     run_id = re.sub(r"[^A-Za-z0-9_-]", "_", f"{task.task_id}-{stream_id}")
     return task_dir, run_id, task_dir / "prepared-task-checkpoint.json"
+
+
+def _cell_result_path(task_dir: Path, task: CodingTask) -> Path:
+    safe_task_id = re.sub(r"[^A-Za-z0-9_.-]", "_", task.task_id)
+    return task_dir / f"{safe_task_id}.result.json"
+
+
+def _cell_commit_path(task_dir: Path) -> Path:
+    return task_dir / "cell-commit-journal.json"
+
+
+def _cell_commit_binding(
+    *,
+    stream_id: str,
+    arm: str,
+    target_id: str,
+    sequence_index: int,
+    task_arm_key: str,
+    task_reservation: str,
+    record: Mapping[str, Any],
+    grade: GradeResult,
+    session_result: Mapping[str, Any],
+) -> dict[str, Any]:
+    return {
+        "stream_id": stream_id,
+        "arm": arm,
+        "target_id": target_id,
+        "expected_cursor": sequence_index,
+        "task_arm_key": task_arm_key,
+        "task_arm_reservation_id": task_reservation,
+        "result_sha256": sha256_bytes(json_file_bytes(record)),
+        "accounting_projection_sha256": sha256_bytes(
+            canonical_bytes(record["actual_accounting"])
+        ),
+        "grader_result_sha256": sha256_bytes(canonical_bytes(asdict(grade))),
+        "session_result_sha256": sha256_bytes(
+            canonical_bytes(session_result)
+        ),
+        "next_cursor": sequence_index + 1,
+    }
+
+
+def _verified_terminal_ledger_row(
+    ledger: AtomicBudgetLedger,
+    *,
+    task_arm_key: str,
+    reservation_id: str,
+    container_started: bool,
+) -> dict[str, Any]:
+    row = ledger.task_arm_row(task_arm_key)
+    if (
+        not isinstance(row, Mapping)
+        or row.get("reservation_id") != reservation_id
+        or row.get("status") != SCIENTIFIC_LEDGER_TERMINAL_STATUS
+        or row.get("container_started") is not container_started
+    ):
+        raise BenchmarkExecutionError("cell-commit task-arm ledger binding differs")
+    return dict(row)
+
+
+def _validate_cell_result_ledger_pair(
+    record: Mapping[str, Any],
+    ledger_row: Mapping[str, Any],
+    *,
+    task_arm_key: str,
+) -> None:
+    try:
+        validate_result_ledger_pair(
+            record,
+            ledger_row,
+            ledger_task_arm_key=task_arm_key,
+        )
+    except ScientificTerminalContractError as exc:
+        raise BenchmarkExecutionError(
+            f"cell-commit result/ledger accounting differs: {exc}"
+        ) from None
+
+
+def _validate_reserved_task_arm_result_pair(
+    record: Mapping[str, Any],
+    ledger_row: Mapping[str, Any],
+    *,
+    task_arm_key: str,
+    request_rows: Sequence[Mapping[str, Any]],
+) -> None:
+    """Validate the complete result projection before ledger terminalization."""
+
+    try:
+        validate_scientific_terminal_result(record)
+    except ScientificTerminalContractError as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit scientific result contract differs"
+        ) from exc
+    accounting = record.get("actual_accounting")
+    if (
+        not isinstance(accounting, Mapping)
+        or set(ledger_row) != RESERVED_LEDGER_TASK_ARM_FIELDS
+        or ledger_row.get("status") != "RESERVED"
+        or ledger_row.get("actual_input_tokens") != accounting.get("input_tokens")
+        or ledger_row.get("actual_model_calls")
+        != accounting.get("model_gateway_calls")
+        or ledger_row.get("actual_output_tokens") != accounting.get("output_tokens")
+        or ledger_row.get("actual_decomposition_output_tokens")
+        != accounting.get("actual_decomposition_output_tokens")
+        or ledger_row.get("actual_solve_output_tokens")
+        != accounting.get("actual_solve_output_tokens")
+        or ledger_row.get("actual_extraction_output_tokens")
+        != accounting.get("actual_extraction_output_tokens")
+        or any(
+            ledger_row.get(name) != 0
+            for name in (
+                "outstanding_input_tokens",
+                "outstanding_model_calls",
+                "outstanding_output_tokens",
+            )
+        )
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit reserved task-arm/result accounting differs"
+        )
+    for role, actual_field in TASK_ACTUAL_OUTPUT_FIELD_BY_CALL_KIND.items():
+        remaining_field = TASK_REMAINING_OUTPUT_FIELD_BY_CALL_KIND[role]
+        if ledger_row.get(remaining_field) != (
+            TASK_OUTPUT_POOL_BY_CALL_KIND[role] - int(accounting[actual_field])
+        ):
+            raise BenchmarkExecutionError(
+                "cell-commit reserved task-arm role pool differs"
+            )
+    if request_rows or accounting.get("model_gateway_calls") or record.get(
+        "failure_metadata"
+    ) is not None:
+        try:
+            validate_result_request_statuses(record, list(request_rows))
+        except ScientificTerminalContractError as exc:
+            raise BenchmarkExecutionError(
+                "cell-commit result/request lifecycle differs"
+            ) from exc
+
+
+def _validated_task_grader_lifecycle(task_dir: Path) -> dict[str, Any]:
+    task_dir = _secure_retained_path(task_dir, task_dir, directory=True)
+    terminal_root = _secure_retained_path(
+        task_dir, task_dir / "terminal-journal", directory=True
+    )
+    grader_root = _secure_retained_path(
+        task_dir, terminal_root / "grader", directory=True
+    )
+    paths = sorted(grader_root.glob("*.json"))
+    if len(paths) != 1:
+        raise BenchmarkExecutionError(
+            "cell-commit requires exactly one grader lifecycle result"
+        )
+    grader_path = _secure_retained_path(task_dir, paths[0], directory=False)
+    row = TerminalInvocationJournal._validated_grader_row(grader_path)
+    if (
+        row.get("status") != "GRADER_RESULT_VALIDATED"
+        or row.get("official_grader_runs") != 1
+        or row.get("grader_containers") != 1
+        or row.get("grader_capacity_disposition") != "AUTHORITATIVE_RESULT"
+        or not isinstance(row.get("result"), Mapping)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit grader lifecycle is not result-validated"
+        )
+    return row
+
+
+def _validated_task_grader_result(task_dir: Path) -> Mapping[str, Any]:
+    return dict(_validated_task_grader_lifecycle(task_dir)["result"])
+
+
+_AGENT_RUN_RESULT_FIELDS = frozenset(
+    {
+        "run_id",
+        "task_id",
+        "arm",
+        "resolved",
+        "patch",
+        "graph_snapshot",
+        "grade",
+        "extraction",
+        "injections",
+        "accounting",
+        "evidence_tail_hash",
+        "lifecycle_result",
+        "cell_status",
+        "model_failure_class",
+        "grader_patch_source",
+        "agent_completed",
+        "extraction_status",
+        "failure_metadata",
+    }
+)
+_GRADE_RESULT_FIELDS = frozenset(
+    {
+        "task_id",
+        "resolved",
+        "exit_code",
+        "stdout",
+        "stderr",
+        "report",
+        "grader_id",
+        "container_digest",
+        "official",
+        "wall_time_ms",
+        "container_started",
+        "status",
+    }
+)
+_EXPERIENCE_EXTRACTION_FIELDS = frozenset(
+    {
+        "episode",
+        "semantic_candidate",
+        "response_hash",
+        "patch_hash",
+        "public_evidence_hash",
+    }
+)
+
+_RESULT_EVIDENCE_FIELDS = frozenset(
+    {
+        "stdout",
+        "stderr",
+        "report",
+        "raw_events",
+        "checkout",
+        "terminal_checkpoint",
+        "restricted_grader_raw",
+    }
+)
+_FILE_EVIDENCE_REFERENCE_FIELDS = frozenset({"path", "sha256", "bytes"})
+_AGENT_CONFIG_HASH_FIELDS = frozenset(
+    {
+        "runtime",
+        "task",
+        "model",
+        "memory_controller",
+        "grader",
+        "workspace",
+        "lifecycle",
+    }
+)
+
+
+def _is_link_or_reparse(path: Path) -> bool:
+    try:
+        value = os.lstat(path)
+    except OSError:
+        return path.is_symlink()
+    return stat.S_ISLNK(value.st_mode) or bool(
+        getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+        & getattr(value, "st_file_attributes", 0)
+    )
+
+
+def _secure_retained_path(
+    root: Path,
+    path: Path,
+    *,
+    directory: bool,
+) -> Path:
+    """Return one non-symlink retained path confined beneath ``root``."""
+
+    lexical_root = root.absolute()
+    lexical_path = path.absolute()
+    if _is_link_or_reparse(lexical_root) or not lexical_root.is_dir():
+        raise BenchmarkExecutionError(
+            "cell-commit retained evidence root is not a regular directory"
+        )
+    try:
+        relative = lexical_path.relative_to(lexical_root)
+    except ValueError as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit retained evidence path escapes its task directory"
+        ) from exc
+    current = lexical_root
+    for part in relative.parts:
+        current = current / part
+        if _is_link_or_reparse(current):
+            raise BenchmarkExecutionError(
+                "cell-commit retained evidence path contains a link or reparse point"
+            )
+    try:
+        resolved_root = lexical_root.resolve(strict=True)
+        resolved = lexical_path.resolve(strict=True)
+        resolved.relative_to(resolved_root)
+    except (OSError, ValueError) as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit retained evidence path is unavailable or escaped"
+        ) from exc
+    if directory:
+        if not resolved.is_dir():
+            raise BenchmarkExecutionError(
+                "cell-commit retained evidence directory is invalid"
+            )
+    elif not resolved.is_file():
+        raise BenchmarkExecutionError(
+            "cell-commit retained evidence file is invalid"
+        )
+    return resolved
+
+
+def _verified_file_evidence_reference(
+    task_dir: Path,
+    reference: object,
+    expected_path: Path,
+) -> bytes:
+    if (
+        not isinstance(reference, Mapping)
+        or set(reference) != _FILE_EVIDENCE_REFERENCE_FIELDS
+        or not isinstance(reference.get("path"), str)
+        or not isinstance(reference.get("sha256"), str)
+        or SHA256.fullmatch(str(reference["sha256"])) is None
+        or type(reference.get("bytes")) is not int
+        or reference["bytes"] < 0
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit canonical evidence reference is malformed"
+        )
+    retained = _secure_retained_path(task_dir, expected_path, directory=False)
+    relative = retained.relative_to(task_dir.resolve(strict=True)).as_posix()
+    try:
+        raw = retained.read_bytes()
+    except OSError as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit canonical evidence file is unavailable"
+        ) from exc
+    if (
+        reference["path"] != relative
+        or reference["bytes"] != len(raw)
+        or reference["sha256"] != sha256_bytes(raw)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit canonical evidence bytes differ"
+        )
+    return raw
+
+
+def _validated_restricted_grader_references(
+    task_dir: Path,
+    references: object,
+) -> None:
+    if not isinstance(references, list):
+        raise BenchmarkExecutionError(
+            "cell-commit restricted grader evidence references are malformed"
+        )
+    restricted_root = task_dir / "official-grader" / "restricted-evidence"
+    if restricted_root.is_symlink():
+        raise BenchmarkExecutionError(
+            "cell-commit restricted grader evidence path is a symlink"
+        )
+    if not restricted_root.exists():
+        if references:
+            raise BenchmarkExecutionError(
+                "cell-commit restricted grader evidence is absent"
+            )
+        return
+    _secure_retained_path(task_dir, restricted_root, directory=True)
+    paths = sorted(restricted_root.glob("*.bin"))
+    if len(paths) != len(references):
+        raise BenchmarkExecutionError(
+            "cell-commit restricted grader evidence set differs"
+        )
+    for reference, path in zip(references, paths):
+        _verified_file_evidence_reference(task_dir, reference, path)
+
+
+def _checkpoint_evidence_blob(
+    evidence: RawEvidenceLedger,
+    reference: object,
+    *,
+    media_type: str,
+) -> bytes:
+    if (
+        not isinstance(reference, Mapping)
+        or set(reference) != {"sha256", "bytes", "media_type"}
+        or reference.get("media_type") != media_type
+        or not isinstance(reference.get("sha256"), str)
+        or SHA256.fullmatch(str(reference["sha256"])) is None
+        or type(reference.get("bytes")) is not int
+        or reference["bytes"] < 0
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit terminal checkpoint blob reference is malformed"
+        )
+    path = _secure_retained_path(
+        evidence.root,
+        evidence.blob_dir / str(reference["sha256"]),
+        directory=False,
+    )
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit terminal checkpoint blob is unavailable"
+        ) from exc
+    if (
+        len(raw) != reference["bytes"]
+        or sha256_bytes(raw) != reference["sha256"]
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit terminal checkpoint blob differs"
+        )
+    return raw
+
+
+def _validate_cell_session_result_against_done_checkpoint_impl(
+    task_dir: Path,
+    journal_row: Mapping[str, Any],
+    result_record: Mapping[str, Any],
+    *,
+    grader_result: Mapping[str, Any],
+    expected_target: Mapping[str, Any],
+) -> AgentRunResult:
+    """Cross-bind a journal's inline result to retained runtime evidence.
+
+    The cell journal is locally sealable, so its inline ``session_result`` is
+    never an authority on its own.  Process-two authorization and recovery
+    both call this verifier, which reconstructs the exact ``AgentRunResult``
+    from a hash-sidecar-protected DONE checkpoint and its raw evidence ledger.
+    """
+
+    session_result = journal_row.get("session_result")
+    binding = journal_row.get("binding")
+    if (
+        not isinstance(session_result, Mapping)
+        or set(session_result) != _AGENT_RUN_RESULT_FIELDS
+        or not isinstance(binding, Mapping)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit durable session result shape differs"
+        )
+    grade_payload = session_result.get("grade")
+    extraction_payload = session_result.get("extraction")
+    injections = session_result.get("injections")
+    if (
+        not isinstance(grade_payload, Mapping)
+        or set(grade_payload) != _GRADE_RESULT_FIELDS
+        or not isinstance(extraction_payload, Mapping)
+        or set(extraction_payload) != _EXPERIENCE_EXTRACTION_FIELDS
+        or not isinstance(injections, list)
+        or any(not isinstance(row, Mapping) for row in injections)
+        or not isinstance(session_result.get("graph_snapshot"), Mapping)
+        or not isinstance(session_result.get("accounting"), Mapping)
+        or not isinstance(session_result.get("lifecycle_result"), Mapping)
+        or type(session_result.get("resolved")) is not bool
+        or type(session_result.get("agent_completed")) is not bool
+        or not isinstance(session_result.get("patch"), str)
+        or not isinstance(session_result.get("evidence_tail_hash"), str)
+        or SHA256.fullmatch(str(session_result["evidence_tail_hash"])) is None
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit durable session result is malformed"
+        )
+    try:
+        grade = GradeResult(**dict(grade_payload))
+        semantic = extraction_payload.get("semantic_candidate")
+        extraction = ExperienceExtraction(
+            episode=dict(extraction_payload["episode"]),
+            semantic_candidate=(
+                dict(semantic) if semantic is not None else None
+            ),
+            response_hash=str(extraction_payload["response_hash"]),
+            patch_hash=str(extraction_payload["patch_hash"]),
+            public_evidence_hash=str(
+                extraction_payload["public_evidence_hash"]
+            ),
+        )
+    except (KeyError, TypeError, ValueError) as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit durable session result cannot be reconstructed"
+        ) from exc
+    expected_run_id = re.sub(
+        r"[^A-Za-z0-9_-]",
+        "_",
+        f"{binding.get('target_id')}-{binding.get('stream_id')}",
+    )
+    if (
+        not isinstance(session_result.get("run_id"), str)
+        or session_result["run_id"] != expected_run_id
+        or session_result.get("task_id") != binding.get("target_id")
+        or session_result.get("arm") != binding.get("arm")
+        or grade.task_id != session_result.get("task_id")
+        or grade.resolved is not session_result.get("resolved")
+        or canonical_bytes(grade_payload) != canonical_bytes(grader_result)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit durable session identity/grader differs"
+        )
+    if (
+        not isinstance(expected_target, Mapping)
+        or expected_target.get("target_id") != session_result["task_id"]
+        or not isinstance(expected_target.get("base_commit"), str)
+        or HEX40.fullmatch(str(expected_target["base_commit"])) is None
+        or not isinstance(expected_target.get("repository"), str)
+        or not expected_target["repository"]
+        or not isinstance(expected_target.get("workspace_checkout_root"), str)
+        or not expected_target["workspace_checkout_root"]
+        or (
+            "benchmark_id" in expected_target
+            and result_record.get("benchmark_id")
+            != expected_target.get("benchmark_id")
+        )
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit durable session differs from the frozen target"
+        )
+    expected_task_config = expected_target.get("task_config_sha256")
+    if (
+        not isinstance(expected_task_config, str)
+        or SHA256.fullmatch(expected_task_config) is None
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit frozen task configuration hash is absent"
+        )
+
+    checkpoint_dir = task_dir / "agent-checkpoints"
+    evidence_root = task_dir / "evidence"
+    _secure_retained_path(task_dir, checkpoint_dir, directory=True)
+    _secure_retained_path(task_dir, evidence_root, directory=True)
+    blob_dir = evidence_root / "blobs"
+    _secure_retained_path(task_dir, blob_dir, directory=True)
+    for blob_path in blob_dir.iterdir():
+        retained_blob = _secure_retained_path(
+            task_dir, blob_path, directory=False
+        )
+        if (
+            SHA256.fullmatch(retained_blob.name) is None
+            or sha256_bytes(retained_blob.read_bytes()) != retained_blob.name
+        ):
+            raise BenchmarkExecutionError(
+                "cell-commit retained evidence blob set is invalid"
+            )
+    events_path = evidence_root / "events.jsonl"
+    _secure_retained_path(task_dir, events_path, directory=False)
+    checkpoint_entries = list(checkpoint_dir.iterdir())
+    if any(
+        entry.is_symlink() or not entry.is_file() for entry in checkpoint_entries
+    ) or {entry.name for entry in checkpoint_entries} != {
+        f"{expected_run_id}.json",
+        f"{expected_run_id}.sha256",
+    }:
+        raise BenchmarkExecutionError(
+            "cell-commit agent checkpoint inventory differs"
+        )
+    checkpoint_path = checkpoint_dir / f"{session_result['run_id']}.json"
+    checkpoint_sidecar = checkpoint_dir / f"{session_result['run_id']}.sha256"
+    _secure_retained_path(task_dir, checkpoint_path, directory=False)
+    _secure_retained_path(task_dir, checkpoint_sidecar, directory=False)
+    try:
+        terminal_checkpoint = FileCheckpointStore(checkpoint_dir).load(
+            str(session_result["run_id"]),
+            required_config_hashes=None,
+            required_evidence_hash=str(session_result["evidence_tail_hash"]),
+        )
+        evidence = RawEvidenceLedger(evidence_root)
+        evidence_summary = evidence.verify()
+    except Exception as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit retained DONE checkpoint/evidence is invalid"
+        ) from exc
+    if (
+        terminal_checkpoint.state != "DONE"
+        or terminal_checkpoint.run_id != session_result["run_id"]
+        or terminal_checkpoint.task_id != session_result["task_id"]
+        or terminal_checkpoint.arm != session_result["arm"]
+        or evidence_summary.get("last_event_hash")
+        != session_result["evidence_tail_hash"]
+        or canonical_bytes(terminal_checkpoint.graph_snapshot)
+        != canonical_bytes(session_result["graph_snapshot"])
+        or canonical_bytes(terminal_checkpoint.injection_ledger)
+        != canonical_bytes(injections)
+        or canonical_bytes(terminal_checkpoint.accounting)
+        != canonical_bytes(session_result["accounting"])
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit session result differs from retained DONE checkpoint"
+        )
+    checkpoint_config_hashes = terminal_checkpoint.config_hashes
+    if (
+        not isinstance(checkpoint_config_hashes, Mapping)
+        or set(checkpoint_config_hashes) != _AGENT_CONFIG_HASH_FIELDS
+        or any(
+            not isinstance(value, str) or SHA256.fullmatch(value) is None
+            for value in checkpoint_config_hashes.values()
+        )
+        or checkpoint_config_hashes.get("task") != expected_task_config
+        or canonical_bytes(result_record.get("agent_config_hashes"))
+        != canonical_bytes(checkpoint_config_hashes)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit DONE checkpoint configuration differs from frozen authority"
+        )
+
+    record_evidence = result_record.get("evidence")
+    if (
+        result_record.get("terminal_state") != "DONE"
+        or result_record.get("terminal_checkpoint_sha256")
+        != terminal_checkpoint.content_hash
+        or not isinstance(record_evidence, Mapping)
+        or set(record_evidence) != _RESULT_EVIDENCE_FIELDS
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit canonical result is not bound to the DONE checkpoint"
+        )
+    stdout_raw = _verified_file_evidence_reference(
+        task_dir, record_evidence["stdout"], task_dir / "stdout.txt"
+    )
+    stderr_raw = _verified_file_evidence_reference(
+        task_dir, record_evidence["stderr"], task_dir / "stderr.txt"
+    )
+    report_raw = _verified_file_evidence_reference(
+        task_dir, record_evidence["report"], task_dir / "report.json"
+    )
+    _verified_file_evidence_reference(
+        task_dir, record_evidence["raw_events"], events_path
+    )
+    checkout_raw = _verified_file_evidence_reference(
+        task_dir,
+        record_evidence["checkout"],
+        task_dir / "checkout-evidence.json",
+    )
+    _verified_file_evidence_reference(
+        task_dir,
+        record_evidence["terminal_checkpoint"],
+        checkpoint_path,
+    )
+    _validated_restricted_grader_references(
+        task_dir, record_evidence["restricted_grader_raw"]
+    )
+    if (
+        stdout_raw != grade.stdout.encode("utf-8")
+        or stderr_raw != grade.stderr.encode("utf-8")
+        or report_raw != json_file_bytes(grade.report)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit grader evidence differs from the DONE result"
+        )
+    try:
+        checkout = strict_json_loads(checkout_raw)
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit checkout evidence is invalid"
+        ) from exc
+    if (
+        not isinstance(checkout, Mapping)
+        or set(checkout)
+        != {"argv", "stdout", "stderr", "head", "initial_status"}
+        or not isinstance(checkout.get("argv"), list)
+        or any(
+            not isinstance(argv, list)
+            or any(not isinstance(value, str) for value in argv)
+            for argv in checkout["argv"]
+        )
+        or any(
+            not isinstance(checkout.get(name), str)
+            for name in ("stdout", "stderr", "head", "initial_status")
+        )
+        or checkout.get("head") != expected_target["base_commit"]
+        or result_record.get("checkout_evidence_sha256")
+        != sha256_bytes(canonical_bytes(checkout))
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit checkout evidence differs from the frozen target"
+        )
+
+    terminal_payload = terminal_checkpoint.terminal_payload
+    if not isinstance(terminal_payload, Mapping):
+        raise BenchmarkExecutionError(
+            "cell-commit DONE terminal payload is malformed"
+        )
+    if (
+        terminal_payload.get("grade_sha256")
+        != sha256_bytes(canonical_bytes(grade_payload))
+        or canonical_bytes(terminal_payload.get("grade"))
+        != canonical_bytes(grade_payload)
+        or terminal_payload.get("extraction_sha256")
+        != sha256_bytes(canonical_bytes(extraction_payload))
+        or canonical_bytes(terminal_payload.get("extraction"))
+        != canonical_bytes(extraction_payload)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit grade/extraction differs from DONE checkpoint"
+        )
+    storage = terminal_payload.get("storage_result")
+    credit = terminal_payload.get("credit_result")
+    lifecycle = {"storage": storage, "credit": credit}
+    if (
+        not isinstance(storage, Mapping)
+        or not isinstance(credit, Mapping)
+        or terminal_payload.get("storage_result_sha256")
+        != sha256_bytes(canonical_bytes(storage))
+        or terminal_payload.get("credit_result_sha256")
+        != sha256_bytes(canonical_bytes(credit))
+        or canonical_bytes(lifecycle)
+        != canonical_bytes(session_result["lifecycle_result"])
+        or (
+            "lifecycle_result" in terminal_payload
+            and canonical_bytes(terminal_payload["lifecycle_result"])
+            != canonical_bytes(lifecycle)
+        )
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit lifecycle result differs from DONE checkpoint"
+        )
+
+    failed = session_result.get("cell_status") != "AGENT_COMPLETED"
+    patch_reference = terminal_payload.get(
+        "graded_patch" if failed else "patch"
+    )
+    try:
+        patch = _checkpoint_evidence_blob(
+            evidence,
+            patch_reference,
+            media_type="text/plain; charset=utf-8",
+        ).decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit terminal checkpoint patch is not UTF-8"
+        ) from exc
+    if (
+        patch != session_result["patch"]
+        or terminal_payload.get("patch_sha256")
+        != sha256_bytes(patch.encode("utf-8"))
+        or extraction.patch_hash != sha256_bytes(patch.encode("utf-8"))
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit patch differs from DONE checkpoint/evidence"
+        )
+
+    try:
+        workspace_checkout_root = Path(
+            str(expected_target["workspace_checkout_root"])
+        ).resolve(strict=True)
+    except OSError as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit frozen grader workspace is unavailable"
+        ) from exc
+    grader_lifecycle = _validated_task_grader_lifecycle(task_dir)
+    expected_grader_request_sha256 = sha256_bytes(
+        canonical_bytes(
+            {
+                "task_id": session_result["task_id"],
+                "repository": expected_target["repository"],
+                "base_commit": expected_target["base_commit"],
+                "patch_sha256": sha256_bytes(patch.encode("utf-8")),
+                "workspace_kind": "git_checkout",
+                "workspace_base_commit": expected_target["base_commit"],
+                "workspace_checkout_root": str(workspace_checkout_root),
+            }
+        )
+    )
+    if (
+        grader_lifecycle.get("request_sha256")
+        != expected_grader_request_sha256
+        or grader_lifecycle.get("key")
+        != f"{session_result['task_id']}:{expected_grader_request_sha256}"
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit patch differs from the retained grader request"
+        )
+
+    raw_events: list[Mapping[str, Any]] = []
+    try:
+        for line in events_path.read_text(encoding="utf-8").splitlines():
+            if line:
+                event = strict_json_loads(line)
+                if not isinstance(event, Mapping):
+                    raise ValueError("event is not an object")
+                raw_events.append(event)
+    except (OSError, UnicodeDecodeError, ValueError) as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit raw evidence events are malformed"
+        ) from exc
+    grader_requests = [
+        event.get("payload")
+        for event in raw_events
+        if event.get("event_type") == "grader_request"
+    ]
+    grader_results = [
+        event.get("payload")
+        for event in raw_events
+        if event.get("event_type") == "grader_result"
+    ]
+    if (
+        len(grader_requests) != 1
+        or len(grader_results) != 1
+        or not isinstance(grader_requests[0], Mapping)
+        or not isinstance(grader_results[0], Mapping)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit raw grader request/result evidence is incomplete"
+        )
+    raw_request = grader_requests[0]
+    raw_result = grader_results[0]
+    if (
+        set(raw_request)
+        != {
+            "task_id",
+            "arm",
+            "repository",
+            "base_commit",
+            "workspace_kind",
+            "patch",
+        }
+        or raw_request.get("task_id") != session_result["task_id"]
+        or raw_request.get("arm") != session_result["arm"]
+        or raw_request.get("repository") != expected_target["repository"]
+        or raw_request.get("base_commit") != expected_target["base_commit"]
+        or raw_request.get("workspace_kind") != "git_checkout"
+        or _checkpoint_evidence_blob(
+            evidence,
+            raw_request.get("patch"),
+            media_type="text/plain; charset=utf-8",
+        )
+        != patch.encode("utf-8")
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit raw grader request differs from the graded patch"
+        )
+    raw_result_fields = {
+        "task_id": grade.task_id,
+        "arm": session_result["arm"],
+        "official": grade.official,
+        "grader_id": grade.grader_id,
+        "container_digest": grade.container_digest,
+        "exit_code": grade.exit_code,
+        "resolved": grade.resolved,
+        "container_started": grade.container_started,
+        "status": grade.status,
+        "wall_time_ms": grade.wall_time_ms,
+    }
+    if (
+        set(raw_result)
+        != set(raw_result_fields) | {"stdout", "stderr", "report"}
+        or any(
+            raw_result.get(name) != value
+            for name, value in raw_result_fields.items()
+        )
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit raw grader result identity differs"
+        )
+    if (
+        _checkpoint_evidence_blob(
+            evidence,
+            raw_result.get("stdout"),
+            media_type="text/plain; charset=utf-8",
+        )
+        != grade.stdout.encode("utf-8")
+        or _checkpoint_evidence_blob(
+            evidence,
+            raw_result.get("stderr"),
+            media_type="text/plain; charset=utf-8",
+        )
+        != grade.stderr.encode("utf-8")
+        or _checkpoint_evidence_blob(
+            evidence,
+            raw_result.get("report"),
+            media_type="application/json",
+        )
+        != canonical_bytes(grade.report)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit raw grader result blobs differ"
+        )
+    expected_terminal_fields = (
+        {
+            "cell_status": terminal_payload.get("cell_status"),
+            "model_failure_class": terminal_payload.get("model_failure_class"),
+            "grader_patch_source": terminal_payload.get("grader_patch_source"),
+            "agent_completed": terminal_payload.get("agent_completed"),
+            "extraction_status": terminal_payload.get("extraction_status"),
+            "failure_metadata": terminal_payload.get("failure_metadata"),
+        }
+        if failed
+        else {
+            "cell_status": "AGENT_COMPLETED",
+            "model_failure_class": None,
+            "grader_patch_source": "MODEL_PATCH",
+            "agent_completed": True,
+            "extraction_status": "SUCCESS",
+            "failure_metadata": None,
+        }
+    )
+    if any(
+        canonical_bytes(session_result.get(name)) != canonical_bytes(value)
+        for name, value in expected_terminal_fields.items()
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit lifecycle status differs from DONE checkpoint"
+        )
+
+    record_pairs = {
+        "agent_completed": session_result["agent_completed"],
+        "cell_status": session_result["cell_status"],
+        "container_started": grade.container_started,
+        "evidence_tail_hash": session_result["evidence_tail_hash"],
+        "extraction_status": session_result["extraction_status"],
+        "failure_metadata": session_result["failure_metadata"],
+        "grader_exit_code": grade.exit_code,
+        "grader_patch_source": session_result["grader_patch_source"],
+        "grader_status": grade.status,
+        "model_failure_class": session_result["model_failure_class"],
+        "official_grader": grade.official,
+        "resolved": session_result["resolved"],
+        "runtime_arm": session_result["arm"],
+        "target_id": session_result["task_id"],
+    }
+    if any(
+        canonical_bytes(result_record.get(name)) != canonical_bytes(value)
+        for name, value in record_pairs.items()
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit canonical result differs from durable session result"
+        )
+    task_wall_time_ms = result_record.get("actual_accounting", {}).get(
+        "task_wall_time_ms"
+    ) if isinstance(result_record.get("actual_accounting"), Mapping) else None
+    if type(task_wall_time_ms) is not int or canonical_bytes(
+        actual_accounting(
+            session_result["accounting"],
+            task_wall_time_ms=task_wall_time_ms,
+        )
+    ) != canonical_bytes(result_record.get("actual_accounting")):
+        raise BenchmarkExecutionError(
+            "cell-commit canonical accounting differs from DONE checkpoint"
+        )
+    if canonical_bytes(provider_outcome_accounting(session_result["accounting"])) != (
+        canonical_bytes(result_record.get("provider_outcomes"))
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit canonical provider outcomes differ from DONE checkpoint"
+        )
+    pricing = read_json(ROOT / "configs/trimem_v1/cost_plan.json").get(
+        "model_pricing"
+    )
+    if not isinstance(pricing, Mapping) or result_record.get(
+        "actual_usd"
+    ) != actual_usd_for_accounting(result_record["actual_accounting"], pricing):
+        raise BenchmarkExecutionError(
+            "cell-commit canonical USD differs from frozen pricing/accounting"
+        )
+    durable_result = AgentRunResult(
+        run_id=str(session_result["run_id"]),
+        task_id=str(session_result["task_id"]),
+        arm=str(session_result["arm"]),
+        resolved=bool(session_result["resolved"]),
+        patch=str(session_result["patch"]),
+        graph_snapshot=dict(session_result["graph_snapshot"]),
+        grade=grade,
+        extraction=extraction,
+        injections=tuple(dict(row) for row in injections),
+        accounting=dict(session_result["accounting"]),
+        evidence_tail_hash=str(session_result["evidence_tail_hash"]),
+        lifecycle_result=dict(session_result["lifecycle_result"]),
+        cell_status=str(session_result["cell_status"]),
+        model_failure_class=(
+            str(session_result["model_failure_class"])
+            if session_result["model_failure_class"] is not None
+            else None
+        ),
+        grader_patch_source=str(session_result["grader_patch_source"]),
+        agent_completed=bool(session_result["agent_completed"]),
+        extraction_status=str(session_result["extraction_status"]),
+        failure_metadata=(
+            dict(session_result["failure_metadata"])
+            if isinstance(session_result["failure_metadata"], Mapping)
+            else None
+        ),
+    )
+    if canonical_bytes(actual_memory_metrics(durable_result, events_path)) != (
+        canonical_bytes(result_record.get("actual_memory_metrics"))
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit canonical memory metrics differ from raw evidence"
+        )
+    return durable_result
+
+
+def validate_cell_session_result_against_done_checkpoint(
+    task_dir: Path,
+    journal_row: Mapping[str, Any],
+    result_record: Mapping[str, Any],
+    *,
+    grader_result: Mapping[str, Any],
+    expected_target: Mapping[str, Any],
+) -> AgentRunResult:
+    """Fail closed on every malformed retained session/checkpoint binding."""
+
+    try:
+        return _validate_cell_session_result_against_done_checkpoint_impl(
+            task_dir,
+            journal_row,
+            result_record,
+            grader_result=grader_result,
+            expected_target=expected_target,
+        )
+    except BenchmarkExecutionError:
+        raise
+    except Exception as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit retained DONE checkpoint/session validation failed"
+        ) from exc
+
+
+def _commit_scientific_cell_impl(
+    *,
+    task_dir: Path,
+    task: CodingTask,
+    target_id: str,
+    stream_id: str,
+    arm: str,
+    sequence_index: int,
+    task_arm_key: str,
+    task_reservation: str,
+    record: Mapping[str, Any],
+    result: AgentRunResult,
+    ledger: AtomicBudgetLedger,
+    session: Any,
+    output_root: Path,
+    transition_hook: Optional[Callable[[str], None]] = None,
+) -> Mapping[str, Any]:
+    """Idempotently finish one validated scientific cell in frozen order."""
+
+    try:
+        validate_scientific_terminal_result(record)
+    except ScientificTerminalContractError as exc:
+        raise BenchmarkExecutionError(
+            f"cell-commit refused a non-terminal scientific result: {exc}"
+        ) from None
+    if (
+        record.get("execution_status") != SCIENTIFIC_EXECUTION_STATUS
+        or result.grade.official is not True
+        or result.grade.container_started is not True
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit requires a validated authoritative grader result"
+        )
+    if dict(_validated_task_grader_result(task_dir)) != asdict(result.grade):
+        raise BenchmarkExecutionError(
+            "cell-commit grader lifecycle/result identity differs"
+        )
+    session_result = asdict(result)
+    binding = _cell_commit_binding(
+        stream_id=stream_id,
+        arm=arm,
+        target_id=target_id,
+        sequence_index=sequence_index,
+        task_arm_key=task_arm_key,
+        task_reservation=task_reservation,
+        record=record,
+        grade=result.grade,
+        session_result=session_result,
+    )
+    journal = CellCommitJournal(_cell_commit_path(task_dir), binding)
+    state = journal.prepare(
+        result_record=record,
+        session_result=session_result,
+    )["status"]
+    if transition_hook is not None and state == "PREPARED":
+        transition_hook("PREPARED")
+
+    result_path = _cell_result_path(task_dir, task)
+    expected_result_raw = json_file_bytes(record)
+    if state == "PREPARED":
+        if _is_link_or_reparse(result_path):
+            raise BenchmarkExecutionError(
+                "cell-commit canonical result path is linked"
+            )
+        if result_path.exists():
+            result_path = _secure_retained_path(
+                task_dir, result_path, directory=False
+            )
+            if result_path.read_bytes() != expected_result_raw:
+                raise BenchmarkExecutionError(
+                    "cell-commit existing canonical result bytes differ"
+                )
+        else:
+            atomic_write(result_path, expected_result_raw)
+        journal.transition(expected=("PREPARED",), status="RESULT_WRITTEN")
+        state = "RESULT_WRITTEN"
+        if transition_hook is not None:
+            transition_hook(state)
+
+    journal.verify_result(result_path, grader_result=result.grade)
+    if state == "RESULT_WRITTEN":
+        ledger_row = ledger.task_arm_row(task_arm_key)
+        if not isinstance(ledger_row, Mapping):
+            raise BenchmarkExecutionError("cell-commit task-arm ledger row is missing")
+        if ledger_row.get("status") == "RESERVED":
+            ledger_state = ledger._read()
+            request_rows = [
+                request
+                for request in ledger_state.get("requests", {}).values()
+                if isinstance(request, Mapping)
+                and request.get("task_arm_key") == task_arm_key
+            ]
+            # Validate the complete result/request/accounting projection while
+            # the task-arm row is still reversible.  A malformed fresh result
+            # must never be able to mutate the ledger to CELL_TERMINAL.
+            _validate_reserved_task_arm_result_pair(
+                record,
+                ledger_row,
+                task_arm_key=task_arm_key,
+                request_rows=request_rows,
+            )
+            ledger.complete_task_arm(
+                task_arm_key,
+                task_reservation,
+                status=SCIENTIFIC_LEDGER_TERMINAL_STATUS,
+                container_started=True,
+            )
+        ledger_row = _verified_terminal_ledger_row(
+            ledger,
+            task_arm_key=task_arm_key,
+            reservation_id=task_reservation,
+            container_started=True,
+        )
+        _validate_cell_result_ledger_pair(
+            record, ledger_row, task_arm_key=task_arm_key
+        )
+        journal.transition(expected=("RESULT_WRITTEN",), status="LEDGER_TERMINAL")
+        state = "LEDGER_TERMINAL"
+        if transition_hook is not None:
+            transition_hook(state)
+
+    if state == "LEDGER_TERMINAL":
+        terminal_ledger_row = _verified_terminal_ledger_row(
+            ledger,
+            task_arm_key=task_arm_key,
+            reservation_id=task_reservation,
+            container_started=True,
+        )
+        _validate_cell_result_ledger_pair(
+            record, terminal_ledger_row, task_arm_key=task_arm_key
+        )
+        if getattr(session, "task_cursor", None) != sequence_index:
+            raise BenchmarkExecutionError(
+                "cell-commit canonical cursor is not at the expected transition"
+            )
+        advance = getattr(session, "after_task_and_checkpoint", None)
+        if not callable(advance):
+            raise BenchmarkExecutionError(
+                "production session lacks atomic task/cursor checkpoint"
+            )
+        stream_checkpoint = advance(task, result)
+        save_arm_checkpoint(output_root, stream_id, stream_checkpoint)
+        journal.transition(
+            expected=("LEDGER_TERMINAL",),
+            status="CURSOR_ADVANCED",
+            values={
+                "stream_checkpoint_sha256": sha256_bytes(
+                    canonical_bytes(stream_checkpoint)
+                )
+            },
+        )
+        state = "CURSOR_ADVANCED"
+        if transition_hook is not None:
+            transition_hook(state)
+
+    if state == "CURSOR_ADVANCED":
+        if getattr(session, "task_cursor", None) != sequence_index + 1:
+            raise BenchmarkExecutionError(
+                "cell-commit cursor-advanced evidence differs from canonical cursor"
+            )
+        journal_row = journal.prepare()
+        _verified_cell_stream_checkpoint(output_root, stream_id, journal_row)
+        journal.transition(expected=("CURSOR_ADVANCED",), status="COMMITTED")
+        state = "COMMITTED"
+        if transition_hook is not None:
+            transition_hook(state)
+    if state != "COMMITTED":
+        raise BenchmarkExecutionError("cell-commit did not reach COMMITTED")
+    return journal.prepare()
+
+
+def commit_scientific_cell(
+    *,
+    task_dir: Path,
+    task: CodingTask,
+    target_id: str,
+    stream_id: str,
+    arm: str,
+    sequence_index: int,
+    task_arm_key: str,
+    task_reservation: str,
+    record: Mapping[str, Any],
+    result: AgentRunResult,
+    ledger: AtomicBudgetLedger,
+    session: Any,
+    output_root: Path,
+    transition_hook: Optional[Callable[[str], None]] = None,
+) -> Mapping[str, Any]:
+    """Commit a cell, surfacing only hash-proven recovery as resume-safe."""
+
+    try:
+        return _commit_scientific_cell_impl(
+            task_dir=task_dir,
+            task=task,
+            target_id=target_id,
+            stream_id=stream_id,
+            arm=arm,
+            sequence_index=sequence_index,
+            task_arm_key=task_arm_key,
+            task_reservation=task_reservation,
+            record=record,
+            result=result,
+            ledger=ledger,
+            session=session,
+            output_root=output_root,
+            transition_hook=transition_hook,
+        )
+    except BenchmarkExecutionError:
+        raise
+    except Exception as exc:
+        journal_path = _cell_commit_path(task_dir)
+        if journal_path.is_file():
+            # Only a fully hash-verified transaction containing both durable
+            # payloads can authorize the wrapper's one recovery process.
+            CellCommitJournal.read_verified(journal_path)
+            raise BenchmarkProcessFailure(
+                "RESUME_SAFE_CELL_COMMIT_JOURNAL",
+                "cell commit stopped after a recoverable durable journal state",
+            ) from exc
+        raise
+
+
+def verify_cell_commit_frontier(
+    *,
+    output_root: Path,
+    stream_id: str,
+    arm: str,
+    tasks: Sequence[CodingTask],
+    expected_targets: Sequence[Mapping[str, Any]],
+    ledger: AtomicBudgetLedger,
+    canonical_cursor: int,
+) -> int:
+    """Recompute the longest contiguous result+ledger CELL_TERMINAL prefix."""
+
+    if type(canonical_cursor) is not int or not 0 <= canonical_cursor <= len(tasks):
+        raise BenchmarkExecutionError("canonical stream cursor is invalid")
+    if len(expected_targets) != len(tasks) or any(
+        not isinstance(target, Mapping)
+        or target.get("target_id") != task.task_id
+        or target.get("base_commit") != task.commit
+        for task, target in zip(tasks, expected_targets)
+    ):
+        raise BenchmarkExecutionError(
+            "cell-commit frozen target/task sequence differs"
+        )
+    prefix = 0
+    saw_gap = False
+    for index, task in enumerate(tasks):
+        task_dir, _run_id, _prepared = _task_recovery_paths(
+            output_root, stream_id, index, task
+        )
+        result_path = _cell_result_path(task_dir, task)
+        journal_path = _cell_commit_path(task_dir)
+        if _is_link_or_reparse(result_path) or _is_link_or_reparse(
+            journal_path
+        ):
+            raise BenchmarkExecutionError(
+                "cell-commit frontier contains a linked result or journal"
+            )
+        task_arm_key = f"{stream_id}:{arm}:{task.task_id}"
+        ledger_row = ledger.task_arm_row(task_arm_key)
+        result_terminal = False
+        if result_path.is_file():
+            result_path = _secure_retained_path(
+                task_dir, result_path, directory=False
+            )
+            record = read_json(result_path)
+            try:
+                validate_scientific_terminal_result(record)
+                result_terminal = scientific_task_arm_key(record) == task_arm_key
+            except ScientificTerminalContractError:
+                result_terminal = False
+        ledger_terminal = (
+            isinstance(ledger_row, Mapping)
+            and ledger_row.get("status") == SCIENTIFIC_LEDGER_TERMINAL_STATUS
+        )
+        if result_terminal and ledger_terminal and not saw_gap:
+            if not journal_path.is_file():
+                raise BenchmarkExecutionError(
+                    "terminal cell has no hash-bound cell-commit journal"
+                )
+            journal_row = CellCommitJournal.read_verified(journal_path)
+            binding = journal_row["binding"]
+            grader_result = _validated_task_grader_result(task_dir)
+            if (
+                binding.get("stream_id") != stream_id
+                or binding.get("arm") != arm
+                or binding.get("expected_cursor") != index
+                or binding.get("next_cursor") != index + 1
+                or binding.get("task_arm_key") != task_arm_key
+                or binding.get("task_arm_reservation_id")
+                != ledger_row.get("reservation_id")
+                or binding.get("result_sha256")
+                != sha256_bytes(result_path.read_bytes())
+                or binding.get("accounting_projection_sha256")
+                != sha256_bytes(canonical_bytes(record["actual_accounting"]))
+                or binding.get("grader_result_sha256")
+                != sha256_bytes(canonical_bytes(grader_result))
+                or binding.get("target_id") != record.get("target_id")
+            ):
+                raise BenchmarkExecutionError("cell-commit contiguous prefix binding differs")
+            validate_cell_session_result_against_done_checkpoint(
+                task_dir,
+                journal_row,
+                record,
+                grader_result=grader_result,
+                expected_target={
+                    **dict(expected_targets[index]),
+                    "task_config_sha256": task_configuration_sha256(task),
+                },
+            )
+            _validate_cell_result_ledger_pair(
+                record, ledger_row, task_arm_key=task_arm_key
+            )
+            prefix += 1
+        else:
+            saw_gap = True
+            if result_terminal != ledger_terminal:
+                # The sole allowed temporary asymmetry is RESULT_WRITTEN at
+                # the current frontier; the journal proves its exact hash.
+                if not journal_path.is_file():
+                    raise BenchmarkExecutionError(
+                        "result/ledger terminal prefix is not contiguous"
+                    )
+                journal_row = CellCommitJournal.read_verified(journal_path)
+                journal = CellCommitJournal(journal_path, journal_row["binding"])
+                grader_result = _validated_task_grader_result(task_dir)
+                verified_record = journal.verify_result(
+                    result_path,
+                    grader_result=grader_result,
+                )
+                validate_cell_session_result_against_done_checkpoint(
+                    task_dir,
+                    journal_row,
+                    verified_record,
+                    grader_result=grader_result,
+                    expected_target={
+                        **dict(expected_targets[index]),
+                        "task_config_sha256": task_configuration_sha256(task),
+                    },
+                )
+                if not (
+                    index == canonical_cursor
+                    and result_terminal
+                    and not ledger_terminal
+                    and journal_row.get("status")
+                    in {"PREPARED", "RESULT_WRITTEN"}
+                ):
+                    raise BenchmarkExecutionError(
+                        "result/ledger terminal prefix is not contiguous"
+                    )
+            if index > prefix and (result_terminal or ledger_terminal):
+                raise BenchmarkExecutionError(
+                    "scientific terminal cells contain a non-contiguous suffix"
+                )
+
+    if prefix == canonical_cursor + 1 and canonical_cursor < len(tasks):
+        task_dir, _run_id, _prepared = _task_recovery_paths(
+            output_root, stream_id, canonical_cursor, tasks[canonical_cursor]
+        )
+        row = CellCommitJournal.read_verified(_cell_commit_path(task_dir))
+        if row.get("status") not in {"RESULT_WRITTEN", "LEDGER_TERMINAL"}:
+            raise BenchmarkExecutionError(
+                "result/ledger prefix is ahead of cursor without a recoverable journal"
+            )
+    elif prefix != canonical_cursor:
+        raise BenchmarkExecutionError(
+            "canonical cursor differs from contiguous CELL_TERMINAL prefix"
+        )
+
+    for index in range(canonical_cursor):
+        task_dir, _run_id, _prepared = _task_recovery_paths(
+            output_root, stream_id, index, tasks[index]
+        )
+        row = CellCommitJournal.read_verified(_cell_commit_path(task_dir))
+        journal = CellCommitJournal(_cell_commit_path(task_dir), row["binding"])
+        state = row["status"]
+        if state == "LEDGER_TERMINAL":
+            if index != canonical_cursor - 1:
+                raise BenchmarkExecutionError(
+                    "cursor passed an unsealed cell-commit checkpoint"
+                )
+            checkpoint_sha256 = _cell_stream_checkpoint_sha256(
+                output_root, stream_id, row["binding"]
+            )
+            row = journal.transition(
+                expected=("LEDGER_TERMINAL",),
+                status="CURSOR_ADVANCED",
+                values={"stream_checkpoint_sha256": checkpoint_sha256},
+            )
+            state = "CURSOR_ADVANCED"
+        if state == "CURSOR_ADVANCED":
+            if index != canonical_cursor - 1:
+                raise BenchmarkExecutionError(
+                    "cursor passed an uncommitted scientific cell"
+                )
+            _verified_cell_stream_checkpoint(output_root, stream_id, row)
+            journal.transition(expected=("CURSOR_ADVANCED",), status="COMMITTED")
+            state = "COMMITTED"
+        elif state == "COMMITTED" and index == canonical_cursor - 1:
+            current_checkpoint = load_arm_checkpoint(output_root, stream_id)
+            current_payload = _validated_checkpoint_envelope(current_checkpoint)
+            if current_payload.get("stream_state") == "DEVELOPMENT_FINALIZED":
+                if arm != "M2":
+                    raise BenchmarkExecutionError(
+                        "non-M2 stream has a finalized development checkpoint"
+                    )
+                load_development_finalization_binding(
+                    output_root,
+                    stream_id,
+                    last_cell_journal_path=_cell_commit_path(task_dir),
+                )
+            else:
+                _verified_cell_stream_checkpoint(output_root, stream_id, row)
+        if state != "COMMITTED":
+            raise BenchmarkExecutionError(
+                "canonical cursor includes an uncommitted scientific cell"
+            )
+    return prefix
+
+
+def _recover_cell_commit_frontier_impl(
+    *,
+    output_root: Path,
+    stream_id: str,
+    arm: str,
+    tasks: Sequence[CodingTask],
+    expected_targets: Sequence[Mapping[str, Any]],
+    ledger: AtomicBudgetLedger,
+    session: Any,
+    canonical_cursor: int,
+) -> int:
+    """Finish the one hash-bound cell transaction at the cursor, if present."""
+
+    verify_cell_commit_frontier(
+        output_root=output_root,
+        stream_id=stream_id,
+        arm=arm,
+        tasks=tasks,
+        expected_targets=expected_targets,
+        ledger=ledger,
+        canonical_cursor=canonical_cursor,
+    )
+    if canonical_cursor >= len(tasks):
+        return canonical_cursor
+    task = tasks[canonical_cursor]
+    task_dir, _run_id, _prepared = _task_recovery_paths(
+        output_root, stream_id, canonical_cursor, task
+    )
+    journal_path = _cell_commit_path(task_dir)
+    if not journal_path.is_file():
+        return canonical_cursor
+    row = CellCommitJournal.read_verified(journal_path)
+    binding = row["binding"]
+    task_arm_key = f"{stream_id}:{arm}:{task.task_id}"
+    if (
+        binding.get("stream_id") != stream_id
+        or binding.get("arm") != arm
+        or binding.get("expected_cursor") != canonical_cursor
+        or binding.get("task_arm_key") != task_arm_key
+    ):
+        raise BenchmarkExecutionError("recoverable cell-commit identity differs")
+    journal = CellCommitJournal(journal_path, binding)
+    state = str(row["status"])
+    if state not in {"PREPARED", "RESULT_WRITTEN", "LEDGER_TERMINAL"}:
+        raise BenchmarkExecutionError(
+            "cell-commit state disagrees with the canonical cursor"
+        )
+    result_path = _cell_result_path(task_dir, task)
+    record = dict(row["result_record"])
+    session_result = dict(row["session_result"])
+    try:
+        grade = GradeResult(**dict(session_result["grade"]))
+    except (KeyError, TypeError, ValueError) as exc:
+        raise BenchmarkExecutionError(
+            "cell-commit durable session grader result is malformed"
+        ) from exc
+    grader_result = dict(_validated_task_grader_result(task_dir))
+    if grader_result != asdict(grade):
+        raise BenchmarkExecutionError(
+            "cell-commit grader lifecycle/session result differs"
+        )
+    durable_result = validate_cell_session_result_against_done_checkpoint(
+        task_dir,
+        row,
+        record,
+        grader_result=grader_result,
+        expected_target={
+            **dict(expected_targets[canonical_cursor]),
+            "task_config_sha256": task_configuration_sha256(task),
+        },
+    )
+    if state == "PREPARED":
+        expected_raw = json_file_bytes(record)
+        if _is_link_or_reparse(result_path):
+            raise BenchmarkExecutionError(
+                "cell-commit canonical result path is linked"
+            )
+        if result_path.exists() and result_path.read_bytes() != expected_raw:
+            raise BenchmarkExecutionError(
+                "cell-commit existing canonical result bytes differ"
+            )
+        if not result_path.exists():
+            atomic_write(result_path, expected_raw)
+        journal.transition(expected=("PREPARED",), status="RESULT_WRITTEN")
+        state = "RESULT_WRITTEN"
+    journal.verify_result(result_path, grader_result=grade)
+    reservation = str(binding["task_arm_reservation_id"])
+    if state == "RESULT_WRITTEN":
+        ledger_row = ledger.task_arm_row(task_arm_key)
+        if not isinstance(ledger_row, Mapping):
+            raise BenchmarkExecutionError("recoverable task-arm ledger row is missing")
+        if ledger_row.get("status") == "RESERVED":
+            ledger_state = ledger._read()
+            request_rows = [
+                request
+                for request in ledger_state.get("requests", {}).values()
+                if isinstance(request, Mapping)
+                and request.get("task_arm_key") == task_arm_key
+            ]
+            _validate_reserved_task_arm_result_pair(
+                record,
+                ledger_row,
+                task_arm_key=task_arm_key,
+                request_rows=request_rows,
+            )
+            ledger.complete_task_arm(
+                task_arm_key,
+                reservation,
+                status=SCIENTIFIC_LEDGER_TERMINAL_STATUS,
+                container_started=True,
+            )
+        recovered_ledger_row = _verified_terminal_ledger_row(
+            ledger,
+            task_arm_key=task_arm_key,
+            reservation_id=reservation,
+            container_started=True,
+        )
+        _validate_cell_result_ledger_pair(
+            record, recovered_ledger_row, task_arm_key=task_arm_key
+        )
+        journal.transition(expected=("RESULT_WRITTEN",), status="LEDGER_TERMINAL")
+        state = "LEDGER_TERMINAL"
+    if state == "LEDGER_TERMINAL":
+        recovered_ledger_row = _verified_terminal_ledger_row(
+            ledger,
+            task_arm_key=task_arm_key,
+            reservation_id=reservation,
+            container_started=True,
+        )
+        _validate_cell_result_ledger_pair(
+            record, recovered_ledger_row, task_arm_key=task_arm_key
+        )
+        session.before_task(task, canonical_cursor)
+        session.controller_for(task)
+        advance = getattr(session, "after_task_and_checkpoint", None)
+        if not callable(advance):
+            raise BenchmarkExecutionError(
+                "production session lacks atomic task/cursor checkpoint"
+            )
+        checkpoint = advance(task, durable_result)
+        save_arm_checkpoint(output_root, stream_id, checkpoint)
+        cursor_row = journal.transition(
+            expected=("LEDGER_TERMINAL",),
+            status="CURSOR_ADVANCED",
+            values={
+                "stream_checkpoint_sha256": sha256_bytes(
+                    canonical_bytes(checkpoint)
+                )
+            },
+        )
+        _verified_cell_stream_checkpoint(output_root, stream_id, cursor_row)
+        journal.transition(expected=("CURSOR_ADVANCED",), status="COMMITTED")
+    recovered_cursor = getattr(session, "task_cursor", None)
+    if recovered_cursor != canonical_cursor + 1:
+        raise BenchmarkExecutionError(
+            "recovered cell-commit did not advance the canonical cursor"
+        )
+    verify_cell_commit_frontier(
+        output_root=output_root,
+        stream_id=stream_id,
+        arm=arm,
+        tasks=tasks,
+        expected_targets=expected_targets,
+        ledger=ledger,
+        canonical_cursor=recovered_cursor,
+    )
+    return int(recovered_cursor)
+
+
+def recover_cell_commit_frontier(
+    *,
+    output_root: Path,
+    stream_id: str,
+    arm: str,
+    tasks: Sequence[CodingTask],
+    expected_targets: Sequence[Mapping[str, Any]],
+    ledger: AtomicBudgetLedger,
+    session: Any,
+    canonical_cursor: int,
+) -> int:
+    """Recover one verified commit and expose only that state as resume-safe."""
+
+    try:
+        return _recover_cell_commit_frontier_impl(
+            output_root=output_root,
+            stream_id=stream_id,
+            arm=arm,
+            tasks=tasks,
+            expected_targets=expected_targets,
+            ledger=ledger,
+            session=session,
+            canonical_cursor=canonical_cursor,
+        )
+    except BenchmarkExecutionError:
+        raise
+    except Exception as exc:
+        if canonical_cursor < len(tasks):
+            task_dir, _run_id, _prepared = _task_recovery_paths(
+                output_root, stream_id, canonical_cursor, tasks[canonical_cursor]
+            )
+            journal_path = _cell_commit_path(task_dir)
+            if journal_path.is_file():
+                CellCommitJournal.read_verified(journal_path)
+                raise BenchmarkProcessFailure(
+                    "RESUME_SAFE_CELL_COMMIT_JOURNAL",
+                    "cell-commit recovery stopped with a verified durable journal",
+                ) from exc
+        raise
 
 
 def load_latest_task_recovery_proofs(
@@ -3806,6 +7564,7 @@ def build_execution_lock_hash(
     checkpoint_path: Optional[Path],
     runtime_lock: RuntimeLock,
     identity_seed_evidence: Mapping[str, Any],
+    official_harness_loader_preflight: Mapping[str, Any],
 ) -> str:
     """Bind every execution-affecting artifact needed across task-boundary resume."""
 
@@ -3875,6 +7634,9 @@ def build_execution_lock_hash(
         "m2_policy": dict(m2_manifest) if isinstance(m2_manifest, Mapping) else None,
         "selected_m2_checkpoint": selected_checkpoint,
         "identity_seed_evidence": dict(identity_seed_evidence),
+        "official_harness_loader_preflight_sha256": sha256_bytes(
+            canonical_bytes(official_harness_loader_preflight)
+        ),
         "harness_revisions": harness_revisions,
         "grader_images": selected_images,
         "committed_files": files,
@@ -3969,6 +7731,7 @@ def run_arm_stream(
     checkout_evidence: Mapping[str, Mapping[str, Any]], harnesses: Mapping[str, Path], output_root: Path,
     ledger: AtomicBudgetLedger, database_url: str, qdrant_url: str, resume: bool,
     identity_seed_evidence: Mapping[str, Any],
+    official_harness_loader_preflight: Mapping[str, Any],
 ) -> dict[str, Any]:
     if arm not in ARMS or not isinstance(stream_id, str) or not stream_id:
         raise BenchmarkExecutionError("invalid benchmark runtime arm/stream identity")
@@ -4034,6 +7797,7 @@ def run_arm_stream(
         checkpoint_path=dqn_checkpoint_path,
         runtime_lock=runtime_lock,
         identity_seed_evidence=identity_seed_evidence,
+        official_harness_loader_preflight=official_harness_loader_preflight,
     )
     identity = prepare_arm_identity(
         output_root,
@@ -4044,6 +7808,15 @@ def run_arm_stream(
         resume=resume,
     )
     run_nonce = identity["run_nonce"]
+    cell_target_authorities = [
+        {
+            **dict(target),
+            "workspace_checkout_root": str(
+                workspace_factory.checkout_roots[task.task_id]
+            ),
+        }
+        for task, target in zip(tasks, targets)
+    ]
     inflight_proof: Optional[RuntimeCheckpoint] = None
     prepared_proof: Optional[Mapping[str, Any]] = None
     if resume:
@@ -4071,7 +7844,43 @@ def run_arm_stream(
                 ),
             )
             if checkpoint is not None:
-                save_arm_checkpoint(output_root, stream_id, checkpoint)
+                checkpoint_payload = _validated_checkpoint_envelope(checkpoint)
+                if checkpoint_payload.get("stream_state") == "DEVELOPMENT_FINALIZED":
+                    if not tasks:
+                        raise BenchmarkExecutionError(
+                            "finalized development stream has no task predecessor"
+                        )
+                    last_task_dir, _last_run_id, _last_prepared = (
+                        _task_recovery_paths(
+                            output_root,
+                            stream_id,
+                            len(tasks) - 1,
+                            tasks[-1],
+                        )
+                    )
+                    local_checkpoint = load_arm_checkpoint(output_root, stream_id)
+                    local_payload = _validated_checkpoint_envelope(local_checkpoint)
+                    if local_payload.get("stream_state") == "DEVELOPMENT_FINALIZED":
+                        if canonical_bytes(local_checkpoint) != canonical_bytes(
+                            checkpoint
+                        ):
+                            raise BenchmarkExecutionError(
+                                "canonical finalized checkpoint differs from local evidence"
+                            )
+                        load_development_finalization_binding(
+                            output_root,
+                            stream_id,
+                            last_cell_journal_path=_cell_commit_path(last_task_dir),
+                        )
+                    else:
+                        save_development_finalized_arm_checkpoint(
+                            output_root,
+                            stream_id,
+                            checkpoint,
+                            last_cell_journal_path=_cell_commit_path(last_task_dir),
+                        )
+                else:
+                    save_arm_checkpoint(output_root, stream_id, checkpoint)
             cursor = session.task_cursor
         else:
             freshness = session.assert_fresh()
@@ -4083,35 +7892,25 @@ def run_arm_stream(
                 output_root / "restricted-provider-responses" / stream_id
             ),
         )
-        # A crash after the canonical cursor advanced but before the local cap
-        # ledger reconciled is repaired from the already-written task result.
-        for completed_index in range(cursor):
-            completed_task = tasks[completed_index]
-            task_arm_key = f"{stream_id}:{arm}:{completed_task.task_id}"
-            if ledger.task_arm_status(task_arm_key) != "RESERVED":
-                continue
-            safe_completed = re.sub(r"[^A-Za-z0-9_.-]", "_", completed_task.task_id)
-            completed_dir = output_root / stream_id / f"{completed_index:03d}-{safe_completed}"
-            completed_result_path = completed_dir / f"{safe_completed}.result.json"
-            if not completed_result_path.is_file():
-                raise BenchmarkExecutionError("canonical cursor is ahead without terminal task evidence")
-            completed_record = read_json(completed_result_path)
-            try:
-                validate_scientific_terminal_result(completed_record)
-                if scientific_task_arm_key(completed_record) != task_arm_key:
-                    raise ScientificTerminalContractError(
-                        "canonical cursor result/task-arm identity mismatch"
-                    )
-            except ScientificTerminalContractError as exc:
-                raise BenchmarkExecutionError(
-                    f"canonical cursor terminal result is invalid: {exc}"
-                ) from None
-            task_reservation = ledger.resume_task_arm(task_arm_key)
-            ledger.complete_task_arm(
-                task_arm_key,
-                task_reservation,
-                status=SCIENTIFIC_LEDGER_TERMINAL_STATUS,
-                container_started=bool(completed_record["container_started"]),
+        verify_cell_commit_frontier(
+            output_root=output_root,
+            stream_id=stream_id,
+            arm=arm,
+            tasks=tasks,
+            expected_targets=cell_target_authorities,
+            ledger=ledger,
+            canonical_cursor=cursor,
+        )
+        if resume:
+            cursor = recover_cell_commit_frontier(
+                output_root=output_root,
+                stream_id=stream_id,
+                arm=arm,
+                tasks=tasks,
+                expected_targets=cell_target_authorities,
+                ledger=ledger,
+                session=session,
+                canonical_cursor=cursor,
             )
         for index in range(cursor, len(tasks)):
             task, target = tasks[index], targets[index]
@@ -4127,6 +7926,20 @@ def run_arm_stream(
                 task_reservation = ledger.reserve_task_arm(task_arm_key)
             elif resume and task_status == "RESERVED":
                 task_reservation = ledger.resume_task_arm(task_arm_key)
+            elif resume and task_status == SCIENTIFIC_LEDGER_TERMINAL_STATUS:
+                journal_path = _cell_commit_path(task_dir)
+                if not journal_path.is_file():
+                    raise BenchmarkExecutionError(
+                        "terminal task-arm has no cell-commit recovery journal"
+                    )
+                cell_row = CellCommitJournal.read_verified(journal_path)
+                if cell_row.get("status") != "LEDGER_TERMINAL":
+                    raise BenchmarkExecutionError(
+                        "terminal task-arm is not at the recoverable cursor frontier"
+                    )
+                task_reservation = str(
+                    cell_row["binding"]["task_arm_reservation_id"]
+                )
             else:
                 raise BenchmarkExecutionError("task-arm cap ledger state does not match the stream cursor")
             task_started_ns = time.perf_counter_ns()
@@ -4147,8 +7960,13 @@ def run_arm_stream(
             official_grader = grader_factory(
                 target, rows[target["instance_id"]], images[target["instance_id"]],
                 harnesses, task_dir / "official-grader", arm, support,
+                loader_preflight_evidence=official_harness_loader_preflight,
             )
-            grader = JournaledGraderGateway(official_grader, journal)
+            grader = JournaledGraderGateway(
+                official_grader,
+                journal,
+                preflight_evidence=official_harness_loader_preflight,
+            )
             task_gateway = JournaledModelGateway(gateway, journal)
             runtime = TriMemAgentRuntime(
                 runtime_lock=runtime_lock, model_gateway=task_gateway, grader_gateway=grader,
@@ -4213,11 +8031,14 @@ def run_arm_stream(
                     write_json(receipt_path, receipt)
                 raise
             except GraderInvocationFailure as failure:
-                ledger.complete_task_arm(
-                    task_arm_key, task_reservation, status="OFFICIAL_GRADER_FAILURE",
-                    container_started=failure.result.container_started,
-                )
-                raise
+                # Infrastructure outcomes are campaign evidence, never scored
+                # task-arm terminals.  The outstanding reservation remains
+                # consumed and cannot enter the contiguous scientific prefix.
+                raise BenchmarkProcessFailure(
+                    "GLOBAL_GRADER_INFRA_FAILURE",
+                    "official grader failed before an authoritative result: "
+                    + failure.result.status,
+                ) from failure
             terminal_checkpoint = checkpoints.load(
                 run_id, required_config_hashes=None,
                 required_evidence_hash=result.evidence_tail_hash,
@@ -4252,6 +8073,7 @@ def run_arm_stream(
                 actual_usd=task_actual_usd,
                 static_fields={
                 "arm": stream_id, "runtime_arm": arm,
+                "agent_config_hashes": dict(terminal_checkpoint.config_hashes),
                 "benchmark_id": target["benchmark_id"],
                 "checkout_evidence_sha256": sha256_bytes(canonical_bytes(checkout_evidence[task.task_id])),
                 "execution_lock_hash": execution_lock_hash,
@@ -4282,18 +8104,29 @@ def run_arm_stream(
                     ),
                 },
             )
-            result_path = task_dir / f"{re.sub(r'[^A-Za-z0-9_.-]', '_', task.task_id)}.result.json"
-            write_json(result_path, record)
-            advance = getattr(session, "after_task_and_checkpoint", None)
-            if not callable(advance):
-                raise BenchmarkExecutionError("production session lacks atomic task/cursor checkpoint")
-            stream_checkpoint = advance(task, result)
-            save_arm_checkpoint(output_root, stream_id, stream_checkpoint)
-            ledger.complete_task_arm(
-                task_arm_key,
-                task_reservation,
-                status=SCIENTIFIC_LEDGER_TERMINAL_STATUS,
-                container_started=result.grade.container_started,
+            commit_scientific_cell(
+                task_dir=task_dir,
+                task=task,
+                target_id=str(target["target_id"]),
+                stream_id=stream_id,
+                arm=arm,
+                sequence_index=index,
+                task_arm_key=task_arm_key,
+                task_reservation=task_reservation,
+                record=record,
+                result=result,
+                ledger=ledger,
+                session=session,
+                output_root=output_root,
+            )
+            verify_cell_commit_frontier(
+                output_root=output_root,
+                stream_id=stream_id,
+                arm=arm,
+                tasks=tasks,
+                expected_targets=cell_target_authorities,
+                ledger=ledger,
+                canonical_cursor=session.task_cursor,
             )
         selected_checkpoint = None
         checkpoint_file: Optional[Path] = None
@@ -4310,7 +8143,20 @@ def run_arm_stream(
                 final_envelope = session.latest_checkpoint_envelope
                 if not isinstance(final_envelope, Mapping):
                     raise BenchmarkExecutionError("development finalizer was not canonically checkpointed")
-                save_arm_checkpoint(output_root, stream_id, final_envelope)
+                last_task_dir, _last_run_id, _last_prepared = (
+                    _task_recovery_paths(
+                        output_root,
+                        stream_id,
+                        len(tasks) - 1,
+                        tasks[-1],
+                    )
+                )
+                save_development_finalized_arm_checkpoint(
+                    output_root,
+                    stream_id,
+                    final_envelope,
+                    last_cell_journal_path=_cell_commit_path(last_task_dir),
+                )
             checkpoint_file = output_root / f"{stream_id}.post-development-frozen-checkpoint.json"
             write_json(checkpoint_file, selected_checkpoint)
         result_records = [
@@ -4525,6 +8371,46 @@ def write_development_selection_artifacts(
     return proposal, runtime_lock_for(selected_id), load_candidate_policy(selected_id)
 
 
+def process_disposition_for_exception(exc: BaseException) -> str:
+    """Return the closed disposition consumed by the same-attempt wrapper."""
+
+    if isinstance(exc, BenchmarkProcessFailure):
+        return exc.disposition
+    if isinstance(exc, GraderInvocationFailure):
+        return "GLOBAL_GRADER_INFRA_FAILURE"
+    if isinstance(exc, ApprovalValidationError):
+        return "GLOBAL_CREDENTIAL_FAILURE"
+    if isinstance(exc, ModelPreflightFailure):
+        if exc.classification == "LEDGER_IDENTITY_OR_INTEGRITY_FAILURE":
+            return "GLOBAL_LEDGER_INTEGRITY_FAILURE"
+        return "UNKNOWN_FAILURE"
+    message = str(exc).casefold()
+    if any(token in message for token in ("credential", "api key", "approval")):
+        return "GLOBAL_CREDENTIAL_FAILURE"
+    if any(token in message for token in ("model identity", "model lock", "model differs")):
+        return "GLOBAL_MODEL_IDENTITY_FAILURE"
+    if any(token in message for token in ("budget ledger", "task-arm ledger", "ledger integrity")):
+        return "GLOBAL_LEDGER_INTEGRITY_FAILURE"
+    if any(
+        token in message
+        for token in (
+            "grader",
+            "official harness",
+            "container start",
+            "image digest",
+        )
+    ):
+        return "GLOBAL_GRADER_INFRA_FAILURE"
+    if any(token in message for token in ("evidence", "checkpoint", "cell-commit")):
+        return "GLOBAL_EVIDENCE_FAILURE"
+    if any(
+        token in message
+        for token in ("environment", "loader", "libpython", "python launch")
+    ):
+        return "GLOBAL_ENVIRONMENT_FAILURE"
+    return "UNKNOWN_FAILURE"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--split", choices=SPLITS, required=True)
@@ -4533,6 +8419,9 @@ def main() -> int:
     args = parser.parse_args()
     try:
         validate_benchmark_environment()
+        official_harness_loader_preflight = (
+            load_official_harness_loader_preflight()
+        )
         approval = validate_exec_approval(args.split, args.approval_file)
         manifest_targets, rows = load_frozen_rows(args.split, ROOT / ".trimem-exec/datasets")
         tasks = coding_tasks(manifest_targets, rows)
@@ -4604,6 +8493,9 @@ def main() -> int:
             raise BenchmarkExecutionError("admin database URL remained in runtime environment")
 
         harnesses = prepare_harnesses(ROOT / ".trimem-exec/harnesses")
+        validate_preflight_harness_root_binding(
+            official_harness_loader_preflight, harnesses
+        )
         approval_digest = approval["approval_artifact_sha256"]
         ledger = AtomicBudgetLedger(
             output / "budget-ledger.json",
@@ -4648,6 +8540,9 @@ def main() -> int:
                 database_url=runtime_database_url,
                 qdrant_url=os.environ.get("TRIMEM_QDRANT_URL", ""), resume=stream_resume,
                 identity_seed_evidence=seed_evidence_by_stream[stream_id],
+                official_harness_loader_preflight=(
+                    official_harness_loader_preflight
+                ),
             )
 
         # One process/job owns one phase-scoped ledger. Every online memory
@@ -4708,13 +8603,28 @@ def main() -> int:
                 },
             )
         print(json.dumps(
-            {"phase_evidence": phase_evidence, "streams": summaries, "status": "PASS"},
+            {
+                "phase_evidence": phase_evidence,
+                "process_disposition": "SUCCESS",
+                "streams": summaries,
+                "status": "PASS",
+            },
             ensure_ascii=False,
             sort_keys=True,
         ))
         return 0
     except Exception as exc:
-        print(json.dumps({"error": str(exc), "status": "FAIL"}, ensure_ascii=False, sort_keys=True))
+        print(
+            json.dumps(
+                {
+                    "error": str(exc),
+                    "process_disposition": process_disposition_for_exception(exc),
+                    "status": "FAIL",
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+        )
         return 1
 
 

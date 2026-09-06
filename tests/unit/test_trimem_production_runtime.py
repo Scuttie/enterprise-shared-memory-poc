@@ -564,6 +564,7 @@ def _decompose_prepared_proof(task, *, arm="M0", lifecycle_state=None):
             "base_commit": "c" * 40,
             "patch": "",
             "patch_sha256": sha256_bytes(b""),
+            "inventory_sha256": sha256_bytes(b"fixture inventory"),
         },
         injected_memory_ids=(),
         injected_bytes=0,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+import copy
+from dataclasses import dataclass, replace
 import hashlib
 import json
 from pathlib import Path
@@ -874,6 +875,62 @@ def test_gateway_runs_instance_only_then_official_report_and_parses_final_report
         "source_image_build_calls": 0,
         "host_prepare_script_reads": 0,
     }
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    (
+        ("resolved", "adapter evidence identity differs"),
+        ("grader_id", "result identity differs"),
+        ("image_digest", "result identity differs"),
+        ("semantic", "semantic normalization differs"),
+        ("report_raw_bytes", "restricted evidence bytes differ"),
+    ),
+)
+def test_captured_multi_success_replay_rederives_retained_official_bytes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    mutation: str,
+    message: str,
+) -> None:
+    gateway, request, runner, _docker_util = _gateway_and_request(
+        tmp_path, monkeypatch
+    )
+    result = gateway.grade(request)
+    calls_after_grade = list(runner.calls)
+
+    # Replay validation is execution-free and accepts the exact captured
+    # result repeatedly from its restricted official byte references.
+    gateway.validate_captured_result(request, result)
+    gateway.validate_captured_result(request, result)
+    assert runner.calls == calls_after_grade
+
+    tampered = result
+    if mutation == "resolved":
+        tampered = replace(result, resolved=not result.resolved)
+    elif mutation == "grader_id":
+        tampered = replace(result, grader_id="official-forged@revision")
+    elif mutation == "image_digest":
+        tampered = replace(
+            result,
+            container_digest="mswebench/vuejs_m_core@sha256:" + "f" * 64,
+        )
+    elif mutation == "semantic":
+        report = copy.deepcopy(result.report)
+        report["_trimem"]["semantic_normalization"][
+            "computed_resolved"
+        ] = not result.resolved
+        tampered = replace(result, report=report)
+    elif mutation == "report_raw_bytes":
+        reference = result.report["_trimem"]["restricted_raw_report"]
+        report_path = gateway.output_root / reference["path"]
+        report_path.write_bytes(report_path.read_bytes() + b"\n")
+    else:  # pragma: no cover - the parameter set above is closed.
+        raise AssertionError(mutation)
+
+    with pytest.raises(official_grader.OfficialGraderError, match=message):
+        gateway.validate_captured_result(request, tampered)
+    assert runner.calls == calls_after_grade
 
 
 def test_success_envelope_finalization_failure_retains_resolved_official_outcome(

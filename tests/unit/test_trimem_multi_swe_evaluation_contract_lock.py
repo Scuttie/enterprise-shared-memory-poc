@@ -35,6 +35,12 @@ D19_AMENDMENT_PATH = (
 D19_INVENTORY_PATH = (
     ROOT / "artifacts" / "trimem_v1" / "development_bounded_context_inventory.json"
 )
+D110_AMENDMENT_PATH = ROOT / (
+    "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json"
+)
+D110_INVENTORY_PATH = ROOT / (
+    "artifacts/trimem_v1/development_grader_launch_stream_commit_inventory.json"
+)
 EXPECTED_SOURCE_BLOBS = {
     "multi_swe_bench/harness/dataset.py": {
         "bytes": 2833,
@@ -249,14 +255,9 @@ def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -
 
     assert projection["files"] == EXPECTED_LOCAL_VALIDATOR_FILES
     for path, expected in EXPECTED_LOCAL_VALIDATOR_FILES.items():
-        if path == "scripts/trimem_benchmark_matrix.py":
-            # D1.8 legitimately changes the aggregate consumer.  Preserve the
-            # historical contract lock by checking it against the immutable
-            # correction starting point rather than mutable working-tree bytes.
-            raw = historical_matrix
-        else:
-            raw = (ROOT / path).read_bytes()
-            assert raw == _git_blob("HEAD", path)
+        # The lock is immutable historical evidence. D1.10 current validator
+        # identities are carried by the new amendment/inventory instead.
+        raw = _git_blob(D18_STARTING_HEAD, path)
         assert b"\r" not in raw
         assert len(raw) == expected["bytes"]
         assert hashlib.sha256(raw).hexdigest() == expected["sha256"]
@@ -283,6 +284,18 @@ def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -
     assert d19_inventory["implementation_sha256"][
         "scripts/trimem_benchmark_matrix.py"
     ] == current_sha256
+    d110_amendment = json.loads(D110_AMENDMENT_PATH.read_text(encoding="utf-8"))
+    d110_inventory = json.loads(D110_INVENTORY_PATH.read_text(encoding="utf-8"))
+    assert d110_amendment["implementation_sha256"][
+        "scripts/trimem_benchmark_matrix.py"
+    ] == current_sha256
+    assert d110_inventory["implementation_sha256"][
+        "scripts/trimem_benchmark_matrix.py"
+    ] == current_sha256
+    for path in EXPECTED_LOCAL_VALIDATOR_FILES:
+        live_sha256 = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
+        assert d110_amendment["implementation_sha256"][path] == live_sha256
+        assert d110_inventory["implementation_sha256"][path] == live_sha256
 
     assert projection["line_endings"] == {
         "gitattributes_pattern": "scripts/trimem_*.py",
@@ -395,6 +408,24 @@ def test_production_verifier_rejects_d19_inventory_aggregate_drift(
     with pytest.raises(
         multi_contract.ContractError,
         match="D1.9 aggregate implementation seals disagree",
+    ):
+        multi_contract._verify_local_validator_files(_load_lock()["contracts"])
+
+
+def test_production_verifier_rejects_d110_inventory_aggregate_drift(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    inventory = json.loads(D110_INVENTORY_PATH.read_text(encoding="utf-8"))
+    inventory["implementation_sha256"][multi_contract.D18_CURRENT_AGGREGATE_PATH] = (
+        "0" * 64
+    )
+    tampered_path = tmp_path / "d110-inventory.json"
+    tampered_path.write_text(json.dumps(inventory), encoding="utf-8")
+    monkeypatch.setattr(multi_contract, "D110_INVENTORY_PATH", tampered_path)
+
+    with pytest.raises(
+        multi_contract.ContractError,
+        match="D1.10 aggregate implementation seals disagree",
     ):
         multi_contract._verify_local_validator_files(_load_lock()["contracts"])
 
@@ -671,7 +702,7 @@ def test_safe_route_bypasses_all_image_builds_then_runs_the_pinned_reporter() ->
 
     entrypoint = contracts["production_entrypoint"]
     entrypoint_path = ROOT / entrypoint["path"]
-    entrypoint_raw = entrypoint_path.read_bytes()
+    entrypoint_raw = _git_blob(D18_STARTING_HEAD, entrypoint["path"])
     assert entrypoint == {
         "bytes": len(entrypoint_raw),
         "invocation": (
@@ -702,6 +733,14 @@ def test_safe_route_bypasses_all_image_builds_then_runs_the_pinned_reporter() ->
     ):
         assert f'parser.add_argument("{required_flag}"' in entrypoint_source
     assert "containers.run = original_container_run" in entrypoint_source
+
+    current_raw = entrypoint_path.read_bytes()
+    amendment = json.loads(D110_AMENDMENT_PATH.read_text(encoding="utf-8"))
+    inventory = json.loads(D110_INVENTORY_PATH.read_text(encoding="utf-8"))
+    current_sha256 = hashlib.sha256(current_raw).hexdigest()
+    assert amendment["implementation_sha256"][entrypoint["path"]] == current_sha256
+    assert inventory["implementation_sha256"][entrypoint["path"]] == current_sha256
+    assert "--loader-self-check" in current_raw.decode("utf-8")
 
     bootstrap = contracts["upstream_module_main_bootstrap"]
     assert bootstrap == {

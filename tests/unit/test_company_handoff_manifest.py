@@ -69,3 +69,103 @@ def test_r23_branch_cannot_rewrite_product_manifest(
     )
     monkeypatch.setattr(module.sys, "argv", ["make_handoff_manifest.py"])
     assert module.main() == 2
+
+
+def _github_event(
+    tmp_path: Path,
+    *,
+    head_repository: str | None = None,
+    head_ref: str = "codex/trimem-coder-v1",
+) -> Path:
+    repository = "Scuttie/enterprise-shared-memory-poc"
+    payload = {
+        "repository": {"full_name": repository},
+        "pull_request": {
+            "head": {
+                "ref": head_ref,
+                "repo": {"full_name": head_repository or repository},
+            }
+        },
+    }
+    path = tmp_path / "event.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def test_detached_github_pr_uses_same_repository_head_ref(tmp_path: Path) -> None:
+    module = _module()
+    event = _github_event(tmp_path)
+    branch = module._branch(
+        {
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "pull_request",
+            "GITHUB_HEAD_REF": "codex/trimem-coder-v1",
+            "GITHUB_REF_NAME": "18/merge",
+            "GITHUB_EVENT_PATH": str(event),
+            "GITHUB_REPOSITORY": "Scuttie/enterprise-shared-memory-poc",
+        }
+    )
+    assert branch == "codex/trimem-coder-v1"
+
+
+def test_github_pull_request_rejects_fork_branch_spoof(tmp_path: Path) -> None:
+    module = _module()
+    event = _github_event(tmp_path, head_repository="attacker/fork")
+    assert module._branch(
+        {
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "pull_request",
+            "GITHUB_HEAD_REF": "codex/trimem-coder-v1",
+            "GITHUB_REF_NAME": "18/merge",
+            "GITHUB_EVENT_PATH": str(event),
+            "GITHUB_REPOSITORY": "Scuttie/enterprise-shared-memory-poc",
+        }
+    ) == ""
+
+
+def test_github_push_uses_bound_ref_name(tmp_path: Path) -> None:
+    module = _module()
+    event = tmp_path / "event.json"
+    event.write_text(
+        json.dumps(
+            {"repository": {"full_name": "Scuttie/enterprise-shared-memory-poc"}}
+        ),
+        encoding="utf-8",
+    )
+    branch = module._branch(
+        {
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "push",
+            "GITHUB_HEAD_REF": "",
+            "GITHUB_REF_NAME": "codex/trimem-coder-v1",
+            "GITHUB_REF": "refs/heads/codex/trimem-coder-v1",
+            "GITHUB_EVENT_PATH": str(event),
+            "GITHUB_REPOSITORY": "Scuttie/enterprise-shared-memory-poc",
+        }
+    )
+    assert branch == "codex/trimem-coder-v1"
+
+
+@pytest.mark.parametrize(
+    "candidate",
+    ("", " codex/trimem-coder-v1", "codex/trimem-coder-v1\n", "../trimem"),
+)
+def test_github_branch_identity_rejects_malformed_values(
+    tmp_path: Path,
+    candidate: str,
+) -> None:
+    module = _module()
+    event = _github_event(tmp_path, head_ref=candidate)
+    assert (
+        module._branch(
+            {
+                "GITHUB_ACTIONS": "true",
+                "GITHUB_EVENT_NAME": "pull_request",
+                "GITHUB_HEAD_REF": candidate,
+                "GITHUB_REF_NAME": "18/merge",
+                "GITHUB_EVENT_PATH": str(event),
+                "GITHUB_REPOSITORY": "Scuttie/enterprise-shared-memory-poc",
+            }
+        )
+        == ""
+    )

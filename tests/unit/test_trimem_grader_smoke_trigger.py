@@ -15,6 +15,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
+D18_STARTING_HEAD = "8002847d0db8975dfd957a1322d31a7768fc098f"
 
 import trimem_grader_smoke_trigger_preflight as trigger  # noqa: E402
 import trimem_evidence_inventory as inventory  # noqa: E402
@@ -62,6 +63,16 @@ def _git(repository: Path, *args: str) -> str:
         check=True,
     )
     return result.stdout.strip()
+
+
+def _git_blob(repository: Path, commit: str, path: str) -> bytes:
+    result = subprocess.run(
+        ["git", "--no-replace-objects", "cat-file", "blob", f"{commit}:{path}"],
+        cwd=repository,
+        capture_output=True,
+        check=True,
+    )
+    return result.stdout
 
 
 def _commit(repository: Path, message: str) -> str:
@@ -115,7 +126,12 @@ def _initialize(repository: Path, *, workflow_text: str | None = None) -> str:
     ):
         destination = repository / path
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes((ROOT / path).read_bytes())
+        raw = (
+            _git_blob(ROOT, D18_STARTING_HEAD, path)
+            if path == trigger.MULTI_SWE_ENTRYPOINT_PATH
+            else (ROOT / path).read_bytes()
+        )
+        destination.write_bytes(raw)
     historical_sentinel_paths = [path for path, _ in trigger.HISTORICAL_SENTINELS]
     for historical_sentinel_path in historical_sentinel_paths:
         historical = repository / historical_sentinel_path

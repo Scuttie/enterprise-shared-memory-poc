@@ -322,9 +322,10 @@ failure-taxonomy counters were zero. The campaign used 12 grader containers,
 six target-image pulls, and one support-image pull, while task-arm, model, API,
 paid-model, token, and USD counters remained zero.
 
-The current endpoint is
+The historical post-P0.1.5 snapshot endpoint was
 `TRIMEM_V1_GRADER_SMOKE_PASS_READY_FOR_DEVELOPMENT_APPROVAL`, with
-`GRADER_EXEC_PACKAGE=PASS`, `OFFICIAL_GRADER_VIABILITY=ESTABLISHED`,
+`GRADER_EXEC_PACKAGE=PASS` and the legacy evidence field
+`OFFICIAL_GRADER_VIABILITY=ESTABLISHED`,
 `PERFORMANCE=NOT_MEASURED`, and `DEV_APPROVAL_ALLOWED=YES`. The last field
 means only that a separate development approval may now be considered;
 `DEV_EXECUTION_ALLOWED=NO` remained the execution boundary at that snapshot.
@@ -426,3 +427,56 @@ one exact-model metadata request, one native-action canary generation, 72 DEV
 task-arm cells, and 72 official grader runs under the unchanged $50 cap. It
 does not authorize `_007` reuse, `_009`, HELDOUT, ablation, grader-smoke rerun,
 model/target/memory changes, merge, tag, or release.
+
+## D1.10 current grader-launch and stream-commit boundary
+
+The immutable `_010` request at
+`ea261f4fa783559d559e0df52800099ca98064f7` created workflow run
+`34008674563` attempt 1. Its protected environment, approval, credential, exact
+model identity, and protocol canary gates passed. The first M2-baseline cell
+then completed eight bounded context projections, one decomposition call, and
+eight solve calls, preserving a non-empty partial patch after the per-subtask
+step cap. The official grader adapter was reached, but the exact child Python
+exited 127 because `libpython3.11.so.1.0` was absent from the sanitized loader
+environment. No grader container started, no official grader ran, no
+`CELL_TERMINAL` record existed, and the stream cursor remained zero.
+
+Current status is therefore reported with independent fields:
+
+- `OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION=ESTABLISHED_BY_P0_1_5`
+- `OFFICIAL_GRADER_IMAGE_INTEGRITY=ESTABLISHED`
+- `OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH=FAILED_ON_D1_9_EXEC_010`
+- `OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START=NOT_YET_ESTABLISHED`
+- `PERFORMANCE=NOT_MEASURED`
+
+The single broad viability field is retained only inside immutable historical
+P0.1.5 evidence schemas; it is not a current readiness claim. D1.10 is
+classified
+`PRE_RESULT_GRADER_LAUNCH_AND_STREAM_COMMIT_CORRECTION`: terminal scientific
+cells and official grader runs were both zero, no Pass@1 existed, and no arm,
+memory policy, model, reasoning setting, target, or budget was changed.
+
+D1.10 derives one loader directory from the exact interpreter and verifies the
+resolved executable and `libpython3.11.so.1.0` identities before exposing any
+credential or pulling a benchmark image. The exact SWE and Multi-SWE harness
+imports and invocation construction run as a zero-cost preflight. Grader
+infrastructure failures remain outside the scientific terminal ledger.
+Validated cells commit result, ledger, and cursor through the hash-bound
+`trimem/cell-commit-journal/1.0` state machine; the cursor must equal the longest
+contiguous valid `CELL_TERMINAL` prefix. Automatic same-attempt resume is
+restricted to explicit durable-suffix and cell-journal recovery dispositions.
+The checkpoint proof schema additionally binds `inventory_sha256`; this is an
+integrity-only validator hardening and does not alter scientific runtime or any
+memory policy.
+
+Encrypted restricted `_010` evidence and its inventory have verified external
+custody. A public performance artifact is correctly absent. The correction
+itself made zero model/API or paid calls, zero benchmark image pulls, zero
+official grader executions, and spent zero USD. Its credential-free endpoint
+is `TRIMEM_V1_GRADER_LAUNCH_AND_STREAM_COMMIT_READY_FOR_DEV_APPROVAL`, which
+permits only a request for a fresh explicit DEV approval; execution remains
+unauthorized. The `_010` ID/path identify only the immutable failed request,
+never a recovery request. No fresh execution request exists yet, and creating a
+new sentinel requires separate explicit authority in addition to the later
+execution approval. `_010` may not be rerun or gain attempt 2, `_011` has not
+been created, and HELDOUT, ablation, merge, tag, and release remain prohibited.

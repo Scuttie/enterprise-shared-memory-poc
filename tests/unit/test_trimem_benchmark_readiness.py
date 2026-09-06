@@ -444,38 +444,51 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "benchmark_grader_containers"
     ] == 12
     requirements = _read(ROOT / "artifacts/trimem_v1/readiness_requirements.json")
+    joined_requirements = "\n".join(requirements["benchmark_approval_requires"])
+    assert "hermetic exact-interpreter loader derivation" in joined_requirements
+    assert "atomic cell result/ledger/cursor commit journal" in joined_requirements
+    assert "failed-campaign external custody" in joined_requirements
     assert requirements["current_status"] == {
-        "DEV_APPROVAL_ALLOWED": "NO",
+        "CLASSIFICATION": readiness.D110_AMENDMENT_CLASSIFICATION,
+        "DEV_APPROVAL_ALLOWED": "YES",
         "DEV_EXECUTION_ALLOWED": "NO",
         "DEV_SCIENTIFIC_STATUS": "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL",
-        "ENDPOINT": readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT,
-        "FAILURE_SUBTYPE": readiness.DEVELOPMENT_EXEC_009_FAILURE_SUBTYPE,
+        "ENDPOINT": readiness.D110_READY_ENDPOINT,
+        "FAILURE_SUBTYPE": readiness.D110_FAILURE_SUBTYPE,
         "GRADER_EXEC_PACKAGE": "PASS",
-        "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
-        "PERFORMANCE": "NOT_MEASURED",
+        **readiness.d110_reseal.STATUS_FIELDS,
         "SCIENTIFIC_RESULT": "NO_DEVELOPMENT_SCIENTIFIC_RESULT",
         "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN",
     }
     authorization = requirements["development_authorization_boundary"]
-    assert authorization["approval_request_eligible"] is False
+    assert authorization["approval_request_eligible"] is True
     assert authorization["active_development_approval"] is False
-    assert authorization["attempt_one_consumed"] is False
+    assert authorization["attempt_one_consumed"] is True
     assert authorization["attempt_two_allowed"] is False
     assert authorization["development_execution_authorized"] is False
     assert authorization["grader_smoke_rerun_authorized"] is False
     assert authorization["heldout_execution_authorized"] is False
-    assert authorization["future_recovery_authority_received"] is True
+    assert authorization["future_recovery_authority_received"] is False
     assert authorization["prior_failed_run_reusable"] is False
-    assert authorization["recovery_authorization_received"] is True
+    assert authorization["recovery_authorization_received"] is False
     assert authorization["recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_CONTEXT_RECOVERY_EXEC_APPROVED_ONCE"
+        "FRESH_EXPLICIT_DEV_EXECUTION_APPROVAL_REQUIRED"
     )
-    assert authorization["recovery_request_id"] == (
+    assert authorization["historical_failed_request_id"] == (
         "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010"
     )
-    assert authorization["recovery_request_path"].endswith(
+    assert authorization["historical_failed_request_path"].endswith(
         "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
     )
+    assert authorization["fresh_execution_request"] == (
+        "NOT_CREATED_PENDING_EXPLICIT_APPROVAL"
+    )
+    assert authorization["fresh_execution_request_creation_authorized"] is False
+    assert authorization[
+        "fresh_execution_request_requires_explicit_sentinel_authority"
+    ] is True
+    assert "recovery_request_id" not in authorization
+    assert "recovery_request_path" not in authorization
     assert authorization["request_003_final"] is True
     assert authorization["request_004_allowed_after_exact_remote_gates"] is False
     assert authorization["request_004_attempt_one_consumed"] is True
@@ -489,17 +502,21 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["request_008_attempt_one_consumed"] is True
     assert authorization["request_009_allowed_after_exact_remote_gates"] is False
     assert authorization["request_009_attempt_one_consumed"] is True
-    assert authorization["request_010_allowed_after_exact_remote_gates"] is True
-    assert authorization["request_010_attempt_one_consumed"] is False
+    assert authorization["request_010_allowed_after_exact_remote_gates"] is False
+    assert authorization["request_010_attempt_one_consumed"] is True
+    assert authorization["request_010_attempt_two_allowed"] is False
+    assert authorization["request_010_rerun_allowed"] is False
+    assert authorization["request_011_created"] is False
+    assert authorization["fresh_dev_execution_approval_required"] is True
     assert authorization["rerun_allowed"] is False
-    assert "_009" in authorization["meaning"]
+    assert "_010" in authorization["meaning"]
     assert "not reusable" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     assert authorization["amendment_classification"] == (
-        "PRE_RESULT_BOUNDED_SHORT_TERM_CONTEXT_AND_PREFLIGHT_FIX"
+        readiness.D110_AMENDMENT_CLASSIFICATION
     )
     assert authorization["amendment_evidence_path"].endswith(
-        "development_bounded_context_amendment.json"
+        "development_grader_launch_stream_commit_amendment.json"
     )
     assert authorization["solve_execution_contract_rehearsal_required_before_request_005"] is False
     service_boundary = requirements["credential_free_service_ci_boundary"]
@@ -637,21 +654,29 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert historical_exec_008["execution_accounting"]["scientific_model_calls"] == 0
     assert historical_exec_008["execution_accounting"]["official_grader_runs"] == 0
     latest_failure = requirements["current_development_execution_failure"]
-    assert latest_failure == readiness._validated_development_exec_009_failure()
+    assert latest_failure == readiness.d110_reseal.current_failure_record()
     assert latest_failure["scientific_status"] == (
         "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL"
     )
     assert latest_failure["workflow_run"]["conclusion"] == "failure"
-    assert latest_failure["scientific_usage"]["paid_model_calls"] == 8
-    assert latest_failure["official_grader_runs"] == 0
-    assert readiness._development_exec_009_static_accounting(latest_failure) == {
-        "scientific_usage": latest_failure["scientific_usage"],
-        "canary_usage": latest_failure["canary_usage"],
-        "total_usage": latest_failure["total_usage"],
+    assert latest_failure["observed_usage"]["paid_model_calls"] == 10
+    assert latest_failure["failure_boundary"]["official_grader_runs"] == 0
+    assert readiness._development_exec_010_static_accounting(latest_failure) == {
+        "scientific_model_calls": 9,
+        "decomposition_calls": 1,
+        "solve_calls": 8,
+        "extraction_calls": 0,
+        "protocol_canary_calls": 1,
+        "paid_model_calls": 10,
         "terminal_task_arm_runs": 0,
         "planned_task_arm_runs": 72,
         "official_grader_runs": 0,
+        "grader_containers": 0,
+        "total_usd": "0.051215550000",
     }
+    assert requirements["historical_development_exec_009_failure"] == (
+        readiness._validated_development_exec_009_failure()
+    )
     assert requirements["historical_development_exec_007_failure"] == (
         readiness._validated_development_exec_007_failure()
     )
@@ -669,15 +694,18 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
     targets = readiness.validate_targets()
     derived = readiness.validate_readiness_plan(targets)
     assert derived["current_status"]["ENDPOINT"] == (
-        readiness.DEVELOPMENT_INCOMPLETE_ENDPOINT
+        readiness.D110_READY_ENDPOINT
     )
-    assert derived["current_status"]["DEV_APPROVAL_ALLOWED"] == "NO"
+    assert derived["current_status"]["DEV_APPROVAL_ALLOWED"] == "YES"
     assert derived["current_status"]["DEV_EXECUTION_ALLOWED"] == "NO"
     assert derived["current_status"]["PERFORMANCE"] == "NOT_MEASURED"
     assert derived["development_execution_failure"] == (
         readiness._validated_development_exec_005_failure()
     )
     assert derived["current_development_execution_failure"] == (
+        readiness.d110_reseal.current_failure_record()
+    )
+    assert derived["historical_development_exec_009_failure"] == (
         readiness._validated_development_exec_009_failure()
     )
     assert derived["historical_development_exec_008_failure"] == (
@@ -771,12 +799,10 @@ def test_development_exec_002_semantic_drift_fails_even_with_bound_bytes(
         readiness._validated_development_exec_002_failure()
 
 
-def test_d18_recovery_requires_fresh_sentinel_before_approval(
+def test_d110_correction_is_ready_only_to_request_fresh_approval(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    assert readiness.preapproval_blockers() == [
-        "DEV _010 sentinel and exact-head remote gates are required before approval"
-    ]
+    assert readiness.preapproval_blockers() == []
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
         json.dumps({"approval": {"approved_phase": "DEVELOPMENT_TUNING"}}),
@@ -1021,7 +1047,10 @@ def test_benchmark_approval_cannot_disable_git_tracked_freeze(
     assert observed == [True]
     assert report["git_tracked_freeze_required"] is True
     assert "endpoint" not in report
-    assert report["official_grader_viability"] == "NOT_YET_ESTABLISHED"
+    assert "official_grader_viability" not in report
+    assert {
+        key: report[key] for key in readiness.d110_reseal.STATUS_FIELDS
+    } == readiness.d110_reseal.STATUS_FIELDS
 
 
 def test_readiness_report_derives_validated_post_smoke_state(
@@ -1032,7 +1061,9 @@ def test_readiness_report_derives_validated_post_smoke_state(
         "validate_static",
         lambda require_git_tracked: {
             "grader_exec_package": "PASS",
-            "official_grader_viability": "ESTABLISHED",
+            "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": (
+                "ESTABLISHED_BY_P0_1_5"
+            ),
             "performance": "NOT_MEASURED",
         },
     )
@@ -1045,7 +1076,10 @@ def test_readiness_report_derives_validated_post_smoke_state(
     assert readiness.main() == 0
     report = json.loads(capsys.readouterr().out)
     assert report["grader_exec_package"] == "PASS"
-    assert report["official_grader_viability"] == "ESTABLISHED"
+    assert "official_grader_viability" not in report
+    assert report["OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION"] == (
+        "ESTABLISHED_BY_P0_1_5"
+    )
 
 
 def test_pre_exec_grader_gate_keeps_not_yet_established_status(
@@ -1056,7 +1090,9 @@ def test_pre_exec_grader_gate_keeps_not_yet_established_status(
         "validate_static",
         lambda require_git_tracked: {
             "grader_exec_package": "CORRECTION_READY_FOR_EXECUTION",
-            "official_grader_viability": "NOT_YET_ESTABLISHED",
+            "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": (
+                "NOT_YET_ESTABLISHED"
+            ),
             "performance": "NOT_MEASURED",
         },
     )
@@ -1069,7 +1105,10 @@ def test_pre_exec_grader_gate_keeps_not_yet_established_status(
     report = json.loads(capsys.readouterr().out)
     assert report["status"] == "FAIL_CLOSED"
     assert report["grader_exec_package"] == "CORRECTION_READY_FOR_EXECUTION"
-    assert report["official_grader_viability"] == "NOT_YET_ESTABLISHED"
+    assert "official_grader_viability" not in report
+    assert report["OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START"] == (
+        "NOT_YET_ESTABLISHED"
+    )
 
 
 def test_grader_smoke_exec_gate_accepts_only_validated_005_recovery_state(
@@ -1599,9 +1638,7 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "paid_model_calls": 0,
         "total_usd": 0,
     }
-    assert readiness.preapproval_blockers() == [
-        "DEV _010 sentinel and exact-head remote gates are required before approval"
-    ]
+    assert readiness.preapproval_blockers() == []
 
 
 def test_recovery_ready_history_rejects_rebound_receipt_hash() -> None:
@@ -3390,6 +3427,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         ROOT / ".github/workflows/trimem-benchmark.yml",
         ROOT / ".github/workflows/ci-trimem-harness-lock.yml",
         ROOT / ".github/workflows/ci-trimem-multi-swe-contract.yml",
+        ROOT / ".github/workflows/ci-trimem-grader-loader.yml",
     ]
     for path in workflows:
         text = path.read_text(encoding="utf-8")
@@ -3404,11 +3442,12 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "D1.9 recovery authority boundaries" in static
-    assert '"DEV _010 sentinel and exact-head remote gates are "' in static
+    assert "D1.10 approval-request boundary" in static
+    assert "python scripts/trimem_d110_reseal.py --check" in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
-    assert "expected exact D1.9 recovery report" in static
+    assert "expected exact D1.10 readiness report" in static
+    assert "broad grader viability leaked" in static
     assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
     assert "test_real_services_e2e.py" in service
@@ -3888,7 +3927,7 @@ def test_workflow_validator_rejects_restricted_root_mutation_after_inventory(
         readiness.validate_workflows()
 
 
-def test_same_attempt_driver_retries_exactly_once_and_propagates_final_status(
+def test_same_attempt_driver_rejects_an_unbacked_safe_disposition(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsysbinary
 ) -> None:
     monkeypatch.setattr(resume_runner, "ROOT", tmp_path)
@@ -3897,22 +3936,45 @@ def test_same_attempt_driver_retries_exactly_once_and_propagates_final_status(
     def fake_run(argv, **kwargs):
         calls.append(list(argv))
         code = 23 if len(calls) == 1 else 29
+        disposition = (
+            "RESUME_SAFE_CELL_COMMIT_JOURNAL"
+            if len(calls) == 1
+            else "UNKNOWN_FAILURE"
+        )
         return type("Completed", (), {
             "returncode": code,
-            "stdout": f"stdout-{len(calls)}".encode(),
+            "stdout": (
+                f"stdout-{len(calls)}\n"
+                + json.dumps({"process_disposition": disposition, "status": "FAIL"})
+                + "\n"
+            ).encode(),
             "stderr": f"stderr-{len(calls)}".encode(),
         })()
 
+    monkeypatch.setattr(
+        resume_runner,
+        "_durable_resume_disposition",
+        lambda *_args, **_kwargs: "UNKNOWN_FAILURE",
+    )
     monkeypatch.setattr(resume_runner.subprocess, "run", fake_run)
-    assert resume_runner.run_with_one_resume("development", tmp_path.parent / "approval.json") == 29
-    assert len(calls) == 2
-    assert "--resume" not in calls[0] and calls[1][-1] == "--resume"
+    assert resume_runner.run_with_one_resume("development", tmp_path.parent / "approval.json") == 23
+    assert len(calls) == 1
+    assert "--resume" not in calls[0]
     evidence = _read(tmp_path / "artifacts/trimem_v1/benchmark_exec/development/driver-evidence/attempts.json")
-    assert [row["exit_code"] for row in evidence["attempts"]] == [23, 29]
+    assert [row["exit_code"] for row in evidence["attempts"]] == [23]
+    assert evidence["attempts"][0]["reported_process_disposition"] == (
+        "RESUME_SAFE_CELL_COMMIT_JOURNAL"
+    )
+    assert evidence["attempts"][0]["disposition_source"] == (
+        "REPORTED_RESUME_DISPOSITION_FAILED_DURABLE_VERIFICATION"
+    )
+    assert evidence["first_disposition"] == "GLOBAL_EVIDENCE_FAILURE"
+    assert evidence["resume_eligible"] is evidence["resume_started"] is False
+    assert evidence["second_process_exit_code"] is None
     assert evidence["maximum_resume_attempts"] == 1 and evidence["status"] == "FAIL"
     captured = capsysbinary.readouterr()
-    assert b"stdout-1" in captured.out and b"stdout-2" in captured.out
-    assert b"stderr-1" in captured.err and b"stderr-2" in captured.err
+    assert b"stdout-1" in captured.out and b"stdout-2" not in captured.out
+    assert b"stderr-1" in captured.err and b"stderr-2" not in captured.err
 
 
 def test_exec_cleanup_removes_only_fixed_scoped_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -4792,6 +4854,7 @@ def test_non_m2_stream_rejects_m2_artifacts_before_session_open(
                 **seed_body,
                 "digest": benchmark_run.canonical_hash(seed_body),
             },
+            official_harness_loader_preflight={},
         )
 
 

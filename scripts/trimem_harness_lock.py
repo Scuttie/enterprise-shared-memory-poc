@@ -14,6 +14,7 @@ import os
 from pathlib import Path, PurePosixPath
 import platform
 import re
+import stat
 import subprocess
 from typing import Any, Mapping, Sequence
 
@@ -99,19 +100,311 @@ def _run_git(
     *,
     timeout: int = 120,
 ) -> bytes:
+    environment = {
+        "PATH": os.environ.get("PATH", ""),
+        "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+        "WINDIR": os.environ.get("WINDIR", ""),
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "LC_ALL": "C",
+        "LANG": "C",
+    }
     try:
         completed = subprocess.run(
-            ["git", "--no-replace-objects", "-C", str(repository), *arguments],
+            [
+                "git",
+                "--no-replace-objects",
+                "-c",
+                "core.fsmonitor=false",
+                "-c",
+                f"core.hooksPath={os.devnull}",
+                "-C",
+                str(repository),
+                *arguments,
+            ],
             capture_output=True,
             text=False,
             check=False,
             timeout=timeout,
+            env=environment,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise HarnessLockError("pinned harness Git command could not complete") from exc
     if completed.returncode != 0:
         raise HarnessLockError("pinned harness Git command failed closed")
     return completed.stdout
+
+
+def _is_link_or_reparse(path: Path) -> bool:
+    """Recognize POSIX links and Windows junction/reparse-point escapes."""
+
+    try:
+        value = os.lstat(path)
+    except OSError:
+        return path.is_symlink()
+    reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    attributes = getattr(value, "st_file_attributes", 0)
+    return stat.S_ISLNK(value.st_mode) or bool(reparse_flag & attributes)
+
+
+def validate_lexical_directory_chain(path: Path, *, label: str) -> Path:
+    """Return an absolute lexical path after rejecting existing link ancestors."""
+
+    try:
+        absolute = path.absolute()
+    except (OSError, RuntimeError) as exc:
+        raise HarnessLockError(f"{label} path could not be made absolute") from exc
+    current = Path(absolute.anchor)
+    for part in absolute.parts[1:]:
+        current = current / part
+        try:
+            status = os.lstat(current)
+        except FileNotFoundError:
+            continue
+        except OSError as exc:
+            raise HarnessLockError(f"{label} ancestor could not be inspected") from exc
+        reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+        attributes = getattr(status, "st_file_attributes", 0)
+        if stat.S_ISLNK(status.st_mode) or bool(reparse_flag & attributes):
+            raise HarnessLockError(f"{label} path contains a link or reparse point")
+        if not stat.S_ISDIR(status.st_mode):
+            raise HarnessLockError(f"{label} path contains a non-directory ancestor")
+    return absolute
+
+
+def validate_pristine_checkout(repository: Path, commit: str) -> None:
+    """Compare one lexical harness work tree with an immutable Git tree.
+
+    Git supplies only content-addressed object identities.  The mutable index,
+    ignore files, local ``core.worktree``, filters and fsmonitor are never used
+    to decide whether the executable harness bytes are pristine.
+    """
+
+    if not isinstance(repository, Path) or not repository.is_absolute():
+        raise HarnessLockError("harness checkout must be an absolute pathlib.Path")
+    if HEX40.fullmatch(commit) is None:
+        raise HarnessLockError("harness checkout revision is malformed")
+    repository = validate_lexical_directory_chain(
+        repository, label="harness checkout"
+    )
+    if _is_link_or_reparse(repository) or not repository.is_dir():
+        raise HarnessLockError("harness checkout is not a regular directory")
+    git_dir = repository / ".git"
+    if _is_link_or_reparse(git_dir) or not git_dir.is_dir():
+        raise HarnessLockError("harness Git metadata is not local")
+
+    environment = {
+        "PATH": os.environ.get("PATH", ""),
+        "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+        "WINDIR": os.environ.get("WINDIR", ""),
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "LC_ALL": "C",
+        "LANG": "C",
+    }
+
+    try:
+        config = subprocess.run(
+            [
+                "git",
+                "--no-replace-objects",
+                f"--git-dir={git_dir}",
+                "config",
+                "--local",
+                "--no-includes",
+                "--null",
+                "--name-only",
+                "--list",
+            ],
+            cwd=repository,
+            capture_output=True,
+            text=False,
+            check=False,
+            timeout=120,
+            env=environment,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise HarnessLockError(
+            "harness local Git configuration could not be inspected"
+        ) from exc
+    if config.returncode != 0:
+        raise HarnessLockError(
+            "harness local Git configuration could not be inspected"
+        )
+    try:
+        config_keys = [
+            value.decode("utf-8", errors="strict").lower()
+            for value in config.stdout.split(b"\0")
+            if value
+        ]
+    except UnicodeDecodeError as exc:
+        raise HarnessLockError("harness local Git configuration is not UTF-8") from exc
+    forbidden_config = {
+        "core.attributesfile",
+        "core.fsmonitor",
+        "core.hookspath",
+        "core.pager",
+        "core.worktree",
+        "interactive.difffilter",
+    }
+    if any(
+        key in forbidden_config
+        or key.startswith("filter.")
+        or key.startswith("include.")
+        or key.startswith("includeif.")
+        or (
+            key.startswith("diff.")
+            and (key.endswith(".command") or key.endswith(".textconv"))
+        )
+        for key in config_keys
+    ):
+        raise HarnessLockError("harness local Git configuration is unsafe")
+
+    def git_object_query(*arguments: str) -> bytes:
+        try:
+            completed = subprocess.run(
+                [
+                    "git",
+                    "--no-replace-objects",
+                    f"--git-dir={git_dir}",
+                    f"--work-tree={repository}",
+                    "-c",
+                    "core.fsmonitor=false",
+                    "-c",
+                    f"core.hooksPath={os.devnull}",
+                    *arguments,
+                ],
+                capture_output=True,
+                text=False,
+                check=False,
+                timeout=120,
+                env=environment,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise HarnessLockError(
+                "harness Git object query could not complete"
+            ) from exc
+        if completed.returncode != 0:
+            raise HarnessLockError("harness Git object query failed closed")
+        return completed.stdout
+
+    if git_object_query("rev-parse", "--verify", "HEAD").strip() != commit.encode(
+        "ascii"
+    ):
+        raise HarnessLockError("harness checkout HEAD differs")
+    raw_tree = git_object_query("ls-tree", "-rz", "--full-tree", commit)
+    blobs: dict[str, tuple[str, str]] = {}
+    gitlinks: set[str] = set()
+    for raw_entry in raw_tree.split(b"\0"):
+        if not raw_entry:
+            continue
+        try:
+            header, raw_path = raw_entry.split(b"\t", 1)
+            mode, kind, object_id = header.decode("ascii").split(" ")
+            relative = raw_path.decode("utf-8", errors="strict")
+        except (UnicodeDecodeError, ValueError) as exc:
+            raise HarnessLockError("harness Git tree is malformed") from exc
+        parts = relative.split("/")
+        if (
+            not relative
+            or relative.startswith("/")
+            or any(part in {"", ".", ".."} for part in parts)
+            or (os.name == "nt" and "\\" in relative)
+            or HEX40.fullmatch(object_id) is None
+        ):
+            raise HarnessLockError("harness Git tree path is unsafe")
+        if kind == "blob" and mode in {"100644", "100755", "120000"}:
+            blobs[relative] = (mode, object_id)
+        elif kind == "commit" and mode == "160000":
+            gitlinks.add(relative)
+        else:
+            raise HarnessLockError("harness Git tree entry is unsupported")
+    if len(blobs) + len(gitlinks) != len(set(blobs) | gitlinks):
+        raise HarnessLockError("harness Git tree paths collide")
+
+    expected_leaf_paths = set(blobs)
+    allowed_directories: set[str] = set()
+    required_directories: set[str] = set()
+    for relative in (*blobs, *gitlinks):
+        parts = relative.split("/")
+        parents = ["/".join(parts[:index]) for index in range(1, len(parts))]
+        allowed_directories.update(parents)
+        if relative in blobs:
+            required_directories.update(parents)
+    allowed_directories.update(gitlinks)
+
+    for relative, (mode, object_id) in blobs.items():
+        candidate = repository.joinpath(*relative.split("/"))
+        current = repository
+        for part in relative.split("/")[:-1]:
+            current = current / part
+            if _is_link_or_reparse(current) or not current.is_dir():
+                raise HarnessLockError("harness tracked parent is unsafe")
+        if mode == "120000":
+            if candidate.is_symlink():
+                target = os.readlink(candidate)
+                raw = target if isinstance(target, bytes) else os.fsencode(target)
+            elif os.name == "nt" and not _is_link_or_reparse(
+                candidate
+            ) and candidate.is_file():
+                # Git for Windows materializes symlink blobs as regular files
+                # when core.symlinks=false.  The blob bytes remain authoritative.
+                raw = candidate.read_bytes()
+            else:
+                raise HarnessLockError("harness tracked symlink differs")
+        else:
+            if _is_link_or_reparse(candidate) or not candidate.is_file():
+                raise HarnessLockError("harness tracked file is absent")
+            raw = candidate.read_bytes()
+            if os.name != "nt" and bool(candidate.stat().st_mode & stat.S_IXUSR) != (
+                mode == "100755"
+            ):
+                raise HarnessLockError("harness executable mode differs")
+        header = b"blob " + str(len(raw)).encode("ascii") + b"\0"
+        if hashlib.sha1(header + raw).hexdigest() != object_id:
+            raise HarnessLockError("harness differs from its frozen Git blob")
+
+    for relative in gitlinks:
+        candidate = repository.joinpath(*relative.split("/"))
+        if candidate.exists() or candidate.is_symlink():
+            if (
+                _is_link_or_reparse(candidate)
+                or not candidate.is_dir()
+                or any(candidate.iterdir())
+            ):
+                raise HarnessLockError("harness gitlink is not pristine")
+
+    observed_leaf_paths: set[str] = set()
+    observed_directories: set[str] = set()
+    for current_root, directory_names, file_names in os.walk(
+        repository,
+        topdown=True,
+        followlinks=False,
+    ):
+        current = Path(current_root)
+        if current == repository and ".git" in directory_names:
+            directory_names.remove(".git")
+        for name in list(directory_names):
+            path = current / name
+            relative = path.relative_to(repository).as_posix()
+            if _is_link_or_reparse(path):
+                directory_names.remove(name)
+                observed_leaf_paths.add(relative)
+            else:
+                observed_directories.add(relative)
+        for name in file_names:
+            observed_leaf_paths.add(
+                (current / name).relative_to(repository).as_posix()
+            )
+    if (
+        observed_leaf_paths != expected_leaf_paths
+        or not required_directories <= observed_directories
+        or not observed_directories <= allowed_directories
+    ):
+        raise HarnessLockError("harness inventory differs from its frozen Git tree")
 
 
 def _safe_blob_path(path: str) -> str:
@@ -319,10 +612,26 @@ def _normalized_repository_url(value: str) -> str:
 
 
 def _clone(repository: str, target: Path) -> None:
+    environment = {
+        "PATH": os.environ.get("PATH", ""),
+        "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+        "WINDIR": os.environ.get("WINDIR", ""),
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "LC_ALL": "C",
+        "LANG": "C",
+    }
     try:
         completed = subprocess.run(
             [
                 "git",
+                "--no-replace-objects",
+                "-c",
+                "core.fsmonitor=false",
+                "-c",
+                f"core.hooksPath={os.devnull}",
                 "clone",
                 "--no-checkout",
                 "--filter=blob:none",
@@ -333,6 +642,7 @@ def _clone(repository: str, target: Path) -> None:
             text=False,
             check=False,
             timeout=900,
+            env=environment,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise HarnessLockError("pinned harness clone could not complete") from exc
@@ -390,23 +700,33 @@ def _prepare_harness_sources(
         raise HarnessLockError("harness checkout root must be a pathlib.Path")
     environment, rows = _load_lock_rows()
     del environment
+    root = validate_lexical_directory_chain(root, label="harness checkout root")
     root.mkdir(parents=True, exist_ok=True)
+    root = validate_lexical_directory_chain(root, label="harness checkout root")
+    if not root.is_dir():
+        raise HarnessLockError("harness checkout root is not a regular directory")
     result: dict[str, Path] = {}
     for row in rows:
         target = root / row["checkout_key"]
         existed = target.exists()
+        if existed:
+            target = validate_lexical_directory_chain(
+                target, label="harness checkout"
+            )
+            if not target.is_dir():
+                raise HarnessLockError("harness checkout is not a regular directory")
+            git_dir = target / ".git"
+            if _is_link_or_reparse(git_dir) or not git_dir.is_dir():
+                raise HarnessLockError("harness Git metadata is not local")
         if not existed:
             _clone(row["repository"], target)
-        origin = _run_git(target, ["remote", "get-url", "origin"]).decode("utf-8").strip()
-        if _normalized_repository_url(origin) != _normalized_repository_url(row["repository"]):
-            raise HarnessLockError("official harness checkout origin mismatch")
         if materialize_worktrees and not existed:
             _run_git(target, ["checkout", "--detach", row["revision"]], timeout=900)
         if materialize_worktrees:
-            head = _run_git(target, ["rev-parse", "HEAD"]).decode("ascii").strip()
-            status = _run_git(target, ["status", "--porcelain=v1"])
-            if head != row["revision"] or status:
-                raise HarnessLockError("official harness checkout is not exact and clean")
+            validate_pristine_checkout(target.absolute(), row["revision"])
+        origin = _run_git(target, ["remote", "get-url", "origin"]).decode("utf-8").strip()
+        if _normalized_repository_url(origin) != _normalized_repository_url(row["repository"]):
+            raise HarnessLockError("official harness checkout origin mismatch")
         validate_dependency_declarations(
             target, row["revision"], row["dependency_declarations"]
         )
@@ -459,13 +779,10 @@ def build_rehearsal(
             "working_tree_materialized": materialize_worktrees,
         }
         if materialize_worktrees:
-            head = _run_git(repository, ["rev-parse", "HEAD"]).decode("ascii").strip()
-            status = _run_git(repository, ["status", "--porcelain=v1"])
-            if head != row["revision"] or status:
-                raise HarnessLockError(
-                    "rehearsal full harness checkout is not exact and clean"
-                )
-            harness_row.update({"clean": status == b"", "head": head})
+            validate_pristine_checkout(
+                repository.absolute(), row["revision"]
+            )
+            harness_row.update({"clean": True, "head": row["revision"]})
         harness_rows.append(harness_row)
         for declaration in row["dependency_declarations"]:
             blob = read_pinned_git_blob(repository, row["revision"], declaration["path"])
@@ -514,7 +831,8 @@ def build_rehearsal(
         "execution_counters": _zero_execution_counters(),
         "harnesses": sorted(harness_rows, key=lambda item: item["checkout_key"]),
         "hash_basis": HASH_BASIS,
-        "official_grader_viability": "NOT_YET_ESTABLISHED",
+        "harness_dependency_lock_status": "ESTABLISHED",
+        "official_grader_execution_status": "NOT_PERFORMED_CREDENTIAL_FREE_REHEARSAL",
         "platform": {
             "architecture": platform.machine().lower(),
             "python_implementation": platform.python_implementation(),
@@ -568,7 +886,8 @@ def failure_rehearsal(
             "type": type(error).__name__,
         },
         "execution_counters": _zero_execution_counters(),
-        "official_grader_viability": "NOT_YET_ESTABLISHED",
+        "harness_dependency_lock_status": "NOT_ESTABLISHED",
+        "official_grader_execution_status": "NOT_PERFORMED_CREDENTIAL_FREE_REHEARSAL",
         "platform": {
             "architecture": platform.machine().lower(),
             "python_implementation": platform.python_implementation(),

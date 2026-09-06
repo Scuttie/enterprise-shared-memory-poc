@@ -102,6 +102,54 @@ jobs:
           tests/unit/test_trimem_d19_bounded_short_term_context.py::test_mixed_72_cell_aggregate_public_and_terminal_ledger_round_trip
       - name: Verify bounded context round trip before provider access
         run: python scripts/trimem_context_roundtrip.py
+      - name: Materialize pinned harnesses in unprotected loader preflight
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from trimem_harness_lock import prepare_harnesses
+
+          checkout_root = Path(os.environ["RUNNER_TEMP"]) / "trimem-d110-harnesses"
+          observed = prepare_harnesses(checkout_root)
+          if set(observed) != {
+              "swebench_verified",
+              "multi_swe_bench_mini",
+              "multi_swe_bench_flash",
+          }:
+              raise SystemExit("pinned harness set differs")
+          PY
+      - name: Gate protected job on unprotected exact loader preflight
+        run: |
+          set -euo pipefail
+          exact_python="$pythonLocation/bin/python"
+          preflight_output="$RUNNER_TEMP/trimem-official-harness-loader-preflight.json"
+          test -x "$exact_python"
+          test "$(readlink -f "$exact_python")" = "$(readlink -f "$(command -v python)")"
+          "$exact_python" scripts/trimem_official_harness_loader_preflight.py \
+            --python-binary "$exact_python" \
+            --swe-harness-root "$RUNNER_TEMP/trimem-d110-harnesses/swebench_verified" \
+            --multi-harness-root "$RUNNER_TEMP/trimem-d110-harnesses/multi" \
+            --output "$preflight_output"
+          "$exact_python" - "$preflight_output" "$exact_python" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from trimem_benchmark_run import (
+              validate_official_harness_loader_preflight_evidence,
+          )
+
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          validate_official_harness_loader_preflight_evidence(
+              report,
+              python_binary=sys.argv[2],
+          )
+          PY
 
   frozen-serial-phase:
     needs: [branch-trigger-preflight, bounded-context-preflight]
@@ -183,6 +231,36 @@ jobs:
           python scripts/trimem_verify_gh_lock.py \
             --lock configs/trimem_v1/gh_cli_lock.json \
             --prefix "$RUNNER_TEMP/trimem-gh"
+      - name: Materialize exact pinned harness sources before credentials
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from trimem_harness_lock import prepare_harnesses
+
+          observed = prepare_harnesses(Path(".trimem-exec/harnesses"))
+          if set(observed) != {
+              "swebench_verified",
+              "multi_swe_bench_mini",
+              "multi_swe_bench_flash",
+          }:
+              raise SystemExit("pinned harness set differs")
+          PY
+      - name: Verify exact official harness Python loader before credentials
+        run: |
+          set -euo pipefail
+          exact_python="$pythonLocation/bin/python"
+          test -x "$exact_python"
+          test "$(readlink -f "$exact_python")" = "$(readlink -f "$(command -v python)")"
+          install -d -m 700 artifacts/trimem_v1/benchmark_exec/control
+          "$exact_python" scripts/trimem_official_harness_loader_preflight.py \
+            --python-binary "$exact_python" \
+            --swe-harness-root ".trimem-exec/harnesses/swebench_verified" \
+            --multi-harness-root ".trimem-exec/harnesses/multi" \
+            --output "artifacts/trimem_v1/benchmark_exec/control/official-harness-loader-preflight.json"
       - name: Materialize protected external approval
         id: approval_materialization
         env:
@@ -361,11 +439,13 @@ jobs:
         if: >-
           always() &&
           !cancelled() &&
-          steps.public-upload.outcome == 'success' &&
           steps.restricted-upload.outcome == 'success' &&
-          steps.inventory-upload.outcome == 'success'
+          steps.inventory-upload.outcome == 'success' &&
+          (steps.public-upload.outcome == 'success' ||
+           steps.public-upload.outcome == 'skipped')
         env:
           GH_TOKEN: ${{ github.token }}
+          PUBLIC_UPLOAD_OUTCOME: ${{ steps.public-upload.outcome }}
           PUBLIC_ARTIFACT_ID: ${{ steps.public-upload.outputs.artifact-id }}
           PUBLIC_ARTIFACT_DIGEST: ${{ steps.public-upload.outputs.artifact-digest }}
           RESTRICTED_ARTIFACT_ID: ${{ steps.restricted-upload.outputs.artifact-id }}
@@ -374,54 +454,35 @@ jobs:
           INVENTORY_ARTIFACT_DIGEST: ${{ steps.inventory-upload.outputs.artifact-digest }}
         run: |
           set -euo pipefail
-          python - <<'PY'
-          import json
-          import os
-          import re
-          import subprocess
-
-          expected_names = {
-              "PUBLIC": "trimem-benchmark-public",
-              "RESTRICTED": "trimem-benchmark-restricted-encrypted",
-              "INVENTORY": "trimem-benchmark-evidence-inventories",
-          }
-          for label, expected_name in expected_names.items():
-              artifact_id = os.environ[f"{label}_ARTIFACT_ID"]
-              artifact_digest = os.environ[f"{label}_ARTIFACT_DIGEST"]
-              if re.fullmatch(r"[1-9][0-9]*", artifact_id) is None:
-                  raise SystemExit(f"{label} artifact-id is not canonical")
-              if re.fullmatch(r"[0-9a-f]{64}", artifact_digest) is None:
-                  raise SystemExit(f"{label} artifact-digest is not a SHA-256 hex digest")
-              completed = subprocess.run(
-                  [
-                      "gh", "api", "--method", "GET",
-                      f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/artifacts/{artifact_id}",
-                  ],
-                  capture_output=True,
-                  check=False,
-                  text=True,
-              )
-              if completed.returncode != 0:
-                  raise SystemExit(f"{label} artifact is not remotely retrievable")
-              try:
-                  remote = json.loads(completed.stdout)
-              except json.JSONDecodeError as exc:
-                  raise SystemExit(f"{label} artifact metadata is invalid JSON") from exc
-              workflow_run = remote.get("workflow_run")
-              if (
-                  remote.get("id") != int(artifact_id)
-                  or remote.get("name") != expected_name
-                  or remote.get("expired") is not False
-                  or type(remote.get("size_in_bytes")) is not int
-                  or remote["size_in_bytes"] <= 0
-                  or remote.get("digest") != "sha256:" + artifact_digest
-                  or not isinstance(workflow_run, dict)
-                  or workflow_run.get("id") != int(os.environ["GITHUB_RUN_ID"])
-              ):
-                  raise SystemExit(f"{label} remote artifact custody differs")
-          PY
+          python scripts/trimem_verify_remote_custody.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --public-upload-outcome "$PUBLIC_UPLOAD_OUTCOME" \
+            --public-artifact-id "$PUBLIC_ARTIFACT_ID" \
+            --public-artifact-digest "$PUBLIC_ARTIFACT_DIGEST" \
+            --restricted-artifact-id "$RESTRICTED_ARTIFACT_ID" \
+            --restricted-artifact-digest "$RESTRICTED_ARTIFACT_DIGEST" \
+            --inventory-artifact-id "$INVENTORY_ARTIFACT_ID" \
+            --inventory-artifact-digest "$INVENTORY_ARTIFACT_DIGEST" \
+            --output "$RUNNER_TEMP/trimem-remote-custody-result.json"
+      - name: Upload sanitized remote-custody result before cleanup
+        id: custody-result-upload
+        if: >-
+          always() &&
+          !cancelled() &&
+          steps.external-custody-verification.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-benchmark-remote-custody
+          path: ${{ runner.temp }}/trimem-remote-custody-result.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Remove plaintext external approval after encryption attempt
-        if: always() && steps.approval_materialization.outcome == 'success'
+        if: >-
+          always() &&
+          steps.approval_materialization.outcome == 'success' &&
+          steps.external-custody-verification.outcome == 'success' &&
+          steps.custody-result-upload.outcome == 'success'
         run: |
           set -euo pipefail
           rm -f -- \
@@ -435,11 +496,13 @@ jobs:
           RESTRICTED_UPLOAD_OUTCOME: ${{ steps.restricted-upload.outcome }}
           INVENTORY_UPLOAD_OUTCOME: ${{ steps.inventory-upload.outcome }}
           EXTERNAL_CUSTODY_VERIFICATION_OUTCOME: ${{ steps.external-custody-verification.outcome }}
+          CUSTODY_RESULT_UPLOAD_OUTCOME: ${{ steps.custody-result-upload.outcome }}
         run: |
           set -euo pipefail
           if [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ] || \
              [ "$INVENTORY_UPLOAD_OUTCOME" != "success" ] || \
-             [ "$EXTERNAL_CUSTODY_VERIFICATION_OUTCOME" != "success" ]; then
+             [ "$EXTERNAL_CUSTODY_VERIFICATION_OUTCOME" != "success" ] || \
+             [ "$CUSTODY_RESULT_UPLOAD_OUTCOME" != "success" ]; then
             echo "external artifact custody was not verified; preserving plaintext and ciphertext" >&2
             exit 1
           fi

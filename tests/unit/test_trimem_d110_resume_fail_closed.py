@@ -65,7 +65,7 @@ def test_second_zero_exit_without_exact_success_marker_fails_closed(
     monkeypatch.setattr(
         resume_driver,
         "_durable_resume_disposition",
-        lambda _root: "RESUME_SAFE_CELL_COMMIT_JOURNAL",
+        lambda _root, **_kwargs: "RESUME_SAFE_CELL_COMMIT_JOURNAL",
     )
     outputs = [
         subprocess.CompletedProcess(
@@ -123,6 +123,11 @@ def test_reported_safe_disposition_requires_matching_durable_evidence(
         )
 
     monkeypatch.setattr(resume_driver.subprocess, "run", fake_run)
+    monkeypatch.setattr(
+        resume_driver,
+        "_durable_resume_disposition",
+        lambda _root, **_kwargs: "UNKNOWN_FAILURE",
+    )
     assert resume_driver.run_with_one_resume(
         "development", tmp_path / "approval.json"
     ) == 9
@@ -214,7 +219,7 @@ def test_hard_second_child_death_closes_started_grader_without_third_process(
     monkeypatch.setattr(
         resume_driver,
         "_durable_resume_disposition",
-        lambda _root: "RESUME_SAFE_CELL_COMMIT_JOURNAL",
+        lambda _root, **_kwargs: "RESUME_SAFE_CELL_COMMIT_JOURNAL",
     )
     execution_root = (
         tmp_path / "artifacts/trimem_v1/benchmark_exec/development"

@@ -55,6 +55,14 @@ EXPECTED_CONFIG_FIELDS = frozenset(
         "workdir",
     }
 )
+LOADER_SELF_CHECK_SCHEMA = "trimem/multi-swe-loader-self-check/1.0"
+LOADER_SELF_CHECK_MODULES = (
+    UPSTREAM_MODULE,
+    "multi_swe_bench.harness.gen_report",
+    "multi_swe_bench.harness.dataset",
+    "multi_swe_bench.harness.report",
+    "multi_swe_bench.harness.test_result",
+)
 
 
 class MultiSWEEntrypointError(RuntimeError):
@@ -143,6 +151,68 @@ def _verify_checkout(harness_root: Path) -> Path:
     ):
         raise MultiSWEEntrypointError("Multi-SWE checkout revision differs")
     return root
+
+
+def loader_self_check(harness_root: Path) -> dict[str, Any]:
+    """Import and validate the pinned Multi-SWE launch surface only.
+
+    This path intentionally stops before configuration materialization,
+    Docker-client use, patch application, or ``CliArgs.run()``.
+    """
+
+    root = _verify_checkout(harness_root)
+    inserted = str(root)
+    sys.path.insert(0, inserted)
+    modules: dict[str, dict[str, object]] = {}
+    imported: dict[str, Any] = {}
+    try:
+        for name in LOADER_SELF_CHECK_MODULES:
+            module = importlib.import_module(name)
+            module_path = Path(str(getattr(module, "__file__", ""))).resolve(
+                strict=True
+            )
+            if not (module_path == root or root in module_path.parents):
+                raise MultiSWEEntrypointError(
+                    f"Multi-SWE self-check module escaped pinned checkout: {name}"
+                )
+            raw = module_path.read_bytes()
+            modules[name] = {
+                "path": module_path.relative_to(root).as_posix(),
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "bytes": len(raw),
+            }
+            imported[name] = module
+    finally:
+        if sys.path and sys.path[0] == inserted:
+            sys.path.pop(0)
+
+    parser = imported[UPSTREAM_MODULE].get_parser()
+    actions = getattr(parser, "_actions", None)
+    if not isinstance(actions, list):
+        raise MultiSWEEntrypointError("pinned Multi-SWE parser actions are unavailable")
+    destinations = sorted(
+        {
+            str(getattr(action, "dest", ""))
+            for action in actions
+            if str(getattr(action, "dest", "")) not in {"", "help"}
+        }
+    )
+    if not EXPECTED_CONFIG_FIELDS <= set(destinations):
+        raise MultiSWEEntrypointError("pinned Multi-SWE parser schema differs")
+    return {
+        "schema": LOADER_SELF_CHECK_SCHEMA,
+        "status": "PASS",
+        "harness_revision": PINNED_MULTI_SWE_REVISION,
+        "modules": modules,
+        "cli_argument_destinations": destinations,
+        "model_metadata_requests": 0,
+        "model_generation_calls": 0,
+        "paid_calls": 0,
+        "image_pulls": 0,
+        "grader_attempts": 0,
+        "grader_containers": 0,
+        "usd": 0,
+    }
 
 
 def _canonical_exit_status(
@@ -618,13 +688,50 @@ def execute_pinned_instance_only(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--harness-root", type=Path, required=True)
-    parser.add_argument("--config", type=Path, required=True)
-    parser.add_argument("--expected-image", required=True)
-    parser.add_argument("--expected-tag", required=True)
-    parser.add_argument("--exit-status-output", type=Path, required=True)
+    parser.add_argument("--loader-self-check", action="store_true")
+    parser.add_argument("--harness-root", type=Path)
+    parser.add_argument("--config", type=Path)
+    parser.add_argument("--expected-image")
+    parser.add_argument("--expected-tag")
+    parser.add_argument("--exit-status-output", type=Path)
     args = parser.parse_args()
     try:
+        if args.loader_self_check:
+            if args.harness_root is None or any(
+                value is not None
+                for value in (
+                    args.config,
+                    args.expected_image,
+                    args.expected_tag,
+                    args.exit_status_output,
+                )
+            ):
+                raise MultiSWEEntrypointError(
+                    "loader self-check accepts only --harness-root"
+                )
+            print(
+                json.dumps(
+                    loader_self_check(args.harness_root),
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    allow_nan=False,
+                )
+            )
+            return 0
+        if any(
+            value is None
+            for value in (
+                args.harness_root,
+                args.config,
+                args.expected_image,
+                args.expected_tag,
+                args.exit_status_output,
+            )
+        ):
+            raise MultiSWEEntrypointError(
+                "production execution requires the complete fixed argument set"
+            )
         execute_pinned_instance_only(
             harness_root=args.harness_root,
             config_path=args.config,

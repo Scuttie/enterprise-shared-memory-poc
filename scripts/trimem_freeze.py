@@ -82,6 +82,8 @@ CONFIG_PATHS = (
     "configs/trimem_v1/tool_environment_lock.json",
 )
 ARTIFACT_PATHS = (
+    "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json",
+    "artifacts/trimem_v1/development_grader_launch_stream_commit_inventory.json",
     "artifacts/trimem_v1/development_bounded_context_inventory.json",
     "artifacts/trimem_v1/development_bounded_context_amendment.json",
     "artifacts/trimem_v1/development_terminal_contract_inventory.json",
@@ -109,6 +111,7 @@ ARTIFACT_PATHS = (
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_007.json",
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_008.json",
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_009.json",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_002.json",
     "artifacts/trimem_v1/exec_requests/GRADER_SMOKE_EXEC_REQUEST_003.json",
@@ -142,6 +145,7 @@ ARTIFACT_PATHS = (
     "artifacts/trimem_v1/upstream_source_audit.json",
 )
 SCRIPT_PATHS = (
+    "scripts/make_handoff_manifest.py",
     "scripts/run_trimem_replay_e2e.py",
     "scripts/trimem_atomic_evidence.py",
     "scripts/trimem_audit_encrypted_evidence.py",
@@ -155,6 +159,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_development_trigger_d19.py",
     "scripts/trimem_development_phase_cap.py",
     "scripts/trimem_context_roundtrip.py",
+    "scripts/trimem_d110_reseal.py",
     "scripts/trimem_d19_reseal.py",
     "scripts/trimem_action_canary.py",
     "scripts/trimem_evidence_inventory.py",
@@ -179,6 +184,8 @@ SCRIPT_PATHS = (
     "scripts/trimem_multi_swe_preexec.py",
     "scripts/trimem_multi_swe_report_semantics.py",
     "scripts/trimem_official_grader.py",
+    "scripts/trimem_official_harness_loader.py",
+    "scripts/trimem_official_harness_loader_preflight.py",
     "scripts/trimem_openai_model_access_check.py",
     "scripts/trimem_public_artifact.py",
     "scripts/trimem_pull_locked_images.py",
@@ -192,6 +199,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_verify_openai_key_binding.py",
     "scripts/trimem_verify_gh_lock.py",
     "scripts/trimem_verify_ready.py",
+    "scripts/trimem_verify_remote_custody.py",
 )
 SOURCE_PATHS = (
     "src/enterprise_memory/contracts/codec.py",
@@ -278,6 +286,7 @@ MIGRATION_PATHS = (
 TEST_PATHS = (
     "tests/trimem/e2e/test_full_replay.py",
     "tests/trimem/test_real_services_e2e.py",
+    "tests/unit/test_company_handoff_manifest.py",
     "tests/unit/test_trimem_atomic_evidence.py",
     "tests/unit/test_trimem_accounting_checkpoint.py",
     "tests/unit/test_trimem_benchmark_checkpoint_recovery.py",
@@ -287,12 +296,18 @@ TEST_PATHS = (
     "tests/unit/test_trimem_d15_credential_control.py",
     "tests/unit/test_trimem_evidence_custody.py",
     "tests/unit/test_trimem_dev_toolchain_workflows.py",
+    "tests/unit/test_trimem_d110_official_harness_loader.py",
+    "tests/unit/test_trimem_d110_resume_fail_closed.py",
+    "tests/unit/test_trimem_d110_atomic_resume.py",
+    "tests/unit/test_trimem_d110_checkout_custody.py",
+    "tests/unit/test_trimem_d110_status_and_reseal.py",
     "tests/unit/test_trimem_grader_smoke_trigger.py",
     "tests/unit/test_trimem_grader_smoke_authority.py",
     "tests/unit/test_trimem_grader_smoke_execution_accounting.py",
     "tests/unit/test_trimem_grader_smoke_failure_evidence.py",
     "tests/unit/test_trimem_grader_terminal_evidence.py",
     "tests/unit/test_trimem_harness_lock.py",
+    "tests/unit/test_trimem_remote_custody.py",
     "tests/unit/test_trimem_pinned_gh.py",
     "tests/unit/test_trimem_multi_prebuilt_evaluation.py",
     "tests/unit/test_trimem_multi_swe_entrypoint.py",
@@ -330,10 +345,14 @@ TEST_PATHS = (
     "tests/unit/test_trimem_vector_index.py",
     "tests/unit/test_trimem_working_retrieval.py",
 )
+FIXTURE_PATHS = (
+    "tests/fixtures/trimem_d110/exec_010_sanitized.json",
+)
 WORKFLOW_PATHS = (
     ".github/workflows/ci-trimem.yml",
     ".github/workflows/ci-trimem-e2e.yml",
     ".github/workflows/ci-trimem-harness-lock.yml",
+    ".github/workflows/ci-trimem-grader-loader.yml",
     ".github/workflows/ci-trimem-multi-swe-contract.yml",
     ".github/workflows/ci-trimem-dev-toolchain.yml",
     ".github/workflows/trimem-benchmark.yml",
@@ -345,6 +364,7 @@ FROZEN_PATHS = (
     "alembic.ini",
     "DEPENDENCY_PROVENANCE.json",
     "docs/TRIMEM_V1_SYSTEM.md",
+    "reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md",
     "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_001_PREFLIGHT_FAILURE.md",
     "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_002_PROTECTED_GATE_FAILURE.md",
     "reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md",
@@ -369,6 +389,7 @@ FROZEN_PATHS = (
     *SOURCE_PATHS,
     *MIGRATION_PATHS,
     *TEST_PATHS,
+    *FIXTURE_PATHS,
     *WORKFLOW_PATHS,
 )
 POST_DEVELOPMENT_PATH_FIELDS = (

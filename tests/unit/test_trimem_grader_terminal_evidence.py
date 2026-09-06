@@ -1448,7 +1448,7 @@ def _configured_failure_path_gateway(
 
 @pytest.mark.parametrize("failure_kind", ["timeout", "nonzero"])
 @pytest.mark.parametrize("post_start_artifact", [False, True])
-def test_harness_failure_counts_container_only_from_post_start_artifact(
+def test_harness_failure_conservatively_counts_a_started_child(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     failure_kind: str,
@@ -1486,7 +1486,7 @@ def test_harness_failure_counts_container_only_from_post_start_artifact(
         "harness_timeout" if failure_kind == "timeout" else "harness_exit_nonzero"
     )
     assert result.status == expected_status
-    assert result.container_started is post_start_artifact
+    assert result.container_started is True
     assert result.report["_trimem"]["adapter_primary_error"] == {
         "stage": "official_harness",
         "status": expected_status,
@@ -1495,6 +1495,34 @@ def test_harness_failure_counts_container_only_from_post_start_artifact(
     assert (
         result.report["_trimem"]["test_output"] is not None
     ) is post_start_artifact
+
+
+def test_exact_loader_exit_127_is_proven_before_container(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    gateway, request, invocation = _configured_failure_path_gateway(
+        tmp_path, monkeypatch
+    )
+
+    monkeypatch.setattr(
+        gateway,
+        "_run",
+        lambda *_args, **_kwargs: subprocess.CompletedProcess(
+            invocation.argv,
+            127,
+            stdout="",
+            stderr=(
+                "python: error while loading shared libraries: "
+                "libpython3.11.so.1.0: cannot open shared object file"
+            ),
+        ),
+    )
+    with pytest.raises(official_grader.GraderInvocationFailure) as caught:
+        gateway.grade(request)
+
+    assert caught.value.result.status == "harness_exit_nonzero"
+    assert caught.value.result.container_started is False
 
 
 def _unresolved_multi_final_report(instance_id: str) -> dict[str, object]:
@@ -1574,6 +1602,7 @@ def test_report_failure_retains_generated_report_and_official_outcome(
         "timeout" if failure_kind == "timeout" else "nonzero_exit"
     )
     assert result.status == expected_status
+    assert result.container_started is True
     assert envelope["adapter_primary_error"] == {
         "stage": "official_report",
         "status": expected_status,

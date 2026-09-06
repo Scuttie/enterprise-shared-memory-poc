@@ -35,6 +35,9 @@ from trimem_multi_swe_report_semantics import (  # noqa: E402
     validate_public_semantics_summary,
 )
 from trimem_atomic_evidence import atomic_write_bytes  # noqa: E402
+from trimem_official_harness_loader import (  # noqa: E402
+    build_official_harness_python_loader,
+)
 
 
 SWE_HARNESS_REVISION = "7a21e05772954cc81471ae19d56f436cecf43c54"
@@ -52,11 +55,6 @@ SHA256 = re.compile(r"^[0-9a-f]{64}$")
 DIGEST_IMAGE = re.compile(r"^[a-z0-9][a-z0-9._/-]*@sha256:[0-9a-f]{64}$")
 TAGGED_IMAGE = re.compile(r"^[a-z0-9][a-z0-9._/-]*:[A-Za-z0-9._-]+$")
 INSTANCE_ID = re.compile(r"^[A-Za-z0-9_.-]+__[A-Za-z0-9_.-]+-[0-9]+$")
-SAFE_ENV_KEYS = frozenset({
-    "COMSPEC", "DOCKER_CONFIG", "HOME", "LANG", "LC_ALL", "PATH", "PATHEXT",
-    "SYSTEMDRIVE", "SYSTEMROOT", "TEMP", "TMP", "TMPDIR", "USERPROFILE", "WINDIR",
-    "XDG_CACHE_HOME", "XDG_CONFIG_HOME",
-})
 SECRET_ENV_NAME = re.compile(
     r"(?:OPENAI|TRIMEM|DATABASE|DB_|GITHUB|TOKEN|SECRET|PASSWORD|API_KEY|CREDENTIAL)",
     re.IGNORECASE,
@@ -458,19 +456,23 @@ def validate_multi_swe_container_exit_status(
     }
 
 
-def minimal_subprocess_env(source: Mapping[str, str]) -> dict[str, str]:
-    """Return only non-secret OS/Docker process prerequisites.
+def minimal_subprocess_env(
+    source: Mapping[str, str],
+    *,
+    python_binary: str | Path,
+) -> dict[str, str]:
+    """Return the verified non-secret environment for an exact interpreter.
 
-    Official harness code is pinned but external.  It never receives the model
-    key, database URL, GitHub token, or any TRIMEM secret from the parent job.
+    The parent loader path is never copied.  On Linux the only generated
+    ``LD_LIBRARY_PATH`` is derived from, and contained by, the resolved Python
+    installation prefix.
     """
-    result = {
-        key: str(value)
-        for key, value in source.items()
-        if key.upper() in SAFE_ENV_KEYS and not SECRET_ENV_NAME.search(key)
-    }
-    result["PYTHONUNBUFFERED"] = "1"
-    return result
+
+    loader = build_official_harness_python_loader(
+        source,
+        python_binary=python_binary,
+    )
+    return dict(loader.environment)
 
 
 def redact_text(value: str, secret_values: Sequence[str]) -> str:
@@ -712,8 +714,18 @@ class OfficialHarnessGraderGateway:
             _validated_multi_swe_prebuilt_evaluation()
         if not harness_root.is_dir():
             raise ValueError("pinned official harness checkout is missing")
+        resolved_harness_root = harness_root.resolve()
+        loader = build_official_harness_python_loader(
+            os.environ,
+            python_binary=python_binary,
+            probe_cwd=resolved_harness_root,
+        )
         completed = subprocess.run(
-            ["git", "-C", str(harness_root), "rev-parse", "HEAD"], capture_output=True, text=True, check=False
+            ["git", "-C", str(resolved_harness_root), "rev-parse", "HEAD"],
+            env=dict(loader.environment),
+            capture_output=True,
+            text=True,
+            check=False,
         )
         if completed.returncode != 0 or completed.stdout.strip() != target.harness_revision:
             raise ValueError("official harness checkout revision mismatch")
@@ -726,15 +738,16 @@ class OfficialHarnessGraderGateway:
                 raise ValueError("support image binding is not frozen")
         self.target = target
         self.source_row = dict(source_row)
-        self.harness_root = harness_root.resolve()
+        self.harness_root = resolved_harness_root
         self.output_root = output_root.resolve()
         self.model_name = model_name
         self.support_images = tuple(support_images)
         self.runner = runner
         self.docker_binary = docker_binary
-        self.python_binary = python_binary
+        self.python_binary = str(loader.evidence["python_binary_realpath"])
+        self.python_loader_evidence = dict(loader.evidence)
         self.timeout_seconds = timeout_seconds
-        self.execution_env = minimal_subprocess_env(os.environ)
+        self.execution_env = dict(loader.environment)
         self._secret_values = tuple(
             value for key, value in os.environ.items()
             if SECRET_ENV_NAME.search(key) and isinstance(value, str) and len(value) >= 4
@@ -1159,6 +1172,281 @@ class OfficialHarnessGraderGateway:
         except (OSError, UnicodeDecodeError, ValueError, OfficialGraderError) as exc:
             raise _ActualTestEvidenceError(str(exc), captured) from None
         return captured
+
+    def _read_restricted_reference(
+        self, value: object, *, description: str
+    ) -> bytes:
+        if not isinstance(value, Mapping) or set(value) != {
+            "path",
+            "sha256",
+            "bytes",
+            "access",
+        }:
+            raise OfficialGraderError(
+                f"captured {description} restricted reference is malformed"
+            )
+        relative = value.get("path")
+        digest = value.get("sha256")
+        size = value.get("bytes")
+        if (
+            not isinstance(relative, str)
+            or not relative
+            or Path(relative).is_absolute()
+            or "\\" in relative
+            or not isinstance(digest, str)
+            or SHA256.fullmatch(digest) is None
+            or type(size) is not int
+            or size < 0
+            or value.get("access") != "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS"
+        ):
+            raise OfficialGraderError(
+                f"captured {description} restricted reference differs"
+            )
+        lexical = self.output_root / relative
+        if lexical.is_symlink():
+            raise OfficialGraderError(
+                f"captured {description} restricted evidence is a symlink"
+            )
+        try:
+            path = lexical.resolve(strict=True)
+        except OSError as exc:
+            raise OfficialGraderError(
+                f"captured {description} restricted evidence is missing"
+            ) from exc
+        if (
+            self.output_root not in path.parents
+            or self._restricted_root not in path.parents
+            or not path.is_file()
+        ):
+            raise OfficialGraderError(
+                f"captured {description} restricted evidence escaped its root"
+            )
+        raw = path.read_bytes()
+        if len(raw) != size or hashlib.sha256(raw).hexdigest() != digest:
+            raise OfficialGraderError(
+                f"captured {description} restricted evidence bytes differ"
+            )
+        return raw
+
+    def _validate_all_restricted_references(self, value: object) -> None:
+        if isinstance(value, Mapping):
+            if value.get("access") == "RESTRICTED_RAW_NOT_FOR_PUBLIC_LOGS":
+                self._read_restricted_reference(value, description="nested")
+                return
+            for child in value.values():
+                self._validate_all_restricted_references(child)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                self._validate_all_restricted_references(child)
+
+    def validate_captured_result(
+        self, request: GradeRequest, result: GradeResult
+    ) -> None:
+        """Re-derive an authoritative result from its retained official bytes.
+
+        This is deliberately execution-free.  It is called both immediately
+        after the adapter returns and whenever a terminal grader journal is
+        replayed after a process death.
+        """
+
+        expected_grader_id = (
+            f"official-{self.target.benchmark_id}@{self.target.harness_revision}"
+        )
+        if (
+            (request.task_id, request.repository, request.base_commit)
+            != (
+                self.target.target_id,
+                self.target.repository,
+                self.target.base_commit,
+            )
+            or not isinstance(request.patch, str)
+            or not request.patch.strip()
+            or result.task_id != request.task_id
+            or result.grader_id != expected_grader_id
+            or result.container_digest != self.target.image
+            or result.official is not True
+            or result.container_started is not True
+            or result.exit_code != 0
+            or result.status != "success"
+            or type(result.resolved) is not bool
+        ):
+            raise OfficialGraderError(
+                "captured official grader result identity differs"
+            )
+        report = result.report
+        if (
+            not isinstance(report, Mapping)
+            or set(report) != {"task_id", "status", "failure_stage", "reason", "_trimem"}
+            or report.get("task_id") != request.task_id
+            or report.get("status") != "success"
+            or report.get("failure_stage") is not None
+            or report.get("reason") is not None
+            or not isinstance(report.get("_trimem"), Mapping)
+        ):
+            raise OfficialGraderError("captured official report envelope differs")
+        envelope = report["_trimem"]
+        if (
+            set(envelope) != OFFICIAL_EVIDENCE_FIELDS
+            or envelope.get("schema") != OFFICIAL_EVIDENCE_SCHEMA
+            or envelope.get("benchmark_id") != self.target.benchmark_id
+            or envelope.get("dataset_revision") != self.target.dataset_revision
+            or envelope.get("harness_revision") != self.target.harness_revision
+            or envelope.get("source_row_sha256") != self.target.source_row_sha256
+            or envelope.get("execution_contract")
+            != self._execution_contract(request.patch)
+            or envelope.get("execution_control_evidence")
+            != self._execution_control_evidence()
+            or envelope.get("adapter_status") != "SUCCESS"
+            or envelope.get("adapter_failure_stage") is not None
+            or envelope.get("adapter_primary_error") is not None
+            or envelope.get("adapter_secondary_evidence_failures") != []
+            or envelope.get("adapter_normalized") is not True
+            or envelope.get("official_final_report_resolved")
+            is not result.resolved
+            or envelope.get("scientific_resolved") is not result.resolved
+            or envelope.get("harness_invocation_status") != "SUCCESS"
+            or not isinstance(envelope.get("invocation_argv"), list)
+            or not envelope["invocation_argv"]
+            or envelope["invocation_argv"][0] != self.python_binary
+        ):
+            raise OfficialGraderError(
+                "captured official adapter evidence identity differs"
+            )
+
+        expected_images = [
+            ("TARGET", self.target.image, self.target.harness_image_tag),
+            *(("SUPPORT", image, tag) for image, tag in self.support_images),
+        ]
+        image_evidence = envelope.get("image_evidence")
+        if not isinstance(image_evidence, list) or len(image_evidence) != len(
+            expected_images
+        ):
+            raise OfficialGraderError("captured official image evidence differs")
+        for row, (role, image, tag) in zip(image_evidence, expected_images):
+            expected_digest = image.rsplit("@", 1)[1]
+            if (
+                not isinstance(row, Mapping)
+                or set(row) != OFFICIAL_IMAGE_EVIDENCE_FIELDS
+                or row.get("schema") != OFFICIAL_IMAGE_EVIDENCE_SCHEMA
+                or row.get("role") != role
+                or row.get("image") != image
+                or row.get("tag") != tag
+                or row.get("expected") != expected_digest
+                or row.get("observed") != [expected_digest]
+                or row.get("inspect_invocation_status") != "SUCCESS"
+                or row.get("inspect_exit_code") != 0
+                or row.get("tag_invocation_status") != "SUCCESS"
+                or row.get("tag_exit_code") != 0
+            ):
+                raise OfficialGraderError(
+                    "captured official image identity differs"
+                )
+
+        self._validate_all_restricted_references(envelope)
+        report_raw = self._read_restricted_reference(
+            envelope.get("restricted_raw_report"),
+            description="official report",
+        )
+        test_output_raw = self._read_restricted_reference(
+            envelope.get("test_output"),
+            description="official test output",
+        )
+        test_status_raw = self._read_restricted_reference(
+            envelope.get("official_test_status"),
+            description="official test status",
+        )
+        try:
+            final_report = strict_json_loads(report_raw)
+        except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+            raise OfficialGraderError(
+                "captured official report is not strict JSON"
+            ) from exc
+        if not isinstance(final_report, Mapping):
+            raise OfficialGraderError("captured official report is not an object")
+        resolved = parse_official_report(self.target, final_report)
+        if resolved is not result.resolved:
+            raise OfficialGraderError(
+                "captured official report resolution differs"
+            )
+        semantic = validate_official_test_evidence(
+            self.target,
+            source_row=self.source_row,
+            test_output_raw=test_output_raw,
+            test_status_raw=test_status_raw,
+            resolved=resolved,
+            final_report=final_report,
+        )
+        if envelope.get("semantic_normalization") != semantic:
+            raise OfficialGraderError(
+                "captured official semantic normalization differs"
+            )
+        if self.target.benchmark_id == "swebench_verified":
+            if (
+                envelope.get("container_exit_status") is not None
+                or envelope.get("container_exit_summary") is not None
+                or envelope.get("report_invocation_argv") != []
+                or envelope.get("report_invocation_status") != "NOT_APPLICABLE"
+                or envelope.get("report_restricted_raw_streams") is not None
+            ):
+                raise OfficialGraderError(
+                    "captured SWE-bench report execution evidence differs"
+                )
+        else:
+            container_exit_raw = self._read_restricted_reference(
+                envelope.get("container_exit_status"),
+                description="Multi-SWE container exit",
+            )
+            container_summary = validate_multi_swe_container_exit_status(
+                self.target,
+                raw=container_exit_raw,
+                resolved=resolved,
+                test_summary=semantic,
+                expected_patch=request.patch,
+            )
+            if (
+                envelope.get("container_exit_summary") != container_summary
+                or envelope.get("report_invocation_status") != "SUCCESS"
+                or not isinstance(envelope.get("report_invocation_argv"), list)
+                or not envelope["report_invocation_argv"]
+                or envelope["report_invocation_argv"][0] != self.python_binary
+                or not isinstance(envelope.get("report_restricted_raw_streams"), Mapping)
+            ):
+                raise OfficialGraderError(
+                    "captured Multi-SWE report execution evidence differs"
+                )
+
+        harness_streams = envelope.get("harness_restricted_raw_streams")
+        if not isinstance(harness_streams, Mapping) or set(harness_streams) != {
+            "stdout",
+            "stderr",
+        }:
+            raise OfficialGraderError("captured harness streams are absent")
+        stdout_raw = self._read_restricted_reference(
+            harness_streams["stdout"], description="harness stdout"
+        )
+        stderr_raw = self._read_restricted_reference(
+            harness_streams["stderr"], description="harness stderr"
+        )
+        report_streams = envelope.get("report_restricted_raw_streams")
+        if report_streams is not None:
+            if not isinstance(report_streams, Mapping) or set(report_streams) != {
+                "stdout",
+                "stderr",
+            }:
+                raise OfficialGraderError("captured report streams differ")
+            stdout_raw += self._read_restricted_reference(
+                report_streams["stdout"], description="report stdout"
+            )
+            stderr_raw += self._read_restricted_reference(
+                report_streams["stderr"], description="report stderr"
+            )
+        if (
+            result.stdout != self._redact(_stream_text(stdout_raw))
+            or result.stderr != self._redact(_stream_text(stderr_raw))
+        ):
+            raise OfficialGraderError(
+                "captured official public streams differ from retained bytes"
+            )
 
     def _capture_available_test_references(
         self,
@@ -1720,7 +2008,10 @@ class OfficialHarnessGraderGateway:
                 invocation, secondary_evidence_failures=capture_secondary
             )
             patch_secondary = capture_patch_after_primary()
-            container_started = self._container_start_proven(available_after_timeout)
+            # The exact child process started and then timed out.  Absence of
+            # an output marker cannot prove that it failed before Docker, so
+            # consume the container capacity conservatively.
+            container_started = True
             materialized, purge_secondary = purge(
                 private_paths,
                 container_started=container_started,
@@ -1821,7 +2112,15 @@ class OfficialHarnessGraderGateway:
         available_after_harness = self._capture_available_outputs(
             invocation, secondary_evidence_failures=capture_secondary
         )
-        container_started = self._container_start_proven(available_after_harness)
+        loader_stderr = _stream_text(completed.stderr)
+        exact_loader_failure_before_container = (
+            completed.returncode == 127
+            and "libpython3.11.so.1.0" in loader_stderr
+            and "error while loading shared libraries" in loader_stderr.casefold()
+        )
+        container_started = self._container_start_proven(
+            available_after_harness
+        ) or not exact_loader_failure_before_container
         if completed.returncode != 0:
             patch_secondary = capture_patch_after_primary()
             materialized, purge_secondary = purge(

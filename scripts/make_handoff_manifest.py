@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -18,6 +19,8 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FORBIDDEN_TRACKED_PARTS = {"__pycache__", "build", "dist"}
 FORBIDDEN_TRACKED_SUFFIXES = (".pyc", ".pyo")
+GITHUB_BRANCH = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*$")
+GITHUB_REPOSITORY = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 
 
 def _sha_file(path):
@@ -68,7 +71,70 @@ def _commit():
         return "unknown"
 
 
-def _branch():
+def _strict_json(path):
+    def reject_duplicates(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("duplicate GitHub event field: %s" % key)
+            value[key] = item
+        return value
+
+    with open(path, encoding="utf-8") as handle:
+        value = json.load(handle, object_pairs_hook=reject_duplicates)
+    if not isinstance(value, dict):
+        raise ValueError("GitHub event payload is not an object")
+    return value
+
+
+def _github_actions_branch(environment):
+    event = environment.get("GITHUB_EVENT_NAME", "")
+    repository = environment.get("GITHUB_REPOSITORY", "")
+    event_path = environment.get("GITHUB_EVENT_PATH", "")
+    if (
+        not isinstance(repository, str)
+        or GITHUB_REPOSITORY.fullmatch(repository) is None
+        or not isinstance(event_path, str)
+        or not os.path.isabs(event_path)
+    ):
+        return ""
+    try:
+        payload = _strict_json(event_path)
+    except (OSError, UnicodeDecodeError, ValueError):
+        return ""
+    payload_repository = payload.get("repository")
+    if (
+        not isinstance(payload_repository, dict)
+        or payload_repository.get("full_name") != repository
+    ):
+        return ""
+    if event == "pull_request":
+        candidate = environment.get("GITHUB_HEAD_REF", "")
+        pull_request = payload.get("pull_request")
+        head = pull_request.get("head") if isinstance(pull_request, dict) else None
+        head_repository = head.get("repo") if isinstance(head, dict) else None
+        if (
+            not isinstance(head, dict)
+            or not isinstance(head_repository, dict)
+            or head.get("ref") != candidate
+            or head_repository.get("full_name") != repository
+        ):
+            return ""
+    elif event in {"push", "workflow_dispatch"}:
+        candidate = environment.get("GITHUB_REF_NAME", "")
+        if environment.get("GITHUB_REF") != "refs/heads/" + str(candidate):
+            return ""
+    else:
+        return ""
+    if not isinstance(candidate, str) or GITHUB_BRANCH.fullmatch(candidate) is None:
+        return ""
+    return candidate
+
+
+def _branch(environ=None):
+    environment = os.environ if environ is None else environ
+    if environment.get("GITHUB_ACTIONS") == "true":
+        return _github_actions_branch(environment)
     try:
         return subprocess.check_output(
             ["git", "branch", "--show-current"], cwd=ROOT

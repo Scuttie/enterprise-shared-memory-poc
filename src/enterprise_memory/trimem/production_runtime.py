@@ -509,13 +509,20 @@ def _validated_runtime_checkpoint_proof(
             and checkpoint.pending_policy_transition is None
             and isinstance(decompose_workspace, Mapping)
             and set(decompose_workspace) == {
-                "kind", "base_commit", "patch", "patch_sha256"
+                "kind", "base_commit", "patch", "patch_sha256",
+                "inventory_sha256",
             }
             and decompose_workspace.get("kind")
             == "trimem-git-checkout-workspace-v1"
             and decompose_workspace.get("patch") == ""
             and decompose_workspace.get("patch_sha256")
             == sha256_bytes(b"")
+            and isinstance(decompose_workspace.get("inventory_sha256"), str)
+            and len(decompose_workspace["inventory_sha256"]) == 64
+            and all(
+                character in "0123456789abcdef"
+                for character in decompose_workspace["inventory_sha256"]
+            )
             and isinstance(decompose_workspace.get("base_commit"), str)
             and bool(decompose_workspace.get("base_commit"))
         )

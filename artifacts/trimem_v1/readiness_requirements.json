@@ -11,6 +11,9 @@
     "expected cost separated from proposed hard caps for 72 development and 81 held-out task-arm runs plus 12 grader-smoke containers",
     "fail-closed per-arm/per-benchmark n, resolved, and Pass@1 aggregation with SWE-bench Verified primary, Multi-SWE-bench secondary, and pooled totals descriptive only",
     "one shared pinned Multi-SWE two-stage report-semantics helper and one total v2 adapter evidence envelope",
+    "hermetic exact-interpreter loader derivation and official-harness import/invocation preflight before credentials, model metadata, canary, benchmark images, reservations, or scientific calls",
+    "hash-bound atomic cell result/ledger/cursor commit journal, contiguous-prefix cursor verification, and failure-aware resume restricted to durable suffix or cell-commit recovery",
+    "failed-campaign external custody verifies encrypted restricted evidence and inventory without requiring a nonexistent public performance artifact",
     "exactly one terminal record per attempted smoke cell with independent seven-layer failure taxonomy, mandatory content-bound campaign-finalization journal, fail-closed interrupted-authority recovery, authority-independent evidence inventory/encryption, durable upload before plaintext cleanup, and plaintext preservation on upload failure",
     "phase-specific single-use external approval plan bound to an already committed Git HEAD, freeze digest, workflow run ID, run attempt, approval nonce, and HMAC commitment to the exact protected OpenAI key",
     "visible-ASCII credential validation and exact model metadata access PASS before migration, benchmark image pulls, task-arm reservations, or model-generation accounting",
@@ -18,13 +21,17 @@
     "public benchmark evaluation scope and no-redistribution policy documented; SWE-bench Verified dataset license remains undeclared and the EXEC actor must accept applicable source/project terms"
   ],
   "current_status": {
-    "DEV_APPROVAL_ALLOWED": "NO",
+    "CLASSIFICATION": "PRE_RESULT_GRADER_LAUNCH_AND_STREAM_COMMIT_CORRECTION",
+    "DEV_APPROVAL_ALLOWED": "YES",
     "DEV_EXECUTION_ALLOWED": "NO",
     "DEV_SCIENTIFIC_STATUS": "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL",
-    "ENDPOINT": "TRIMEM_V1_DEV_INCOMPLETE",
-    "FAILURE_SUBTYPE": "UNBOUNDED_MODEL_VISIBLE_TOOL_HISTORY",
+    "ENDPOINT": "TRIMEM_V1_GRADER_LAUNCH_AND_STREAM_COMMIT_READY_FOR_DEV_APPROVAL",
+    "FAILURE_SUBTYPE": "GLOBAL_GRADER_INFRA_FAILURE",
     "GRADER_EXEC_PACKAGE": "PASS",
-    "OFFICIAL_GRADER_VIABILITY": "ESTABLISHED",
+    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "NOT_YET_ESTABLISHED",
+    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "FAILED_ON_D1_9_EXEC_010",
+    "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
+    "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": "ESTABLISHED_BY_P0_1_5",
     "PERFORMANCE": "NOT_MEASURED",
     "SCIENTIFIC_RESULT": "NO_DEVELOPMENT_SCIENTIFIC_RESULT",
     "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN"
@@ -53,24 +60,28 @@
   },
   "development_authorization_boundary": {
     "active_development_approval": false,
-    "amendment_classification": "PRE_RESULT_BOUNDED_SHORT_TERM_CONTEXT_AND_PREFLIGHT_FIX",
-    "amendment_evidence_path": "artifacts/trimem_v1/development_bounded_context_amendment.json",
-    "approval_request_eligible": false,
-    "attempt_one_consumed": false,
+    "amendment_classification": "PRE_RESULT_GRADER_LAUNCH_AND_STREAM_COMMIT_CORRECTION",
+    "amendment_evidence_path": "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json",
+    "approval_request_eligible": true,
+    "attempt_one_consumed": true,
     "attempt_two_allowed": false,
     "development_execution_authorized": false,
     "expected_total_usd": 10.8,
     "grader_smoke_rerun_authorized": false,
     "hard_cap_total_usd": 50.0,
     "heldout_execution_authorized": false,
-    "future_recovery_authority_received": true,
-    "meaning": "The approved _009 attempt-1 run is failed, immutable, cannot be rerun, and is not reusable. D1.9 allows one fresh _010 attempt-1 run only after the bounded short-term context, pre-send request preflight, request-only resume recovery, exact-head credential-free gates, one protected protocol canary, and a distinct run-bound HMAC approval all pass.",
+    "fresh_dev_execution_approval_required": true,
+    "future_recovery_authority_received": false,
+    "meaning": "The approved _010 attempt-1 run is failed, immutable, cannot be rerun, and is not reusable. D1.10 corrects only the hermetic grader launch, atomic cell commit, failure-aware resume, and failed-campaign custody paths. Credential-free readiness permits requesting a fresh, explicit DEV approval; it does not authorize execution.",
     "model_id": "gpt-5.4-mini-2026-03-17",
     "prior_failed_run_reusable": false,
-    "recovery_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_CONTEXT_RECOVERY_EXEC_APPROVED_ONCE",
-    "recovery_authorization_received": true,
-    "recovery_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010",
-    "recovery_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json",
+    "recovery_authorization": "FRESH_EXPLICIT_DEV_EXECUTION_APPROVAL_REQUIRED",
+    "recovery_authorization_received": false,
+    "fresh_execution_request": "NOT_CREATED_PENDING_EXPLICIT_APPROVAL",
+    "fresh_execution_request_creation_authorized": false,
+    "fresh_execution_request_requires_explicit_sentinel_authority": true,
+    "historical_failed_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010",
+    "historical_failed_request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json",
     "request_002_final": true,
     "request_003_final": true,
     "request_004_allowed_after_exact_remote_gates": false,
@@ -85,8 +96,11 @@
     "request_008_attempt_one_consumed": true,
     "request_009_allowed_after_exact_remote_gates": false,
     "request_009_attempt_one_consumed": true,
-    "request_010_allowed_after_exact_remote_gates": true,
-    "request_010_attempt_one_consumed": false,
+    "request_010_allowed_after_exact_remote_gates": false,
+    "request_010_attempt_one_consumed": true,
+    "request_010_attempt_two_allowed": false,
+    "request_010_rerun_allowed": false,
+    "request_011_created": false,
     "rerun_allowed": false,
     "selected_m2_checkpoint": "PRE_DEVELOPMENT; no development result or checkpoint was produced",
     "solve_execution_contract_rehearsal_required_before_request_005": false
@@ -437,7 +451,7 @@
       "merge_tag_or_release_authorized": false
     }
   },
-  "current_development_execution_failure": {
+  "historical_development_exec_009_failure": {
     "schema": "trimem/development-bounded-context-failure-receipt/1.0",
     "status": "TERMINAL_PRESERVED",
     "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
@@ -526,6 +540,87 @@
       "benchmark_performance_result": false,
       "context_window_failure": false,
       "local_short_term_context_contract_failure": true
+    }
+  },
+  "current_development_execution_failure": {
+    "classification": "PRE_RESULT_GRADER_LAUNCH_AND_STREAM_COMMIT_CORRECTION",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "evidence_custody": {
+      "evidence_inventories": {
+        "digest": "sha256:3bf1856ffd385dac10daac17d006ed5ef037c75817c1b1fba76cd0f12d8c0433",
+        "id": 9982017330,
+        "name": "trimem-benchmark-evidence-inventories",
+        "size_in_bytes": 7804
+      },
+      "plaintext_inventory": {
+        "bytes": 9828804,
+        "files": 176,
+        "root_sha256": "dbecd53c1673a006f90e6350370cb6200b00230e803a6b69aca5fd4d0d7f7132"
+      },
+      "public_artifact_present": false,
+      "restricted_encrypted": {
+        "digest": "sha256:7a76d6626206e3174b5c6f0ee8cfdd3bf571b54fe49064a6714ed82ecc1bead8",
+        "id": 9982016857,
+        "name": "trimem-benchmark-restricted-encrypted",
+        "size_in_bytes": 10079456
+      },
+      "status": "TRIMEM_FAILURE_EVIDENCE_CUSTODY_PASS"
+    },
+    "failure_boundary": {
+      "cell_terminal_records": 0,
+      "container_started": false,
+      "context_projections_bounded": 8,
+      "context_projections_total": 8,
+      "decomposition_calls": 1,
+      "exact_child_python_exit_code": 127,
+      "grader_adapter_invoked": true,
+      "official_grader_runs": 0,
+      "partial_patch_nonempty": true,
+      "per_subtask_step_cap_reached": true,
+      "public_aggregate_present": false,
+      "solve_calls": 8,
+      "stderr_class": "LIBPYTHON3_11_SO_1_0_UNAVAILABLE",
+      "stream": "M2-baseline",
+      "target": "swebench_verified--django__django-16100",
+      "task_arm_cursor": 0
+    },
+    "failure_subtype": "GLOBAL_GRADER_INFRA_FAILURE",
+    "grader_state": "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+    "observed_usage": {
+      "decomposition_calls": 1,
+      "extraction_calls": 0,
+      "grader_containers": 0,
+      "official_grader_runs": 0,
+      "paid_model_calls": 10,
+      "protocol_canary_calls": 1,
+      "scientific_model_calls": 9,
+      "solve_calls": 8,
+      "terminal_task_arm_runs": 0,
+      "total_usd": "0.051215550000"
+    },
+    "pass_at_1": null,
+    "performance_measured": false,
+    "process_disposition": {
+      "first_disposition": "GLOBAL_GRADER_INFRA_FAILURE",
+      "resume_eligible": false,
+      "resume_started": false
+    },
+    "request": {
+      "attempt_one_consumed": true,
+      "attempt_two_allowed": false,
+      "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json",
+      "raw_sha256": "f42389df5a12c8f0d06bcd3eb2c97c69b0fde39667f8c880832e1c01bf998d9f",
+      "rerun_allowed": false
+    },
+    "schema": "trimem/development-grader-launch-failure/1.0",
+    "scientific_status": "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL",
+    "status": "IMMUTABLE_EXTERNAL_EVIDENCE_PRESERVED",
+    "workflow_run": {
+      "attempt": 1,
+      "conclusion": "failure",
+      "head_sha": "ea261f4fa783559d559e0df52800099ca98064f7",
+      "id": 34008674563,
+      "source_head_sha": "2d4a4535e68c8bfa923c93ef6d9d191ec579423a"
     }
   },
   "historical_development_provider_failure": {
@@ -711,7 +806,8 @@
     }
   },
   "post_approval_gates": [
-    "the _003 through _009 requests and their attempt-1 runs are final; _009 failed after one canary and eight scientific calls but before any terminal cell or official grader and may not be rerun; _010 remains pending until every D1.9 credential-free gate and reseal passes",
+    "the _003 through _010 requests and their attempt-1 runs are final; _010 failed after one canary and nine scientific calls but before any terminal cell, official grader run, or grader-container start and may not be rerun or resumed as attempt 2",
+    "a fresh external DEV approval bound to the final D1.10 correction HEAD, freeze, workflow run and attempt is required before any credential, model, benchmark image, grader, or task-arm execution; _011 has not been created",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",
     "one serial ordered stream per held-out arm using the same selected prompt/model/tool/parser and exact M2 evaluation checkpoint"
@@ -719,7 +815,7 @@
   "schema": "trimem/readiness-requirements/2.0",
   "credential_free_service_ci_boundary": "ALLOWED_PRE_EXEC: automatic credential-free CI may run only digest-pinned PostgreSQL and Qdrant support services; it does not pull or run official grader/benchmark target images and performs no official grading or paid model calls.",
   "m1_current_v03_boundary": "Exact current canonical private episode plus CONTRACT_CANDIDATE outbox side effects in one tenant transaction; no direct Qdrant write and no immediate fresh-solve carryover. Recall uses only pre-existing indexed current records through validated_search and plan_injection.",
-  "static_ci_meaning": "OFFICIAL_GRADER_VIABILITY=ESTABLISHED derives from the committed grader-smoke PASS evidence, not static CI. DEV _009 attempt 1 is immutable, failed, and final. D1.9 is a pre-result bounded short-term context, pre-send preflight, and request-only resume correction; performance remains NOT_MEASURED until a fresh authorized _010 completes 72 terminal cells.",
+  "static_ci_meaning": "Historical P0.1.5 evidence establishes OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION=ESTABLISHED_BY_P0_1_5 and the frozen digest evidence establishes OFFICIAL_GRADER_IMAGE_INTEGRITY=ESTABLISHED. DEV _010 attempt 1 is immutable, failed before exact child-Python launch and container start, and is final. D1.10 is a pre-result hermetic loader, atomic cell-commit, failure-aware resume, and failure-custody correction; PERFORMANCE remains NOT_MEASURED until a fresh explicitly approved DEV run completes valid terminal cells.",
   "target_set_sha256": {
     "development": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
     "grader_smoke": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",

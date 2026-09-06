@@ -50,6 +50,21 @@ D19_AMENDMENT_SCHEMA = "trimem/development-bounded-context-amendment/1.0"
 D19_INVENTORY_SCHEMA = "trimem/development-bounded-context-inventory/1.0"
 D19_STATUS = "FROZEN_PRE_RESULT_PENDING_FRESH_EXECUTION"
 D19_CLASSIFICATION = "PRE_RESULT_BOUNDED_SHORT_TERM_CONTEXT_AND_PREFLIGHT_FIX"
+D19_CORRECTION_SOURCE_HEAD = "2d4a4535e68c8bfa923c93ef6d9d191ec579423a"
+D110_AMENDMENT_PATH = ROOT / (
+    "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json"
+)
+D110_INVENTORY_PATH = ROOT / (
+    "artifacts/trimem_v1/development_grader_launch_stream_commit_inventory.json"
+)
+D110_AMENDMENT_SCHEMA = (
+    "trimem/development-grader-launch-stream-commit-amendment/1.0"
+)
+D110_INVENTORY_SCHEMA = (
+    "trimem/development-grader-launch-stream-commit-inventory/1.0"
+)
+D110_STATUS = "FROZEN_CREDENTIAL_FREE_READY_FOR_DEV_APPROVAL"
+D110_CLASSIFICATION = "PRE_RESULT_GRADER_LAUNCH_AND_STREAM_COMMIT_CORRECTION"
 ENTRYPOINT_PATH = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
 REPORT_SEMANTICS_MODULE_PATH = ROOT / "scripts/trimem_multi_swe_report_semantics.py"
 REPORT_SEMANTICS_LOCK_PATH = (
@@ -918,9 +933,34 @@ def _verify_production_entrypoint(contracts: dict[str, Any]) -> dict[str, Any]:
         "upstream_module_main_executed": False,
         "upstream_revision": PINNED_REVISION,
     }
+    historical = _git(
+        ROOT,
+        "cat-file",
+        "blob",
+        f"{D18_STARTING_HEAD}:scripts/trimem_multi_swe_entrypoint.py",
+        text=False,
+    )
+    assert isinstance(historical.stdout, bytes)
+    historical_observed = {
+        **observed,
+        "bytes": len(historical.stdout),
+        "sha256": hashlib.sha256(historical.stdout).hexdigest(),
+    }
     _require(
-        contracts.get("production_entrypoint") == observed,
-        "production Multi-SWE entrypoint byte/dispatch lock differs",
+        contracts.get("production_entrypoint") == historical_observed,
+        "historical production Multi-SWE entrypoint byte/dispatch lock differs",
+    )
+    d110_amendment = _strict_json_object(D110_AMENDMENT_PATH, "D1.10 amendment")
+    d110_inventory = _strict_json_object(D110_INVENTORY_PATH, "D1.10 inventory")
+    relative_entrypoint = ENTRYPOINT_PATH.relative_to(ROOT).as_posix()
+    _require(
+        d110_amendment.get("implementation_sha256", {}).get(relative_entrypoint)
+        == observed["sha256"]
+        and d110_inventory.get("implementation_sha256", {}).get(
+            relative_entrypoint
+        )
+        == observed["sha256"],
+        "current production Multi-SWE entrypoint differs from the D1.10 seal",
     )
 
     calls = [_call_name(node) for node in ast.walk(tree) if isinstance(node, ast.Call)]
@@ -949,32 +989,34 @@ def _verify_production_entrypoint(contracts: dict[str, Any]) -> dict[str, Any]:
     argument_calls = [
         node for node in main_calls if _call_name(node) == "parser.add_argument"
     ]
-    required_flags: set[str] = set()
+    argument_surface: dict[str, dict[str, str]] = {}
     for call in argument_calls:
         _require(
             len(call.args) == 1
             and isinstance(call.args[0], ast.Constant)
-            and isinstance(call.args[0].value, str)
-            and any(
-                keyword.arg == "required"
-                and isinstance(keyword.value, ast.Constant)
-                and keyword.value.value is True
-                for keyword in call.keywords
-            ),
-            "production entrypoint CLI argument is not one required flag",
+            and isinstance(call.args[0].value, str),
+            "production entrypoint CLI argument is not one literal flag",
         )
-        required_flags.add(call.args[0].value)
-    _require(
-        required_flags
-        == {
-            "--harness-root",
-            "--config",
-            "--expected-image",
-            "--expected-tag",
-            "--exit-status-output",
+        flag = call.args[0].value
+        _require(
+            flag not in argument_surface,
+            "production entrypoint CLI argument is duplicated",
+        )
+        argument_surface[flag] = {
+            str(keyword.arg): ast.unparse(keyword.value)
+            for keyword in call.keywords
         }
-        and len(argument_calls) == len(required_flags),
-        "production entrypoint required CLI surface differs",
+    _require(
+        argument_surface
+        == {
+            "--loader-self-check": {"action": "'store_true'"},
+            "--harness-root": {"type": "Path"},
+            "--config": {"type": "Path"},
+            "--expected-image": {},
+            "--expected-tag": {},
+            "--exit-status-output": {"type": "Path"},
+        },
+        "production entrypoint D1.10 CLI surface differs",
     )
     execution_calls = [
         node
@@ -1218,17 +1260,65 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
         d19_amendment_aggregate_sha256 == d19_inventory_aggregate_sha256,
         "D1.9 aggregate implementation seals disagree",
     )
-    current_aggregate_sha256 = d19_amendment_aggregate_sha256
+    d19_aggregate_blob = _git(
+        ROOT,
+        "cat-file",
+        "blob",
+        f"{D19_CORRECTION_SOURCE_HEAD}:{D18_CURRENT_AGGREGATE_PATH}",
+        text=False,
+    )
+    assert isinstance(d19_aggregate_blob.stdout, bytes)
     _require(
-        current_aggregate_sha256 != d18_aggregate_sha256,
+        hashlib.sha256(d19_aggregate_blob.stdout).hexdigest()
+        == d19_amendment_aggregate_sha256,
+        "historical D1.9 aggregate differs from the bounded-context seal",
+    )
+    _require(
+        d19_amendment_aggregate_sha256 != d18_aggregate_sha256,
         "D1.9 aggregate unexpectedly equals the historical D1.8 aggregate",
     )
 
-    # The immutable Multi-SWE contract predates D1.8.  Its aggregate row remains
-    # bound to the starting commit, while every executable validator at the
-    # correction source must still be the exact tracked HEAD bytes.  Keep the
-    # two observations separate so neither historical evidence nor current
-    # production code can silently substitute for the other.
+    d110_amendment = _strict_json_object(D110_AMENDMENT_PATH, "D1.10 amendment")
+    d110_inventory = _strict_json_object(D110_INVENTORY_PATH, "D1.10 inventory")
+    d110_amendment_implementation = d110_amendment.get("implementation_sha256")
+    d110_inventory_implementation = d110_inventory.get("implementation_sha256")
+    _require(
+        d110_amendment.get("schema") == D110_AMENDMENT_SCHEMA
+        and d110_amendment.get("status") == D110_STATUS
+        and d110_amendment.get("classification") == D110_CLASSIFICATION
+        and isinstance(d110_amendment_implementation, dict),
+        "D1.10 grader-launch/stream-commit amendment identity differs",
+    )
+    _require(
+        d110_inventory.get("schema") == D110_INVENTORY_SCHEMA
+        and d110_inventory.get("status") == D110_STATUS
+        and d110_inventory.get("classification") == D110_CLASSIFICATION
+        and isinstance(d110_inventory_implementation, dict),
+        "D1.10 grader-launch/stream-commit inventory identity differs",
+    )
+    d110_amendment_aggregate_sha256 = d110_amendment_implementation.get(
+        D18_CURRENT_AGGREGATE_PATH
+    )
+    d110_inventory_aggregate_sha256 = d110_inventory_implementation.get(
+        D18_CURRENT_AGGREGATE_PATH
+    )
+    _require(
+        isinstance(d110_amendment_aggregate_sha256, str)
+        and SHA256.fullmatch(d110_amendment_aggregate_sha256) is not None
+        and isinstance(d110_inventory_aggregate_sha256, str)
+        and SHA256.fullmatch(d110_inventory_aggregate_sha256) is not None,
+        "D1.10 current aggregate implementation seal is missing",
+    )
+    _require(
+        d110_amendment_aggregate_sha256 == d110_inventory_aggregate_sha256,
+        "D1.10 aggregate implementation seals disagree",
+    )
+    current_aggregate_sha256 = d110_amendment_aggregate_sha256
+
+    # The immutable Multi-SWE lock predates D1.8 and remains bound to its exact
+    # starting blobs.  D1.10 separately seals every current executable local
+    # validator.  Never rewrite the historical projection to make changed live
+    # validators appear unchanged.
     locked_rows: dict[str, dict[str, Any]] = {}
     verified: list[dict[str, Any]] = []
     for path in sorted(LOCAL_VALIDATOR_ROLES):
@@ -1265,51 +1355,52 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             head_blob.stdout == raw,
             f"local validator working bytes differ from the tracked HEAD blob: {path}",
         )
+        historical_blob = _git(
+            ROOT,
+            "cat-file",
+            "blob",
+            f"{D18_STARTING_HEAD}:{path}",
+            text=False,
+        )
+        assert isinstance(historical_blob.stdout, bytes)
+        historical_raw = historical_blob.stdout
+        try:
+            historical_source = historical_raw.decode("utf-8")
+            ast.parse(historical_source, filename=f"{D18_STARTING_HEAD}:{path}")
+        except (UnicodeDecodeError, SyntaxError) as exc:
+            raise ContractError(
+                f"historical local validator is not valid UTF-8 Python: {path}"
+            ) from exc
+        _require(
+            b"\r" not in historical_raw,
+            f"historical local validator is not LF-only: {path}",
+        )
+        historical_observed = {
+            "bytes": len(historical_raw),
+            "role": LOCAL_VALIDATOR_ROLES[path],
+            "sha256": hashlib.sha256(historical_raw).hexdigest(),
+        }
+        _require(
+            rows.get(path) == historical_observed,
+            f"historical local validator byte lock differs: {path}",
+        )
+        d110_amendment_sha256 = d110_amendment_implementation.get(path)
+        d110_inventory_sha256 = d110_inventory_implementation.get(path)
+        _require(
+            d110_amendment_sha256 == observed["sha256"]
+            and d110_inventory_sha256 == observed["sha256"],
+            f"current D1.10 local validator seal differs: {path}",
+        )
         if path == D18_CURRENT_AGGREGATE_PATH:
-            historical_blob = _git(
-                ROOT,
-                "cat-file",
-                "blob",
-                f"{D18_STARTING_HEAD}:{path}",
-                text=False,
-            )
-            assert isinstance(historical_blob.stdout, bytes)
-            historical_raw = historical_blob.stdout
-            try:
-                historical_source = historical_raw.decode("utf-8")
-                ast.parse(historical_source, filename=f"{D18_STARTING_HEAD}:{path}")
-            except (UnicodeDecodeError, SyntaxError) as exc:
-                raise ContractError(
-                    f"historical local validator is not valid UTF-8 Python: {path}"
-                ) from exc
-            _require(
-                b"\r" not in historical_raw,
-                f"historical local validator is not LF-only: {path}",
-            )
-            historical_observed = {
-                "bytes": len(historical_raw),
-                "role": LOCAL_VALIDATOR_ROLES[path],
-                "sha256": hashlib.sha256(historical_raw).hexdigest(),
-            }
-            _require(
-                rows.get(path) == historical_observed,
-                f"historical local validator byte lock differs: {path}",
-            )
             _require(
                 raw != historical_raw,
-                "current D1.8 aggregate unexpectedly equals the historical lock blob",
+                "current aggregate unexpectedly equals the historical lock blob",
             )
             _require(
                 observed["sha256"] == current_aggregate_sha256,
-                "current D1.9 aggregate differs from the bounded-context implementation seal",
+                "current D1.10 aggregate differs from the stream-commit implementation seal",
             )
-            locked_rows[path] = historical_observed
-        else:
-            _require(
-                rows.get(path) == observed,
-                f"local validator byte lock differs: {path}",
-            )
-            locked_rows[path] = observed
+        locked_rows[path] = historical_observed
         verified.append({"git_blob_oid": match.group(1), "path": path, **observed})
     _require(
         projection

@@ -18,15 +18,17 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Set up exact Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: 3.11.10
           cache: ""
-      - name: Rehearse dependency-free DEV preflight boundary
+      - name: Rehearse dependency-free D1.10 boundary
         run: |
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
-          python -I -S scripts/trimem_development_trigger_d19.py --help
+          python -I -S scripts/trimem_d110_reseal.py --help
       - name: Install hash-locked environment
         run: |
           python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
@@ -43,9 +45,10 @@ jobs:
         run: python scripts/make_handoff_manifest.py --check
       - name: Scan tracked source for forbidden credentials and host paths
         run: python scripts/release_check.py --secrets
-      - name: Verify committed freeze and D1.9 recovery authority boundaries
+      - name: Verify committed freeze and D1.10 approval-request boundary
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
+          python scripts/trimem_d110_reseal.py --check
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
           python - <<'PY'
           import json
@@ -53,23 +56,11 @@ jobs:
           import subprocess
           import sys
 
-          development_request = Path(
-              "artifacts/trimem_v1/exec_requests/"
-              "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
-          )
-          benchmark_approval_blockers = (
-              []
-              if development_request.is_file()
-              else [
-                  "DEV _010 sentinel and exact-head remote gates are "
-                  "required before approval"
-              ]
-          )
           cases = (
               (
                   "benchmark-approval",
-                  0 if development_request.is_file() else 1,
-                  benchmark_approval_blockers,
+                  0,
+                  [],
               ),
               (
                   "grader-smoke-exec",
@@ -114,13 +105,38 @@ jobs:
               }
               expected = {
                   "blockers": expected_blockers,
-                  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+                  "endpoint": (
+                      "TRIMEM_V1_GRADER_LAUNCH_AND_STREAM_COMMIT_"
+                      "READY_FOR_DEV_APPROVAL"
+                  ),
                   "level": level,
                   "status": "PASS" if not expected_blockers else "FAIL_CLOSED",
               }
               if observed != expected:
                   raise SystemExit(
-                      f"{level}: expected exact D1.9 recovery report {expected!r}, "
+                      f"{level}: expected exact D1.10 readiness report {expected!r}, "
                       f"got {observed!r}"
+                  )
+              if "official_grader_viability" in report:
+                  raise SystemExit(f"{level}: broad grader viability leaked")
+              expected_split = {
+                  "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": (
+                      "ESTABLISHED_BY_P0_1_5"
+                  ),
+                  "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
+                  "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": (
+                      "FAILED_ON_D1_9_EXEC_010"
+                  ),
+                  "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": (
+                      "NOT_YET_ESTABLISHED"
+                  ),
+                  "PERFORMANCE": "NOT_MEASURED",
+              }
+              observed_split = {
+                  key: report.get(key) for key in expected_split
+              }
+              if observed_split != expected_split:
+                  raise SystemExit(
+                      f"{level}: D1.10 split status differs: {observed_split!r}"
                   )
           PY

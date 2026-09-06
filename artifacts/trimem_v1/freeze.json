@@ -373,12 +373,12 @@
       "sha256": "1b131b7f7ca7992499e4fca93545e2452e6e6d26ce4d954cbebc337f50d7c03e"
     },
     "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json": {
-      "bytes": 17440,
-      "sha256": "30d1944cf6c0b1db7e984e3be170b1c182331dfbf96cd6b8186d7d8217903aac"
+      "bytes": 17565,
+      "sha256": "8ea1e6ad5fb698f0bfe5fce689e9f9f8103dec1750f6b47b1c44db132dbe9c72"
     },
     "artifacts/trimem_v1/development_grader_launch_stream_commit_inventory.json": {
-      "bytes": 17965,
-      "sha256": "0ffb02a22d28fce35ea25f3dc508531d2620f618c72dba0f2043d151d1cef515"
+      "bytes": 18090,
+      "sha256": "66fb0a36403d6aa9a801c5fbc1a06af61475960b2b2d70d1b94f4a34d9223209"
     },
     "artifacts/trimem_v1/development_model_pricing_amendment.json": {
       "bytes": 4126,
@@ -881,8 +881,8 @@
       "sha256": "10f56591c08c6cdf069508f161473dc5b4f93df8452cfa1bc9b012080c5e87b4"
     },
     "reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md": {
-      "bytes": 6051,
-      "sha256": "98cb8d2b468448efa3f7bd9906d95246f9e55ab8304a574a07a22d529b63f35d"
+      "bytes": 6640,
+      "sha256": "d7f89050b93ea61027f3201e48a9cc8576096627041eb76f1052446fbbecd490"
     },
     "reports/TRIMEM_D14_SOLVE_0005_OUTPUT_SHAPE_FORENSICS.md": {
       "bytes": 2591,
@@ -965,8 +965,8 @@
       "sha256": "0b69b8e16d74d0968dcd17c6e28cfd5c97f4555d066db0d9548edbd882cff372"
     },
     "scripts/trimem_benchmark_run.py": {
-      "bytes": 369563,
-      "sha256": "2e626f5c969161377a11e6aec89874219d1b75f84a2731eb7ec5ae3498aa882b"
+      "bytes": 369599,
+      "sha256": "b5ae51f547aa324ec5676d109ec1c81c7056b9537ffb5c416cca30d0b7928b0f"
     },
     "scripts/trimem_cleanup_exec.py": {
       "bytes": 2472,
@@ -977,8 +977,8 @@
       "sha256": "d6830b75f11f2f6f4eb93bcfdbb252f5c49eb288b1d727edd5ba28487720e56e"
     },
     "scripts/trimem_d110_reseal.py": {
-      "bytes": 47731,
-      "sha256": "fe941a3f9931ed18b7323d708ce9636f5f6ffebfbb04f09c16e31f9e61fd7666"
+      "bytes": 47788,
+      "sha256": "714cc0a6ad9fc54431e4141897dccd83274e588b086180cf81d111b5d256572a"
     },
     "scripts/trimem_d19_reseal.py": {
       "bytes": 29922,
@@ -1065,8 +1065,8 @@
       "sha256": "a9d80880c2263b7450f76a3380ff7432378c8625bed1221bc7a18dd8927de032"
     },
     "scripts/trimem_multi_swe_entrypoint.py": {
-      "bytes": 28779,
-      "sha256": "8b90c34682db8b4635754cbe2fb228e88c7d042b3b68e8b1462953e297b7b134"
+      "bytes": 29145,
+      "sha256": "c1342dde02eaebabfcdddaef001c3ec4afec26ea2f519966d7169f127929bf27"
     },
     "scripts/trimem_multi_swe_image_probe.py": {
       "bytes": 12361,
@@ -1441,16 +1441,16 @@
       "sha256": "5a1c5415f71e7bec1743ee94fe8fe9aa78c2518b016e8b7396bd1650c18e5443"
     },
     "tests/unit/test_trimem_d110_atomic_resume.py": {
-      "bytes": 169080,
-      "sha256": "dae630b19d302890dc6a4a0a3d75c01f9bb361c9419eca2b0d98a2b7a4092052"
+      "bytes": 169798,
+      "sha256": "afa3179a0f9ae8bb2c63074c95bd56add5ab82d94f8699d0f9e4b7ec07470cdf"
     },
     "tests/unit/test_trimem_d110_checkout_custody.py": {
       "bytes": 26357,
       "sha256": "396f7d9587132ba324e35abfd763fee909f03113fef29d512d48110ae89df1ef"
     },
     "tests/unit/test_trimem_d110_official_harness_loader.py": {
-      "bytes": 19815,
-      "sha256": "29cded61b99b7afc433f439046be9a6203a2ecfeda6a9c56b7e1dbbda1daacbe"
+      "bytes": 21510,
+      "sha256": "cec9d84617fb35dc0a1e6c76501c15edee476c4ec0eef228a6e90ac794ff3974"
     },
     "tests/unit/test_trimem_d110_resume_fail_closed.py": {
       "bytes": 10252,
@@ -1581,8 +1581,8 @@
       "sha256": "c139347b3fdee71a9ca1cf7f895212437c37af3089d1731b053d1f650c495312"
     },
     "tests/unit/test_trimem_multi_swe_probe_request.py": {
-      "bytes": 16800,
-      "sha256": "9f3819179b59340baf12e4b50517cd59d599962f28b619f91cdd6efeef6d32a8"
+      "bytes": 16838,
+      "sha256": "13581e37ae4b4327cad43e2f798162a044fe82ca65214a26be45ebaf7a675b90"
     },
     "tests/unit/test_trimem_multi_swe_report_semantics.py": {
       "bytes": 24003,

@@ -28,7 +28,7 @@
     "task_arm_input_cap": 500000
   },
   "contracts": {
-    "credential_free_bundle_sha256": "0a1e8c6155c97d1f8a5c589bd39882572bc380cb7b7af7bc9122d8c920f03f38",
+    "credential_free_bundle_sha256": "6c9f0192c4ffba6fa2ed67066d5b45edd30cd8e96ec14af68cf6fb258290a3d5",
     "function_tool_schema_sha256": "1f9f70c6ae31464a03d93ec7294a3901ee6b34ded1bb79d65224e925c8aea63c",
     "list_files_pagination_contract_sha256": "591db921e9009791c2d1e5c9c9da1a0d478f71f5c68cd39f6adb639ed7c85a53",
     "model_visible_observation_projection_sha256": "72d57a4dfb6daba2fb1455af03f44293d5dd05ddf4c35ea01756c0ea53267731",
@@ -122,7 +122,7 @@
     ".github/workflows/ci-trimem-dev-toolchain.yml": "d491cabb52282f67d6f337f29e1d64bfe17d4afc7b23df142e62c717a6e262f4",
     ".github/workflows/ci-trimem.yml": "30e94bef269ccd06a894434ff6f4fc8c2c533825222501844e4d305ed5f11fc3",
     ".github/workflows/trimem-benchmark.yml": "78f806475528ab938a3f4975f73039d8055946c52cb5d94ae30d691319a69ab4",
-    "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json": "0a1e8c6155c97d1f8a5c589bd39882572bc380cb7b7af7bc9122d8c920f03f38",
+    "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json": "6c9f0192c4ffba6fa2ed67066d5b45edd30cd8e96ec14af68cf6fb258290a3d5",
     "artifacts/trimem_v1/development_tuning_exec/exec-009/bounded-short-term-context-failure-receipt.json": "71e85eef6ea558208f445ef4667afbf2c7a8126b61b536ff413212b2e52c2270",
     "artifacts/trimem_v1/development_tuning_exec/exec-009/request-only-boundary-fixture.json": "0229c7147bc6777c09d8a1488b8edccdd9829665c102333fdb135e909d8eb575",
     "artifacts/trimem_v1/readiness_requirements.json": "37952c20aedfc165f270b8433e93e99294fc8a10f1fa6f8699f4810bd16185fe",
@@ -165,7 +165,7 @@
     "tests/unit/test_trimem_d19_terminal_contract.py": "5bb050f011a55e6dfbc2cd04a32e8745bf19e1e07e95c74831216c478f088577",
     "tests/unit/test_trimem_d19_trigger.py": "9467d832669128af126f550469c0d5e84d43ef0f2f24acd72b1dc5c31a98cb5c",
     "tests/unit/test_trimem_dev_toolchain_workflows.py": "e0e1a39a426f856c16925362c679877d0ddac918e3eb467a4f485e6f1d028ce4",
-    "tests/unit/test_trimem_development_trigger.py": "b7f8bcd7702457f9b25063b3d7069c211e3f735103dc706ef728360aed803bce",
+    "tests/unit/test_trimem_development_trigger.py": "37377a947ca0367fc18f00ce741cc44fe7cf618a474f57054be49afbf0d68767",
     "tests/unit/test_trimem_git_workspace.py": "2f1f40362780e56b752f8e2fb030f5de91581f636a6144c298be515bf85096d9",
     "tests/unit/test_trimem_production_runtime.py": "3e7b7244870d3be4a1b78c6fdac73747d730c050b9b14435d02e1d7368cd9681",
     "tests/unit/test_trimem_runtime_boundaries.py": "ca89432a19f50de956e1223a820138345c539f898a363f53a71fd52dedd03984"

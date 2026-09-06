@@ -20,9 +20,7 @@ ROUND_TRIP_COMMAND = (
 )
 CONTEXT_ROUND_TRIP_STEP = "Verify bounded context round trip before provider access"
 CONTEXT_ROUND_TRIP_COMMAND = "python scripts/trimem_context_roundtrip.py"
-EXACT_RUNNER_LABELS = (
-    "runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]"
-)
+EXACT_RUNNER = "runs-on: ubuntu-24.04"
 ZERO_FIELDS = {
     "api_calls",
     "database_operations",
@@ -340,10 +338,11 @@ def test_benchmark_evidence_uploads_stop_on_cancellation_but_cleanup_is_fail_clo
     assert "external artifact custody was not verified" in final_cleanup
 
 
-def test_toolchain_rehearsal_is_narrow_credential_free_and_self_hosted() -> None:
+def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> None:
     text = _read(TOOLCHAIN_WORKFLOW)
     _install_and_verify_contract(text)
-    assert EXACT_RUNNER_LABELS in text
+    assert EXACT_RUNNER in text
+    assert "self-hosted" not in text
     assert "branches:\n      - codex/trimem-coder-v1" in text
     assert "workflow_dispatch:" not in text
     assert "pull_request:" not in text

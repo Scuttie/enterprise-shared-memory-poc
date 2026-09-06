@@ -114,7 +114,7 @@ permissions:
 
 jobs:
   pinned-gh-and-smoke-attestation-only:
-    runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - name: Checkout exact correction commit

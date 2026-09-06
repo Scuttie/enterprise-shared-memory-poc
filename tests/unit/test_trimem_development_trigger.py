@@ -320,6 +320,8 @@ def _d110_runner_readiness(source_head: str) -> dict[str, object]:
                 for index, row in enumerate(runners)
             ],
             "minimum_disk_available_bytes": trigger_d110.MINIMUM_RUNNER_DISK_BYTES,
+            "os_id": "ubuntu",
+            "os_version_id": "24.04",
             "stale_runner_roots_absent": list(trigger_d110.STALE_RUNNER_ROOTS),
             "tool_cache_root": trigger_d110.RUNNER_TOOL_CACHE,
             "wsl_distribution": trigger_d110.RUNNER_DISTRIBUTION,

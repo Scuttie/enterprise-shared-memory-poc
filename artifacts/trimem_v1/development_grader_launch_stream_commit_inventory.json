@@ -268,7 +268,7 @@
     "tests/unit/test_trimem_d16_native_action.py": "7a6ac6aa4050d6fbec6afa5730d7bf412dff9301a6bde06bac05e445aec6db4c",
     "tests/unit/test_trimem_d19_trigger.py": "31027e3e2165c51df44c19745f739d3c3db3dccd0b1007bd5446517e96b7d10e",
     "tests/unit/test_trimem_dev_toolchain_workflows.py": "367b51b39ea52be97ae21fdef9d062d624d7d392bc1a7b2750db1a358b65a880",
-    "tests/unit/test_trimem_development_trigger.py": "d8421d3314c48b52a371d734552691722ee60c805bbf3d26f8b70f912c6a7d20",
+    "tests/unit/test_trimem_development_trigger.py": "9a9ed86ccc8535c8c76b6946e8b884e609ab517894cb4edfaf724de6de9f8f85",
     "tests/unit/test_trimem_grader_smoke_trigger.py": "6410be7f96b9034e37ca95fa2ac224e2309f2ec0125e47b3e295cd294a619b8e",
     "tests/unit/test_trimem_grader_terminal_evidence.py": "2c9acdbd3d4eca645255aea4b213df2dfb030fe188ed1e3cd55cd2f46c6c4ab4",
     "tests/unit/test_trimem_harness_lock.py": "6c3ea747d5fbae46602bcd1c40fcb949e18f190b2f2fde548fc7481972c62715",

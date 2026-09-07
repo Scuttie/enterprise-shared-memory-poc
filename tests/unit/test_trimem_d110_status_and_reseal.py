@@ -1,4 +1,4 @@
-"""Immutable D1.10-D1.13 history and the current zero-cost D1.14 seal."""
+"""Immutable D1.10-D1.14 history and the current zero-cost D1.15 seal."""
 from __future__ import annotations
 
 import hashlib
@@ -18,7 +18,17 @@ import trimem_d110_reseal as reseal  # noqa: E402
 import trimem_d111_reseal as d111_reseal  # noqa: E402
 import trimem_d112_reseal as d112_reseal  # noqa: E402
 import trimem_d113_reseal as d113_reseal  # noqa: E402
-import trimem_d114_reseal as current_reseal  # noqa: E402
+import trimem_d114_reseal as d114_reseal  # noqa: E402
+import trimem_d115_reseal as current_reseal  # noqa: E402
+
+
+CURRENT_STATUS_FIELDS = {
+    "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": "ESTABLISHED_BY_P0_1_5",
+    "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
+    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "NOT_REACHED_ON_EXEC_014",
+    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "NOT_REACHED_ON_EXEC_014",
+    "PERFORMANCE": "NOT_MEASURED",
+}
 
 
 def read(relative: str) -> dict:
@@ -31,8 +41,8 @@ def test_current_status_uses_exact_split_fields_and_ready_endpoint() -> None:
 
     assert "OFFICIAL_GRADER_VIABILITY" not in status
     assert {
-        key: status[key] for key in current_reseal.STATUS_FIELDS
-    } == current_reseal.STATUS_FIELDS
+        key: status[key] for key in CURRENT_STATUS_FIELDS
+    } == CURRENT_STATUS_FIELDS
     assert status["CLASSIFICATION"] == current_reseal.CLASSIFICATION
     assert status["ENDPOINT"] == current_reseal.ENDPOINT
     assert status["DEV_APPROVAL_ALLOWED"] == "NO"
@@ -59,32 +69,32 @@ def test_exec_010_failure_remains_incomplete_and_pre_result() -> None:
     }
 
 
-def test_exec_013_is_spent_and_only_014_request_creation_is_authorized() -> None:
+def test_exec_014_is_spent_and_only_015_request_creation_is_authorized() -> None:
     authority = read("artifacts/trimem_v1/readiness_requirements.json")[
         "development_authorization_boundary"
     ]
     assert authority["historical_failed_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_013"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_014"
     )
     assert authority["historical_failed_request_path"] == (
-        current_reseal.D113_REQUEST_PATH
+        current_reseal.D114_REQUEST_PATH
     )
     assert authority["fresh_execution_request"] == (
-        "REQUEST_014_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
+        "REQUEST_015_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
     )
     assert authority["fresh_execution_request_creation_authorized"] is True
     assert authority["recovery_authorization"] == (
-        "REQUEST_014_CREATION_AUTHORITY_RECEIVED"
+        "REQUEST_015_CREATION_AUTHORITY_RECEIVED"
     )
     assert authority["required_external_authorization"] == (
-        current_reseal.D114_REQUIRED_EXTERNAL_AUTHORIZATION
+        current_reseal.D115_REQUIRED_EXTERNAL_AUTHORIZATION
     )
     assert authority["recovery_authorization_received"] is True
     assert authority["future_recovery_authority_received"] is True
     assert authority["recovery_request_id"] == (
-        current_reseal.D114_REQUEST_ID
+        current_reseal.D115_REQUEST_ID
     )
-    assert authority["recovery_request_path"] == current_reseal.D114_REQUEST_PATH
+    assert authority["recovery_request_path"] == current_reseal.D115_REQUEST_PATH
     assert authority["request_011_allowed_after_exact_remote_gates"] is False
     assert authority["request_011_attempt_one_consumed"] is True
     assert authority["request_011_attempt_two_allowed"] is False
@@ -101,8 +111,16 @@ def test_exec_013_is_spent_and_only_014_request_creation_is_authorized() -> None
     assert authority["request_013_created"] is True
     assert authority["request_013_rerun_allowed"] is False
     assert authority["request_014_authorized"] is False
-    assert authority["request_014_allowed_after_exact_remote_gates"] is True
-    assert authority["request_014_created"] is False
+    assert authority["request_014_allowed_after_exact_remote_gates"] is False
+    assert authority["request_014_attempt_one_consumed"] is True
+    assert authority["request_014_attempt_two_allowed"] is False
+    assert authority["request_014_created"] is True
+    assert authority["request_014_rerun_allowed"] is False
+    assert authority[
+        "request_015_allowed_after_exact_remote_gates_and_rehearsal"
+    ] is True
+    assert authority["request_015_authorized"] is False
+    assert authority["request_015_created"] is False
     assert authority["active_development_approval"] is False
     assert authority["development_execution_authorized"] is False
     assert authority["fresh_dev_execution_approval_required"] is True
@@ -119,10 +137,14 @@ def test_exec_001_through_012_are_byte_locked_and_013_is_spent() -> None:
     assert historical_d112["execution_head"] == d113_reseal.D112_EXECUTION_HEAD
     assert historical_d112["run_attempt"] == 1
     assert historical_d112["run_id"] == d113_reseal.D112_RUN_ID
-    historical_d113 = current_reseal.validate_historical_d113()
-    assert historical_d113["execution_head"] == current_reseal.D113_EXECUTION_HEAD
-    assert historical_d113["run_attempt"] == current_reseal.D113_RUN_ATTEMPT
-    assert historical_d113["run_id"] == current_reseal.D113_RUN_ID
+    historical_d113 = d114_reseal.validate_historical_d113()
+    assert historical_d113["execution_head"] == d114_reseal.D113_EXECUTION_HEAD
+    assert historical_d113["run_attempt"] == d114_reseal.D113_RUN_ATTEMPT
+    assert historical_d113["run_id"] == d114_reseal.D113_RUN_ID
+    historical_d114 = current_reseal.validate_historical_d114()
+    assert historical_d114["execution_head"] == current_reseal.D114_EXECUTION_HEAD
+    assert historical_d114["run_attempt"] == current_reseal.D114_RUN_ATTEMPT
+    assert historical_d114["run_id"] == current_reseal.D114_RUN_ID
     assert len(reseal.HISTORICAL_REQUEST_SHA256) == 10
 
 
@@ -252,8 +274,8 @@ def test_d114_integration_paths_are_closed_under_the_explicit_seal() -> None:
         "tests/unit/test_trimem_benchmark_readiness.py",
         "tests/unit/test_trimem_d110_status_and_reseal.py",
     }
-    assert expected <= current_reseal.ALLOWED_CHANGED_PATHS
-    assert all(current_reseal.REQUIRED_CHANGED_PATHS[path] == "M" for path in expected)
+    assert expected <= d114_reseal.ALLOWED_CHANGED_PATHS
+    assert all(d114_reseal.REQUIRED_CHANGED_PATHS[path] == "M" for path in expected)
 
 
 def test_changed_path_coverage_rejects_an_unsealed_commit_path(

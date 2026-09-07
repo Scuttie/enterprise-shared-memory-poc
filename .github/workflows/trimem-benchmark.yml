@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_014.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_015.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-014
+  group: trimem-v1-development-tuning-exec-015
   cancel-in-progress: false
 
 permissions:
@@ -62,7 +62,7 @@ jobs:
         run: |
           set -euo pipefail
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
-          python -I -S scripts/trimem_development_trigger_d114.py \
+          python -I -S scripts/trimem_development_trigger_d115.py \
             --repository "$GITHUB_WORKSPACE" \
             --event-path "$GITHUB_EVENT_PATH"
 
@@ -92,7 +92,7 @@ jobs:
           RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
         run: >-
           /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python
-          -I -S scripts/trimem_development_trigger_d114.py
+          -I -S scripts/trimem_development_trigger_d115.py
           --repository "$GITHUB_WORKSPACE"
           --pre-setup-cache-host-event-path "$GITHUB_EVENT_PATH"
       - name: Set up exact Python
@@ -106,7 +106,7 @@ jobs:
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d114.py
+          python -I -S scripts/trimem_development_trigger_d115.py
           --repository "$GITHUB_WORKSPACE"
           --runner-host-preflight-event-path "$GITHUB_EVENT_PATH"
       - name: Install hash-locked environment
@@ -143,10 +143,11 @@ jobs:
       - name: Gate protected job on unprotected exact loader preflight
         run: |
           set -euo pipefail
-          exact_python="$pythonLocation/bin/python"
+          exact_python="$pythonLocation/bin/python3.11"
           preflight_output="$RUNNER_TEMP/trimem-official-harness-loader-preflight.json"
           test -x "$exact_python"
           test "$(readlink -f "$exact_python")" = "$(readlink -f "$(command -v python)")"
+          "$exact_python" -I -S scripts/trimem_compiled_prefix_alias.py --check
           "$exact_python" scripts/trimem_official_harness_loader_preflight.py \
             --python-binary "$exact_python" \
             --swe-harness-root "$RUNNER_TEMP/trimem-d112-harnesses/swebench_verified" \
@@ -208,7 +209,7 @@ jobs:
           RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
         run: >-
           /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python
-          -I -S scripts/trimem_development_trigger_d114.py
+          -I -S scripts/trimem_development_trigger_d115.py
           --repository "$GITHUB_WORKSPACE"
           --pre-setup-cache-host-event-path "$GITHUB_EVENT_PATH"
       - name: Set up exact Python
@@ -222,21 +223,21 @@ jobs:
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d114.py
+          python -I -S scripts/trimem_development_trigger_d115.py
           --repository "$GITHUB_WORKSPACE"
           --protected-runner-preflight-event-path "$GITHUB_EVENT_PATH"
       - name: Start exact cache-only benchmark services
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d114.py
+          python -I -S scripts/trimem_development_trigger_d115.py
           --repository "$GITHUB_WORKSPACE"
           --start-protected-services-event-path "$GITHUB_EVENT_PATH"
       - name: Verify exact cache-only benchmark services
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d114.py
+          python -I -S scripts/trimem_development_trigger_d115.py
           --repository "$GITHUB_WORKSPACE"
           --verify-protected-services-event-path "$GITHUB_EVENT_PATH"
       - name: Install hash-locked environment
@@ -284,15 +285,33 @@ jobs:
       - name: Verify exact official harness Python loader before credentials
         run: |
           set -euo pipefail
-          exact_python="$pythonLocation/bin/python"
+          exact_python="$pythonLocation/bin/python3.11"
+          preflight_output="artifacts/trimem_v1/benchmark_exec/control/official-harness-loader-preflight.json"
           test -x "$exact_python"
           test "$(readlink -f "$exact_python")" = "$(readlink -f "$(command -v python)")"
           install -d -m 700 artifacts/trimem_v1/benchmark_exec/control
+          "$exact_python" -I -S scripts/trimem_compiled_prefix_alias.py --check
           "$exact_python" scripts/trimem_official_harness_loader_preflight.py \
             --python-binary "$exact_python" \
             --swe-harness-root ".trimem-exec/harnesses/swebench_verified" \
             --multi-harness-root ".trimem-exec/harnesses/multi" \
-            --output "artifacts/trimem_v1/benchmark_exec/control/official-harness-loader-preflight.json"
+            --output "$preflight_output"
+          "$exact_python" - "$preflight_output" "$exact_python" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from trimem_benchmark_run import (
+              validate_official_harness_loader_preflight_evidence,
+          )
+
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          validate_official_harness_loader_preflight_evidence(
+              report,
+              python_binary=sys.argv[2],
+          )
+          PY
       - name: Materialize protected external approval
         id: approval_materialization
         env:
@@ -548,6 +567,6 @@ jobs:
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d114.py
+          python -I -S scripts/trimem_development_trigger_d115.py
           --repository "$GITHUB_WORKSPACE"
           --cleanup-protected-services-event-path "$GITHUB_EVENT_PATH"

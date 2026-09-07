@@ -19,6 +19,7 @@ import trimem_development_trigger_d114 as trigger  # noqa: E402
 
 SOURCE_HEAD = "cb17ceae0fbc951dff34213de977a73b5405fefc"
 EXECUTION_HEAD = "35bfa338915d731dab499f2dfee08b38741bfe8d"
+D114_SOURCE_HEAD = "6e9abe999f2b9d7ebdd3eea23dbbea8f6afad931"
 REQUEST_RAW_SHA256 = (
     "a500568cedfa800bd85e20263b604fa2c1d24f634644d5ef14f517a8330b6417"
 )
@@ -170,27 +171,33 @@ def test_changed_path_vocabulary_matches_trigger_and_excludes_science() -> None:
     assert set(reseal.REQUIRED_CHANGED_PATHS) <= reseal.ALLOWED_CHANGED_PATHS
 
 
-def test_generated_documents_are_deterministic_and_source_head_free() -> None:
-    first_amendment, first_inventory = reseal.build_artifacts()
-    second_amendment, second_inventory = reseal.build_artifacts()
-    assert (first_amendment, first_inventory) == (
-        second_amendment,
-        second_inventory,
+def test_generated_documents_are_immutable_at_the_d114_source() -> None:
+    amendment_raw = _git_blob(
+        D114_SOURCE_HEAD,
+        reseal.AMENDMENT_PATH.relative_to(ROOT).as_posix(),
     )
-    assert first_amendment["schema"] == reseal.AMENDMENT_SCHEMA
-    assert first_inventory["schema"] == reseal.INVENTORY_SCHEMA
-    assert first_amendment["status"] == reseal.STATUS
-    assert first_inventory["status"] == reseal.STATUS
-    assert first_amendment["classification"] == reseal.CLASSIFICATION
-    assert first_inventory["classification"] == reseal.CLASSIFICATION
-    assert first_amendment["implementation_sha256"] == first_inventory[
+    inventory_raw = _git_blob(
+        D114_SOURCE_HEAD,
+        reseal.INVENTORY_PATH.relative_to(ROOT).as_posix(),
+    )
+    amendment = json.loads(amendment_raw)
+    inventory = json.loads(inventory_raw)
+    assert amendment_raw == reseal.AMENDMENT_PATH.read_bytes()
+    assert inventory_raw == reseal.INVENTORY_PATH.read_bytes()
+    assert amendment["schema"] == reseal.AMENDMENT_SCHEMA
+    assert inventory["schema"] == reseal.INVENTORY_SCHEMA
+    assert amendment["status"] == reseal.STATUS
+    assert inventory["status"] == reseal.STATUS
+    assert amendment["classification"] == reseal.CLASSIFICATION
+    assert inventory["classification"] == reseal.CLASSIFICATION
+    assert amendment["implementation_sha256"] == inventory[
         "implementation_sha256"
     ]
-    assert set(first_amendment["implementation_sha256"]) == set(
+    assert set(amendment["implementation_sha256"]) == set(
         reseal.IMPLEMENTATION_PATHS
     )
-    assert first_amendment["zero_cost_recovery_actuals"] == reseal.ZERO_ACTUALS
-    authority = first_amendment["authority_boundary"]
+    assert amendment["zero_cost_recovery_actuals"] == reseal.ZERO_ACTUALS
+    authority = amendment["authority_boundary"]
     assert authority["request_013_attempt_one_consumed"] is True
     assert authority["request_013_rerun_allowed"] is False
     assert authority["request_014_creation_authorized"] is True
@@ -199,16 +206,14 @@ def test_generated_documents_are_deterministic_and_source_head_free() -> None:
     assert authority["actual_execution_authorized"] is False
     assert authority["external_execution_approval_received"] is False
 
-    execution = reseal.validate_optional_exec_014_boundary()
-    source_head = reseal._source_head(execution)
-    serialized = json.dumps(first_amendment, ensure_ascii=False, sort_keys=True)
-    assert source_head not in serialized
-    assert first_amendment["active_recovery"]["source_validation"] == (
+    serialized = json.dumps(amendment, ensure_ascii=False, sort_keys=True)
+    assert D114_SOURCE_HEAD not in serialized
+    assert amendment["active_recovery"]["source_validation"] == (
         "GIT_BLOB_EXACT_AT_CHECK_TIME"
     )
-    assert first_amendment["active_recovery"]["remote_gate_count"] == 20
-    assert first_amendment["active_recovery"]["push_remote_gate_count"] == 6
-    assert first_amendment["active_recovery"][
+    assert amendment["active_recovery"]["remote_gate_count"] == 20
+    assert amendment["active_recovery"]["push_remote_gate_count"] == 6
+    assert amendment["active_recovery"][
         "pull_request_remote_gate_count"
     ] == 14
 

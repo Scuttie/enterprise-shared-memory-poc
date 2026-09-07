@@ -17,6 +17,7 @@ REPORT = ROOT / "reports/TRIMEM_D113_EXEC_013_RECOVERY.md"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_d113_reseal as reseal  # noqa: E402
+import trimem_d114_reseal as current_reseal  # noqa: E402
 
 
 SOURCE_HEAD = "9db94e2a4abfaad0bb27079738b77836d68fa2e4"
@@ -30,6 +31,8 @@ REQUEST_PAYLOAD_SHA256 = (
 FREEZE_SHA256 = (
     "3bbafc53504b45c20996094d96a6abfa5fd9e90c5b078eb2f1dc3f1f6d7ad5b4"
 )
+D113_SOURCE_HEAD = "cb17ceae0fbc951dff34213de977a73b5405fefc"
+D113_EXECUTION_HEAD = "35bfa338915d731dab499f2dfee08b38741bfe8d"
 
 
 def _git_blob(commit: str, relative: str) -> bytes:
@@ -230,12 +233,26 @@ def test_control_plane_allowlist_excludes_every_scientific_input() -> None:
     )
 
 
-def test_generated_documents_are_deterministic_and_have_no_source_head_cycle() -> None:
-    first_amendment, first_inventory = reseal.build_artifacts()
-    second_amendment, second_inventory = reseal.build_artifacts()
-    assert (first_amendment, first_inventory) == (
-        second_amendment,
-        second_inventory,
+def test_generated_documents_are_frozen_at_the_exact_d113_source() -> None:
+    first_amendment = json.loads(
+        _git_blob(
+            D113_SOURCE_HEAD,
+            "artifacts/trimem_v1/development_exec_013_recovery_amendment.json",
+        )
+    )
+    first_inventory = json.loads(
+        _git_blob(
+            D113_SOURCE_HEAD,
+            "artifacts/trimem_v1/development_exec_013_recovery_inventory.json",
+        )
+    )
+    assert first_amendment == json.loads(
+        (ROOT / "artifacts/trimem_v1/development_exec_013_recovery_amendment.json")
+        .read_text(encoding="utf-8")
+    )
+    assert first_inventory == json.loads(
+        (ROOT / "artifacts/trimem_v1/development_exec_013_recovery_inventory.json")
+        .read_text(encoding="utf-8")
     )
     assert first_amendment["schema"] == reseal.AMENDMENT_SCHEMA
     assert first_inventory["schema"] == reseal.INVENTORY_SCHEMA
@@ -261,9 +278,7 @@ def test_generated_documents_are_deterministic_and_have_no_source_head_cycle() -
     assert authority["request_013_execution_authorized"] is False
     assert authority["sentinel_contains_execution_authority"] is False
 
-    execution = reseal.validate_optional_exec_013_boundary()
-    source_head = reseal._source_head(execution)
-    assert source_head not in json.dumps(
+    assert D113_SOURCE_HEAD not in json.dumps(
         first_amendment,
         ensure_ascii=False,
         sort_keys=True,
@@ -273,9 +288,12 @@ def test_generated_documents_are_deterministic_and_have_no_source_head_cycle() -
     )
 
 
-def test_optional_013_boundary_is_absent_at_source_or_exact_sentinel_child() -> None:
-    observed = reseal.validate_optional_exec_013_boundary()
-    assert observed is None or reseal.HEX40.fullmatch(observed) is not None
+def test_013_boundary_is_validated_as_exact_immutable_history() -> None:
+    observed = current_reseal.validate_historical_d113()
+    assert observed["status"] == "PASS"
+    assert observed["source_head"] == D113_SOURCE_HEAD
+    assert observed["execution_head"] == D113_EXECUTION_HEAD
+    assert observed["sentinel_only"] is True
 
 
 def test_report_freezes_permission_attestation_and_no_result_meaning() -> None:

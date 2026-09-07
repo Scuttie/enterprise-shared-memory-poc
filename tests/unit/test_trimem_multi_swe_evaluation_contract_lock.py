@@ -53,6 +53,13 @@ D113_AMENDMENT_PATH = ROOT / (
 D113_INVENTORY_PATH = ROOT / (
     "artifacts/trimem_v1/development_exec_013_recovery_inventory.json"
 )
+D113_CORRECTION_SOURCE_HEAD = "cb17ceae0fbc951dff34213de977a73b5405fefc"
+D114_AMENDMENT_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_014_recovery_amendment.json"
+)
+D114_INVENTORY_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_014_recovery_inventory.json"
+)
 EXPECTED_SOURCE_BLOBS = {
     "multi_swe_bench/harness/dataset.py": {
         "bytes": 2833,
@@ -327,8 +334,18 @@ def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -
         "scripts/trimem_benchmark_matrix.py"
     ] != current_sha256
 
-    d113_amendment = json.loads(D113_AMENDMENT_PATH.read_text(encoding="utf-8"))
-    d113_inventory = json.loads(D113_INVENTORY_PATH.read_text(encoding="utf-8"))
+    d113_amendment_raw = _git_blob(
+        D113_CORRECTION_SOURCE_HEAD,
+        "artifacts/trimem_v1/development_exec_013_recovery_amendment.json",
+    )
+    d113_inventory_raw = _git_blob(
+        D113_CORRECTION_SOURCE_HEAD,
+        "artifacts/trimem_v1/development_exec_013_recovery_inventory.json",
+    )
+    assert D113_AMENDMENT_PATH.read_bytes() == d113_amendment_raw
+    assert D113_INVENTORY_PATH.read_bytes() == d113_inventory_raw
+    d113_amendment = json.loads(d113_amendment_raw.decode("utf-8"))
+    d113_inventory = json.loads(d113_inventory_raw.decode("utf-8"))
     assert d113_amendment["implementation_sha256"] == d113_inventory[
         "implementation_sha256"
     ]
@@ -337,13 +354,36 @@ def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -
         for path in d113_amendment["implementation_sha256"]
         if path in multi_contract.LOCAL_VALIDATOR_ROLES
     } == {"scripts/trimem_benchmark_matrix.py"}
-    assert d113_amendment["implementation_sha256"][
+    d113_matrix_sha256 = d113_amendment["implementation_sha256"][
         "scripts/trimem_benchmark_matrix.py"
-    ] == current_sha256
+    ]
+    assert d113_matrix_sha256 != current_sha256
+
+    d114_amendment = json.loads(D114_AMENDMENT_PATH.read_text(encoding="utf-8"))
+    d114_inventory = json.loads(D114_INVENTORY_PATH.read_text(encoding="utf-8"))
+    assert d114_amendment["schema"] == multi_contract.D114_AMENDMENT_SCHEMA
+    assert d114_inventory["schema"] == multi_contract.D114_INVENTORY_SCHEMA
+    assert d114_amendment["status"] == multi_contract.D114_STATUS
+    assert d114_inventory["status"] == multi_contract.D114_STATUS
+    assert d114_amendment["classification"] == multi_contract.D114_CLASSIFICATION
+    assert d114_inventory["classification"] == multi_contract.D114_CLASSIFICATION
+    assert d114_amendment["implementation_sha256"] == d114_inventory[
+        "implementation_sha256"
+    ]
+    assert {
+        path
+        for path in d114_amendment["implementation_sha256"]
+        if path in multi_contract.LOCAL_VALIDATOR_ROLES
+    } == {"scripts/trimem_benchmark_matrix.py"}
+    d114_matrix_sha256 = d114_amendment["implementation_sha256"][
+        "scripts/trimem_benchmark_matrix.py"
+    ]
+    assert d114_matrix_sha256 == current_sha256
+    assert d114_matrix_sha256 != d113_matrix_sha256
     for path in EXPECTED_LOCAL_VALIDATOR_FILES:
         live_sha256 = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
         if path == "scripts/trimem_benchmark_matrix.py":
-            assert d113_amendment["implementation_sha256"][path] == live_sha256
+            assert d114_amendment["implementation_sha256"][path] == live_sha256
         else:
             assert d110_amendment["implementation_sha256"][path] == live_sha256
             assert d110_inventory["implementation_sha256"][path] == live_sha256
@@ -499,7 +539,7 @@ def test_production_verifier_rejects_d112_inventory_aggregate_drift(
         multi_contract._verify_local_validator_files(_load_lock()["contracts"])
 
 
-def test_production_verifier_rejects_d113_inventory_aggregate_drift(
+def test_production_verifier_rejects_historical_d113_inventory_drift(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     inventory = json.loads(D113_INVENTORY_PATH.read_text(encoding="utf-8"))
@@ -512,7 +552,25 @@ def test_production_verifier_rejects_d113_inventory_aggregate_drift(
 
     with pytest.raises(
         multi_contract.ContractError,
-        match="D1.13 recovery implementation seals disagree",
+        match="historical D1.13 inventory byte seal differs",
+    ):
+        multi_contract._verify_local_validator_files(_load_lock()["contracts"])
+
+
+def test_production_verifier_rejects_d114_inventory_aggregate_drift(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    inventory = json.loads(D114_INVENTORY_PATH.read_text(encoding="utf-8"))
+    inventory["implementation_sha256"][
+        multi_contract.D18_CURRENT_AGGREGATE_PATH
+    ] = "0" * 64
+    tampered_path = tmp_path / "d114-inventory.json"
+    tampered_path.write_text(json.dumps(inventory), encoding="utf-8")
+    monkeypatch.setattr(multi_contract, "D114_INVENTORY_PATH", tampered_path)
+
+    with pytest.raises(
+        multi_contract.ContractError,
+        match="D1.14 recovery implementation seals disagree",
     ):
         multi_contract._verify_local_validator_files(_load_lock()["contracts"])
 
@@ -540,7 +598,7 @@ def test_production_verifier_rejects_unexpected_d112_validator_override(
         multi_contract._verify_local_validator_files(_load_lock()["contracts"])
 
 
-def test_production_verifier_rejects_unexpected_d113_validator_override(
+def test_production_verifier_rejects_historical_d113_amendment_drift(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     amendment = json.loads(D113_AMENDMENT_PATH.read_text(encoding="utf-8"))
@@ -558,7 +616,30 @@ def test_production_verifier_rejects_unexpected_d113_validator_override(
 
     with pytest.raises(
         multi_contract.ContractError,
-        match="D1.13 local validator override set differs",
+        match="historical D1.13 amendment byte seal differs",
+    ):
+        multi_contract._verify_local_validator_files(_load_lock()["contracts"])
+
+
+def test_production_verifier_rejects_unexpected_d114_validator_override(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    amendment = json.loads(D114_AMENDMENT_PATH.read_text(encoding="utf-8"))
+    inventory = json.loads(D114_INVENTORY_PATH.read_text(encoding="utf-8"))
+    unexpected_path = "scripts/trimem_grader_smoke.py"
+    unexpected_sha256 = hashlib.sha256((ROOT / unexpected_path).read_bytes()).hexdigest()
+    amendment["implementation_sha256"][unexpected_path] = unexpected_sha256
+    inventory["implementation_sha256"][unexpected_path] = unexpected_sha256
+    amendment_path = tmp_path / "d114-amendment.json"
+    inventory_path = tmp_path / "d114-inventory.json"
+    amendment_path.write_text(json.dumps(amendment), encoding="utf-8")
+    inventory_path.write_text(json.dumps(inventory), encoding="utf-8")
+    monkeypatch.setattr(multi_contract, "D114_AMENDMENT_PATH", amendment_path)
+    monkeypatch.setattr(multi_contract, "D114_INVENTORY_PATH", inventory_path)
+
+    with pytest.raises(
+        multi_contract.ContractError,
+        match="D1.14 local validator override set differs",
     ):
         multi_contract._verify_local_validator_files(_load_lock()["contracts"])
 

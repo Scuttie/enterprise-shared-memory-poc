@@ -85,6 +85,17 @@ D113_AMENDMENT_SCHEMA = "trimem/development-exec-013-recovery-amendment/1.0"
 D113_INVENTORY_SCHEMA = "trimem/development-exec-013-recovery-inventory/1.0"
 D113_STATUS = "FROZEN_CREDENTIAL_FREE_EXEC_012_FAILURE_READY_FOR_EXEC_013_REQUEST"
 D113_CLASSIFICATION = "POST_EXEC_012_ZERO_MODEL_RUNNER_OBSERVER_RECOVERY"
+D113_CORRECTION_SOURCE_HEAD = "cb17ceae0fbc951dff34213de977a73b5405fefc"
+D114_AMENDMENT_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_014_recovery_amendment.json"
+)
+D114_INVENTORY_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_014_recovery_inventory.json"
+)
+D114_AMENDMENT_SCHEMA = "trimem/development-exec-014-recovery-amendment/1.0"
+D114_INVENTORY_SCHEMA = "trimem/development-exec-014-recovery-inventory/1.0"
+D114_STATUS = "FROZEN_CREDENTIAL_FREE_EXEC_013_FAILURE_READY_FOR_EXEC_014_REQUEST"
+D114_CLASSIFICATION = "POST_EXEC_013_ZERO_MODEL_SETUP_PYTHON_ENVIRONMENT_RECOVERY"
 ENTRYPOINT_PATH = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
 REPORT_SEMANTICS_MODULE_PATH = ROOT / "scripts/trimem_multi_swe_report_semantics.py"
 REPORT_SEMANTICS_LOCK_PATH = (
@@ -147,6 +158,7 @@ LOCAL_VALIDATOR_LINE_ENDINGS = {
 }
 D112_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 D113_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
+D114_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 
 
 class ContractError(ValueError):
@@ -175,7 +187,7 @@ def _git(
     return result
 
 
-def _strict_json_object(path: Path, label: str) -> dict[str, Any]:
+def _strict_json_bytes(raw: bytes, label: str) -> dict[str, Any]:
     def object_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
         value: dict[str, Any] = {}
         for key, child in pairs:
@@ -184,13 +196,19 @@ def _strict_json_object(path: Path, label: str) -> dict[str, Any]:
         return value
 
     try:
-        value = json.loads(
-            path.read_bytes().decode("utf-8"), object_pairs_hook=object_pairs
-        )
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        value = json.loads(raw.decode("utf-8"), object_pairs_hook=object_pairs)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ContractError(f"{label} is not strict UTF-8 JSON") from exc
     _require(isinstance(value, dict), f"{label} root is not an object")
     return value
+
+
+def _strict_json_object(path: Path, label: str) -> dict[str, Any]:
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise ContractError(f"{label} is not strict UTF-8 JSON") from exc
+    return _strict_json_bytes(raw, label)
 
 
 def _strict_lock() -> dict[str, Any]:
@@ -1377,8 +1395,41 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
         d112_aggregate_sha256 != d110_amendment_aggregate_sha256,
         "D1.12 aggregate unexpectedly equals the historical D1.10 aggregate",
     )
-    d113_amendment = _strict_json_object(D113_AMENDMENT_PATH, "D1.13 amendment")
-    d113_inventory = _strict_json_object(D113_INVENTORY_PATH, "D1.13 inventory")
+    d113_amendment_blob = _git(
+        ROOT,
+        "cat-file",
+        "blob",
+        f"{D113_CORRECTION_SOURCE_HEAD}:{D113_AMENDMENT_PATH.relative_to(ROOT).as_posix()}",
+        text=False,
+    )
+    d113_inventory_blob = _git(
+        ROOT,
+        "cat-file",
+        "blob",
+        f"{D113_CORRECTION_SOURCE_HEAD}:{D113_INVENTORY_PATH.relative_to(ROOT).as_posix()}",
+        text=False,
+    )
+    assert isinstance(d113_amendment_blob.stdout, bytes)
+    assert isinstance(d113_inventory_blob.stdout, bytes)
+    try:
+        d113_amendment_current = D113_AMENDMENT_PATH.read_bytes()
+        d113_inventory_current = D113_INVENTORY_PATH.read_bytes()
+    except OSError as exc:
+        raise ContractError("historical D1.13 documents are unavailable") from exc
+    _require(
+        d113_amendment_current == d113_amendment_blob.stdout,
+        "historical D1.13 amendment byte seal differs",
+    )
+    _require(
+        d113_inventory_current == d113_inventory_blob.stdout,
+        "historical D1.13 inventory byte seal differs",
+    )
+    d113_amendment = _strict_json_bytes(
+        d113_amendment_blob.stdout, "historical D1.13 amendment"
+    )
+    d113_inventory = _strict_json_bytes(
+        d113_inventory_blob.stdout, "historical D1.13 inventory"
+    )
     d113_amendment_implementation = d113_amendment.get("implementation_sha256")
     d113_inventory_implementation = d113_inventory.get("implementation_sha256")
     _require(
@@ -1418,13 +1469,56 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
         d113_aggregate_sha256 != d112_aggregate_sha256,
         "D1.13 aggregate unexpectedly equals the historical D1.12 aggregate",
     )
-    current_aggregate_sha256 = d113_aggregate_sha256
+    d114_amendment = _strict_json_object(D114_AMENDMENT_PATH, "D1.14 amendment")
+    d114_inventory = _strict_json_object(D114_INVENTORY_PATH, "D1.14 inventory")
+    d114_amendment_implementation = d114_amendment.get("implementation_sha256")
+    d114_inventory_implementation = d114_inventory.get("implementation_sha256")
+    _require(
+        d114_amendment.get("schema") == D114_AMENDMENT_SCHEMA
+        and d114_amendment.get("status") == D114_STATUS
+        and d114_amendment.get("classification") == D114_CLASSIFICATION
+        and isinstance(d114_amendment_implementation, dict),
+        "D1.14 recovery amendment identity differs",
+    )
+    _require(
+        d114_inventory.get("schema") == D114_INVENTORY_SCHEMA
+        and d114_inventory.get("status") == D114_STATUS
+        and d114_inventory.get("classification") == D114_CLASSIFICATION
+        and isinstance(d114_inventory_implementation, dict),
+        "D1.14 recovery inventory identity differs",
+    )
+    _require(
+        d114_amendment_implementation == d114_inventory_implementation,
+        "D1.14 recovery implementation seals disagree",
+    )
+    d114_local_validator_overrides = (
+        set(d114_amendment_implementation) & set(LOCAL_VALIDATOR_ROLES)
+    )
+    _require(
+        d114_local_validator_overrides == D114_LOCAL_VALIDATOR_OVERRIDES,
+        "D1.14 local validator override set differs",
+    )
+    d114_aggregate_sha256 = d114_amendment_implementation.get(
+        D18_CURRENT_AGGREGATE_PATH
+    )
+    _require(
+        isinstance(d114_aggregate_sha256, str)
+        and SHA256.fullmatch(d114_aggregate_sha256) is not None,
+        "D1.14 aggregate implementation seal is missing",
+    )
+    _require(
+        d114_aggregate_sha256 != d113_aggregate_sha256,
+        "D1.14 aggregate unexpectedly equals the historical D1.13 aggregate",
+    )
+    current_aggregate_sha256 = d114_aggregate_sha256
 
     # The immutable Multi-SWE lock predates D1.8 and remains bound to its exact
     # starting blobs.  D1.10 separately seals the executable local validators
-    # at that correction, while D1.12 and D1.13 provide explicit successive
-    # overrides for the benchmark matrix.  Never rewrite a historical lock or
-    # amendment to make a changed live validator appear unchanged.
+    # at that correction, while D1.12, D1.13, and D1.14 provide explicit
+    # successive overrides for the benchmark matrix.  D1.13 is loaded from
+    # its exact source Git blobs and must remain byte-identical in the current
+    # tree.  Never rewrite a historical lock or amendment to make a changed
+    # live validator appear unchanged.
     locked_rows: dict[str, dict[str, Any]] = {}
     verified: list[dict[str, Any]] = []
     for path in sorted(LOCAL_VALIDATOR_ROLES):
@@ -1490,9 +1584,9 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             rows.get(path) == historical_observed,
             f"historical local validator byte lock differs: {path}",
         )
-        if path in D113_LOCAL_VALIDATOR_OVERRIDES:
-            expected_current_sha256 = d113_amendment_implementation.get(path)
-            current_generation = "D1.13"
+        if path in D114_LOCAL_VALIDATOR_OVERRIDES:
+            expected_current_sha256 = d114_amendment_implementation.get(path)
+            current_generation = "D1.14"
         else:
             d110_amendment_sha256 = d110_amendment_implementation.get(path)
             d110_inventory_sha256 = d110_inventory_implementation.get(path)
@@ -1513,7 +1607,7 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             )
             _require(
                 observed["sha256"] == current_aggregate_sha256,
-                "current D1.13 aggregate differs from the recovery implementation seal",
+                "current D1.14 aggregate differs from the recovery implementation seal",
             )
         locked_rows[path] = historical_observed
         verified.append({"git_blob_oid": match.group(1), "path": path, **observed})

@@ -25,10 +25,10 @@ jobs:
         with:
           python-version: 3.11.10
           cache: ""
-      - name: Rehearse dependency-free D1.13 boundary
+      - name: Rehearse dependency-free D1.14 boundary
         run: |
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
-          python -I -S scripts/trimem_d113_reseal.py --help
+          python -I -S scripts/trimem_d114_reseal.py --help
       - name: Install hash-locked environment
         run: |
           python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
@@ -45,12 +45,14 @@ jobs:
         run: python scripts/make_handoff_manifest.py --check
       - name: Scan tracked source for forbidden credentials and host paths
         run: python scripts/release_check.py --secrets
-      - name: Verify committed freeze and D1.13 no-execution-authority boundary
+      - name: Verify committed freeze and D1.14 no-execution-authority boundary
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
           python -I -S scripts/trimem_d113_gate_contract.py \
             --fixture tests/fixtures/trimem_d113/exec_012_preprotected_failure.json
-          python scripts/trimem_d113_reseal.py --check
+          python -I -S scripts/trimem_d114_gate_contract.py \
+            --fixture tests/fixtures/trimem_d114/exec_013_post_setup_failure.json
+          python scripts/trimem_d114_reseal.py --check
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
           python - <<'PY'
           import json
@@ -60,14 +62,14 @@ jobs:
 
           sentinel_present = Path(
               "artifacts/trimem_v1/exec_requests/"
-              "DEVELOPMENT_TUNING_EXEC_REQUEST_013.json"
+              "DEVELOPMENT_TUNING_EXEC_REQUEST_014.json"
           ).is_file()
           cases = (
               (
                   "benchmark-approval",
                   0 if sentinel_present else 1,
                   [] if sentinel_present else [
-                      "fresh _013 zero-authority sentinel is required"
+                      "fresh _014 zero-authority sentinel is required"
                   ],
               ),
               (
@@ -114,14 +116,14 @@ jobs:
               expected = {
                   "blockers": expected_blockers,
                   "endpoint": (
-                      "TRIMEM_V1_READY_FOR_EXEC_013_REQUEST"
+                      "TRIMEM_V1_READY_FOR_EXEC_014_REQUEST"
                   ),
                   "level": level,
                   "status": "PASS" if not expected_blockers else "FAIL_CLOSED",
               }
               if observed != expected:
                   raise SystemExit(
-                      f"{level}: expected exact D1.13 readiness report {expected!r}, "
+                      f"{level}: expected exact D1.14 readiness report {expected!r}, "
                       f"got {observed!r}"
                   )
               if "official_grader_viability" in report:
@@ -132,10 +134,10 @@ jobs:
                   ),
                   "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
                   "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": (
-                      "NOT_REACHED_ON_EXEC_012"
+                      "NOT_REACHED_ON_EXEC_013"
                   ),
                   "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": (
-                      "NOT_REACHED_ON_EXEC_012"
+                      "NOT_REACHED_ON_EXEC_013"
                   ),
                   "PERFORMANCE": "NOT_MEASURED",
               }
@@ -144,6 +146,6 @@ jobs:
               }
               if observed_split != expected_split:
                   raise SystemExit(
-                      f"{level}: D1.13 split status differs: {observed_split!r}"
+                      f"{level}: D1.14 split status differs: {observed_split!r}"
                   )
           PY

@@ -355,5 +355,5 @@ def test_workflow_orders_canary_before_images_and_scientific_runner():
     image_pull = workflow.index("Pull committed images by digest and verify local observations")
     scientific = workflow.index("Execute frozen serial streams with one atomic phase ledger")
     assert canary < image_pull < scientific
-    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_012.json" in workflow
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_013.json" in workflow
     assert "protocol-action-canary.json" in workflow

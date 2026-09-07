@@ -64,6 +64,82 @@ def _strict_object(raw: bytes, *, label: str) -> dict[str, Any]:
     return value
 
 
+def _read_exact_repository_head(repository: Path) -> str:
+    """Read HEAD while trusting only this exact cross-OS checkout path.
+
+    Windows-owned DrvFS checkouts are intentionally not present in the WSL
+    user's global ``safe.directory`` list.  Supply the one exact repository as
+    protected command-scope configuration while disabling every ambient Git
+    configuration and replacement-object input.
+    """
+
+    git_metadata = repository / ".git"
+    if not git_metadata.is_dir() or git_metadata.is_symlink():
+        raise D115LoaderRehearsalError(
+            "exact loader rehearsal requires a standalone Git checkout"
+        )
+    environment = {
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "GIT_TERMINAL_PROMPT": "0",
+        "HOME": d115.WSL_COLLECTOR_HOME,
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": d115.EXACT_PYTHON_LIBRARY_PATH,
+        "PATH": d115.WSL_COLLECTOR_PATH,
+    }
+    try:
+        completed = subprocess.run(
+            [
+                "/usr/bin/git",
+                "--no-replace-objects",
+                "-c",
+                f"safe.directory={repository}",
+                "-c",
+                "core.fsmonitor=false",
+                "-c",
+                f"core.hooksPath={os.devnull}",
+                "-C",
+                str(repository),
+                "rev-parse",
+                "--verify",
+                "HEAD^{commit}",
+            ],
+            cwd=repository,
+            check=False,
+            capture_output=True,
+            text=False,
+            timeout=30,
+            env=environment,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise D115LoaderRehearsalError(
+            "rehearsal repository HEAD could not be read"
+        ) from exc
+    if completed.returncode != 0 or completed.stderr != b"":
+        raise D115LoaderRehearsalError(
+            "rehearsal repository HEAD could not be read"
+        )
+    try:
+        observed = completed.stdout.decode("ascii", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise D115LoaderRehearsalError(
+            "rehearsal repository HEAD is not canonical ASCII"
+        ) from exc
+    if not observed.endswith("\n") or observed.count("\n") != 1:
+        raise D115LoaderRehearsalError(
+            "rehearsal repository HEAD is not canonical ASCII"
+        )
+    head = observed[:-1]
+    if d115.HEX40.fullmatch(head) is None:
+        raise D115LoaderRehearsalError(
+            "rehearsal repository HEAD is not canonical ASCII"
+        )
+    return head
+
+
 def collect_exact_loader_rehearsal(
     *,
     repository: Path,
@@ -73,13 +149,7 @@ def collect_exact_loader_rehearsal(
     if os.name != "posix":
         raise D115LoaderRehearsalError("exact loader rehearsal requires POSIX")
     repository = repository.resolve(strict=True)
-    observed_head = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=repository,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
+    observed_head = _read_exact_repository_head(repository)
     if observed_head != source_head:
         raise D115LoaderRehearsalError("rehearsal repository HEAD differs")
     validated_readiness = d115._validate_runner_readiness(

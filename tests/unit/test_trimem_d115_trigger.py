@@ -6,6 +6,7 @@ import hashlib
 import inspect
 import json
 from pathlib import Path
+import subprocess
 import sys
 
 import pytest
@@ -16,6 +17,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_development_trigger_d114 as d114  # noqa: E402
 import trimem_development_trigger_d115 as d115  # noqa: E402
+import trimem_d115_loader_rehearsal as loader_rehearsal  # noqa: E402
 
 
 def _alias_evidence() -> dict[str, object]:
@@ -359,6 +361,110 @@ def test_wsl_collector_host_environment_is_an_allowlist() -> None:
         "SystemRoot": r"C:\RealWindows",
         "WINDIR": r"C:\RealWindows",
     }
+
+
+def test_loader_repository_head_uses_one_exact_safe_directory_and_no_ambient_git(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path.resolve()
+    (repository / ".git").mkdir()
+    observed: dict[str, object] = {}
+
+    def run(argv: object, **kwargs: object) -> subprocess.CompletedProcess[bytes]:
+        observed["argv"] = list(argv)
+        observed.update(kwargs)
+        return subprocess.CompletedProcess(
+            list(argv), returncode=0, stdout=b"a" * 40 + b"\n", stderr=b""
+        )
+
+    monkeypatch.setattr(loader_rehearsal.subprocess, "run", run)
+
+    assert loader_rehearsal._read_exact_repository_head(repository) == "a" * 40
+    assert observed["argv"] == [
+        "/usr/bin/git",
+        "--no-replace-objects",
+        "-c",
+        f"safe.directory={repository}",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        f"core.hooksPath={loader_rehearsal.os.devnull}",
+        "-C",
+        str(repository),
+        "rev-parse",
+        "--verify",
+        "HEAD^{commit}",
+    ]
+    assert observed["cwd"] == repository
+    assert observed["check"] is False
+    assert observed["capture_output"] is True
+    assert observed["text"] is False
+    assert observed["timeout"] == 30
+    assert observed["env"] == {
+        "GIT_CONFIG_GLOBAL": loader_rehearsal.os.devnull,
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "GIT_TERMINAL_PROMPT": "0",
+        "HOME": d115.WSL_COLLECTOR_HOME,
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": d115.EXACT_PYTHON_LIBRARY_PATH,
+        "PATH": d115.WSL_COLLECTOR_PATH,
+    }
+
+
+@pytest.mark.parametrize(
+    ("returncode", "stdout", "stderr"),
+    (
+        (128, b"", b"fatal\n"),
+        (0, b"a" * 40 + b"\n", b"warning\n"),
+        (0, b"A" * 40 + b"\n", b""),
+        (0, b"a" * 40, b""),
+        (0, b"a" * 40 + b"\n\n", b""),
+    ),
+)
+def test_loader_repository_head_rejects_noncanonical_git_observation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    returncode: int,
+    stdout: bytes,
+    stderr: bytes,
+) -> None:
+    repository = tmp_path.resolve()
+    (repository / ".git").mkdir()
+    monkeypatch.setattr(
+        loader_rehearsal.subprocess,
+        "run",
+        lambda *_args, **_kwargs: subprocess.CompletedProcess(
+            [], returncode=returncode, stdout=stdout, stderr=stderr
+        ),
+    )
+
+    with pytest.raises(loader_rehearsal.D115LoaderRehearsalError):
+        loader_rehearsal._read_exact_repository_head(repository)
+
+
+def test_loader_repository_head_rejects_cross_os_linked_worktree(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    (tmp_path / ".git").write_text(
+        "gitdir: G:/external/repository/.git/worktrees/rehearsal\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        loader_rehearsal.subprocess,
+        "run",
+        lambda *_args, **_kwargs: pytest.fail("Git must not run for a linked checkout"),
+    )
+
+    with pytest.raises(
+        loader_rehearsal.D115LoaderRehearsalError,
+        match="standalone Git checkout",
+    ):
+        loader_rehearsal._read_exact_repository_head(tmp_path)
 
 
 def test_exact_loader_rehearsal_uses_isolated_absolute_wsl_chain(

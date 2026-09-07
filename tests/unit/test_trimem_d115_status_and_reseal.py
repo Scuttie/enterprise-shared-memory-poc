@@ -6,6 +6,9 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from typing import Callable
+
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -172,6 +175,88 @@ def test_changed_path_vocabulary_matches_trigger_and_excludes_science() -> None:
     assert reseal.D114_REQUEST_PATH not in reseal.ALLOWED_CHANGED_PATHS
     assert reseal.D115_REQUEST_PATH not in reseal.ALLOWED_CHANGED_PATHS
     assert set(reseal.REQUIRED_CHANGED_PATHS) <= reseal.ALLOWED_CHANGED_PATHS
+    assert {
+        "scripts/trimem_benchmark_matrix.py": "M",
+        "scripts/trimem_benchmark_run.py": "M",
+    }.items() <= reseal.REQUIRED_CHANGED_PATHS.items()
+    assert {
+        "scripts/trimem_benchmark_matrix.py",
+        "scripts/trimem_benchmark_run.py",
+    } <= set(freeze.FROZEN_PATHS)
+    assert trigger.ACTIVATION_BINDING_PATHS == {
+        "gitattributes_sha256": ".gitattributes",
+        "benchmark_matrix_sha256": "scripts/trimem_benchmark_matrix.py",
+        "benchmark_runner_sha256": "scripts/trimem_benchmark_run.py",
+        "benchmark_workflow_sha256": trigger.EXPECTED_WORKFLOW_PATH,
+        "compiled_prefix_alias_sha256": trigger.COMPILED_PREFIX_ALIAS_PATH,
+        "loader_rehearsal_collector_sha256": (
+            trigger.LOADER_REHEARSAL_COLLECTOR_PATH
+        ),
+        "d115_amendment_sha256": trigger.AMENDMENT_PATH,
+        "d115_gate_contract_sha256": trigger.GATE_CONTRACT_PATH,
+        "d115_inventory_sha256": trigger.INVENTORY_PATH,
+        "d115_reseal_sha256": trigger.RESEAL_PATH,
+        "d115_run_fixture_sha256": trigger.PREVIOUS_FAILURE_FIXTURE_PATH,
+        "readiness_requirements_sha256": (
+            "artifacts/trimem_v1/readiness_requirements.json"
+        ),
+        "trigger_reader_sha256": trigger.TRIGGER_PATH,
+        "verify_ready_sha256": "scripts/trimem_verify_ready.py",
+    }
+
+
+def _live_active_contract_blob(_commit: str, relative: str) -> bytes:
+    return (ROOT / relative).read_bytes()
+
+
+def test_active_contract_accepts_exact_d115_consumer_imports(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(reseal, "git_blob", _live_active_contract_blob)
+    observed = reseal.validate_active_contract("unused")
+    assert observed["request_id"] == trigger.REQUEST_ID
+
+
+@pytest.mark.parametrize(
+    "tamper",
+    (
+        lambda source: source.replace(
+            "from trimem_development_trigger_d115 import",
+            "# from trimem_development_trigger_d115 import\n"
+            "from trimem_development_trigger_d114 import",
+            1,
+        ),
+        lambda source: source
+        + "\nfrom trimem_development_trigger_d113 import SENTINEL_PATH\n",
+        lambda source: source
+        + "\nimport trimem_development_trigger_d114 as legacy_trigger\n",
+        lambda source: source.replace(
+            "    DevelopmentTriggerError,\n", "", 1
+        ),
+        lambda source: source
+        + "\n__import__('trimem_development_trigger_d114')\n",
+        lambda source: source + "\nif:\n",
+    ),
+)
+def test_active_contract_rejects_non_exact_or_legacy_consumer_imports(
+    monkeypatch: pytest.MonkeyPatch,
+    tamper: Callable[[str], str],
+) -> None:
+    relative = "scripts/trimem_benchmark_matrix.py"
+    original = (ROOT / relative).read_text(encoding="utf-8")
+    modified = tamper(original)
+
+    def blob(_commit: str, requested: str) -> bytes:
+        if requested == relative:
+            return modified.encode("utf-8")
+        return _live_active_contract_blob(_commit, requested)
+
+    monkeypatch.setattr(reseal, "git_blob", blob)
+    with pytest.raises(
+        reseal.D115ResealError,
+        match="D1.15 active request consumer",
+    ):
+        reseal.validate_active_contract("unused")
 
 
 def test_optional_015_boundary_is_absent_or_exact_sentinel_child() -> None:

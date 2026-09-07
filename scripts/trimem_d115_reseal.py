@@ -109,6 +109,34 @@ ALLOWED_CHANGED_PATHS = d115.ALLOWED_RECOVERY_PATHS
 REQUIRED_CHANGED_PATHS = d115.REQUIRED_RECOVERY_CHANGES
 HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
+DEVELOPMENT_TRIGGER_MODULE = re.compile(
+    r"trimem_development_trigger_d[0-9]+\Z"
+)
+EXPECTED_ACTIVE_CONSUMER_IMPORTS: Mapping[
+    str, frozenset[tuple[str, str | None]]
+] = {
+    "scripts/trimem_benchmark_matrix.py": frozenset(
+        {
+            ("SENTINEL_PATH", "DEVELOPMENT_SENTINEL_PATH"),
+            ("DevelopmentTriggerError", None),
+            (
+                "validate_sentinel_commit",
+                "validate_development_sentinel_commit",
+            ),
+        }
+    ),
+    "scripts/trimem_benchmark_run.py": frozenset(
+        {
+            ("EXPECTED_WORKFLOW_REF", "DEVELOPMENT_WORKFLOW_REF"),
+            ("SENTINEL_PATH", "DEVELOPMENT_SENTINEL_PATH"),
+            ("DevelopmentTriggerError", None),
+            (
+                "validate_sentinel_commit",
+                "validate_development_sentinel_commit",
+            ),
+        }
+    ),
+}
 
 ZERO_SCIENTIFIC_ACTUALS: dict[str, int | float] = {
     "benchmark_image_pulls": 0,
@@ -532,6 +560,53 @@ def current_recovery_record() -> dict[str, Any]:
     }
 
 
+def _validate_active_consumer_imports(relative: str, source: str) -> None:
+    try:
+        tree = ast.parse(source, filename=relative)
+    except SyntaxError as exc:
+        raise D115ResealError(
+            f"D1.15 active request consumer is invalid Python: {relative}"
+        ) from exc
+
+    trigger_imports: list[ast.Import | ast.ImportFrom] = []
+    active_imports: list[ast.ImportFrom] = []
+    dynamic_trigger_references: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            if any(
+                DEVELOPMENT_TRIGGER_MODULE.fullmatch(alias.name)
+                for alias in node.names
+            ):
+                trigger_imports.append(node)
+        elif isinstance(node, ast.ImportFrom):
+            module = node.module or ""
+            if DEVELOPMENT_TRIGGER_MODULE.fullmatch(module):
+                trigger_imports.append(node)
+                if module == "trimem_development_trigger_d115":
+                    active_imports.append(node)
+        elif (
+            isinstance(node, ast.Constant)
+            and isinstance(node.value, str)
+            and DEVELOPMENT_TRIGGER_MODULE.fullmatch(node.value)
+        ):
+            dynamic_trigger_references.add(node.value)
+
+    expected_names = EXPECTED_ACTIVE_CONSUMER_IMPORTS[relative]
+    actual_names = (
+        frozenset((alias.name, alias.asname) for alias in active_imports[0].names)
+        if len(active_imports) == 1
+        else frozenset()
+    )
+    require(
+        len(trigger_imports) == 1
+        and len(active_imports) == 1
+        and active_imports[0].level == 0
+        and actual_names == expected_names
+        and not dynamic_trigger_references,
+        f"D1.15 active request consumer differs: {relative}",
+    )
+
+
 def validate_active_contract(source_head: str) -> dict[str, Any]:
     trigger = importlib.import_module("trimem_development_trigger_d115")
     expected = {
@@ -567,6 +642,9 @@ def validate_active_contract(source_head: str) -> dict[str, Any]:
         and workflow.count("scripts/trimem_official_harness_loader_preflight.py") == 2,
         "D1.15 workflow alias/loader/request contract differs",
     )
+    for relative in EXPECTED_ACTIVE_CONSUMER_IMPORTS:
+        consumer = git_blob(source_head, relative).decode("utf-8", errors="strict")
+        _validate_active_consumer_imports(relative, consumer)
     return {
         "actual_execution_authorized": False,
         "alias_validation": "EXACT_ROOT_OWNED_DEFAULT_ONLY",

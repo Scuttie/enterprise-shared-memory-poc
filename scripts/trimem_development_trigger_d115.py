@@ -263,12 +263,18 @@ REQUIRED_RECOVERY_CHANGES = {
     RESEAL_PATH: "A",
     TRIGGER_PATH: "A",
     "scripts/trimem_freeze.py": "M",
+    "scripts/trimem_benchmark_matrix.py": "M",
+    "scripts/trimem_benchmark_run.py": "M",
     "scripts/trimem_verify_ready.py": "M",
 }
 ALLOWED_ACTIVATION_PATHS = ALLOWED_RECOVERY_PATHS
 REQUIRED_ACTIVATION_CHANGES = REQUIRED_RECOVERY_CHANGES
 
 ACTIVATION_BINDING_PATHS = {
+    "gitattributes_sha256": ".gitattributes",
+    "benchmark_matrix_sha256": "scripts/trimem_benchmark_matrix.py",
+    "benchmark_runner_sha256": "scripts/trimem_benchmark_run.py",
+    "benchmark_workflow_sha256": EXPECTED_WORKFLOW_PATH,
     "compiled_prefix_alias_sha256": COMPILED_PREFIX_ALIAS_PATH,
     "loader_rehearsal_collector_sha256": LOADER_REHEARSAL_COLLECTOR_PATH,
     "d115_amendment_sha256": AMENDMENT_PATH,

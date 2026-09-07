@@ -25,6 +25,7 @@ import trimem_development_trigger_d110 as trigger_d110  # noqa: E402
 import trimem_development_trigger_d112 as trigger_d112  # noqa: E402
 import trimem_development_trigger_d113 as trigger_d113  # noqa: E402
 import trimem_development_trigger_d114 as trigger_d114  # noqa: E402
+import trimem_development_trigger_d115 as trigger_d115  # noqa: E402
 import trimem_d111_gate_contract as d111_gate  # noqa: E402
 import trimem_exec_approval as approval_validator  # noqa: E402
 import trimem_approved_phase as approved_phase  # noqa: E402
@@ -2739,7 +2740,21 @@ def _d18_receipt_fixture() -> dict[str, object]:
     }
 
 
-def test_d114_is_the_only_active_development_reader_contract() -> None:
+def test_d115_is_the_only_active_development_reader_contract() -> None:
+    assert trigger_d115.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_015"
+    assert trigger_d115.SENTINEL_PATH.endswith(
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_015.json"
+    )
+    assert (
+        trigger_d115.REQUIRED_EXTERNAL_AUTHORIZATION
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_015_APPROVED_ONCE"
+    )
+    assert benchmark_run.DEVELOPMENT_EXEC_REQUEST == Path(
+        trigger_d115.SENTINEL_PATH
+    )
+    assert benchmark_matrix.DEVELOPMENT_SENTINEL_PATH == trigger_d115.SENTINEL_PATH
+
+    # D1.14 remains immutable execution history, not an active benchmark reader.
     assert trigger_d114.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_014"
     assert trigger_d114.SENTINEL_PATH.endswith(
         "DEVELOPMENT_TUNING_EXEC_REQUEST_014.json"
@@ -2748,9 +2763,6 @@ def test_d114_is_the_only_active_development_reader_contract() -> None:
         trigger_d114.REQUIRED_EXTERNAL_AUTHORIZATION
         == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_014_APPROVED_ONCE"
     )
-    assert benchmark_run.DEVELOPMENT_EXEC_REQUEST == Path(trigger_d114.SENTINEL_PATH)
-    assert benchmark_matrix.DEVELOPMENT_SENTINEL_PATH == trigger_d114.SENTINEL_PATH
-
     # D1.13 remains immutable execution history, not an active benchmark reader.
     assert trigger_d113.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_013"
     assert trigger_d113.SENTINEL_PATH.endswith(

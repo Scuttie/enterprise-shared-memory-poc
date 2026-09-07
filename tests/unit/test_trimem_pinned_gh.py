@@ -34,6 +34,12 @@ EXPECTED_CHECKSUM_FILE_SHA256 = (
     "61905c69ec8660f310814ec98395cdd0c2d07aabf024c597ec45813984a02334"
 )
 EXPECTED_VERSION_LINE = "gh version 2.97.0 (2026-07-31)"
+EXPECTED_WINDOWS_ARCHIVE_SHA256 = (
+    "35d7fe05c4dd1411ffda1e73dfc7c6f44b75c936ca51fa6595c657fdc0350cec"
+)
+EXPECTED_WINDOWS_BINARY_SHA256 = (
+    "e2efa10a5d2ce93cac9bc4b676932b62947c0967c01c8f2c3a9cb4437ad358d3"
+)
 ARCHIVE_ROOT = "gh_2.97.0_linux_amd64"
 BINARY_PATH = f"{ARCHIVE_ROOT}/bin/gh"
 
@@ -146,6 +152,7 @@ def install_fixture(
 def test_committed_lock_is_the_exact_official_github_cli_release() -> None:
     lock = pinned_gh.load_gh_cli_lock(LOCK_PATH)
 
+    assert lock["schema"] == "trimem/gh-cli-lock/1.1"
     assert lock["version"] == "2.97.0"
     assert lock["release_tag"] == "v2.97.0"
     assert lock["platform"] == "linux_amd64"
@@ -167,6 +174,166 @@ def test_committed_lock_is_the_exact_official_github_cli_release() -> None:
         "https://github.com/cli/cli/releases/download/v2.97.0/"
     )
     assert "latest" not in lock["archive_url"]
+    windows = lock["windows_observer"]
+    assert windows == {
+        "archive_binary_path": "bin/gh.exe",
+        "archive_filename": "gh_2.97.0_windows_amd64.zip",
+        "archive_sha256": EXPECTED_WINDOWS_ARCHIVE_SHA256,
+        "archive_sha256_source_line": (
+            f"{EXPECTED_WINDOWS_ARCHIVE_SHA256}  gh_2.97.0_windows_amd64.zip"
+        ),
+        "archive_url": (
+            "https://github.com/cli/cli/releases/download/v2.97.0/"
+            "gh_2.97.0_windows_amd64.zip"
+        ),
+        "extracted_gh_binary_sha256": EXPECTED_WINDOWS_BINARY_SHA256,
+        "hash_source": {
+            "archive_sha256": "OFFICIAL_GITHUB_CLI_RELEASE_CHECKSUM_FILE",
+            "extracted_gh_binary_sha256": (
+                "INDEPENDENT_SHA256_OF_EXACT_REGULAR_FILE_PAYLOAD_"
+                "AFTER_ARCHIVE_VERIFICATION"
+            ),
+        },
+        "observed_archive_bytes": 14_938_517,
+        "observed_gh_binary_bytes": 41_775_416,
+        "platform": "windows_amd64",
+    }
+
+
+def _windows_observer_fixture(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> tuple[dict[str, Any], Path]:
+    payload = b"exact pinned Windows gh executable fixture"
+    binary = tmp_path / "gh.exe"
+    binary.write_bytes(payload)
+    lock = deepcopy(pinned_gh.load_gh_cli_lock(LOCK_PATH))
+    lock["windows_observer"]["observed_gh_binary_bytes"] = len(payload)
+    lock["windows_observer"]["extracted_gh_binary_sha256"] = hashlib.sha256(
+        payload
+    ).hexdigest()
+    monkeypatch.setattr(pinned_gh.platform, "system", lambda: "Windows")
+    monkeypatch.setattr(pinned_gh.platform, "machine", lambda: "AMD64")
+    for secret_name in (
+        "GH_TOKEN",
+        "GITHUB_TOKEN",
+        "OPENAI_API_KEY",
+        "TRIMEM_EVIDENCE_PASSPHRASE",
+        "TRIMEM_EXEC_APPROVAL_B64",
+    ):
+        monkeypatch.setenv(secret_name, f"canary-{secret_name.lower()}")
+    return lock, binary
+
+
+def test_windows_observer_requires_exact_locked_bytes_and_version(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock, binary = _windows_observer_fixture(tmp_path, monkeypatch)
+
+    def fake_version(
+        argv: list[str], **kwargs: Any
+    ) -> subprocess.CompletedProcess[bytes]:
+        assert argv == [str(binary), "--version"]
+        assert kwargs["text"] is False
+        for secret_name in (
+            "GH_TOKEN",
+            "GITHUB_TOKEN",
+            "OPENAI_API_KEY",
+            "TRIMEM_EVIDENCE_PASSPHRASE",
+            "TRIMEM_EXEC_APPROVAL_B64",
+        ):
+            assert secret_name not in kwargs["env"]
+        return subprocess.CompletedProcess(
+            argv, 0, (EXPECTED_VERSION_LINE + "\n").encode(), b""
+        )
+
+    monkeypatch.setattr(pinned_gh.subprocess, "run", fake_version)
+    observed = pinned_gh.verify_observer_gh(lock, binary)
+
+    assert observed == {
+        "binary_sha256": lock["windows_observer"]["extracted_gh_binary_sha256"],
+        "first_version_line": EXPECTED_VERSION_LINE,
+        "observer_platform": "windows_amd64",
+        "status": "PASS",
+        "version": "2.97.0",
+    }
+
+
+def test_windows_observer_rejects_same_size_wrong_hash(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock, binary = _windows_observer_fixture(tmp_path, monkeypatch)
+    lock["windows_observer"]["extracted_gh_binary_sha256"] = "0" * 64
+    monkeypatch.setattr(
+        pinned_gh.subprocess,
+        "run",
+        lambda *_args, **_kwargs: pytest.fail("wrong bytes were executed"),
+    )
+
+    with pytest.raises(pinned_gh.GhCliInstallError, match="binary hash mismatch"):
+        pinned_gh.verify_observer_gh(lock, binary)
+
+
+def test_windows_observer_rejects_wrong_version_and_noncanonical_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock, binary = _windows_observer_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(
+        pinned_gh.subprocess,
+        "run",
+        lambda argv, **_kwargs: subprocess.CompletedProcess(
+            argv, 0, b"gh version 2.96.0 (2026-07-15)\n", b""
+        ),
+    )
+    with pytest.raises(pinned_gh.GhCliInstallError, match="first version line mismatch"):
+        pinned_gh.verify_observer_gh(lock, binary)
+
+    renamed = tmp_path / "github-cli.exe"
+    renamed.write_bytes(binary.read_bytes())
+    with pytest.raises(pinned_gh.GhCliInstallError, match="absolute gh.exe path"):
+        pinned_gh.verify_observer_gh(lock, renamed)
+
+
+def test_observer_dispatch_rejects_unsupported_platform(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock = pinned_gh.load_gh_cli_lock(LOCK_PATH)
+    binary = tmp_path / "gh"
+    binary.write_bytes(b"untrusted")
+    monkeypatch.setattr(pinned_gh.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(pinned_gh.platform, "machine", lambda: "arm64")
+    monkeypatch.setattr(
+        pinned_gh.subprocess,
+        "run",
+        lambda *_args, **_kwargs: pytest.fail("unsupported binary was executed"),
+    )
+
+    with pytest.raises(pinned_gh.GhCliInstallError, match="platform is unsupported"):
+        pinned_gh.verify_observer_gh(lock, binary)
+
+
+def test_linux_observer_dispatch_preserves_the_linux_binary_verifier(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock = pinned_gh.load_gh_cli_lock(LOCK_PATH)
+    binary = tmp_path / "gh"
+    observed: list[tuple[dict[str, Any], Path]] = []
+    monkeypatch.setattr(pinned_gh.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(pinned_gh.platform, "machine", lambda: "x86_64")
+
+    def fake_verify(
+        passed_lock: dict[str, Any], passed_binary: Path
+    ) -> dict[str, Any]:
+        observed.append((passed_lock, passed_binary))
+        return {"status": "PASS", "version": "2.97.0"}
+
+    monkeypatch.setattr(pinned_gh, "verify_installed_gh", fake_verify)
+
+    assert pinned_gh.verify_observer_gh(lock, binary) == {
+        "observer_platform": "linux_amd64",
+        "status": "PASS",
+        "version": "2.97.0",
+    }
+    assert observed == [(lock, binary)]
 
 
 def test_missing_gh_is_repaired_and_only_the_locked_binary_is_extracted(

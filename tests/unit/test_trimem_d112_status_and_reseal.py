@@ -207,6 +207,78 @@ def test_trigger_and_reseal_share_exact_d112_contract_constants() -> None:
     assert trigger.ALLOWED_ACTIVATION_PATHS == reseal.ALLOWED_CHANGED_PATHS
 
 
+def test_cross_platform_observer_is_byte_locked_and_bounded() -> None:
+    contract = reseal.validate_github_observer_contract()
+
+    assert contract["lock_schema"] == "trimem/gh-cli-lock/1.1"
+    assert contract["first_version_line"] == "gh version 2.97.0 (2026-07-31)"
+    assert contract["observer_selection_policy"] == (
+        "PLATFORM_EXACT_BYTES_AND_VERSION_NO_UNVERIFIED_FALLBACK"
+    )
+    assert contract["report_line_ending_contract"] == "GIT_ATTRIBUTE_TEXT_EOL_LF"
+    assert contract["platforms"] == {
+        "linux_amd64": {
+            "archive_sha256": (
+                "a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112"
+            ),
+            "binary_sha256": (
+                "141507c337e8b202ad398550c3b73d72f5af92e86f71665214538a81efd4c409"
+            ),
+        },
+        "windows_amd64": {
+            "archive_sha256": (
+                "35d7fe05c4dd1411ffda1e73dfc7c6f44b75c936ca51fa6595c657fdc0350cec"
+            ),
+            "binary_sha256": (
+                "e2efa10a5d2ce93cac9bc4b676932b62947c0967c01c8f2c3a9cb4437ad358d3"
+            ),
+        },
+    }
+    assert contract["same_verified_transport_for"] == [
+        "current_pull_request",
+        "current_execution_workflow_run",
+        "source_workflow_runs",
+        "repository_runners",
+    ]
+    assert contract["visibility_polling"] == {
+        "fail_immediately_for": [
+            "malformed_or_contradictory_identity",
+            "duplicate_or_rerun_workflow",
+            "red_source_gate",
+            "missing_or_nonready_runner_set",
+        ],
+        "interval_seconds": 2,
+        "maximum_polls": 16,
+        "poll_only": [
+            "missing_stale_or_incomplete_current_pr_head",
+            "missing_or_incomplete_current_execution_workflow_run",
+        ],
+        "timeout_disposition": "FAIL_CLOSED_BEFORE_SENTINEL_OR_EXECUTION",
+        "timeout_seconds": 30,
+    }
+    for relative in (
+        ".gitattributes",
+        "configs/trimem_v1/gh_cli_lock.json",
+        "scripts/trimem_install_pinned_gh.py",
+        "tests/unit/test_trimem_pinned_gh.py",
+    ):
+        assert relative in reseal.IMPLEMENTATION_PATHS
+        assert reseal.REQUIRED_CHANGED_PATHS[relative] == "M"
+
+
+def test_activation_report_records_observer_scope_without_execution_claim() -> None:
+    report = (ROOT / "reports/TRIMEM_D112_EXEC_012_ACTIVATION.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "same verified GitHub CLI" in report
+    assert "gh_2.97.0_windows_amd64.zip" in report
+    assert "at most 16 observations" in report
+    assert "Source-gate and runner-set evidence never poll" in report
+    assert "no benchmark image" in report
+    assert "not DEV execution approval" in report
+
+
 def test_d112_artifacts_are_reproducible_and_keep_zero_execution_authority() -> None:
     expected_amendment, expected_inventory = reseal.build_artifacts()
     amendment = read(
@@ -218,6 +290,8 @@ def test_d112_artifacts_are_reproducible_and_keep_zero_execution_authority() -> 
 
     assert amendment == expected_amendment
     assert inventory == expected_inventory
+    assert amendment["github_observer"] == reseal.validate_github_observer_contract()
+    assert inventory["github_observer"] == amendment["github_observer"]
     assert amendment["zero_cost_activation_actuals"] == reseal.ZERO_ACTUALS
     assert amendment["authority_boundary"] == {
         "actual_execution_authorized": False,

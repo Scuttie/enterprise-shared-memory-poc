@@ -67,6 +67,26 @@ def _pull_request(head: str) -> dict[str, object]:
     }
 
 
+def _raw_pull_request(head: str) -> dict[str, object]:
+    return {
+        "base": {
+            "ref": trigger.EXPECTED_BASE_BRANCH,
+            "sha": trigger.EXPECTED_BASE_HEAD,
+        },
+        "draft": True,
+        "head": {
+            "ref": trigger.EXPECTED_BRANCH,
+            "repo": {"full_name": trigger.EXPECTED_REPOSITORY},
+            "sha": head,
+        },
+        "html_url": (
+            "https://github.com/Scuttie/enterprise-shared-memory-poc/pull/18"
+        ),
+        "number": trigger.PULL_REQUEST_NUMBER,
+        "state": "open",
+    }
+
+
 def _raw_runs(source_head: str) -> dict[str, list[dict[str, object]]]:
     result: dict[str, list[dict[str, object]]] = {"push": [], "pull_request": []}
     for index, (path, event, _pr_number) in enumerate(
@@ -96,6 +116,19 @@ def _raw_runs(source_head: str) -> dict[str, list[dict[str, object]]]:
             }
         )
     return result
+
+
+def _execution_run(head: str, run_id: int = 990_012) -> dict[str, object]:
+    return {
+        "conclusion": None,
+        "event": "push",
+        "head_branch": trigger.EXPECTED_BRANCH,
+        "head_sha": head,
+        "id": run_id,
+        "path": trigger.EXPECTED_WORKFLOW_PATH,
+        "run_attempt": 1,
+        "status": "in_progress",
+    }
 
 
 def _remote_gate_evidence(source_head: str) -> dict[str, object]:
@@ -285,6 +318,26 @@ def test_d112_frozen_identity_and_zero_authority_constants() -> None:
         "trimem-ubuntu-24.04",
         "trimem-benchmark",
     )
+    assert trigger.REQUIRED_ACTIVATION_CHANGES[".gitattributes"] == "M"
+    assert trigger.REQUIRED_ACTIVATION_CHANGES[trigger.GH_CLI_LOCK_PATH] == "M"
+    assert trigger.REQUIRED_ACTIVATION_CHANGES[
+        "scripts/trimem_install_pinned_gh.py"
+    ] == "M"
+    assert trigger.REQUIRED_ACTIVATION_CHANGES[
+        "tests/unit/test_trimem_pinned_gh.py"
+    ] == "M"
+    assert trigger.ACTIVATION_BINDING_PATHS["gitattributes_sha256"] == (
+        ".gitattributes"
+    )
+    assert trigger.ACTIVATION_BINDING_PATHS["gh_cli_lock_sha256"] == (
+        trigger.GH_CLI_LOCK_PATH
+    )
+    assert trigger.ACTIVATION_BINDING_PATHS[
+        "gh_observer_verifier_sha256"
+    ] == "scripts/trimem_install_pinned_gh.py"
+    assert trigger.ACTIVATION_BINDING_PATHS[
+        "gh_observer_verifier_test_sha256"
+    ] == "tests/unit/test_trimem_pinned_gh.py"
 
 
 def test_d112_cli_imports_sibling_lock_reader_under_isolated_python() -> None:
@@ -304,6 +357,83 @@ def test_d112_cli_imports_sibling_lock_reader_under_isolated_python() -> None:
     )
     assert completed.returncode == 0, completed.stderr
     assert "ModuleNotFoundError" not in completed.stderr
+
+
+def test_d112_windows_observer_is_byte_verified_before_transport(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    windows_binary = (tmp_path / "gh.exe").resolve()
+    lock = {"schema": "trimem/gh-cli-lock/1.1"}
+    safe_environment = {"PATH": "verified-observer-only"}
+    calls: list[tuple[object, ...]] = []
+
+    monkeypatch.setattr(
+        trigger.shutil, "which", lambda name: str(windows_binary) if name == "gh" else None
+    )
+    monkeypatch.setattr(trigger, "load_gh_cli_lock", lambda path: lock)
+
+    def verify_observer(
+        selected_lock: object, binary: Path
+    ) -> dict[str, object]:
+        calls.append((selected_lock, binary))
+        return {
+            "first_version_line": "gh version 2.97.0 (2026-07-31)",
+            "observer_platform": "windows_amd64",
+            "status": "PASS",
+        }
+
+    monkeypatch.setattr(trigger, "verify_observer_gh", verify_observer)
+    monkeypatch.setattr(
+        trigger, "_safe_process_environment", lambda: safe_environment
+    )
+
+    assert trigger._pinned_gh_context() == (
+        str(windows_binary),
+        safe_environment,
+    )
+    assert calls == [(lock, windows_binary)]
+
+
+def test_d112_runner_api_uses_the_same_byte_verified_observer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    safe_environment = {"PATH": "verified-observer-only"}
+    expected = _runner_rows()
+    response_rows = [
+        {
+            **row,
+            "labels": [{"name": label} for label in row["labels"]],
+        }
+        for row in expected
+    ]
+    calls: list[tuple[object, ...]] = []
+    monkeypatch.setattr(
+        trigger,
+        "_pinned_gh_context",
+        lambda: ("C:\\locked\\gh.exe", safe_environment),
+    )
+
+    def run_command(
+        argv: object,
+        *,
+        safe_environment: object,
+        label: str,
+        timeout: int = 60,
+    ) -> bytes:
+        calls.append((tuple(argv), safe_environment, label, timeout))  # type: ignore[arg-type]
+        return trigger.canonical_bytes(
+            {"runners": response_rows, "total_count": len(response_rows)}
+        )
+
+    monkeypatch.setattr(trigger, "_run_readiness_command", run_command)
+
+    assert trigger.collect_remote_runner_rows() == expected
+    assert len(calls) == 1
+    argv, observed_environment, label, timeout = calls[0]
+    assert argv[0] == "C:\\locked\\gh.exe"  # type: ignore[index]
+    assert observed_environment is safe_environment
+    assert label == "GitHub repository runners"
+    assert timeout == 60
 
 
 def test_d112_workflow_locks_job_placement_order_and_secret_boundary(
@@ -414,6 +544,88 @@ def test_d112_current_pr_is_validated_separately_from_historical_runs() -> None:
         trigger._validate_remote_gate_evidence(evidence, source_head=source_head)
 
 
+def test_d112_current_pr_visibility_polls_only_missing_or_stale_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    expected_head = "b" * 40
+    responses = [
+        {},
+        _raw_pull_request("a" * 40),
+        _raw_pull_request(expected_head),
+    ]
+    sleeps: list[float] = []
+
+    def run_command(*_args: object, **_kwargs: object) -> bytes:
+        return trigger.canonical_bytes(responses.pop(0))
+
+    monkeypatch.setattr(trigger, "_run_readiness_command", run_command)
+    assert trigger._collect_current_pull_request(
+        "verified-gh",
+        {"PATH": "verified"},
+        expected_head=expected_head,
+        _sleep=sleeps.append,
+    ) == _pull_request(expected_head)
+    assert responses == []
+    assert sleeps == [
+        trigger.REMOTE_VISIBILITY_POLL_INTERVAL_SECONDS,
+        trigger.REMOTE_VISIBILITY_POLL_INTERVAL_SECONDS,
+    ]
+    assert sum(sleeps) <= trigger.REMOTE_VISIBILITY_TIMEOUT_SECONDS
+
+
+@pytest.mark.parametrize("malformed", ["wrong-draft", "malformed-head"])
+def test_d112_current_pr_deterministic_errors_do_not_poll(
+    monkeypatch: pytest.MonkeyPatch, malformed: str
+) -> None:
+    expected_head = "b" * 40
+    response = _raw_pull_request(expected_head)
+    if malformed == "wrong-draft":
+        response["draft"] = False
+    else:
+        response["head"] = "not-an-object"
+    sleeps: list[float] = []
+    monkeypatch.setattr(
+        trigger,
+        "_run_readiness_command",
+        lambda *_args, **_kwargs: trigger.canonical_bytes(response),
+    )
+
+    with pytest.raises(
+        trigger.DevelopmentTriggerError,
+        match="OPEN/DRAFT|malformed",
+    ):
+        trigger._collect_current_pull_request(
+            "verified-gh",
+            {"PATH": "verified"},
+            expected_head=expected_head,
+            _sleep=sleeps.append,
+        )
+    assert sleeps == []
+
+
+def test_d112_current_pr_visibility_timeout_is_bounded_to_30_seconds(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observations: list[bool] = []
+    sleeps: list[float] = []
+
+    def missing_response(*_args: object, **_kwargs: object) -> bytes:
+        observations.append(True)
+        return b"{}"
+
+    monkeypatch.setattr(trigger, "_run_readiness_command", missing_response)
+    with pytest.raises(trigger.DevelopmentTriggerError, match="30 seconds"):
+        trigger._collect_current_pull_request(
+            "verified-gh",
+            {"PATH": "verified"},
+            expected_head="b" * 40,
+            _sleep=sleeps.append,
+        )
+    assert len(observations) == trigger.REMOTE_VISIBILITY_MAX_POLLS
+    assert len(sleeps) == trigger.REMOTE_VISIBILITY_MAX_POLLS - 1
+    assert sum(sleeps) == trigger.REMOTE_VISIBILITY_TIMEOUT_SECONDS
+
+
 def test_d112_branch_trigger_binds_source_execution_pr_and_runner_separately(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -495,11 +707,13 @@ def test_d112_branch_trigger_binds_source_execution_pr_and_runner_separately(
         "_collect_remote_gate_rows",
         remote_gates,
     )
-    monkeypatch.setattr(
-        trigger,
-        "collect_remote_runner_rows",
-        lambda: deepcopy(readiness["runners"]),
-    )
+    def remote_runners(
+        gh: str, environment: dict[str, str]
+    ) -> list[dict[str, object]]:
+        calls.append(("runners", gh, environment))
+        return deepcopy(readiness["runners"])  # type: ignore[return-value]
+
+    monkeypatch.setattr(trigger, "_collect_remote_runner_rows", remote_runners)
 
     result = trigger.validate_branch_trigger(
         ROOT, event_path, environ=_environment(after)
@@ -513,6 +727,7 @@ def test_d112_branch_trigger_binds_source_execution_pr_and_runner_separately(
         ("sentinel", ROOT, after, before, True),
         ("current-pr", "pinned-gh", {}, after),
         ("source-gates", "pinned-gh", {}, before),
+        ("runners", "pinned-gh", {}),
     ]
 
 
@@ -569,16 +784,7 @@ def test_d112_execution_run_is_unique_and_attempt_one(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     head, run_id = "b" * 40, 990_012
-    run = {
-        "conclusion": None,
-        "event": "push",
-        "head_branch": trigger.EXPECTED_BRANCH,
-        "head_sha": head,
-        "id": run_id,
-        "path": trigger.EXPECTED_WORKFLOW_PATH,
-        "run_attempt": 1,
-        "status": "in_progress",
-    }
+    run = _execution_run(head, run_id)
     monkeypatch.setattr(trigger, "_pinned_gh_context", lambda: ("pinned-gh", {}))
     monkeypatch.setattr(
         trigger, "_query_github_runs", lambda *_args, **_kwargs: [run]
@@ -596,6 +802,86 @@ def test_d112_execution_run_is_unique_and_attempt_one(
         trigger._validate_unique_execution_run(
             head, {"GITHUB_RUN_ID": str(run_id)}
         )
+
+
+def test_d112_execution_visibility_polls_missing_and_incomplete_rows(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    head, run_id = "b" * 40, 990_012
+    complete = _execution_run(head, run_id)
+    incomplete = deepcopy(complete)
+    del incomplete["status"]
+    del incomplete["conclusion"]
+    responses = [[], [incomplete], [complete]]
+    sleeps: list[float] = []
+    calls: list[tuple[object, ...]] = []
+    safe_environment = {"PATH": "verified"}
+    monkeypatch.setattr(
+        trigger,
+        "_pinned_gh_context",
+        lambda: ("C:\\locked\\gh.exe", safe_environment),
+    )
+
+    def query(
+        gh: str,
+        source_head: str,
+        event: str,
+        environment: object,
+    ) -> list[dict[str, object]]:
+        calls.append((gh, source_head, event, environment))
+        return responses.pop(0)
+
+    monkeypatch.setattr(trigger, "_query_github_runs", query)
+    result = trigger._validate_unique_execution_run(
+        head,
+        {"GITHUB_RUN_ID": str(run_id)},
+        _sleep=sleeps.append,
+    )
+    assert result["run_id"] == run_id
+    assert responses == []
+    assert calls == [
+        ("C:\\locked\\gh.exe", head, "push", safe_environment),
+        ("C:\\locked\\gh.exe", head, "push", safe_environment),
+        ("C:\\locked\\gh.exe", head, "push", safe_environment),
+    ]
+    assert sleeps == [
+        trigger.REMOTE_VISIBILITY_POLL_INTERVAL_SECONDS,
+        trigger.REMOTE_VISIBILITY_POLL_INTERVAL_SECONDS,
+    ]
+    assert sum(sleeps) <= trigger.REMOTE_VISIBILITY_TIMEOUT_SECONDS
+
+
+@pytest.mark.parametrize("failure", ["duplicate", "red", "rerun"])
+def test_d112_execution_deterministic_errors_do_not_poll(
+    monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    head, run_id = "b" * 40, 990_012
+    run = _execution_run(head, run_id)
+    if failure == "duplicate":
+        rows = [run, deepcopy(run)]
+        expected_message = "exactly one"
+    elif failure == "red":
+        run["status"] = "completed"
+        run["conclusion"] = "failure"
+        rows = [run]
+        expected_message = "identity differs"
+    else:
+        run["run_attempt"] = 2
+        rows = [run]
+        expected_message = "identity differs"
+    sleeps: list[float] = []
+    monkeypatch.setattr(trigger, "_pinned_gh_context", lambda: ("verified-gh", {}))
+    monkeypatch.setattr(
+        trigger, "_query_github_runs", lambda *_args, **_kwargs: rows
+    )
+
+    with pytest.raises(trigger.DevelopmentTriggerError, match=expected_message):
+        trigger._validate_unique_execution_run(
+            head,
+            {"GITHUB_RUN_ID": str(run_id)},
+            _sleep=sleeps.append,
+        )
+    assert sleeps == []
 
 
 def test_d112_runner_readiness_requires_exact_fresh_identity() -> None:
@@ -774,3 +1060,56 @@ def test_d112_source_requires_empty_sentinel_history(
     with_history = _commit(repository, "fixture: premature _012")
     with pytest.raises(trigger.DevelopmentTriggerError, match="source history"):
         trigger._validate_historical_011(repository, with_history)
+
+
+def test_d112_windows_writer_shares_one_verified_observer_context(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    repository, source_head = _repository(tmp_path)
+    _git(repository, "branch", "-M", trigger.EXPECTED_BRANCH)
+    observer_environment = {"PATH": "verified-observer-only"}
+    observer_context = ("C:\\locked\\gh.exe", observer_environment)
+    calls: list[tuple[object, ...]] = []
+    gates = _remote_gate_evidence(source_head)
+    readiness = _runner_readiness(source_head)
+
+    monkeypatch.setattr(
+        trigger, "_validate_secret_free_branch_environment", lambda _env: None
+    )
+    monkeypatch.setattr(trigger, "_validate_source", lambda *_args: {})
+    monkeypatch.setattr(trigger, "_pinned_gh_context", lambda: observer_context)
+
+    def collect_gates(
+        selected_head: str,
+        *,
+        _observer_context: object,
+    ) -> dict[str, object]:
+        calls.append(("gates", selected_head, _observer_context))
+        assert _observer_context is observer_context
+        return gates
+
+    def collect_readiness(
+        selected_repository: Path,
+        selected_head: str,
+        *,
+        _observer_context: object,
+    ) -> dict[str, object]:
+        calls.append(
+            ("runners", selected_repository, selected_head, _observer_context)
+        )
+        assert _observer_context is observer_context
+        return readiness
+
+    document = {"request_id": trigger.REQUEST_ID, "source_head": source_head}
+    monkeypatch.setattr(trigger, "collect_remote_gate_evidence", collect_gates)
+    monkeypatch.setattr(trigger, "collect_runner_readiness", collect_readiness)
+    monkeypatch.setattr(trigger, "build_request", lambda *_args, **_kwargs: document)
+
+    written = trigger.write_request(repository)
+    target = repository / trigger.SENTINEL_PATH
+    assert target.read_bytes() == trigger.canonical_bytes(document, trailing_lf=True)
+    assert written["source_head"] == source_head
+    assert calls == [
+        ("gates", source_head, observer_context),
+        ("runners", repository.resolve(), source_head, observer_context),
+    ]

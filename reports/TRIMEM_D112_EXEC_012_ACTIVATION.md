@@ -43,6 +43,36 @@ rewrite the spent D1.10/D1.11 contracts.
 - source CI gates and runner observations are embedded before the sentinel is
   written, and are rechecked by the hosted branch trigger.
 
+## Cross-platform GitHub observer
+
+The request writer and hosted preflight use the same verified GitHub CLI
+transport for current-PR, workflow-run, execution-run, and repository-runner
+API observations. There is no unverified `gh` fallback and no version-only
+acceptance:
+
+- Linux AMD64 uses the existing exact release-archive and extracted-binary byte
+  locks;
+- Windows AMD64 uses the exact official `gh_2.97.0_windows_amd64.zip` archive
+  hash and byte count, then independently verifies the extracted absolute
+  `gh.exe` hash and byte count before any observer API call;
+- unsupported platforms, renamed or non-absolute Windows executables, byte
+  drift, version-output drift, malformed locks, and observer transport
+  substitution fail closed;
+- the active D1.12 reader requires the amended `trimem/gh-cli-lock/1.1`
+  schema. Retired historical compatibility validators remain immutable and are
+  not part of the active `_012` path;
+- the D1.12 report itself is explicitly Git-attribute pinned to LF so its
+  freeze hash is identical on Windows and Linux checkouts;
+- only eventually consistent current-PR head visibility and current `_012`
+  workflow-run visibility use bounded polling: 30 seconds, 2-second intervals,
+  and at most 16 observations. Source-gate and runner-set evidence never poll;
+  missing, malformed, duplicate, red, rerun, stale, busy, or offline evidence
+  fails immediately. Poll exhaustion is a pre-execution failure and cannot be
+  converted into success.
+
+The observer amendment is credential-free. It performs no benchmark image
+pull, grader run, task-arm reservation, model call, token use, or paid action.
+
 ## Scientific invariants
 
 The exact model `gpt-5.4-mini-2026-03-17`, reasoning effort, prompts, tools,

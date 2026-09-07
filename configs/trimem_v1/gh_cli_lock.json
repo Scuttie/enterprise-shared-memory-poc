@@ -22,7 +22,22 @@
   "observed_gh_binary_bytes": 40992930,
   "platform": "linux_amd64",
   "release_tag": "v2.97.0",
-  "schema": "trimem/gh-cli-lock/1.0",
+  "schema": "trimem/gh-cli-lock/1.1",
   "verification_date": "2026-09-03",
-  "version": "2.97.0"
+  "version": "2.97.0",
+  "windows_observer": {
+    "archive_binary_path": "bin/gh.exe",
+    "archive_filename": "gh_2.97.0_windows_amd64.zip",
+    "archive_sha256": "35d7fe05c4dd1411ffda1e73dfc7c6f44b75c936ca51fa6595c657fdc0350cec",
+    "archive_sha256_source_line": "35d7fe05c4dd1411ffda1e73dfc7c6f44b75c936ca51fa6595c657fdc0350cec  gh_2.97.0_windows_amd64.zip",
+    "archive_url": "https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_windows_amd64.zip",
+    "extracted_gh_binary_sha256": "e2efa10a5d2ce93cac9bc4b676932b62947c0967c01c8f2c3a9cb4437ad358d3",
+    "hash_source": {
+      "archive_sha256": "OFFICIAL_GITHUB_CLI_RELEASE_CHECKSUM_FILE",
+      "extracted_gh_binary_sha256": "INDEPENDENT_SHA256_OF_EXACT_REGULAR_FILE_PAYLOAD_AFTER_ARCHIVE_VERIFICATION"
+    },
+    "observed_archive_bytes": 14938517,
+    "observed_gh_binary_bytes": 41775416,
+    "platform": "windows_amd64"
+  }
 }

@@ -24,14 +24,15 @@ import re
 import shutil
 import subprocess
 import sys
-from typing import Any, Mapping, Sequence
+import time
+from typing import Any, Callable, Mapping, Sequence
 
 
 SCRIPT_DIRECTORY = str(Path(__file__).resolve().parent)
 if SCRIPT_DIRECTORY not in sys.path:
     sys.path.insert(0, SCRIPT_DIRECTORY)
 
-from trimem_install_pinned_gh import load_gh_cli_lock, verify_installed_gh
+from trimem_install_pinned_gh import load_gh_cli_lock, verify_observer_gh
 
 
 EXPECTED_REPOSITORY = "Scuttie/enterprise-shared-memory-poc"
@@ -108,6 +109,12 @@ EXACT_PYTHON_ROOT = f"{RUNNER_TOOL_CACHE}/Python/3.11.10/x64"
 MINIMUM_RUNNER_DISK_BYTES = 500 * 1024 * 1024 * 1024
 MAXIMUM_RUNNER_READINESS_AGE_SECONDS = 60 * 60
 MAXIMUM_RUNNER_CLOCK_SKEW_SECONDS = 5 * 60
+REMOTE_VISIBILITY_TIMEOUT_SECONDS = 30
+REMOTE_VISIBILITY_POLL_INTERVAL_SECONDS = 2
+REMOTE_VISIBILITY_MAX_POLLS = (
+    REMOTE_VISIBILITY_TIMEOUT_SECONDS // REMOTE_VISIBILITY_POLL_INTERVAL_SECONDS
+    + 1
+)
 REQUIRED_RUNNER_LABELS = (
     "self-hosted",
     "linux",
@@ -224,12 +231,14 @@ EXPECTED_DEVELOPMENT_HARD_CAP = {
 # correction only; no frozen scientific input is permitted in this set.
 ALLOWED_ACTIVATION_PATHS = frozenset(
     {
+        ".gitattributes",
         ".github/workflows/ci-trimem-dev-toolchain.yml",
         ".github/workflows/ci-trimem.yml",
         ".github/workflows/trimem-benchmark.yml",
         AMENDMENT_PATH,
         INVENTORY_PATH,
         "artifacts/trimem_v1/readiness_requirements.json",
+        GH_CLI_LOCK_PATH,
         FREEZE_PATH,
         "reports/TRIMEM_D112_EXEC_012_ACTIVATION.md",
         "scripts/trimem_benchmark_matrix.py",
@@ -237,23 +246,27 @@ ALLOWED_ACTIVATION_PATHS = frozenset(
         "scripts/trimem_d112_reseal.py",
         "scripts/trimem_development_trigger_d112.py",
         "scripts/trimem_freeze.py",
+        "scripts/trimem_install_pinned_gh.py",
         "scripts/trimem_verify_ready.py",
         "tests/unit/test_trimem_benchmark_readiness.py",
         "tests/unit/test_trimem_d110_status_and_reseal.py",
         "tests/unit/test_trimem_dev_toolchain_workflows.py",
         "tests/unit/test_trimem_d16_native_action.py",
+        "tests/unit/test_trimem_pinned_gh.py",
         "tests/unit/test_trimem_d112_e1_trigger.py",
         "tests/unit/test_trimem_d112_status_and_reseal.py",
         "tests/unit/test_trimem_development_trigger.py",
     }
 )
 REQUIRED_ACTIVATION_CHANGES = {
+    ".gitattributes": "M",
     ".github/workflows/ci-trimem-dev-toolchain.yml": "M",
     ".github/workflows/ci-trimem.yml": "M",
     ".github/workflows/trimem-benchmark.yml": "M",
     AMENDMENT_PATH: "A",
     INVENTORY_PATH: "A",
     "artifacts/trimem_v1/readiness_requirements.json": "M",
+    GH_CLI_LOCK_PATH: "M",
     FREEZE_PATH: "M",
     "reports/TRIMEM_D112_EXEC_012_ACTIVATION.md": "A",
     "scripts/trimem_benchmark_matrix.py": "M",
@@ -261,6 +274,7 @@ REQUIRED_ACTIVATION_CHANGES = {
     "scripts/trimem_d112_reseal.py": "A",
     "scripts/trimem_development_trigger_d112.py": "A",
     "scripts/trimem_freeze.py": "M",
+    "scripts/trimem_install_pinned_gh.py": "M",
     "scripts/trimem_verify_ready.py": "M",
     "tests/unit/test_trimem_benchmark_readiness.py": "M",
     "tests/unit/test_trimem_d110_status_and_reseal.py": "M",
@@ -269,6 +283,7 @@ REQUIRED_ACTIVATION_CHANGES = {
     "tests/unit/test_trimem_dev_toolchain_workflows.py": "M",
     "tests/unit/test_trimem_development_trigger.py": "M",
     "tests/unit/test_trimem_d16_native_action.py": "M",
+    "tests/unit/test_trimem_pinned_gh.py": "M",
 }
 PRESERVED_SCIENTIFIC_PATHS = (
     "artifacts/trimem_v1/grader_image_lock.json",
@@ -314,12 +329,16 @@ SCIENCE_BINDING_PATHS = {
     "tool_environment_lock_sha256": "configs/trimem_v1/tool_environment_lock.json",
 }
 ACTIVATION_BINDING_PATHS = {
+    "gitattributes_sha256": ".gitattributes",
     "approval_consumer_sha256": "scripts/trimem_exec_approval.py",
     "benchmark_matrix_sha256": "scripts/trimem_benchmark_matrix.py",
     "benchmark_runner_sha256": "scripts/trimem_benchmark_run.py",
     "benchmark_workflow_sha256": EXPECTED_WORKFLOW_PATH,
     "d112_amendment_sha256": AMENDMENT_PATH,
     "d112_inventory_sha256": INVENTORY_PATH,
+    "gh_cli_lock_sha256": GH_CLI_LOCK_PATH,
+    "gh_observer_verifier_sha256": "scripts/trimem_install_pinned_gh.py",
+    "gh_observer_verifier_test_sha256": "tests/unit/test_trimem_pinned_gh.py",
     "readiness_requirements_sha256": (
         "artifacts/trimem_v1/readiness_requirements.json"
     ),
@@ -1230,11 +1249,12 @@ def _run_readiness_command(
     return completed.stdout
 
 
-def collect_remote_runner_rows() -> list[dict[str, Any]]:
+def _collect_remote_runner_rows(
+    gh: str, safe_environment: Mapping[str, str]
+) -> list[dict[str, Any]]:
     """Read the complete repository-runner set without exposing benchmark secrets."""
 
-    gh = shutil.which("gh")
-    require(gh is not None, "gh CLI is required to verify self-hosted runners")
+    require(isinstance(gh, str) and bool(gh), "verified GitHub observer is missing")
     raw = _run_readiness_command(
         [
             gh,
@@ -1247,7 +1267,7 @@ def collect_remote_runner_rows() -> list[dict[str, Any]]:
             "-f",
             "per_page=100",
         ],
-        safe_environment=_safe_process_environment(),
+        safe_environment=safe_environment,
         label="GitHub repository runners",
     )
     response = strict_json(raw)
@@ -1299,6 +1319,12 @@ def collect_remote_runner_rows() -> list[dict[str, Any]]:
         "fresh runner identities differ",
     )
     return rows
+
+
+def collect_remote_runner_rows() -> list[dict[str, Any]]:
+    """Collect runners through the same byte-pinned observer as all gates."""
+
+    return _collect_remote_runner_rows(*_pinned_gh_context())
 
 
 def _wsl_stdout(
@@ -1513,14 +1539,22 @@ def _validate_runner_readiness(
 
 
 def collect_runner_readiness(
-    repository: Path, source_head: str
+    repository: Path,
+    source_head: str,
+    *,
+    _observer_context: tuple[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Verify two clean WSL runners and all local prerequisites without pulls."""
 
     wsl = shutil.which("wsl.exe")
     require(wsl is not None, "WSL is required for benchmark runner readiness")
     safe_environment = _safe_process_environment()
-    runners = collect_remote_runner_rows()
+    observer_context = (
+        _pinned_gh_context()
+        if _observer_context is None
+        else _observer_context
+    )
+    runners = _collect_remote_runner_rows(*observer_context)
     architecture = _wsl_stdout(
         wsl, ["uname", "-m"], safe_environment=safe_environment, label="architecture"
     )
@@ -2092,11 +2126,14 @@ def validate_runner_host_preflight(
 def _pinned_gh_context() -> tuple[str, dict[str, str]]:
     gh = shutil.which("gh")
     require(gh is not None, "gh CLI is required to verify remote gates")
-    # The workflow installs the byte-pinned CLI before invoking this module.
+    # Hosted Linux uses the installed locked payload; the Windows request
+    # writer uses a separately byte-pinned native observer.  The shared
+    # verifier selects the exact platform record and never falls back to a
+    # version-only check.
     try:
         root = Path(__file__).resolve().parents[1]
         lock = load_gh_cli_lock(root / GH_CLI_LOCK_PATH)
-        verification = verify_installed_gh(lock, Path(gh))
+        verification = verify_observer_gh(lock, Path(gh))
     except (ImportError, OSError, ValueError) as exc:
         raise DevelopmentTriggerError(
             "remote gate observer does not match the pinned gh byte lock"
@@ -2104,7 +2141,9 @@ def _pinned_gh_context() -> tuple[str, dict[str, str]]:
     require(
         verification.get("status") == "PASS"
         and verification.get("first_version_line")
-        == "gh version 2.97.0 (2026-07-31)",
+        == "gh version 2.97.0 (2026-07-31)"
+        and verification.get("observer_platform")
+        in {"linux_amd64", "windows_amd64"},
         "remote gate observer is not exact gh 2.97.0",
     )
     return gh, _safe_process_environment()
@@ -2115,58 +2154,118 @@ def _collect_current_pull_request(
     safe_environment: Mapping[str, str],
     *,
     expected_head: str,
+    _sleep: Callable[[float], None] | None = None,
 ) -> dict[str, Any]:
     require(HEX40.fullmatch(expected_head) is not None, "PR head is not a commit SHA")
-    pull_raw = _run_readiness_command(
-        [
-            gh,
-            "api",
-            "--hostname",
-            "github.com",
-            f"repos/{EXPECTED_REPOSITORY}/pulls/{PULL_REQUEST_NUMBER}",
-        ],
-        safe_environment=safe_environment,
-        label="current PR #18",
-    )
-    pull_response = strict_json(pull_raw)
-    pull_head = pull_response.get("head")
-    pull_base = pull_response.get("base")
-    pull_head_repo = (
-        pull_head.get("repo") if isinstance(pull_head, Mapping) else None
-    )
-    record = {
-        "base_ref": pull_base.get("ref") if isinstance(pull_base, Mapping) else None,
-        "base_sha": pull_base.get("sha") if isinstance(pull_base, Mapping) else None,
-        "draft": pull_response.get("draft"),
-        "head_ref": pull_head.get("ref") if isinstance(pull_head, Mapping) else None,
-        "head_repository": (
-            pull_head_repo.get("full_name")
-            if isinstance(pull_head_repo, Mapping)
-            else None
+    sleeper = time.sleep if _sleep is None else _sleep
+    expected = {
+        "base_ref": EXPECTED_BASE_BRANCH,
+        "base_sha": EXPECTED_BASE_HEAD,
+        "draft": True,
+        "head_ref": EXPECTED_BRANCH,
+        "head_repository": EXPECTED_REPOSITORY,
+        "head_sha": expected_head,
+        "html_url": (
+            "https://github.com/Scuttie/enterprise-shared-memory-poc/pull/18"
         ),
-        "head_sha": pull_head.get("sha") if isinstance(pull_head, Mapping) else None,
-        "html_url": pull_response.get("html_url"),
-        "number": pull_response.get("number"),
-        "state": pull_response.get("state"),
+        "number": PULL_REQUEST_NUMBER,
+        "state": "open",
     }
-    require(
-        record
-        == {
-            "base_ref": EXPECTED_BASE_BRANCH,
-            "base_sha": EXPECTED_BASE_HEAD,
-            "draft": True,
-            "head_ref": EXPECTED_BRANCH,
-            "head_repository": EXPECTED_REPOSITORY,
-            "head_sha": expected_head,
-            "html_url": (
-                "https://github.com/Scuttie/enterprise-shared-memory-poc/pull/18"
+    for poll_index in range(REMOTE_VISIBILITY_MAX_POLLS):
+        pull_raw = _run_readiness_command(
+            [
+                gh,
+                "api",
+                "--hostname",
+                "github.com",
+                f"repos/{EXPECTED_REPOSITORY}/pulls/{PULL_REQUEST_NUMBER}",
+            ],
+            safe_environment=safe_environment,
+            label="current PR #18",
+        )
+        pull_response = strict_json(pull_raw)
+        pull_head = pull_response.get("head")
+        pull_base = pull_response.get("base")
+        if "head" in pull_response and pull_head is not None:
+            require(isinstance(pull_head, Mapping), "current PR head is malformed")
+        if "base" in pull_response and pull_base is not None:
+            require(isinstance(pull_base, Mapping), "current PR base is malformed")
+        pull_head_repo = (
+            pull_head.get("repo") if isinstance(pull_head, Mapping) else None
+        )
+        if (
+            isinstance(pull_head, Mapping)
+            and "repo" in pull_head
+            and pull_head_repo is not None
+        ):
+            require(
+                isinstance(pull_head_repo, Mapping),
+                "current PR head repository is malformed",
+            )
+        record = {
+            "base_ref": (
+                pull_base.get("ref") if isinstance(pull_base, Mapping) else None
             ),
-            "number": PULL_REQUEST_NUMBER,
-            "state": "open",
-        },
-        "current PR #18 is not OPEN/DRAFT at the exact expected head",
-    )
-    return record
+            "base_sha": (
+                pull_base.get("sha") if isinstance(pull_base, Mapping) else None
+            ),
+            "draft": pull_response.get("draft"),
+            "head_ref": (
+                pull_head.get("ref") if isinstance(pull_head, Mapping) else None
+            ),
+            "head_repository": (
+                pull_head_repo.get("full_name")
+                if isinstance(pull_head_repo, Mapping)
+                else None
+            ),
+            "head_sha": (
+                pull_head.get("sha") if isinstance(pull_head, Mapping) else None
+            ),
+            "html_url": pull_response.get("html_url"),
+            "number": pull_response.get("number"),
+            "state": pull_response.get("state"),
+        }
+        if record == expected:
+            return record
+        non_head = {
+            name: value for name, value in record.items() if name != "head_sha"
+        }
+        expected_non_head = {
+            name: value for name, value in expected.items() if name != "head_sha"
+        }
+        non_head_compatible = all(
+            value is None or value == expected_non_head[name]
+            for name, value in non_head.items()
+        )
+        observed_head = record["head_sha"]
+        head_compatible = (
+            observed_head is None
+            or observed_head == expected_head
+            or (
+                isinstance(observed_head, str)
+                and HEX40.fullmatch(observed_head) is not None
+            )
+        )
+        incomplete = (
+            any(value is None for value in record.values())
+            and non_head_compatible
+            and head_compatible
+        )
+        stale_head_only = (
+            non_head == expected_non_head
+            and isinstance(observed_head, str)
+            and HEX40.fullmatch(observed_head) is not None
+        )
+        require(
+            incomplete or stale_head_only,
+            "current PR #18 is not OPEN/DRAFT at the exact expected head",
+        )
+        if poll_index == REMOTE_VISIBILITY_MAX_POLLS - 1:
+            raise DevelopmentTriggerError(
+                "current PR #18 exact-head visibility remained incomplete for 30 seconds"
+            )
+        sleeper(REMOTE_VISIBILITY_POLL_INTERVAL_SECONDS)
+    raise AssertionError("unreachable current PR polling boundary")
 
 
 def _collect_remote_gate_rows(
@@ -2233,11 +2332,19 @@ def _select_remote_gate_rows(
     return rows
 
 
-def collect_remote_gate_evidence(source_head: str) -> dict[str, Any]:
+def collect_remote_gate_evidence(
+    source_head: str,
+    *,
+    _observer_context: tuple[str, Mapping[str, str]] | None = None,
+) -> dict[str, Any]:
     """Collect the exact mixed-event twelve-gate activation evidence."""
 
     require(HEX40.fullmatch(source_head) is not None, "source_head is not a commit SHA")
-    gh, safe_environment = _pinned_gh_context()
+    gh, safe_environment = (
+        _pinned_gh_context()
+        if _observer_context is None
+        else _observer_context
+    )
     pull_record = _collect_current_pull_request(
         gh, safe_environment, expected_head=source_head
     )
@@ -2262,7 +2369,10 @@ def collect_remote_gate_evidence(source_head: str) -> dict[str, Any]:
 
 
 def _validate_unique_execution_run(
-    trigger_head: str, environment: Mapping[str, str]
+    trigger_head: str,
+    environment: Mapping[str, str],
+    *,
+    _sleep: Callable[[float], None] | None = None,
 ) -> dict[str, Any]:
     run_id_text = environment.get("GITHUB_RUN_ID")
     require(
@@ -2273,28 +2383,72 @@ def _validate_unique_execution_run(
         "current workflow run ID is invalid",
     )
     gh, safe_environment = _pinned_gh_context()
-    matches = [
-        run
-        for run in _query_github_runs(
-            gh, trigger_head, "push", safe_environment
+    sleeper = time.sleep if _sleep is None else _sleep
+    run: Mapping[str, Any] | None = None
+    required_fields = {
+        "conclusion",
+        "event",
+        "head_branch",
+        "head_sha",
+        "id",
+        "path",
+        "run_attempt",
+        "status",
+    }
+    for poll_index in range(REMOTE_VISIBILITY_MAX_POLLS):
+        matches = [
+            candidate
+            for candidate in _query_github_runs(
+                gh, trigger_head, "push", safe_environment
+            )
+            if candidate.get("path") == EXPECTED_WORKFLOW_PATH
+            and candidate.get("event") == "push"
+            and candidate.get("head_sha") == trigger_head
+        ]
+        require(
+            len(matches) <= 1,
+            "exactly one benchmark workflow push run is allowed for _012 HEAD",
         )
-        if run.get("path") == EXPECTED_WORKFLOW_PATH
-        and run.get("event") == "push"
-        and run.get("head_sha") == trigger_head
-    ]
-    require(
-        len(matches) == 1,
-        "exactly one benchmark workflow push run is allowed for _012 HEAD",
-    )
-    run = matches[0]
-    require(
-        run.get("id") == int(run_id_text)
-        and run.get("run_attempt") == 1
-        and run.get("head_branch") == EXPECTED_BRANCH
-        and run.get("status") in {"queued", "in_progress", "completed"}
-        and run.get("conclusion") in {None, "success"},
-        "current benchmark workflow run identity differs",
-    )
+        if matches:
+            candidate = matches[0]
+            present = set(candidate)
+            # Any visible contradictory identity is deterministic, not an
+            # eventual-consistency condition, and therefore fails immediately.
+            if "id" in present:
+                require(
+                    candidate.get("id") == int(run_id_text),
+                    "current benchmark workflow run identity differs",
+                )
+            if "run_attempt" in present:
+                require(
+                    candidate.get("run_attempt") == 1,
+                    "current benchmark workflow run identity differs",
+                )
+            if "head_branch" in present:
+                require(
+                    candidate.get("head_branch") == EXPECTED_BRANCH,
+                    "current benchmark workflow run identity differs",
+                )
+            if "status" in present:
+                require(
+                    candidate.get("status")
+                    in {"queued", "in_progress", "completed"},
+                    "current benchmark workflow run identity differs",
+                )
+            if "conclusion" in present:
+                require(
+                    candidate.get("conclusion") in {None, "success"},
+                    "current benchmark workflow run identity differs",
+                )
+            if required_fields <= present:
+                run = candidate
+                break
+        if poll_index == REMOTE_VISIBILITY_MAX_POLLS - 1:
+            raise DevelopmentTriggerError(
+                "current _012 workflow run visibility remained incomplete for 30 seconds"
+            )
+        sleeper(REMOTE_VISIBILITY_POLL_INTERVAL_SECONDS)
+    require(run is not None, "current _012 workflow run is not visible")
     return {
         "event": "push",
         "head_sha": trigger_head,
@@ -2620,7 +2774,7 @@ def validate_branch_trigger(
     )
     require(
         request.get("runner_readiness", {}).get("runners")
-        == collect_remote_runner_rows(),
+        == _collect_remote_runner_rows(gh, safe_environment),
         "embedded runner registrations differ from current repository runners",
     )
     return {
@@ -2651,8 +2805,13 @@ def write_request(repository: Path) -> dict[str, Any]:
     target = repository / Path(*PurePosixPath(SENTINEL_PATH).parts)
     require(not target.exists(), "_012 sentinel already exists in the worktree")
     _validate_source(repository, source_head)
-    gates = collect_remote_gate_evidence(source_head)
-    readiness = collect_runner_readiness(repository, source_head)
+    observer_context = _pinned_gh_context()
+    gates = collect_remote_gate_evidence(
+        source_head, _observer_context=observer_context
+    )
+    readiness = collect_runner_readiness(
+        repository, source_head, _observer_context=observer_context
+    )
     document = build_request(
         repository,
         source_head=source_head,

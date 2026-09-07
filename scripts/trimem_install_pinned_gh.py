@@ -19,7 +19,7 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LOCK_PATH = ROOT / "configs/trimem_v1/gh_cli_lock.json"
-LOCK_SCHEMA = "trimem/gh-cli-lock/1.0"
+LOCK_SCHEMA = "trimem/gh-cli-lock/1.1"
 SHA256_HEX_LENGTH = 64
 MAX_ARCHIVE_MEMBERS = 4096
 MAX_ARCHIVE_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
@@ -129,6 +129,7 @@ def load_gh_cli_lock(path: Path) -> dict[str, Any]:
             "schema",
             "verification_date",
             "version",
+            "windows_observer",
         },
         "GitHub CLI lock",
     )
@@ -233,6 +234,78 @@ def load_gh_cli_lock(path: Path) -> dict[str, Any]:
         ),
     }:
         raise GhCliInstallError("GitHub CLI hash provenance mismatch")
+
+    windows_observer = lock["windows_observer"]
+    if not isinstance(windows_observer, dict):
+        raise GhCliInstallError("GitHub CLI Windows observer lock is not an object")
+    _exact_keys(
+        windows_observer,
+        {
+            "archive_binary_path",
+            "archive_filename",
+            "archive_sha256",
+            "archive_sha256_source_line",
+            "archive_url",
+            "extracted_gh_binary_sha256",
+            "hash_source",
+            "observed_archive_bytes",
+            "observed_gh_binary_bytes",
+            "platform",
+        },
+        "GitHub CLI Windows observer lock",
+    )
+    if windows_observer["platform"] != "windows_amd64":
+        raise GhCliInstallError("GitHub CLI observer platform is not windows_amd64")
+    windows_archive_filename = _safe_relative_posix_path(
+        windows_observer["archive_filename"], "windows_observer.archive_filename"
+    )
+    expected_windows_archive_filename = f"gh_{version}_windows_amd64.zip"
+    if (
+        "/" in windows_archive_filename
+        or windows_archive_filename != expected_windows_archive_filename
+    ):
+        raise GhCliInstallError("GitHub CLI Windows archive filename mismatch")
+    if windows_observer["archive_url"] != (
+        f"{release_base}/{expected_windows_archive_filename}"
+    ):
+        raise GhCliInstallError(
+            "GitHub CLI Windows archive URL is not the official exact asset"
+        )
+    windows_archive_sha256 = _sha256_hex(
+        windows_observer["archive_sha256"], "windows_observer.archive_sha256"
+    )
+    _sha256_hex(
+        windows_observer["extracted_gh_binary_sha256"],
+        "windows_observer.extracted_gh_binary_sha256",
+    )
+    if windows_observer["archive_sha256_source_line"] != (
+        f"{windows_archive_sha256}  {windows_archive_filename}"
+    ):
+        raise GhCliInstallError("official Windows checksum source line mismatch")
+    if windows_observer["archive_binary_path"] != "bin/gh.exe":
+        raise GhCliInstallError("GitHub CLI Windows archive binary path mismatch")
+    windows_archive_bytes = _positive_integer(
+        windows_observer["observed_archive_bytes"],
+        "windows_observer.observed_archive_bytes",
+    )
+    windows_binary_bytes = _positive_integer(
+        windows_observer["observed_gh_binary_bytes"],
+        "windows_observer.observed_gh_binary_bytes",
+    )
+    if windows_archive_bytes > MAX_ARCHIVE_BYTES:
+        raise GhCliInstallError("GitHub CLI Windows archive byte lock exceeds safety cap")
+    if windows_binary_bytes > MAX_BINARY_BYTES:
+        raise GhCliInstallError("GitHub CLI Windows binary byte lock exceeds safety cap")
+    windows_hash_source = windows_observer["hash_source"]
+    if not isinstance(windows_hash_source, dict):
+        raise GhCliInstallError("GitHub CLI Windows hash source is not an object")
+    _exact_keys(
+        windows_hash_source,
+        {"archive_sha256", "extracted_gh_binary_sha256"},
+        "GitHub CLI Windows hash source",
+    )
+    if windows_hash_source != hash_source:
+        raise GhCliInstallError("GitHub CLI Windows hash provenance mismatch")
     return lock
 
 
@@ -389,17 +462,18 @@ def resolve_installed_binary(lock: Mapping[str, Any], prefix: Path) -> Path:
     return binary_path
 
 
-def verify_installed_gh(
-    lock: Mapping[str, Any], binary_path: Path
+def _verify_exact_gh_binary(
+    lock: Mapping[str, Any],
+    binary_contract: Mapping[str, Any],
+    binary_path: Path,
 ) -> dict[str, Any]:
-    """Verify exact installed bytes and the exact first `gh --version` line."""
+    """Verify one already-selected binary against an immutable byte contract."""
 
-    _verify_runtime_platform()
     _assert_regular_file(binary_path, "installed GitHub CLI")
-    if binary_path.stat().st_size != lock["observed_gh_binary_bytes"]:
+    if binary_path.stat().st_size != binary_contract["observed_gh_binary_bytes"]:
         raise GhCliInstallError("installed GitHub CLI binary byte count mismatch")
     observed_sha256 = _sha256_file(binary_path)
-    if observed_sha256 != lock["extracted_gh_binary_sha256"]:
+    if observed_sha256 != binary_contract["extracted_gh_binary_sha256"]:
         raise GhCliInstallError("installed GitHub CLI binary hash mismatch")
     try:
         completed = subprocess.run(
@@ -437,6 +511,45 @@ def verify_installed_gh(
         "status": "PASS",
         "version": lock["version"],
     }
+
+
+def verify_installed_gh(
+    lock: Mapping[str, Any], binary_path: Path
+) -> dict[str, Any]:
+    """Verify exact installed Linux bytes and the exact `gh --version` line."""
+
+    _verify_runtime_platform()
+    return _verify_exact_gh_binary(lock, lock, binary_path)
+
+
+def verify_observer_gh(
+    lock: Mapping[str, Any], binary_path: Path
+) -> dict[str, Any]:
+    """Verify the selected local observer `gh` by platform and exact bytes.
+
+    This is intentionally distinct from installation. Linux observers use the
+    byte-identical installation contract. Windows AMD64 observers use the
+    independently frozen executable payload from the official ZIP asset.
+    """
+
+    system = platform.system()
+    machine = platform.machine().lower()
+    if system == "Linux" and machine in {"amd64", "x86_64"}:
+        result = dict(verify_installed_gh(lock, binary_path))
+        result["observer_platform"] = "linux_amd64"
+        return result
+    if system == "Windows" and machine in {"amd64", "x86_64"}:
+        if not binary_path.is_absolute() or binary_path.name != "gh.exe":
+            raise GhCliInstallError(
+                "Windows GitHub CLI observer must be an absolute gh.exe path"
+            )
+        windows_contract = lock.get("windows_observer")
+        if not isinstance(windows_contract, Mapping):
+            raise GhCliInstallError("GitHub CLI Windows observer lock is unavailable")
+        result = _verify_exact_gh_binary(lock, windows_contract, binary_path)
+        result["observer_platform"] = "windows_amd64"
+        return result
+    raise GhCliInstallError("pinned GitHub CLI observer platform is unsupported")
 
 
 def _repair_executable_mode_for_matching_bytes(

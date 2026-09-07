@@ -7,7 +7,9 @@ sentinel commit and workflow attempt before credentials or benchmark work can
 be reached.
 
 The historical D1.11 seal is read from its immutable Git commit.  This module
-performs no network, credential, Docker, grader, image, or model operation.
+also freezes the exact Linux/Windows GitHub observer bytes and bounded
+eventual-visibility policy.  It performs no network, credential, Docker,
+grader, image, or model operation.
 """
 
 from __future__ import annotations
@@ -87,6 +89,38 @@ PREVIOUS_REQUEST_SHA256 = (
 REQUIRED_EXTERNAL_AUTHORIZATION = (
     "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_012_APPROVED_ONCE"
 )
+GH_CLI_LOCK_PATH = ROOT / "configs/trimem_v1/gh_cli_lock.json"
+GH_CLI_LOCK_SCHEMA = "trimem/gh-cli-lock/1.1"
+GH_CLI_VERSION = "2.97.0"
+GH_CLI_VERSION_LINE = "gh version 2.97.0 (2026-07-31)"
+WINDOWS_OBSERVER_LOCK = {
+    "archive_binary_path": "bin/gh.exe",
+    "archive_filename": "gh_2.97.0_windows_amd64.zip",
+    "archive_sha256": (
+        "35d7fe05c4dd1411ffda1e73dfc7c6f44b75c936ca51fa6595c657fdc0350cec"
+    ),
+    "archive_sha256_source_line": (
+        "35d7fe05c4dd1411ffda1e73dfc7c6f44b75c936ca51fa6595c657fdc0350cec  "
+        "gh_2.97.0_windows_amd64.zip"
+    ),
+    "archive_url": (
+        "https://github.com/cli/cli/releases/download/v2.97.0/"
+        "gh_2.97.0_windows_amd64.zip"
+    ),
+    "extracted_gh_binary_sha256": (
+        "e2efa10a5d2ce93cac9bc4b676932b62947c0967c01c8f2c3a9cb4437ad358d3"
+    ),
+    "hash_source": {
+        "archive_sha256": "OFFICIAL_GITHUB_CLI_RELEASE_CHECKSUM_FILE",
+        "extracted_gh_binary_sha256": (
+            "INDEPENDENT_SHA256_OF_EXACT_REGULAR_FILE_PAYLOAD_"
+            "AFTER_ARCHIVE_VERIFICATION"
+        ),
+    },
+    "observed_archive_bytes": 14_938_517,
+    "observed_gh_binary_bytes": 41_775_416,
+    "platform": "windows_amd64",
+}
 
 STATUS_FIELDS = {
     "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": "ESTABLISHED_BY_P0_1_5",
@@ -127,16 +161,19 @@ IMMUTABLE_D111_CURRENT_PATHS = (
 # This is the complete D1.12 control-plane diff vocabulary.  The sentinel is
 # intentionally absent: it may exist only in the single-file child commit.
 IMPLEMENTATION_PATHS = (
+    ".gitattributes",
     ".github/workflows/ci-trimem-dev-toolchain.yml",
     ".github/workflows/ci-trimem.yml",
     ".github/workflows/trimem-benchmark.yml",
     "artifacts/trimem_v1/readiness_requirements.json",
+    "configs/trimem_v1/gh_cli_lock.json",
     "reports/TRIMEM_D112_EXEC_012_ACTIVATION.md",
     "scripts/trimem_benchmark_matrix.py",
     "scripts/trimem_benchmark_run.py",
     "scripts/trimem_d112_reseal.py",
     "scripts/trimem_development_trigger_d112.py",
     "scripts/trimem_freeze.py",
+    "scripts/trimem_install_pinned_gh.py",
     "scripts/trimem_verify_ready.py",
     "tests/unit/test_trimem_benchmark_readiness.py",
     "tests/unit/test_trimem_d110_status_and_reseal.py",
@@ -145,6 +182,7 @@ IMPLEMENTATION_PATHS = (
     "tests/unit/test_trimem_d112_e1_trigger.py",
     "tests/unit/test_trimem_d112_status_and_reseal.py",
     "tests/unit/test_trimem_development_trigger.py",
+    "tests/unit/test_trimem_pinned_gh.py",
 )
 GENERATED_PATHS = frozenset(
     {
@@ -155,6 +193,7 @@ GENERATED_PATHS = frozenset(
 )
 ALLOWED_CHANGED_PATHS = frozenset(IMPLEMENTATION_PATHS) | GENERATED_PATHS
 REQUIRED_CHANGED_PATHS = {
+    ".gitattributes": "M",
     ".github/workflows/ci-trimem-dev-toolchain.yml": "M",
     ".github/workflows/ci-trimem.yml": "M",
     ".github/workflows/trimem-benchmark.yml": "M",
@@ -162,12 +201,14 @@ REQUIRED_CHANGED_PATHS = {
     INVENTORY_PATH.relative_to(ROOT).as_posix(): "A",
     "artifacts/trimem_v1/freeze.json": "M",
     "artifacts/trimem_v1/readiness_requirements.json": "M",
+    "configs/trimem_v1/gh_cli_lock.json": "M",
     "reports/TRIMEM_D112_EXEC_012_ACTIVATION.md": "A",
     "scripts/trimem_benchmark_matrix.py": "M",
     "scripts/trimem_benchmark_run.py": "M",
     "scripts/trimem_d112_reseal.py": "A",
     "scripts/trimem_development_trigger_d112.py": "A",
     "scripts/trimem_freeze.py": "M",
+    "scripts/trimem_install_pinned_gh.py": "M",
     "scripts/trimem_verify_ready.py": "M",
     "tests/unit/test_trimem_benchmark_readiness.py": "M",
     "tests/unit/test_trimem_d110_status_and_reseal.py": "M",
@@ -176,6 +217,7 @@ REQUIRED_CHANGED_PATHS = {
     "tests/unit/test_trimem_d112_e1_trigger.py": "A",
     "tests/unit/test_trimem_d112_status_and_reseal.py": "A",
     "tests/unit/test_trimem_development_trigger.py": "M",
+    "tests/unit/test_trimem_pinned_gh.py": "M",
 }
 
 HEX40 = re.compile(r"[0-9a-f]{40}\Z")
@@ -579,6 +621,119 @@ def validate_runner_isolation() -> dict[str, Any]:
     }
 
 
+def validate_github_observer_contract() -> dict[str, Any]:
+    """Verify one byte-pinned cross-platform transport and bounded visibility.
+
+    This validation inspects committed configuration and source only.  It does
+    not execute ``gh`` or perform a GitHub API request.
+    """
+
+    lock = read_json(GH_CLI_LOCK_PATH)
+    require(
+        lock.get("schema") == GH_CLI_LOCK_SCHEMA
+        and lock.get("version") == GH_CLI_VERSION
+        and lock.get("release_tag") == "v2.97.0"
+        and lock.get("platform") == "linux_amd64"
+        and lock.get("expected_first_version_line") == GH_CLI_VERSION_LINE
+        and lock.get("windows_observer") == WINDOWS_OBSERVER_LOCK,
+        "cross-platform GitHub observer byte lock differs",
+    )
+    installer = source_bytes("scripts/trimem_install_pinned_gh.py").decode(
+        "utf-8", errors="strict"
+    )
+    require(
+        f'LOCK_SCHEMA = "{GH_CLI_LOCK_SCHEMA}"' in installer
+        and installer.count("def verify_observer_gh(") == 1
+        and "_verify_exact_gh_binary(lock, windows_contract, binary_path)"
+        in installer
+        and "Windows GitHub CLI observer must be an absolute gh.exe path"
+        in installer
+        and "pinned GitHub CLI observer platform is unsupported" in installer,
+        "cross-platform GitHub observer verifier differs",
+    )
+    attributes = source_bytes(".gitattributes").decode("utf-8", errors="strict")
+    report_raw = source_bytes("reports/TRIMEM_D112_EXEC_012_ACTIVATION.md")
+    report_attribute = "reports/TRIMEM_D112_EXEC_012_ACTIVATION.md text eol=lf"
+    require(
+        attributes.splitlines().count(report_attribute) == 1
+        and not report_raw.startswith(b"\xef\xbb\xbf")
+        and b"\r" not in report_raw,
+        "D1.12 report is not byte-stable LF text",
+    )
+    trigger = importlib.import_module("trimem_development_trigger_d112")
+    require(
+        getattr(trigger, "GH_CLI_LOCK_PATH", None)
+        == GH_CLI_LOCK_PATH.relative_to(ROOT).as_posix()
+        and getattr(trigger, "REMOTE_VISIBILITY_TIMEOUT_SECONDS", None) == 30
+        and getattr(trigger, "REMOTE_VISIBILITY_POLL_INTERVAL_SECONDS", None) == 2
+        and getattr(trigger, "REMOTE_VISIBILITY_MAX_POLLS", None) == 16,
+        "D1.12 GitHub observer visibility bounds differ",
+    )
+    trigger_source = source_bytes("scripts/trimem_development_trigger_d112.py").decode(
+        "utf-8", errors="strict"
+    )
+    require(
+        "from trimem_install_pinned_gh import load_gh_cli_lock, verify_observer_gh"
+        in trigger_source
+        and "verify_observer_gh(lock, Path(gh))" in trigger_source
+        and "verify_installed_gh" not in trigger_source
+        and trigger_source.count('shutil.which("gh")') == 1
+        and "def _collect_remote_runner_rows(" in trigger_source
+        and "return _collect_remote_runner_rows(*_pinned_gh_context())"
+        in trigger_source
+        and "== _collect_remote_runner_rows(gh, safe_environment)"
+        in trigger_source
+        and "current PR #18 exact-head visibility remained incomplete for 30 seconds"
+        in trigger_source
+        and "current _012 workflow run visibility remained incomplete for 30 seconds"
+        in trigger_source,
+        "D1.12 gate/runner observer transport or bounded polling differs",
+    )
+    return {
+        "first_version_line": GH_CLI_VERSION_LINE,
+        "lock_path": GH_CLI_LOCK_PATH.relative_to(ROOT).as_posix(),
+        "lock_schema": GH_CLI_LOCK_SCHEMA,
+        "observer_selection_policy": (
+            "PLATFORM_EXACT_BYTES_AND_VERSION_NO_UNVERIFIED_FALLBACK"
+        ),
+        "report_line_ending_contract": "GIT_ATTRIBUTE_TEXT_EOL_LF",
+        "platforms": {
+            "linux_amd64": {
+                "archive_sha256": lock["archive_sha256"],
+                "binary_sha256": lock["extracted_gh_binary_sha256"],
+            },
+            "windows_amd64": {
+                "archive_sha256": WINDOWS_OBSERVER_LOCK["archive_sha256"],
+                "binary_sha256": WINDOWS_OBSERVER_LOCK[
+                    "extracted_gh_binary_sha256"
+                ],
+            },
+        },
+        "same_verified_transport_for": [
+            "current_pull_request",
+            "current_execution_workflow_run",
+            "source_workflow_runs",
+            "repository_runners",
+        ],
+        "visibility_polling": {
+            "fail_immediately_for": [
+                "malformed_or_contradictory_identity",
+                "duplicate_or_rerun_workflow",
+                "red_source_gate",
+                "missing_or_nonready_runner_set",
+            ],
+            "interval_seconds": 2,
+            "maximum_polls": 16,
+            "poll_only": [
+                "missing_stale_or_incomplete_current_pr_head",
+                "missing_or_incomplete_current_execution_workflow_run",
+            ],
+            "timeout_disposition": "FAIL_CLOSED_BEFORE_SENTINEL_OR_EXECUTION",
+            "timeout_seconds": 30,
+        },
+    }
+
+
 def validate_readiness() -> None:
     readiness = read_json(READINESS_PATH)
     status = readiness.get("current_status")
@@ -637,6 +792,7 @@ def build_artifacts() -> tuple[dict[str, Any], dict[str, Any]]:
     historical = validate_historical_d111()
     validate_readiness()
     runner = validate_runner_isolation()
+    observer = validate_github_observer_contract()
     implementation = {
         relative: sha256(source_bytes(relative)) for relative in IMPLEMENTATION_PATHS
     }
@@ -664,6 +820,7 @@ def build_artifacts() -> tuple[dict[str, Any], dict[str, Any]]:
         "classification": CLASSIFICATION,
         "endpoint": ENDPOINT,
         "historical_d111": historical,
+        "github_observer": observer,
         "implementation_sha256": implementation,
         "runner_isolation": runner,
         "schema": AMENDMENT_SCHEMA,
@@ -682,6 +839,7 @@ def build_artifacts() -> tuple[dict[str, Any], dict[str, Any]]:
         },
         "endpoint": ENDPOINT,
         "historical_d111": historical,
+        "github_observer": observer,
         "implementation_sha256": implementation,
         "schema": INVENTORY_SCHEMA,
         "source_contract": source_contract,

@@ -21,7 +21,11 @@ import sys
 from typing import Any, Mapping
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from trimem_install_pinned_gh import load_gh_cli_lock, verify_installed_gh
+from trimem_install_pinned_gh import (
+    LOCK_SCHEMA as CURRENT_GH_CLI_LOCK_SCHEMA,
+    load_gh_cli_lock,
+    verify_installed_gh,
+)
 from trimem_development_phase_cap import (
     DevelopmentPhaseCapError,
     validate_development_phase_hard_cap,
@@ -88,6 +92,7 @@ TOOLCHAIN_WORKFLOW_PATH = ".github/workflows/ci-trimem-dev-toolchain.yml"
 EXPECTED_CONCURRENCY_GROUP = "trimem-v1-development-tuning-exec-005"
 FREEZE_PATH = "artifacts/trimem_v1/freeze.json"
 GH_CLI_LOCK_PATH = "configs/trimem_v1/gh_cli_lock.json"
+LEGACY_GH_CLI_LOCK_SCHEMA = "trimem/gh-cli-lock/1.0"
 MODEL_LOCK_PATH = "configs/trimem_v1/model_lock.json"
 TOOL_ENVIRONMENT_LOCK_PATH = "configs/trimem_v1/tool_environment_lock.json"
 COST_PLAN_PATH = "configs/trimem_v1/cost_plan.json"
@@ -902,6 +907,39 @@ def _json_material(raw: Mapping[str, bytes], path: str) -> dict[str, Any]:
         raise DevelopmentTriggerError(f"invalid committed JSON at {path}: {exc}") from exc
 
 
+def _validate_gh_cli_lock_schema(gh_lock: Mapping[str, Any]) -> str:
+    """Accept the live shared schema and only the exact historical shape.
+
+    The retired ``_005`` reader still validates immutable pre-1.1 Git blobs.
+    A document carrying the new Windows observer must, however, use the
+    current schema exported by the shared lock consumer.
+    """
+
+    schema = gh_lock.get("schema")
+    windows = gh_lock.get("windows_observer")
+    if schema == CURRENT_GH_CLI_LOCK_SCHEMA:
+        _require(
+            isinstance(windows, Mapping)
+            and windows.get("platform") == "windows_amd64"
+            and windows.get("archive_binary_path") == "bin/gh.exe"
+            and windows.get("archive_filename")
+            == "gh_2.97.0_windows_amd64.zip"
+            and windows.get("archive_sha256")
+            == "35d7fe05c4dd1411ffda1e73dfc7c6f44b75c936ca51fa6595c657fdc0350cec"
+            and windows.get("extracted_gh_binary_sha256")
+            == "e2efa10a5d2ce93cac9bc4b676932b62947c0967c01c8f2c3a9cb4437ad358d3"
+            and windows.get("observed_archive_bytes") == 14_938_517
+            and windows.get("observed_gh_binary_bytes") == 41_775_416,
+            "current GitHub CLI lock Windows observer differs",
+        )
+        return str(schema)
+    _require(
+        schema == LEGACY_GH_CLI_LOCK_SCHEMA and "windows_observer" not in gh_lock,
+        "GitHub CLI lock schema differs",
+    )
+    return str(schema)
+
+
 def _validate_frozen_material(
     repository: Path, commit: str
 ) -> tuple[dict[str, bytes], dict[str, str], dict[str, Any]]:
@@ -998,6 +1036,8 @@ def _validate_frozen_material(
     solve_budget_lock = _json_material(raw, SOLVE_OUTPUT_BUDGET_LOCK_PATH)
     schema_lock = _json_material(raw, PROVIDER_OUTPUT_SCHEMA_LOCK_PATH)
     output_schemas = _json_material(raw, PROVIDER_OUTPUT_SCHEMAS_PATH)
+
+    _validate_gh_cli_lock_schema(gh_lock)
 
     _require(
         response_amendment.get("classification")
@@ -1105,8 +1145,7 @@ def _validate_frozen_material(
     )
 
     _require(
-        gh_lock.get("schema") == "trimem/gh-cli-lock/1.0"
-        and gh_lock.get("version") == "2.97.0"
+        gh_lock.get("version") == "2.97.0"
         and gh_lock.get("platform") == "linux_amd64"
         and gh_lock.get("expected_first_version_line")
         == "gh version 2.97.0 (2026-07-31)"

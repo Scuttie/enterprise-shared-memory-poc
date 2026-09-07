@@ -31,6 +31,7 @@ import trimem_benchmark_run as benchmark_run  # noqa: E402
 import trimem_freeze as freeze  # noqa: E402
 import trimem_grader_smoke_failure_closure as smoke_failure_closure  # noqa: E402
 import trimem_grader_smoke_failure_evidence as smoke_failure_evidence  # noqa: E402
+import trimem_install_pinned_gh as pinned_gh  # noqa: E402
 import trimem_m2_candidates as m2_candidates  # noqa: E402
 import trimem_multi_swe_probe_evidence as probe_evidence  # noqa: E402
 import trimem_public_artifact as public_artifact  # noqa: E402
@@ -221,6 +222,40 @@ def _remote_gate_evidence(
             )
         ],
     }
+
+
+def test_retired_preflight_tracks_current_shared_gh_schema_without_weakening_history(
+) -> None:
+    current = json.loads(
+        (ROOT / trigger.GH_CLI_LOCK_PATH).read_text(encoding="utf-8")
+    )
+    legacy = trigger.strict_json_object(
+        trigger._commit_bytes(
+            ROOT,
+            LEGACY_PREFLIGHT_FIXTURE_HEAD,
+            trigger.GH_CLI_LOCK_PATH,
+        )
+    )
+
+    assert trigger.CURRENT_GH_CLI_LOCK_SCHEMA == pinned_gh.LOCK_SCHEMA
+    assert trigger._validate_gh_cli_lock_schema(current) == pinned_gh.LOCK_SCHEMA
+    assert trigger._validate_gh_cli_lock_schema(legacy) == (
+        trigger.LEGACY_GH_CLI_LOCK_SCHEMA
+    )
+    assert "windows_observer" not in legacy
+
+    current_with_legacy_schema = deepcopy(current)
+    current_with_legacy_schema["schema"] = trigger.LEGACY_GH_CLI_LOCK_SCHEMA
+    with pytest.raises(trigger.DevelopmentTriggerError, match="schema differs"):
+        trigger._validate_gh_cli_lock_schema(current_with_legacy_schema)
+
+    legacy_with_current_schema = deepcopy(legacy)
+    legacy_with_current_schema["schema"] = trigger.CURRENT_GH_CLI_LOCK_SCHEMA
+    with pytest.raises(
+        trigger.DevelopmentTriggerError,
+        match="current GitHub CLI lock Windows observer differs",
+    ):
+        trigger._validate_gh_cli_lock_schema(legacy_with_current_schema)
 
 
 def _d110_remote_gate_evidence(source_head: str) -> dict[str, object]:
@@ -1462,6 +1497,16 @@ def test_development_approval_evidence_round_trips_runner_aggregate_and_public(
         "source_head",
     }
     monkeypatch.setattr(benchmark_matrix, "ROOT", repository)
+    monkeypatch.setattr(
+        benchmark_matrix,
+        "DEVELOPMENT_SENTINEL_PATH",
+        trigger_d110.SENTINEL_PATH,
+    )
+    monkeypatch.setattr(
+        benchmark_matrix,
+        "validate_development_sentinel_commit",
+        trigger_d110.validate_sentinel_commit,
+    )
     monkeypatch.setenv("GITHUB_RUN_ID", "246813579")
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
     aggregated = benchmark_matrix._approval_binding("development", results)

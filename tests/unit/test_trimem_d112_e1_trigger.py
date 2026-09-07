@@ -19,6 +19,9 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import trimem_development_trigger_d112 as trigger  # noqa: E402
 
 
+D112_SOURCE_HEAD = "9db94e2a4abfaad0bb27079738b77836d68fa2e4"
+
+
 class _FakeMonotonic:
     def __init__(self) -> None:
         self.value = 0.0
@@ -49,6 +52,16 @@ def _git(repository: Path, *arguments: str) -> str:
         encoding="utf-8",
     )
     return completed.stdout.strip()
+
+
+def _git_blob(repository: Path, commit: str, relative: str) -> bytes:
+    completed = subprocess.run(
+        ["git", "show", f"{commit}:{relative}"],
+        cwd=repository,
+        capture_output=True,
+        check=True,
+    )
+    return completed.stdout
 
 
 def _commit(repository: Path, message: str) -> str:
@@ -847,7 +860,10 @@ def test_d112_pre_setup_rejects_wrong_local_uid_before_event_or_setup(
 def test_d112_workflow_locks_job_placement_order_and_secret_boundary(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    workflow = (ROOT / trigger.EXPECTED_WORKFLOW_PATH).read_bytes()
+    # D1.12 is historical after D1.13 replaces the active workflow route.
+    # Exercise its validator against the exact frozen D1.12 Git blob instead
+    # of silently treating the mutable current-generation workflow as D1.12.
+    workflow = _git_blob(ROOT, D112_SOURCE_HEAD, trigger.EXPECTED_WORKFLOW_PATH)
     monkeypatch.setattr(
         trigger,
         "commit_bytes",

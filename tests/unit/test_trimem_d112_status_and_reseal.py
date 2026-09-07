@@ -14,10 +14,24 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_d112_reseal as reseal  # noqa: E402
+import trimem_d113_reseal as current_reseal  # noqa: E402
+
+
+D112_SOURCE_HEAD = "9db94e2a4abfaad0bb27079738b77836d68fa2e4"
 
 
 def read(relative: str) -> dict:
     return json.loads((ROOT / relative).read_text(encoding="utf-8"))
+
+
+def read_historical(relative: str) -> dict:
+    completed = subprocess.run(
+        ["git", "show", f"{D112_SOURCE_HEAD}:{relative}"],
+        cwd=ROOT,
+        capture_output=True,
+        check=True,
+    )
+    return json.loads(completed.stdout.decode("utf-8", errors="strict"))
 
 
 def git(repository: Path, *args: str) -> str:
@@ -75,13 +89,16 @@ def test_source_activation_record_has_creation_but_no_execution_authority() -> N
 
 
 def test_readiness_seals_final_011_no_rerun_wording() -> None:
-    authority = read("artifacts/trimem_v1/readiness_requirements.json")[
+    # Read the readiness document at the frozen D1.12 source.  The working
+    # tree now truthfully describes D1.13 and must not be reinterpreted by the
+    # historical D1.12 validator.
+    authority = read_historical("artifacts/trimem_v1/readiness_requirements.json")[
         "development_authorization_boundary"
     ]
 
     assert authority["meaning"] == reseal.DEVELOPMENT_AUTHORITY_MEANING
     assert "_011 attempt-1 run cannot be rerun" in authority["meaning"]
-    reseal.validate_readiness()
+    assert current_reseal.validate_historical_d112()["status"] == "PASS"
 
 
 def test_historical_d111_is_verified_from_exact_git_blobs() -> None:
@@ -827,7 +844,12 @@ def test_activation_report_records_observer_scope_without_execution_claim() -> N
 
 
 def test_d112_artifacts_are_reproducible_and_keep_zero_execution_authority() -> None:
-    expected_amendment, expected_inventory = reseal.build_artifacts()
+    expected_amendment = read_historical(
+        "artifacts/trimem_v1/development_exec_012_activation_amendment.json"
+    )
+    expected_inventory = read_historical(
+        "artifacts/trimem_v1/development_exec_012_activation_inventory.json"
+    )
     amendment = read(
         "artifacts/trimem_v1/development_exec_012_activation_amendment.json"
     )
@@ -837,7 +859,6 @@ def test_d112_artifacts_are_reproducible_and_keep_zero_execution_authority() -> 
 
     assert amendment == expected_amendment
     assert inventory == expected_inventory
-    assert amendment["github_observer"] == reseal.validate_github_observer_contract()
     assert inventory["github_observer"] == amendment["github_observer"]
     assert amendment["zero_cost_activation_actuals"] == reseal.ZERO_ACTUALS
     assert amendment["authority_boundary"] == {
@@ -851,4 +872,7 @@ def test_d112_artifacts_are_reproducible_and_keep_zero_execution_authority() -> 
         "request_012_execution_authorized": False,
         "sentinel_contains_execution_authority": False,
     }
-    assert reseal.validate_optional_exec_012_boundary() is None
+    historical = current_reseal.validate_historical_d112()
+    assert historical["source_head"] == D112_SOURCE_HEAD
+    assert historical["execution_head"] == current_reseal.D112_EXECUTION_HEAD
+    assert historical["sentinel_only"] is True

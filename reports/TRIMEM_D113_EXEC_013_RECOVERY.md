@@ -151,6 +151,12 @@ implementation hashes, and the stable changed-path set. Consequently the
 second commit converges instead of invalidating its own amendment. `_013`
 remains absent from both source commits and the source freeze.
 
+Historical D1.12 tests likewise read the exact D1.12 workflow, readiness, and
+seal documents from commit `9db94e2a4abfaad0bb27079738b77836d68fa2e4`.
+They do not apply D1.12 current-HEAD assumptions to the active D1.13 workflow.
+The D1.12 test blobs themselves remain independently verified from immutable
+Git history by the D1.13 resealer.
+
 ## Prohibited operations
 
 D1.13 does not authorize `_012` attempt `2`, a rerun of run `34128541859`, an

@@ -133,7 +133,16 @@ HISTORICAL_D112_SHA256 = {
 # integration files are intentionally not listed because D1.13 replaces their
 # current-generation route while their old bytes remain available from Git.
 IMMUTABLE_D112_CURRENT_PATHS = tuple(
-    relative for relative in HISTORICAL_D112_SHA256 if relative != D112_FREEZE_PATH
+    relative
+    for relative in HISTORICAL_D112_SHA256
+    if relative
+    not in {
+        D112_FREEZE_PATH,
+        # D1.13 adapts only the historical tests' source selection.  Their
+        # original D1.12 bytes remain verified above from the exact Git blob.
+        "tests/unit/test_trimem_d112_e1_trigger.py",
+        "tests/unit/test_trimem_d112_status_and_reseal.py",
+    }
 )
 
 ZERO_ACTUALS: dict[str, int | float] = {
@@ -209,6 +218,8 @@ IMPLEMENTATION_PATHS = (
     "tests/fixtures/trimem_d113/exec_012_preprotected_failure.json",
     "tests/unit/test_trimem_benchmark_readiness.py",
     "tests/unit/test_trimem_d110_status_and_reseal.py",
+    "tests/unit/test_trimem_d112_e1_trigger.py",
+    "tests/unit/test_trimem_d112_status_and_reseal.py",
     "tests/unit/test_trimem_d113_e1_trigger.py",
     "tests/unit/test_trimem_d113_gate_contract.py",
     "tests/unit/test_trimem_d113_status_and_reseal.py",
@@ -247,6 +258,8 @@ REQUIRED_CHANGED_PATHS = {
     "tests/fixtures/trimem_d113/exec_012_preprotected_failure.json": "A",
     "tests/unit/test_trimem_benchmark_readiness.py": "M",
     "tests/unit/test_trimem_d110_status_and_reseal.py": "M",
+    "tests/unit/test_trimem_d112_e1_trigger.py": "M",
+    "tests/unit/test_trimem_d112_status_and_reseal.py": "M",
     "tests/unit/test_trimem_d113_e1_trigger.py": "A",
     "tests/unit/test_trimem_d113_gate_contract.py": "A",
     "tests/unit/test_trimem_d113_status_and_reseal.py": "A",

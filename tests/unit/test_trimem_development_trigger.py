@@ -664,12 +664,13 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_014.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_015.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-014" in workflow
+    assert "group: trimem-v1-development-tuning-exec-015" in workflow
+    assert "group: trimem-v1-development-tuning-exec-014" not in workflow
     assert "group: trimem-v1-development-tuning-exec-013" not in workflow
     assert "group: trimem-v1-development-tuning-exec-010" not in workflow
     assert "group: trimem-v1-development-tuning-exec-004" not in workflow
@@ -680,7 +681,8 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "  frozen-serial-phase:", 1
     )[0]
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in preflight
-    assert "python -I -S scripts/trimem_development_trigger_d114.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d115.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d114.py" not in preflight
     assert "python -I -S scripts/trimem_development_trigger_d113.py" not in preflight
     assert "python -I -S scripts/trimem_development_trigger_d112.py" not in preflight
     assert "python -I -S scripts/trimem_development_trigger_d110.py" not in preflight
@@ -718,11 +720,14 @@ def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
     freeze_rehearsal = (
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
-    rehearsal = "python -I -S scripts/trimem_d114_reseal.py --help"
+    alias_rehearsal = "python -I -S scripts/trimem_compiled_prefix_alias.py --help"
+    rehearsal = "python -I -S scripts/trimem_d115_reseal.py --help"
     install = "python -m pip install --require-hashes"
     assert workflow.count(freeze_rehearsal) == 1
+    assert workflow.count(alias_rehearsal) == 1
     assert workflow.count(rehearsal) == 1
     assert workflow.index(freeze_rehearsal) < workflow.index(install)
+    assert workflow.index(alias_rehearsal) < workflow.index(install)
     assert workflow.index(rehearsal) < workflow.index(install)
 
 

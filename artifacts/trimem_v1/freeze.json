@@ -405,12 +405,12 @@
       "sha256": "1b131b7f7ca7992499e4fca93545e2452e6e6d26ce4d954cbebc337f50d7c03e"
     },
     "artifacts/trimem_v1/development_exec_012_activation_amendment.json": {
-      "bytes": 526,
-      "sha256": "94b00ee9ddc795ba1ad30e5c47d471e5fd96435cee8eb41c87a4efd297bf4370"
+      "bytes": 4786,
+      "sha256": "520edab78f0f742d0f92397370119f8c8e73da7f09319c2d356f33f5ebe087e0"
     },
     "artifacts/trimem_v1/development_exec_012_activation_inventory.json": {
-      "bytes": 235,
-      "sha256": "ac5d2b0dca010c6a1351fdf3c43050e4b31e45c1534968774d7ccf2dc942776a"
+      "bytes": 4414,
+      "sha256": "a08dee92693ac17baefc508a031a4d47ac7132093e3ffcd163c536d5b0f56f19"
     },
     "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json": {
       "bytes": 19159,

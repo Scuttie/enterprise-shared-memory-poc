@@ -75,12 +75,14 @@ D112_AMENDMENT_SCHEMA = "trimem/development-exec-012-activation-amendment/1.0"
 D112_INVENTORY_SCHEMA = "trimem/development-exec-012-activation-inventory/1.0"
 D112_STATUS = "FROZEN_CREDENTIAL_FREE_READY_FOR_EXEC_012_REQUEST"
 D112_CLASSIFICATION = "PRE_EXEC_012_ZERO_AUTHORITY_ACTIVATION"
-D113_AMENDMENT_PATH = ROOT / (
+D113_AMENDMENT_REPO_PATH = (
     "artifacts/trimem_v1/development_exec_013_recovery_amendment.json"
 )
-D113_INVENTORY_PATH = ROOT / (
+D113_INVENTORY_REPO_PATH = (
     "artifacts/trimem_v1/development_exec_013_recovery_inventory.json"
 )
+D113_AMENDMENT_PATH = ROOT / D113_AMENDMENT_REPO_PATH
+D113_INVENTORY_PATH = ROOT / D113_INVENTORY_REPO_PATH
 D113_AMENDMENT_SCHEMA = "trimem/development-exec-013-recovery-amendment/1.0"
 D113_INVENTORY_SCHEMA = "trimem/development-exec-013-recovery-inventory/1.0"
 D113_STATUS = "FROZEN_CREDENTIAL_FREE_EXEC_012_FAILURE_READY_FOR_EXEC_013_REQUEST"
@@ -1399,14 +1401,14 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
         ROOT,
         "cat-file",
         "blob",
-        f"{D113_CORRECTION_SOURCE_HEAD}:{D113_AMENDMENT_PATH.relative_to(ROOT).as_posix()}",
+        f"{D113_CORRECTION_SOURCE_HEAD}:{D113_AMENDMENT_REPO_PATH}",
         text=False,
     )
     d113_inventory_blob = _git(
         ROOT,
         "cat-file",
         "blob",
-        f"{D113_CORRECTION_SOURCE_HEAD}:{D113_INVENTORY_PATH.relative_to(ROOT).as_posix()}",
+        f"{D113_CORRECTION_SOURCE_HEAD}:{D113_INVENTORY_REPO_PATH}",
         text=False,
     )
     assert isinstance(d113_amendment_blob.stdout, bytes)

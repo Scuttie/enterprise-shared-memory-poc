@@ -270,8 +270,6 @@ REQUIRED_ACTIVATION_CHANGES = {
     "tests/unit/test_trimem_development_trigger.py": "M",
     "tests/unit/test_trimem_d16_native_action.py": "M",
 }
-EXPECTED_ACTIVATION_CRITICAL_SHA256: dict[str, str] = {}
-
 PRESERVED_SCIENTIFIC_PATHS = (
     "artifacts/trimem_v1/grader_image_lock.json",
     "artifacts/trimem_v1/multi_swe_evaluation_contract_lock.json",
@@ -338,72 +336,6 @@ EXECUTION_CONTRACT_PATHS = {
     "cell_commit_journal_sha256": "scripts/trimem_benchmark_run.py",
     "resume_disposition_sha256": "scripts/trimem_run_with_resume.py",
 }
-# Historical names remain local aliases only so the copied low-level
-# validators cannot silently select a different contract set.
-D110_CONTRACT_PATHS = EXECUTION_CONTRACT_PATHS
-EXPECTED_D110_IMPLEMENTATION_PATHS = frozenset(
-    {
-        ".gitattributes",
-        ".github/workflows/ci.yml",
-        ".github/workflows/codeql.yml",
-        ".github/workflows/ci-docs.yml",
-        ".github/workflows/ci-company-package.yml",
-        ".github/workflows/ci-company-harness.yml",
-        ".github/workflows/ci-company-demo.yml",
-        ".github/workflows/ci-trimem-dev-toolchain.yml",
-        ".github/workflows/ci-trimem-grader-loader.yml",
-        ".github/workflows/ci-trimem-harness-lock.yml",
-        ".github/workflows/ci-trimem.yml",
-        ".github/workflows/trimem-benchmark.yml",
-        "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json",
-        "artifacts/trimem_v1/readiness_requirements.json",
-        "configs/trimem_v1/tool_environment_lock.json",
-        "docs/TRIMEM_V1_SYSTEM.md",
-        "reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md",
-        "scripts/make_handoff_manifest.py",
-        "scripts/trimem_benchmark_matrix.py",
-        "scripts/trimem_benchmark_run.py",
-        "scripts/trimem_d110_reseal.py",
-        "scripts/trimem_development_trigger_d110.py",
-        "scripts/trimem_development_trigger_preflight.py",
-        "scripts/trimem_freeze.py",
-        "scripts/trimem_grader_smoke.py",
-        "scripts/trimem_harness_lock.py",
-        "scripts/trimem_multi_swe_contract.py",
-        "scripts/trimem_multi_swe_entrypoint.py",
-        "scripts/trimem_official_grader.py",
-        "scripts/trimem_official_harness_loader.py",
-        "scripts/trimem_official_harness_loader_preflight.py",
-        "scripts/trimem_run_with_resume.py",
-        "scripts/trimem_verify_ready.py",
-        "scripts/trimem_verify_remote_custody.py",
-        "src/enterprise_memory/trimem/git_workspace.py",
-        "src/enterprise_memory/trimem/production_runtime.py",
-        "tests/fixtures/trimem_d110/exec_010_sanitized.json",
-        "tests/unit/test_company_handoff_manifest.py",
-        "tests/unit/test_trimem_benchmark_readiness.py",
-        "tests/unit/test_trimem_dev_toolchain_workflows.py",
-        "tests/unit/test_trimem_development_trigger.py",
-        "tests/unit/test_trimem_d19_trigger.py",
-        "tests/unit/test_trimem_d110_official_harness_loader.py",
-        "tests/unit/test_trimem_d110_resume_fail_closed.py",
-        "tests/unit/test_trimem_d110_atomic_resume.py",
-        "tests/unit/test_trimem_d110_checkout_custody.py",
-        "tests/unit/test_trimem_d110_status_and_reseal.py",
-        "tests/unit/test_trimem_d110_e1_trigger.py",
-        "tests/unit/test_trimem_d16_native_action.py",
-        "tests/unit/test_trimem_grader_smoke_trigger.py",
-        "tests/unit/test_trimem_grader_terminal_evidence.py",
-        "tests/unit/test_trimem_harness_lock.py",
-        "tests/unit/test_trimem_multi_prebuilt_evaluation.py",
-        "tests/unit/test_trimem_multi_swe_probe_request.py",
-        "tests/unit/test_trimem_multi_swe_preexec.py",
-        "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
-        "tests/unit/test_trimem_production_runtime.py",
-        "tests/unit/test_trimem_remote_custody.py",
-    }
-)
-
 FORBIDDEN_PREFLIGHT_SECRETS = frozenset(
     {
         "ANTHROPIC_API_KEY",
@@ -419,7 +351,6 @@ FORBIDDEN_PREFLIGHT_SECRETS = frozenset(
 )
 
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
-HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 
 class DevelopmentTriggerError(ValueError):
@@ -659,147 +590,6 @@ def _validate_remote_gate_workflow_contracts(
         )
 
 
-def _validate_contract_documents(
-    repository: Path,
-    source_head: str,
-    inventory: Mapping[str, Any],
-    contracts: Mapping[str, Any],
-) -> None:
-    documents = inventory.get("contract_documents")
-    require(isinstance(documents, Mapping), "D1.10 contract documents are missing")
-    for name, expected_path in D110_CONTRACT_PATHS.items():
-        digest = contracts.get(name)
-        document = documents.get(name)
-        require(
-            isinstance(digest, str)
-            and HEX64.fullmatch(digest) is not None
-            and isinstance(document, Mapping)
-            and document.get("algorithm") == "sha256"
-            and document.get("preimage_kind") == "raw-file-bytes"
-            and document.get("source_path") == expected_path
-            and document.get("sha256") == digest,
-            f"D1.10 contract document differs: {name}",
-        )
-        raw = commit_bytes(repository, source_head, expected_path)
-        require(
-            document.get("bytes") == len(raw)
-            and hashlib.sha256(raw).hexdigest() == digest,
-            f"D1.10 contract bytes differ: {name}",
-        )
-
-
-def _validate_d110_seal(
-    repository: Path, source_head: str
-) -> tuple[dict[str, Any], dict[str, Any], dict[str, str]]:
-    amendment = strict_json(commit_bytes(repository, source_head, AMENDMENT_PATH))
-    inventory = strict_json(commit_bytes(repository, source_head, INVENTORY_PATH))
-    require(
-        amendment.get("schema") == AMENDMENT_SCHEMA
-        and inventory.get("schema") == INVENTORY_SCHEMA
-        and amendment.get("classification") == AMENDMENT_CLASSIFICATION
-        and inventory.get("classification") == AMENDMENT_CLASSIFICATION
-        and amendment.get("status") == AMENDMENT_STATUS
-        and inventory.get("status") == AMENDMENT_STATUS
-        and amendment.get("endpoint") == AMENDMENT_ENDPOINT
-        and inventory.get("endpoint") == AMENDMENT_ENDPOINT,
-        "current D1.10 amendment/inventory identity differs",
-    )
-    contracts = amendment.get("contracts")
-    implementation = amendment.get("implementation_sha256")
-    require(
-        isinstance(contracts, Mapping)
-        and contracts == inventory.get("contracts")
-        and isinstance(implementation, Mapping)
-        and implementation == inventory.get("implementation_sha256"),
-        "D1.10 amendment/inventory hashes disagree",
-    )
-    require(
-        set(implementation) == EXPECTED_D110_IMPLEMENTATION_PATHS,
-        "D1.10 implementation inventory path set differs",
-    )
-    _validate_contract_documents(repository, source_head, inventory, contracts)
-    for path, digest in implementation.items():
-        require(
-            isinstance(path, str)
-            and isinstance(digest, str)
-            and HEX64.fullmatch(digest) is not None
-            and _sha256_at(repository, source_head, path) == digest,
-            f"D1.10 implementation inventory differs: {path}",
-        )
-
-    authority = amendment.get("authority_boundary")
-    require(
-        isinstance(authority, Mapping)
-        and authority.get("dev_execution_authorized") is False
-        and authority.get("heldout_authorized") is False
-        and authority.get("ablation_authorized") is False
-        and authority.get("merge_tag_release_authorized") is False
-        and authority.get("request_010_rerun_allowed") is False
-        and authority.get("request_010_attempt_two_allowed") is False
-        and authority.get("request_011_created") is False
-        and authority.get("historical_failed_request_id")
-        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010"
-        and authority.get("historical_failed_request_path")
-        == PREVIOUS_SENTINEL_PATH
-        and authority.get("fresh_execution_request")
-        == "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
-        and authority.get("fresh_execution_request_creation_authorized") is True
-        and authority.get("required_external_authorization")
-        == REQUIRED_EXTERNAL_AUTHORIZATION,
-        "D1.10 activation authority boundary differs",
-    )
-    historical = amendment.get("historical_execution")
-    run = historical.get("workflow_run") if isinstance(historical, Mapping) else None
-    failure = historical.get("failure_boundary") if isinstance(historical, Mapping) else None
-    usage = historical.get("observed_usage") if isinstance(historical, Mapping) else None
-    previous_request = historical.get("request") if isinstance(historical, Mapping) else None
-    require(
-        isinstance(run, Mapping)
-        and run.get("id") == PREVIOUS_RUN_ID
-        and run.get("attempt") == 1
-        and run.get("head_sha") == PREVIOUS_EXECUTION_HEAD
-        and run.get("conclusion") == "failure"
-        and isinstance(failure, Mapping)
-        and failure.get("stderr_class") == "LIBPYTHON3_11_SO_1_0_UNAVAILABLE"
-        and failure.get("cell_terminal_records") == 0
-        and failure.get("container_started") is False
-        and failure.get("official_grader_runs") == 0
-        and historical.get("grader_state")
-        == "GRADER_INFRA_FAILURE_BEFORE_CONTAINER"
-        and historical.get("performance_measured") is False
-        and isinstance(previous_request, Mapping)
-        and previous_request.get("raw_sha256") == PREVIOUS_SENTINEL_SHA256
-        and previous_request.get("attempt_one_consumed") is True
-        and previous_request.get("attempt_two_allowed") is False
-        and previous_request.get("rerun_allowed") is False
-        and isinstance(usage, Mapping)
-        and usage.get("paid_model_calls") == 10
-        and usage.get("terminal_task_arm_runs") == 0
-        and usage.get("official_grader_runs") == 0
-        and usage.get("total_usd") == "0.051215550000",
-        "immutable _010 execution provenance differs",
-    )
-    scope = amendment.get("scientific_scope_lock")
-    require(
-        isinstance(scope, Mapping)
-        and scope.get("model_id") == MODEL_ID
-        and scope.get("reasoning_effort") == REASONING_EFFORT
-        and scope.get("development_targets") == 12
-        and scope.get("heldout_targets") == 27
-        and scope.get("task_arm_runs") == 72
-        and tuple(scope.get("streams", ())) == EXPECTED_STREAM_ORDER
-        and scope.get("development_hard_caps_changed") is False
-        and scope.get("grader_or_image_revision_changed") is False
-        and scope.get("m2_selection_rule_changed") is False
-        and scope.get("memory_parameters_changed") is False
-        and scope.get("output_token_pools_changed") is False
-        and scope.get("prompt_tool_parser_or_limits_changed") is False
-        and scope.get("runtime_lock_manifest_changed") is False,
-        "D1.10 frozen scientific scope differs",
-    )
-    return amendment, inventory, {str(k): str(v) for k, v in contracts.items()}
-
-
 def _validate_frozen_science_documents(
     repository: Path, source_head: str
 ) -> tuple[list[str], dict[str, Any]]:
@@ -869,99 +659,6 @@ def _validate_frozen_science_documents(
     return target_order, dict(hard)
 
 
-def _validate_freeze_and_bindings(
-    repository: Path,
-    source_head: str,
-    contracts: Mapping[str, str],
-) -> dict[str, Any]:
-    freeze_raw = commit_bytes(repository, source_head, FREEZE_PATH)
-    freeze = strict_json(freeze_raw)
-    files = freeze.get("files")
-    require(
-        freeze.get("schema") == FREEZE_SCHEMA and isinstance(files, Mapping),
-        "activation research freeze is malformed",
-    )
-    require(SENTINEL_PATH not in files, "_011 entered its activation-source freeze")
-    previous_freeze_entry = files.get(PREVIOUS_SENTINEL_PATH)
-    require(
-        previous_freeze_entry is None
-        or previous_freeze_entry
-        == {
-            "bytes": len(
-                commit_bytes(repository, source_head, PREVIOUS_SENTINEL_PATH)
-            ),
-            "sha256": PREVIOUS_SENTINEL_SHA256,
-        },
-        "research freeze records different historical _010 bytes",
-    )
-
-    paths = {**SCIENCE_BINDING_PATHS, **ACTIVATION_BINDING_PATHS}
-    bindings: dict[str, Any] = {
-        "freeze_sha256": "sha256:" + hashlib.sha256(freeze_raw).hexdigest(),
-    }
-    for name, path in paths.items():
-        raw = commit_bytes(repository, source_head, path)
-        digest = hashlib.sha256(raw).hexdigest()
-        require(
-            files.get(path) == {"bytes": len(raw), "sha256": digest},
-            f"activation research freeze does not bind path: {path}",
-        )
-        bindings[name] = "sha256:" + digest
-    for name, path in D110_CONTRACT_PATHS.items():
-        digest = _sha256_at(repository, source_head, path)
-        require(
-            contracts.get(name) == digest
-            and files.get(path)
-            == {
-                "bytes": len(commit_bytes(repository, source_head, path)),
-                "sha256": digest,
-            },
-            f"freeze does not bind current D1.10 contract: {name}",
-        )
-        bindings[name] = "sha256:" + digest
-    gate_hashes: dict[str, str] = {}
-    for path in REQUIRED_REMOTE_GATE_WORKFLOWS:
-        raw = commit_bytes(repository, source_head, path)
-        digest = hashlib.sha256(raw).hexdigest()
-        require(
-            files.get(path) == {"bytes": len(raw), "sha256": digest},
-            f"freeze does not bind remote gate workflow: {path}",
-        )
-        gate_hashes[path] = "sha256:" + digest
-    bindings["remote_gate_workflow_blob_sha256"] = gate_hashes
-    return bindings
-
-
-def _validate_source(repository: Path, source_head: str) -> dict[str, Any]:
-    require(HEX40.fullmatch(source_head) is not None, "source HEAD is invalid")
-    require(
-        git(repository, "cat-file", "-t", source_head).strip() == "commit",
-        "source HEAD is not a commit",
-    )
-    _validate_starting_source(repository)
-    changes = _validate_activation_diff(repository, source_head)
-    _validate_historical_010(repository, source_head)
-    _validate_preserved_science(repository, source_head)
-    _validate_workflow_activation(repository, source_head)
-    _validate_remote_gate_workflow_contracts(repository, source_head)
-    _amendment, _inventory, contracts = _validate_d110_seal(
-        repository, source_head
-    )
-    target_order, hard_cap = _validate_frozen_science_documents(
-        repository, source_head
-    )
-    bindings = _validate_freeze_and_bindings(repository, source_head, contracts)
-    return {
-        "activation_changes": changes,
-        "bindings": bindings,
-        "hard_cap": hard_cap,
-        "target_order": target_order,
-    }
-
-
-# D1.12 deliberately replaces the copied D1.10 source assembler above.  The
-# low-level Git/JSON/workflow/runner helpers remain self-contained in this
-# module, while the active source contract starts at the sealed D1.11 commit.
 def _load_immutable_previous_request(repository: Path) -> dict[str, Any]:
     require(
         git(repository, "cat-file", "-t", PREVIOUS_EXECUTION_HEAD).strip()
@@ -1066,8 +763,29 @@ def _validate_d112_workflow(repository: Path, source_head: str) -> None:
         "_012 concurrency identity differs",
     )
     active_command = "python -I -S scripts/trimem_development_trigger_d112.py"
+    branch_marker = "  branch-trigger-preflight:\n"
+    bounded_marker = "  bounded-context-preflight:\n"
+    frozen_marker = "  frozen-serial-phase:\n"
     require(
-        workflow.count(active_command) == 2
+        workflow.count(branch_marker) == 1
+        and workflow.count(bounded_marker) == 1
+        and workflow.count(frozen_marker) == 1,
+        "D1.12 workflow job identity differs",
+    )
+    branch_start = workflow.index(branch_marker)
+    bounded_start = workflow.index(bounded_marker)
+    frozen_start = workflow.index(frozen_marker)
+    require(
+        branch_start < bounded_start < frozen_start,
+        "D1.12 workflow job order differs",
+    )
+    branch_job = workflow[branch_start:bounded_start]
+    bounded_job = workflow[bounded_start:frozen_start]
+    frozen_job = workflow[frozen_start:]
+    require(
+        branch_job.count(active_command) == 1
+        and bounded_job.count(active_command) == 1
+        and active_command not in frozen_job
         and "python -I -S scripts/trimem_development_trigger_d110.py"
         not in workflow,
         "active trigger validator is not exclusively D1.12 _012",
@@ -1080,12 +798,50 @@ def _validate_d112_workflow(repository: Path, source_head: str) -> None:
         "D1.12 jobs do not use the exact collision-free runner labels",
     )
     require(
-        workflow.count("--runner-host-preflight-event-path \"$GITHUB_EVENT_PATH\"")
+        "runs-on: ubuntu-24.04" in branch_job
+        and "runs-on: [self-hosted" not in branch_job
+        and "runs-on: [self-hosted" in bounded_job
+        and "runs-on: [self-hosted" in frozen_job
+        and branch_job.count('--event-path "$GITHUB_EVENT_PATH"') == 1
+        and '--event-path "$GITHUB_EVENT_PATH"' not in bounded_job
+        and bounded_job.count(
+            '--runner-host-preflight-event-path "$GITHUB_EVENT_PATH"'
+        )
         == 1
+        and "--runner-host-preflight-event-path" not in branch_job
         and workflow.count("github.run_attempt == 1") >= 2
-        and "environment: trimem-benchmark-exec" in workflow,
+        and "environment:" not in workflow[:frozen_start]
+        and frozen_job.count("environment: trimem-benchmark-exec") == 1
+        and "secrets." not in workflow[:frozen_start],
         "D1.12 attempt, host-preflight, or protected-environment gate differs",
     )
+    ordered_markers = (
+        "Verify one-time zero-authority DEV trigger",
+        "Re-observe exact self-hosted runner before any install or materialization",
+        "Verify bounded context round trip before provider access",
+        "Verify production terminal-cell round trip before provider access",
+        "Materialize pinned harnesses in unprotected loader preflight",
+        "Gate protected job on unprotected exact loader preflight",
+        "Materialize protected external approval",
+        "Verify exact phase EXEC gate",
+        "Validate exact OpenAI credential format before network access",
+        "Retrieve exact model metadata before image materialization",
+        "Execute one native-action protocol canary before benchmark images",
+        "Apply exact migration head",
+        "Pull committed images by digest and verify local observations",
+        "Execute frozen serial streams with one atomic phase ledger",
+        "Aggregate exact stream and target set fail closed",
+        "Build public allowlisted result",
+        "Inventory complete restricted benchmark evidence",
+        "Encrypt complete restricted evidence",
+        "Verify durable external artifact custody before cleanup",
+        "Remove plaintext and temporary EXEC material",
+    )
+    positions: list[int] = []
+    for marker in ordered_markers:
+        require(workflow.count(marker) == 1, f"workflow stage differs: {marker}")
+        positions.append(workflow.index(marker))
+    require(positions == sorted(positions), "D1.12 workflow stage order differs")
 
 
 def _freeze_entry(
@@ -1290,21 +1046,6 @@ def _validate_runner_readiness_freshness(
         <= age_seconds
         <= MAXIMUM_RUNNER_READINESS_AGE_SECONDS,
         "runner readiness observation is stale or future-dated",
-    )
-
-
-def _validate_pull_request_binding(
-    pull_requests: Any, source_head: str
-) -> bool:
-    if not isinstance(pull_requests, list) or len(pull_requests) != 1:
-        return False
-    pull = pull_requests[0]
-    head = pull.get("head") if isinstance(pull, Mapping) else None
-    return (
-        isinstance(pull, Mapping)
-        and pull.get("number") == PULL_REQUEST_NUMBER
-        and isinstance(head, Mapping)
-        and head.get("sha") == source_head
     )
 
 
@@ -2834,6 +2575,10 @@ def validate_branch_trigger(
     require(
         environment.get("GITHUB_WORKFLOW_REF") == EXPECTED_WORKFLOW_REF,
         "workflow ref differs",
+    )
+    require(
+        environment.get("GITHUB_JOB") == "branch-trigger-preflight",
+        "branch trigger validation is outside the branch-trigger-preflight job",
     )
     repository_record = event.get("repository")
     require(

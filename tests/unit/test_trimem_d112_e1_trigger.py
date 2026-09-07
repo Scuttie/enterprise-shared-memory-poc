@@ -197,6 +197,7 @@ def _event(before: str, after: str) -> dict[str, object]:
 def _environment(after: str, run_id: int = 990_012) -> dict[str, str]:
     return {
         "GITHUB_EVENT_NAME": "push",
+        "GITHUB_JOB": "branch-trigger-preflight",
         "GITHUB_REF": trigger.EXPECTED_REF,
         "GITHUB_REPOSITORY": trigger.EXPECTED_REPOSITORY,
         "GITHUB_RUN_ATTEMPT": "1",
@@ -305,6 +306,29 @@ def test_d112_cli_imports_sibling_lock_reader_under_isolated_python() -> None:
     assert "ModuleNotFoundError" not in completed.stderr
 
 
+def test_d112_workflow_locks_job_placement_order_and_secret_boundary(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workflow = (ROOT / trigger.EXPECTED_WORKFLOW_PATH).read_bytes()
+    monkeypatch.setattr(
+        trigger,
+        "commit_bytes",
+        lambda _repository, _source, path: workflow
+        if path == trigger.EXPECTED_WORKFLOW_PATH
+        else pytest.fail(f"unexpected path: {path}"),
+    )
+    trigger._validate_d112_workflow(ROOT, "a" * 40)
+
+    exposed = workflow.replace(
+        b"  bounded-context-preflight:\n",
+        b"  bounded-context-preflight:\n    env:\n      LEAK: ${{ secrets.OPENAI_API_KEY }}\n",
+        1,
+    )
+    monkeypatch.setattr(trigger, "commit_bytes", lambda *_args: exposed)
+    with pytest.raises(trigger.DevelopmentTriggerError, match="protected-environment"):
+        trigger._validate_d112_workflow(ROOT, "a" * 40)
+
+
 @pytest.mark.parametrize(
     "raw",
     [
@@ -398,41 +422,78 @@ def test_d112_branch_trigger_binds_source_execution_pr_and_runner_separately(
     readiness = _runner_readiness(before)
     event_path = tmp_path / "event.json"
     event_path.write_bytes(trigger.canonical_bytes(_event(before, after)))
-    monkeypatch.setattr(
-        trigger,
-        "validate_sentinel_commit",
-        lambda _repository,
-        selected,
+    calls: list[tuple[object, ...]] = []
+
+    def validate_sentinel(
+        repository: Path,
+        selected: str,
         *,
-        expected_parent,
-        require_checked_out_head: {
+        expected_parent: str,
+        require_checked_out_head: bool,
+    ) -> dict[str, object]:
+        calls.append(
+            (
+                "sentinel",
+                repository,
+                selected,
+                expected_parent,
+                require_checked_out_head,
+            )
+        )
+        return {
             "remote_gate_evidence": gates,
             "runner_readiness": readiness,
             "source_head": expected_parent,
             "trigger_commit": selected,
-        },
-    )
+        }
+
     monkeypatch.setattr(
         trigger,
-        "_validate_unique_execution_run",
-        lambda selected, environment: {
+        "validate_sentinel_commit",
+        validate_sentinel,
+    )
+
+    def validate_execution_run(
+        selected: str, environment: dict[str, str]
+    ) -> dict[str, object]:
+        calls.append(("execution", selected, environment["GITHUB_RUN_ID"]))
+        return {
             "event": "push",
             "head_sha": selected,
             "run_attempt": 1,
             "run_id": int(environment["GITHUB_RUN_ID"]),
             "workflow_path": trigger.EXPECTED_WORKFLOW_PATH,
-        },
+        }
+
+    monkeypatch.setattr(
+        trigger,
+        "_validate_unique_execution_run",
+        validate_execution_run,
     )
     monkeypatch.setattr(trigger, "_pinned_gh_context", lambda: ("pinned-gh", {}))
+
+    def current_pull_request(
+        gh: str, environment: dict[str, str], *, expected_head: str
+    ) -> dict[str, object]:
+        calls.append(("current-pr", gh, environment, expected_head))
+        return _pull_request(expected_head)
+
     monkeypatch.setattr(
         trigger,
         "_collect_current_pull_request",
-        lambda gh, environment, *, expected_head: _pull_request(expected_head),
+        current_pull_request,
     )
+
+    def remote_gates(
+        gh: str, environment: dict[str, str], *, source_head: str
+    ) -> object:
+        calls.append(("source-gates", gh, environment, source_head))
+        return gates["workflows"]
+
     monkeypatch.setattr(
         trigger,
         "_collect_remote_gate_rows",
-        lambda gh, environment, *, source_head: gates["workflows"],
+        remote_gates,
     )
     monkeypatch.setattr(
         trigger,
@@ -447,6 +508,12 @@ def test_d112_branch_trigger_binds_source_execution_pr_and_runner_separately(
     assert result["trigger_commit"] == after
     assert result["execution_run"]["head_sha"] == after
     assert result["activation_actuals"] == trigger.ACTIVATION_ZERO_COUNTERS
+    assert calls == [
+        ("execution", after, "990012"),
+        ("sentinel", ROOT, after, before, True),
+        ("current-pr", "pinned-gh", {}, after),
+        ("source-gates", "pinned-gh", {}, before),
+    ]
 
 
 def test_d112_branch_trigger_rejects_secret_or_second_attempt_before_git(
@@ -462,9 +529,40 @@ def test_d112_branch_trigger_rejects_secret_or_second_attempt_before_git(
     with pytest.raises(trigger.DevelopmentTriggerError, match="attempt"):
         trigger.validate_branch_trigger(ROOT, event_path, environ=second_attempt)
 
+    wrong_job = {**_environment(after), "GITHUB_JOB": "bounded-context-preflight"}
+    with pytest.raises(trigger.DevelopmentTriggerError, match="branch-trigger-preflight"):
+        trigger.validate_branch_trigger(ROOT, event_path, environ=wrong_job)
+
     with_secret = {**_environment(after), "OPENAI_API_KEY": "must-not-be-visible"}
     with pytest.raises(trigger.DevelopmentTriggerError, match="protected benchmark"):
         trigger.validate_branch_trigger(ROOT, event_path, environ=with_secret)
+
+
+def test_d112_branch_trigger_rejects_stale_embedded_runner_before_live_gates(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    before, after = "a" * 40, "b" * 40
+    readiness = _runner_readiness(before)
+    readiness["observed_at_utc"] = "2000-01-01T00:00:00.000Z"
+    event_path = tmp_path / "event.json"
+    event_path.write_bytes(trigger.canonical_bytes(_event(before, after)))
+    monkeypatch.setattr(
+        trigger,
+        "_validate_unique_execution_run",
+        lambda *_args, **_kwargs: {"run_id": 990_012},
+    )
+    monkeypatch.setattr(
+        trigger,
+        "validate_sentinel_commit",
+        lambda *_args, **_kwargs: {
+            "remote_gate_evidence": _remote_gate_evidence(before),
+            "runner_readiness": readiness,
+        },
+    )
+    monkeypatch.setattr(trigger, "_pinned_gh_context", pytest.fail)
+
+    with pytest.raises(trigger.DevelopmentTriggerError, match="stale"):
+        trigger.validate_branch_trigger(ROOT, event_path, environ=_environment(after))
 
 
 def test_d112_execution_run_is_unique_and_attempt_one(

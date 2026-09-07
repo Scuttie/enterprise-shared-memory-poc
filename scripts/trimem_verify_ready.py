@@ -4767,12 +4767,11 @@ def validate_d112_exec_012_activation() -> None:
         and expected_amendment.get("endpoint") == D112_ENDPOINT
         and isinstance(authority, Mapping)
         and authority.get("request_011_attempt_one_consumed") is True
-        and authority.get("request_011_attempt_two_allowed") is False
         and authority.get("request_011_rerun_allowed") is False
-        and authority.get("request_012_creation_authority_received") is True
+        and authority.get("request_012_creation_authorized") is True
         and authority.get("request_012_execution_authorized") is False
         and authority.get("external_execution_approval_received") is False
-        and authority.get("dev_execution_authorized") is False
+        and authority.get("actual_execution_authorized") is False
         and correction == d112_reseal.ZERO_ACTUALS,
         "D1.12 authority or zero-cost activation boundary differs",
     )

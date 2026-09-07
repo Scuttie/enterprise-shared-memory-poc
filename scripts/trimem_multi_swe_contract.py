@@ -65,6 +65,16 @@ D110_INVENTORY_SCHEMA = (
 )
 D110_STATUS = "FROZEN_CREDENTIAL_FREE_READY_FOR_DEV_APPROVAL"
 D110_CLASSIFICATION = "PRE_RESULT_GRADER_LAUNCH_AND_STREAM_COMMIT_CORRECTION"
+D112_AMENDMENT_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_012_activation_amendment.json"
+)
+D112_INVENTORY_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_012_activation_inventory.json"
+)
+D112_AMENDMENT_SCHEMA = "trimem/development-exec-012-activation-amendment/1.0"
+D112_INVENTORY_SCHEMA = "trimem/development-exec-012-activation-inventory/1.0"
+D112_STATUS = "FROZEN_CREDENTIAL_FREE_READY_FOR_EXEC_012_REQUEST"
+D112_CLASSIFICATION = "PRE_EXEC_012_ZERO_AUTHORITY_ACTIVATION"
 ENTRYPOINT_PATH = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
 REPORT_SEMANTICS_MODULE_PATH = ROOT / "scripts/trimem_multi_swe_report_semantics.py"
 REPORT_SEMANTICS_LOCK_PATH = (
@@ -125,6 +135,7 @@ LOCAL_VALIDATOR_LINE_ENDINGS = {
     "tracked_head_blob_equality_required": True,
     "working_tree_raw_bytes_hashed": True,
 }
+D112_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 
 
 class ContractError(ValueError):
@@ -1313,12 +1324,55 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
         d110_amendment_aggregate_sha256 == d110_inventory_aggregate_sha256,
         "D1.10 aggregate implementation seals disagree",
     )
-    current_aggregate_sha256 = d110_amendment_aggregate_sha256
+
+    d112_amendment = _strict_json_object(D112_AMENDMENT_PATH, "D1.12 amendment")
+    d112_inventory = _strict_json_object(D112_INVENTORY_PATH, "D1.12 inventory")
+    d112_amendment_implementation = d112_amendment.get("implementation_sha256")
+    d112_inventory_implementation = d112_inventory.get("implementation_sha256")
+    _require(
+        d112_amendment.get("schema") == D112_AMENDMENT_SCHEMA
+        and d112_amendment.get("status") == D112_STATUS
+        and d112_amendment.get("classification") == D112_CLASSIFICATION
+        and isinstance(d112_amendment_implementation, dict),
+        "D1.12 activation amendment identity differs",
+    )
+    _require(
+        d112_inventory.get("schema") == D112_INVENTORY_SCHEMA
+        and d112_inventory.get("status") == D112_STATUS
+        and d112_inventory.get("classification") == D112_CLASSIFICATION
+        and isinstance(d112_inventory_implementation, dict),
+        "D1.12 activation inventory identity differs",
+    )
+    _require(
+        d112_amendment_implementation == d112_inventory_implementation,
+        "D1.12 activation implementation seals disagree",
+    )
+    d112_local_validator_overrides = (
+        set(d112_amendment_implementation) & set(LOCAL_VALIDATOR_ROLES)
+    )
+    _require(
+        d112_local_validator_overrides == D112_LOCAL_VALIDATOR_OVERRIDES,
+        "D1.12 local validator override set differs",
+    )
+    d112_aggregate_sha256 = d112_amendment_implementation.get(
+        D18_CURRENT_AGGREGATE_PATH
+    )
+    _require(
+        isinstance(d112_aggregate_sha256, str)
+        and SHA256.fullmatch(d112_aggregate_sha256) is not None,
+        "D1.12 aggregate implementation seal is missing",
+    )
+    _require(
+        d112_aggregate_sha256 != d110_amendment_aggregate_sha256,
+        "D1.12 aggregate unexpectedly equals the historical D1.10 aggregate",
+    )
+    current_aggregate_sha256 = d112_aggregate_sha256
 
     # The immutable Multi-SWE lock predates D1.8 and remains bound to its exact
-    # starting blobs.  D1.10 separately seals every current executable local
-    # validator.  Never rewrite the historical projection to make changed live
-    # validators appear unchanged.
+    # starting blobs.  D1.10 separately seals the executable local validators
+    # at that correction, while D1.12 provides one explicit later-generation
+    # override for the benchmark matrix.  Never rewrite a historical lock or
+    # amendment to make a changed live validator appear unchanged.
     locked_rows: dict[str, dict[str, Any]] = {}
     verified: list[dict[str, Any]] = []
     for path in sorted(LOCAL_VALIDATOR_ROLES):
@@ -1384,12 +1438,21 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             rows.get(path) == historical_observed,
             f"historical local validator byte lock differs: {path}",
         )
-        d110_amendment_sha256 = d110_amendment_implementation.get(path)
-        d110_inventory_sha256 = d110_inventory_implementation.get(path)
+        if path in D112_LOCAL_VALIDATOR_OVERRIDES:
+            expected_current_sha256 = d112_amendment_implementation.get(path)
+            current_generation = "D1.12"
+        else:
+            d110_amendment_sha256 = d110_amendment_implementation.get(path)
+            d110_inventory_sha256 = d110_inventory_implementation.get(path)
+            _require(
+                d110_amendment_sha256 == d110_inventory_sha256,
+                f"D1.10 local validator implementation seals disagree: {path}",
+            )
+            expected_current_sha256 = d110_amendment_sha256
+            current_generation = "D1.10"
         _require(
-            d110_amendment_sha256 == observed["sha256"]
-            and d110_inventory_sha256 == observed["sha256"],
-            f"current D1.10 local validator seal differs: {path}",
+            expected_current_sha256 == observed["sha256"],
+            f"current {current_generation} local validator seal differs: {path}",
         )
         if path == D18_CURRENT_AGGREGATE_PATH:
             _require(
@@ -1398,7 +1461,7 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             )
             _require(
                 observed["sha256"] == current_aggregate_sha256,
-                "current D1.10 aggregate differs from the stream-commit implementation seal",
+                "current D1.12 aggregate differs from the activation implementation seal",
             )
         locked_rows[path] = historical_observed
         verified.append({"git_blob_oid": match.group(1), "path": path, **observed})

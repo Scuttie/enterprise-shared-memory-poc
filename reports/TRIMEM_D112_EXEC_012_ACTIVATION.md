@@ -25,6 +25,29 @@ OpenAI-key commitment before the protected job may execute.
 D1.12 reads D1.11 artifacts from immutable Git blobs. It does not rebuild or
 rewrite the spent D1.10/D1.11 contracts.
 
+## Credential-free Multi-SWE seal-layer closure
+
+Fresh exact-head gates on source
+`6493305b88fdf95bc41d58c1824288bbd3d20b7f` completed with nine successes and
+three failures. Push runs `34115936679` (Multi-SWE contract) and `34115936726`
+(static CI), plus pull-request run `34115943067` (general CI), all exposed the
+same stale-seal defect. Run `34115936679`, attempt `1`, stopped in the
+credential-free `Verify required Git blobs and pinned control flow` step. The
+verifier still required the D1.10 byte identity for
+`scripts/trimem_benchmark_matrix.py` even though D1.12 had changed only that
+validator's active sentinel import and had sealed its new bytes in both the
+D1.12 amendment and inventory. The image probe did not execute. Model/API
+calls, grader containers, official grader runs, benchmark image pulls,
+task-arm runs, tokens, paid calls, and USD remained zero.
+
+The immutable Multi-SWE lock and the D1.8, D1.9, and D1.10 artifacts remain
+byte-for-byte historical evidence. The verifier now layers the D1.12 amendment
+and inventory as an exact current-generation override only for
+`scripts/trimem_benchmark_matrix.py`; the other three executable local
+validators remain bound to their D1.10 seals. A missing, mismatched, or extra
+D1.12 local-validator override fails closed. This source correction still
+requires fresh exact-head credential-free CI before `_012` may be created.
+
 ## Corrected activation contract
 
 - historical workflow gates are selected from immutable top-level run identity;

@@ -698,6 +698,8 @@ def test_cross_platform_observer_is_byte_locked_and_bounded() -> None:
         "configs/trimem_v1/gh_cli_lock.json",
         "scripts/trimem_development_trigger_preflight.py",
         "scripts/trimem_install_pinned_gh.py",
+        "scripts/trimem_multi_swe_contract.py",
+        "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
         "tests/unit/test_trimem_pinned_gh.py",
     ):
         assert relative in reseal.IMPLEMENTATION_PATHS

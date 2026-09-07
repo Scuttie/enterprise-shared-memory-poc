@@ -487,6 +487,12 @@ def test_d112_frozen_identity_and_zero_authority_constants() -> None:
     assert trigger.REQUIRED_ACTIVATION_CHANGES[
         "scripts/trimem_development_trigger_preflight.py"
     ] == "M"
+    assert trigger.REQUIRED_ACTIVATION_CHANGES[
+        "scripts/trimem_multi_swe_contract.py"
+    ] == "M"
+    assert trigger.REQUIRED_ACTIVATION_CHANGES[
+        "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py"
+    ] == "M"
     assert trigger.ACTIVATION_BINDING_PATHS["gitattributes_sha256"] == (
         ".gitattributes"
     )

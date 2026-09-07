@@ -290,6 +290,7 @@ IMPLEMENTATION_PATHS = (
     "scripts/trimem_development_trigger_preflight.py",
     "scripts/trimem_freeze.py",
     "scripts/trimem_install_pinned_gh.py",
+    "scripts/trimem_multi_swe_contract.py",
     "scripts/trimem_verify_ready.py",
     "tests/unit/test_trimem_benchmark_readiness.py",
     "tests/unit/test_trimem_d110_status_and_reseal.py",
@@ -298,6 +299,7 @@ IMPLEMENTATION_PATHS = (
     "tests/unit/test_trimem_d112_e1_trigger.py",
     "tests/unit/test_trimem_d112_status_and_reseal.py",
     "tests/unit/test_trimem_development_trigger.py",
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
     "tests/unit/test_trimem_pinned_gh.py",
 )
 GENERATED_PATHS = frozenset(
@@ -326,6 +328,7 @@ REQUIRED_CHANGED_PATHS = {
     "scripts/trimem_development_trigger_preflight.py": "M",
     "scripts/trimem_freeze.py": "M",
     "scripts/trimem_install_pinned_gh.py": "M",
+    "scripts/trimem_multi_swe_contract.py": "M",
     "scripts/trimem_verify_ready.py": "M",
     "tests/unit/test_trimem_benchmark_readiness.py": "M",
     "tests/unit/test_trimem_d110_status_and_reseal.py": "M",
@@ -334,6 +337,7 @@ REQUIRED_CHANGED_PATHS = {
     "tests/unit/test_trimem_d112_e1_trigger.py": "A",
     "tests/unit/test_trimem_d112_status_and_reseal.py": "A",
     "tests/unit/test_trimem_development_trigger.py": "M",
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py": "M",
     "tests/unit/test_trimem_pinned_gh.py": "M",
 }
 

@@ -406,11 +406,11 @@
     },
     "artifacts/trimem_v1/development_exec_012_activation_amendment.json": {
       "bytes": 4786,
-      "sha256": "520edab78f0f742d0f92397370119f8c8e73da7f09319c2d356f33f5ebe087e0"
+      "sha256": "830d5172cb33dac7b7674b7b613b26a1e4762109807fd89a1eafde4fe213d342"
     },
     "artifacts/trimem_v1/development_exec_012_activation_inventory.json": {
       "bytes": 4414,
-      "sha256": "a08dee92693ac17baefc508a031a4d47ac7132093e3ffcd163c536d5b0f56f19"
+      "sha256": "efe3d0a9e16837e00412bdf633cbb83c35f5d23ec63825ac21ae53af29717b43"
     },
     "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json": {
       "bytes": 19159,
@@ -1057,8 +1057,8 @@
       "sha256": "cc6d02c48af12de64f67bacd46d72149d382b1dcc16b2323e72e5630038670f9"
     },
     "scripts/trimem_development_trigger_d112.py": {
-      "bytes": 111541,
-      "sha256": "df7bc5e5b3b03ffaaa00a49f7a9bfb403ab910d0d47457370b2d6e37d5d442ad"
+      "bytes": 100367,
+      "sha256": "cee17ef33466e140fbddf9b15855816ba2834e7a7b41bf329a780f8f0a7e17c0"
     },
     "scripts/trimem_development_trigger_d15.py": {
       "bytes": 24543,
@@ -1221,8 +1221,8 @@
       "sha256": "f988b0e5229073a2935e26beee40190f2083e74fa155fdbe3373c6af52b91eca"
     },
     "scripts/trimem_verify_ready.py": {
-      "bytes": 268650,
-      "sha256": "5f7dc44a885a7f6b6892d4b39c6f94d92923e8a02675b0f8106e4633f6034ead"
+      "bytes": 268575,
+      "sha256": "b25a888e6327b76490aa5b31daab8145cf28eb4f3b09f6a150d8371a76ceec97"
     },
     "scripts/trimem_verify_remote_custody.py": {
       "bytes": 7571,
@@ -1545,8 +1545,8 @@
       "sha256": "d7870a9d273771287c304af2f87f4e7fa5f5f06bddcbe1a60224626424d77067"
     },
     "tests/unit/test_trimem_d112_e1_trigger.py": {
-      "bytes": 24921,
-      "sha256": "586116a55d7ac2cf53777205522450b1cb37086e701d0687e0299171b4025461"
+      "bytes": 28251,
+      "sha256": "d75f2637a0afea76008fe0097586c2bba5d12e0836c2784b9d1aca78463f0224"
     },
     "tests/unit/test_trimem_d112_status_and_reseal.py": {
       "bytes": 8399,

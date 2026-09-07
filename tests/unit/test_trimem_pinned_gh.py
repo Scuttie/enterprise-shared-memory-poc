@@ -204,7 +204,10 @@ def _windows_observer_fixture(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> tuple[dict[str, Any], Path]:
     payload = b"exact pinned Windows gh executable fixture"
-    binary = tmp_path / "gh.exe"
+    # ``shutil.which("gh")`` returns ``gh.EXE`` on the actual Windows writer.
+    # Windows filenames are case-insensitive, so preserve that real spelling
+    # in the regression while still requiring the exact gh.exe basename.
+    binary = tmp_path / "gh.EXE"
     binary.write_bytes(payload)
     lock = deepcopy(pinned_gh.load_gh_cli_lock(LOCK_PATH))
     lock["windows_observer"]["observed_gh_binary_bytes"] = len(payload)

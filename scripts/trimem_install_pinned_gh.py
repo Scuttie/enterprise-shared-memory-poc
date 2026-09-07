@@ -539,7 +539,7 @@ def verify_observer_gh(
         result["observer_platform"] = "linux_amd64"
         return result
     if system == "Windows" and machine in {"amd64", "x86_64"}:
-        if not binary_path.is_absolute() or binary_path.name != "gh.exe":
+        if not binary_path.is_absolute() or binary_path.name.casefold() != "gh.exe":
             raise GhCliInstallError(
                 "Windows GitHub CLI observer must be an absolute gh.exe path"
             )

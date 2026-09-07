@@ -72,7 +72,7 @@
     "heldout_execution_authorized": false,
     "fresh_dev_execution_approval_required": true,
     "future_recovery_authority_received": true,
-    "meaning": "The _011 attempt-1 run is immutable and final after failing in the hosted branch trigger with zero model/API calls and before protected execution. The user authorized creation of one zero-authority _012 sentinel only after fresh exact-head source CI and exactly two isolated runners pass. This does not authorize protected DEV execution; a separate exact _012 external approval remains mandatory.",
+    "meaning": "The _011 attempt-1 run cannot be rerun; it is immutable and final after failing in the hosted branch trigger with zero model/API calls and before protected execution. The user authorized creation of one zero-authority _012 sentinel only after fresh exact-head source CI and exactly two isolated runners pass. This does not authorize protected DEV execution; a separate exact _012 external approval remains mandatory.",
     "model_id": "gpt-5.4-mini-2026-03-17",
     "prior_failed_run_reusable": false,
     "recovery_authorization": "REQUEST_012_CREATION_AUTHORITY_RECEIVED",

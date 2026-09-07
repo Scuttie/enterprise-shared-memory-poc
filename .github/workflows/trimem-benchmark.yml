@@ -86,8 +86,19 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ github.sha }}
+      - name: Verify complete cached Python before setup-python
+        env:
+          LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
+          RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
+        run: >-
+          /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python
+          -I -S scripts/trimem_development_trigger_d112.py
+          --repository "$GITHUB_WORKSPACE"
+          --pre-setup-cache-host-event-path "$GITHUB_EVENT_PATH"
       - name: Set up exact Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        env:
+          RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
         with:
           python-version: 3.11.10
           cache: ""
@@ -172,24 +183,6 @@ jobs:
     runs-on: [self-hosted, linux, x64, trimem-ubuntu-24.04, trimem-benchmark]
     timeout-minutes: 7200
     environment: trimem-benchmark-exec
-    services:
-      postgres:
-        image: postgres@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
-        env:
-          POSTGRES_DB: trimem_benchmark
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d trimem_benchmark"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
-      qdrant:
-        image: qdrant/qdrant@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636
-        ports:
-          - 6333:6333
     env:
       CUBLAS_WORKSPACE_CONFIG: ":4096:8"
       CUDA_VISIBLE_DEVICES: ""
@@ -198,8 +191,8 @@ jobs:
       OMP_NUM_THREADS: "1"
       PYTHONHASHSEED: "0"
       TOKENIZERS_PARALLELISM: "false"
-      TRIMEM_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@localhost:5432/trimem_benchmark
-      TRIMEM_QDRANT_URL: http://localhost:6333
+      TRIMEM_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@127.0.0.1:5432/trimem_benchmark
+      TRIMEM_QDRANT_URL: http://127.0.0.1:6333
     steps:
       - name: Checkout approved frozen source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -207,11 +200,37 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ github.sha }}
+      - name: Verify complete cached Python before setup-python
+        env:
+          LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
+          RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
+        run: >-
+          /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python
+          -I -S scripts/trimem_development_trigger_d112.py
+          --repository "$GITHUB_WORKSPACE"
+          --pre-setup-cache-host-event-path "$GITHUB_EVENT_PATH"
       - name: Set up exact Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        env:
+          RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
         with:
           python-version: 3.11.10
           cache: ""
+      - name: Re-observe protected runner before cache-only service creation
+        run: >-
+          python -I -S scripts/trimem_development_trigger_d112.py
+          --repository "$GITHUB_WORKSPACE"
+          --protected-runner-preflight-event-path "$GITHUB_EVENT_PATH"
+      - name: Start exact cache-only benchmark services
+        run: >-
+          python -I -S scripts/trimem_development_trigger_d112.py
+          --repository "$GITHUB_WORKSPACE"
+          --start-protected-services-event-path "$GITHUB_EVENT_PATH"
+      - name: Verify exact cache-only benchmark services
+        run: >-
+          python -I -S scripts/trimem_development_trigger_d112.py
+          --repository "$GITHUB_WORKSPACE"
+          --verify-protected-services-event-path "$GITHUB_EVENT_PATH"
       - name: Install hash-locked environment
         run: |
           python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
@@ -338,11 +357,11 @@ jobs:
           --output "artifacts/trimem_v1/benchmark_exec/$TRIMEM_EXEC_SPLIT/control/protocol-action-canary.json"
       - name: Apply exact migration head
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/trimem_benchmark
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/trimem_benchmark
           MIGRATION_PASSWORD: postgres
           MIGRATION_USER: postgres
           PGDATABASE: trimem_benchmark
-          PGHOST: localhost
+          PGHOST: 127.0.0.1
           PGPASSWORD: postgres
           PGUSER: postgres
         run: |
@@ -359,7 +378,7 @@ jobs:
         if: ${{ !cancelled() && success() }}
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TRIMEM_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/trimem_benchmark
+          TRIMEM_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@127.0.0.1:5432/trimem_benchmark
         run: |
           set -euo pipefail
           test -n "$OPENAI_API_KEY"
@@ -516,3 +535,9 @@ jobs:
           test ! -e artifacts/trimem_v1/development_selection
           test ! -e "$RUNNER_TEMP/trimem-exec-approval.json"
           test ! -e "$RUNNER_TEMP/trimem-benchmark-restricted.tar.enc"
+      - name: Remove exact cache-only benchmark services
+        if: always()
+        run: >-
+          python -I -S scripts/trimem_development_trigger_d112.py
+          --repository "$GITHUB_WORKSPACE"
+          --cleanup-protected-services-event-path "$GITHUB_EVENT_PATH"

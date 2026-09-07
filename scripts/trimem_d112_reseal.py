@@ -15,6 +15,7 @@ grader, image, or model operation.
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import importlib
 import json
@@ -89,10 +90,124 @@ PREVIOUS_REQUEST_SHA256 = (
 REQUIRED_EXTERNAL_AUTHORIZATION = (
     "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_012_APPROVED_ONCE"
 )
+DEVELOPMENT_AUTHORITY_MEANING = (
+    "The _011 attempt-1 run cannot be rerun; it is immutable and final after "
+    "failing in the hosted branch trigger with zero model/API calls and before "
+    "protected execution. The user authorized creation of one zero-authority "
+    "_012 sentinel only after fresh exact-head source CI and exactly two isolated "
+    "runners pass. This does not authorize protected DEV execution; a separate "
+    "exact _012 external approval remains mandatory."
+)
 GH_CLI_LOCK_PATH = ROOT / "configs/trimem_v1/gh_cli_lock.json"
 GH_CLI_LOCK_SCHEMA = "trimem/gh-cli-lock/1.1"
 GH_CLI_VERSION = "2.97.0"
 GH_CLI_VERSION_LINE = "gh version 2.97.0 (2026-07-31)"
+WSL_EXACT_PYTHON_ROOT = "/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64"
+WSL_EXACT_PYTHON_LIBRARY_PATH = f"{WSL_EXACT_PYTHON_ROOT}/lib"
+RUNNER_DISTRIBUTION = "TriMemRunner2404"
+RUNNER_WSL_USER = "trimem-runner"
+RUNNER_TOOL_CACHE = "/opt/trimem-runner-cache/work-ci/_tool"
+PYTHON_TOOLCACHE_COMPLETE_PATH = f"{WSL_EXACT_PYTHON_ROOT}.complete"
+PYTHON_TOOLCACHE_COMPLETE_BYTES = 0
+PYTHON_TOOLCACHE_COMPLETE_SHA256 = (
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+)
+RUNNER_PACKAGE_VERSION = "2.337.0"
+RUNNER_PACKAGE_ARCHIVE_PATH = (
+    "/opt/trimem-runner-cache/actions-runner-linux-x64-2.337.0.tar.gz"
+)
+RUNNER_PACKAGE_ARCHIVE_BYTES = 226_430_031
+RUNNER_PACKAGE_ARCHIVE_SHA256 = (
+    "70920811a4f8ad4328818682bca5c6469c1c942fab52448868071d0063816613"
+)
+RUNNER_LISTENER_BYTES = 72_568
+RUNNER_LISTENER_SHA256 = (
+    "f4584cf5ef53ebc8507e9edfad07973e389ff6488906a1abe5f698aa86b295cf"
+)
+RUNNER_BOUNDARY = (
+    "protected ephemeral self-hosted runner; one serial phase job owns "
+    "PostgreSQL, Qdrant and the atomic global ledger"
+)
+RUNNER_NAMES = ("trimem-d112-exec", "trimem-d112-preflight")
+RUNNER_ROOTS = (
+    "/opt/trimem-d112-runners/exec",
+    "/opt/trimem-d112-runners/preflight",
+)
+RUNNER_SERVICE_UID = 1000
+RUNNER_SERVICE_GID = 1000
+POSTGRES_SERVICE_IMAGE = (
+    "postgres@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412"
+)
+QDRANT_SERVICE_IMAGE = (
+    "qdrant/qdrant@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636"
+)
+SERVICE_IMAGE_REFS = {
+    "postgres": POSTGRES_SERVICE_IMAGE,
+    "qdrant": QDRANT_SERVICE_IMAGE,
+}
+SERVICE_PORTS = {"postgres": 5432, "qdrant": 6333}
+SERVICE_CONTAINER_NAME_PREFIX = "trimem-d112"
+SERVICE_STATE_SCHEMA = "trimem/protected-cache-only-services/1.0"
+SERVICE_STATE_FILENAME = "trimem-d112-cache-only-services.json"
+DOCKER_VERSION = "29.1.3"
+DOCKER_CREATE_PULL_NEVER_MARKER = "--pull string Pull image before creating"
+DOCKER_CLIENT_PATH = "/usr/bin/docker"
+DOCKER_CLIENT_BYTES = 31_369_824
+DOCKER_CLIENT_SHA256 = (
+    "7ed12b00293d64742419a6601ae97960a367a0ce97c88b06e3278cc0a409557b"
+)
+DOCKER_ROOT_DIRECTORY = "/var/lib/docker"
+DOCKER_LOCAL_PREFIX = (DOCKER_CLIENT_PATH, "--host", "unix:///var/run/docker.sock")
+DOCKER_AUTHORITY_ENV = frozenset(
+    {
+        "DOCKER_API_VERSION",
+        "DOCKER_CERT_PATH",
+        "DOCKER_CONTENT_TRUST",
+        "DOCKER_CONTENT_TRUST_SERVER",
+        "DOCKER_CONFIG",
+        "DOCKER_CONTEXT",
+        "DOCKER_DEFAULT_PLATFORM",
+        "DOCKER_HOST",
+        "DOCKER_TLS",
+        "DOCKER_TLS_VERIFY",
+    }
+)
+SERVICE_READY_TIMEOUT_SECONDS = 120
+SERVICE_READY_POLL_SECONDS = 2
+PENDING_WORKFLOW_STATUSES = (
+    "in_progress",
+    "pending",
+    "queued",
+    "requested",
+    "waiting",
+)
+REQUEST_REQUIRED_ORDER = (
+    "branch-trigger preflight",
+    "bounded-context roundtrip",
+    "D1.12 activation-bound cell-terminal roundtrip",
+    "frozen cached-Python pre-setup verification",
+    "protected live runner re-observation",
+    "cache-only PostgreSQL and Qdrant start",
+    "exact cache-only service verification",
+    "pinned harness materialization",
+    "exact official-harness loader preflight",
+    "protected approval materialization",
+    "exact execution gate",
+    "credential format and run binding",
+    "exact-model metadata check",
+    "protocol canary",
+    "PostgreSQL migration",
+    "digest-locked image materialization",
+    "frozen DEV streams",
+    "deterministic M2 selection",
+    "M0 and M1",
+    "aggregate",
+    "public allowlisted result",
+    "restricted-evidence inventory and encryption",
+    "remote custody verification",
+    "secret, runner, container and plaintext cleanup",
+    "final exact cache-only service and volume cleanup",
+)
 WINDOWS_OBSERVER_LOCK = {
     "archive_binary_path": "bin/gh.exe",
     "archive_filename": "gh_2.97.0_windows_amd64.zip",
@@ -172,6 +287,7 @@ IMPLEMENTATION_PATHS = (
     "scripts/trimem_benchmark_run.py",
     "scripts/trimem_d112_reseal.py",
     "scripts/trimem_development_trigger_d112.py",
+    "scripts/trimem_development_trigger_preflight.py",
     "scripts/trimem_freeze.py",
     "scripts/trimem_install_pinned_gh.py",
     "scripts/trimem_verify_ready.py",
@@ -207,6 +323,7 @@ REQUIRED_CHANGED_PATHS = {
     "scripts/trimem_benchmark_run.py": "M",
     "scripts/trimem_d112_reseal.py": "A",
     "scripts/trimem_development_trigger_d112.py": "A",
+    "scripts/trimem_development_trigger_preflight.py": "M",
     "scripts/trimem_freeze.py": "M",
     "scripts/trimem_install_pinned_gh.py": "M",
     "scripts/trimem_verify_ready.py": "M",
@@ -298,6 +415,24 @@ def source_bytes(relative: str) -> bytes:
     target = ROOT.joinpath(*path.parts)
     require(target.is_file() and not target.is_symlink(), f"missing regular file: {relative}")
     return target.read_bytes()
+
+
+def _top_level_function_source(source: str, name: str) -> str:
+    try:
+        module = ast.parse(source)
+    except SyntaxError as exc:
+        raise D112ResealError("D1.12 trigger source is not valid Python") from exc
+    matches = [
+        node
+        for node in module.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == name
+    ]
+    require(len(matches) == 1, f"D1.12 trigger function identity differs: {name}")
+    node = matches[0]
+    require(node.end_lineno is not None, f"D1.12 trigger function has no extent: {name}")
+    lines = source.splitlines(keepends=True)
+    return "".join(lines[node.lineno - 1 : node.end_lineno])
 
 
 def _git_environment() -> dict[str, str]:
@@ -591,6 +726,559 @@ def verify_changed_path_coverage(source_head: str | None = None) -> tuple[str, .
     return tuple(sorted(changes))
 
 
+def validate_protected_runtime_contract() -> dict[str, Any]:
+    """Seal the credential-free pre-setup and cache-only service boundary.
+
+    This is a source inspection only.  It deliberately does not invoke a
+    runner, Docker, GitHub, a protected environment, or any benchmark code.
+    """
+
+    trigger = importlib.import_module("trimem_development_trigger_d112")
+    expected_constants = {
+        "DOCKER_AUTHORITY_ENV": DOCKER_AUTHORITY_ENV,
+        "DOCKER_CLIENT_BYTES": DOCKER_CLIENT_BYTES,
+        "DOCKER_CLIENT_PATH": DOCKER_CLIENT_PATH,
+        "DOCKER_CLIENT_SHA256": DOCKER_CLIENT_SHA256,
+        "DOCKER_CREATE_PULL_NEVER_MARKER": DOCKER_CREATE_PULL_NEVER_MARKER,
+        "DOCKER_LOCAL_PREFIX": DOCKER_LOCAL_PREFIX,
+        "DOCKER_ROOT_DIRECTORY": DOCKER_ROOT_DIRECTORY,
+        "DOCKER_VERSION": DOCKER_VERSION,
+        "EXACT_PYTHON_LIBRARY_PATH": WSL_EXACT_PYTHON_LIBRARY_PATH,
+        "EXACT_PYTHON_ROOT": WSL_EXACT_PYTHON_ROOT,
+        "PYTHON_TOOLCACHE_COMPLETE_BYTES": PYTHON_TOOLCACHE_COMPLETE_BYTES,
+        "PYTHON_TOOLCACHE_COMPLETE_PATH": PYTHON_TOOLCACHE_COMPLETE_PATH,
+        "PYTHON_TOOLCACHE_COMPLETE_SHA256": PYTHON_TOOLCACHE_COMPLETE_SHA256,
+        "QDRANT_SERVICE_IMAGE": QDRANT_SERVICE_IMAGE,
+        "RUNNER_DISTRIBUTION": RUNNER_DISTRIBUTION,
+        "RUNNER_NAMES": RUNNER_NAMES,
+        "RUNNER_ROOTS": RUNNER_ROOTS,
+        "RUNNER_SERVICE_GID": RUNNER_SERVICE_GID,
+        "RUNNER_SERVICE_UID": RUNNER_SERVICE_UID,
+        "RUNNER_TOOL_CACHE": RUNNER_TOOL_CACHE,
+        "RUNNER_WSL_USER": RUNNER_WSL_USER,
+        "SERVICE_CONTAINER_NAME_PREFIX": SERVICE_CONTAINER_NAME_PREFIX,
+        "SERVICE_IMAGE_REFS": SERVICE_IMAGE_REFS,
+        "SERVICE_PORTS": SERVICE_PORTS,
+        "SERVICE_READY_POLL_SECONDS": SERVICE_READY_POLL_SECONDS,
+        "SERVICE_READY_TIMEOUT_SECONDS": SERVICE_READY_TIMEOUT_SECONDS,
+        "SERVICE_STATE_FILENAME": SERVICE_STATE_FILENAME,
+        "SERVICE_STATE_SCHEMA": SERVICE_STATE_SCHEMA,
+        "POSTGRES_SERVICE_IMAGE": POSTGRES_SERVICE_IMAGE,
+    }
+    require(
+        all(
+            getattr(trigger, name, None) == expected
+            for name, expected in expected_constants.items()
+        ),
+        "D1.12 protected runtime constants differ",
+    )
+
+    trigger_source = source_bytes(
+        "scripts/trimem_development_trigger_d112.py"
+    ).decode("utf-8", errors="strict")
+    workflow = source_bytes(".github/workflows/trimem-benchmark.yml").decode(
+        "utf-8", errors="strict"
+    )
+    function_names = (
+        "validate_pre_setup_cache_host",
+        "_require_pre_setup_runner_tool_cache_binding",
+        "_observe_local_runner_identity",
+        "_validate_protected_runner_readiness",
+        "collect_protected_runner_readiness",
+        "validate_protected_runner_preflight",
+        "_validate_docker_root_directory",
+        "_expected_service_images",
+        "_probe_local_service_ports_available",
+        "_service_state_path",
+        "_protected_execution_context",
+        "_validate_service_state",
+        "_read_service_state",
+        "_require_service_state_metadata",
+        "_require_service_state_process_identity",
+        "_read_direct_service_state_bytes",
+        "_service_create_argv",
+        "_observe_state_bound_services",
+        "_rollback_created_services",
+        "start_protected_services",
+        "_qdrant_ready",
+        "verify_protected_services",
+        "_cleanup_state_free_partial_services",
+        "_cleanup_state_bound_services",
+        "cleanup_protected_services",
+        "_require_no_pending_benchmark_consumers",
+        "_request_execution_contracts",
+        "write_request",
+    )
+    functions = {
+        name: _top_level_function_source(trigger_source, name)
+        for name in function_names
+    }
+
+    pre_setup = functions["validate_pre_setup_cache_host"]
+    pre_setup_tool_cache = functions["_require_pre_setup_runner_tool_cache_binding"]
+    local_lock = _top_level_function_source(trigger_source, "_verify_local_file_lock")
+    require(
+        'job in {"bounded-context-preflight", "frozen-serial-phase"}'
+        in pre_setup
+        and 'if job == "bounded-context-preflight":' in pre_setup
+        and "_validate_runner_readiness_freshness(readiness, now=now)" in pre_setup
+        and "len(matching) == 1" in pre_setup
+        and "RUNNER_NAMES[matching[0]]" in pre_setup
+        and "_observe_local_runner_identity()" in pre_setup
+        and "_require_pre_setup_runner_tool_cache_binding(" in pre_setup
+        and "active_root=RUNNER_ROOTS[matching[0]]" in pre_setup
+        and "Path(PYTHON_TOOLCACHE_COMPLETE_PATH)" in pre_setup
+        and "expected_bytes=PYTHON_TOOLCACHE_COMPLETE_BYTES" in pre_setup
+        and "expected_sha256=PYTHON_TOOLCACHE_COMPLETE_SHA256" in pre_setup
+        and 'label="pre-setup exact Python toolcache complete marker"' in pre_setup
+        and "path.is_file()" in local_lock
+        and "not path.is_symlink()" in local_lock
+        and "path.resolve(strict=True) == path" in local_lock
+        and "path.stat().st_size == expected_bytes" in local_lock
+        and "digest.hexdigest() == expected_sha256" in local_lock,
+        "D1.12 pre-setup direct toolcache marker contract differs",
+    )
+    require(
+        'expected_value = f"{active_root}/_work/_tool"' in pre_setup_tool_cache
+        and 'bindings.get("RUNNER_TOOL_CACHE") == expected_value'
+        in pre_setup_tool_cache
+        and "selected.is_dir()" in pre_setup_tool_cache
+        and "selected.is_symlink()" in pre_setup_tool_cache
+        and "selected_resolved == central" in pre_setup_tool_cache
+        and "central.is_dir()" in pre_setup_tool_cache
+        and "not central.is_symlink()" in pre_setup_tool_cache
+        and "central_resolved == central" in pre_setup_tool_cache,
+        "D1.12 active-root to central toolcache binding differs",
+    )
+
+    protected_validator = functions["_validate_protected_runner_readiness"]
+    protected_collector = functions["collect_protected_runner_readiness"]
+    protected_preflight = functions["validate_protected_runner_preflight"]
+    require(
+        "del now" in protected_preflight
+        and "_validate_runner_readiness_freshness" not in protected_preflight
+        and "collect_protected_runner_readiness(" in protected_preflight
+        and "for root_value in RUNNER_ROOTS:" in protected_collector
+        and "len(matching_roots) == 1" in protected_collector
+        and "RUNNER_NAMES[matching_roots[0]]" in protected_collector
+        and "len(active_listeners) == 1" in protected_collector
+        and "len(teardown_listeners) <= 1" in protected_collector
+        and "len(listeners) == len(active_listeners) + len(teardown_listeners)"
+        in protected_collector
+        and 'config.get("disableUpdate") is True' in protected_collector
+        and 'config.get("ephemeral") is True' in protected_collector
+        and "_observe_local_runner_identity()" in protected_collector
+        and 'evidence.get("runner_gid") == RUNNER_SERVICE_GID'
+        in protected_validator
+        and 'evidence.get("runner_uid") == RUNNER_SERVICE_UID'
+        in protected_validator
+        and 'evidence.get("runner_user") == RUNNER_WSL_USER'
+        in protected_validator
+        and 'evidence.get("stale_runner_roots_absent") == list(STALE_RUNNER_ROOTS)'
+        in protected_validator
+        and 'teardown.get("root") == inactive_root' in protected_validator,
+        "D1.12 protected live-runner supersession contract differs",
+    )
+
+    docker_version = _top_level_function_source(trigger_source, "_validate_docker_version")
+    docker_root = functions["_validate_docker_root_directory"]
+    docker_help = _top_level_function_source(
+        trigger_source, "_validate_docker_pull_never_help"
+    )
+    secret_validator = _top_level_function_source(
+        trigger_source, "_validate_secret_free_branch_environment"
+    )
+    forbidden_name = _top_level_function_source(
+        trigger_source, "_is_forbidden_environment_name"
+    )
+    docker_client_lock = _top_level_function_source(
+        trigger_source, "_verify_local_docker_client"
+    )
+    require(
+        ') | DOCKER_AUTHORITY_ENV' in trigger_source
+        and "_forbidden_environment_names(environ)" in secret_validator
+        and "name.upper().startswith(\"DOCKER_\")" in forbidden_name
+        and "Path(DOCKER_CLIENT_PATH)" in docker_client_lock
+        and "expected_bytes=DOCKER_CLIENT_BYTES" in docker_client_lock
+        and "expected_sha256=DOCKER_CLIENT_SHA256" in docker_client_lock
+        and "stat.S_IMODE(observed.st_mode) == 0o755" in docker_client_lock
+        and "observed.st_uid == 0" in docker_client_lock
+        and "observed.st_gid == 0" in docker_client_lock
+        and 'raw == f"{DOCKER_VERSION} {DOCKER_VERSION}"' in docker_version
+        and "raw == DOCKER_ROOT_DIRECTORY" in docker_root
+        and "DOCKER_CREATE_PULL_NEVER_MARKER" in docker_help
+        and "DOCKER_LOCAL_PREFIX = (\n    DOCKER_CLIENT_PATH,\n    \"--host\",\n"
+        '    "unix:///var/run/docker.sock",\n)' in trigger_source
+        and '[*DOCKER_LOCAL_PREFIX, "pull"' not in trigger_source
+        and '[*DOCKER_LOCAL_PREFIX, "login"' not in trigger_source,
+        "D1.12 local Docker authority boundary differs",
+    )
+    require(
+        "_validate_docker_root_directory(" in protected_collector
+        and "_verify_local_docker_client()" in protected_collector
+        and "_validate_docker_root_directory(" in functions["start_protected_services"]
+        and "_verify_local_docker_client()" in functions["start_protected_services"]
+        and "_validate_docker_root_directory(" in functions["verify_protected_services"]
+        and "_verify_local_docker_client()" in functions["verify_protected_services"]
+        and "_validate_docker_root_directory(" in functions["cleanup_protected_services"]
+        and "_verify_local_docker_client()" in functions["cleanup_protected_services"],
+        "D1.12 protected Docker binary/root revalidation differs",
+    )
+
+    expected_images = functions["_expected_service_images"]
+    port_probe = functions["_probe_local_service_ports_available"]
+    service_create = functions["_service_create_argv"]
+    service_observer = functions["_observe_state_bound_services"]
+    qdrant_ready = functions["_qdrant_ready"]
+    require(
+        "BENCHMARK_ENVIRONMENT_LOCK_PATH" in expected_images
+        and 'record.get("image") == expected_image' in expected_images
+        and "for port in SERVICE_PORTS.values():" in port_probe
+        and 'ipv4.bind(("127.0.0.1", port))' in port_probe
+        and "AF_INET6" not in port_probe
+        and '"--pull=never"' in service_create
+        and 'f"127.0.0.1:{port}:{port}"' in service_create
+        and 'f"trimem.d112.role={role}"' in service_create
+        and 'f"trimem.d112.run_id={run_id}"' in service_create
+        and 'f"trimem.d112.source_head={source_head}"' in service_create
+        and 'f"trimem.d112.trigger_head={trigger_head}"' in service_create
+        and '"POSTGRES_DB=trimem_benchmark"' in service_create
+        and '"POSTGRES_PASSWORD=postgres"' in service_create
+        and '"POSTGRES_USER=postgres"' in service_create
+        and '"pg_isready -U postgres -d trimem_benchmark"' in service_create
+        and '"type=volume,source="' in service_create
+        and '",target=/var/lib/postgresql/data"' in service_create
+        and 'document.get("Image") == expected["image_id"]' in service_observer
+        and 'config.get("Image") == expected["image"]' in service_observer
+        and '_mapped_host_port(document, role=role) == expected["port"]'
+        in service_observer
+        and "_remaining_service_timeout(deadline, monotonic)" in service_observer
+        and 'connection.request("GET", "/readyz")' in qdrant_ready
+        and "response.status == 200" in qdrant_ready,
+        "D1.12 exact service image, configuration, port, or readiness contract differs",
+    )
+
+    state_path = functions["_service_state_path"]
+    state_validator = functions["_validate_service_state"]
+    state_reader = functions["_read_service_state"]
+    state_metadata = functions["_require_service_state_metadata"]
+    state_process_identity = functions["_require_service_state_process_identity"]
+    direct_state_reader = functions["_read_direct_service_state_bytes"]
+    rollback = functions["_rollback_created_services"]
+    start = functions["start_protected_services"]
+    verify = functions["verify_protected_services"]
+    partial_cleanup = functions["_cleanup_state_free_partial_services"]
+    state_bound_cleanup = functions["_cleanup_state_bound_services"]
+    cleanup = functions["cleanup_protected_services"]
+    require(
+        "root == expected_root" in state_path
+        and "SERVICE_STATE_FILENAME" in state_path
+        and "raw == canonical_bytes(state, trailing_lf=True)" in state_validator
+        and 'state.get("schema") == SERVICE_STATE_SCHEMA' in state_validator
+        and "_service_volume_name(run_id)" in state_validator
+        and 'volume.get("destination") == "/var/lib/postgresql/data"'
+        in state_validator
+        and "_read_direct_service_state_bytes(path)" in state_reader
+        and "path.lstat()" in direct_state_reader
+        and "path.resolve(strict=True)" in direct_state_reader
+        and "stat.S_ISREG(observed.st_mode)" in state_metadata
+        and "not stat.S_ISLNK(observed.st_mode)" in state_metadata
+        and "stat.S_IMODE(observed.st_mode) == 0o600" in state_metadata
+        and "observed.st_uid == RUNNER_SERVICE_UID" in state_metadata
+        and "observed.st_gid == RUNNER_SERVICE_GID" in state_metadata
+        and "observed.st_nlink == 1" in state_metadata
+        and "uid == RUNNER_SERVICE_UID" in state_process_identity
+        and "gid == RUNNER_SERVICE_GID" in state_process_identity
+        and "_require_service_state_process_identity(os.getuid(), os.getgid())"
+        in direct_state_reader
+        and direct_state_reader.count("_require_service_state_metadata(") == 3
+        and 'os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)' in direct_state_reader
+        and "os.fstat(descriptor)" in direct_state_reader
+        and "(opened.st_dev, opened.st_ino) == (before.st_dev, before.st_ino)"
+        in direct_state_reader
+        and "(after.st_dev, after.st_ino) == (before.st_dev, before.st_ino)"
+        in direct_state_reader
+        and "_docker_container_ids" in start
+        and "baseline_volume_names = _docker_volume_names(" in start
+        and '"trimem.d112.role=postgres-data"' in start
+        and 'f"trimem.d112.run_id={run_id}"' in start
+        and 'f"trimem.d112.source_head={source_head}"' in start
+        and 'f"trimem.d112.trigger_head={trigger_head}"' in start
+        and "DOCKER_IMAGE_ID.fullmatch(image_id)" in start
+        and "os.O_WRONLY | os.O_CREAT | os.O_EXCL" in start
+        and 'getattr(os, "O_NOFOLLOW", 0)' in start
+        and "0o600" in start
+        and "os.fsync(stream.fileno())" in start
+        and "_rollback_created_services(" in start
+        and "== baseline" in rollback
+        and "deadline = monotonic() + SERVICE_READY_TIMEOUT_SECONDS" in verify
+        and "_remaining_service_timeout(deadline, monotonic)" in verify
+        and 'health_status in {"starting", "healthy"}' in verify
+        and "_qdrant_ready(" in verify
+        and 'labels.get("trimem.d112.run_id") == str(run_id)' in partial_cleanup
+        and "state-free partial service cleanup did not restore the baseline"
+        in partial_cleanup
+        and "allow_absent=True" in state_bound_cleanup
+        and "present_ids.issubset(expected_ids)" in state_bound_cleanup
+        and "baseline_volumes.issubset(current_volumes)" in state_bound_cleanup
+        and "current_volumes - baseline_volumes <= {volume_name}"
+        in state_bound_cleanup
+        and '== state["baseline_volume_names"]' in state_bound_cleanup
+        and "_cleanup_state_free_partial_services(" in cleanup
+        and "_cleanup_state_bound_services(" in cleanup
+        and "state_path.unlink()" in cleanup,
+        "D1.12 run-bound service state, rollback, or cleanup contract differs",
+    )
+
+    zero_counter_functions = (
+        pre_setup,
+        protected_preflight,
+        start,
+        verify,
+        cleanup,
+    )
+    require(
+        all("ACTIVATION_ZERO_COUNTERS" in source for source in zero_counter_functions),
+        "D1.12 protected lifecycle zero-authority counters differ",
+    )
+
+    branch_marker = "  branch-trigger-preflight:\n"
+    bounded_marker = "  bounded-context-preflight:\n"
+    frozen_marker = "  frozen-serial-phase:\n"
+    require(
+        workflow.count(branch_marker) == 1
+        and workflow.count(bounded_marker) == 1
+        and workflow.count(frozen_marker) == 1,
+        "D1.12 protected workflow job identity differs",
+    )
+    bounded_start = workflow.index(bounded_marker)
+    frozen_start = workflow.index(frozen_marker)
+    bounded_job = workflow[bounded_start:frozen_start]
+    frozen_job = workflow[frozen_start:]
+    bounded_steps = re.findall(r"^      - name: (.+)$", bounded_job, re.MULTILINE)
+    frozen_steps = re.findall(r"^      - name: (.+)$", frozen_job, re.MULTILINE)
+    runner_tool_cache_forwarding = "RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}"
+    bounded_sequence = [
+        "Checkout bounded-context correction",
+        "Verify complete cached Python before setup-python",
+        "Set up exact Python",
+        "Re-observe exact self-hosted runner before any install or materialization",
+        "Install hash-locked environment",
+    ]
+    protected_sequence = [
+        "Checkout approved frozen source",
+        "Verify complete cached Python before setup-python",
+        "Set up exact Python",
+        "Re-observe protected runner before cache-only service creation",
+        "Start exact cache-only benchmark services",
+        "Verify exact cache-only benchmark services",
+        "Install hash-locked environment",
+    ]
+    require(
+        bounded_steps[: len(bounded_sequence)] == bounded_sequence
+        and frozen_steps[: len(protected_sequence)] == protected_sequence
+        and bounded_job.count(runner_tool_cache_forwarding) == 2
+        and frozen_job.count(runner_tool_cache_forwarding) == 2,
+        "D1.12 checkout, pre-setup, protected reobservation, or install order differs",
+    )
+    cleanup_mode = '--cleanup-protected-services-event-path "$GITHUB_EVENT_PATH"'
+    cleanup_marker = "      - name: Remove exact cache-only benchmark services\n"
+    cleanup_adjacency = cleanup_marker + "        if: always()\n"
+    require(
+        frozen_steps[-1] == "Remove exact cache-only benchmark services"
+        and frozen_job.count(cleanup_adjacency) == 1
+        and frozen_job.count(cleanup_mode) == 1
+        and "    services:\n" not in workflow
+        and "job.services." not in workflow
+        and "docker manifest" not in workflow
+        and "docker pull" not in workflow,
+        "D1.12 always-cleanup or no-native-service/no-pull workflow boundary differs",
+    )
+    exact_ipv4_consumers = (
+        "TRIMEM_DATABASE_URL: postgresql+asyncpg://api_service:api_pw@"
+        "127.0.0.1:5432/trimem_benchmark",
+        "TRIMEM_QDRANT_URL: http://127.0.0.1:6333",
+        "DATABASE_URL: postgresql://postgres:postgres@"
+        "127.0.0.1:5432/trimem_benchmark",
+        "PGHOST: 127.0.0.1",
+        "TRIMEM_ADMIN_DATABASE_URL: postgresql+asyncpg://postgres:postgres@"
+        "127.0.0.1:5432/trimem_benchmark",
+    )
+    require(
+        all(frozen_job.count(binding) == 1 for binding in exact_ipv4_consumers)
+        and "@localhost:5432" not in frozen_job
+        and "http://localhost:6333" not in frozen_job
+        and "PGHOST: localhost" not in frozen_job,
+        "D1.12 service consumers are not exact IPv4 loopback bindings",
+    )
+    selector = (
+        "runs-on: [self-hosted, linux, x64, trimem-ubuntu-24.04, "
+        "trimem-benchmark]"
+    )
+    label_markers = (
+        "self-hosted",
+        "linux",
+        "x64",
+        "trimem-ubuntu-24.04",
+        "trimem-benchmark",
+    )
+    workflow_paths = _git_lines("ls-files", "--", ".github/workflows")
+    require(
+        ".github/workflows/trimem-benchmark.yml" in workflow_paths,
+        "D1.12 benchmark workflow is not Git-tracked",
+    )
+    for relative in workflow_paths:
+        if relative == ".github/workflows/trimem-benchmark.yml":
+            continue
+        other = source_bytes(relative).decode("utf-8", errors="strict")
+        require(
+            selector not in other
+            and not all(marker in other for marker in label_markers),
+            "another workflow can select the protected D1.12 runner",
+        )
+
+    pending = functions["_require_no_pending_benchmark_consumers"]
+    writer = functions["write_request"]
+    pending_literal = (
+        'active_statuses = {"in_progress", "pending", "queued", '
+        '"requested", "waiting"}'
+    )
+    first_pending_index = writer.find("_require_no_pending_benchmark_consumers(")
+    gate_observation_index = writer.find("collect_remote_gate_evidence(")
+    runner_observation_index = writer.find("collect_runner_readiness(")
+    second_pending_index = writer.find(
+        "_require_no_pending_benchmark_consumers(", first_pending_index + 1
+    )
+    exclusive_write_index = writer.find('target.open("xb")')
+    require(
+        pending_literal in pending
+        and '"per_page=100"' in pending
+        and '"--paginate"' in pending
+        and '"--slurp"' in pending
+        and 'pages = strict_json(b\'{"pages":\' + raw + b"}").get("pages")'
+        in pending
+        and "len(rows) == next(iter(totals))" in pending
+        and "len(pages) == max(1, (len(rows) + 99) // 100)" in pending
+        and 'row.get("path") == EXPECTED_WORKFLOW_PATH' in pending
+        and 'row.get("status") in allowed_statuses' in pending
+        and 'row["id"] not in observed_ids' in pending
+        and "not any(row.get(\"status\") in active_statuses for row in rows)"
+        in pending
+        and writer.count("_require_no_pending_benchmark_consumers(") == 2
+        and 0 <= first_pending_index < min(
+            gate_observation_index, runner_observation_index
+        )
+        and max(gate_observation_index, runner_observation_index)
+        < second_pending_index < exclusive_write_index,
+        "D1.12 pending workflow consumer guard differs",
+    )
+    request_contract_source = functions["_request_execution_contracts"]
+    request_bindings = {
+        name: name
+        for name in (
+            "loader_environment_contract_sha256",
+            "loader_preflight_sha256",
+            "grader_lifecycle_sha256",
+            "cell_commit_journal_sha256",
+            "resume_disposition_sha256",
+        )
+    }
+    request_contract = trigger._request_execution_contracts(request_bindings)
+    require(
+        isinstance(request_contract, Mapping)
+        and request_contract.get("required_order") == list(REQUEST_REQUIRED_ORDER)
+        and all(marker in request_contract_source for marker in REQUEST_REQUIRED_ORDER)
+        and [request_contract_source.index(marker) for marker in REQUEST_REQUIRED_ORDER]
+        == sorted(request_contract_source.index(marker) for marker in REQUEST_REQUIRED_ORDER),
+        "D1.12 request semantic execution order differs",
+    )
+
+    return {
+        "docker_authority": {
+            "client_server_version": DOCKER_VERSION,
+            "client_binary": {
+                "bytes": DOCKER_CLIENT_BYTES,
+                "path": DOCKER_CLIENT_PATH,
+                "sha256": DOCKER_CLIENT_SHA256,
+            },
+            "create_pull_policy": "CREATE_PULL_NEVER_CACHE_ONLY",
+            "forbidden_override_environment": sorted(DOCKER_AUTHORITY_ENV),
+            "native_job_services_allowed": False,
+            "registry_or_pull_allowed": False,
+            "root_directory": DOCKER_ROOT_DIRECTORY,
+            "socket": DOCKER_LOCAL_PREFIX[-1],
+        },
+        "pending_workflow_consumers": {
+            "active_rows_required": 0,
+            "checked_before_observation_and_before_write": True,
+            "complete_paginated_snapshot_required": True,
+            "single_transition_safe_snapshot": True,
+            "statuses": list(PENDING_WORKFLOW_STATUSES),
+        },
+        "pre_setup_cache_host": {
+            "active_root_tool_cache_template": "{active_root}/_work/_tool",
+            "active_root_tool_cache_symlink_required": True,
+            "allowed_jobs": ["bounded-context-preflight", "frozen-serial-phase"],
+            "central_tool_cache_direct_directory": RUNNER_TOOL_CACHE,
+            "marker_bytes": PYTHON_TOOLCACHE_COMPLETE_BYTES,
+            "marker_direct_regular_non_symlink": True,
+            "marker_path": PYTHON_TOOLCACHE_COMPLETE_PATH,
+            "marker_sha256": PYTHON_TOOLCACHE_COMPLETE_SHA256,
+            "runs_before_setup_python": True,
+            "workflow_forwarding_count_per_job": 2,
+        },
+        "protected_live_runner": {
+            "active_listener_count": 1,
+            "dual_root_name_mapping": dict(zip(RUNNER_NAMES, RUNNER_ROOTS)),
+            "process_identity": {
+                "gid": RUNNER_SERVICE_GID,
+                "uid": RUNNER_SERVICE_UID,
+                "user": RUNNER_WSL_USER,
+            },
+            "source_snapshot_age_superseded_by_live_observation": True,
+            "teardown_listener_count_max": 1,
+        },
+        "services": {
+            "container_name_template": "trimem-d112-{run_id}-{role}",
+            "images": dict(SERVICE_IMAGE_REFS),
+            "loopback_ports": dict(SERVICE_PORTS),
+            "postgres": {
+                "database": "trimem_benchmark",
+                "health_command": "pg_isready -U postgres -d trimem_benchmark",
+                "password": "postgres",
+                "user": "postgres",
+                "volume_destination": "/var/lib/postgresql/data",
+                "volume_name_template": "trimem-d112-{run_id}-postgres-data",
+            },
+            "qdrant_ready_endpoint": "http://127.0.0.1:6333/readyz",
+            "readiness": {
+                "clock": "MONOTONIC_WALL_CLOCK_INCLUDING_COMMAND_TIME",
+                "poll_seconds": SERVICE_READY_POLL_SECONDS,
+                "timeout_seconds": SERVICE_READY_TIMEOUT_SECONDS,
+            },
+            "state": {
+                "baseline_restored_on_partial_or_final_cleanup": True,
+                "canonical_utf8_json_plus_lf": True,
+                "exclusive_mode_octal": "0600",
+                "filename": SERVICE_STATE_FILENAME,
+                "owner_gid": RUNNER_SERVICE_GID,
+                "owner_uid": RUNNER_SERVICE_UID,
+                "retry_safe_owned_or_absent_cleanup": True,
+                "run_source_trigger_labels_required": True,
+                "schema": SERVICE_STATE_SCHEMA,
+            },
+        },
+        "workflow": {
+            "always_cleanup_is_final_step": True,
+            "other_custom_label_workflows_allowed": False,
+            "protected_step_sequence": protected_sequence,
+            "request_required_order": list(REQUEST_REQUIRED_ORDER),
+            "service_consumer_bindings": list(exact_ipv4_consumers),
+        },
+        "zero_authority_actuals": dict(ZERO_ACTUALS),
+    }
+
+
 def validate_runner_isolation() -> dict[str, Any]:
     environment = read_json(ROOT / "configs/trimem_v1/benchmark_environment_lock.json")
     runner = environment.get("runner")
@@ -604,8 +1292,9 @@ def validate_runner_isolation() -> dict[str, Any]:
     require(
         isinstance(runner, Mapping)
         and runner.get("automatic_ci_runner_label") == "ubuntu-24.04"
-        and runner.get("benchmark_exec_runner_labels") == labels,
-        "benchmark runner labels are not collision-free",
+        and runner.get("benchmark_exec_runner_labels") == labels
+        and runner.get("benchmark_exec_runner_boundary") == RUNNER_BOUNDARY,
+        "benchmark runner isolation contract differs",
     )
     workflow = source_bytes(".github/workflows/trimem-benchmark.yml").decode(
         "utf-8", errors="strict"
@@ -613,11 +1302,193 @@ def validate_runner_isolation() -> dict[str, Any]:
     selector = "runs-on: [self-hosted, linux, x64, trimem-ubuntu-24.04, trimem-benchmark]"
     require(workflow.count(selector) == 2, "protected D1.12 runner selector differs")
     require(workflow.count("runs-on: ubuntu-24.04") == 1, "hosted preflight selector differs")
+    trigger = importlib.import_module("trimem_development_trigger_d112")
+    expected_trigger_constants = {
+        "BENCHMARK_EXEC_RUNNER_BOUNDARY": RUNNER_BOUNDARY,
+        "DOCKER_CLIENT_BYTES": DOCKER_CLIENT_BYTES,
+        "DOCKER_CLIENT_PATH": DOCKER_CLIENT_PATH,
+        "DOCKER_CLIENT_SHA256": DOCKER_CLIENT_SHA256,
+        "PYTHON_TOOLCACHE_COMPLETE_BYTES": PYTHON_TOOLCACHE_COMPLETE_BYTES,
+        "PYTHON_TOOLCACHE_COMPLETE_PATH": PYTHON_TOOLCACHE_COMPLETE_PATH,
+        "PYTHON_TOOLCACHE_COMPLETE_SHA256": PYTHON_TOOLCACHE_COMPLETE_SHA256,
+        "RUNNER_LISTENER_BYTES": RUNNER_LISTENER_BYTES,
+        "RUNNER_LISTENER_SHA256": RUNNER_LISTENER_SHA256,
+        "RUNNER_PACKAGE_ARCHIVE_BYTES": RUNNER_PACKAGE_ARCHIVE_BYTES,
+        "RUNNER_PACKAGE_ARCHIVE_PATH": RUNNER_PACKAGE_ARCHIVE_PATH,
+        "RUNNER_PACKAGE_ARCHIVE_SHA256": RUNNER_PACKAGE_ARCHIVE_SHA256,
+        "RUNNER_PACKAGE_VERSION": RUNNER_PACKAGE_VERSION,
+        "RUNNER_DISTRIBUTION": RUNNER_DISTRIBUTION,
+        "RUNNER_SERVICE_GID": RUNNER_SERVICE_GID,
+        "RUNNER_SERVICE_UID": RUNNER_SERVICE_UID,
+        "RUNNER_TOOL_CACHE": RUNNER_TOOL_CACHE,
+        "RUNNER_WSL_USER": RUNNER_WSL_USER,
+    }
+    require(
+        all(
+            getattr(trigger, name, None) == expected
+            for name, expected in expected_trigger_constants.items()
+        ),
+        "D1.12 runner package constants differ",
+    )
+    trigger_source = source_bytes("scripts/trimem_development_trigger_d112.py").decode(
+        "utf-8", errors="strict"
+    )
+    frozen_source = _top_level_function_source(
+        trigger_source, "_validate_frozen_science_documents"
+    )
+    validator_source = _top_level_function_source(
+        trigger_source, "_validate_runner_readiness"
+    )
+    windows_source = _top_level_function_source(
+        trigger_source, "collect_runner_readiness"
+    )
+    local_source = _top_level_function_source(
+        trigger_source, "collect_local_runner_host_readiness"
+    )
+    wsl_prefix_source = _top_level_function_source(
+        trigger_source, "_wsl_command_prefix"
+    )
+    wsl_identity_source = _top_level_function_source(
+        trigger_source, "_validate_wsl_runner_identity"
+    )
+    local_identity_source = _top_level_function_source(
+        trigger_source, "_validate_local_runner_identity"
+    )
+    local_identity_observer_source = _top_level_function_source(
+        trigger_source, "_observe_local_runner_identity"
+    )
+    wsl_lock_source = _top_level_function_source(
+        trigger_source, "_verify_wsl_file_lock"
+    )
+    local_lock_source = _top_level_function_source(
+        trigger_source, "_verify_local_file_lock"
+    )
+    environment_source = _top_level_function_source(
+        trigger_source, "_strict_environment_bindings"
+    )
+    library_source = _top_level_function_source(
+        trigger_source, "_require_exact_python_library_binding"
+    )
+    require(
+        'frozen_runner.get("benchmark_exec_runner_boundary")' in frozen_source
+        and "== BENCHMARK_EXEC_RUNNER_BOUNDARY" in frozen_source
+        and 'row.get("disable_update") is True' in validator_source
+        and 'row.get("ephemeral") is True' in validator_source
+        and 'row.get("listener_version") == RUNNER_PACKAGE_VERSION'
+        in validator_source
+        and 'host.get("runner_package_archive_path")'
+        in validator_source
+        and "== RUNNER_PACKAGE_ARCHIVE_SHA256" in validator_source
+        and windows_source.count("_verify_wsl_file_lock(") == 4
+        and "RUNNER_PACKAGE_ARCHIVE_PATH" in windows_source
+        and "expected_bytes=RUNNER_PACKAGE_ARCHIVE_BYTES" in windows_source
+        and "expected_sha256=RUNNER_PACKAGE_ARCHIVE_SHA256" in windows_source
+        and "PYTHON_TOOLCACHE_COMPLETE_PATH" in windows_source
+        and "expected_bytes=PYTHON_TOOLCACHE_COMPLETE_BYTES" in windows_source
+        and "expected_sha256=PYTHON_TOOLCACHE_COMPLETE_SHA256" in windows_source
+        and "DOCKER_CLIENT_PATH" in windows_source
+        and "expected_bytes=DOCKER_CLIENT_BYTES" in windows_source
+        and "expected_sha256=DOCKER_CLIENT_SHA256" in windows_source
+        and "expected_bytes=RUNNER_LISTENER_BYTES" in windows_source
+        and "expected_sha256=RUNNER_LISTENER_SHA256" in windows_source
+        and 'local_config.get("disableUpdate") is True' in windows_source
+        and 'local_config.get("ephemeral") is True' in windows_source
+        and "listener_version == RUNNER_PACKAGE_VERSION" in windows_source
+        and "library_entries != ['LD_LIBRARY_PATH=' + expected_library_path]"
+        in windows_source
+        and "bindings.get('LD_LIBRARY_PATH') != expected_library_path"
+        in windows_source
+        and local_source.count("_verify_local_file_lock(") == 3
+        and "RUNNER_PACKAGE_ARCHIVE_PATH" in local_source
+        and "expected_bytes=RUNNER_PACKAGE_ARCHIVE_BYTES" in local_source
+        and "expected_sha256=RUNNER_PACKAGE_ARCHIVE_SHA256" in local_source
+        and "PYTHON_TOOLCACHE_COMPLETE_PATH" in local_source
+        and "expected_bytes=PYTHON_TOOLCACHE_COMPLETE_BYTES" in local_source
+        and "expected_sha256=PYTHON_TOOLCACHE_COMPLETE_SHA256" in local_source
+        and "expected_bytes=RUNNER_LISTENER_BYTES" in local_source
+        and "expected_sha256=RUNNER_LISTENER_SHA256" in local_source
+        and 'config.get("disableUpdate") is True' in local_source
+        and 'config.get("ephemeral") is True' in local_source
+        and "listener_version == RUNNER_PACKAGE_VERSION" in local_source
+        and local_source.count("_strict_environment_bindings(") == 2
+        and local_source.count("_require_exact_python_library_binding(") == 3
+        and "/usr/bin/id -u)" in windows_source
+        and "/usr/bin/id -g)" in windows_source
+        and "/usr/bin/id -un)" in windows_source
+        and "_validate_wsl_runner_identity(wsl_identity)" in windows_source
+        and '"--user"' in wsl_prefix_source
+        and "RUNNER_DISTRIBUTION" in wsl_prefix_source
+        and "RUNNER_WSL_USER" in wsl_prefix_source
+        and 'arguments.extend(["--cd", cwd])' in wsl_prefix_source
+        and 'expected = f"{RUNNER_SERVICE_UID}:{RUNNER_SERVICE_GID}:{RUNNER_WSL_USER}"'
+        in wsl_identity_source
+        and "raw == expected" in wsl_identity_source
+        and "uid == RUNNER_SERVICE_UID" in local_identity_source
+        and "gid == RUNNER_SERVICE_GID" in local_identity_source
+        and "user == RUNNER_WSL_USER" in local_identity_source
+        and "pwd.getpwuid(os.getuid()).pw_name" in local_identity_observer_source
+        and "_validate_local_runner_identity(os.getuid(), os.getgid(), user)"
+        in local_identity_observer_source
+        and "runner_uid, runner_gid, runner_user = _observe_local_runner_identity()"
+        in local_source
+        and '"wsl_gid": runner_gid' in local_source
+        and '"wsl_uid": runner_uid' in local_source
+        and '"wsl_user": runner_user' in local_source
+        and 'host.get("wsl_gid") == RUNNER_SERVICE_GID' in validator_source
+        and 'host.get("wsl_uid") == RUNNER_SERVICE_UID' in validator_source
+        and 'host.get("wsl_user") == RUNNER_WSL_USER' in validator_source,
+        "D1.12 ephemeral runner evidence path differs",
+    )
+    require(
+        'observed_bytes == str(expected_bytes)' in wsl_lock_source
+        and 'observed_sha256 == f"{expected_sha256}  {path}"' in wsl_lock_source
+        and "path.stat().st_size == expected_bytes" in local_lock_source
+        and "digest.hexdigest() == expected_sha256" in local_lock_source
+        and "require(name not in bindings" in environment_source
+        and 'bindings.get("LD_LIBRARY_PATH") == EXACT_PYTHON_LIBRARY_PATH'
+        in library_source,
+        "D1.12 runner byte lock or environment decoder differs",
+    )
+    protected_runtime = validate_protected_runtime_contract()
     return {
         "automatic_hosted_label": "ubuntu-24.04",
+        "benchmark_runner_boundary": RUNNER_BOUNDARY,
         "benchmark_self_hosted_labels": labels,
+        "environment_binding": {
+            "live_listener_count": 2,
+            "persisted_env_count": 2,
+            "required_name": "LD_LIBRARY_PATH",
+            "required_value": WSL_EXACT_PYTHON_LIBRARY_PATH,
+            "single_exact_binding_per_environment": True,
+        },
         "exact_runner_count_required_before_request": 2,
+        "local_registration": {
+            "disable_update": True,
+            "ephemeral": True,
+        },
         "ordinary_hosted_job_can_match_benchmark_runner": False,
+        "protected_runtime": protected_runtime,
+        "runner_process_identity": {
+            "gid": RUNNER_SERVICE_GID,
+            "uid": RUNNER_SERVICE_UID,
+            "user": RUNNER_WSL_USER,
+        },
+        "runner_listener_lock": {
+            "bytes": RUNNER_LISTENER_BYTES,
+            "sha256": RUNNER_LISTENER_SHA256,
+            "version": RUNNER_PACKAGE_VERSION,
+        },
+        "runner_package_lock": {
+            "archive_bytes": RUNNER_PACKAGE_ARCHIVE_BYTES,
+            "archive_path": RUNNER_PACKAGE_ARCHIVE_PATH,
+            "archive_sha256": RUNNER_PACKAGE_ARCHIVE_SHA256,
+            "version": RUNNER_PACKAGE_VERSION,
+        },
+        "windows_to_wsl_transport": {
+            "distribution": RUNNER_DISTRIBUTION,
+            "explicit_user": RUNNER_WSL_USER,
+            "identity_probe_binary": "/usr/bin/id",
+        },
     }
 
 
@@ -646,10 +1517,27 @@ def validate_github_observer_contract() -> dict[str, Any]:
         and installer.count("def verify_observer_gh(") == 1
         and "_verify_exact_gh_binary(lock, windows_contract, binary_path)"
         in installer
+        and 'binary_path.name.casefold() != "gh.exe"' in installer
         and "Windows GitHub CLI observer must be an absolute gh.exe path"
         in installer
         and "pinned GitHub CLI observer platform is unsupported" in installer,
         "cross-platform GitHub observer verifier differs",
+    )
+    compatibility_source = source_bytes(
+        "scripts/trimem_development_trigger_preflight.py"
+    ).decode("utf-8", errors="strict")
+    compatibility_validator = _top_level_function_source(
+        compatibility_source, "_validate_gh_cli_lock_schema"
+    )
+    require(
+        "LOCK_SCHEMA as CURRENT_GH_CLI_LOCK_SCHEMA" in compatibility_source
+        and 'LEGACY_GH_CLI_LOCK_SCHEMA = "trimem/gh-cli-lock/1.0"'
+        in compatibility_source
+        and "schema == CURRENT_GH_CLI_LOCK_SCHEMA" in compatibility_validator
+        and 'schema == LEGACY_GH_CLI_LOCK_SCHEMA and "windows_observer" not in gh_lock'
+        in compatibility_validator
+        and "_validate_gh_cli_lock_schema(gh_lock)" in compatibility_source,
+        "shared historical GitHub CLI schema consumer differs",
     )
     attributes = source_bytes(".gitattributes").decode("utf-8", errors="strict")
     report_raw = source_bytes("reports/TRIMEM_D112_EXEC_012_ACTIVATION.md")
@@ -689,6 +1577,125 @@ def validate_github_observer_contract() -> dict[str, Any]:
         in trigger_source,
         "D1.12 gate/runner observer transport or bounded polling differs",
     )
+    public_repository_entrypoints = (
+        "validate_correction_source",
+        "collect_runner_readiness",
+        "collect_local_runner_host_readiness",
+        "validate_runner_host_preflight",
+        "validate_pre_setup_cache_host",
+        "validate_protected_runner_preflight",
+        "start_protected_services",
+        "verify_protected_services",
+        "cleanup_protected_services",
+        "build_request",
+        "validate_request",
+        "validate_sentinel_commit",
+        "validate_branch_trigger",
+        "write_request",
+    )
+    require(
+        "def resolve_repository_root(" in trigger_source
+        and '"rev-parse", "--show-toplevel"' in trigger_source
+        and all(
+            "resolve_repository_root(repository)"
+            in _top_level_function_source(trigger_source, name)
+            for name in public_repository_entrypoints
+        ),
+        "D1.12 public entrypoint Git top-level custody differs",
+    )
+    pull_source = _top_level_function_source(
+        trigger_source, "_collect_current_pull_request"
+    )
+    execution_source = _top_level_function_source(
+        trigger_source, "_validate_unique_execution_run"
+    )
+    branch_source = _top_level_function_source(trigger_source, "validate_branch_trigger")
+    writer_source = _top_level_function_source(trigger_source, "write_request")
+    recheck_source = _top_level_function_source(
+        trigger_source, "_recheck_request_write_boundary"
+    )
+    wsl_python_source = _top_level_function_source(
+        trigger_source, "_wsl_exact_python_argv"
+    )
+    runner_readiness_source = _top_level_function_source(
+        trigger_source, "collect_runner_readiness"
+    )
+    runner_readiness_validator_source = _top_level_function_source(
+        trigger_source, "_validate_runner_readiness"
+    )
+    local_runner_host_source = _top_level_function_source(
+        trigger_source, "collect_local_runner_host_readiness"
+    )
+    deadline_marker = "deadline = monotonic() + REMOTE_VISIBILITY_TIMEOUT_SECONDS"
+    require(
+        "def _remaining_visibility_seconds(" in trigger_source
+        and "def _sleep_for_visibility_retry(" in trigger_source
+        and deadline_marker in pull_source
+        and deadline_marker in execution_source
+        and "timeout=command_timeout" in pull_source
+        and "timeout=command_timeout" in execution_source
+        and "allowed_stale_head: str | None" in pull_source
+        and "observed_head == allowed_stale_head" in pull_source
+        and "allowed_stale_head=before" in branch_source
+        and "allowed_stale_pr_head=None" in writer_source
+        and "_query_github_run_by_id(" in execution_source
+        and 'candidate.get("id") == expected_run_id' in execution_source
+        and "exact_workflow_rows" in execution_source
+        and 'exact_run_id = exact_workflow_rows[0].get("id")'
+        in execution_source
+        and "exact_run_id == expected_run_id" in execution_source,
+        "D1.12 monotonic deadline or contradiction policy differs",
+    )
+    require(
+        getattr(trigger, "EXACT_PYTHON_ROOT", None) == WSL_EXACT_PYTHON_ROOT
+        and getattr(trigger, "EXACT_PYTHON_LIBRARY_PATH", None)
+        == WSL_EXACT_PYTHON_LIBRARY_PATH
+        and 'EXACT_PYTHON_LIBRARY_PATH = f"{EXACT_PYTHON_ROOT}/lib"'
+        in trigger_source
+        and '"env"' in wsl_python_source
+        and 'f"LD_LIBRARY_PATH={EXACT_PYTHON_LIBRARY_PATH}"'
+        in wsl_python_source
+        and 'f"{EXACT_PYTHON_ROOT}/bin/python"' in wsl_python_source
+        and "os.environ" not in wsl_python_source
+        and "getenv" not in wsl_python_source
+        and runner_readiness_source.count("_wsl_exact_python_argv(") == 4
+        and runner_readiness_source.count(
+            '"exact_python_library_path": EXACT_PYTHON_LIBRARY_PATH'
+        )
+        == 1
+        and 'host.get("exact_python_library_path") == EXACT_PYTHON_LIBRARY_PATH'
+        in runner_readiness_validator_source
+        and local_runner_host_source.count(
+            '"exact_python_library_path": EXACT_PYTHON_LIBRARY_PATH'
+        )
+        == 1,
+        "D1.12 WSL exact-Python shared-library transport differs",
+    )
+    remote_gate_index = writer_source.find("collect_remote_gate_evidence(")
+    runner_readiness_index = writer_source.find("collect_runner_readiness(")
+    recheck_index = writer_source.find("_recheck_request_write_boundary(")
+    exclusive_create_index = writer_source.find('target.open("xb")')
+    require(
+        min(
+            remote_gate_index,
+            runner_readiness_index,
+            recheck_index,
+            exclusive_create_index,
+        )
+        >= 0
+        and max(remote_gate_index, runner_readiness_index)
+        < recheck_index
+        < exclusive_create_index
+        and "resolve_repository_root(repository)" in recheck_source
+        and '"symbolic-ref", "--quiet", "HEAD"' in recheck_source
+        and '"rev-parse", "HEAD"' in recheck_source
+        and '"status", "--porcelain=v1", "--untracked-files=all"'
+        in recheck_source
+        and '"log"' in recheck_source
+        and "SENTINEL_PATH" in recheck_source
+        and "not os.path.lexists(target)" in recheck_source,
+        "D1.12 post-observation pre-write custody differs",
+    )
     return {
         "first_version_line": GH_CLI_VERSION_LINE,
         "lock_path": GH_CLI_LOCK_PATH.relative_to(ROOT).as_posix(),
@@ -696,6 +1703,12 @@ def validate_github_observer_contract() -> dict[str, Any]:
         "observer_selection_policy": (
             "PLATFORM_EXACT_BYTES_AND_VERSION_NO_UNVERIFIED_FALLBACK"
         ),
+        "shared_legacy_consumer": {
+            "current_schema_from_shared_consumer": GH_CLI_LOCK_SCHEMA,
+            "historical_schema": "trimem/gh-cli-lock/1.0",
+            "historical_schema_requires_windows_observer_absent": True,
+        },
+        "windows_executable_name_policy": "CASEFOLD_EQUALS_GH_EXE",
         "report_line_ending_contract": "GIT_ATTRIBUTE_TEXT_EOL_LF",
         "platforms": {
             "linux_amd64": {
@@ -715,9 +1728,43 @@ def validate_github_observer_contract() -> dict[str, Any]:
             "source_workflow_runs",
             "repository_runners",
         ],
+        "wsl_exact_python_probes": {
+            "executable_path": f"{WSL_EXACT_PYTHON_ROOT}/bin/python",
+            "launch_prefix": [
+                "env",
+                f"LD_LIBRARY_PATH={WSL_EXACT_PYTHON_LIBRARY_PATH}",
+                f"{WSL_EXACT_PYTHON_ROOT}/bin/python",
+            ],
+            "library_path": WSL_EXACT_PYTHON_LIBRARY_PATH,
+            "no_host_environment_fallback": True,
+            "probe_sites": [
+                "exact_python_version",
+                "service_port_availability",
+                "listener_identity_and_secret_name_absence",
+                "runner_identity_and_config_secret_name_absence",
+            ],
+            "readiness_evidence_field": "host.exact_python_library_path",
+        },
+        "repository_custody": {
+            "exact_git_top_level_required": True,
+            "nested_or_superproject_path_rejected": True,
+            "public_entrypoints": list(public_repository_entrypoints),
+            "pre_write_recheck": [
+                "exact_git_top_level",
+                "expected_branch",
+                "unchanged_source_head",
+                "clean_tracked_and_untracked_worktree",
+                "sentinel_absent_from_history_and_filesystem",
+            ],
+            "pre_write_recheck_occurs_after_remote_observations": True,
+        },
         "visibility_polling": {
+            "clock": "MONOTONIC_WALL_CLOCK_INCLUDING_API_COMMAND_TIME",
+            "deadline_seconds": 30,
             "fail_immediately_for": [
                 "malformed_or_contradictory_identity",
+                "arbitrary_wrong_pr_head_sha",
+                "current_execution_run_id_contradiction",
                 "duplicate_or_rerun_workflow",
                 "red_source_gate",
                 "missing_or_nonready_runner_set",
@@ -725,11 +1772,12 @@ def validate_github_observer_contract() -> dict[str, Any]:
             "interval_seconds": 2,
             "maximum_polls": 16,
             "poll_only": [
-                "missing_stale_or_incomplete_current_pr_head",
+                "missing_or_incomplete_current_pr",
+                "explicitly_allowed_immediate_predecessor_pr_head",
                 "missing_or_incomplete_current_execution_workflow_run",
             ],
+            "retry_sleep_policy": "CLAMP_TO_REMAINING_DEADLINE",
             "timeout_disposition": "FAIL_CLOSED_BEFORE_SENTINEL_OR_EXECUTION",
-            "timeout_seconds": 30,
         },
     }
 
@@ -779,6 +1827,7 @@ def validate_readiness() -> None:
         and authority.get("request_012_allowed_after_exact_remote_gates") is True
         and authority.get("request_012_authorized") is False
         and authority.get("request_012_created") is False
+        and authority.get("meaning") == DEVELOPMENT_AUTHORITY_MEANING
         and authority.get("required_external_authorization")
         == REQUIRED_EXTERNAL_AUTHORIZATION,
         "D1.12 development authority boundary differs",

@@ -449,41 +449,37 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert "atomic cell result/ledger/cursor commit journal" in joined_requirements
     assert "failed-campaign external custody" in joined_requirements
     assert requirements["current_status"] == {
-        "CLASSIFICATION": readiness.D110_AMENDMENT_CLASSIFICATION,
-        "DEV_APPROVAL_ALLOWED": "YES",
+        "CLASSIFICATION": readiness.D111_AMENDMENT_CLASSIFICATION,
+        "DEV_APPROVAL_ALLOWED": "NO",
         "DEV_EXECUTION_ALLOWED": "NO",
-        "DEV_SCIENTIFIC_STATUS": "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL",
-        "ENDPOINT": readiness.D110_READY_ENDPOINT,
-        "FAILURE_SUBTYPE": readiness.D110_FAILURE_SUBTYPE,
+        "DEV_SCIENTIFIC_STATUS": "NOT_STARTED_ON_EXEC_011",
+        "ENDPOINT": readiness.D111_ENDPOINT,
+        "FAILURE_SUBTYPE": readiness.D111_FAILURE_SUBTYPE,
         "GRADER_EXEC_PACKAGE": "PASS",
-        **readiness.d110_reseal.STATUS_FIELDS,
+        **readiness.d111_reseal.STATUS_FIELDS,
         "SCIENTIFIC_RESULT": "NO_DEVELOPMENT_SCIENTIFIC_RESULT",
         "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN",
     }
     authorization = requirements["development_authorization_boundary"]
-    assert authorization["approval_request_eligible"] is True
+    assert authorization["approval_request_eligible"] is False
     assert authorization["active_development_approval"] is False
     assert authorization["attempt_one_consumed"] is True
     assert authorization["attempt_two_allowed"] is False
     assert authorization["development_execution_authorized"] is False
     assert authorization["grader_smoke_rerun_authorized"] is False
     assert authorization["heldout_execution_authorized"] is False
-    assert authorization["future_recovery_authority_received"] is True
+    assert authorization["future_recovery_authority_received"] is False
     assert authorization["prior_failed_run_reusable"] is False
-    assert authorization["recovery_authorization_received"] is True
-    assert authorization["recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
-    )
+    assert authorization["recovery_authorization_received"] is False
+    assert authorization["recovery_authorization"] == "NOT_GRANTED"
     assert authorization["historical_failed_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011"
     )
     assert authorization["historical_failed_request_path"].endswith(
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
     )
-    assert authorization["fresh_execution_request"] == (
-        "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
-    )
-    assert authorization["fresh_execution_request_creation_authorized"] is True
+    assert authorization["fresh_execution_request"] == "NONE"
+    assert authorization["fresh_execution_request_creation_authorized"] is False
     assert authorization[
         "fresh_execution_request_requires_explicit_sentinel_authority"
     ] is True
@@ -510,19 +506,23 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["request_010_attempt_one_consumed"] is True
     assert authorization["request_010_attempt_two_allowed"] is False
     assert authorization["request_010_rerun_allowed"] is False
-    assert authorization["request_011_allowed_after_exact_remote_gates"] is True
-    assert authorization["request_011_attempt_one_consumed"] is False
-    assert authorization["request_011_created"] is False
+    assert authorization["request_011_allowed_after_exact_remote_gates"] is False
+    assert authorization["request_011_attempt_one_consumed"] is True
+    assert authorization["request_011_attempt_two_allowed"] is False
+    assert authorization["request_011_rerun_allowed"] is False
+    assert authorization["request_011_created"] is True
+    assert authorization["request_012_authorized"] is False
+    assert authorization["request_012_created"] is False
     assert authorization["fresh_dev_execution_approval_required"] is True
     assert authorization["rerun_allowed"] is False
-    assert "_010" in authorization["meaning"]
-    assert "not reusable" in authorization["meaning"]
+    assert "_011" in authorization["meaning"]
+    assert "cannot be rerun" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     assert authorization["amendment_classification"] == (
-        readiness.D110_AMENDMENT_CLASSIFICATION
+        readiness.D111_AMENDMENT_CLASSIFICATION
     )
     assert authorization["amendment_evidence_path"].endswith(
-        "development_grader_launch_stream_commit_amendment.json"
+        "development_activation_lifecycle_amendment.json"
     )
     assert authorization["solve_execution_contract_rehearsal_required_before_request_005"] is False
     service_boundary = requirements["credential_free_service_ci_boundary"]
@@ -659,15 +659,14 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     )
     assert historical_exec_008["execution_accounting"]["scientific_model_calls"] == 0
     assert historical_exec_008["execution_accounting"]["official_grader_runs"] == 0
-    latest_failure = requirements["current_development_execution_failure"]
-    assert latest_failure == readiness.d110_reseal.current_failure_record()
-    assert latest_failure["scientific_status"] == (
+    historical_exec_010 = requirements["current_development_execution_failure"]
+    assert historical_exec_010["scientific_status"] == (
         "INTERRUPTED_BEFORE_FIRST_TERMINAL_CELL"
     )
-    assert latest_failure["workflow_run"]["conclusion"] == "failure"
-    assert latest_failure["observed_usage"]["paid_model_calls"] == 10
-    assert latest_failure["failure_boundary"]["official_grader_runs"] == 0
-    assert readiness._development_exec_010_static_accounting(latest_failure) == {
+    assert historical_exec_010["workflow_run"]["conclusion"] == "failure"
+    assert historical_exec_010["observed_usage"]["paid_model_calls"] == 10
+    assert historical_exec_010["failure_boundary"]["official_grader_runs"] == 0
+    assert readiness._development_exec_010_static_accounting(historical_exec_010) == {
         "scientific_model_calls": 9,
         "decomposition_calls": 1,
         "solve_calls": 8,
@@ -680,6 +679,12 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "grader_containers": 0,
         "total_usd": "0.051215550000",
     }
+    latest_failure = requirements["current_development_activation_failure"]
+    assert latest_failure == readiness.d111_reseal.current_failure_record()
+    assert latest_failure["scientific_status"] == "NOT_STARTED_ON_EXEC_011"
+    assert readiness._development_exec_011_static_accounting(latest_failure) == (
+        readiness.d111_reseal.ZERO_ACTUALS
+    )
     assert requirements["historical_development_exec_009_failure"] == (
         readiness._validated_development_exec_009_failure()
     )
@@ -700,16 +705,16 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
     targets = readiness.validate_targets()
     derived = readiness.validate_readiness_plan(targets)
     assert derived["current_status"]["ENDPOINT"] == (
-        readiness.D110_READY_ENDPOINT
+        readiness.D111_ENDPOINT
     )
-    assert derived["current_status"]["DEV_APPROVAL_ALLOWED"] == "YES"
+    assert derived["current_status"]["DEV_APPROVAL_ALLOWED"] == "NO"
     assert derived["current_status"]["DEV_EXECUTION_ALLOWED"] == "NO"
     assert derived["current_status"]["PERFORMANCE"] == "NOT_MEASURED"
     assert derived["development_execution_failure"] == (
         readiness._validated_development_exec_005_failure()
     )
-    assert derived["current_development_execution_failure"] == (
-        readiness.d110_reseal.current_failure_record()
+    assert derived["current_development_activation_failure"] == (
+        readiness.d111_reseal.current_failure_record()
     )
     assert derived["historical_development_exec_009_failure"] == (
         readiness._validated_development_exec_009_failure()
@@ -805,10 +810,12 @@ def test_development_exec_002_semantic_drift_fails_even_with_bound_bytes(
         readiness._validated_development_exec_002_failure()
 
 
-def test_d110_correction_is_ready_only_to_request_fresh_approval(
+def test_d111_correction_blocks_execution_until_fresh_012_authority(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    assert readiness.preapproval_blockers() == []
+    assert readiness.preapproval_blockers() == [
+        "fresh _012 execution authority is required"
+    ]
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
         json.dumps({"approval": {"approved_phase": "DEVELOPMENT_TUNING"}}),
@@ -834,7 +841,7 @@ def test_d110_correction_is_ready_only_to_request_fresh_approval(
     )
     blockers, phase = readiness.execution_blockers(approval_path)
     assert phase == "development"
-    assert blockers == []
+    assert blockers == ["DEV _011 is final and no _012 execution authority exists"]
 
 
 def test_benchmark_exec_cli_requires_fresh_run_bound_approval(
@@ -1055,8 +1062,8 @@ def test_benchmark_approval_cannot_disable_git_tracked_freeze(
     assert "endpoint" not in report
     assert "official_grader_viability" not in report
     assert {
-        key: report[key] for key in readiness.d110_reseal.STATUS_FIELDS
-    } == readiness.d110_reseal.STATUS_FIELDS
+        key: report[key] for key in readiness.d111_reseal.STATUS_FIELDS
+    } == readiness.d111_reseal.STATUS_FIELDS
 
 
 def test_readiness_report_derives_validated_post_smoke_state(
@@ -1644,7 +1651,9 @@ def test_committed_smoke_pass_has_exact_authoritative_execution() -> None:
         "paid_model_calls": 0,
         "total_usd": 0,
     }
-    assert readiness.preapproval_blockers() == []
+    assert readiness.preapproval_blockers() == [
+        "fresh _012 execution authority is required"
+    ]
 
 
 def test_recovery_ready_history_rejects_rebound_receipt_hash() -> None:
@@ -3448,11 +3457,11 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "D1.10 approval-request boundary" in static
-    assert "python scripts/trimem_d110_reseal.py --check" in static
+    assert "D1.11 no-authority boundary" in static
+    assert "python scripts/trimem_d111_reseal.py --check" in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
-    assert "expected exact D1.10 readiness report" in static
+    assert "expected exact D1.11 readiness report" in static
     assert "broad grader viability leaked" in static
     assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
@@ -3750,7 +3759,7 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         text = path.read_text(encoding="utf-8")
         assert "openssl enc -aes-256-cbc" in text
         assert "restricted-encrypted" in text
-    assert "runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]" in benchmark
+    assert "runs-on: [self-hosted, linux, x64, trimem-ubuntu-24.04, trimem-benchmark]" in benchmark
     assert "timeout-minutes: 7200" in benchmark
     assert "matrix:" not in benchmark
     assert "permissions:\n  actions: read\n  contents: read" in benchmark

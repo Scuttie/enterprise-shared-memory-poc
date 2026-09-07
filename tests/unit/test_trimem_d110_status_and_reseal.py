@@ -1,4 +1,4 @@
-"""D1.10 status split, immutable history, and zero-cost research seal."""
+"""Immutable D1.10 history and the current zero-cost D1.11 seal."""
 from __future__ import annotations
 
 import hashlib
@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_d110_reseal as reseal  # noqa: E402
+import trimem_d111_reseal as current_reseal  # noqa: E402
 
 
 def read(relative: str) -> dict:
@@ -27,11 +28,11 @@ def test_current_status_uses_exact_split_fields_and_ready_endpoint() -> None:
 
     assert "OFFICIAL_GRADER_VIABILITY" not in status
     assert {
-        key: status[key] for key in reseal.STATUS_FIELDS
-    } == reseal.STATUS_FIELDS
-    assert status["CLASSIFICATION"] == reseal.CLASSIFICATION
-    assert status["ENDPOINT"] == reseal.ENDPOINT
-    assert status["DEV_APPROVAL_ALLOWED"] == "YES"
+        key: status[key] for key in current_reseal.STATUS_FIELDS
+    } == current_reseal.STATUS_FIELDS
+    assert status["CLASSIFICATION"] == current_reseal.CLASSIFICATION
+    assert status["ENDPOINT"] == current_reseal.ENDPOINT
+    assert status["DEV_APPROVAL_ALLOWED"] == "NO"
     assert status["DEV_EXECUTION_ALLOWED"] == "NO"
 
 
@@ -55,49 +56,45 @@ def test_exec_010_failure_remains_incomplete_and_pre_result() -> None:
     }
 
 
-def test_explicit_011_authority_does_not_reuse_final_exec_010_request() -> None:
+def test_exec_011_is_spent_and_no_012_authority_exists() -> None:
     authority = read("artifacts/trimem_v1/readiness_requirements.json")[
         "development_authorization_boundary"
     ]
     assert authority["historical_failed_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_010"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011"
     )
-    assert authority["historical_failed_request_path"] == reseal.REQUEST_PATH
-    assert authority["fresh_execution_request"] == (
-        "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
-    )
-    assert authority["fresh_execution_request_creation_authorized"] is True
-    assert authority["recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
-    )
-    assert authority["required_external_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
-    )
-    assert authority["recovery_authorization_received"] is True
-    assert authority["future_recovery_authority_received"] is True
+    assert authority["historical_failed_request_path"] == current_reseal.REQUEST_PATH
+    assert authority["fresh_execution_request"] == "NONE"
+    assert authority["fresh_execution_request_creation_authorized"] is False
+    assert authority["recovery_authorization"] == "NOT_GRANTED"
+    assert authority["required_external_authorization"] == "NOT_GRANTED"
+    assert authority["recovery_authorization_received"] is False
+    assert authority["future_recovery_authority_received"] is False
     assert authority["recovery_request_id"] == (
         "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011"
     )
     assert authority["recovery_request_path"] == reseal.REQUEST_011_PATH
-    assert authority["request_011_allowed_after_exact_remote_gates"] is True
-    assert authority["request_011_created"] is False
+    assert authority["request_011_allowed_after_exact_remote_gates"] is False
+    assert authority["request_011_attempt_one_consumed"] is True
+    assert authority["request_011_attempt_two_allowed"] is False
+    assert authority["request_011_rerun_allowed"] is False
+    assert authority["request_011_created"] is True
+    assert authority["request_012_authorized"] is False
+    assert authority["request_012_created"] is False
     assert authority["active_development_approval"] is False
     assert authority["development_execution_authorized"] is False
     assert authority["fresh_dev_execution_approval_required"] is True
 
 
-def test_exec_001_through_010_are_byte_locked_and_011_is_optional_activation() -> None:
-    requests, evidence = reseal.verify_historical_boundaries()
-    request_011 = (
-        "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_011.json"
-    )
-    assert requests == reseal.HISTORICAL_REQUEST_SHA256
-    assert len(requests) == 10
-    assert evidence
-    assert request_011 == reseal.REQUEST_011_PATH
-    assert request_011 not in requests
-    assert request_011 not in reseal.D110_GENERATED_PATHS
-    assert request_011 not in reseal.IMPLEMENTATION_PATHS
+def test_exec_001_through_011_are_byte_locked_and_012_is_absent() -> None:
+    boundary = current_reseal.verify_historical_boundary()
+    assert boundary["execution_head"] == current_reseal.EXECUTION_HEAD
+    assert boundary["execution_parent"] == current_reseal.SOURCE_HEAD
+    assert boundary["request_path"] == current_reseal.REQUEST_PATH
+    assert boundary["request_sha256"] == current_reseal.REQUEST_SHA256
+    assert boundary["sentinel_only"] is True
+    assert not (ROOT / current_reseal.NEXT_REQUEST_PATH).exists()
+    assert len(reseal.HISTORICAL_REQUEST_SHA256) == 10
 
 
 def test_d19_amendment_and_inventory_remain_immutable_history() -> None:
@@ -111,7 +108,7 @@ def test_d19_amendment_and_inventory_remain_immutable_history() -> None:
         )
 
 
-def test_d19_trigger_is_immutable_history_and_d110_trigger_is_active() -> None:
+def test_d19_and_d110_triggers_are_immutable_history() -> None:
     historical = "scripts/trimem_development_trigger_d19.py"
     active = "scripts/trimem_development_trigger_d110.py"
 
@@ -120,8 +117,10 @@ def test_d19_trigger_is_immutable_history_and_d110_trigger_is_active() -> None:
     assert reseal.source_bytes(historical) == reseal.git_blob(
         reseal.EXECUTION_HEAD, historical
     )
-    assert active in reseal.IMPLEMENTATION_PATHS
-    assert active not in reseal.PRESERVED_SCIENTIFIC_PATHS
+    assert current_reseal.HISTORICAL_D110_SHA256[active] == hashlib.sha256(
+        current_reseal.git_blob(current_reseal.EXECUTION_HEAD, active)
+    ).hexdigest()
+    assert "scripts/trimem_d111_gate_contract.py" in current_reseal.IMPLEMENTATION_PATHS
 
 
 def test_tool_environment_lock_changes_only_d110_source_identities() -> None:
@@ -148,64 +147,45 @@ def test_tool_environment_lock_changes_only_d110_source_identities() -> None:
     assert changed == reseal.TOOL_ENVIRONMENT_SOURCE_AMENDMENTS
 
 
-def test_d110_artifacts_are_exactly_reproducible_and_zero_cost() -> None:
-    expected_amendment, expected_inventory = reseal.build_artifacts()
+def test_d111_artifacts_are_exactly_reproducible_and_zero_cost() -> None:
+    expected_amendment, expected_inventory = current_reseal.build_artifacts()
     amendment = read(
-        "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json"
+        "artifacts/trimem_v1/development_activation_lifecycle_amendment.json"
     )
     inventory = read(
-        "artifacts/trimem_v1/development_grader_launch_stream_commit_inventory.json"
+        "artifacts/trimem_v1/development_activation_lifecycle_inventory.json"
     )
 
     assert amendment == expected_amendment
     assert inventory == expected_inventory
-    assert amendment["credential_free_correction_actuals"] == {
+    assert amendment["zero_cost_correction_actuals"] == {
         "benchmark_image_pulls": 0,
+        "grader_containers": 0,
+        "input_tokens": 0,
         "model_api_calls": 0,
         "model_generation_calls": 0,
-        "official_grader_executions": 0,
+        "model_metadata_requests": 0,
+        "official_grader_runs": 0,
+        "output_tokens": 0,
         "paid_model_calls": 0,
-        "total_usd": 0,
+        "task_arm_runs": 0,
+        "terminal_cells": 0,
+        "total_usd": 0.0,
     }
-    assert amendment["authority_boundary"]["request_011_created"] is False
-    assert amendment["authority_boundary"]["fresh_execution_request"] == (
-        "REQUEST_011_AUTHORIZED_PENDING_EXACT_REMOTE_GATES"
-    )
-    assert amendment["authority_boundary"][
-        "fresh_execution_request_creation_authorized"
-    ] is True
-    assert amendment["authority_boundary"]["recovery_authorization"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
-    )
-    assert amendment["authority_boundary"][
-        "required_external_authorization"
-    ] == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE"
-    assert amendment["authority_boundary"][
-        "recovery_authorization_received"
-    ] is True
-    assert amendment["authority_boundary"][
-        "future_recovery_authority_received"
-    ] is True
-    assert amendment["authority_boundary"][
-        "request_011_allowed_after_exact_remote_gates"
-    ] is True
-    assert amendment["authority_boundary"][
-        "fresh_dev_execution_approval_required"
-    ] is True
-    assert amendment["credential_free_bundle_scope"] == (
-        "REHASHED_BYTE_STABLE_EXISTING_SOURCE_TO_TARGET_EVIDENCE; "
-        "NOT_D1_10_LOADER_OR_CELL_COMMIT_REHEARSAL"
-    )
+    assert amendment["authority_boundary"]["request_011_attempt_one_consumed"] is True
+    assert amendment["authority_boundary"]["request_012_authorized"] is False
+    assert amendment["credential_free_replay"]["historical_source_gates"] == 12
 
 
-def test_contract_hashes_are_raw_file_identities() -> None:
+def test_d110_seal_remains_exact_at_spent_execution_head() -> None:
     amendment = read(
         "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json"
     )
-    for name, relative in reseal.CONTRACT_PATHS.items():
-        assert amendment["contracts"][name] == hashlib.sha256(
-            (ROOT / relative).read_bytes()
-        ).hexdigest()
+    assert hashlib.sha256(json.dumps(amendment).encode()).hexdigest()
+    for relative, expected in current_reseal.HISTORICAL_D110_SHA256.items():
+        assert hashlib.sha256(
+            current_reseal.git_blob(current_reseal.EXECUTION_HEAD, relative)
+        ).hexdigest() == expected
 
 
 def test_product_handoff_inventory_is_separate_from_research_freeze() -> None:
@@ -228,15 +208,9 @@ def test_product_handoff_inventory_is_separate_from_research_freeze() -> None:
     reseal.verify_product_status_compatibility()
 
 
-def test_committed_d110_paths_are_closed_under_the_explicit_seal() -> None:
-    changed = reseal.verify_changed_path_coverage()
-    allowed = (
-        set(reseal.IMPLEMENTATION_PATHS)
-        | reseal.D110_GENERATED_PATHS
-        | reseal.PRODUCT_COMPATIBILITY_PATHS
-    )
-    assert changed
-    assert set(changed) <= allowed
+def test_committed_d111_paths_are_closed_under_the_explicit_seal() -> None:
+    changed = current_reseal.verify_changed_path_coverage()
+    assert set(changed) <= current_reseal.ALLOWED_CHANGED_PATHS
 
 
 def test_changed_path_coverage_rejects_an_unsealed_commit_path(

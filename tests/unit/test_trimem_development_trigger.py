@@ -22,6 +22,7 @@ import trimem_development_trigger_preflight as trigger  # noqa: E402
 import trimem_development_trigger_d18 as trigger_d18  # noqa: E402
 import trimem_development_trigger_d19 as trigger_d19  # noqa: E402
 import trimem_development_trigger_d110 as trigger_d110  # noqa: E402
+import trimem_d111_gate_contract as d111_gate  # noqa: E402
 import trimem_exec_approval as approval_validator  # noqa: E402
 import trimem_approved_phase as approved_phase  # noqa: E402
 import trimem_benchmark_matrix as benchmark_matrix  # noqa: E402
@@ -147,7 +148,7 @@ def _initialize(repository: Path, *, bind_recovery_history: bool = True) -> str:
 
 
 def _initialize_d110_activation_source(repository: Path) -> str:
-    """Commit the pending activation bytes over the immutable D1.10 base."""
+    """Check out the immutable D1.10 activation source used by ``_011``."""
 
     repository.mkdir()
     _git(repository, "init", "-b", "codex/trimem-coder-v1")
@@ -166,18 +167,10 @@ def _initialize_d110_activation_source(repository: Path) -> str:
         repository,
         "update-ref",
         "refs/heads/codex/trimem-coder-v1",
-        trigger_d110.STARTING_SOURCE_HEAD,
+        d111_gate.EXPECTED_SOURCE_HEAD,
     )
-    _git(repository, "reset", "--hard", trigger_d110.STARTING_SOURCE_HEAD)
-    for relative in sorted(trigger_d110.ALLOWED_ACTIVATION_PATHS):
-        source = ROOT / relative
-        destination = repository / relative
-        if source.is_file():
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(source.read_bytes())
-        elif destination.exists():
-            destination.unlink()
-    return _commit(repository, "fixture: D1.10-E1 activation source")
+    _git(repository, "reset", "--hard", d111_gate.EXPECTED_SOURCE_HEAD)
+    return _git(repository, "rev-parse", "HEAD")
 
 
 def _rehash(value: dict[str, object]) -> None:
@@ -683,7 +676,7 @@ def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
     freeze_rehearsal = (
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
-    rehearsal = "python -I -S scripts/trimem_d110_reseal.py --help"
+    rehearsal = "python -I -S scripts/trimem_d111_reseal.py --help"
     install = "python -m pip install --require-hashes"
     assert workflow.count(freeze_rehearsal) == 1
     assert workflow.count(rehearsal) == 1

@@ -77,7 +77,7 @@ jobs:
         github.ref == 'refs/heads/codex/trimem-coder-v1' &&
         github.run_attempt == 1 &&
         needs.branch-trigger-preflight.result == 'success'))
-    runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]
+    runs-on: [self-hosted, linux, x64, trimem-ubuntu-24.04, trimem-benchmark]
     timeout-minutes: 45
     steps:
       - name: Checkout bounded-context correction
@@ -169,7 +169,7 @@ jobs:
         github.run_attempt == 1 &&
         needs.branch-trigger-preflight.result == 'success' &&
         needs.bounded-context-preflight.result == 'success'))
-    runs-on: [self-hosted, linux, x64, ubuntu-24.04, trimem-benchmark]
+    runs-on: [self-hosted, linux, x64, trimem-ubuntu-24.04, trimem-benchmark]
     timeout-minutes: 7200
     environment: trimem-benchmark-exec
     services:

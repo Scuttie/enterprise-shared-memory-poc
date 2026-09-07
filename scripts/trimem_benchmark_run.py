@@ -985,7 +985,7 @@ def validate_benchmark_environment() -> dict[str, Any]:
     if runner != {
         "automatic_ci_runner_label": "ubuntu-24.04",
         "benchmark_exec_runner_labels": [
-            "self-hosted", "linux", "x64", "ubuntu-24.04", "trimem-benchmark"
+            "self-hosted", "linux", "x64", "trimem-ubuntu-24.04", "trimem-benchmark"
         ],
         "benchmark_exec_max_job_minutes": 7200,
         "benchmark_exec_runner_boundary": (

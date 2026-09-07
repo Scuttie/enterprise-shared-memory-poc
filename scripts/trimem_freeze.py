@@ -82,6 +82,8 @@ CONFIG_PATHS = (
     "configs/trimem_v1/tool_environment_lock.json",
 )
 ARTIFACT_PATHS = (
+    "artifacts/trimem_v1/development_activation_lifecycle_amendment.json",
+    "artifacts/trimem_v1/development_activation_lifecycle_inventory.json",
     "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json",
     "artifacts/trimem_v1/development_grader_launch_stream_commit_inventory.json",
     "artifacts/trimem_v1/development_bounded_context_inventory.json",
@@ -161,6 +163,8 @@ SCRIPT_PATHS = (
     "scripts/trimem_development_phase_cap.py",
     "scripts/trimem_context_roundtrip.py",
     "scripts/trimem_d110_reseal.py",
+    "scripts/trimem_d111_gate_contract.py",
+    "scripts/trimem_d111_reseal.py",
     "scripts/trimem_d19_reseal.py",
     "scripts/trimem_action_canary.py",
     "scripts/trimem_evidence_inventory.py",
@@ -303,6 +307,7 @@ TEST_PATHS = (
     "tests/unit/test_trimem_d110_checkout_custody.py",
     "tests/unit/test_trimem_d110_status_and_reseal.py",
     "tests/unit/test_trimem_d110_e1_trigger.py",
+    "tests/unit/test_trimem_d111_gate_contract.py",
     "tests/unit/test_trimem_grader_smoke_trigger.py",
     "tests/unit/test_trimem_grader_smoke_authority.py",
     "tests/unit/test_trimem_grader_smoke_execution_accounting.py",
@@ -349,6 +354,7 @@ TEST_PATHS = (
 )
 FIXTURE_PATHS = (
     "tests/fixtures/trimem_d110/exec_010_sanitized.json",
+    "tests/fixtures/trimem_d111/exec_011_branch_transition.json",
 )
 WORKFLOW_PATHS = (
     ".github/workflows/ci.yml",
@@ -373,6 +379,7 @@ FROZEN_PATHS = (
     "DEPENDENCY_PROVENANCE.json",
     "docs/TRIMEM_V1_SYSTEM.md",
     "reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md",
+    "reports/TRIMEM_D111_ACTIVATION_LIFECYCLE_CORRECTION.md",
     "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_001_PREFLIGHT_FAILURE.md",
     "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_002_PROTECTED_GATE_FAILURE.md",
     "reports/TRIMEM_GRADER_SMOKE_EXEC_004_FAILURE.md",

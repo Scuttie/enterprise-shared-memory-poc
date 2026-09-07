@@ -7,7 +7,7 @@
       "self-hosted",
       "linux",
       "x64",
-      "ubuntu-24.04",
+      "trimem-ubuntu-24.04",
       "trimem-benchmark"
     ],
     "benchmark_exec_max_job_minutes": 7200,

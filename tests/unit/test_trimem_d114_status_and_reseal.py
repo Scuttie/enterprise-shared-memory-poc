@@ -20,6 +20,7 @@ import trimem_development_trigger_d114 as trigger  # noqa: E402
 SOURCE_HEAD = "cb17ceae0fbc951dff34213de977a73b5405fefc"
 EXECUTION_HEAD = "35bfa338915d731dab499f2dfee08b38741bfe8d"
 D114_SOURCE_HEAD = "6e9abe999f2b9d7ebdd3eea23dbbea8f6afad931"
+D114_EXECUTION_HEAD = "31234fdd58fd43170764524662c9e51687521761"
 REQUEST_RAW_SHA256 = (
     "a500568cedfa800bd85e20263b604fa2c1d24f634644d5ef14f517a8330b6417"
 )
@@ -218,9 +219,15 @@ def test_generated_documents_are_immutable_at_the_d114_source() -> None:
     ] == 14
 
 
-def test_optional_014_boundary_is_absent_or_exact_sentinel_child() -> None:
-    observed = reseal.validate_optional_exec_014_boundary()
-    assert observed is None or reseal.HEX40.fullmatch(observed) is not None
+def test_014_boundary_is_an_immutable_exact_sentinel_child() -> None:
+    observed = trigger.validate_sentinel_commit(
+        ROOT,
+        D114_EXECUTION_HEAD,
+        expected_parent=D114_SOURCE_HEAD,
+        require_checked_out_head=False,
+    )
+    assert observed["request_id"] == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_014"
+    assert observed["source_head"] == D114_SOURCE_HEAD
 
 
 def test_report_freezes_exact_failure_fix_and_no_result_meaning() -> None:

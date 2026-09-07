@@ -178,6 +178,8 @@ def test_changed_path_vocabulary_matches_trigger_and_excludes_science() -> None:
     assert {
         "scripts/trimem_benchmark_matrix.py": "M",
         "scripts/trimem_benchmark_run.py": "M",
+        "scripts/trimem_multi_swe_contract.py": "M",
+        "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py": "M",
     }.items() <= reseal.REQUIRED_CHANGED_PATHS.items()
     assert {
         "scripts/trimem_benchmark_matrix.py",
@@ -192,6 +194,7 @@ def test_changed_path_vocabulary_matches_trigger_and_excludes_science() -> None:
         "loader_rehearsal_collector_sha256": (
             trigger.LOADER_REHEARSAL_COLLECTOR_PATH
         ),
+        "multi_swe_contract_sha256": "scripts/trimem_multi_swe_contract.py",
         "d115_amendment_sha256": trigger.AMENDMENT_PATH,
         "d115_gate_contract_sha256": trigger.GATE_CONTRACT_PATH,
         "d115_inventory_sha256": trigger.INVENTORY_PATH,

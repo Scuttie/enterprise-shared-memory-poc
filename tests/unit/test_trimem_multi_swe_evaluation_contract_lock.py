@@ -60,6 +60,12 @@ D114_AMENDMENT_PATH = ROOT / (
 D114_INVENTORY_PATH = ROOT / (
     "artifacts/trimem_v1/development_exec_014_recovery_inventory.json"
 )
+D115_AMENDMENT_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_015_recovery_amendment.json"
+)
+D115_INVENTORY_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_015_recovery_inventory.json"
+)
 EXPECTED_SOURCE_BLOBS = {
     "multi_swe_bench/harness/dataset.py": {
         "bytes": 2833,
@@ -378,12 +384,34 @@ def test_local_validator_projection_locks_raw_lf_bytes_and_fail_closed_chain() -
     d114_matrix_sha256 = d114_amendment["implementation_sha256"][
         "scripts/trimem_benchmark_matrix.py"
     ]
-    assert d114_matrix_sha256 == current_sha256
+    assert d114_matrix_sha256 != current_sha256
     assert d114_matrix_sha256 != d113_matrix_sha256
+
+    d115_amendment = json.loads(D115_AMENDMENT_PATH.read_text(encoding="utf-8"))
+    d115_inventory = json.loads(D115_INVENTORY_PATH.read_text(encoding="utf-8"))
+    assert d115_amendment["schema"] == multi_contract.D115_AMENDMENT_SCHEMA
+    assert d115_inventory["schema"] == multi_contract.D115_INVENTORY_SCHEMA
+    assert d115_amendment["status"] == multi_contract.D115_STATUS
+    assert d115_inventory["status"] == multi_contract.D115_STATUS
+    assert d115_amendment["classification"] == multi_contract.D115_CLASSIFICATION
+    assert d115_inventory["classification"] == multi_contract.D115_CLASSIFICATION
+    assert d115_amendment["implementation_sha256"] == d115_inventory[
+        "implementation_sha256"
+    ]
+    assert {
+        path
+        for path in d115_amendment["implementation_sha256"]
+        if path in multi_contract.LOCAL_VALIDATOR_ROLES
+    } == {"scripts/trimem_benchmark_matrix.py"}
+    d115_matrix_sha256 = d115_amendment["implementation_sha256"][
+        "scripts/trimem_benchmark_matrix.py"
+    ]
+    assert d115_matrix_sha256 == current_sha256
+    assert d115_matrix_sha256 != d114_matrix_sha256
     for path in EXPECTED_LOCAL_VALIDATOR_FILES:
         live_sha256 = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
         if path == "scripts/trimem_benchmark_matrix.py":
-            assert d114_amendment["implementation_sha256"][path] == live_sha256
+            assert d115_amendment["implementation_sha256"][path] == live_sha256
         else:
             assert d110_amendment["implementation_sha256"][path] == live_sha256
             assert d110_inventory["implementation_sha256"][path] == live_sha256
@@ -571,6 +599,24 @@ def test_production_verifier_rejects_d114_inventory_aggregate_drift(
     with pytest.raises(
         multi_contract.ContractError,
         match="D1.14 recovery implementation seals disagree",
+    ):
+        multi_contract._verify_local_validator_files(_load_lock()["contracts"])
+
+
+def test_production_verifier_rejects_d115_inventory_aggregate_drift(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    inventory = json.loads(D115_INVENTORY_PATH.read_text(encoding="utf-8"))
+    inventory["implementation_sha256"][
+        multi_contract.D18_CURRENT_AGGREGATE_PATH
+    ] = "0" * 64
+    tampered_path = tmp_path / "d115-inventory.json"
+    tampered_path.write_text(json.dumps(inventory), encoding="utf-8")
+    monkeypatch.setattr(multi_contract, "D115_INVENTORY_PATH", tampered_path)
+
+    with pytest.raises(
+        multi_contract.ContractError,
+        match="D1.15 recovery implementation seals disagree",
     ):
         multi_contract._verify_local_validator_files(_load_lock()["contracts"])
 

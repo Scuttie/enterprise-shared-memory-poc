@@ -265,7 +265,9 @@ REQUIRED_RECOVERY_CHANGES = {
     "scripts/trimem_freeze.py": "M",
     "scripts/trimem_benchmark_matrix.py": "M",
     "scripts/trimem_benchmark_run.py": "M",
+    "scripts/trimem_multi_swe_contract.py": "M",
     "scripts/trimem_verify_ready.py": "M",
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py": "M",
 }
 ALLOWED_ACTIVATION_PATHS = ALLOWED_RECOVERY_PATHS
 REQUIRED_ACTIVATION_CHANGES = REQUIRED_RECOVERY_CHANGES
@@ -277,6 +279,7 @@ ACTIVATION_BINDING_PATHS = {
     "benchmark_workflow_sha256": EXPECTED_WORKFLOW_PATH,
     "compiled_prefix_alias_sha256": COMPILED_PREFIX_ALIAS_PATH,
     "loader_rehearsal_collector_sha256": LOADER_REHEARSAL_COLLECTOR_PATH,
+    "multi_swe_contract_sha256": "scripts/trimem_multi_swe_contract.py",
     "d115_amendment_sha256": AMENDMENT_PATH,
     "d115_gate_contract_sha256": GATE_CONTRACT_PATH,
     "d115_inventory_sha256": INVENTORY_PATH,

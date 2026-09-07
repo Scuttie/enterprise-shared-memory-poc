@@ -154,6 +154,120 @@ def test_d115_runtime_context_is_reversible() -> None:
     assert d114.REQUEST_ID == original
 
 
+def test_runner_readiness_uses_system_wsl_and_restores_inherited_module(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    system_wsl = r"C:\Windows\System32\wsl.exe"
+    original_shutil = d115.d112.shutil
+    original_safe_environment = d115.d112._safe_process_environment
+    original_command_prefix = d115.d112._wsl_command_prefix
+    observed: list[dict[str, object]] = []
+    order: list[str] = []
+
+    def observer() -> tuple[str, dict[str, str]]:
+        order.append("observer")
+        return "gh", {"GH_TOKEN": "observer-only"}
+
+    def resolve_wsl() -> str:
+        order.append("wsl")
+        return system_wsl
+
+    monkeypatch.setattr(d115, "_pinned_gh_context", observer)
+    monkeypatch.setattr(d115, "_system_wsl_path", resolve_wsl)
+    monkeypatch.setenv("PATH", r"C:\attacker")
+    monkeypatch.setenv("SYSTEMROOT", r"C:\attacker-root")
+    monkeypatch.setenv("WSLENV", "PYTHONPATH/u:LD_PRELOAD/u")
+    monkeypatch.setenv("PYTHONPATH", r"C:\attacker-python")
+    monkeypatch.setenv("LD_PRELOAD", "/attacker/preload.so")
+
+    def collect(*_args: object, **kwargs: object) -> dict[str, object]:
+        assert kwargs["_observer_context"] == (
+            "gh",
+            {"GH_TOKEN": "observer-only"},
+        )
+        order.append("collect")
+        observed.append(
+            {
+                "environment": d115.d112._safe_process_environment(),
+                "prefix": d115.d112._wsl_command_prefix(
+                    d115.d112.shutil.which("wsl.exe"),
+                    cwd=d115.RUNNER_ROOTS[0],
+                ),
+            }
+        )
+        return {"status": "PASS"}
+
+    monkeypatch.setattr(d115.d113, "collect_runner_readiness", collect)
+    result = d115.collect_runner_readiness(
+        ROOT,
+        d115.PREVIOUS_EXECUTION_HEAD,
+    )
+
+    assert result == {"status": "PASS"}
+    assert order == ["observer", "wsl", "collect"]
+    environment = observed[0]["environment"]
+    assert isinstance(environment, dict)
+    assert environment["SystemRoot"] == r"C:\Windows"
+    assert environment["WINDIR"] == r"C:\Windows"
+    assert not {
+        "PATH",
+        "SYSTEMROOT",
+        "WSLENV",
+        "PYTHONPATH",
+        "LD_PRELOAD",
+    } & set(environment)
+    assert observed[0]["prefix"] == [
+        system_wsl,
+        "-d",
+        d115.RUNNER_DISTRIBUTION,
+        "--user",
+        d115.RUNNER_WSL_USER,
+        "--cd",
+        d115.RUNNER_ROOTS[0],
+        "--exec",
+        "/usr/bin/env",
+        "-i",
+        f"HOME={d115.WSL_COLLECTOR_HOME}",
+        "LANG=C.UTF-8",
+        "LC_ALL=C.UTF-8",
+        f"PATH={d115.WSL_COLLECTOR_PATH}",
+        f"LD_LIBRARY_PATH={d115.EXACT_PYTHON_LIBRARY_PATH}",
+    ]
+    assert d115.d112.shutil is original_shutil
+    assert d115.d112._safe_process_environment is original_safe_environment
+    assert d115.d112._wsl_command_prefix is original_command_prefix
+
+
+def test_runner_readiness_restores_inherited_globals_after_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    originals = (
+        d115.d112.shutil,
+        d115.d112._safe_process_environment,
+        d115.d112._wsl_command_prefix,
+    )
+    monkeypatch.setattr(
+        d115, "_system_wsl_path", lambda: r"C:\Windows\System32\wsl.exe"
+    )
+
+    def fail(*_args: object, **_kwargs: object) -> dict[str, object]:
+        raise RuntimeError("expected test failure")
+
+    monkeypatch.setattr(d115.d113, "collect_runner_readiness", fail)
+    with pytest.raises(RuntimeError, match="expected test failure"):
+        d115.collect_runner_readiness(
+            ROOT,
+            d115.PREVIOUS_EXECUTION_HEAD,
+            _observer_context=("gh", {}),
+        )
+
+    assert (
+        d115.d112.shutil,
+        d115.d112._safe_process_environment,
+        d115.d112._wsl_command_prefix,
+    ) == originals
+
+
 def test_immutable_exec_014_request_reader_uses_exact_git_blob() -> None:
     request = d115._load_previous_request(ROOT, d115.PREVIOUS_EXECUTION_HEAD)
 

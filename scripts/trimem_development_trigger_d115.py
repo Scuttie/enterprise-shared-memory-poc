@@ -16,7 +16,7 @@ import hashlib
 import importlib
 import json
 import os
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import subprocess
 import sys
@@ -1441,15 +1441,98 @@ def collect_remote_runner_rows() -> list[dict[str, Any]]:
         return d113.collect_remote_runner_rows()
 
 
+class _SystemWslShutilProxy:
+    """Delegate ``shutil`` except for the security-sensitive WSL lookup."""
+
+    def __init__(self, delegate: Any, system_wsl: str) -> None:
+        self._delegate = delegate
+        self._system_wsl = system_wsl
+
+    def which(self, command: str, *args: Any, **kwargs: Any) -> str | None:
+        if command.casefold() == "wsl.exe":
+            return self._system_wsl
+        return self._delegate.which(command, *args, **kwargs)
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._delegate, name)
+
+
+@contextmanager
+def _d112_system_wsl_context(
+    system_wsl: str,
+    safe_host_environment: Mapping[str, str],
+) -> Iterator[None]:
+    """Isolate every inherited WSL readiness probe and restore its globals."""
+
+    original_shutil = d112.shutil
+    original_safe_environment = d112._safe_process_environment
+    original_command_prefix = d112._wsl_command_prefix
+
+    def safe_environment() -> dict[str, str]:
+        return dict(safe_host_environment)
+
+    def command_prefix(wsl: str, *, cwd: str | None = None) -> list[str]:
+        require(wsl == system_wsl, "runner readiness WSL executable differs")
+        arguments = [
+            system_wsl,
+            "-d",
+            RUNNER_DISTRIBUTION,
+            "--user",
+            RUNNER_WSL_USER,
+        ]
+        if cwd is not None:
+            require(
+                cwd in RUNNER_ROOTS and PurePosixPath(cwd).is_absolute(),
+                "WSL working directory is not an exact runner root",
+            )
+            arguments.extend(["--cd", cwd])
+        return [
+            *arguments,
+            "--exec",
+            "/usr/bin/env",
+            "-i",
+            f"HOME={WSL_COLLECTOR_HOME}",
+            "LANG=C.UTF-8",
+            "LC_ALL=C.UTF-8",
+            f"PATH={WSL_COLLECTOR_PATH}",
+            f"LD_LIBRARY_PATH={EXACT_PYTHON_LIBRARY_PATH}",
+        ]
+
+    d112.shutil = _SystemWslShutilProxy(original_shutil, system_wsl)
+    d112._safe_process_environment = safe_environment
+    d112._wsl_command_prefix = command_prefix
+    try:
+        yield
+    finally:
+        d112._wsl_command_prefix = original_command_prefix
+        d112._safe_process_environment = original_safe_environment
+        d112.shutil = original_shutil
+
+
 def collect_runner_readiness(
     repository: Path,
     source_head: str,
     *,
     _observer_context: tuple[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
-    with _d115_runtime_context(), d114._d114_runtime_context():
+    observer_context = (
+        _pinned_gh_context()
+        if _observer_context is None
+        else _observer_context
+    )
+    system_wsl = _system_wsl_path()
+    system_root = str(PureWindowsPath(system_wsl).parent.parent)
+    safe_host_environment = _wsl_collector_host_environment(
+        os.environ,
+        system_root=system_root,
+    )
+    with (
+        _d115_runtime_context(),
+        d114._d114_runtime_context(),
+        _d112_system_wsl_context(system_wsl, safe_host_environment),
+    ):
         return d113.collect_runner_readiness(
-            repository, source_head, _observer_context=_observer_context
+            repository, source_head, _observer_context=observer_context
         )
 
 

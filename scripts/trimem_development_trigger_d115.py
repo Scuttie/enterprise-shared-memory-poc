@@ -237,6 +237,7 @@ ALLOWED_RECOVERY_PATHS = frozenset(
         "tests/unit/test_trimem_benchmark_readiness.py",
         "tests/unit/test_trimem_d110_status_and_reseal.py",
         "tests/unit/test_trimem_d114_status_and_reseal.py",
+        "tests/unit/test_trimem_d114_post_setup_environment.py",
         "tests/unit/test_trimem_d115_compiled_prefix_alias.py",
         "tests/unit/test_trimem_d115_gate_contract.py",
         "tests/unit/test_trimem_d115_status_and_reseal.py",

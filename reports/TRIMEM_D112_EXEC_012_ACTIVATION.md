@@ -67,10 +67,12 @@ requires fresh exact-head credential-free CI before `_012` may be created.
 - both `.runner` records must carry exact JSON booleans `ephemeral: true` and
   `disableUpdate: true`;
 - every Windows-to-WSL observation uses the explicit unprivileged prefix
-  `wsl -d TriMemRunner2404 --user trimem-runner --`. An absolute `/usr/bin/id`
-  probe must report the exact UID/GID/user tuple `1000:1000:trimem-runner`, and
-  the bounded and protected Linux observations independently recheck the same
-  process identity;
+  `wsl -d TriMemRunner2404 --user trimem-runner --exec`. The explicit execution
+  option preserves all trailing argv entries, including positional parameters
+  supplied after a `sh -c` program, across the native Windows transport. An
+  absolute `/usr/bin/id` probe must report the exact UID/GID/user tuple
+  `1000:1000:trimem-runner`, and the bounded and protected Linux observations
+  independently recheck the same process identity;
 - Actions Runner is frozen at version `2.337.0`. Its source archive is exactly
   `/opt/trimem-runner-cache/actions-runner-linux-x64-2.337.0.tar.gz`,
   `226430031` bytes, SHA-256
@@ -213,8 +215,9 @@ identity, and per-runner configuration all use `env` with the exact
 `LD_LIBRARY_PATH=/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib`
 assignment before the frozen Python executable. The library path is derived
 only from the exact Actions tool-cache Python root. The outer WSL launch always
-selects `TriMemRunner2404` and explicit user `trimem-runner`; it never relies on
-the distribution's default user. There is no host-environment fallback.
+selects `TriMemRunner2404`, explicit user `trimem-runner`, and explicit
+`--exec`; it never relies on the distribution's default user or the ambiguous
+bare separator transport. There is no host-environment fallback.
 Both persisted runner `.env` files and both live `Runner.Listener`
 environments must contain exactly one `LD_LIBRARY_PATH` binding with that
 value; a missing, duplicate, malformed, or different binding fails closed.

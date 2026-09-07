@@ -733,14 +733,14 @@ def test_d112_all_wsl_probes_use_exact_unprivileged_prefix(
         trigger.RUNNER_DISTRIBUTION,
         "--user",
         trigger.RUNNER_WSL_USER,
-        "--",
+        "--exec",
     ]
     assert trigger._wsl_command_prefix(wsl) == expected
     assert trigger._wsl_command_prefix(wsl, cwd=trigger.RUNNER_ROOTS[0]) == [
         *expected[:-1],
         "--cd",
         trigger.RUNNER_ROOTS[0],
-        "--",
+        "--exec",
     ]
     calls: list[list[str]] = []
     monkeypatch.setattr(
@@ -760,6 +760,39 @@ def test_d112_all_wsl_probes_use_exact_unprivileged_prefix(
 def test_d112_wsl_prefix_rejects_uncommitted_working_directory() -> None:
     with pytest.raises(trigger.DevelopmentTriggerError, match="working directory"):
         trigger._wsl_command_prefix("wsl.exe", cwd="/tmp")
+
+
+def test_d112_wsl_exec_transport_keeps_shell_positional_argv(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[list[str]] = []
+    monkeypatch.setattr(
+        trigger,
+        "_run_readiness_command",
+        lambda argv, **_kwargs: calls.append(list(argv)) or b"trimem-tail\n",
+    )
+    shell_program = 'test "$1" = trimem-tail && printf "%s\\n" "$1"'
+    assert trigger._wsl_stdout(
+        "wsl.exe",
+        ["sh", "-c", shell_program, "trimem-probe", "trimem-tail"],
+        safe_environment={},
+        label="fixture shell tail",
+    ) == "trimem-tail"
+    assert calls == [
+        [
+            "wsl.exe",
+            "-d",
+            trigger.RUNNER_DISTRIBUTION,
+            "--user",
+            trigger.RUNNER_WSL_USER,
+            "--exec",
+            "sh",
+            "-c",
+            shell_program,
+            "trimem-probe",
+            "trimem-tail",
+        ]
+    ]
 
 
 def test_d112_wsl_runner_identity_is_exact_unprivileged_uid_gid() -> None:

@@ -1424,6 +1424,7 @@ def validate_runner_isolation() -> dict[str, Any]:
         and "RUNNER_DISTRIBUTION" in wsl_prefix_source
         and "RUNNER_WSL_USER" in wsl_prefix_source
         and 'arguments.extend(["--cd", cwd])' in wsl_prefix_source
+        and 'return [*arguments, "--exec"]' in wsl_prefix_source
         and 'expected = f"{RUNNER_SERVICE_UID}:{RUNNER_SERVICE_GID}:{RUNNER_WSL_USER}"'
         in wsl_identity_source
         and "raw == expected" in wsl_identity_source
@@ -1490,6 +1491,7 @@ def validate_runner_isolation() -> dict[str, Any]:
         },
         "windows_to_wsl_transport": {
             "distribution": RUNNER_DISTRIBUTION,
+            "execution_option": "--exec",
             "explicit_user": RUNNER_WSL_USER,
             "identity_probe_binary": "/usr/bin/id",
         },

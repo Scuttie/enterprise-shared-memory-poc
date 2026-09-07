@@ -274,6 +274,7 @@ def test_runner_isolation_seals_ephemeral_binary_and_environment_contract() -> N
         },
         "windows_to_wsl_transport": {
             "distribution": "TriMemRunner2404",
+            "execution_option": "--exec",
             "explicit_user": "trimem-runner",
             "identity_probe_binary": "/usr/bin/id",
         },
@@ -295,6 +296,7 @@ def test_runner_isolation_seals_ephemeral_binary_and_environment_contract() -> N
         b'config.get("disableUpdate") is True',
         b'config.get("ephemeral") is True',
         b'        "--user",',
+        b'return [*arguments, "--exec"]',
         b'expected = f"{RUNNER_SERVICE_UID}:{RUNNER_SERVICE_GID}:{RUNNER_WSL_USER}"',
         b"/usr/bin/id -u)",
         b"_validate_wsl_runner_identity(wsl_identity)",

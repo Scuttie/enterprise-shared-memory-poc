@@ -1842,7 +1842,12 @@ def _wsl_command_prefix(wsl: str, *, cwd: str | None = None) -> list[str]:
             "WSL working directory is not an exact runner root",
         )
         arguments.extend(["--cd", cwd])
-    return [*arguments, "--"]
+    # The explicit exec option preserves every argv entry after a shell ``-c``
+    # program when Python launches wsl.exe through the native Windows argv
+    # transport.  The bare ``--`` separator drops the positional arguments on
+    # that path, which makes otherwise valid fail-closed probes observe empty
+    # ``$1`` values.
+    return [*arguments, "--exec"]
 
 
 def _validate_wsl_runner_identity(raw: str) -> tuple[int, int, str]:

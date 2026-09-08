@@ -114,6 +114,7 @@ AMENDMENT_ENDPOINT = "TRIMEM_V1_READY_FOR_EXEC_017_REQUEST"
 REPORT_PATH = "reports/TRIMEM_D117_EXEC_017_RECOVERY.md"
 TRIGGER_PATH = "scripts/trimem_development_trigger_d117.py"
 CHECKOUT_REHEARSAL_PATH = "scripts/trimem_d117_checkout_rehearsal.py"
+EXACT_HEAD_GATE_WORKFLOW_PATH = ".github/workflows/ci-trimem-dev-toolchain.yml"
 LOADER_REHEARSAL_COLLECTOR_PATH = d116.LOADER_REHEARSAL_COLLECTOR_PATH
 
 FREEZE_PATH = d116.FREEZE_PATH
@@ -655,7 +656,44 @@ def _validate_preserved_science(repository: Path, source_head: str) -> None:
         )
 
 
+def _validate_exact_head_gate_workflow(
+    repository: Path, source_head: str
+) -> None:
+    """Require one branch-only DEV-toolchain run for every exact source HEAD."""
+
+    try:
+        workflow = commit_bytes(
+            repository, source_head, EXACT_HEAD_GATE_WORKFLOW_PATH
+        ).decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise DevelopmentTriggerError(
+            "exact-head DEV toolchain workflow is not UTF-8"
+        ) from exc
+    start_marker = "on:\n"
+    end_marker = "\npermissions:\n"
+    require(
+        workflow.count(start_marker) == 1 and workflow.count(end_marker) == 1,
+        "exact-head DEV toolchain trigger boundary differs",
+    )
+    trigger = workflow[
+        workflow.index(start_marker) : workflow.index(end_marker)
+    ].rstrip("\n") + "\n"
+    expected = (
+        "on:\n"
+        "  push:\n"
+        "    branches:\n"
+        f"      - {EXPECTED_BRANCH}\n"
+    )
+    require(
+        trigger == expected
+        and "paths:" not in trigger
+        and "paths-ignore:" not in trigger,
+        "exact-head DEV toolchain push gate is filtered or misbound",
+    )
+
+
 def _validate_workflow(repository: Path, source_head: str) -> None:
+    _validate_exact_head_gate_workflow(repository, source_head)
     try:
         workflow = commit_bytes(repository, source_head, EXPECTED_WORKFLOW_PATH).decode(
             "utf-8", errors="strict"

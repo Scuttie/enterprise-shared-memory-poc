@@ -226,6 +226,45 @@ def test_d117_recovery_scope_excludes_science_and_historical_d116() -> None:
     assert forbidden.isdisjoint(d117.ALLOWED_RECOVERY_PATHS)
 
 
+@pytest.mark.parametrize("filter_name", ("paths", "paths-ignore"))
+def test_d117_exact_head_dev_toolchain_gate_rejects_path_filters(
+    monkeypatch: pytest.MonkeyPatch, filter_name: str
+) -> None:
+    workflow = (ROOT / d117.EXACT_HEAD_GATE_WORKFLOW_PATH).read_text(
+        encoding="utf-8"
+    )
+    trigger = (
+        "on:\n"
+        "  push:\n"
+        "    branches:\n"
+        f"      - {d117.EXPECTED_BRANCH}\n"
+    )
+    assert trigger in workflow
+    monkeypatch.setattr(
+        d117,
+        "commit_bytes",
+        lambda *_args: workflow.encode("utf-8"),
+    )
+    d117._validate_exact_head_gate_workflow(ROOT, "a" * 40)
+
+    filtered = workflow.replace(
+        trigger,
+        trigger + f"    {filter_name}:\n      - scripts/**\n",
+        1,
+    )
+    assert filtered != workflow
+    monkeypatch.setattr(
+        d117,
+        "commit_bytes",
+        lambda *_args: filtered.encode("utf-8"),
+    )
+    with pytest.raises(
+        d117.DevelopmentTriggerError,
+        match="exact-head DEV toolchain push gate is filtered or misbound",
+    ):
+        d117._validate_exact_head_gate_workflow(ROOT, "a" * 40)
+
+
 def test_d117_current_records_separate_consumed_and_current_actuals() -> None:
     failure = d117.current_failure_record()
     recovery = d117.current_recovery_record()

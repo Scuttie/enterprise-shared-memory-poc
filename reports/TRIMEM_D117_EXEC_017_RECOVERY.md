@@ -87,6 +87,17 @@ no OpenAI credential, provider call, Docker operation, image pull, grader, or
 task-arm run. The same exact rehearsal is now an unprotected workflow gate, so
 a future canary cannot run unless all 12 checkouts pass first.
 
+## Exact-head gate renewal
+
+Request creation requires all 20 remote gates on the same source commit and on
+their first attempts. An empty CI-renewal commit is not usable for this purpose:
+the credential-free DEV-toolchain push workflow is intentionally path-filtered,
+so GitHub creates no run for a commit with no changed path. The source is
+therefore resealed with this recorded D1.17 contract clarification, which is an
+explicit trigger path for that workflow. The incomplete 19/20 observation is
+not execution evidence and carries zero provider, model, image, grader, and
+task-arm activity.
+
 ## `_017` authority boundary
 
 The D1.17 source preserves the model, reasoning effort, 12 targets/order, six

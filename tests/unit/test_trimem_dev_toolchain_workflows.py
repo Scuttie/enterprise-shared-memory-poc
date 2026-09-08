@@ -390,166 +390,43 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> No
     _install_and_verify_contract(text)
     assert EXACT_RUNNER in text
     assert "self-hosted" not in text
-    assert "branches:\n      - codex/trimem-coder-v1" in text
+    trigger = (
+        text[text.index("on:\n") : text.index("\npermissions:")].rstrip("\n")
+        + "\n"
+    )
+    assert trigger == (
+        "on:\n"
+        "  push:\n"
+        "    branches:\n"
+        "      - codex/trimem-coder-v1\n"
+    )
+    assert "paths:" not in trigger
+    assert "paths-ignore:" not in trigger
     assert "workflow_dispatch:" not in text
     assert "pull_request:" not in text
     assert "artifacts/trimem_v1/exec_requests/" not in text
-    for path in (
-        ".gitattributes",
-        ".github/workflows/ci-trimem-dev-toolchain.yml",
-        ".github/workflows/ci-trimem.yml",
-        ".github/workflows/trimem-benchmark.yml",
-        "artifacts/trimem_v1/development_terminal_contract_amendment.json",
-        "artifacts/trimem_v1/development_terminal_contract_inventory.json",
-        "artifacts/trimem_v1/development_bounded_context_amendment.json",
-        "artifacts/trimem_v1/development_bounded_context_inventory.json",
-        "artifacts/trimem_v1/development_grader_launch_stream_commit_amendment.json",
-        "artifacts/trimem_v1/development_grader_launch_stream_commit_inventory.json",
-        "artifacts/trimem_v1/development_exec_012_activation_amendment.json",
-        "artifacts/trimem_v1/development_exec_012_activation_inventory.json",
-        "artifacts/trimem_v1/development_exec_013_recovery_amendment.json",
-        "artifacts/trimem_v1/development_exec_013_recovery_inventory.json",
-        "artifacts/trimem_v1/development_exec_014_recovery_amendment.json",
-        "artifacts/trimem_v1/development_exec_014_recovery_inventory.json",
-        "artifacts/trimem_v1/development_exec_015_recovery_amendment.json",
-        "artifacts/trimem_v1/development_exec_015_recovery_inventory.json",
-        "artifacts/trimem_v1/development_exec_016_recovery_amendment.json",
-        "artifacts/trimem_v1/development_exec_016_recovery_inventory.json",
-        "artifacts/trimem_v1/development_exec_017_recovery_amendment.json",
-        "artifacts/trimem_v1/development_exec_017_recovery_inventory.json",
-        "artifacts/trimem_v1/development_tuning_exec/exec-008/terminal-status-contract-mismatch-receipt.json",
-        "artifacts/trimem_v1/development_tuning_exec/exec-009/bounded-short-term-context-failure-receipt.json",
-        "artifacts/trimem_v1/development_tuning_exec/exec-009/request-only-boundary-fixture.json",
-        "artifacts/trimem_v1/freeze.json",
-        "artifacts/trimem_v1/readiness_requirements.json",
-        "configs/trimem_v1/cost_plan.json",
-        "configs/trimem_v1/development_manifest.json",
-        "configs/trimem_v1/gh_cli_lock.json",
-        "scripts/trimem_development_trigger_preflight.py",
-        "scripts/trimem_development_trigger_d18.py",
-        "scripts/trimem_development_trigger_d19.py",
-        "scripts/trimem_development_trigger_d110.py",
-        "scripts/trimem_development_trigger_d112.py",
-        "scripts/trimem_development_trigger_d113.py",
-        "scripts/trimem_development_trigger_d114.py",
-        "scripts/trimem_development_trigger_d115.py",
-        "scripts/trimem_development_trigger_d116.py",
-        "scripts/trimem_development_trigger_d117.py",
-        "scripts/trimem_d117_checkout_rehearsal.py",
-        "scripts/trimem_context_roundtrip.py",
-        "scripts/trimem_d19_reseal.py",
-        "scripts/trimem_d110_reseal.py",
-        "scripts/trimem_d112_reseal.py",
-        "scripts/trimem_d113_gate_contract.py",
-        "scripts/trimem_d113_reseal.py",
-        "scripts/trimem_d114_gate_contract.py",
-        "scripts/trimem_d114_reseal.py",
-        "scripts/trimem_compiled_prefix_alias.py",
-        "scripts/trimem_d115_gate_contract.py",
-        "scripts/trimem_d115_loader_rehearsal.py",
-        "scripts/trimem_d115_reseal.py",
-        "scripts/trimem_action_canary.py",
-        "scripts/trimem_freeze.py",
-        "scripts/trimem_m2_candidates.py",
-        "scripts/trimem_multi_swe_contract.py",
-        "scripts/trimem_multi_swe_entrypoint.py",
-        "scripts/trimem_official_grader.py",
-        "scripts/trimem_official_harness_loader.py",
-        "scripts/trimem_official_harness_loader_preflight.py",
-        "scripts/trimem_public_artifact.py",
-        "scripts/trimem_pytest_no_skip.py",
-        "scripts/trimem_install_pinned_gh.py",
-        "scripts/trimem_verify_gh_lock.py",
-        "scripts/trimem_verify_ready.py",
-        "scripts/trimem_verify_remote_custody.py",
-        "scripts/trimem_run_with_resume.py",
-        "tests/unit/test_trimem_dev_toolchain_workflows.py",
-        "tests/unit/test_trimem_pinned_gh.py",
-        "tests/unit/test_trimem_development_trigger.py",
-        "tests/unit/test_trimem_benchmark_readiness.py",
-        "tests/unit/test_trimem_d16_native_action.py",
-        "tests/unit/test_trimem_d17_approval_cap_integration.py",
-        "tests/unit/test_trimem_d18_public_artifact_hardening.py",
-        "tests/unit/test_trimem_d18_terminal_contract_integration.py",
-        "tests/unit/test_trimem_d19_bounded_short_term_context.py",
-        "tests/unit/test_trimem_d19_list_files_pagination.py",
-        "tests/unit/test_trimem_d19_model_preflight.py",
-        "tests/unit/test_trimem_d19_request_only_resume.py",
-        "tests/unit/test_trimem_d19_terminal_contract.py",
-        "tests/unit/test_trimem_d19_trigger.py",
-        "tests/unit/test_trimem_d110_atomic_resume.py",
-        "tests/unit/test_trimem_d110_official_harness_loader.py",
-        "tests/unit/test_trimem_d110_resume_fail_closed.py",
-        "tests/unit/test_trimem_d110_status_and_reseal.py",
-        "tests/unit/test_trimem_d112_e1_trigger.py",
-        "tests/unit/test_trimem_d112_status_and_reseal.py",
-        "tests/unit/test_trimem_d113_e1_trigger.py",
-        "tests/unit/test_trimem_d113_gate_contract.py",
-        "tests/unit/test_trimem_d113_status_and_reseal.py",
-        "tests/fixtures/trimem_d113/exec_012_preprotected_failure.json",
-        "tests/unit/test_trimem_d114_e1_trigger.py",
-        "tests/unit/test_trimem_d114_gate_contract.py",
-        "tests/unit/test_trimem_d114_post_setup_environment.py",
-        "tests/unit/test_trimem_d114_status_and_reseal.py",
-        "tests/fixtures/trimem_d114/exec_013_post_setup_failure.json",
-        "tests/unit/test_trimem_d115_compiled_prefix_alias.py",
-        "tests/unit/test_trimem_d115_gate_contract.py",
-        "tests/unit/test_trimem_d115_status_and_reseal.py",
-        "tests/unit/test_trimem_d115_trigger.py",
-        "tests/fixtures/trimem_d115/exec_014_loader_failure.json",
-        "tests/unit/test_trimem_d116_trigger.py",
-        "tests/fixtures/trimem_d116/exec_015_preapproval_freshness_scope_failure.json",
-        "tests/unit/test_trimem_d117_trigger.py",
-        "tests/fixtures/trimem_d117/exec_016_checkout_portability_failure.json",
-        "tests/unit/test_trimem_remote_custody.py",
-        "tests/unit/test_trimem_git_workspace.py",
-        "tests/unit/test_trimem_runtime_boundaries.py",
-        "tests/openai/test_openai_response_outcomes.py",
-        "tests/unit/test_trimem_smoke_attestation_only.py",
-        "src/enterprise_memory/trimem/accounting.py",
-        "src/enterprise_memory/trimem/agent_runtime.py",
-        "src/enterprise_memory/trimem/checkpoint.py",
-        "src/enterprise_memory/trimem/context_projection.py",
-        "src/enterprise_memory/trimem/function_tools.py",
-        "src/enterprise_memory/trimem/gateway.py",
-        "src/enterprise_memory/trimem/git_workspace.py",
-        "src/enterprise_memory/trimem/production_runtime.py",
-        "src/enterprise_memory/trimem/runtime_lock.py",
-        "src/enterprise_memory/trimem/scientific_terminal.py",
-        "src/enterprise_memory/trimem/workspace.py",
-        "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_008_TERMINAL_STATUS_CONTRACT_MISMATCH.md",
-        "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_009_BOUNDED_CONTEXT_FAILURE.md",
-        "reports/TRIMEM_D110_GRADER_LAUNCH_STREAM_COMMIT_CORRECTION.md",
-        "reports/TRIMEM_D112_EXEC_012_ACTIVATION.md",
-        "reports/TRIMEM_D113_EXEC_013_RECOVERY.md",
-        "reports/TRIMEM_D114_EXEC_014_RECOVERY.md",
-        "reports/TRIMEM_D115_EXEC_015_RECOVERY.md",
-        "reports/TRIMEM_D116_EXEC_016_RECOVERY.md",
-        "reports/TRIMEM_D117_EXEC_017_RECOVERY.md",
-    ):
-        assert f"- {path}" in text
     for d113_test in (
         "tests/unit/test_trimem_d113_e1_trigger.py",
         "tests/unit/test_trimem_d113_gate_contract.py",
         "tests/unit/test_trimem_d113_status_and_reseal.py",
     ):
-        assert text.count(d113_test) == 2
+        assert text.count(d113_test) == 1
     for d114_test in (
         "tests/unit/test_trimem_d114_e1_trigger.py",
         "tests/unit/test_trimem_d114_gate_contract.py",
         "tests/unit/test_trimem_d114_post_setup_environment.py",
         "tests/unit/test_trimem_d114_status_and_reseal.py",
     ):
-        assert text.count(d114_test) == 2
+        assert text.count(d114_test) == 1
     for d115_test in (
         "tests/unit/test_trimem_d115_compiled_prefix_alias.py",
         "tests/unit/test_trimem_d115_gate_contract.py",
         "tests/unit/test_trimem_d115_status_and_reseal.py",
         "tests/unit/test_trimem_d115_trigger.py",
     ):
-        assert text.count(d115_test) == 2
-    assert text.count("tests/unit/test_trimem_d116_trigger.py") == 2
-    assert text.count("tests/unit/test_trimem_d117_trigger.py") == 2
+        assert text.count(d115_test) == 1
+    assert text.count("tests/unit/test_trimem_d116_trigger.py") == 1
+    assert text.count("tests/unit/test_trimem_d117_trigger.py") == 1
     assert "environment:" not in text
     assert "services:" not in text
     assert "secrets." not in text

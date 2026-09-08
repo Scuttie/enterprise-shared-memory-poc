@@ -70,6 +70,278 @@ def _committed_checkout(path: Path) -> str:
     return _git(path, "rev-parse", "--verify", "HEAD")
 
 
+def _committed_eol_checkout(
+    path: Path,
+    files: dict[str, bytes],
+) -> str:
+    path.mkdir(parents=True)
+    completed = subprocess.run(
+        ["git", "init", "--quiet", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+        env={
+            "PATH": os.environ.get("PATH", ""),
+            "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+        },
+    )
+    assert completed.returncode == 0, completed.stderr
+    suffixes = sorted({Path(relative).suffix for relative in files})
+    attributes = b"".join(
+        f"*{suffix} text eol=crlf\n".encode("ascii") for suffix in suffixes
+    )
+    (path / ".gitattributes").write_bytes(attributes)
+    for relative, raw in files.items():
+        candidate = path / relative
+        candidate.parent.mkdir(parents=True, exist_ok=True)
+        assert b"\r" not in raw and b"\n" in raw
+        candidate.write_bytes(raw)
+    _git(path, "add", "--", ".gitattributes", *sorted(files))
+    _git(
+        path,
+        "-c",
+        "user.name=TriMem Test",
+        "-c",
+        "user.email=trimem-test@example.invalid",
+        "commit",
+        "--quiet",
+        "-m",
+        "frozen eol checkout",
+    )
+    commit = _git(path, "rev-parse", "--verify", "HEAD")
+    for relative, raw in files.items():
+        (path / relative).write_bytes(raw.replace(b"\n", b"\r\n"))
+    return commit
+
+
+def test_fresh_checkout_materialization_restores_exact_git_blob_bytes(
+    tmp_path: Path,
+) -> None:
+    checkout = tmp_path / "eol-checkout"
+    raw = b"@echo off\necho frozen\n"
+    commit = _committed_eol_checkout(checkout, {"make.bat": raw})
+
+    with pytest.raises(
+        harness_lock.HarnessLockError,
+        match="differs from its frozen Git blob",
+    ):
+        harness_lock.validate_pristine_checkout(checkout.absolute(), commit)
+
+    evidence = benchmark_run._materialize_exact_git_blob_checkout(
+        checkout.absolute(), commit
+    )
+
+    assert (checkout / "make.bat").read_bytes() == raw
+    assert evidence["schema"] == "trimem/git-blob-worktree-materialization/1.0"
+    assert evidence["status"] == "PASS"
+    assert evidence["commit"] == commit
+    assert evidence["regular_blob_count"] == 2
+    assert evidence["normalized_paths"] == ["make.bat"]
+    assert evidence["normalized_path_count"] == 1
+    assert evidence["normalized_paths_sha256"] == benchmark_run.sha256_bytes(
+        benchmark_run.canonical_bytes(["make.bat"])
+    )
+    assert benchmark_run._valid_checkout_materialization_evidence(
+        evidence,
+        expected_commit=commit,
+    )
+    harness_lock.validate_pristine_checkout(checkout.absolute(), commit)
+    resume_driver._validate_checkout_tree_bytes(
+        checkout.absolute(),
+        expected_commit=commit,
+    )
+
+
+def test_fresh_checkout_materialization_handles_zstd_style_file_set(
+    tmp_path: Path,
+) -> None:
+    checkout = tmp_path / "multi-eol-checkout"
+    files = {
+        "build/a.vcxproj": b"<Project>\n</Project>\n",
+        "build/b.sln": b"header\nproject\n",
+        "scripts/c.cmd": b"@echo off\necho c\n",
+        "scripts/d.bat": b"@echo off\necho d\n",
+    }
+    commit = _committed_eol_checkout(checkout, files)
+
+    evidence = benchmark_run._materialize_exact_git_blob_checkout(
+        checkout.absolute(), commit
+    )
+
+    assert evidence["normalized_paths"] == sorted(files)
+    for relative, raw in files.items():
+        assert (checkout / relative).read_bytes() == raw
+    harness_lock.validate_pristine_checkout(checkout.absolute(), commit)
+
+
+def test_fresh_checkout_materialization_rejects_non_declared_tamper_atomically(
+    tmp_path: Path,
+) -> None:
+    checkout = tmp_path / "tampered-eol-checkout"
+    files = {
+        "a.bat": b"@echo off\necho a\n",
+        "b.bat": b"@echo off\necho b\n",
+    }
+    commit = _committed_eol_checkout(checkout, files)
+    expected_checkout_a = files["a.bat"].replace(b"\n", b"\r\n")
+    (checkout / "b.bat").write_bytes(b"@echo off\necho attacker\n")
+
+    with pytest.raises(
+        benchmark_run.BenchmarkExecutionError,
+        match="differ from their committed checkout transform",
+    ):
+        benchmark_run._materialize_exact_git_blob_checkout(
+            checkout.absolute(), commit
+        )
+
+    assert (checkout / "a.bat").read_bytes() == expected_checkout_a
+    assert (checkout / "b.bat").read_bytes() == b"@echo off\necho attacker\n"
+
+
+def test_fresh_checkout_materialization_rejects_inventory_before_writes(
+    tmp_path: Path,
+) -> None:
+    checkout = tmp_path / "untracked-eol-checkout"
+    raw = b"@echo off\necho frozen\n"
+    commit = _committed_eol_checkout(checkout, {"make.bat": raw})
+    expected_checkout = raw.replace(b"\n", b"\r\n")
+    (checkout / "untracked.txt").write_text("untracked\n", encoding="utf-8")
+
+    with pytest.raises(
+        benchmark_run.BenchmarkExecutionError,
+        match="inventory differs before Git-blob materialization",
+    ):
+        benchmark_run._materialize_exact_git_blob_checkout(
+            checkout.absolute(), commit
+        )
+
+    assert (checkout / "make.bat").read_bytes() == expected_checkout
+
+
+def test_fresh_checkout_materialization_rejects_mutable_info_attributes(
+    tmp_path: Path,
+) -> None:
+    checkout = tmp_path / "info-attributes-checkout"
+    commit = _committed_eol_checkout(
+        checkout,
+        {"make.bat": b"@echo off\necho frozen\n"},
+    )
+    info_attributes = checkout / ".git" / "info" / "attributes"
+    info_attributes.write_text("*.bat -text\n", encoding="utf-8")
+
+    with pytest.raises(
+        benchmark_run.BenchmarkExecutionError,
+        match="mutable info attributes",
+    ):
+        benchmark_run._materialize_exact_git_blob_checkout(
+            checkout.absolute(), commit
+        )
+
+
+def test_exact_fresh_checkout_materialization_records_zero_transforms(
+    tmp_path: Path,
+) -> None:
+    checkout = tmp_path / "exact-checkout"
+    commit = _committed_checkout(checkout)
+
+    evidence = benchmark_run._materialize_exact_git_blob_checkout(
+        checkout.absolute(), commit
+    )
+
+    assert evidence["normalized_paths"] == []
+    assert evidence["normalized_path_count"] == 0
+    assert evidence["regular_blob_count"] == 1
+    harness_lock.validate_pristine_checkout(checkout.absolute(), commit)
+
+
+def test_prepare_checkouts_fresh_clone_uses_materialization_and_records_origin(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "source"
+    raw = b"@echo off\necho frozen\n"
+    commit = _committed_eol_checkout(source, {"make.bat": raw})
+    stream_root = tmp_path / "fresh-task-checkouts"
+    task = SimpleNamespace(
+        task_id="task-0",
+        repository="example/repository",
+        commit=commit,
+    )
+    real_runner = benchmark_run._run_hermetic_git
+
+    def local_clone(arguments: object) -> object:
+        argv = list(arguments)
+        if argv[:2] == ["clone", "--no-checkout"]:
+            argv[-2] = str(source)
+        return real_runner(argv)
+
+    monkeypatch.setattr(benchmark_run, "_run_hermetic_git", local_clone)
+    factory, evidence = benchmark_run.prepare_checkouts(
+        [task],
+        [{"instance_id": "fixture-instance"}],
+        {
+            "fixture-instance": {
+                "image": "example/image@sha256:" + "0" * 64,
+            }
+        },
+        stream_root,
+        resume=False,
+    )
+
+    checkout = factory.checkout_roots["task-0"]
+    assert (checkout / "make.bat").read_bytes() == raw
+    assert evidence["task-0"]["checkout_origin"] == "FRESH_CLONE"
+    assert evidence["task-0"]["materialization"]["normalized_paths"] == [
+        "make.bat"
+    ]
+    harness_lock.validate_pristine_checkout(checkout, commit)
+
+
+def test_preexisting_checkout_is_never_repaired_as_fresh(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stream_root = tmp_path / "preexisting-task-checkouts"
+    checkout = stream_root / "task-0"
+    commit = _committed_eol_checkout(
+        checkout,
+        {"make.bat": b"@echo off\necho frozen\n"},
+    )
+    task = SimpleNamespace(
+        task_id="task-0",
+        repository="example/repository",
+        commit=commit,
+    )
+
+    def forbidden_materializer(*_args: object, **_kwargs: object) -> object:
+        raise AssertionError("an existing checkout was passed to the materializer")
+
+    monkeypatch.setattr(
+        benchmark_run,
+        "_materialize_exact_git_blob_checkout",
+        forbidden_materializer,
+    )
+    with pytest.raises(
+        benchmark_run.BenchmarkExecutionError,
+        match="new checkout is not exact and clean",
+    ):
+        benchmark_run.prepare_checkouts(
+            [task],
+            [{"instance_id": "fixture-instance"}],
+            {
+                "fixture-instance": {
+                    "image": "example/image@sha256:" + "0" * 64,
+                }
+            },
+            stream_root,
+            resume=False,
+        )
+
+    assert (checkout / "make.bat").read_bytes().endswith(b"\r\n")
+
+
 def _custody_case(
     tmp_path: Path,
     *,
@@ -732,6 +1004,8 @@ def test_process2_task_checkout_ignores_host_git_environment(
     assert factory.checkout_roots["task-0"] == checkout.resolve(strict=True)
     assert evidence["task-0"]["head"] == commit
     assert evidence["task-0"]["initial_status"] == ""
+    assert evidence["task-0"]["checkout_origin"] == "EXISTING_CHECKOUT"
+    assert evidence["task-0"]["materialization"] is None
 
 
 def test_process2_task_checkout_root_link_escape_is_rejected(

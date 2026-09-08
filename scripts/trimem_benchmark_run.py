@@ -19,7 +19,7 @@ import hashlib
 import importlib.util
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import platform
 import re
 import stat
@@ -98,6 +98,7 @@ from trimem_benchmark_matrix import sequence_sha256  # noqa: E402
 from trimem_harness_lock import (  # noqa: E402
     HarnessLockError,
     prepare_harnesses,
+    read_pinned_git_blob,
     validate_lexical_directory_chain,
     validate_pristine_checkout,
 )
@@ -136,7 +137,7 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     TriggerPreflightError,
     validate_request_document as validate_grader_smoke_request_document,
 )
-from trimem_development_trigger_d116 import (  # noqa: E402
+from trimem_development_trigger_d117 import (  # noqa: E402
     EXPECTED_WORKFLOW_REF as DEVELOPMENT_WORKFLOW_REF,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
@@ -4935,11 +4936,12 @@ def _hermetic_git_command(arguments: Sequence[str]) -> list[str]:
     ]
 
 
-def _run_hermetic_git(arguments: Sequence[str]) -> subprocess.CompletedProcess[str]:
-    environment = {
+def _hermetic_git_environment() -> dict[str, str]:
+    return {
         "PATH": os.environ.get("PATH", ""),
         "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
         "WINDIR": os.environ.get("WINDIR", ""),
+        "GIT_ATTR_NOSYSTEM": "1",
         "GIT_CONFIG_NOSYSTEM": "1",
         "GIT_CONFIG_GLOBAL": os.devnull,
         "GIT_NO_REPLACE_OBJECTS": "1",
@@ -4947,19 +4949,346 @@ def _run_hermetic_git(arguments: Sequence[str]) -> subprocess.CompletedProcess[s
         "LC_ALL": "C",
         "LANG": "C",
     }
+
+
+def _run_hermetic_git(arguments: Sequence[str]) -> subprocess.CompletedProcess[str]:
     argv = _hermetic_git_command(arguments)
     completed = subprocess.run(
         argv,
         capture_output=True,
         text=True,
         check=False,
-        env=environment,
+        env=_hermetic_git_environment(),
     )
     if completed.returncode != 0:
         raise BenchmarkExecutionError(
             f"command failed ({argv[0]}): {completed.stderr.strip()}"
         )
     return completed
+
+
+def _run_hermetic_git_bytes(
+    arguments: Sequence[str],
+) -> subprocess.CompletedProcess[bytes]:
+    argv = _hermetic_git_command(arguments)
+    completed = subprocess.run(
+        argv,
+        capture_output=True,
+        text=False,
+        check=False,
+        env=_hermetic_git_environment(),
+    )
+    if completed.returncode != 0:
+        raise BenchmarkExecutionError(f"command failed ({argv[0]})")
+    return completed
+
+
+def _git_blob_object_id(raw: bytes) -> str:
+    header = b"blob " + str(len(raw)).encode("ascii") + b"\0"
+    return hashlib.sha1(header + raw).hexdigest()
+
+
+_GIT_BLOB_MATERIALIZATION_SCHEMA = "trimem/git-blob-worktree-materialization/1.0"
+_GIT_BLOB_SOURCE_IDENTITY = "PINNED_GIT_BLOB_BYTES_AT_REVISION"
+_GIT_BLOB_TRANSFORM_RULE = "COMMITTED_TEXT_SET_EOL_CRLF_ONLY"
+_GIT_BLOB_ATTRIBUTE_NAMES = (
+    "text",
+    "eol",
+    "ident",
+    "working-tree-encoding",
+    "filter",
+)
+
+
+def _committed_git_attributes(
+    repository: Path,
+    commit: str,
+    relative: str,
+) -> dict[str, str]:
+    """Read checkout-affecting attributes from the immutable commit tree."""
+
+    raw = _run_hermetic_git_bytes(
+        [
+            f"--git-dir={repository / '.git'}",
+            f"--work-tree={repository}",
+            "check-attr",
+            "-z",
+            f"--source={commit}",
+            *_GIT_BLOB_ATTRIBUTE_NAMES,
+            "--",
+            relative,
+        ]
+    ).stdout
+    fields = raw.split(b"\0")
+    if fields and fields[-1] == b"":
+        fields.pop()
+    if len(fields) != 3 * len(_GIT_BLOB_ATTRIBUTE_NAMES):
+        raise BenchmarkExecutionError("committed Git attributes are malformed")
+    result: dict[str, str] = {}
+    for index in range(0, len(fields), 3):
+        try:
+            observed_path = fields[index].decode("utf-8", errors="strict")
+            name = fields[index + 1].decode("ascii", errors="strict")
+            value = fields[index + 2].decode("utf-8", errors="strict")
+        except UnicodeDecodeError as exc:
+            raise BenchmarkExecutionError(
+                "committed Git attributes are not valid text"
+            ) from exc
+        if (
+            observed_path != relative
+            or name not in _GIT_BLOB_ATTRIBUTE_NAMES
+            or name in result
+        ):
+            raise BenchmarkExecutionError("committed Git attributes differ")
+        result[name] = value
+    if tuple(result) != _GIT_BLOB_ATTRIBUTE_NAMES:
+        raise BenchmarkExecutionError("committed Git attribute order differs")
+    return result
+
+
+def _materialize_exact_git_blob_checkout(
+    repository: Path,
+    commit: str,
+) -> dict[str, Any]:
+    """Undo checkout-only byte transforms in a just-created work tree.
+
+    Git may legitimately apply a committed ``eol=crlf`` attribute while
+    populating a checkout.  TriMem's cross-platform source identity is instead
+    the immutable Git blob byte sequence.  This helper is called as a
+    construction step only after this process has freshly cloned and checked
+    out the exact commit.  A differing work-tree file is accepted only when it
+    exactly equals the narrow transformation declared by that immutable tree.
+    It never removes unknown paths or repairs an existing/resumed checkout.
+    """
+
+    if not repository.is_absolute() or HEX40.fullmatch(commit) is None:
+        raise BenchmarkExecutionError("fresh checkout identity is malformed")
+    try:
+        repository = validate_lexical_directory_chain(
+            repository, label="fresh task checkout"
+        )
+    except HarnessLockError as exc:
+        raise BenchmarkExecutionError("fresh task checkout is unsafe") from exc
+    git_dir = repository / ".git"
+    if _is_link_or_reparse(git_dir) or not git_dir.is_dir():
+        raise BenchmarkExecutionError("fresh task checkout Git metadata is not local")
+    try:
+        validate_safe_local_git_configuration(repository)
+    except Exception as exc:
+        raise BenchmarkExecutionError(
+            "fresh task checkout Git configuration is unsafe"
+        ) from exc
+    info_attributes = git_dir / "info" / "attributes"
+    if _is_link_or_reparse(info_attributes) or info_attributes.exists():
+        raise BenchmarkExecutionError(
+            "fresh task checkout has mutable info attributes"
+        )
+
+    tree_object_id = _run_hermetic_git_bytes(
+        [
+            f"--git-dir={git_dir}",
+            f"--work-tree={repository}",
+            "rev-parse",
+            "--verify",
+            f"{commit}^{{tree}}",
+        ]
+    ).stdout.strip().decode("ascii", errors="strict")
+    if HEX40.fullmatch(tree_object_id) is None:
+        raise BenchmarkExecutionError("fresh task Git tree identity is malformed")
+
+    raw_tree = _run_hermetic_git_bytes(
+        [
+            f"--git-dir={git_dir}",
+            f"--work-tree={repository}",
+            "ls-tree",
+            "-rz",
+            "--full-tree",
+            commit,
+        ]
+    ).stdout
+    regular_blob_count = 0
+    tree_paths: set[str] = set()
+    blob_entries: dict[str, tuple[str, str]] = {}
+    gitlinks: set[str] = set()
+    plans: list[tuple[Path, str, str, bytes, bytes]] = []
+    for raw_entry in raw_tree.split(b"\0"):
+        if not raw_entry:
+            continue
+        try:
+            header, raw_path = raw_entry.split(b"\t", 1)
+            mode, kind, object_id = header.decode("ascii").split(" ")
+            relative = raw_path.decode("utf-8", errors="strict")
+        except (UnicodeDecodeError, ValueError) as exc:
+            raise BenchmarkExecutionError("fresh task Git tree is malformed") from exc
+        parts = relative.split("/")
+        if (
+            not relative
+            or relative.startswith("/")
+            or any(part in {"", ".", ".."} for part in parts)
+            or (os.name == "nt" and "\\" in relative)
+            or HEX40.fullmatch(object_id) is None
+        ):
+            raise BenchmarkExecutionError("fresh task Git tree path is unsafe")
+        if relative in tree_paths:
+            raise BenchmarkExecutionError("fresh task Git tree path is duplicated")
+        tree_paths.add(relative)
+        if kind == "commit" and mode == "160000":
+            gitlinks.add(relative)
+            continue
+        if kind != "blob" or mode not in {"100644", "100755", "120000"}:
+            raise BenchmarkExecutionError("fresh task Git tree entry is unsupported")
+        blob_entries[relative] = (mode, object_id)
+
+        candidate = repository.joinpath(*parts)
+        current = repository
+        for part in parts[:-1]:
+            current = current / part
+            if _is_link_or_reparse(current) or not current.is_dir():
+                raise BenchmarkExecutionError("fresh task tracked parent is unsafe")
+        if mode == "120000":
+            if candidate.is_symlink():
+                target = os.readlink(candidate)
+                observed_raw = target if isinstance(target, bytes) else os.fsencode(target)
+            elif os.name == "nt" and not _is_link_or_reparse(
+                candidate
+            ) and candidate.is_file():
+                observed_raw = candidate.read_bytes()
+            else:
+                raise BenchmarkExecutionError("fresh task tracked symlink differs")
+            if _git_blob_object_id(observed_raw) != object_id:
+                raise BenchmarkExecutionError("fresh task tracked symlink differs")
+            continue
+        regular_blob_count += 1
+        if _is_link_or_reparse(candidate) or not candidate.is_file():
+            raise BenchmarkExecutionError("fresh task tracked file is absent")
+        if os.name != "nt" and bool(candidate.stat().st_mode & stat.S_IXUSR) != (
+            mode == "100755"
+        ):
+            raise BenchmarkExecutionError("fresh task executable mode differs")
+        observed_raw = candidate.read_bytes()
+        if _git_blob_object_id(observed_raw) == object_id:
+            continue
+
+        try:
+            committed_raw = read_pinned_git_blob(repository, commit, relative)
+        except HarnessLockError as exc:
+            raise BenchmarkExecutionError(
+                "fresh task Git blob could not be materialized"
+            ) from exc
+        if _git_blob_object_id(committed_raw) != object_id:
+            raise BenchmarkExecutionError("fresh task Git blob identity differs")
+        attributes = _committed_git_attributes(repository, commit, relative)
+        if (
+            attributes
+            != {
+                "text": "set",
+                "eol": "crlf",
+                "ident": "unspecified",
+                "working-tree-encoding": "unspecified",
+                "filter": "unspecified",
+            }
+            or b"\r" in committed_raw
+            or b"\n" not in committed_raw
+            or observed_raw != committed_raw.replace(b"\n", b"\r\n")
+        ):
+            raise BenchmarkExecutionError(
+                "fresh task bytes differ from their committed checkout transform"
+            )
+        plans.append((candidate, relative, mode, observed_raw, committed_raw))
+
+    expected_leaf_paths = set(blob_entries)
+    allowed_directories: set[str] = set()
+    required_directories: set[str] = set()
+    for relative in (*blob_entries, *gitlinks):
+        parts = relative.split("/")
+        parents = ["/".join(parts[:index]) for index in range(1, len(parts))]
+        allowed_directories.update(parents)
+        if relative in blob_entries:
+            required_directories.update(parents)
+    allowed_directories.update(gitlinks)
+    for relative in gitlinks:
+        candidate = repository.joinpath(*relative.split("/"))
+        if candidate.exists() or candidate.is_symlink():
+            if (
+                _is_link_or_reparse(candidate)
+                or not candidate.is_dir()
+                or any(candidate.iterdir())
+            ):
+                raise BenchmarkExecutionError("fresh task gitlink is not pristine")
+    observed_leaf_paths: set[str] = set()
+    observed_directories: set[str] = set()
+    for current_root, directory_names, file_names in os.walk(
+        repository,
+        topdown=True,
+        followlinks=False,
+    ):
+        current = Path(current_root)
+        if current == repository and ".git" in directory_names:
+            directory_names.remove(".git")
+        for name in list(directory_names):
+            path = current / name
+            relative = path.relative_to(repository).as_posix()
+            if _is_link_or_reparse(path):
+                directory_names.remove(name)
+                observed_leaf_paths.add(relative)
+            else:
+                observed_directories.add(relative)
+        for name in file_names:
+            observed_leaf_paths.add(
+                (current / name).relative_to(repository).as_posix()
+            )
+    if (
+        observed_leaf_paths != expected_leaf_paths
+        or not required_directories <= observed_directories
+        or not observed_directories <= allowed_directories
+    ):
+        raise BenchmarkExecutionError(
+            "fresh task inventory differs before Git-blob materialization"
+        )
+
+    normalized: list[str] = []
+    for candidate, relative, mode, observed_raw, committed_raw in plans:
+        current = repository
+        for part in relative.split("/")[:-1]:
+            current = current / part
+            if _is_link_or_reparse(current) or not current.is_dir():
+                raise BenchmarkExecutionError("fresh task tracked parent changed")
+        if (
+            _is_link_or_reparse(candidate)
+            or not candidate.is_file()
+            or candidate.read_bytes() != observed_raw
+        ):
+            raise BenchmarkExecutionError("fresh task tracked file changed")
+        descriptor, temporary_name = tempfile.mkstemp(
+            prefix=f".{candidate.name}.trimem-git-blob-",
+            dir=candidate.parent,
+        )
+        temporary = Path(temporary_name)
+        try:
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(committed_raw)
+                stream.flush()
+                os.fsync(stream.fileno())
+            if os.name != "nt":
+                temporary.chmod(0o755 if mode == "100755" else 0o644)
+            os.replace(temporary, candidate)
+        finally:
+            if temporary.exists():
+                temporary.unlink()
+        normalized.append(relative)
+    normalized.sort()
+    return {
+        "schema": _GIT_BLOB_MATERIALIZATION_SCHEMA,
+        "status": "PASS",
+        "source_identity": _GIT_BLOB_SOURCE_IDENTITY,
+        "transform_rule": _GIT_BLOB_TRANSFORM_RULE,
+        "commit": commit,
+        "tree_object_id": tree_object_id,
+        "regular_blob_count": regular_blob_count,
+        "normalized_paths": normalized,
+        "normalized_path_count": len(normalized),
+        "normalized_paths_sha256": sha256_bytes(canonical_bytes(normalized)),
+    }
 
 
 def prepare_checkouts(
@@ -4989,6 +5318,7 @@ def prepare_checkouts(
             )
         checkout = lexical_checkout.resolve()
         stdout_parts, stderr_parts, argv_rows = [], [], []
+        created = False
         if not checkout.exists():
             if resume:
                 raise BenchmarkExecutionError(f"resume checkout is missing: {task.task_id}")
@@ -5007,6 +5337,7 @@ def prepare_checkouts(
             checkout_cmd = _hermetic_git_command(checkout_arguments)
             result = _run_hermetic_git(checkout_arguments)
             stdout_parts.append(result.stdout); stderr_parts.append(result.stderr); argv_rows.append(checkout_cmd)
+            created = True
         git_dir = checkout / ".git"
         if _is_link_or_reparse(git_dir) or not git_dir.is_dir():
             raise BenchmarkExecutionError(
@@ -5029,14 +5360,27 @@ def prepare_checkouts(
         ).stdout.strip()
         if head != task.commit:
             raise BenchmarkExecutionError(f"checkout HEAD mismatch: {task.task_id}")
-        status = ""
+        materialization: dict[str, Any] | None = None
         if not resume:
+            if created:
+                materialization = _materialize_exact_git_blob_checkout(
+                    checkout, task.commit
+                )
             try:
                 validate_pristine_checkout(checkout, task.commit)
             except HarnessLockError as exc:
                 raise BenchmarkExecutionError(
                     f"new checkout is not exact and clean: {task.task_id}"
                 ) from exc
+        status = _run_hermetic_git(
+            [
+                f"--git-dir={git_dir}",
+                f"--work-tree={checkout}",
+                "status",
+                "--porcelain=v2",
+                "--untracked-files=all",
+            ]
+        ).stdout
         roots[task.task_id], commits[task.task_id] = checkout, task.commit
         image = images.get(str(target.get("instance_id")), {}).get("image")
         if not isinstance(image, str):
@@ -5045,6 +5389,8 @@ def prepare_checkouts(
         evidence[task.task_id] = {
             "argv": argv_rows, "stdout": "".join(stdout_parts), "stderr": "".join(stderr_parts),
             "head": head, "initial_status": status,
+            "checkout_origin": "FRESH_CLONE" if created else "EXISTING_CHECKOUT",
+            "materialization": materialization,
         }
     factory = GitCheckoutWorkspaceFactory(roots, commits, command_runners=command_runners)
     if factory.production_capable is not True or type(factory) is not GitCheckoutWorkspaceFactory:
@@ -6138,6 +6484,62 @@ def _verified_file_evidence_reference(
     return raw
 
 
+def _valid_checkout_materialization_evidence(
+    value: object,
+    *,
+    expected_commit: str,
+) -> bool:
+    if value is None:
+        # A resumed process never reconstructs or repairs its existing checkout.
+        return True
+    if not isinstance(value, Mapping) or set(value) != {
+        "schema",
+        "status",
+        "source_identity",
+        "transform_rule",
+        "commit",
+        "tree_object_id",
+        "regular_blob_count",
+        "normalized_paths",
+        "normalized_path_count",
+        "normalized_paths_sha256",
+    }:
+        return False
+    paths = value.get("normalized_paths")
+    if (
+        value.get("schema") != _GIT_BLOB_MATERIALIZATION_SCHEMA
+        or value.get("status") != "PASS"
+        or value.get("source_identity") != _GIT_BLOB_SOURCE_IDENTITY
+        or value.get("transform_rule") != _GIT_BLOB_TRANSFORM_RULE
+        or value.get("commit") != expected_commit
+        or not isinstance(value.get("tree_object_id"), str)
+        or HEX40.fullmatch(str(value["tree_object_id"])) is None
+        or type(value.get("regular_blob_count")) is not int
+        or value["regular_blob_count"] < 0
+        or not isinstance(paths, list)
+        or any(
+            not isinstance(path, str)
+            or not path
+            or "\\" in path
+            or ":" in path
+            or path.startswith("-")
+            or any(ord(character) < 32 or ord(character) == 127 for character in path)
+            or PurePosixPath(path).is_absolute()
+            or PurePosixPath(path).as_posix() != path
+            or any(part in {"", ".", ".."} for part in PurePosixPath(path).parts)
+            for path in paths
+        )
+        or paths != sorted(set(paths))
+        or type(value.get("normalized_path_count")) is not int
+        or value["normalized_path_count"] != len(paths)
+        or len(paths) > value["regular_blob_count"]
+        or value.get("normalized_paths_sha256")
+        != sha256_bytes(canonical_bytes(paths))
+    ):
+        return False
+    return True
+
+
 def _validated_restricted_grader_references(
     task_dir: Path,
     references: object,
@@ -6451,18 +6853,46 @@ def _validate_cell_session_result_against_done_checkpoint_impl(
     if (
         not isinstance(checkout, Mapping)
         or set(checkout)
-        != {"argv", "stdout", "stderr", "head", "initial_status"}
+        != {
+            "argv",
+            "checkout_origin",
+            "stdout",
+            "stderr",
+            "head",
+            "initial_status",
+            "materialization",
+        }
         or not isinstance(checkout.get("argv"), list)
         or any(
             not isinstance(argv, list)
             or any(not isinstance(value, str) for value in argv)
             for argv in checkout["argv"]
         )
+        or checkout.get("checkout_origin")
+        not in {"FRESH_CLONE", "EXISTING_CHECKOUT"}
+        or (
+            checkout.get("checkout_origin") == "FRESH_CLONE"
+            and (
+                len(checkout["argv"]) != 2
+                or checkout.get("materialization") is None
+            )
+        )
+        or (
+            checkout.get("checkout_origin") == "EXISTING_CHECKOUT"
+            and (
+                checkout["argv"] != []
+                or checkout.get("materialization") is not None
+            )
+        )
         or any(
             not isinstance(checkout.get(name), str)
             for name in ("stdout", "stderr", "head", "initial_status")
         )
         or checkout.get("head") != expected_target["base_commit"]
+        or not _valid_checkout_materialization_evidence(
+            checkout.get("materialization"),
+            expected_commit=str(expected_target["base_commit"]),
+        )
         or result_record.get("checkout_evidence_sha256")
         != sha256_bytes(canonical_bytes(checkout))
     ):

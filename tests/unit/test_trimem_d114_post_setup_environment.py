@@ -59,19 +59,20 @@ def _step_blocks(text: str) -> dict[str, list[str]]:
     return blocks
 
 
-def test_current_workflow_routes_only_the_fresh_016_request() -> None:
+def test_current_workflow_routes_only_the_fresh_017_request() -> None:
     text = _workflow_text()
 
     assert (
         "artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_016.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_017.json"
     ) in text
-    assert "group: trimem-v1-development-tuning-exec-016" in text
+    assert "group: trimem-v1-development-tuning-exec-017" in text
     assert "DEVELOPMENT_TUNING_EXEC_REQUEST_014.json" not in text
     assert "group: trimem-v1-development-tuning-exec-014" not in text
     assert "scripts/trimem_development_trigger_d113.py" not in text
     assert "scripts/trimem_development_trigger_d114.py" not in text
-    assert text.count("scripts/trimem_development_trigger_d116.py") == 8
+    assert text.count("scripts/trimem_development_trigger_d117.py") == 8
+    assert "scripts/trimem_development_trigger_d116.py" not in text
     assert "scripts/trimem_development_trigger_d115.py" not in text
 
 
@@ -84,14 +85,14 @@ def test_every_post_setup_current_runner_and_service_call_forces_central_library
         selected = blocks.get(name)
         assert selected is not None and len(selected) == 1, name
         block = selected[0]
-        assert "scripts/trimem_development_trigger_d116.py" in block
+        assert "scripts/trimem_development_trigger_d117.py" in block
         assert flag in block
         assert block.count(exact_binding) == 1
         assert block.index("        env:\n") < block.index("        run:")
         assert ACTIVE_EXEC_LIBRARY_PATH not in block
         assert f"{ACTIVE_EXEC_LIBRARY_PATH}:{CENTRAL_LIBRARY_PATH}" not in block
 
-    # Two pre-setup probes plus the five post-setup D1.16 validation calls.
+    # Two pre-setup probes plus the five post-setup D1.17 validation calls.
     assert text.count(exact_binding) == 7
 
 
@@ -109,7 +110,7 @@ def test_pre_setup_calls_remain_explicit_central_cache_probes() -> None:
         assert (
             f"          {d112.EXACT_PYTHON_ROOT}/bin/python\n" in block
         )
-        assert "scripts/trimem_development_trigger_d116.py" in block
+        assert "scripts/trimem_development_trigger_d117.py" in block
         assert "--pre-setup-cache-host-event-path" in block
 
 

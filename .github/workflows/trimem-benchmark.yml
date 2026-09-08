@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_016.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_017.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-016
+  group: trimem-v1-development-tuning-exec-017
   cancel-in-progress: false
 
 permissions:
@@ -62,7 +62,7 @@ jobs:
         run: |
           set -euo pipefail
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
-          python -I -S scripts/trimem_development_trigger_d116.py \
+          python -I -S scripts/trimem_development_trigger_d117.py \
             --repository "$GITHUB_WORKSPACE" \
             --event-path "$GITHUB_EVENT_PATH"
 
@@ -92,7 +92,7 @@ jobs:
           RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
         run: >-
           /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python
-          -I -S scripts/trimem_development_trigger_d116.py
+          -I -S scripts/trimem_development_trigger_d117.py
           --repository "$GITHUB_WORKSPACE"
           --pre-setup-cache-host-event-path "$GITHUB_EVENT_PATH"
       - name: Set up exact Python
@@ -106,7 +106,7 @@ jobs:
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d116.py
+          python -I -S scripts/trimem_development_trigger_d117.py
           --repository "$GITHUB_WORKSPACE"
           --runner-host-preflight-event-path "$GITHUB_EVENT_PATH"
       - name: Install hash-locked environment
@@ -120,6 +120,12 @@ jobs:
           python scripts/trimem_pytest_no_skip.py
           tests/unit/test_trimem_d18_terminal_contract_integration.py
           tests/unit/test_trimem_d19_bounded_short_term_context.py::test_mixed_72_cell_aggregate_public_and_terminal_ledger_round_trip
+      - name: Rehearse all frozen DEV task checkouts before provider access
+        run: >-
+          python scripts/trimem_d117_checkout_rehearsal.py
+          --checkout-root "$RUNNER_TEMP/trimem-d117-task-checkouts"
+          --cache-root "$RUNNER_TEMP/trimem-d117-datasets"
+          --output "$RUNNER_TEMP/trimem-d117-checkout-rehearsal.json"
       - name: Materialize pinned harnesses in unprotected loader preflight
         run: |
           set -euo pipefail
@@ -209,7 +215,7 @@ jobs:
           RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
         run: >-
           /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python
-          -I -S scripts/trimem_development_trigger_d116.py
+          -I -S scripts/trimem_development_trigger_d117.py
           --repository "$GITHUB_WORKSPACE"
           --pre-setup-cache-host-event-path "$GITHUB_EVENT_PATH"
       - name: Set up exact Python
@@ -223,21 +229,21 @@ jobs:
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d116.py
+          python -I -S scripts/trimem_development_trigger_d117.py
           --repository "$GITHUB_WORKSPACE"
           --protected-runner-preflight-event-path "$GITHUB_EVENT_PATH"
       - name: Start exact cache-only benchmark services
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d116.py
+          python -I -S scripts/trimem_development_trigger_d117.py
           --repository "$GITHUB_WORKSPACE"
           --start-protected-services-event-path "$GITHUB_EVENT_PATH"
       - name: Verify exact cache-only benchmark services
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d116.py
+          python -I -S scripts/trimem_development_trigger_d117.py
           --repository "$GITHUB_WORKSPACE"
           --verify-protected-services-event-path "$GITHUB_EVENT_PATH"
       - name: Install hash-locked environment
@@ -567,6 +573,6 @@ jobs:
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d116.py
+          python -I -S scripts/trimem_development_trigger_d117.py
           --repository "$GITHUB_WORKSPACE"
           --cleanup-protected-services-event-path "$GITHUB_EVENT_PATH"

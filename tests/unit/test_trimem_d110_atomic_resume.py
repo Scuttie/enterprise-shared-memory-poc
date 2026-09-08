@@ -1354,10 +1354,12 @@ def _record(
         benchmark.write_json(report_path, result.grade.report)
         checkout = {
             "argv": [],
+            "checkout_origin": "EXISTING_CHECKOUT",
             "stdout": "",
             "stderr": "",
             "head": "a" * 40,
             "initial_status": "",
+            "materialization": None,
         }
         benchmark.write_json(checkout_path, checkout)
         if not events_path.exists():

@@ -351,10 +351,14 @@ def test_workflow_orders_canary_before_images_and_scientific_runner():
     workflow = (ROOT / ".github/workflows/trimem-benchmark.yml").read_text(
         encoding="utf-8"
     )
+    checkout_rehearsal = workflow.index(
+        "Rehearse all frozen DEV task checkouts before provider access"
+    )
     canary = workflow.index("Execute one native-action protocol canary before benchmark images")
     image_pull = workflow.index("Pull committed images by digest and verify local observations")
     scientific = workflow.index("Execute frozen serial streams with one atomic phase ledger")
-    assert canary < image_pull < scientific
-    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_016.json" in workflow
+    assert checkout_rehearsal < canary < image_pull < scientific
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_017.json" in workflow
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_016.json" not in workflow
     assert "DEVELOPMENT_TUNING_EXEC_REQUEST_014.json" not in workflow
     assert "protocol-action-canary.json" in workflow

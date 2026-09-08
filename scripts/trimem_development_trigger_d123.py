@@ -706,7 +706,6 @@ def _validate_source_impl(repository: Path, source_head: str) -> dict[str, Any]:
     _validate_active_reader_sources(repository, source_head)
     with d114._d114_runtime_context(), d113._d113_runtime_context():
         d112._validate_remote_gate_workflow_contracts(repository, source_head)
-        d112._validate_remote_gate_workflow_refs(repository, source_head)
         target_order, hard_cap = d112._validate_frozen_science_documents(
             repository, source_head
         )

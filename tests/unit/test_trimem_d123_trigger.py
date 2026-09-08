@@ -178,6 +178,12 @@ def test_d123_previous_run_fixture_binds_the_recorded_attempt(
     assert observed["workflow_run"]["attempt"] == d123.PREVIOUS_RUN_ATTEMPT
 
 
+def test_d123_source_uses_the_existing_remote_workflow_contract_validator() -> None:
+    source = (ROOT / d123.TRIGGER_PATH).read_text(encoding="utf-8")
+    assert "d112._validate_remote_gate_workflow_contracts(" in source
+    assert "d112._validate_remote_gate_workflow_refs(" not in source
+
+
 def test_d123_fresh_campaign_caps_and_nonreuse_are_exact() -> None:
     assert d123.FRESH_EXECUTION_CONTRACT == {
         "cross_run_resume_allowed": False,

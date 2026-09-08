@@ -18,6 +18,7 @@ if str(SCRIPTS) not in sys.path:
 
 import trimem_development_trigger_d115 as d115  # noqa: E402
 import trimem_development_trigger_d116 as d116  # noqa: E402
+import trimem_d116_loader_rehearsal as d116_collector  # noqa: E402
 
 
 def _previous_request() -> dict[str, object]:
@@ -87,16 +88,49 @@ def test_d116_context_restores_d115_bindings() -> None:
         "schema": d115.REQUEST_SCHEMA,
         "sentinel": d115.SENTINEL_PATH,
         "builder": d115._build_request_impl,
+        "loader_collector": d115.LOADER_REHEARSAL_COLLECTOR_PATH,
     }
     with d116._d116_runtime_context():
         assert d115.REQUEST_ID == d116.REQUEST_ID
         assert d115.REQUEST_SCHEMA == d116.REQUEST_SCHEMA
         assert d115.SENTINEL_PATH == d116.SENTINEL_PATH
         assert d115._build_request_impl is d116._build_request_impl
+        assert (
+            d115.LOADER_REHEARSAL_COLLECTOR_PATH
+            == d116.LOADER_REHEARSAL_COLLECTOR_PATH
+        )
     assert d115.REQUEST_ID == before["request_id"]
     assert d115.REQUEST_SCHEMA == before["schema"]
     assert d115.SENTINEL_PATH == before["sentinel"]
     assert d115._build_request_impl is before["builder"]
+    assert d115.LOADER_REHEARSAL_COLLECTOR_PATH == before["loader_collector"]
+
+
+def test_d116_loader_subprocess_wrapper_binds_parent_collector(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observed: list[tuple[object, object, object]] = []
+
+    def parent_main(argv: object = None) -> int:
+        observed.append(
+            (
+                argv,
+                d115.RUNNER_READINESS_SCHEMA,
+                d115.LOADER_REHEARSAL_COLLECTOR_PATH,
+            )
+        )
+        return 23
+
+    monkeypatch.setattr(d116_collector.d115_collector, "main", parent_main)
+    argv = ["--synthetic"]
+    assert d116_collector.main(argv) == 23
+    assert observed == [
+        (
+            argv,
+            d116.RUNNER_READINESS_SCHEMA,
+            d116.LOADER_REHEARSAL_COLLECTOR_PATH,
+        )
+    ]
 
 
 def test_d116_context_blocks_older_generation_until_full_restore() -> None:

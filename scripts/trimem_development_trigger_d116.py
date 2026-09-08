@@ -106,6 +106,7 @@ AMENDMENT_STATUS = (
 AMENDMENT_ENDPOINT = "TRIMEM_V1_READY_FOR_EXEC_016_REQUEST"
 REPORT_PATH = "reports/TRIMEM_D116_EXEC_016_RECOVERY.md"
 TRIGGER_PATH = "scripts/trimem_development_trigger_d116.py"
+LOADER_REHEARSAL_COLLECTOR_PATH = "scripts/trimem_d116_loader_rehearsal.py"
 
 FREEZE_PATH = d115.FREEZE_PATH
 FREEZE_SCHEMA = d115.FREEZE_SCHEMA
@@ -151,6 +152,7 @@ ALLOWED_RECOVERY_PATHS = frozenset(
         REPORT_PATH,
         "scripts/trimem_benchmark_matrix.py",
         "scripts/trimem_benchmark_run.py",
+        LOADER_REHEARSAL_COLLECTOR_PATH,
         "scripts/trimem_multi_swe_contract.py",
         TRIGGER_PATH,
         "scripts/trimem_freeze.py",
@@ -179,6 +181,7 @@ REQUIRED_RECOVERY_CHANGES = {
     REPORT_PATH: "A",
     "scripts/trimem_benchmark_matrix.py": "M",
     "scripts/trimem_benchmark_run.py": "M",
+    LOADER_REHEARSAL_COLLECTOR_PATH: "A",
     "scripts/trimem_multi_swe_contract.py": "M",
     TRIGGER_PATH: "A",
     "scripts/trimem_freeze.py": "M",
@@ -205,6 +208,7 @@ ACTIVATION_BINDING_PATHS = {
     "d116_inventory_sha256": INVENTORY_PATH,
     "d116_run_fixture_sha256": PREVIOUS_FAILURE_FIXTURE_PATH,
     "d116_trigger_reader_sha256": TRIGGER_PATH,
+    "loader_rehearsal_collector_sha256": LOADER_REHEARSAL_COLLECTOR_PATH,
     "multi_swe_contract_sha256": "scripts/trimem_multi_swe_contract.py",
     "readiness_requirements_sha256": "artifacts/trimem_v1/readiness_requirements.json",
     "verify_ready_sha256": "scripts/trimem_verify_ready.py",
@@ -249,6 +253,7 @@ def _context_bindings() -> dict[str, Any]:
         "AMENDMENT_ENDPOINT": AMENDMENT_ENDPOINT,
         "REPORT_PATH": REPORT_PATH,
         "TRIGGER_PATH": TRIGGER_PATH,
+        "LOADER_REHEARSAL_COLLECTOR_PATH": LOADER_REHEARSAL_COLLECTOR_PATH,
         "REMOTE_GATE_SCHEMA": REMOTE_GATE_SCHEMA,
         "RUNNER_READINESS_SCHEMA": RUNNER_READINESS_SCHEMA,
         "ALLOWED_RECOVERY_PATHS": ALLOWED_RECOVERY_PATHS,

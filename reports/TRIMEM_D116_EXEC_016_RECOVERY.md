@@ -35,6 +35,14 @@ D1.16 keeps the D1.15 full evidence validator unchanged and separates its use:
   live protected-runner observation, cache-only service checks, pinned harness
   materialization, and the exact official-harness loader preflight.
 
+The request writer launches that rehearsal in a separate POSIX process.  The
+dedicated `trimem_d116_loader_rehearsal.py` entry point holds the complete
+D1.16 inherited runtime context around the unchanged D1.15 collector.  This
+prevents a D1.16 runner-readiness record from being interpreted under the
+D1.15 schema merely because validation crossed a process boundary.  The
+boundary was exercised locally before any `_016` sentinel, secret, image,
+grader, or model call existed.
+
 Malformed, future-dated, unbound, or noncanonical evidence remains fail-closed.
 
 ## Frozen scientific boundary

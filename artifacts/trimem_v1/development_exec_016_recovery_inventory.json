@@ -25,6 +25,7 @@
     "reports/TRIMEM_D116_EXEC_016_RECOVERY.md",
     "scripts/trimem_benchmark_matrix.py",
     "scripts/trimem_benchmark_run.py",
+    "scripts/trimem_d116_loader_rehearsal.py",
     "scripts/trimem_development_trigger_d116.py",
     "scripts/trimem_freeze.py",
     "scripts/trimem_multi_swe_contract.py",

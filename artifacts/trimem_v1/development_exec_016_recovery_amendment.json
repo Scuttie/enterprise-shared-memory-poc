@@ -60,6 +60,7 @@
   },
   "recovery_contract": {
     "immutable_record_validation": "FULL_CONTENT_HASH_BINDING_AND_CANONICAL_BYTES_WITHOUT_PRESENT_WALL_CLOCK_EXPIRY",
+    "loader_collector_generation_binding": "D1.16_WRAPPER_HOLDS_COMPLETE_INHERITED_RUNTIME_CONTEXT_IN_THE_SEPARATE_POSIX_PROCESS",
     "live_freshness_required_at": [
       "request_write",
       "branch_trigger",

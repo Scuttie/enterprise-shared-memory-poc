@@ -1150,7 +1150,7 @@
   },
   "post_approval_gates": [
     "the _003 through _015 requests and their attempt-1 runs are final; _015 was cancelled unapproved after its credential-free preflights and before protected-environment entry, model access, images, graders, or task cells and may not be rerun or resumed as attempt 2",
-    "D1.16 source must pass fresh exact-head credential-free CI and the writer must observe the exact isolated trimem-ubuntu-24.04 runner topology, validate the frozen root-owned compiled-prefix alias, and pass the complete loader/evidence rehearsal before the authorized zero-authority _016 sentinel is created",
+    "D1.16 source must pass fresh exact-head credential-free CI and the writer must observe the exact isolated trimem-ubuntu-24.04 runner topology, enter the D1.16 runtime identity in the separate POSIX collector, validate the frozen root-owned compiled-prefix alias, and pass the complete loader/evidence rehearsal before the authorized zero-authority _016 sentinel is created",
     "after _016 creates one attempt-1 workflow run, a distinct external approval bound to the exact sentinel HEAD, source HEAD, freeze, request bytes, workflow run ID/attempt, caps, actor, UTC time, nonce, legal acceptance, and OpenAI-key commitment is required before protected DEV execution",
     "four M2 candidate development streams, deterministic selection, pending-credit zero, immutable checkpoint export, then selected M0/M1 development streams",
     "new commit and freeze containing selected M2 policy, selected RuntimeLock prompt, checkpoint, and selection evidence before HELDOUT_BENCHMARK approval",

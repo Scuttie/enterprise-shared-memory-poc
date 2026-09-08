@@ -184,6 +184,7 @@ SCRIPT_PATHS = (
     "scripts/trimem_development_trigger_d114.py",
     "scripts/trimem_development_trigger_d115.py",
     "scripts/trimem_development_trigger_d116.py",
+    "scripts/trimem_d116_loader_rehearsal.py",
     "scripts/trimem_development_phase_cap.py",
     "scripts/trimem_context_roundtrip.py",
     "scripts/trimem_d110_reseal.py",

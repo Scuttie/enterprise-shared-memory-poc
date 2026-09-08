@@ -1,4 +1,4 @@
-"""Immutable D1.10-D1.19 history and the current zero-authority D1.20 seal."""
+"""Immutable D1.10-D1.20 history and the current zero-authority D1.21 seal."""
 from __future__ import annotations
 
 import hashlib
@@ -24,14 +24,15 @@ import trimem_development_trigger_d116 as d116_trigger  # noqa: E402
 import trimem_development_trigger_d117 as d117_trigger  # noqa: E402
 import trimem_development_trigger_d118 as d118_trigger  # noqa: E402
 import trimem_development_trigger_d119 as d119_trigger  # noqa: E402
-import trimem_development_trigger_d120 as current_trigger  # noqa: E402
+import trimem_development_trigger_d120 as d120_trigger  # noqa: E402
+import trimem_development_trigger_d121 as current_trigger  # noqa: E402
 
 
 CURRENT_STATUS_FIELDS = {
     "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": "ESTABLISHED_BY_P0_1_5",
     "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
-    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "PASS_ON_EXEC_019_FIRST_CELL",
-    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "PASS_ON_EXEC_019_FIRST_CELL",
+    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "PASS_ON_EXEC_020_FIRST_CELL",
+    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "PASS_ON_EXEC_020_FIRST_CELL",
     "PERFORMANCE": "NOT_MEASURED",
 }
 
@@ -74,7 +75,7 @@ def test_exec_010_failure_remains_incomplete_and_pre_result() -> None:
     }
 
 
-def test_exec_019_is_spent_and_only_020_request_creation_is_authorized() -> None:
+def test_exec_020_is_spent_and_only_021_request_creation_is_authorized() -> None:
     readiness = read("artifacts/trimem_v1/readiness_requirements.json")
     authority = readiness["development_authorization_boundary"]
     assert readiness[
@@ -91,6 +92,9 @@ def test_exec_019_is_spent_and_only_020_request_creation_is_authorized() -> None
     ] == d119_trigger.current_failure_record()
     assert readiness[
         "historical_development_exec_019_harness_runtime_isolation_failure"
+    ] == d120_trigger.current_failure_record()
+    assert readiness[
+        "historical_development_exec_020_swe_outcome_classification_failure"
     ] == current_trigger.current_failure_record()
     assert readiness["current_development_activation"] == (
         current_trigger.current_recovery_record()
@@ -119,17 +123,17 @@ def test_exec_019_is_spent_and_only_020_request_creation_is_authorized() -> None
         for value in exec_018_actuals.values()
     )
     assert authority["historical_failed_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_019"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_020"
     )
     assert authority["historical_failed_request_path"] == (
         current_trigger.PREVIOUS_SENTINEL_PATH
     )
     assert authority["fresh_execution_request"] == (
-        "REQUEST_020_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
+        "REQUEST_021_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
     )
     assert authority["fresh_execution_request_creation_authorized"] is True
     assert authority["recovery_authorization"] == (
-        "REQUEST_020_CREATION_AUTHORITY_RECEIVED"
+        "REQUEST_021_CREATION_AUTHORITY_RECEIVED"
     )
     assert authority["required_external_authorization"] == (
         current_trigger.REQUIRED_EXTERNAL_AUTHORIZATION
@@ -204,10 +208,19 @@ def test_exec_019_is_spent_and_only_020_request_creation_is_authorized() -> None
     assert authority["request_019_rerun_allowed"] is False
     assert authority[
         "request_020_allowed_after_exact_remote_gates_and_rehearsal"
-    ] is True
-    assert authority["request_020_authorized"] is False
-    assert authority["request_020_created"] is False
+    ] is False
+    assert authority["request_020_attempt_one_consumed"] is True
+    assert authority["request_020_attempt_two_allowed"] is False
+    assert authority["request_020_authorized"] is True
+    assert authority["request_020_created"] is True
     assert authority["request_020_execution_authorized"] is False
+    assert authority["request_020_rerun_allowed"] is False
+    assert authority[
+        "request_021_allowed_after_exact_remote_gates_and_rehearsal"
+    ] is True
+    assert authority["request_021_authorized"] is False
+    assert authority["request_021_created"] is False
+    assert authority["request_021_execution_authorized"] is False
     assert authority["active_development_approval"] is False
     assert authority["development_execution_authorized"] is False
     assert authority["fresh_dev_execution_approval_required"] is True

@@ -59,7 +59,7 @@ from trimem_development_phase_cap import (  # noqa: E402
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
 )
-from trimem_development_trigger_d120 import (  # noqa: E402
+from trimem_development_trigger_d121 import (  # noqa: E402
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
     validate_sentinel_commit as validate_development_sentinel_commit,
@@ -642,12 +642,25 @@ def _validate_smoke_test_status(
 ) -> None:
     benchmark_id = target["benchmark_id"]
     if benchmark_id == "swebench_verified":
-        common = {
-            "schema": "trimem/official-test-status-summary/1.0",
-            "benchmark_id": benchmark_id,
-            "resolved": resolved,
+        expected_summary_fields = {
+            "schema",
+            "benchmark_id",
+            "source",
+            "fail_to_pass_expected",
+            "fail_to_pass_classified",
+            "fail_to_pass_failures",
+            "pass_to_pass_expected",
+            "pass_to_pass_classified",
+            "pass_to_pass_regressions",
+            "expected_test_spec_sha256",
+            "resolved",
         }
-        if any(summary.get(field) != value for field, value in common.items()):
+        if (
+            set(summary) != expected_summary_fields
+            or summary.get("schema") != "trimem/official-test-status-summary/1.0"
+            or summary.get("benchmark_id") != benchmark_id
+            or summary.get("resolved") is not resolved
+        ):
             raise MatrixError(
                 f"{result_file.name}: official test summary identity/result mismatch"
             )
@@ -681,10 +694,12 @@ def _validate_smoke_test_status(
             ):
                 raise MatrixError(f"{result_file.name}: SWE {group} classifications overlap")
             counts[group] = (len(success) + len(failure), len(failure))
-        computed_resolved = counts["FAIL_TO_PASS"][1] == 0
+        computed_resolved = (
+            counts["FAIL_TO_PASS"][1] == 0
+            and counts["PASS_TO_PASS"][1] == 0
+        )
         if (
             counts["FAIL_TO_PASS"][0] <= 0
-            or counts["PASS_TO_PASS"][1] != 0
             or not isinstance(instance, dict)
             or instance.get("patch_exists") is not True
             or instance.get("patch_is_None") is not False
@@ -693,12 +708,24 @@ def _validate_smoke_test_status(
             or instance.get("resolved") is not computed_resolved
             or computed_resolved is not resolved
             or summary.get("source") != "SWE_PER_INSTANCE_REPORT"
-            or summary.get("fail_to_pass_expected") != counts["FAIL_TO_PASS"][0]
-            or summary.get("fail_to_pass_classified") != counts["FAIL_TO_PASS"][0]
-            or summary.get("fail_to_pass_failures") != counts["FAIL_TO_PASS"][1]
-            or summary.get("pass_to_pass_expected") != counts["PASS_TO_PASS"][0]
-            or summary.get("pass_to_pass_classified") != counts["PASS_TO_PASS"][0]
-            or summary.get("pass_to_pass_regressions") != 0
+            or not _exact_int(
+                summary.get("fail_to_pass_expected"), counts["FAIL_TO_PASS"][0]
+            )
+            or not _exact_int(
+                summary.get("fail_to_pass_classified"), counts["FAIL_TO_PASS"][0]
+            )
+            or not _exact_int(
+                summary.get("fail_to_pass_failures"), counts["FAIL_TO_PASS"][1]
+            )
+            or not _exact_int(
+                summary.get("pass_to_pass_expected"), counts["PASS_TO_PASS"][0]
+            )
+            or not _exact_int(
+                summary.get("pass_to_pass_classified"), counts["PASS_TO_PASS"][0]
+            )
+            or not _exact_int(
+                summary.get("pass_to_pass_regressions"), counts["PASS_TO_PASS"][1]
+            )
             or summary.get("expected_test_spec_sha256") != hashlib.sha256(_canonical({
                 group: sorted(expected_sets[group])
                 for group in ("FAIL_TO_PASS", "PASS_TO_PASS")
@@ -1679,7 +1706,11 @@ def _validate_smoke_evidence(
     _validate_smoke_completion_report(
         result_file, target, final_report, resolved=record["resolved"]
     )
-    if trimem.get("semantic_normalization") != summary:
+    report_semantic = trimem.get("semantic_normalization")
+    if (
+        not isinstance(report_semantic, dict)
+        or _canonical(report_semantic) != _canonical(summary)
+    ):
         raise MatrixError(f"{result_file.name}: report/test-summary binding mismatch")
     for name, raw in (("test_output", test_output), ("official_test_status", status_raw)):
         reference = trimem.get(name)

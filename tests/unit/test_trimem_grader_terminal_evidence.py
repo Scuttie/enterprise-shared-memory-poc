@@ -89,6 +89,164 @@ def _private_inputs(target: dict[str, object], patch_raw: bytes) -> list[dict[st
     return result
 
 
+def test_swe_p2p_regression_is_successful_unresolved_gateway_result(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A complete P2P regression is scientific failure, not adapter failure."""
+
+    source_row = {"FAIL_TO_PASS": ["f2p"], "PASS_TO_PASS": ["p2p"]}
+    instance_id = "django__django-16100"
+    target = official_grader.FrozenOfficialTarget(
+        target_id="swebench_verified--django__django-16100",
+        benchmark_id="swebench_verified",
+        instance_id=instance_id,
+        repository="django/django",
+        base_commit="a" * 40,
+        dataset_revision="b" * 40,
+        source_row_sha256=official_grader.canonical_row_hash(source_row),
+        image="example.invalid/grader@sha256:" + "d" * 64,
+        harness_image_tag="example.invalid/grader:locked",
+        harness_revision=official_grader.SWE_HARNESS_REVISION,
+    )
+    harness_root = tmp_path / "harness"
+    harness_root.mkdir()
+    output_root = (tmp_path / "official-grader").resolve()
+    output_root.mkdir()
+    task_root = output_root / target.target_id
+    task_root.mkdir()
+    invocation = official_grader.HarnessInvocation(
+        argv=(sys.executable, "-P", "pinned-swe-entrypoint"),
+        cwd=task_root,
+        report_path=task_root / "final_report.json",
+        private_input_paths=(),
+        test_output_path=task_root / "test_output.txt",
+        test_status_path=task_root / "report.json",
+    )
+    final_report = {
+        "schema_version": 2,
+        "total_instances": 1,
+        "submitted_instances": 1,
+        "completed_instances": 1,
+        "resolved_instances": 0,
+        "unresolved_instances": 1,
+        "infra_failure_instances": 0,
+        "ambiguous_failure_instances": 0,
+        "empty_patch_instances": 0,
+        "error_instances": 0,
+        "submitted_ids": [instance_id],
+        "completed_ids": [instance_id],
+        "incomplete_ids": [],
+        "resolved_ids": [],
+        "unresolved_ids": [instance_id],
+        "empty_patch_ids": [],
+        "error_ids": [],
+        "infra_failure_ids": [],
+        "ambiguous_failure_ids": [],
+    }
+    test_status = {
+        instance_id: {
+            "patch_exists": True,
+            "patch_is_None": False,
+            "patch_successfully_applied": True,
+            "infra_failure": False,
+            "resolved": False,
+            "tests_status": {
+                "FAIL_TO_PASS": {"success": ["f2p"], "failure": []},
+                "PASS_TO_PASS": {"success": [], "failure": ["p2p"]},
+                "FAIL_TO_FAIL": {"success": [], "failure": []},
+                "PASS_TO_FAIL": {"success": [], "failure": []},
+            },
+        }
+    }
+    calls: list[tuple[str, ...]] = []
+
+    def runner(
+        argv: list[str], **_kwargs: object
+    ) -> subprocess.CompletedProcess[bytes]:
+        call = tuple(argv)
+        calls.append(call)
+        if call[1:3] == ("image", "inspect"):
+            return subprocess.CompletedProcess(
+                argv,
+                0,
+                stdout=json.dumps([target.image]).encode("utf-8"),
+                stderr=b"",
+            )
+        if call[1:3] == ("image", "tag"):
+            return subprocess.CompletedProcess(argv, 0, stdout=b"", stderr=b"")
+        assert call == invocation.argv
+        invocation.report_path.write_text(
+            json.dumps(final_report, sort_keys=True, separators=(",", ":")),
+            encoding="utf-8",
+        )
+        invocation.test_output_path.write_bytes(b"official P2P regression output\n")
+        invocation.test_status_path.write_text(
+            json.dumps(test_status, sort_keys=True, separators=(",", ":")),
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(
+            argv, 0, stdout=b"harness complete\n", stderr=b""
+        )
+
+    gateway = object.__new__(official_grader.OfficialHarnessGraderGateway)
+    gateway.target = target
+    gateway.source_row = source_row
+    gateway.harness_root = harness_root.resolve()
+    gateway.output_root = output_root
+    gateway.model_name = "trimem-dev"
+    gateway.support_images = ()
+    gateway.runner = runner
+    gateway.docker_binary = "docker"
+    gateway.python_binary = sys.executable
+    gateway.timeout_seconds = 60
+    gateway.execution_env = {}
+    gateway._secret_values = ()
+    gateway._restricted_root = output_root / "restricted-evidence"
+    monkeypatch.setattr(
+        official_grader,
+        "build_harness_invocation",
+        lambda *_args, **_kwargs: invocation,
+    )
+    request = GradeRequest(
+        task_id=target.target_id,
+        repository=target.repository,
+        base_commit=target.base_commit,
+        patch=PATCH,
+        workspace=WorkspaceGraderContext(
+            kind="test", repository_files={}, base_commit=target.base_commit
+        ),
+    )
+
+    result = gateway.grade(request)
+
+    assert result.status == "success"
+    assert result.exit_code == 0
+    assert result.official is True
+    assert result.container_started is True
+    assert result.resolved is False
+    evidence = result.report["_trimem"]
+    assert evidence["adapter_status"] == "SUCCESS"
+    assert evidence["adapter_normalized"] is True
+    assert evidence["official_final_report_resolved"] is False
+    assert evidence["scientific_resolved"] is False
+    assert evidence["semantic_normalization"]["fail_to_pass_failures"] == 0
+    assert evidence["semantic_normalization"]["pass_to_pass_regressions"] == 1
+    calls_after_grade = list(calls)
+    gateway.validate_captured_result(request, result)
+    assert calls == calls_after_grade
+
+    # Python considers ``True == 1``.  Replay must compare canonical JSON
+    # semantics so a bool-for-integer evidence substitution still fails closed.
+    evidence["semantic_normalization"]["pass_to_pass_regressions"] = True
+    with pytest.raises(
+        official_grader.OfficialGraderError,
+        match="captured official semantic normalization differs",
+    ):
+        gateway.validate_captured_result(request, result)
+    assert calls == calls_after_grade
+
+
 def _failure_result(
     tmp_path: Path, *, official_final_report_resolved: bool = False
 ) -> tuple[GradeResult, dict[str, object], Path]:

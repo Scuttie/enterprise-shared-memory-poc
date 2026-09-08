@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_development_trigger_d119 as d119
 import trimem_development_trigger_d120 as d120
+import trimem_development_trigger_d121 as d121
 import trimem_d120_loader_rehearsal as d120_collector
 
 
@@ -58,16 +59,23 @@ def test_d120_exact_active_and_historical_identities() -> None:
     )
 
 
-def test_d120_freeze_preserves_immutable_exec_019_and_excludes_exec_020() -> None:
+def test_d121_freeze_preserves_immutable_exec_019_and_exec_020() -> None:
     freeze = json.loads((ROOT / d120.FREEZE_PATH).read_bytes())
     files = freeze["files"]
     previous_raw = (ROOT / d120.PREVIOUS_SENTINEL_PATH).read_bytes()
+    exec_020_raw = (ROOT / d120.SENTINEL_PATH).read_bytes()
 
     assert files[d120.PREVIOUS_SENTINEL_PATH] == {
         "bytes": len(previous_raw),
         "sha256": hashlib.sha256(previous_raw).hexdigest(),
     }
-    assert d120.SENTINEL_PATH not in files
+    assert files[d120.SENTINEL_PATH] == {
+        "bytes": d121.PREVIOUS_SENTINEL_BYTES,
+        "sha256": d121.PREVIOUS_SENTINEL_SHA256,
+    }
+    assert len(exec_020_raw) == d121.PREVIOUS_SENTINEL_BYTES
+    assert hashlib.sha256(exec_020_raw).hexdigest() == d121.PREVIOUS_SENTINEL_SHA256
+    assert d121.SENTINEL_PATH not in files
 
 
 def test_d120_fixture_is_exact_and_replays_partial_accounting(
@@ -267,5 +275,14 @@ def test_d120_recovery_scope_excludes_science_and_historical_d119() -> None:
     assert forbidden.isdisjoint(d120.ALLOWED_RECOVERY_PATHS)
 
 
-def test_d120_current_history_has_no_uncommitted_or_committed_020() -> None:
-    assert d120.validate_optional_exec_020_boundary(ROOT) is None
+def test_d121_history_validates_spent_exec_020_and_has_no_exec_021() -> None:
+    request = d120.validate_sentinel_commit(
+        ROOT,
+        d121.PREVIOUS_EXECUTION_HEAD,
+        expected_parent=d121.PREVIOUS_SOURCE_HEAD,
+        require_checked_out_head=False,
+    )
+    assert request["request_id"] == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_020"
+    assert request["source_head"] == d121.PREVIOUS_SOURCE_HEAD
+    assert request["request_path"] == d121.PREVIOUS_SENTINEL_PATH
+    assert d121.validate_optional_exec_021_boundary(ROOT) is None

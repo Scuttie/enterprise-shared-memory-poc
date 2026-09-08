@@ -316,9 +316,14 @@ def validate_official_test_evidence(
             if set(success) & set(failure) or set(success) | set(failure) != set(expected[name]):
                 raise OfficialGraderError(f"SWE official {name} classification is incomplete")
             classified[name] = {"success": success, "failure": failure}
-        if classified["PASS_TO_PASS"]["failure"]:
-            raise OfficialGraderError("SWE PASS_TO_PASS regression count is non-zero")
-        computed_resolved = not classified["FAIL_TO_PASS"]["failure"]
+        # A PASS_TO_PASS regression is a valid scientific failure, not an
+        # adapter/infrastructure failure.  The classification is authoritative
+        # only when both frozen test domains are complete and disjoint (proved
+        # above); resolution then requires every F2P and P2P test to pass.
+        computed_resolved = (
+            not classified["FAIL_TO_PASS"]["failure"]
+            and not classified["PASS_TO_PASS"]["failure"]
+        )
         if (
             instance.get("patch_exists") is not True
             or instance.get("patch_is_None") is not False
@@ -344,7 +349,9 @@ def validate_official_test_evidence(
             "pass_to_pass_classified": sum(
                 len(classified["PASS_TO_PASS"][kind]) for kind in ("success", "failure")
             ),
-            "pass_to_pass_regressions": 0,
+            "pass_to_pass_regressions": len(
+                classified["PASS_TO_PASS"]["failure"]
+            ),
             "expected_test_spec_sha256": canonical_row_hash(expected_spec),
             "resolved": resolved,
         }
@@ -1396,7 +1403,11 @@ class OfficialHarnessGraderGateway:
             resolved=resolved,
             final_report=final_report,
         )
-        if envelope.get("semantic_normalization") != semantic:
+        captured_semantic = envelope.get("semantic_normalization")
+        if (
+            not isinstance(captured_semantic, Mapping)
+            or canonical_row_hash(captured_semantic) != canonical_row_hash(semantic)
+        ):
             raise OfficialGraderError(
                 "captured official semantic normalization differs"
             )

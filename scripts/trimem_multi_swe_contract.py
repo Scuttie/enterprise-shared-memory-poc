@@ -196,6 +196,25 @@ D120_STATUS = (
 D120_CLASSIFICATION = (
     "POST_EXEC_019_PARTIAL_SCIENTIFIC_HARNESS_RUNTIME_ISOLATION_RECOVERY"
 )
+D121_AMENDMENT_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_021_recovery_amendment.json"
+)
+D121_INVENTORY_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_021_recovery_inventory.json"
+)
+D121_AMENDMENT_SCHEMA = (
+    "trimem/development-exec-021-swe-outcome-normalization-amendment/1.0"
+)
+D121_INVENTORY_SCHEMA = (
+    "trimem/development-exec-021-swe-outcome-normalization-inventory/1.0"
+)
+D121_STATUS = (
+    "FROZEN_CREDENTIAL_FREE_EXEC_020_PARTIAL_SCIENTIFIC_FAILURE_"
+    "READY_FOR_EXEC_021_REQUEST"
+)
+D121_CLASSIFICATION = (
+    "POST_EXEC_020_PARTIAL_SCIENTIFIC_SWE_OUTCOME_NORMALIZATION_RECOVERY"
+)
 ENTRYPOINT_PATH = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
 REPORT_SEMANTICS_MODULE_PATH = ROOT / "scripts/trimem_multi_swe_report_semantics.py"
 REPORT_SEMANTICS_LOCK_PATH = (
@@ -265,6 +284,9 @@ D117_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 D118_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 D119_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 D120_LOCAL_VALIDATOR_OVERRIDES = frozenset(
+    {D18_CURRENT_AGGREGATE_PATH, "scripts/trimem_official_grader.py"}
+)
+D121_LOCAL_VALIDATOR_OVERRIDES = frozenset(
     {D18_CURRENT_AGGREGATE_PATH, "scripts/trimem_official_grader.py"}
 )
 
@@ -1864,13 +1886,54 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
         d120_aggregate_sha256 != d119_aggregate_sha256,
         "D1.20 aggregate unexpectedly equals the historical D1.19 aggregate",
     )
-    current_aggregate_sha256 = d120_aggregate_sha256
+    d121_amendment = _strict_json_object(D121_AMENDMENT_PATH, "D1.21 amendment")
+    d121_inventory = _strict_json_object(D121_INVENTORY_PATH, "D1.21 inventory")
+    d121_amendment_implementation = d121_amendment.get("implementation_sha256")
+    d121_inventory_implementation = d121_inventory.get("implementation_sha256")
+    _require(
+        d121_amendment.get("schema") == D121_AMENDMENT_SCHEMA
+        and d121_amendment.get("status") == D121_STATUS
+        and d121_amendment.get("classification") == D121_CLASSIFICATION
+        and isinstance(d121_amendment_implementation, dict),
+        "D1.21 recovery amendment identity differs",
+    )
+    _require(
+        d121_inventory.get("schema") == D121_INVENTORY_SCHEMA
+        and d121_inventory.get("status") == D121_STATUS
+        and d121_inventory.get("classification") == D121_CLASSIFICATION
+        and isinstance(d121_inventory_implementation, dict),
+        "D1.21 recovery inventory identity differs",
+    )
+    _require(
+        d121_amendment_implementation == d121_inventory_implementation,
+        "D1.21 recovery implementation seals disagree",
+    )
+    d121_local_validator_overrides = (
+        set(d121_amendment_implementation) & set(LOCAL_VALIDATOR_ROLES)
+    )
+    _require(
+        d121_local_validator_overrides == D121_LOCAL_VALIDATOR_OVERRIDES,
+        "D1.21 local validator override set differs",
+    )
+    d121_aggregate_sha256 = d121_amendment_implementation.get(
+        D18_CURRENT_AGGREGATE_PATH
+    )
+    _require(
+        isinstance(d121_aggregate_sha256, str)
+        and SHA256.fullmatch(d121_aggregate_sha256) is not None,
+        "D1.21 aggregate implementation seal is missing",
+    )
+    _require(
+        d121_aggregate_sha256 != d120_aggregate_sha256,
+        "D1.21 aggregate unexpectedly equals the historical D1.20 aggregate",
+    )
+    current_aggregate_sha256 = d121_aggregate_sha256
 
     # The immutable Multi-SWE lock predates D1.8 and remains bound to its exact
     # starting blobs.  D1.10 separately seals the executable local validators
     # at that correction, while D1.12 through D1.19 provide explicit successive
-    # overrides for the benchmark matrix. D1.20 also seals the runtime-isolated
-    # official grader. D1.13 is loaded from
+    # overrides for the benchmark matrix. D1.20 seals the runtime-isolated
+    # official grader; D1.21 seals both outcome normalizers. D1.13 is loaded from
     # its exact source Git blobs and must remain byte-identical in the current
     # tree. Never rewrite a historical lock or amendment to make a changed live
     # validator appear unchanged.
@@ -1939,7 +2002,10 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             rows.get(path) == historical_observed,
             f"historical local validator byte lock differs: {path}",
         )
-        if path in D120_LOCAL_VALIDATOR_OVERRIDES:
+        if path in D121_LOCAL_VALIDATOR_OVERRIDES:
+            expected_current_sha256 = d121_amendment_implementation.get(path)
+            current_generation = "D1.21"
+        elif path in D120_LOCAL_VALIDATOR_OVERRIDES:
             expected_current_sha256 = d120_amendment_implementation.get(path)
             current_generation = "D1.20"
         elif path in D119_LOCAL_VALIDATOR_OVERRIDES:
@@ -1965,7 +2031,7 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             )
             _require(
                 observed["sha256"] == current_aggregate_sha256,
-                "current D1.20 aggregate differs from the recovery implementation seal",
+                "current D1.21 aggregate differs from the recovery implementation seal",
             )
         locked_rows[path] = historical_observed
         verified.append({"git_blob_oid": match.group(1), "path": path, **observed})

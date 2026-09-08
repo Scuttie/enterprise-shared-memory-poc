@@ -140,6 +140,8 @@ SERVICE_IMAGE_REFS = {
     "qdrant": QDRANT_SERVICE_IMAGE,
 }
 SERVICE_PORTS = {"postgres": 5432, "qdrant": 6333}
+QDRANT_NOFILE_SOFT = 65_535
+QDRANT_NOFILE_HARD = 65_535
 SERVICE_CONTAINER_NAME_PREFIX = "trimem-d112"
 SERVICE_STATE_SCHEMA = "trimem/protected-cache-only-services/1.0"
 SERVICE_STATE_FILENAME = "trimem-d112-cache-only-services.json"
@@ -4363,8 +4365,36 @@ def _service_create_argv(
                 "20",
             ]
         )
+    elif role == "qdrant":
+        argv.extend(
+            [
+                "--ulimit",
+                f"nofile={QDRANT_NOFILE_SOFT}:{QDRANT_NOFILE_HARD}",
+            ]
+        )
     argv.append(image)
     return argv
+
+
+def _require_exact_service_ulimits(document: Mapping[str, Any], *, role: str) -> None:
+    """Fail closed when Qdrant was not created with the frozen nofile contract."""
+
+    if role != "qdrant":
+        return
+    host_config = document.get("HostConfig")
+    ulimits = host_config.get("Ulimits") if isinstance(host_config, Mapping) else None
+    require(
+        isinstance(ulimits, list)
+        and len(ulimits) == 1
+        and isinstance(ulimits[0], Mapping)
+        and set(ulimits[0]) == {"Name", "Soft", "Hard"}
+        and ulimits[0].get("Name") == "nofile"
+        and type(ulimits[0].get("Soft")) is int
+        and ulimits[0].get("Soft") == QDRANT_NOFILE_SOFT
+        and type(ulimits[0].get("Hard")) is int
+        and ulimits[0].get("Hard") == QDRANT_NOFILE_HARD,
+        "qdrant service ulimit contract differs",
+    )
 
 
 def _docker_container_ids(
@@ -4518,6 +4548,7 @@ def _observe_state_bound_services(
             and _mapped_host_port(document, role=role) == expected["port"],
             f"state-bound {role} service identity differs",
         )
+        _require_exact_service_ulimits(document, role=role)
         mounts = document.get("Mounts")
         require(isinstance(mounts, list), f"{role} service mount set is malformed")
         if role == "postgres":
@@ -4972,6 +5003,7 @@ def _cleanup_state_free_partial_services(
             and _mapped_host_port(document, role=str(role)) == SERVICE_PORTS[str(role)],
             "unbound Docker container identity differs",
         )
+        _require_exact_service_ulimits(document, role=str(role))
         mounts = document.get("Mounts")
         require(isinstance(mounts, list), "unbound Docker mount set is malformed")
         if role == "postgres":

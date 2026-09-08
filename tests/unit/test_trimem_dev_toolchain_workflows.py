@@ -443,6 +443,11 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> No
     assert text.count("tests/unit/test_trimem_d119_approval_secret.py") == 1
     assert text.count("tests/unit/test_trimem_d120_trigger.py") == 1
     assert text.count("tests/unit/test_trimem_d121_trigger.py") == 1
+    assert text.count("tests/unit/test_trimem_d122_trigger.py") == 1
+    assert (
+        text.count("tests/unit/test_trimem_d122_qdrant_nofile_rehearsal.py")
+        == 1
+    )
     assert "environment:" not in text
     assert "services:" not in text
     assert "secrets." not in text
@@ -467,13 +472,13 @@ def test_toolchain_runs_production_round_trip_before_credentialed_attestation() 
     text = _read(TOOLCHAIN_WORKFLOW)
     _assert_production_round_trip_precedes(
         text,
-        "Validate exact D1.21 credential-free recovery source",
+        "Validate exact D1.22 credential-free recovery source",
         "Install exact pinned GitHub CLI",
         "Verify official smoke attestation only with zero scientific work",
     )
     _assert_context_round_trip_precedes(
         text,
-        "Validate exact D1.21 credential-free recovery source",
+        "Validate exact D1.22 credential-free recovery source",
         "Install exact pinned GitHub CLI",
         "Verify official smoke attestation only with zero scientific work",
     )
@@ -481,16 +486,16 @@ def test_toolchain_runs_production_round_trip_before_credentialed_attestation() 
     context_round_trip = _step_block(text, CONTEXT_ROUND_TRIP_STEP)
     source_validation = _step_block(
         text,
-        "Validate exact D1.21 credential-free recovery source",
+        "Validate exact D1.22 credential-free recovery source",
     )
     for block in (round_trip, context_round_trip):
         assert "secrets." not in block
         assert "OPENAI_API_KEY" not in block
         assert "GH_TOKEN" not in block
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in source_validation
-    assert "scripts/trimem_development_trigger_d121.py" in source_validation
-    assert "scripts/trimem_development_trigger_d120.py" not in source_validation
-    assert "python -I -S scripts/trimem_d121_reseal.py --check" in source_validation
+    assert "scripts/trimem_development_trigger_d122.py" in source_validation
+    assert "scripts/trimem_development_trigger_d121.py" not in source_validation
+    assert "python -I -S scripts/trimem_d122_reseal.py --check" in source_validation
     assert "scripts/trimem_development_trigger_d119.py" not in source_validation
     assert "scripts/trimem_development_trigger_d118.py" not in source_validation
     assert "scripts/trimem_development_trigger_d117.py" not in source_validation
@@ -504,6 +509,28 @@ def test_toolchain_runs_production_round_trip_before_credentialed_attestation() 
     assert "secrets." not in source_validation
     assert "OPENAI_API_KEY" not in source_validation
     assert "GH_TOKEN" not in source_validation
+
+
+def test_d122_qdrant_rehearsal_pulls_and_verifies_exact_pinned_digest() -> None:
+    text = _read(TOOLCHAIN_WORKFLOW)
+    block = _step_block(
+        text,
+        "Rehearse exact Qdrant nofile topology with zero model or grader work",
+    )
+    expected = (
+        "qdrant/qdrant@sha256:"
+        "241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636"
+    )
+    assert f'qdrant_image="{expected}"' in block
+    assert 'docker pull "$qdrant_image"' in block
+    assert 'docker image inspect "$qdrant_image"' in block
+    assert "--format '{{json .RepoDigests}}'" in block
+    assert '| tee "$qdrant_repo_digests"' in block
+    assert "expected not in observed" in block
+    assert '"support_service_image_pulls": 1' in block
+    assert "print(json.dumps(report" in block
+    assert "OPENAI_API_KEY" not in block
+    assert "secrets." not in block
 
 
 def test_toolchain_rehearsal_and_benchmark_use_same_installer_contract() -> None:
@@ -525,8 +552,8 @@ def test_required_static_gate_includes_company_handoff_and_secret_scan() -> None
     assert "persist-credentials: false" in text
     assert "ref: ${{ github.event.pull_request.head.sha || github.sha }}" in text
     assert "python -I -S scripts/trimem_compiled_prefix_alias.py --help" in text
-    assert "python -I -S scripts/trimem_development_trigger_d121.py --help" in text
-    assert "python -I -S scripts/trimem_d121_reseal.py --help" in text
+    assert "python -I -S scripts/trimem_development_trigger_d122.py --help" in text
+    assert "python -I -S scripts/trimem_d122_reseal.py --help" in text
     assert "python -I -S scripts/trimem_d119_approval_secret.py --help" in text
     assert "python scripts/make_handoff_manifest.py --check" in text
     assert "python scripts/release_check.py --secrets" in text

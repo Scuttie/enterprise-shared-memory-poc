@@ -138,6 +138,10 @@ IMMUTABLE_D112_CURRENT_PATHS = tuple(
     if relative
     not in {
         D112_FREEZE_PATH,
+        # D1.22 intentionally changes the shared D1.12 service launcher to
+        # bind Qdrant's portable nofile limit.  The immutable D1.12 Git blob
+        # is still checked above; only current-tree equality is superseded.
+        "scripts/trimem_development_trigger_d112.py",
         # D1.13 adapts only the historical tests' source selection.  Their
         # original D1.12 bytes remain verified above from the exact Git blob.
         "tests/unit/test_trimem_d112_e1_trigger.py",

@@ -2140,6 +2140,20 @@ def test_d112_cache_only_service_create_argv_is_local_loopback_and_never_pulls()
     assert "pull" not in argv
     assert "manifest" not in argv
 
+    qdrant_argv = trigger._service_create_argv(
+        role="qdrant",
+        image=trigger.QDRANT_SERVICE_IMAGE,
+        name="trimem-d112-990012-qdrant",
+        run_id=990_012,
+        source_head="a" * 40,
+        trigger_head="b" * 40,
+        postgres_volume_name="trimem-d112-990012-postgres-data",
+    )
+    assert qdrant_argv.count("--ulimit") == 1
+    ulimit_index = qdrant_argv.index("--ulimit")
+    assert qdrant_argv[ulimit_index + 1] == "nofile=65535:65535"
+    assert trigger.QDRANT_SERVICE_IMAGE == qdrant_argv[-1]
+
 
 def test_d112_docker_pull_never_help_accepts_wrapped_v29_output() -> None:
     raw = """
@@ -2493,6 +2507,19 @@ def _service_container_document(
         ]
     return {
         "Config": {"Env": environment, "Image": row["image"], "Labels": labels},  # type: ignore[index]
+        "HostConfig": {
+            "Ulimits": (
+                [
+                    {
+                        "Hard": trigger.QDRANT_NOFILE_HARD,
+                        "Name": "nofile",
+                        "Soft": trigger.QDRANT_NOFILE_SOFT,
+                    }
+                ]
+                if role == "qdrant"
+                else None
+            )
+        },
         "Id": row["container_id"],  # type: ignore[index]
         "Image": row["image_id"],  # type: ignore[index]
         "Mounts": mounts,
@@ -2613,7 +2640,47 @@ def test_d112_state_free_cleanup_rejects_unknown_identity_without_mutation(
     assert calls[0][3] == "container"
 
 
-@pytest.mark.parametrize("failure", ["extra", "stopped", "wrong-image", "wrong-port"])
+def test_d112_state_free_cleanup_rejects_qdrant_ulimit_drift_before_mutation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = _service_state_fixture()
+    qdrant_id = state["containers"]["qdrant"]["container_id"]  # type: ignore[index]
+    document = _service_container_document(state, "qdrant")
+    document["HostConfig"]["Ulimits"][0]["Soft"] = 1024  # type: ignore[index]
+    commands: list[list[str]] = []
+
+    monkeypatch.setattr(
+        trigger, "_docker_container_ids", lambda *_args, **_kwargs: [qdrant_id]
+    )
+
+    def inspect(argv: object, **_kwargs: object) -> bytes:
+        command = list(argv)  # type: ignore[arg-type]
+        commands.append(command)
+        return trigger.canonical_bytes(document)
+
+    monkeypatch.setattr(trigger, "_run_readiness_command", inspect)
+    monkeypatch.setattr(
+        trigger,
+        "_local_stdout",
+        lambda *_args, **_kwargs: state["containers"]["qdrant"]["image_id"],  # type: ignore[index]
+    )
+
+    with pytest.raises(trigger.DevelopmentTriggerError, match="ulimit"):
+        trigger._cleanup_state_free_partial_services(
+            source_head=state["source_head"],  # type: ignore[arg-type]
+            trigger_head=state["trigger_head"],  # type: ignore[arg-type]
+            run_id=state["execution_run_id"],  # type: ignore[arg-type]
+            service_images=trigger.SERVICE_IMAGE_REFS,
+            safe_environment={},
+        )
+    assert len(commands) == 1
+    assert commands[0][3] == "container"
+
+
+@pytest.mark.parametrize(
+    "failure",
+    ["extra", "stopped", "wrong-image", "wrong-port", "missing-ulimit", "extra-ulimit"],
+)
 def test_d112_service_observation_fails_closed_on_container_drift(
     monkeypatch: pytest.MonkeyPatch, failure: str
 ) -> None:
@@ -2629,10 +2696,16 @@ def test_d112_service_observation_fails_closed_on_container_drift(
         documents["qdrant"]["State"]["Running"] = False  # type: ignore[index]
     elif failure == "wrong-image":
         documents["qdrant"]["Image"] = "sha256:" + "c" * 64
-    else:
+    elif failure == "wrong-port":
         documents["qdrant"]["NetworkSettings"]["Ports"] = {  # type: ignore[index]
             "6333/tcp": [{"HostIp": "0.0.0.0", "HostPort": "6333"}]
         }
+    elif failure == "missing-ulimit":
+        documents["qdrant"]["HostConfig"]["Ulimits"] = None  # type: ignore[index]
+    else:
+        documents["qdrant"]["HostConfig"]["Ulimits"].append(  # type: ignore[index]
+            {"Hard": 1024, "Name": "nproc", "Soft": 1024}
+        )
     monkeypatch.setattr(trigger, "_docker_container_ids", lambda *_args, **_kwargs: ids)
     monkeypatch.setattr(trigger, "_inspect_named_service_volume", lambda *_args, **_kwargs: {})
 

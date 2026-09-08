@@ -189,6 +189,7 @@ import trimem_development_trigger_d118 as d118_trigger  # noqa: E402
 import trimem_development_trigger_d119 as d119_trigger  # noqa: E402
 import trimem_development_trigger_d120 as d120_trigger  # noqa: E402
 import trimem_development_trigger_d121 as d121_trigger  # noqa: E402
+import trimem_development_trigger_d122 as d122_trigger  # noqa: E402
 import trimem_d111_reseal as d111_reseal  # noqa: E402
 import trimem_d112_reseal as d112_reseal  # noqa: E402
 import trimem_d113_reseal as d113_reseal  # noqa: E402
@@ -398,6 +399,18 @@ D121_STATUS_FIELDS = {
     "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
     "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "PASS_ON_EXEC_020_FIRST_CELL",
     "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "PASS_ON_EXEC_020_FIRST_CELL",
+    "PERFORMANCE": "NOT_MEASURED",
+}
+D122_ENDPOINT = d122_trigger.AMENDMENT_ENDPOINT
+D122_AMENDMENT_CLASSIFICATION = d122_trigger.AMENDMENT_CLASSIFICATION
+D122_FAILURE_SUBTYPE = d122_trigger.FAILURE_SUBTYPE
+D122_STATUS_FIELDS = {
+    "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": (
+        "ESTABLISHED_BY_P0_1_5"
+    ),
+    "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
+    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "PASS_ON_EXEC_021_24_CELLS",
+    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "PASS_ON_EXEC_021_24_CELLS",
     "PERFORMANCE": "NOT_MEASURED",
 }
 D15_CORRECTION_SOURCE_HEAD = "38573cb2a499aec67b970cfcd4a7a2e119de3a70"
@@ -4373,26 +4386,32 @@ def validate_readiness_plan(
     historical_exec_020_swe_outcome_classification_failure = (
         d121_trigger.current_failure_record()
     )
-    current_activation = d121_trigger.current_recovery_record()
+    historical_exec_021_qdrant_nofile_portability_failure = (
+        d122_trigger.current_failure_record()
+    )
+    current_activation = d122_trigger.current_recovery_record()
     # The broad historical smoke ``official_grader_viability`` field remains
     # valid only inside its immutable evidence schema.  It is never emitted as
     # current readiness after the DEV loader failure.
     derived["current_status"].pop("OFFICIAL_GRADER_VIABILITY", None)
-    derived["current_status"].update(D121_STATUS_FIELDS)
-    derived["current_status"]["CLASSIFICATION"] = D121_AMENDMENT_CLASSIFICATION
+    derived["current_status"].update(D122_STATUS_FIELDS)
+    derived["current_status"]["CLASSIFICATION"] = D122_AMENDMENT_CLASSIFICATION
     derived["current_status"]["DEV_APPROVAL_ALLOWED"] = "NO"
     derived["current_status"]["DEV_EXECUTION_ALLOWED"] = "NO"
     derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = (
-        "ONE_UNRESOLVED_OUTCOME_NO_TERMINAL_CAMPAIGN_CELL"
+        d122_trigger.SCIENTIFIC_STATUS
     )
-    derived["current_status"]["ENDPOINT"] = D121_ENDPOINT
-    derived["current_status"]["FAILURE_SUBTYPE"] = D121_FAILURE_SUBTYPE
+    derived["current_status"]["ENDPOINT"] = D122_ENDPOINT
+    derived["current_status"]["FAILURE_SUBTYPE"] = D122_FAILURE_SUBTYPE
     derived["current_status"]["PERFORMANCE"] = "NOT_MEASURED"
     derived["current_status"]["SCIENTIFIC_RESULT"] = (
-        "NO_CAMPAIGN_RESULT_EXEC_020_ONE_UNRESOLVED_OUTCOME"
+        "NO_CAMPAIGN_RESULT_EXEC_021_PARTIAL_24_OF_72"
     )
     derived["development_execution_failure"] = development_failure
     derived["current_development_activation"] = current_activation
+    derived[
+        "historical_development_exec_021_qdrant_nofile_portability_failure"
+    ] = historical_exec_021_qdrant_nofile_portability_failure
     derived[
         "historical_development_exec_020_swe_outcome_classification_failure"
     ] = historical_exec_020_swe_outcome_classification_failure
@@ -4537,14 +4556,25 @@ def validate_readiness_plan(
         ),
         "D1.21 SWE outcome-normalization requirement is absent",
     )
+    require(
+        any(
+            "Qdrant" in item
+            and "nofile=65535:65535" in item
+            and "six namespaces" in item
+            and "twelve collections" in item
+            and "seventy-two payload indexes" in item
+            for item in readiness_requirements
+        ),
+        "D1.22 Qdrant nofile topology requirement is absent",
+    )
     authorization = plan.get("development_authorization_boundary", {})
     require(
         isinstance(authorization, dict)
         and authorization.get("active_development_approval") is False
         and authorization.get("amendment_classification")
-        == D121_AMENDMENT_CLASSIFICATION
+        == D122_AMENDMENT_CLASSIFICATION
         and authorization.get("amendment_evidence_path")
-        == d121_trigger.AMENDMENT_PATH
+        == d122_trigger.AMENDMENT_PATH
         and authorization.get("approval_request_eligible") is False
         and authorization.get("attempt_one_consumed") is True
         and authorization.get("attempt_two_allowed") is False
@@ -4554,29 +4584,29 @@ def validate_readiness_plan(
         and authorization.get("hard_cap_total_usd") == 50.0
         and authorization.get("heldout_execution_authorized") is False
         and authorization.get("fresh_dev_execution_approval_required") is True
-        and authorization.get("future_recovery_authority_received") is True
+        and authorization.get("future_recovery_authority_received") is False
         and authorization.get("model_id") == "gpt-5.4-mini-2026-03-17"
         and authorization.get("prior_failed_run_reusable") is False
         and authorization.get("recovery_authorization")
-        == "REQUEST_021_CREATION_AUTHORITY_RECEIVED"
-        and authorization.get("recovery_authorization_received") is True
-        and authorization.get("required_external_authorization")
-        == DEVELOPMENT_EXECUTION_AUTHORIZATION
+        == "REQUEST_022_CREATION_AUTHORITY_NOT_RECEIVED"
+        and authorization.get("recovery_authorization_received") is False
+        and authorization.get("required_external_authorization") is None
         and authorization.get("external_execution_approval_received") is False
         and authorization.get("historical_failed_request_id")
-        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_020"
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_021"
         and authorization.get("historical_failed_request_path")
-        == d121_trigger.PREVIOUS_SENTINEL_PATH
+        == d122_trigger.PREVIOUS_SENTINEL_PATH
         and authorization.get("fresh_execution_request")
-        == "REQUEST_021_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
+        == "REQUEST_022_CREATION_NOT_AUTHORIZED_PENDING_EXPLICIT_AUTHORITY"
         and authorization.get("fresh_execution_request_creation_authorized")
-        is True
+        is False
         and authorization.get(
             "fresh_execution_request_requires_explicit_sentinel_authority"
         )
         is True
-        and authorization.get("recovery_request_id") == DEVELOPMENT_REQUEST_ID
-        and authorization.get("recovery_request_path") == DEVELOPMENT_SENTINEL_PATH
+        and authorization.get("recovery_request_id") == d122_trigger.FUTURE_REQUEST_ID
+        and authorization.get("recovery_request_path")
+        == d122_trigger.FUTURE_SENTINEL_PATH
         and authorization.get("request_004_allowed_after_exact_remote_gates") is False
         and authorization.get("request_004_attempt_one_consumed") is True
         and authorization.get("request_005_allowed_after_exact_remote_gates") is False
@@ -4675,16 +4705,31 @@ def validate_readiness_plan(
         and authorization.get(
             "request_021_allowed_after_exact_remote_gates_and_rehearsal"
         )
-        is True
-        and authorization.get("request_021_authorized") is False
-        and authorization.get("request_021_created") is False
+        is False
+        and authorization.get("request_021_authorized") is True
+        and authorization.get("request_021_created") is True
+        and authorization.get("request_021_attempt_one_consumed") is True
+        and authorization.get("request_021_attempt_two_allowed") is False
         and authorization.get("request_021_execution_authorized") is False
+        and authorization.get("request_021_rerun_allowed") is False
+        and authorization.get("request_022_creation_authorized") is False
+        and authorization.get("request_022_created") is False
+        and authorization.get("request_022_execution_authorized") is False
+        and authorization.get("cross_run_resume_allowed") is False
+        and authorization.get("historical_partial_results_reusable") is False
+        and authorization.get("partial_checkpoint_selection_allowed") is False
+        and authorization.get("selected_m2_checkpoint")
+        == (
+            "PRE_DEVELOPMENT; EXEC _021 produced 24 partial terminal cells but "
+            "no aggregate or selected checkpoint; partial candidate selection "
+            "is forbidden"
+        )
         and authorization.get(
             "solve_execution_contract_rehearsal_required_before_request_005"
         )
         is False
         and authorization.get("rerun_allowed") is False,
-        "D1.21 development authorization boundary differs",
+        "D1.22 development authorization boundary differs",
     )
     counts = plan.get("frozen_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_benchmark_physical_task_arm_runs")) == (72, 81, 153), "readiness physical-run counts drift")
@@ -4736,7 +4781,13 @@ def validate_readiness_plan(
     )
     require(
         plan.get("current_development_activation") == current_activation,
-        "readiness DEV _021 recovery state differs",
+        "readiness D1.22 recovery state differs",
+    )
+    require(
+        plan.get(
+            "historical_development_exec_021_qdrant_nofile_portability_failure"
+        ) == historical_exec_021_qdrant_nofile_portability_failure,
+        "readiness DEV _021 Qdrant nofile failure history differs",
     )
     require(
         plan.get(
@@ -4818,10 +4869,11 @@ def validate_readiness_plan(
     require(
         "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION=ESTABLISHED_BY_P0_1_5"
         in static_meaning
-        and "DEV _020" in static_meaning
+        and "DEV _021" in static_meaning
         and "PASS_TO_PASS regression" in static_meaning
-        and "D1.21" in static_meaning
-        and "request-creation authority remains separate" in static_meaning
+        and "Qdrant" in static_meaning
+        and "D1.22" in static_meaning
+        and "Request-creation authority remains separate" in static_meaning
         and "PERFORMANCE remains NOT_MEASURED" in static_meaning,
         "post-smoke static-CI evidence boundary differs",
     )
@@ -4830,8 +4882,8 @@ def validate_readiness_plan(
         isinstance(remaining, list)
         and remaining
         and any(
-            "D1.21 source" in str(item)
-            and "zero-authority _021 sentinel" in str(item)
+            "D1.22 source" in str(item)
+            and "credential-free CI" in str(item)
             for item in remaining
         ),
         "post-smoke remaining phase gates differ",
@@ -5290,6 +5342,39 @@ def validate_d121_exec_021_recovery() -> None:
     )
 
 
+def validate_d122_exec_021_qdrant_recovery() -> None:
+    """Validate spent EXEC-021 history and the no-authority D1.22 seal."""
+
+    result = d122_trigger.validate_recovery_source(ROOT)
+    failure = d122_trigger.current_failure_record()
+    recovery = d122_trigger.current_recovery_record()
+    require(
+        failure.get("workflow_run")
+        == {"attempt": 1, "conclusion": "failure", "id": 34_257_490_991}
+        and failure.get("endpoint") == D122_FAILURE_SUBTYPE
+        and failure.get("scientific_status") == d122_trigger.SCIENTIFIC_STATUS
+        and failure.get("pass_at_1") is None
+        and failure.get("performance_measured") is False
+        and failure.get("observed_execution_actuals")
+        == d122_trigger.HISTORICAL_EXECUTION_ACTUALS
+        and failure.get("process_disposition", {}).get("first")
+        == "UNKNOWN_FAILURE"
+        and failure.get("process_disposition", {}).get("resume_eligible") is False
+        and failure.get("process_disposition", {}).get("resume_started") is False
+        and result.get("request_021_attempt_one_consumed") is True
+        and result.get("request_021_rerun_allowed") is False
+        and result.get("request_022_creation_authorized") is False
+        and result.get("request_022_execution_authorized") is False
+        and recovery.get("consumed_exec_021_actuals")
+        == d122_trigger.HISTORICAL_EXECUTION_ACTUALS
+        and recovery.get("current_execution_actuals")
+        == d122_trigger.ZERO_CURRENT_EXECUTION_ACTUALS
+        and recovery.get("endpoint") == D122_ENDPOINT
+        and "READY" not in str(recovery.get("status")),
+        "D1.22 Qdrant recovery seal or no-authority boundary differs",
+    )
+
+
 def validate_runtime_and_candidates() -> None:
     validate_d15_credential_control_amendment()
     validate_d16_action_protocol_amendment()
@@ -5306,7 +5391,7 @@ def validate_runtime_and_candidates() -> None:
     validate_d118_exec_018_recovery()
     validate_d119_exec_019_recovery()
     validate_d120_exec_020_recovery()
-    validate_d121_exec_021_recovery()
+    validate_d122_exec_021_qdrant_recovery()
     bundle = load_bundle()
     require(bundle.get("candidate_order") == list(CANDIDATE_IDS), "M2 candidate order drift")
     require(bundle.get("development_contract", {}).get("candidate_task_arm_runs") == 48, "M2 candidate run count drift")
@@ -5609,7 +5694,7 @@ def validate_workflows() -> None:
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
     stdlib_preflight_rehearsal = (
-        "python -I -S scripts/trimem_development_trigger_d121.py --help"
+        "python -I -S scripts/trimem_development_trigger_d122.py --help"
     )
     stdlib_secret_producer_rehearsal = (
         "python -I -S scripts/trimem_d119_approval_secret.py --help"
@@ -5622,7 +5707,7 @@ def validate_workflows() -> None:
         < static.index("python -m pip install --require-hashes")
         and static.index(stdlib_preflight_rehearsal)
         < static.index("python -m pip install --require-hashes"),
-        "static CI lacks the dependency-free D1.21 preflight/producer rehearsal",
+        "static CI lacks the dependency-free D1.22 preflight/producer rehearsal",
     )
     service = automatic[1].read_text(encoding="utf-8")
     require("test_real_services_e2e.py" in service and "postgres@sha256:" in service and "qdrant/qdrant@sha256:" in service, "real PostgreSQL/Qdrant CI is absent")
@@ -6308,7 +6393,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         ),
         "DEV _011 historical activation accounting differs at readiness output",
     )
-    development_accounting = dict(d121_trigger.ZERO_CURRENT_EXECUTION_ACTUALS)
+    development_accounting = dict(d122_trigger.ZERO_CURRENT_EXECUTION_ACTUALS)
     smoke_counters = readiness_state["execution_counters"]
     require(
         all(smoke_counters.get(key) == value for key, value in smoke_actual.items()),
@@ -6321,7 +6406,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "support_image_digests_frozen": 1,
         "target_image_digests_frozen": 45,
         "execution_counter_scope": (
-            "DEVELOPMENT_TUNING_EXEC_021_PRE_EXEC_RECOVERY"
+            "DEVELOPMENT_TUNING_EXEC_022_UNAUTHORIZED_RECOVERY"
         ),
         "task_arm_runs": development_accounting["task_arm_runs"],
         "model_calls": development_accounting["model_generation_calls"],
@@ -6352,6 +6437,12 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "historical_exec_020_execution_accounting": dict(
             d121_trigger.HISTORICAL_EXECUTION_ACTUALS
         ),
+        "historical_exec_021_execution_counter_scope": (
+            "DEVELOPMENT_TUNING_EXEC_021_RUN_34257490991_ATTEMPT_1"
+        ),
+        "historical_exec_021_execution_accounting": dict(
+            d122_trigger.HISTORICAL_EXECUTION_ACTUALS
+        ),
         "grader_smoke_history": {
             "execution_counter_scope": readiness_state["execution_counter_scope"],
             "execution_counters": smoke_counters,
@@ -6366,7 +6457,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "scientific_result": readiness_state["current_status"][
             "SCIENTIFIC_RESULT"
         ],
-        **D121_STATUS_FIELDS,
+        **D122_STATUS_FIELDS,
         "performance": smoke["performance"],
         "multi_swe_report_semantics_sha256": contracts["module_sha256"],
         "multi_swe_report_semantics_lock_sha256": contracts["lock_sha256"],
@@ -6392,12 +6483,10 @@ def preapproval_blockers() -> list[str]:
         validate_d118_exec_018_recovery()
         validate_d119_exec_019_recovery()
         validate_d120_exec_020_recovery()
-        validate_d121_exec_021_recovery()
+        validate_d122_exec_021_qdrant_recovery()
     except (OSError, ValueError, subprocess.SubprocessError) as exc:
-        return [f"D1.21 credential-free recovery validation failed: {exc}"]
-    if d121_trigger.validate_optional_exec_021_boundary(ROOT) is None:
-        return ["fresh _021 zero-authority sentinel is required"]
-    return []
+        return [f"D1.22 credential-free recovery validation failed: {exc}"]
+    return ["explicit request-creation authority for `_022` is required"]
 
 
 def execution_blockers(approval_file: Path) -> tuple[list[str], str | None]:
@@ -6556,7 +6645,7 @@ def main() -> int:
         }
         # Never flatten the historical broad smoke label into current status.
         report.pop("official_grader_viability", None)
-        for field, value in D121_STATUS_FIELDS.items():
+        for field, value in D122_STATUS_FIELDS.items():
             report[field] = evidence.get(field, value)
         if (
             args.level == "benchmark-exec"

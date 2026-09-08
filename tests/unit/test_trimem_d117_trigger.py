@@ -17,6 +17,7 @@ if str(SCRIPTS) not in sys.path:
 
 import trimem_development_trigger_d116 as d116  # noqa: E402
 import trimem_development_trigger_d117 as d117  # noqa: E402
+import trimem_d117_loader_rehearsal as d117_collector  # noqa: E402
 
 
 def _fixture_bytes() -> bytes:
@@ -92,6 +93,10 @@ def test_d117_exact_active_and_historical_identities() -> None:
     assert d117.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_017"
     assert d117.REQUEST_SCHEMA == "trimem/development-tuning-branch-trigger/1.17"
     assert d117.SENTINEL_PATH.endswith("DEVELOPMENT_TUNING_EXEC_REQUEST_017.json")
+    assert (
+        d117.LOADER_REHEARSAL_COLLECTOR_PATH
+        == "scripts/trimem_d117_loader_rehearsal.py"
+    )
     assert (
         d117.REQUIRED_EXTERNAL_AUTHORIZATION
         == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_017_APPROVED_ONCE"
@@ -194,11 +199,16 @@ def test_d117_checkout_rehearsal_row_mutations_fail_closed(
 
 def test_d117_context_propagates_and_restores_inherited_bindings() -> None:
     modules = (d116, d117.d115, d117.d114)
+    collector_modules = (d116, d117.d115)
+    missing = object()
     before = {
         module: {
             "request_id": module.REQUEST_ID,
             "schema": module.REQUEST_SCHEMA,
             "sentinel": module.SENTINEL_PATH,
+            "loader_collector": getattr(
+                module, "LOADER_REHEARSAL_COLLECTOR_PATH", missing
+            ),
         }
         for module in modules
     }
@@ -209,6 +219,11 @@ def test_d117_context_propagates_and_restores_inherited_bindings() -> None:
             assert module.REQUEST_ID == d117.REQUEST_ID
             assert module.REQUEST_SCHEMA == d117.REQUEST_SCHEMA
             assert module.SENTINEL_PATH == d117.SENTINEL_PATH
+        for module in collector_modules:
+            assert (
+                module.LOADER_REHEARSAL_COLLECTOR_PATH
+                == d117.LOADER_REHEARSAL_COLLECTOR_PATH
+            )
         assert d116._build_request_impl is d117._build_request_impl
 
         # Re-entry must restore to the surrounding D1.17 view, not leak an
@@ -218,16 +233,74 @@ def test_d117_context_propagates_and_restores_inherited_bindings() -> None:
                 assert module.REQUEST_ID == d117.REQUEST_ID
                 assert module.REQUEST_SCHEMA == d117.REQUEST_SCHEMA
                 assert module.SENTINEL_PATH == d117.SENTINEL_PATH
+            for module in collector_modules:
+                assert (
+                    module.LOADER_REHEARSAL_COLLECTOR_PATH
+                    == d117.LOADER_REHEARSAL_COLLECTOR_PATH
+                )
         for module in modules:
             assert module.REQUEST_ID == d117.REQUEST_ID
             assert module.REQUEST_SCHEMA == d117.REQUEST_SCHEMA
             assert module.SENTINEL_PATH == d117.SENTINEL_PATH
+        for module in collector_modules:
+            assert (
+                module.LOADER_REHEARSAL_COLLECTOR_PATH
+                == d117.LOADER_REHEARSAL_COLLECTOR_PATH
+            )
 
     for module in modules:
         assert module.REQUEST_ID == before[module]["request_id"]
         assert module.REQUEST_SCHEMA == before[module]["schema"]
         assert module.SENTINEL_PATH == before[module]["sentinel"]
+        previous_collector = before[module]["loader_collector"]
+        if previous_collector is missing:
+            assert not hasattr(module, "LOADER_REHEARSAL_COLLECTOR_PATH")
+        else:
+            assert module.LOADER_REHEARSAL_COLLECTOR_PATH == previous_collector
     assert d116._build_request_impl is before_builder
+
+
+def test_d117_loader_subprocess_wrapper_binds_parent_collector(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observed: list[tuple[object, object, object, object, object]] = []
+
+    def parent_main(argv: object = None) -> int:
+        observed.append(
+            (
+                argv,
+                d117.d116.RUNNER_READINESS_SCHEMA,
+                d117.d115.RUNNER_READINESS_SCHEMA,
+                d117.d114.RUNNER_READINESS_SCHEMA,
+                d117.d115.LOADER_REHEARSAL_COLLECTOR_PATH,
+            )
+        )
+        return 23
+
+    monkeypatch.setattr(d117_collector.d115_collector, "main", parent_main)
+    argv = ["--synthetic"]
+    assert d117_collector.main(argv) == 23
+    assert observed == [
+        (
+            argv,
+            d117.RUNNER_READINESS_SCHEMA,
+            d117.RUNNER_READINESS_SCHEMA,
+            d117.RUNNER_READINESS_SCHEMA,
+            d117.LOADER_REHEARSAL_COLLECTOR_PATH,
+        )
+    ]
+
+
+def test_d117_loader_wrapper_is_required_recovery_source() -> None:
+    assert d117.LOADER_REHEARSAL_COLLECTOR_PATH in d117.ALLOWED_RECOVERY_PATHS
+    assert (
+        d117.REQUIRED_RECOVERY_CHANGES[d117.LOADER_REHEARSAL_COLLECTOR_PATH]
+        == "A"
+    )
+    assert (
+        d117.ACTIVATION_BINDING_PATHS["loader_rehearsal_collector_sha256"]
+        == d117.LOADER_REHEARSAL_COLLECTOR_PATH
+    )
 
 
 def test_d117_recovery_scope_excludes_science_and_historical_d116() -> None:
@@ -241,6 +314,7 @@ def test_d117_recovery_scope_excludes_science_and_historical_d116() -> None:
         d116.AMENDMENT_PATH,
         d116.INVENTORY_PATH,
         d116.PREVIOUS_FAILURE_FIXTURE_PATH,
+        d116.LOADER_REHEARSAL_COLLECTOR_PATH,
         d116.TRIGGER_PATH,
     }
     assert forbidden.isdisjoint(d117.ALLOWED_RECOVERY_PATHS)

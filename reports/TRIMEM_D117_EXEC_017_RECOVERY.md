@@ -106,6 +106,17 @@ binds and restores the complete inherited overlay chain atomically; a nested
 re-entry regression test covers the exact writer-path failure. This observation
 also contains zero provider, model, image, grader, and task-arm activity.
 
+The next writer invocation used two freshly materialized ephemeral runner roots
+and passed runner readiness, but stopped at the exact full-loader rehearsal.
+That rehearsal is a separate POSIX Python process: invoking the inherited
+D1.16 wrapper meant the subprocess rebound only the D1.16 identity and rejected
+the D1.17 runner-readiness record as a schema mismatch. D1.17 now owns an
+explicit loader-rehearsal wrapper which enters the complete D1.17 runtime
+context before delegating to the frozen collector. The wrapper itself is in the
+recovery scope, freeze, activation bindings, and subprocess regression tests.
+This stopped writer invocation likewise made zero provider, model, image,
+grader, or task-arm calls.
+
 ## `_017` authority boundary
 
 The D1.17 source preserves the model, reasoning effort, 12 targets/order, six

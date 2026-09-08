@@ -115,7 +115,7 @@ REPORT_PATH = "reports/TRIMEM_D117_EXEC_017_RECOVERY.md"
 TRIGGER_PATH = "scripts/trimem_development_trigger_d117.py"
 CHECKOUT_REHEARSAL_PATH = "scripts/trimem_d117_checkout_rehearsal.py"
 EXACT_HEAD_GATE_WORKFLOW_PATH = ".github/workflows/ci-trimem-dev-toolchain.yml"
-LOADER_REHEARSAL_COLLECTOR_PATH = d116.LOADER_REHEARSAL_COLLECTOR_PATH
+LOADER_REHEARSAL_COLLECTOR_PATH = "scripts/trimem_d117_loader_rehearsal.py"
 
 FREEZE_PATH = d116.FREEZE_PATH
 FREEZE_SCHEMA = d116.FREEZE_SCHEMA
@@ -165,6 +165,7 @@ ALLOWED_RECOVERY_PATHS = frozenset(
         "scripts/trimem_benchmark_matrix.py",
         "scripts/trimem_benchmark_run.py",
         CHECKOUT_REHEARSAL_PATH,
+        LOADER_REHEARSAL_COLLECTOR_PATH,
         "scripts/trimem_freeze.py",
         "scripts/trimem_multi_swe_contract.py",
         TRIGGER_PATH,
@@ -195,6 +196,7 @@ REQUIRED_RECOVERY_CHANGES = {
     "scripts/trimem_benchmark_matrix.py": "M",
     "scripts/trimem_benchmark_run.py": "M",
     CHECKOUT_REHEARSAL_PATH: "A",
+    LOADER_REHEARSAL_COLLECTOR_PATH: "A",
     "scripts/trimem_freeze.py": "M",
     "scripts/trimem_multi_swe_contract.py": "M",
     TRIGGER_PATH: "A",
@@ -215,6 +217,7 @@ ACTIVATION_BINDING_PATHS = {
     "d117_inventory_sha256": INVENTORY_PATH,
     "d117_run_fixture_sha256": PREVIOUS_FAILURE_FIXTURE_PATH,
     "d117_trigger_reader_sha256": TRIGGER_PATH,
+    "loader_rehearsal_collector_sha256": LOADER_REHEARSAL_COLLECTOR_PATH,
     "multi_swe_contract_sha256": "scripts/trimem_multi_swe_contract.py",
     "readiness_requirements_sha256": "artifacts/trimem_v1/readiness_requirements.json",
     "verify_ready_sha256": "scripts/trimem_verify_ready.py",

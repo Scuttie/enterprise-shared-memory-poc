@@ -14,7 +14,8 @@
     "scripts/trimem_benchmark_matrix.py": "2fc1a753cc52ba90236f3e967bebd7a09110c8791e9d854caef963d9698e0da8",
     "scripts/trimem_benchmark_run.py": "f34aef14773cb2031b7ab07cf4fb8159a11fdbac9af40c9e539996302bdc7269",
     "scripts/trimem_d117_checkout_rehearsal.py": "2cb95b75c978a14dbe31d8aa27232267d710281f271b6a8ec6c5e94dc45ef25f",
-    "scripts/trimem_development_trigger_d117.py": "fb6f2efce2dcada895d4c5679b2828c72d104080962609ef1d9cbf09a6197a98"
+    "scripts/trimem_d117_loader_rehearsal.py": "cc53be21bbbbe6ae4a40036568a244c25d82f1ad44c292906e9009e4a1e05044",
+    "scripts/trimem_development_trigger_d117.py": "526ddfa2118abd5265472328523bc6c49665557badf12273ed4649522deec173"
   },
   "schema": "trimem/development-exec-017-checkout-portability-inventory/1.0",
   "source_changed_paths": [
@@ -29,6 +30,7 @@
     "scripts/trimem_benchmark_matrix.py",
     "scripts/trimem_benchmark_run.py",
     "scripts/trimem_d117_checkout_rehearsal.py",
+    "scripts/trimem_d117_loader_rehearsal.py",
     "scripts/trimem_development_trigger_d117.py",
     "scripts/trimem_freeze.py",
     "scripts/trimem_multi_swe_contract.py",

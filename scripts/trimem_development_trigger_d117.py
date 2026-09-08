@@ -390,7 +390,14 @@ def _d117_runtime_context() -> Iterator[None]:
         try:
             for name, value in bindings.items():
                 setattr(d116, name, value)
-            yield
+            # D1.17 calls some implementation functions directly while this
+            # context is active.  Propagate the dynamic bindings through both
+            # inherited adapters so those calls observe one coherent D1.17
+            # identity all the way down to D1.14 (not a stale D1.14/D1.15
+            # sentinel or schema).  The inherited contexts are re-entrant and
+            # restore their own modules before we restore D1.16 below.
+            with d116._d116_runtime_context(), d115._d115_runtime_context():
+                yield
         finally:
             for name, value in reversed(tuple(previous.items())):
                 setattr(d116, name, value)

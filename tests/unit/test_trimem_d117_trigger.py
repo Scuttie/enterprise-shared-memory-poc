@@ -192,22 +192,42 @@ def test_d117_checkout_rehearsal_row_mutations_fail_closed(
             d117.validate_checkout_rehearsal(modified)
 
 
-def test_d117_context_restores_d116_bindings() -> None:
+def test_d117_context_propagates_and_restores_inherited_bindings() -> None:
+    modules = (d116, d117.d115, d117.d114)
     before = {
-        "request_id": d116.REQUEST_ID,
-        "schema": d116.REQUEST_SCHEMA,
-        "sentinel": d116.SENTINEL_PATH,
-        "builder": d116._build_request_impl,
+        module: {
+            "request_id": module.REQUEST_ID,
+            "schema": module.REQUEST_SCHEMA,
+            "sentinel": module.SENTINEL_PATH,
+        }
+        for module in modules
     }
+    before_builder = d116._build_request_impl
+
     with d117._d117_runtime_context():
-        assert d116.REQUEST_ID == d117.REQUEST_ID
-        assert d116.REQUEST_SCHEMA == d117.REQUEST_SCHEMA
-        assert d116.SENTINEL_PATH == d117.SENTINEL_PATH
+        for module in modules:
+            assert module.REQUEST_ID == d117.REQUEST_ID
+            assert module.REQUEST_SCHEMA == d117.REQUEST_SCHEMA
+            assert module.SENTINEL_PATH == d117.SENTINEL_PATH
         assert d116._build_request_impl is d117._build_request_impl
-    assert d116.REQUEST_ID == before["request_id"]
-    assert d116.REQUEST_SCHEMA == before["schema"]
-    assert d116.SENTINEL_PATH == before["sentinel"]
-    assert d116._build_request_impl is before["builder"]
+
+        # Re-entry must restore to the surrounding D1.17 view, not leak an
+        # older generation into the still-active outer context.
+        with d117._d117_runtime_context():
+            for module in modules:
+                assert module.REQUEST_ID == d117.REQUEST_ID
+                assert module.REQUEST_SCHEMA == d117.REQUEST_SCHEMA
+                assert module.SENTINEL_PATH == d117.SENTINEL_PATH
+        for module in modules:
+            assert module.REQUEST_ID == d117.REQUEST_ID
+            assert module.REQUEST_SCHEMA == d117.REQUEST_SCHEMA
+            assert module.SENTINEL_PATH == d117.SENTINEL_PATH
+
+    for module in modules:
+        assert module.REQUEST_ID == before[module]["request_id"]
+        assert module.REQUEST_SCHEMA == before[module]["schema"]
+        assert module.SENTINEL_PATH == before[module]["sentinel"]
+    assert d116._build_request_impl is before_builder
 
 
 def test_d117_recovery_scope_excludes_science_and_historical_d116() -> None:

@@ -98,6 +98,14 @@ explicit trigger path for that workflow. The incomplete 19/20 observation is
 not execution evidence and carries zero provider, model, image, grader, and
 task-arm activity.
 
+The first writer invocation after those 20 gates also stopped before request
+creation because the D1.17 overlay had bound D1.16 but had not propagated that
+identity through the inherited D1.15/D1.14 adapters. It therefore evaluated the
+current freeze with the stale `_014` sentinel identity. The runtime context now
+binds and restores the complete inherited overlay chain atomically; a nested
+re-entry regression test covers the exact writer-path failure. This observation
+also contains zero provider, model, image, grader, and task-arm activity.
+
 ## `_017` authority boundary
 
 The D1.17 source preserves the model, reasoning effort, 12 targets/order, six

@@ -1,0 +1,44 @@
+{
+  "classification": "POST_EXEC_015_ZERO_MODEL_APPROVAL_DELAY_FRESHNESS_RECOVERY",
+  "historical_boundary": {
+    "execution_head": "221a23be33597fdfa37b9b2d9ed2a7ffba2767f3",
+    "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_015.json",
+    "request_payload_sha256": "6274e8384ac521d32e74f4b3200d6bf0c6161b92e79f8f9742e358f3c0669498",
+    "request_raw_sha256": "1fc04b6e0f85a041506e42ec83671b9a6ffd6bb3311f34bbff1f9173683617cc",
+    "run_attempt": 1,
+    "run_id": 34160843621,
+    "source_head": "de4b42be532910bf1a6349241b535ca31a93b6af"
+  },
+  "implementation_sha256": {
+    "scripts/trimem_benchmark_matrix.py": "90b7834cc3cf26f2028bb8bac4a9c511073d8083b047f53b3aea830b6b7fe984"
+  },
+  "schema": "trimem/development-exec-016-approval-delay-inventory/1.0",
+  "source_changed_paths": [
+    ".gitattributes",
+    ".github/workflows/ci-trimem-dev-toolchain.yml",
+    ".github/workflows/ci-trimem.yml",
+    ".github/workflows/trimem-benchmark.yml",
+    "artifacts/trimem_v1/development_exec_016_recovery_amendment.json",
+    "artifacts/trimem_v1/development_exec_016_recovery_inventory.json",
+    "artifacts/trimem_v1/freeze.json",
+    "artifacts/trimem_v1/readiness_requirements.json",
+    "reports/TRIMEM_D116_EXEC_016_RECOVERY.md",
+    "scripts/trimem_benchmark_matrix.py",
+    "scripts/trimem_benchmark_run.py",
+    "scripts/trimem_development_trigger_d116.py",
+    "scripts/trimem_freeze.py",
+    "scripts/trimem_multi_swe_contract.py",
+    "scripts/trimem_verify_ready.py",
+    "tests/fixtures/trimem_d116/exec_015_preapproval_freshness_scope_failure.json",
+    "tests/unit/test_trimem_benchmark_readiness.py",
+    "tests/unit/test_trimem_d110_status_and_reseal.py",
+    "tests/unit/test_trimem_d114_post_setup_environment.py",
+    "tests/unit/test_trimem_d115_status_and_reseal.py",
+    "tests/unit/test_trimem_d116_trigger.py",
+    "tests/unit/test_trimem_d16_native_action.py",
+    "tests/unit/test_trimem_dev_toolchain_workflows.py",
+    "tests/unit/test_trimem_development_trigger.py",
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py"
+  ],
+  "status": "FROZEN_CREDENTIAL_FREE_EXEC_015_CANCELLED_READY_FOR_EXEC_016_REQUEST"
+}

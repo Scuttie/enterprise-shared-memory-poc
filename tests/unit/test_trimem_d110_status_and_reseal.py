@@ -1,4 +1,4 @@
-"""Immutable D1.10-D1.14 history and the current zero-cost D1.15 seal."""
+"""Immutable D1.10-D1.15 history and the current zero-cost D1.16 seal."""
 from __future__ import annotations
 
 import hashlib
@@ -20,13 +20,14 @@ import trimem_d112_reseal as d112_reseal  # noqa: E402
 import trimem_d113_reseal as d113_reseal  # noqa: E402
 import trimem_d114_reseal as d114_reseal  # noqa: E402
 import trimem_d115_reseal as current_reseal  # noqa: E402
+import trimem_development_trigger_d116 as current_trigger  # noqa: E402
 
 
 CURRENT_STATUS_FIELDS = {
     "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": "ESTABLISHED_BY_P0_1_5",
     "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
-    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "NOT_REACHED_ON_EXEC_014",
-    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "NOT_REACHED_ON_EXEC_014",
+    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "NOT_REACHED_ON_EXEC_015",
+    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "NOT_REACHED_ON_EXEC_015",
     "PERFORMANCE": "NOT_MEASURED",
 }
 
@@ -43,8 +44,8 @@ def test_current_status_uses_exact_split_fields_and_ready_endpoint() -> None:
     assert {
         key: status[key] for key in CURRENT_STATUS_FIELDS
     } == CURRENT_STATUS_FIELDS
-    assert status["CLASSIFICATION"] == current_reseal.CLASSIFICATION
-    assert status["ENDPOINT"] == current_reseal.ENDPOINT
+    assert status["CLASSIFICATION"] == current_trigger.AMENDMENT_CLASSIFICATION
+    assert status["ENDPOINT"] == current_trigger.AMENDMENT_ENDPOINT
     assert status["DEV_APPROVAL_ALLOWED"] == "NO"
     assert status["DEV_EXECUTION_ALLOWED"] == "NO"
 
@@ -69,32 +70,32 @@ def test_exec_010_failure_remains_incomplete_and_pre_result() -> None:
     }
 
 
-def test_exec_014_is_spent_and_only_015_request_creation_is_authorized() -> None:
+def test_exec_015_is_spent_and_only_016_request_creation_is_authorized() -> None:
     authority = read("artifacts/trimem_v1/readiness_requirements.json")[
         "development_authorization_boundary"
     ]
     assert authority["historical_failed_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_014"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_015"
     )
     assert authority["historical_failed_request_path"] == (
-        current_reseal.D114_REQUEST_PATH
+        current_trigger.PREVIOUS_SENTINEL_PATH
     )
     assert authority["fresh_execution_request"] == (
-        "REQUEST_015_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
+        "REQUEST_016_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
     )
     assert authority["fresh_execution_request_creation_authorized"] is True
     assert authority["recovery_authorization"] == (
-        "REQUEST_015_CREATION_AUTHORITY_RECEIVED"
+        "REQUEST_016_CREATION_AUTHORITY_RECEIVED"
     )
     assert authority["required_external_authorization"] == (
-        current_reseal.D115_REQUIRED_EXTERNAL_AUTHORIZATION
+        current_trigger.REQUIRED_EXTERNAL_AUTHORIZATION
     )
     assert authority["recovery_authorization_received"] is True
     assert authority["future_recovery_authority_received"] is True
     assert authority["recovery_request_id"] == (
-        current_reseal.D115_REQUEST_ID
+        current_trigger.REQUEST_ID
     )
-    assert authority["recovery_request_path"] == current_reseal.D115_REQUEST_PATH
+    assert authority["recovery_request_path"] == current_trigger.SENTINEL_PATH
     assert authority["request_011_allowed_after_exact_remote_gates"] is False
     assert authority["request_011_attempt_one_consumed"] is True
     assert authority["request_011_attempt_two_allowed"] is False
@@ -118,9 +119,17 @@ def test_exec_014_is_spent_and_only_015_request_creation_is_authorized() -> None
     assert authority["request_014_rerun_allowed"] is False
     assert authority[
         "request_015_allowed_after_exact_remote_gates_and_rehearsal"
-    ] is True
+    ] is False
+    assert authority["request_015_attempt_one_consumed"] is True
+    assert authority["request_015_attempt_two_allowed"] is False
     assert authority["request_015_authorized"] is False
-    assert authority["request_015_created"] is False
+    assert authority["request_015_created"] is True
+    assert authority["request_015_rerun_allowed"] is False
+    assert authority[
+        "request_016_allowed_after_exact_remote_gates_and_rehearsal"
+    ] is True
+    assert authority["request_016_authorized"] is False
+    assert authority["request_016_created"] is False
     assert authority["active_development_approval"] is False
     assert authority["development_execution_authorized"] is False
     assert authority["fresh_dev_execution_approval_required"] is True

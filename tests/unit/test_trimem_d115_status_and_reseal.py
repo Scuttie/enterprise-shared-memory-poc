@@ -23,6 +23,7 @@ import trimem_freeze as freeze  # noqa: E402
 
 SOURCE_HEAD = "6e9abe999f2b9d7ebdd3eea23dbbea8f6afad931"
 EXECUTION_HEAD = "31234fdd58fd43170764524662c9e51687521761"
+D115_SOURCE_HEAD = "de4b42be532910bf1a6349241b535ca31a93b6af"
 REQUEST_RAW_SHA256 = (
     "7b4ff50e423cd12baea93413bbedcf7c2ee210d031fc20b30ad1c9d9f3c2dbaa"
 )
@@ -128,7 +129,9 @@ def test_exec_014_failure_replay_separates_control_plane_from_science() -> None:
         assert replay[key] == 0
 
 
-def test_failure_recovery_and_readiness_do_not_claim_a_result_or_execution() -> None:
+def test_failure_recovery_and_readiness_do_not_claim_a_result_or_execution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     failure = reseal.current_failure_record()
     assert failure["workflow_run"] == {
         "attempt": 1,
@@ -163,6 +166,22 @@ def test_failure_recovery_and_readiness_do_not_claim_a_result_or_execution() -> 
     assert recovery["external_execution_approval_received"] is False
     assert recovery["request_present_in_recovery_source"] is False
     assert recovery["performance_measured"] is False
+    historical_readiness = json.loads(
+        _git_blob(
+            D115_SOURCE_HEAD,
+            "artifacts/trimem_v1/readiness_requirements.json",
+        )
+    )
+    original_read_json = reseal.read_json
+    monkeypatch.setattr(
+        reseal,
+        "read_json",
+        lambda path: (
+            historical_readiness
+            if path == reseal.READINESS_PATH
+            else original_read_json(path)
+        ),
+    )
     reseal.validate_readiness()
 
 
@@ -209,7 +228,7 @@ def test_changed_path_vocabulary_matches_trigger_and_excludes_science() -> None:
 
 
 def _live_active_contract_blob(_commit: str, relative: str) -> bytes:
-    return (ROOT / relative).read_bytes()
+    return _git_blob(D115_SOURCE_HEAD, relative)
 
 
 def test_active_contract_accepts_exact_d115_consumer_imports(
@@ -246,7 +265,7 @@ def test_active_contract_rejects_non_exact_or_legacy_consumer_imports(
     tamper: Callable[[str], str],
 ) -> None:
     relative = "scripts/trimem_benchmark_matrix.py"
-    original = (ROOT / relative).read_text(encoding="utf-8")
+    original = _git_blob(D115_SOURCE_HEAD, relative).decode("utf-8")
     modified = tamper(original)
 
     def blob(_commit: str, requested: str) -> bytes:
@@ -262,9 +281,12 @@ def test_active_contract_rejects_non_exact_or_legacy_consumer_imports(
         reseal.validate_active_contract("unused")
 
 
-def test_optional_015_boundary_is_absent_or_exact_sentinel_child() -> None:
-    observed = reseal.validate_optional_exec_015_boundary()
-    assert observed is None or reseal.HEX40.fullmatch(observed) is not None
+def test_spent_015_live_d115_reader_expires_fail_closed() -> None:
+    with pytest.raises(
+        trigger.DevelopmentTriggerError,
+        match="exact loader rehearsal is stale or from the future",
+    ):
+        reseal.validate_optional_exec_015_boundary()
 
 
 def test_report_freezes_exact_failure_fix_and_no_result_meaning() -> None:
@@ -309,12 +331,12 @@ def test_freeze_contains_every_d115_authority_input() -> None:
     assert required <= set(freeze.FROZEN_PATHS)
 
 
-def test_generated_documents_are_deterministic_after_source_commit() -> None:
-    first_amendment, first_inventory = reseal.build_artifacts()
-    second_amendment, second_inventory = reseal.build_artifacts()
-    assert (first_amendment, first_inventory) == (
-        second_amendment,
-        second_inventory,
+def test_generated_documents_remain_exact_at_immutable_d115_source() -> None:
+    first_amendment = json.loads(
+        _git_blob(D115_SOURCE_HEAD, trigger.AMENDMENT_PATH)
+    )
+    first_inventory = json.loads(
+        _git_blob(D115_SOURCE_HEAD, trigger.INVENTORY_PATH)
     )
     assert first_amendment["schema"] == reseal.AMENDMENT_SCHEMA
     assert first_inventory["schema"] == reseal.INVENTORY_SCHEMA

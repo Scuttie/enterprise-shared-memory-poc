@@ -1,5 +1,5 @@
 name: TriMem V1 credential-free DEV toolchain rehearsal
-# D1.15 request-015 compiled-prefix alias recovery and historical-gate replay.
+# D1.16 request-016 approval-delay freshness recovery and historical replay.
 
 on:
   push:
@@ -33,6 +33,8 @@ on:
       - artifacts/trimem_v1/development_exec_014_recovery_inventory.json
       - artifacts/trimem_v1/development_exec_015_recovery_amendment.json
       - artifacts/trimem_v1/development_exec_015_recovery_inventory.json
+      - artifacts/trimem_v1/development_exec_016_recovery_amendment.json
+      - artifacts/trimem_v1/development_exec_016_recovery_inventory.json
       - artifacts/trimem_v1/development_tuning_exec/exec-008/terminal-status-contract-mismatch-receipt.json
       - artifacts/trimem_v1/development_tuning_exec/exec-009/bounded-short-term-context-failure-receipt.json
       - artifacts/trimem_v1/development_tuning_exec/exec-009/request-only-boundary-fixture.json
@@ -47,6 +49,7 @@ on:
       - reports/TRIMEM_D113_EXEC_013_RECOVERY.md
       - reports/TRIMEM_D114_EXEC_014_RECOVERY.md
       - reports/TRIMEM_D115_EXEC_015_RECOVERY.md
+      - reports/TRIMEM_D116_EXEC_016_RECOVERY.md
       - scripts/trimem_development_trigger_preflight.py
       - scripts/trimem_development_trigger_d15.py
       - scripts/trimem_development_trigger_d18.py
@@ -56,6 +59,7 @@ on:
       - scripts/trimem_development_trigger_d113.py
       - scripts/trimem_development_trigger_d114.py
       - scripts/trimem_development_trigger_d115.py
+      - scripts/trimem_development_trigger_d116.py
       - scripts/trimem_context_roundtrip.py
       - scripts/trimem_d19_reseal.py
       - scripts/trimem_d110_reseal.py
@@ -145,10 +149,12 @@ on:
       - tests/unit/test_trimem_d115_gate_contract.py
       - tests/unit/test_trimem_d115_status_and_reseal.py
       - tests/unit/test_trimem_d115_trigger.py
+      - tests/unit/test_trimem_d116_trigger.py
       - tests/fixtures/trimem_d111/exec_011_branch_transition.json
       - tests/fixtures/trimem_d113/exec_012_preprotected_failure.json
       - tests/fixtures/trimem_d114/exec_013_post_setup_failure.json
       - tests/fixtures/trimem_d115/exec_014_loader_failure.json
+      - tests/fixtures/trimem_d116/exec_015_preapproval_freshness_scope_failure.json
       - tests/unit/test_trimem_evidence_custody.py
       - tests/unit/test_trimem_remote_custody.py
       - tests/unit/test_trimem_git_workspace.py
@@ -204,11 +210,12 @@ jobs:
           tests/unit/test_trimem_d115_gate_contract.py
           tests/unit/test_trimem_d115_status_and_reseal.py
           tests/unit/test_trimem_d115_trigger.py
+          tests/unit/test_trimem_d116_trigger.py
           tests/unit/test_trimem_remote_custody.py
           tests/unit/test_trimem_d19_bounded_short_term_context.py::test_mixed_72_cell_aggregate_public_and_terminal_ledger_round_trip
       - name: Verify bounded context round trip before provider access
         run: python scripts/trimem_context_roundtrip.py
-      - name: Validate exact D1.15 credential-free recovery source
+      - name: Validate exact D1.16 credential-free recovery source
         run: |
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
           python -I -S scripts/trimem_d111_gate_contract.py \
@@ -219,7 +226,9 @@ jobs:
             --fixture tests/fixtures/trimem_d114/exec_013_post_setup_failure.json
           python -I -S scripts/trimem_d115_gate_contract.py \
             --fixture tests/fixtures/trimem_d115/exec_014_loader_failure.json
-          python scripts/trimem_d115_reseal.py --check
+          python -I -S scripts/trimem_development_trigger_d116.py \
+            --repository "$GITHUB_WORKSPACE" \
+            --validate-current
       - name: Install exact pinned GitHub CLI
         run: |
           set -euo pipefail

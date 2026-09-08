@@ -132,7 +132,7 @@ def test_benchmark_installs_and_byte_verifies_pinned_gh_before_exec_gate() -> No
     assert "--approval-file" in gate_block
 
 
-def test_benchmark_has_only_the_d115_015_active_development_trigger() -> None:
+def test_benchmark_has_only_the_d116_016_active_development_trigger() -> None:
     text = _read(BENCHMARK_WORKFLOW)
     trigger = text[text.index("on:"):text.index("\nconcurrency:")]
     assert trigger == (
@@ -143,15 +143,16 @@ def test_benchmark_has_only_the_d115_015_active_development_trigger() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_015.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_016.json\n"
     )
     assert (
         "- artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_015.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_016.json"
     ) in text
-    assert "group: trimem-v1-development-tuning-exec-015" in text
+    assert "group: trimem-v1-development-tuning-exec-016" in text
     preflight = _step_block(text, "Verify one-time zero-authority DEV trigger")
-    assert "scripts/trimem_development_trigger_d115.py" in preflight
+    assert "scripts/trimem_development_trigger_d116.py" in preflight
+    assert "scripts/trimem_development_trigger_d115.py" not in preflight
     assert "scripts/trimem_development_trigger_d114.py" not in preflight
     assert "scripts/trimem_development_trigger_d113.py" not in preflight
     assert "scripts/trimem_development_trigger_d112.py" not in preflight
@@ -405,6 +406,8 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> No
         "artifacts/trimem_v1/development_exec_014_recovery_inventory.json",
         "artifacts/trimem_v1/development_exec_015_recovery_amendment.json",
         "artifacts/trimem_v1/development_exec_015_recovery_inventory.json",
+        "artifacts/trimem_v1/development_exec_016_recovery_amendment.json",
+        "artifacts/trimem_v1/development_exec_016_recovery_inventory.json",
         "artifacts/trimem_v1/development_tuning_exec/exec-008/terminal-status-contract-mismatch-receipt.json",
         "artifacts/trimem_v1/development_tuning_exec/exec-009/bounded-short-term-context-failure-receipt.json",
         "artifacts/trimem_v1/development_tuning_exec/exec-009/request-only-boundary-fixture.json",
@@ -421,6 +424,7 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> No
         "scripts/trimem_development_trigger_d113.py",
         "scripts/trimem_development_trigger_d114.py",
         "scripts/trimem_development_trigger_d115.py",
+        "scripts/trimem_development_trigger_d116.py",
         "scripts/trimem_context_roundtrip.py",
         "scripts/trimem_d19_reseal.py",
         "scripts/trimem_d110_reseal.py",
@@ -482,6 +486,8 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> No
         "tests/unit/test_trimem_d115_status_and_reseal.py",
         "tests/unit/test_trimem_d115_trigger.py",
         "tests/fixtures/trimem_d115/exec_014_loader_failure.json",
+        "tests/unit/test_trimem_d116_trigger.py",
+        "tests/fixtures/trimem_d116/exec_015_preapproval_freshness_scope_failure.json",
         "tests/unit/test_trimem_remote_custody.py",
         "tests/unit/test_trimem_git_workspace.py",
         "tests/unit/test_trimem_runtime_boundaries.py",
@@ -505,6 +511,7 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> No
         "reports/TRIMEM_D113_EXEC_013_RECOVERY.md",
         "reports/TRIMEM_D114_EXEC_014_RECOVERY.md",
         "reports/TRIMEM_D115_EXEC_015_RECOVERY.md",
+        "reports/TRIMEM_D116_EXEC_016_RECOVERY.md",
     ):
         assert f"- {path}" in text
     for d113_test in (
@@ -527,6 +534,7 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> No
         "tests/unit/test_trimem_d115_trigger.py",
     ):
         assert text.count(d115_test) == 2
+    assert text.count("tests/unit/test_trimem_d116_trigger.py") == 2
     assert "environment:" not in text
     assert "services:" not in text
     assert "secrets." not in text
@@ -551,13 +559,13 @@ def test_toolchain_runs_production_round_trip_before_credentialed_attestation() 
     text = _read(TOOLCHAIN_WORKFLOW)
     _assert_production_round_trip_precedes(
         text,
-        "Validate exact D1.15 credential-free recovery source",
+        "Validate exact D1.16 credential-free recovery source",
         "Install exact pinned GitHub CLI",
         "Verify official smoke attestation only with zero scientific work",
     )
     _assert_context_round_trip_precedes(
         text,
-        "Validate exact D1.15 credential-free recovery source",
+        "Validate exact D1.16 credential-free recovery source",
         "Install exact pinned GitHub CLI",
         "Verify official smoke attestation only with zero scientific work",
     )
@@ -565,14 +573,16 @@ def test_toolchain_runs_production_round_trip_before_credentialed_attestation() 
     context_round_trip = _step_block(text, CONTEXT_ROUND_TRIP_STEP)
     source_validation = _step_block(
         text,
-        "Validate exact D1.15 credential-free recovery source",
+        "Validate exact D1.16 credential-free recovery source",
     )
     for block in (round_trip, context_round_trip):
         assert "secrets." not in block
         assert "OPENAI_API_KEY" not in block
         assert "GH_TOKEN" not in block
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in source_validation
-    assert "python scripts/trimem_d115_reseal.py --check" in source_validation
+    assert "scripts/trimem_development_trigger_d116.py" in source_validation
+    assert "--validate-current" in source_validation
+    assert "python scripts/trimem_d115_reseal.py --check" not in source_validation
     assert "scripts/trimem_d115_gate_contract.py" in source_validation
     assert "scripts/trimem_d114_gate_contract.py" in source_validation
     assert "scripts/trimem_d113_gate_contract.py" in source_validation
@@ -601,7 +611,7 @@ def test_required_static_gate_includes_company_handoff_and_secret_scan() -> None
     assert "persist-credentials: false" in text
     assert "ref: ${{ github.event.pull_request.head.sha || github.sha }}" in text
     assert "python -I -S scripts/trimem_compiled_prefix_alias.py --help" in text
-    assert "python -I -S scripts/trimem_d115_reseal.py --help" in text
+    assert "python -I -S scripts/trimem_development_trigger_d116.py --help" in text
     assert "python scripts/make_handoff_manifest.py --check" in text
     assert "python scripts/release_check.py --secrets" in text
 

@@ -105,7 +105,7 @@ def test_exec_021_is_spent_and_022_remains_unauthorized() -> None:
     assert authority["fresh_execution_request_creation_authorized"] is False
 
 
-def _legacy_d121_authorization_assertions() -> None:
+def test_historical_exec_015_through_020_actuals_remain_frozen() -> None:
     readiness = read("artifacts/trimem_v1/readiness_requirements.json")
     authority = readiness["development_authorization_boundary"]
     assert readiness[
@@ -126,9 +126,6 @@ def _legacy_d121_authorization_assertions() -> None:
     assert readiness[
         "historical_development_exec_020_swe_outcome_classification_failure"
     ] == d121_trigger.current_failure_record()
-    assert readiness["current_development_activation"] == (
-        d121_trigger.current_recovery_record()
-    )
     exec_017_actuals = readiness[
         "historical_development_exec_017_python_launcher_alias_failure"
     ]["observed_execution_actuals"]
@@ -152,28 +149,6 @@ def _legacy_d121_authorization_assertions() -> None:
         value == 0 or value == "0.000000000000"
         for value in exec_018_actuals.values()
     )
-    assert authority["historical_failed_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_020"
-    )
-    assert authority["historical_failed_request_path"] == (
-        d121_trigger.PREVIOUS_SENTINEL_PATH
-    )
-    assert authority["fresh_execution_request"] == (
-        "REQUEST_021_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
-    )
-    assert authority["fresh_execution_request_creation_authorized"] is True
-    assert authority["recovery_authorization"] == (
-        "REQUEST_021_CREATION_AUTHORITY_RECEIVED"
-    )
-    assert authority["required_external_authorization"] == (
-        d121_trigger.REQUIRED_EXTERNAL_AUTHORIZATION
-    )
-    assert authority["recovery_authorization_received"] is True
-    assert authority["future_recovery_authority_received"] is True
-    assert authority["recovery_request_id"] == (
-        d121_trigger.REQUEST_ID
-    )
-    assert authority["recovery_request_path"] == d121_trigger.SENTINEL_PATH
     assert authority["request_011_allowed_after_exact_remote_gates"] is False
     assert authority["request_011_attempt_one_consumed"] is True
     assert authority["request_011_attempt_two_allowed"] is False
@@ -247,9 +222,9 @@ def _legacy_d121_authorization_assertions() -> None:
     assert authority["request_020_rerun_allowed"] is False
     assert authority[
         "request_021_allowed_after_exact_remote_gates_and_rehearsal"
-    ] is True
-    assert authority["request_021_authorized"] is False
-    assert authority["request_021_created"] is False
+    ] is False
+    assert authority["request_021_authorized"] is True
+    assert authority["request_021_created"] is True
     assert authority["request_021_execution_authorized"] is False
     assert authority["active_development_approval"] is False
     assert authority["development_execution_authorized"] is False

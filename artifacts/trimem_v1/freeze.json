@@ -1869,8 +1869,8 @@
       "sha256": "c8f8371397ea788867b4e1c94f43e1f8af57e1a14523bc32400bd7b823b44eca"
     },
     "tests/unit/test_trimem_d110_status_and_reseal.py": {
-      "bytes": 25336,
-      "sha256": "20ab2c5c9b1ad94377c7a6ae03eaac9c5fc98c75ad4bbb0b763d52be3564d444"
+      "bytes": 24281,
+      "sha256": "fda55d1a40dde1d58ad5c623ee17d9649b724b37e9e883dc52fb681a058f3480"
     },
     "tests/unit/test_trimem_d111_gate_contract.py": {
       "bytes": 18966,

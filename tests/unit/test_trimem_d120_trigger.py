@@ -61,10 +61,16 @@ def test_d120_exact_active_and_historical_identities() -> None:
 
 
 def test_d121_freeze_preserves_immutable_exec_019_and_exec_020() -> None:
-    freeze = json.loads((ROOT / d120.FREEZE_PATH).read_bytes())
+    # This is a historical D1.21 boundary assertion.  Read the exact D1.21
+    # activation-source blobs instead of the current generation's evolving
+    # freeze, which legitimately preserves later consumed sentinels.
+    source_head = d122.PREVIOUS_SOURCE_HEAD
+    freeze = json.loads(d121.commit_bytes(ROOT, source_head, d120.FREEZE_PATH))
     files = freeze["files"]
-    previous_raw = (ROOT / d120.PREVIOUS_SENTINEL_PATH).read_bytes()
-    exec_020_raw = (ROOT / d120.SENTINEL_PATH).read_bytes()
+    previous_raw = d121.commit_bytes(
+        ROOT, source_head, d120.PREVIOUS_SENTINEL_PATH
+    )
+    exec_020_raw = d121.commit_bytes(ROOT, source_head, d120.SENTINEL_PATH)
 
     assert files[d120.PREVIOUS_SENTINEL_PATH] == {
         "bytes": len(previous_raw),

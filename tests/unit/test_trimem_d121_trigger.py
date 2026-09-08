@@ -18,6 +18,7 @@ import trimem_d121_reseal as reseal
 import trimem_development_trigger_d120 as d120
 import trimem_development_trigger_d121 as d121
 import trimem_development_trigger_d122 as d122
+import trimem_development_trigger_d123 as d123
 
 
 def _fixture_bytes() -> bytes:
@@ -270,4 +271,8 @@ def test_d121_history_has_one_exact_spent_exec_021() -> None:
     assert request["request_id"] == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_021"
     assert request["request_path"] == d122.PREVIOUS_SENTINEL_PATH
     assert request["source_head"] == d122.PREVIOUS_SOURCE_HEAD
-    assert not (ROOT / d122.FUTURE_SENTINEL_PATH).exists()
+    future = ROOT / d122.FUTURE_SENTINEL_PATH
+    if future.exists():
+        assert d123.validate_optional_exec_022_boundary(ROOT) is not None
+    else:
+        assert d123.validate_optional_exec_022_boundary(ROOT) is None

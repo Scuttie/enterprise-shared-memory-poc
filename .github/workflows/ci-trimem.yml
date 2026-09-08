@@ -25,12 +25,12 @@ jobs:
         with:
           python-version: 3.11.10
           cache: ""
-      - name: Rehearse dependency-free D1.22 boundary
+      - name: Rehearse dependency-free D1.23 boundary
         run: |
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
           python -I -S scripts/trimem_compiled_prefix_alias.py --help
-          python -I -S scripts/trimem_development_trigger_d122.py --help
-          python -I -S scripts/trimem_d122_reseal.py --help
+          python -I -S scripts/trimem_development_trigger_d123.py --help
+          python -I -S scripts/trimem_d123_reseal.py --help
           python -I -S scripts/trimem_d119_approval_secret.py --help
       - name: Install hash-locked environment
         run: |
@@ -48,7 +48,7 @@ jobs:
         run: python scripts/make_handoff_manifest.py --check
       - name: Scan tracked source for forbidden credentials and host paths
         run: python scripts/release_check.py --secrets
-      - name: Verify committed freeze and D1.22 no-execution-authority boundary
+      - name: Verify committed freeze and D1.23 source or sentinel-only boundary
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
           python -I -S scripts/trimem_d113_gate_contract.py \
@@ -57,8 +57,8 @@ jobs:
             --fixture tests/fixtures/trimem_d114/exec_013_post_setup_failure.json
           python -I -S scripts/trimem_d115_gate_contract.py \
             --fixture tests/fixtures/trimem_d115/exec_014_loader_failure.json
-          python -I -S scripts/trimem_d122_reseal.py --check
-          python -I -S scripts/trimem_development_trigger_d122.py \
+          python -I -S scripts/trimem_d123_reseal.py --check
+          python -I -S scripts/trimem_development_trigger_d123.py \
             --repository "$GITHUB_WORKSPACE" \
             --validate-current
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
@@ -68,12 +68,16 @@ jobs:
           import subprocess
           import sys
 
+          sentinel_present = Path(
+              "artifacts/trimem_v1/exec_requests/"
+              "DEVELOPMENT_TUNING_EXEC_REQUEST_022.json"
+          ).is_file()
           cases = (
               (
                   "benchmark-approval",
-                  1,
-                  [
-                      "explicit request-creation authority for `_022` is required"
+                  0 if sentinel_present else 1,
+                  [] if sentinel_present else [
+                      "exact fresh `_022` sentinel is required"
                   ],
               ),
               (
@@ -120,14 +124,14 @@ jobs:
               expected = {
                   "blockers": expected_blockers,
                   "endpoint": (
-                      "QDRANT_RLIMIT_NOFILE_PORTABILITY_FAILURE"
+                      "TRIMEM_V1_READY_FOR_EXEC_022_REQUEST"
                   ),
                   "level": level,
                   "status": "PASS" if not expected_blockers else "FAIL_CLOSED",
               }
               if observed != expected:
                   raise SystemExit(
-                      f"{level}: expected exact D1.22 readiness report {expected!r}, "
+                      f"{level}: expected exact D1.23 readiness report {expected!r}, "
                       f"got {observed!r}"
                   )
               if "official_grader_viability" in report:
@@ -150,6 +154,17 @@ jobs:
               }
               if observed_split != expected_split:
                   raise SystemExit(
-                      f"{level}: D1.22 split status differs: {observed_split!r}"
+                      f"{level}: D1.23 split status differs: {observed_split!r}"
+                  )
+              expected_dev_approval = (
+                  level == "benchmark-approval" and sentinel_present
+              )
+              if report.get("dev_approval_allowed") is not expected_dev_approval:
+                  raise SystemExit(
+                      f"{level}: D1.23 approval eligibility differs"
+                  )
+              if report.get("dev_execution_allowed") is not False:
+                  raise SystemExit(
+                      f"{level}: execution became allowed without external approval"
                   )
           PY

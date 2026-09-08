@@ -1,4 +1,4 @@
-"""Immutable D1.10-D1.20 history and the current zero-authority D1.21 seal."""
+"""Immutable D1.10-D1.22 history and the current D1.23 activation seal."""
 from __future__ import annotations
 
 import hashlib
@@ -26,7 +26,8 @@ import trimem_development_trigger_d118 as d118_trigger  # noqa: E402
 import trimem_development_trigger_d119 as d119_trigger  # noqa: E402
 import trimem_development_trigger_d120 as d120_trigger  # noqa: E402
 import trimem_development_trigger_d121 as d121_trigger  # noqa: E402
-import trimem_development_trigger_d122 as current_trigger  # noqa: E402
+import trimem_development_trigger_d122 as d122_trigger  # noqa: E402
+import trimem_development_trigger_d123 as current_trigger  # noqa: E402
 
 
 CURRENT_STATUS_FIELDS = {
@@ -76,33 +77,39 @@ def test_exec_010_failure_remains_incomplete_and_pre_result() -> None:
     }
 
 
-def test_exec_021_is_spent_and_022_remains_unauthorized() -> None:
+def test_exec_021_is_spent_and_022_creation_only_is_authorized() -> None:
     readiness = read("artifacts/trimem_v1/readiness_requirements.json")
     authority = readiness["development_authorization_boundary"]
 
     assert readiness[
         "historical_development_exec_021_qdrant_nofile_portability_failure"
-    ] == current_trigger.current_failure_record()
+    ] == d122_trigger.current_failure_record()
     assert readiness["current_development_activation"] == (
-        current_trigger.current_recovery_record()
+        current_trigger.current_activation_record()
     )
     assert authority["historical_failed_request_id"] == (
         "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_021"
     )
     assert authority["historical_failed_request_path"] == (
-        current_trigger.PREVIOUS_SENTINEL_PATH
+        d122_trigger.PREVIOUS_SENTINEL_PATH
     )
     assert authority["request_021_attempt_one_consumed"] is True
     assert authority["request_021_attempt_two_allowed"] is False
     assert authority["request_021_rerun_allowed"] is False
-    assert authority["request_022_creation_authorized"] is False
+    assert authority["request_022_creation_authorized"] is True
     assert authority["request_022_created"] is False
     assert authority["request_022_execution_authorized"] is False
+    assert authority["external_execution_approval_received"] is False
+    assert authority["required_external_authorization"] == (
+        current_trigger.REQUIRED_EXTERNAL_AUTHORIZATION
+    )
     assert authority["cross_run_resume_allowed"] is False
     assert authority["historical_partial_results_reusable"] is False
     assert authority["partial_checkpoint_selection_allowed"] is False
-    assert authority["required_external_authorization"] is None
-    assert authority["fresh_execution_request_creation_authorized"] is False
+    assert authority["recovery_authorization"] == (
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_022_REQUEST_CREATION_APPROVED_ONCE"
+    )
+    assert authority["fresh_execution_request_creation_authorized"] is True
 
 
 def test_historical_exec_015_through_020_actuals_remain_frozen() -> None:

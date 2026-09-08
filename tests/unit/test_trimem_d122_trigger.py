@@ -6,12 +6,15 @@ import json
 from pathlib import Path
 import sys
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-import trimem_d122_reseal as reseal  # noqa: E402
+import trimem_d123_reseal as d123_reseal  # noqa: E402
 import trimem_development_trigger_d122 as d122  # noqa: E402
+import trimem_development_trigger_d123 as d123  # noqa: E402
 
 
 def test_d122_exact_spent_exec_021_identity() -> None:
@@ -95,8 +98,14 @@ def test_d122_resume_and_authority_boundary_is_fail_closed() -> None:
     assert boundary["request_022_creation_authorized"] is False
     assert boundary["request_022_execution_authorized"] is False
     assert not hasattr(d122, "write_request")
-    d122.validate_no_exec_022(ROOT)
-    assert not (ROOT / d122.FUTURE_SENTINEL_PATH).exists()
+    future = ROOT / d122.FUTURE_SENTINEL_PATH
+    if future.exists():
+        with pytest.raises(d122.D122RecoveryError, match="unauthorized"):
+            d122.validate_no_exec_022(ROOT)
+        assert d123.validate_optional_exec_022_boundary(ROOT) is not None
+    else:
+        d122.validate_no_exec_022(ROOT)
+        assert d123.validate_optional_exec_022_boundary(ROOT) is None
 
 
 def test_d122_qdrant_contract_is_exact_and_source_enforced() -> None:
@@ -113,7 +122,11 @@ def test_d122_qdrant_contract_is_exact_and_source_enforced() -> None:
 
 
 def test_d122_reseal_builds_pending_no_authority_artifacts() -> None:
-    amendment, inventory = reseal.build_artifacts()
+    baseline = d123_reseal.validate_d122_baseline()
+    assert baseline["source_head"] == d123_reseal.D122_BASELINE_HEAD
+    assert baseline["status"] == "PASS"
+    amendment = json.loads((ROOT / d122.AMENDMENT_PATH).read_text(encoding="utf-8"))
+    inventory = json.loads((ROOT / d122.INVENTORY_PATH).read_text(encoding="utf-8"))
     assert amendment["schema"] == d122.AMENDMENT_SCHEMA
     assert inventory["schema"] == d122.INVENTORY_SCHEMA
     assert amendment["status"] == d122.AMENDMENT_STATUS

@@ -347,7 +347,7 @@ def test_protocol_canary_and_scientific_cap_arithmetic_is_exact():
     assert combined["output_tokens"] == 4_718_602
 
 
-def test_workflow_preserves_execution_order_while_022_route_is_not_authorized():
+def test_workflow_preserves_execution_order_while_022_execution_is_not_authorized():
     workflow = (ROOT / ".github/workflows/trimem-benchmark.yml").read_text(
         encoding="utf-8"
     )
@@ -367,8 +367,8 @@ def test_workflow_preserves_execution_order_while_022_route_is_not_authorized():
     scientific = workflow.index("Execute frozen serial streams with one atomic phase ledger")
     assert checkout_rehearsal < canary < image_pull < scientific
     assert active_request == "DEVELOPMENT_TUNING_EXEC_REQUEST_022.json"
-    assert active_request not in workflow
-    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_021.json" in workflow
+    assert workflow.count(active_request) == 1
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_021.json" not in workflow
     assert "DEVELOPMENT_TUNING_EXEC_REQUEST_019.json" not in workflow
     assert "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json" not in workflow
     assert "DEVELOPMENT_TUNING_EXEC_REQUEST_017.json" not in workflow

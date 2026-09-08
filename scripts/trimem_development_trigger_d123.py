@@ -198,6 +198,7 @@ ALLOWED_ACTIVATION_PATHS = frozenset(
         "scripts/trimem_benchmark_matrix.py",
         "scripts/trimem_benchmark_run.py",
         "scripts/trimem_freeze.py",
+        "scripts/trimem_multi_swe_contract.py",
         "scripts/trimem_verify_ready.py",
         "tests/unit/test_trimem_benchmark_readiness.py",
         "tests/unit/test_trimem_d110_status_and_reseal.py",
@@ -205,9 +206,11 @@ ALLOWED_ACTIVATION_PATHS = frozenset(
         "tests/unit/test_trimem_d121_trigger.py",
         "tests/unit/test_trimem_d122_trigger.py",
         "tests/unit/test_trimem_d123_trigger.py",
+        "tests/unit/test_trimem_d16_native_action.py",
         "tests/unit/test_trimem_d16_native_action_protocol.py",
         "tests/unit/test_trimem_dev_toolchain_workflows.py",
         "tests/unit/test_trimem_development_trigger.py",
+        "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py",
     }
 )
 ALLOWED_RECOVERY_PATHS = ALLOWED_ACTIVATION_PATHS
@@ -228,10 +231,13 @@ REQUIRED_ACTIVATION_CHANGES: dict[str, str] = {
     "scripts/trimem_benchmark_matrix.py": "M",
     "scripts/trimem_benchmark_run.py": "M",
     "scripts/trimem_freeze.py": "M",
+    "scripts/trimem_multi_swe_contract.py": "M",
     "scripts/trimem_verify_ready.py": "M",
     "tests/unit/test_trimem_d123_trigger.py": "A",
+    "tests/unit/test_trimem_d16_native_action.py": "M",
     "tests/unit/test_trimem_dev_toolchain_workflows.py": "M",
     "tests/unit/test_trimem_development_trigger.py": "M",
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py": "M",
 }
 REQUIRED_RECOVERY_CHANGES = REQUIRED_ACTIVATION_CHANGES
 
@@ -245,6 +251,7 @@ IMPLEMENTATION_SEAL_PATHS = frozenset(
         REPORT_PATH,
         "scripts/trimem_benchmark_matrix.py",
         "scripts/trimem_benchmark_run.py",
+        "scripts/trimem_multi_swe_contract.py",
         "scripts/trimem_verify_ready.py",
     }
 )
@@ -350,8 +357,7 @@ def _validate_previous_run_fixture(
         and value.get("pass_at_1") is None
         and value.get("actuals") == HISTORICAL_EXECUTION_ACTUALS
         and value.get("workflow_run", {}).get("id") == PREVIOUS_RUN_ID
-        and value.get("workflow_run", {}).get("run_attempt")
-        == PREVIOUS_RUN_ATTEMPT,
+        and value.get("workflow_run", {}).get("attempt") == PREVIOUS_RUN_ATTEMPT,
         "EXEC `_021` partial-science evidence differs",
     )
     return value

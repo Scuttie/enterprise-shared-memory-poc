@@ -168,6 +168,16 @@ def test_d123_preserves_the_exact_d122_baseline() -> None:
     )
 
 
+def test_d123_previous_run_fixture_binds_the_recorded_attempt(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw = (ROOT / d123.PREVIOUS_FAILURE_FIXTURE_PATH).read_bytes()
+    monkeypatch.setattr(d123, "commit_bytes", lambda *_args: raw)
+    observed = d123._validate_previous_run_fixture(ROOT, "a" * 40)
+    assert observed["workflow_run"]["id"] == d123.PREVIOUS_RUN_ID
+    assert observed["workflow_run"]["attempt"] == d123.PREVIOUS_RUN_ATTEMPT
+
+
 def test_d123_fresh_campaign_caps_and_nonreuse_are_exact() -> None:
     assert d123.FRESH_EXECUTION_CONTRACT == {
         "cross_run_resume_allowed": False,

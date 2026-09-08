@@ -114,7 +114,7 @@ TRIGGER_PATH = "scripts/trimem_development_trigger_d119.py"
 APPROVAL_SECRET_PATH = "scripts/trimem_d119_approval_secret.py"
 CHECKOUT_REHEARSAL_PATH = d118.CHECKOUT_REHEARSAL_PATH
 EXACT_HEAD_GATE_WORKFLOW_PATH = ".github/workflows/ci-trimem-dev-toolchain.yml"
-LOADER_REHEARSAL_COLLECTOR_PATH = d118.LOADER_REHEARSAL_COLLECTOR_PATH
+LOADER_REHEARSAL_COLLECTOR_PATH = "scripts/trimem_d119_loader_rehearsal.py"
 GRADER_FACTORY_REHEARSAL_PATH = d118.GRADER_FACTORY_REHEARSAL_PATH
 
 FREEZE_PATH = d118.FREEZE_PATH
@@ -164,6 +164,7 @@ ALLOWED_RECOVERY_PATHS = frozenset(
         "artifacts/trimem_v1/readiness_requirements.json",
         REPORT_PATH,
         APPROVAL_SECRET_PATH,
+        LOADER_REHEARSAL_COLLECTOR_PATH,
         "scripts/trimem_benchmark_matrix.py",
         "scripts/trimem_benchmark_run.py",
         "scripts/trimem_freeze.py",
@@ -193,6 +194,7 @@ REQUIRED_RECOVERY_CHANGES = {
     "artifacts/trimem_v1/readiness_requirements.json": "M",
     REPORT_PATH: "A",
     APPROVAL_SECRET_PATH: "A",
+    LOADER_REHEARSAL_COLLECTOR_PATH: "A",
     "scripts/trimem_benchmark_matrix.py": "M",
     "scripts/trimem_benchmark_run.py": "M",
     "scripts/trimem_freeze.py": "M",
@@ -917,6 +919,7 @@ def _validate_documents(repository: Path, source_head: str) -> None:
     expected_implementation_paths = {
         EXPECTED_WORKFLOW_PATH,
         APPROVAL_SECRET_PATH,
+        LOADER_REHEARSAL_COLLECTOR_PATH,
         "scripts/trimem_benchmark_matrix.py",
         "scripts/trimem_benchmark_run.py",
         TRIGGER_PATH,

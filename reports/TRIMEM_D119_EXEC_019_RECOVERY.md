@@ -72,6 +72,20 @@ approval bound to the new sentinel child, source freeze, request bytes,
 workflow run ID, attempt `1`, actor, timestamp, nonce, legal acceptance, caps,
 and exact OpenAI-key commitment.
 
+## Pre-request loader-wrapper correction
+
+Before `_019` existed, the local writer collected fresh D1.19 runner readiness
+and then failed closed in the exact full-loader rehearsal. The host produced a
+`trimem/self-hosted-runner-readiness/1.19` record, but the separate WSL process
+still entered through the inherited D1.18 wrapper and rebound the validator to
+schema `1.18`. It therefore rejected the record with `runner readiness identity
+differs`. This was a credential-free request-construction rehearsal, not a DEV
+execution attempt: no sentinel or secret existed, and provider, model, image,
+task-arm, grader-container, official-grader, token, and USD actuals were all
+zero. D1.19 now has its own subprocess wrapper, which binds the existing strict
+D1.15 collector to the complete D1.19 runtime context without weakening any
+readiness validator.
+
 ## Preserved scientific identity and `_019` authority boundary
 
 D1.19 preserves exact model `gpt-5.4-mini-2026-03-17`, reasoning effort
@@ -82,6 +96,8 @@ is changed.
 
 Only a sentinel-only `_019` child may be created after exact-source CI, fresh
 writer-runner readiness, loader, grader-factory, and checkout rehearsals.
+The loader rehearsal enters through the D1.19 subprocess wrapper so the
+separate WSL process validates the D1.19 runner-readiness schema and identity.
 Protected execution still requires a separate external approval. Until that
 execution completes, performance remains `NOT_MEASURED` and this recovery is
 not a final endpoint.

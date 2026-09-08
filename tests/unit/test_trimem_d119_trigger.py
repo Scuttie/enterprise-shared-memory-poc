@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_development_trigger_d118 as d118
 import trimem_development_trigger_d119 as d119
+import trimem_d119_loader_rehearsal as d119_collector
 
 
 def _fixture_bytes() -> bytes:
@@ -175,8 +176,14 @@ def test_d119_accounting_keeps_d118_zero_and_d117_partial_separate() -> None:
 
 def test_d119_context_propagates_and_restores_inherited_bindings() -> None:
     modules = (d118, d119.d115, d119.d114)
+    missing = object()
     before = {
-        module: (module.REQUEST_ID, module.REQUEST_SCHEMA, module.SENTINEL_PATH)
+        module: (
+            module.REQUEST_ID,
+            module.REQUEST_SCHEMA,
+            module.SENTINEL_PATH,
+            getattr(module, "LOADER_REHEARSAL_COLLECTOR_PATH", missing),
+        )
         for module in modules
     }
 
@@ -185,6 +192,11 @@ def test_d119_context_propagates_and_restores_inherited_bindings() -> None:
             assert module.REQUEST_ID == d119.REQUEST_ID
             assert module.REQUEST_SCHEMA == d119.REQUEST_SCHEMA
             assert module.SENTINEL_PATH == d119.SENTINEL_PATH
+        for module in (d118, d119.d115):
+            assert (
+                module.LOADER_REHEARSAL_COLLECTOR_PATH
+                == d119.LOADER_REHEARSAL_COLLECTOR_PATH
+            )
         with d119._d119_runtime_context():
             assert d118.REQUEST_ID == d119.REQUEST_ID
 
@@ -193,12 +205,50 @@ def test_d119_context_propagates_and_restores_inherited_bindings() -> None:
             module.REQUEST_ID,
             module.REQUEST_SCHEMA,
             module.SENTINEL_PATH,
+            getattr(module, "LOADER_REHEARSAL_COLLECTOR_PATH", missing),
         ) == before[module]
+
+
+def test_d119_loader_subprocess_wrapper_binds_parent_collector(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observed: list[tuple[object, object, object, object]] = []
+
+    def parent_main(argv: object = None) -> int:
+        observed.append(
+            (
+                argv,
+                d119.d118.RUNNER_READINESS_SCHEMA,
+                d119.d115.RUNNER_READINESS_SCHEMA,
+                d119.d115.LOADER_REHEARSAL_COLLECTOR_PATH,
+            )
+        )
+        return 29
+
+    monkeypatch.setattr(d119_collector.d115_collector, "main", parent_main)
+    argv = ["--synthetic"]
+    assert d119_collector.main(argv) == 29
+    assert observed == [
+        (
+            argv,
+            d119.RUNNER_READINESS_SCHEMA,
+            d119.RUNNER_READINESS_SCHEMA,
+            d119.LOADER_REHEARSAL_COLLECTOR_PATH,
+        )
+    ]
 
 
 def test_d119_new_sources_are_required_and_bound() -> None:
     assert d119.REQUIRED_RECOVERY_CHANGES[d119.TRIGGER_PATH] == "A"
     assert d119.REQUIRED_RECOVERY_CHANGES[d119.APPROVAL_SECRET_PATH] == "A"
+    assert (
+        d119.REQUIRED_RECOVERY_CHANGES[d119.LOADER_REHEARSAL_COLLECTOR_PATH]
+        == "A"
+    )
+    assert (
+        d119.ACTIVATION_BINDING_PATHS["loader_rehearsal_collector_sha256"]
+        == d119.LOADER_REHEARSAL_COLLECTOR_PATH
+    )
     assert (
         d119.ACTIVATION_BINDING_PATHS["approval_secret_producer_sha256"]
         == d119.APPROVAL_SECRET_PATH

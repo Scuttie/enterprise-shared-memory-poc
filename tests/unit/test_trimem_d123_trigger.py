@@ -168,6 +168,18 @@ def test_d123_preserves_the_exact_d122_baseline() -> None:
     )
 
 
+def test_d123_freeze_allowlist_preserves_the_spent_exec_021_request() -> None:
+    import trimem_freeze
+
+    assert d123.PREVIOUS_SENTINEL_PATH in trimem_freeze.ARTIFACT_PATHS
+    freeze = json.loads((ROOT / d123.FREEZE_PATH).read_text(encoding="utf-8"))
+    expected = {
+        "bytes": d123.PREVIOUS_SENTINEL_BYTES,
+        "sha256": d123.PREVIOUS_SENTINEL_SHA256,
+    }
+    assert freeze["files"][d123.PREVIOUS_SENTINEL_PATH] == expected
+
+
 def test_d123_previous_run_fixture_binds_the_recorded_attempt(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -88,6 +88,7 @@ ARTIFACT_PATHS = (
     "tests/fixtures/trimem_d122/exec_021_qdrant_nofile_portability_failure.json",
     "artifacts/trimem_v1/development_exec_022_recovery_amendment.json",
     "artifacts/trimem_v1/development_exec_022_recovery_inventory.json",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_021.json",
     "tests/fixtures/trimem_d121/exec_020_swe_p2p_outcome_misclassification.json",
     "artifacts/trimem_v1/development_exec_021_recovery_amendment.json",
     "artifacts/trimem_v1/development_exec_021_recovery_inventory.json",
@@ -757,13 +758,16 @@ def build_freeze(root: Path) -> dict[str, Any]:
 def git_untracked_frozen_paths(root: Path) -> list[str]:
     required = frozen_paths(root)
     completed = subprocess.run(
-        ["git", "ls-files", "--", *required],
+        ["git", "ls-files", "-z"],
         cwd=root,
         capture_output=True,
-        text=True,
         check=True,
     )
-    tracked = {line.replace("\\", "/") for line in completed.stdout.splitlines() if line}
+    tracked = {
+        item.decode("utf-8", errors="strict").replace("\\", "/")
+        for item in completed.stdout.split(b"\0")
+        if item
+    }
     return sorted(set(required) - tracked)
 
 

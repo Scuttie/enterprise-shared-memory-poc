@@ -25,11 +25,12 @@ jobs:
         with:
           python-version: 3.11.10
           cache: ""
-      - name: Rehearse dependency-free D1.18 boundary
+      - name: Rehearse dependency-free D1.19 boundary
         run: |
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
           python -I -S scripts/trimem_compiled_prefix_alias.py --help
-          python -I -S scripts/trimem_development_trigger_d118.py --help
+          python -I -S scripts/trimem_development_trigger_d119.py --help
+          python -I -S scripts/trimem_d119_approval_secret.py --help
       - name: Install hash-locked environment
         run: |
           python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
@@ -46,7 +47,7 @@ jobs:
         run: python scripts/make_handoff_manifest.py --check
       - name: Scan tracked source for forbidden credentials and host paths
         run: python scripts/release_check.py --secrets
-      - name: Verify committed freeze and D1.18 no-execution-authority boundary
+      - name: Verify committed freeze and D1.19 no-execution-authority boundary
         run: |
           python scripts/trimem_freeze.py --check --require-git-tracked
           python -I -S scripts/trimem_d113_gate_contract.py \
@@ -55,7 +56,7 @@ jobs:
             --fixture tests/fixtures/trimem_d114/exec_013_post_setup_failure.json
           python -I -S scripts/trimem_d115_gate_contract.py \
             --fixture tests/fixtures/trimem_d115/exec_014_loader_failure.json
-          python -I -S scripts/trimem_development_trigger_d118.py \
+          python -I -S scripts/trimem_development_trigger_d119.py \
             --repository "$GITHUB_WORKSPACE" \
             --validate-current
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
@@ -67,14 +68,14 @@ jobs:
 
           sentinel_present = Path(
               "artifacts/trimem_v1/exec_requests/"
-              "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json"
+              "DEVELOPMENT_TUNING_EXEC_REQUEST_019.json"
           ).is_file()
           cases = (
               (
                   "benchmark-approval",
                   0 if sentinel_present else 1,
                   [] if sentinel_present else [
-                      "fresh _018 zero-authority sentinel is required"
+                      "fresh _019 zero-authority sentinel is required"
                   ],
               ),
               (
@@ -121,14 +122,14 @@ jobs:
               expected = {
                   "blockers": expected_blockers,
                   "endpoint": (
-                      "TRIMEM_V1_READY_FOR_EXEC_018_REQUEST"
+                      "TRIMEM_V1_READY_FOR_EXEC_019_REQUEST"
                   ),
                   "level": level,
                   "status": "PASS" if not expected_blockers else "FAIL_CLOSED",
               }
               if observed != expected:
                   raise SystemExit(
-                      f"{level}: expected exact D1.18 readiness report {expected!r}, "
+                      f"{level}: expected exact D1.19 readiness report {expected!r}, "
                       f"got {observed!r}"
                   )
               if "official_grader_viability" in report:
@@ -139,10 +140,10 @@ jobs:
                   ),
                   "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
                   "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": (
-                      "NOT_REACHED_ON_EXEC_017"
+                      "NOT_REACHED_ON_EXEC_018"
                   ),
                   "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": (
-                      "NOT_REACHED_ON_EXEC_017"
+                      "NOT_REACHED_ON_EXEC_018"
                   ),
                   "PERFORMANCE": "NOT_MEASURED",
               }
@@ -151,6 +152,6 @@ jobs:
               }
               if observed_split != expected_split:
                   raise SystemExit(
-                      f"{level}: D1.18 split status differs: {observed_split!r}"
+                      f"{level}: D1.19 split status differs: {observed_split!r}"
                   )
           PY

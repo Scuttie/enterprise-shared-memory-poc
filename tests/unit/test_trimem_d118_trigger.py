@@ -343,11 +343,15 @@ def test_d118_build_request_binds_rehearsal_and_launcher_fix(
 def test_d118_workflow_requires_exact_driver_and_factory_rehearsal(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    # D1.19 intentionally moves the live route to _019. Exercise D1.18 against
+    # its immutable correction-source blobs instead of the newer live files.
+    d118_source_head = "3236bd546ff581e396ca6123bb1655bad5294ce4"
     files = {
-        d118.EXACT_HEAD_GATE_WORKFLOW_PATH: (
-            ROOT / d118.EXACT_HEAD_GATE_WORKFLOW_PATH
-        ).read_bytes(),
-        d118.EXPECTED_WORKFLOW_PATH: (ROOT / d118.EXPECTED_WORKFLOW_PATH).read_bytes(),
+        path: d118.commit_bytes(ROOT, d118_source_head, path)
+        for path in (
+            d118.EXACT_HEAD_GATE_WORKFLOW_PATH,
+            d118.EXPECTED_WORKFLOW_PATH,
+        )
     }
     monkeypatch.setattr(d118, "commit_bytes", lambda _r, _h, path: files[path])
     d118._validate_workflow(ROOT, "a" * 40)

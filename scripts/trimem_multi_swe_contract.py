@@ -160,6 +160,23 @@ D118_STATUS = (
 D118_CLASSIFICATION = (
     "POST_EXEC_017_PARTIAL_MODEL_PRE_GRADER_PYTHON_LAUNCHER_ALIAS_RECOVERY"
 )
+D119_AMENDMENT_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_019_recovery_amendment.json"
+)
+D119_INVENTORY_PATH = ROOT / (
+    "artifacts/trimem_v1/development_exec_019_recovery_inventory.json"
+)
+D119_AMENDMENT_SCHEMA = (
+    "trimem/development-exec-019-approval-secret-transport-amendment/1.0"
+)
+D119_INVENTORY_SCHEMA = (
+    "trimem/development-exec-019-approval-secret-transport-inventory/1.0"
+)
+D119_STATUS = (
+    "FROZEN_CREDENTIAL_FREE_EXEC_018_PRE_MODEL_APPROVAL_FAILURE_"
+    "READY_FOR_EXEC_019_REQUEST"
+)
+D119_CLASSIFICATION = "POST_EXEC_018_PRE_MODEL_APPROVAL_SECRET_TRANSPORT_RECOVERY"
 ENTRYPOINT_PATH = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
 REPORT_SEMANTICS_MODULE_PATH = ROOT / "scripts/trimem_multi_swe_report_semantics.py"
 REPORT_SEMANTICS_LOCK_PATH = (
@@ -227,6 +244,7 @@ D115_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 D116_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 D117_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 D118_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
+D119_LOCAL_VALIDATOR_OVERRIDES = frozenset({D18_CURRENT_AGGREGATE_PATH})
 
 
 class ContractError(ValueError):
@@ -1742,11 +1760,52 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
         d118_aggregate_sha256 != d117_aggregate_sha256,
         "D1.18 aggregate unexpectedly equals the historical D1.17 aggregate",
     )
-    current_aggregate_sha256 = d118_aggregate_sha256
+    d119_amendment = _strict_json_object(D119_AMENDMENT_PATH, "D1.19 amendment")
+    d119_inventory = _strict_json_object(D119_INVENTORY_PATH, "D1.19 inventory")
+    d119_amendment_implementation = d119_amendment.get("implementation_sha256")
+    d119_inventory_implementation = d119_inventory.get("implementation_sha256")
+    _require(
+        d119_amendment.get("schema") == D119_AMENDMENT_SCHEMA
+        and d119_amendment.get("status") == D119_STATUS
+        and d119_amendment.get("classification") == D119_CLASSIFICATION
+        and isinstance(d119_amendment_implementation, dict),
+        "D1.19 recovery amendment identity differs",
+    )
+    _require(
+        d119_inventory.get("schema") == D119_INVENTORY_SCHEMA
+        and d119_inventory.get("status") == D119_STATUS
+        and d119_inventory.get("classification") == D119_CLASSIFICATION
+        and isinstance(d119_inventory_implementation, dict),
+        "D1.19 recovery inventory identity differs",
+    )
+    _require(
+        d119_amendment_implementation == d119_inventory_implementation,
+        "D1.19 recovery implementation seals disagree",
+    )
+    d119_local_validator_overrides = (
+        set(d119_amendment_implementation) & set(LOCAL_VALIDATOR_ROLES)
+    )
+    _require(
+        d119_local_validator_overrides == D119_LOCAL_VALIDATOR_OVERRIDES,
+        "D1.19 local validator override set differs",
+    )
+    d119_aggregate_sha256 = d119_amendment_implementation.get(
+        D18_CURRENT_AGGREGATE_PATH
+    )
+    _require(
+        isinstance(d119_aggregate_sha256, str)
+        and SHA256.fullmatch(d119_aggregate_sha256) is not None,
+        "D1.19 aggregate implementation seal is missing",
+    )
+    _require(
+        d119_aggregate_sha256 != d118_aggregate_sha256,
+        "D1.19 aggregate unexpectedly equals the historical D1.18 aggregate",
+    )
+    current_aggregate_sha256 = d119_aggregate_sha256
 
     # The immutable Multi-SWE lock predates D1.8 and remains bound to its exact
     # starting blobs.  D1.10 separately seals the executable local validators
-    # at that correction, while D1.12 through D1.18 provide explicit successive
+    # at that correction, while D1.12 through D1.19 provide explicit successive
     # overrides for the benchmark matrix. D1.13 is loaded from
     # its exact source Git blobs and must remain byte-identical in the current
     # tree. Never rewrite a historical lock or amendment to make a changed live
@@ -1816,9 +1875,9 @@ def _verify_local_validator_files(contracts: dict[str, Any]) -> list[dict[str, A
             rows.get(path) == historical_observed,
             f"historical local validator byte lock differs: {path}",
         )
-        if path in D118_LOCAL_VALIDATOR_OVERRIDES:
-            expected_current_sha256 = d118_amendment_implementation.get(path)
-            current_generation = "D1.18"
+        if path in D119_LOCAL_VALIDATOR_OVERRIDES:
+            expected_current_sha256 = d119_amendment_implementation.get(path)
+            current_generation = "D1.19"
         else:
             d110_amendment_sha256 = d110_amendment_implementation.get(path)
             d110_inventory_sha256 = d110_inventory_implementation.get(path)

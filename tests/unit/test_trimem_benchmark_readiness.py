@@ -453,15 +453,17 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert "full official grader factory" in joined_requirements
     assert "lexical Python launcher aliases" in joined_requirements
     assert "synthetic three-adapter protected repetition" in joined_requirements
+    assert "Python binary stdin only" in joined_requirements
+    assert "live exact-zero/exact-three" in joined_requirements
     assert requirements["current_status"] == {
-        "CLASSIFICATION": readiness.D118_AMENDMENT_CLASSIFICATION,
+        "CLASSIFICATION": readiness.D119_AMENDMENT_CLASSIFICATION,
         "DEV_APPROVAL_ALLOWED": "NO",
         "DEV_EXECUTION_ALLOWED": "NO",
-        "DEV_SCIENTIFIC_STATUS": "STARTED_NO_COMPLETED_CELL_ON_EXEC_017",
-        "ENDPOINT": readiness.D118_ENDPOINT,
-        "FAILURE_SUBTYPE": readiness.D118_FAILURE_SUBTYPE,
+        "DEV_SCIENTIFIC_STATUS": "NOT_STARTED_ON_EXEC_018",
+        "ENDPOINT": readiness.D119_ENDPOINT,
+        "FAILURE_SUBTYPE": readiness.D119_FAILURE_SUBTYPE,
         "GRADER_EXEC_PACKAGE": "PASS",
-        **readiness.D118_STATUS_FIELDS,
+        **readiness.D119_STATUS_FIELDS,
         "SCIENTIFIC_RESULT": "NO_DEVELOPMENT_SCIENTIFIC_RESULT",
         "TRIMEM_SYSTEM_IMPLEMENTATION": "CREDENTIAL_FREE_GREEN",
     }
@@ -477,27 +479,27 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["prior_failed_run_reusable"] is False
     assert authorization["recovery_authorization_received"] is True
     assert authorization["recovery_authorization"] == (
-        "REQUEST_018_CREATION_AUTHORITY_RECEIVED"
+        "REQUEST_019_CREATION_AUTHORITY_RECEIVED"
     )
     assert authorization["external_execution_approval_received"] is False
     assert authorization["historical_failed_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_017"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_018"
     )
     assert authorization["historical_failed_request_path"].endswith(
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_017.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json"
     )
     assert authorization["fresh_execution_request"] == (
-        "REQUEST_018_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
+        "REQUEST_019_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
     )
     assert authorization["fresh_execution_request_creation_authorized"] is True
     assert authorization[
         "fresh_execution_request_requires_explicit_sentinel_authority"
     ] is True
     assert authorization["recovery_request_id"] == (
-        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_018"
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_019"
     )
     assert authorization["recovery_request_path"].endswith(
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_019.json"
     )
     assert authorization["request_003_final"] is True
     assert authorization["request_004_allowed_after_exact_remote_gates"] is False
@@ -565,23 +567,33 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
     assert authorization["request_017_rerun_allowed"] is False
     assert authorization[
         "request_018_allowed_after_exact_remote_gates_and_rehearsal"
+    ] is False
+    assert authorization["request_018_attempt_one_consumed"] is True
+    assert authorization["request_018_attempt_two_allowed"] is False
+    assert authorization["request_018_authorized"] is True
+    assert authorization["request_018_created"] is True
+    assert authorization["request_018_rerun_allowed"] is False
+    assert authorization[
+        "request_019_allowed_after_exact_remote_gates_and_rehearsal"
     ] is True
-    assert authorization["request_018_authorized"] is False
-    assert authorization["request_018_created"] is False
-    assert authorization["request_018_execution_authorized"] is False
+    assert authorization["request_019_authorized"] is False
+    assert authorization["request_019_created"] is False
+    assert authorization["request_019_execution_authorized"] is False
     assert authorization["fresh_dev_execution_approval_required"] is True
     assert authorization["rerun_allowed"] is False
     assert "_017" in authorization["meaning"]
     assert "18 paid generation calls" in authorization["meaning"]
+    assert "_018 attempt-1" in authorization["meaning"]
+    assert "zero model/API calls" in authorization["meaning"]
     assert "zero completed task-arm runs" in authorization["meaning"]
     assert "produced no score" in authorization["meaning"]
-    assert "cannot be rerun" in authorization["meaning"]
+    assert "Neither run may be rerun" in authorization["meaning"]
     assert "PRE_DEVELOPMENT" in authorization["selected_m2_checkpoint"]
     assert authorization["amendment_classification"] == (
-        readiness.D118_AMENDMENT_CLASSIFICATION
+        readiness.D119_AMENDMENT_CLASSIFICATION
     )
     assert authorization["amendment_evidence_path"].endswith(
-        "development_exec_018_recovery_amendment.json"
+        "development_exec_019_recovery_amendment.json"
     )
     assert authorization["solve_execution_contract_rehearsal_required_before_request_005"] is False
     service_boundary = requirements["credential_free_service_ci_boundary"]
@@ -830,13 +842,23 @@ def test_cost_history_and_post_smoke_readiness_are_non_circular() -> None:
         "total_tokens": 202_566,
         "total_usd": "0.170929500000",
     }
+    historical_exec_018 = requirements[
+        "historical_development_exec_018_approval_secret_bom_failure"
+    ]
+    assert historical_exec_018 == readiness.d119_trigger.current_failure_record()
+    assert historical_exec_018["scientific_status"] == "NOT_STARTED_ON_EXEC_018"
+    assert historical_exec_018["performance_measured"] is False
+    assert historical_exec_018["pass_at_1"] is None
+    assert historical_exec_018["observed_execution_actuals"] == (
+        readiness.d119_trigger.HISTORICAL_EXECUTION_ACTUALS
+    )
     current_activation = requirements["current_development_activation"]
-    assert current_activation == readiness.d118_trigger.current_recovery_record()
-    assert current_activation["consumed_exec_017_actuals"] == (
-        readiness.d118_trigger.HISTORICAL_EXECUTION_ACTUALS
+    assert current_activation == readiness.d119_trigger.current_recovery_record()
+    assert current_activation["consumed_exec_018_actuals"] == (
+        readiness.d119_trigger.HISTORICAL_EXECUTION_ACTUALS
     )
     assert current_activation["current_execution_actuals"] == (
-        readiness.d118_trigger.ZERO_CURRENT_EXECUTION_ACTUALS
+        readiness.d119_trigger.ZERO_CURRENT_EXECUTION_ACTUALS
     )
     assert current_activation["actual_execution_authorized"] is False
     assert current_activation["performance_measured"] is False
@@ -859,7 +881,7 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
 ) -> None:
     targets = readiness.validate_targets()
     derived = readiness.validate_readiness_plan(targets)
-    assert derived["current_status"]["ENDPOINT"] == readiness.D118_ENDPOINT
+    assert derived["current_status"]["ENDPOINT"] == readiness.D119_ENDPOINT
     assert derived["current_status"]["DEV_APPROVAL_ALLOWED"] == "NO"
     assert derived["current_status"]["DEV_EXECUTION_ALLOWED"] == "NO"
     assert derived["current_status"]["PERFORMANCE"] == "NOT_MEASURED"
@@ -884,8 +906,11 @@ def test_post_smoke_readiness_is_evidence_derived_and_fail_closed(
     assert derived[
         "historical_development_exec_017_python_launcher_alias_failure"
     ] == readiness.d118_trigger.current_failure_record()
+    assert derived[
+        "historical_development_exec_018_approval_secret_bom_failure"
+    ] == readiness.d119_trigger.current_failure_record()
     assert derived["current_development_activation"] == (
-        readiness.d118_trigger.current_recovery_record()
+        readiness.d119_trigger.current_recovery_record()
     )
     assert derived["historical_development_exec_011_activation_failure"] == (
         readiness.d111_reseal.current_failure_record()
@@ -988,35 +1013,45 @@ def test_d117_history_validation_preserves_exact_spent_exec_017() -> None:
     readiness.validate_d117_exec_017_recovery()
 
 
+def test_d118_history_validation_preserves_exact_zero_exec_018() -> None:
+    readiness.validate_d118_exec_018_recovery()
+
+
 @pytest.mark.parametrize(
     ("execution_head", "request_created"),
     ((None, False), ("f" * 40, True)),
 )
-def test_d118_recovery_validation_accepts_source_and_exact_sentinel_child(
+def test_d119_recovery_validation_accepts_source_and_exact_sentinel_child(
     monkeypatch: pytest.MonkeyPatch,
     execution_head: str | None,
     request_created: bool,
 ) -> None:
     monkeypatch.setattr(
-        readiness.d118_trigger,
-        "validate_optional_exec_018_boundary",
+        readiness.d119_trigger,
+        "validate_optional_exec_019_boundary",
         lambda _repository: execution_head,
     )
     monkeypatch.setattr(
-        readiness.d118_trigger,
+        readiness.d119_trigger,
         "validate_current_recovery",
         lambda _repository: {
-            "request_017_attempt_one_consumed": True,
-            "request_017_rerun_allowed": False,
-            "request_018_created": request_created,
-            "request_018_execution_authorized": False,
+            "request_018_attempt_one_consumed": True,
+            "request_018_rerun_allowed": False,
+            "request_019_created": request_created,
+            "request_019_execution_authorized": False,
+            "consumed_exec_018_actuals": (
+                readiness.d119_trigger.HISTORICAL_EXECUTION_ACTUALS
+            ),
+            "current_execution_actuals": (
+                readiness.d119_trigger.ZERO_CURRENT_EXECUTION_ACTUALS
+            ),
         },
     )
 
-    readiness.validate_d118_exec_018_recovery()
+    readiness.validate_d119_exec_019_recovery()
 
 
-def test_d118_source_blocks_preapproval_until_018_sentinel_but_routes_exec_approval(
+def test_d119_source_blocks_preapproval_until_019_sentinel_but_routes_exec_approval(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(readiness, "validate_d114_exec_014_recovery", lambda: None)
@@ -1024,13 +1059,14 @@ def test_d118_source_blocks_preapproval_until_018_sentinel_but_routes_exec_appro
     monkeypatch.setattr(readiness, "validate_d116_exec_016_recovery", lambda: None)
     monkeypatch.setattr(readiness, "validate_d117_exec_017_recovery", lambda: None)
     monkeypatch.setattr(readiness, "validate_d118_exec_018_recovery", lambda: None)
+    monkeypatch.setattr(readiness, "validate_d119_exec_019_recovery", lambda: None)
     monkeypatch.setattr(
-        readiness.d118_trigger,
-        "validate_optional_exec_018_boundary",
+        readiness.d119_trigger,
+        "validate_optional_exec_019_boundary",
         lambda _repository: None,
     )
     assert readiness.preapproval_blockers() == [
-        "fresh _018 zero-authority sentinel is required"
+        "fresh _019 zero-authority sentinel is required"
     ]
     approval_path = tmp_path / "approval.json"
     approval_path.write_text(
@@ -1278,8 +1314,8 @@ def test_benchmark_approval_cannot_disable_git_tracked_freeze(
     assert "endpoint" not in report
     assert "official_grader_viability" not in report
     assert {
-        key: report[key] for key in readiness.D118_STATUS_FIELDS
-    } == readiness.D118_STATUS_FIELDS
+        key: report[key] for key in readiness.D119_STATUS_FIELDS
+    } == readiness.D119_STATUS_FIELDS
 
 
 def test_readiness_report_derives_validated_post_smoke_state(
@@ -1858,9 +1894,10 @@ def test_committed_smoke_pass_has_exact_authoritative_execution(
     monkeypatch.setattr(readiness, "validate_d116_exec_016_recovery", lambda: None)
     monkeypatch.setattr(readiness, "validate_d117_exec_017_recovery", lambda: None)
     monkeypatch.setattr(readiness, "validate_d118_exec_018_recovery", lambda: None)
+    monkeypatch.setattr(readiness, "validate_d119_exec_019_recovery", lambda: None)
     monkeypatch.setattr(
-        readiness.d118_trigger,
-        "validate_optional_exec_018_boundary",
+        readiness.d119_trigger,
+        "validate_optional_exec_019_boundary",
         lambda _repository: None,
     )
     smoke = _read(ROOT / "artifacts/trimem_v1/grader_smoke_result.json")
@@ -1880,7 +1917,7 @@ def test_committed_smoke_pass_has_exact_authoritative_execution(
         "total_usd": 0,
     }
     assert readiness.preapproval_blockers() == [
-        "fresh _018 zero-authority sentinel is required"
+        "fresh _019 zero-authority sentinel is required"
     ]
 
 
@@ -3685,14 +3722,15 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     static = workflows[0].read_text(encoding="utf-8")
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
-    assert "D1.18 no-execution-authority boundary" in static
-    assert "scripts/trimem_development_trigger_d118.py" in static
+    assert "D1.19 no-execution-authority boundary" in static
+    assert "scripts/trimem_development_trigger_d119.py" in static
+    assert "scripts/trimem_d119_approval_secret.py --help" in static
     assert "--validate-current" in static
     assert "python scripts/trimem_d115_reseal.py --check" not in static
     assert "scripts/trimem_d115_gate_contract.py" in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
-    assert "expected exact D1.18 readiness report" in static
+    assert "expected exact D1.19 readiness report" in static
     assert "broad grader viability leaked" in static
     assert '"benchmark-exec"' in static
     service = workflows[1].read_text(encoding="utf-8")
@@ -3934,11 +3972,12 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "      - codex/trimem-coder-v1" in benchmark
     assert (
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_019.json"
     ) in benchmark
     assert "branch-trigger-preflight:" in benchmark
     assert "needs: branch-trigger-preflight" in benchmark
-    assert "group: trimem-v1-development-tuning-exec-018" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-019" in benchmark
+    assert "group: trimem-v1-development-tuning-exec-018" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-017" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-014" not in benchmark
     assert "group: trimem-v1-development-tuning-exec-013" not in benchmark
@@ -3956,7 +3995,8 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in preflight
     )
-    assert "python -I -S scripts/trimem_development_trigger_d118.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d119.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d118.py" not in preflight
     assert "python -I -S scripts/trimem_development_trigger_d117.py" not in preflight
     assert "python -I -S scripts/trimem_development_trigger_d116.py" not in preflight
     assert "python -I -S scripts/trimem_development_trigger_d115.py" not in preflight

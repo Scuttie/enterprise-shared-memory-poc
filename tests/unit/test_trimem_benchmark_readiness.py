@@ -1168,6 +1168,35 @@ def test_d121_recovery_validation_accepts_source_and_exact_sentinel_child(
     readiness.validate_d121_exec_021_recovery()
 
 
+def test_d122_history_validation_uses_the_immutable_d123_baseline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[Path] = []
+
+    def validate_baseline(repository: Path) -> dict[str, object]:
+        calls.append(repository)
+        return {
+            "request_021_attempt_one_consumed": True,
+            "request_021_rerun_allowed": False,
+            "request_022_creation_authorized": False,
+            "request_022_execution_authorized": False,
+        }
+
+    monkeypatch.setattr(
+        readiness.d123_trigger, "validate_d122_baseline", validate_baseline
+    )
+    monkeypatch.setattr(
+        readiness.d122_trigger,
+        "validate_recovery_source",
+        lambda *_args, **_kwargs: pytest.fail(
+            "current D1.23 HEAD must not be validated as a D1.22 recovery diff"
+        ),
+    )
+
+    readiness.validate_d122_exec_021_qdrant_recovery()
+    assert calls == [readiness.ROOT]
+
+
 @pytest.mark.parametrize("execution_head", (None, "f" * 40))
 def test_d123_activation_validation_accepts_only_source_or_exact_sentinel_child(
     monkeypatch: pytest.MonkeyPatch,

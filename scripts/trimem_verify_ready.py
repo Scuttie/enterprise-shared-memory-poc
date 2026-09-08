@@ -5367,7 +5367,10 @@ def validate_d121_exec_021_recovery() -> None:
 def validate_d122_exec_021_qdrant_recovery() -> None:
     """Validate spent EXEC-021 history and the no-authority D1.22 seal."""
 
-    result = d122_trigger.validate_recovery_source(ROOT)
+    # D1.22 is immutable history once the D1.23 activation exists.  Validate
+    # it at D1.23's exact baseline commit; applying D1.22's narrow recovery
+    # diff to the current D1.23 head would reject legitimate later changes.
+    result = d123_trigger.validate_d122_baseline(ROOT)
     failure = d122_trigger.current_failure_record()
     recovery = d122_trigger.current_recovery_record()
     require(

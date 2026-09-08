@@ -397,7 +397,16 @@ def test_preflight_uses_exact_roots_environment_and_zero_execution_counters(
     ]
     assert len(runner.calls) == 4
     assert all("OPENAI_API_KEY" not in environment for _, _, environment in runner.calls)
-    assert runner.calls[2][1] == swe_root.resolve()
+    assert runner.calls[2][1] != swe_root.resolve()
+    assert swe_root.resolve() not in runner.calls[2][1].parents
+    assert runner.calls[2][0][:5] == [
+        str(binary.resolve()),
+        "-P",
+        str(official_grader.SWE_ENTRYPOINT),
+        "--harness-root",
+        str(swe_root.resolve()),
+    ]
+    assert runner.calls[2][0][-1] == "--self-check"
     assert runner.calls[3][1] == multi_root.resolve()
     assert runner.calls[3][0][0] == str(binary.resolve())
     assert "--loader-self-check" in runner.calls[3][0]

@@ -59,7 +59,7 @@ from trimem_development_phase_cap import (  # noqa: E402
 from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     SENTINEL_PATH as GRADER_SMOKE_SENTINEL_PATH,
 )
-from trimem_development_trigger_d119 import (  # noqa: E402
+from trimem_development_trigger_d120 import (  # noqa: E402
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
     validate_sentinel_commit as validate_development_sentinel_commit,

@@ -351,6 +351,14 @@ def test_workflow_orders_canary_before_images_and_scientific_runner():
     workflow = (ROOT / ".github/workflows/trimem-benchmark.yml").read_text(
         encoding="utf-8"
     )
+    readiness = json.loads(
+        (ROOT / "artifacts/trimem_v1/readiness_requirements.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    active_request = Path(
+        readiness["development_authorization_boundary"]["recovery_request_path"]
+    ).name
     checkout_rehearsal = workflow.index(
         "Rehearse all frozen DEV task checkouts before provider access"
     )
@@ -358,7 +366,8 @@ def test_workflow_orders_canary_before_images_and_scientific_runner():
     image_pull = workflow.index("Pull committed images by digest and verify local observations")
     scientific = workflow.index("Execute frozen serial streams with one atomic phase ledger")
     assert checkout_rehearsal < canary < image_pull < scientific
-    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_019.json" in workflow
+    assert active_request in workflow
+    assert "DEVELOPMENT_TUNING_EXEC_REQUEST_019.json" not in workflow
     assert "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json" not in workflow
     assert "DEVELOPMENT_TUNING_EXEC_REQUEST_017.json" not in workflow
     assert "DEVELOPMENT_TUNING_EXEC_REQUEST_016.json" not in workflow

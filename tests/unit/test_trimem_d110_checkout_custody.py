@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import trimem_run_with_resume as resume_driver
 import trimem_benchmark_run as benchmark_run
 import trimem_harness_lock as harness_lock
+import trimem_official_grader as official_grader
 import trimem_official_harness_loader_preflight as loader_preflight
 
 
@@ -114,6 +115,57 @@ def _committed_eol_checkout(
     for relative, raw in files.items():
         (path / relative).write_bytes(raw.replace(b"\n", b"\r\n"))
     return commit
+
+
+def test_two_swe_cells_keep_shared_harness_pristine_and_outputs_task_local(
+    tmp_path: Path,
+) -> None:
+    harness = tmp_path / "pinned-swe-harness"
+    commit = _committed_checkout(harness)
+    row = {
+        "instance_id": "owner__repo-1",
+        "repo": "owner/repo",
+        "base_commit": "b" * 40,
+    }
+    target = official_grader.FrozenOfficialTarget(
+        target_id="swebench_verified--owner__repo-1",
+        benchmark_id="swebench_verified",
+        instance_id="owner__repo-1",
+        repository="owner/repo",
+        base_commit="b" * 40,
+        dataset_revision="c" * 40,
+        source_row_sha256=official_grader.canonical_row_hash(row),
+        image="owner/repo@sha256:" + "d" * 64,
+        harness_image_tag="owner/repo:latest",
+        harness_revision=official_grader.SWE_HARNESS_REVISION,
+    )
+
+    for index in range(2):
+        run_root = tmp_path / f"task-{index}" / "official-grader"
+        invocation = official_grader.build_harness_invocation(
+            target,
+            row=row,
+            patch="diff --git a/a b/a\n",
+            harness_root=harness,
+            run_root=run_root,
+            model_name="trimem-v1-M2",
+        )
+        assert invocation.cwd == run_root
+        assert harness not in invocation.test_output_path.parents
+        log_root = invocation.test_output_path.parent
+        log_root.mkdir(parents=True)
+        for name in (
+            "run_instance.log",
+            "patch.diff",
+            "eval.sh",
+            "test_output.txt",
+            "report.json",
+        ):
+            (log_root / name).write_bytes(b"retained task-local evidence\n")
+        (log_root.parents[1] / "run.json").write_bytes(b"{}\n")
+        harness_lock.validate_pristine_checkout(harness.absolute(), commit)
+
+    assert not (harness / "logs").exists()
 
 
 def test_fresh_checkout_materialization_restores_exact_git_blob_bytes(

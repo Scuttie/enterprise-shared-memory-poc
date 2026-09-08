@@ -35,6 +35,10 @@ from trimem_multi_swe_report_semantics import (  # noqa: E402
     validate_public_semantics_summary,
 )
 from trimem_atomic_evidence import atomic_write_bytes  # noqa: E402
+from trimem_harness_lock import (  # noqa: E402
+    HarnessLockError,
+    validate_pristine_checkout,
+)
 from trimem_official_harness_loader import (  # noqa: E402
     build_official_harness_python_loader,
 )
@@ -42,6 +46,7 @@ from trimem_official_harness_loader import (  # noqa: E402
 
 SWE_HARNESS_REVISION = "7a21e05772954cc81471ae19d56f436cecf43c54"
 MULTI_HARNESS_REVISION = "24f493f8a103e72312ded4f6b9c89f081d69cb09"
+SWE_ENTRYPOINT = ROOT / "scripts/trimem_swe_bench_entrypoint.py"
 MULTI_ENTRYPOINT = ROOT / "scripts/trimem_multi_swe_entrypoint.py"
 MULTI_FIX_PATCH_RUN_COMMAND = "bash -e /home/fix-run.sh"
 MULTI_SWE_PREBUILT_EVALUATION: Mapping[str, object] = MappingProxyType({
@@ -539,6 +544,7 @@ def build_harness_invocation(
         dataset = run_root / "dataset.json"
         prediction = run_root / "prediction.jsonl"
         report_dir = run_root / "report"
+        report_dir.mkdir()
         locked_row = dict(row)
         locked_row["image"] = target.harness_image_tag
         _write_json(dataset, [locked_row])
@@ -550,19 +556,23 @@ def build_harness_invocation(
         run_id = hashlib.sha256(f"{target.target_id}:{model_name}".encode()).hexdigest()[:20]
         report_path = report_dir / f"{model_name}.{run_id}.json"
         instance_log_dir = (
-            harness_root / "logs" / "run_evaluation" / run_id
+            run_root / "logs" / "run_evaluation" / run_id
             / model_name.replace("/", "__") / target.instance_id
         )
         return HarnessInvocation(
             argv=(
-                python_binary, "-m", "swebench.harness.run_evaluation",
+                python_binary,
+                "-P",
+                str(SWE_ENTRYPOINT),
+                "--harness-root",
+                str(harness_root),
                 "--dataset_name", str(dataset), "--split", "test",
                 "--instance_ids", target.instance_id,
                 "--predictions_path", str(prediction), "--max_workers", "1",
                 "--timeout", "1800", "--run_id", run_id,
                 "--report_dir", str(report_dir),
             ),
-            cwd=harness_root,
+            cwd=run_root,
             report_path=report_path,
             private_input_paths=(dataset, prediction),
             test_output_path=instance_log_dir / "test_output.txt",
@@ -817,6 +827,11 @@ class OfficialHarnessGraderGateway:
             "need_clone": None,
             "report_module": "swebench.harness.run_evaluation",
             "report_mode": "inline",
+            "source_checkout_custody": "FULL_PRISTINE_PRE_AND_POST_EXECUTION",
+            "source_import_binding": "PINNED_GIT_BLOB_AND_EXACT_MODULE_ORIGIN",
+            "parent_timeout_postflight": True,
+            "task_local_output_cwd": True,
+            "python_safe_path": True,
             "patch_transport": {
                 "host_source": "prediction.jsonl.model_patch",
                 "container_destination": None,
@@ -853,8 +868,13 @@ class OfficialHarnessGraderGateway:
         return {
             **common,
             "profile": "SWE_BENCH_OFFICIAL_PREDICTION",
-            "proof_basis": "PINNED_CONTROL_FLOW_AND_FIXED_ARGV",
-            "dispatch": "main(task_repo=None,rewrite_reports=False)->run_instances",
+            "proof_basis": "PINNED_CONTROL_FLOW_FIXED_ARGV_AND_TASK_LOCAL_CWD",
+            "dispatch": (
+                "trimem_swe_bench_entrypoint(-P,exact-origin,pristine-pre-post)"
+                "->swebench.harness.run_evaluation.main"
+                "(task_repo=None,rewrite_reports=False)->run_instances"
+            ),
+            "source_checkout_mutation_allowed": False,
             "source_build_guard": {
                 "expression": "task_repo and not rewrite_reports",
                 "task_repo_argv_present": False,
@@ -2003,6 +2023,20 @@ class OfficialHarnessGraderGateway:
         try:
             completed = self._run(invocation.argv, cwd=invocation.cwd, timeout=self.timeout_seconds)
         except subprocess.TimeoutExpired as exc:
+            postflight_secondary: list[str] = []
+            if self.target.benchmark_id == "swebench_verified":
+                try:
+                    # A parent-enforced timeout can kill the wrapper before its
+                    # in-process finally path runs.  Recheck the complete
+                    # immutable checkout here as defense in depth; a dirty
+                    # checkout is also rejected by the next cell's factory.
+                    validate_pristine_checkout(
+                        self.harness_root, self.target.harness_revision
+                    )
+                except HarnessLockError:
+                    postflight_secondary.append(
+                        "harness_postflight_after_timeout: HarnessLockError"
+                    )
             capture_secondary: list[str] = []
             available_after_timeout = self._capture_available_outputs(
                 invocation, secondary_evidence_failures=capture_secondary
@@ -2033,7 +2067,10 @@ class OfficialHarnessGraderGateway:
                 container_started=container_started,
                 evidence=image_evidence, extra=timeout_extra,
                 secondary_evidence_failures=[
-                    *capture_secondary, *patch_secondary, *purge_secondary,
+                    *postflight_secondary,
+                    *capture_secondary,
+                    *patch_secondary,
+                    *purge_secondary,
                 ],
             ) from None
         except OSError as exc:

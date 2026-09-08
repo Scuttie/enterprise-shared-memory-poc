@@ -214,8 +214,15 @@ def _preflight(
         },
         "swe_import_check": {
             "status": "PASS",
-            "argv": [str(python), "-c", benchmark.SWE_IMPORT_PROBE_CODE],
-            "cwd": str(swe_root),
+            "argv": [
+                str(python),
+                "-P",
+                str(benchmark.SWE_ENTRYPOINT),
+                "--harness-root",
+                str(swe_root),
+                "--self-check",
+            ],
+            "cwd": "<TASK_LOCAL_PREFLIGHT_ROOT>",
             "exit_code": 0,
             "stdout_sha256": hashlib.sha256(
                 json.dumps(

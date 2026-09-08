@@ -113,6 +113,7 @@ from trimem_m2_candidates import (  # noqa: E402
 )
 from trimem_official_grader import (  # noqa: E402
     MULTI_HARNESS_REVISION,
+    SWE_ENTRYPOINT,
     SWE_HARNESS_REVISION,
     FrozenOfficialTarget,
     OfficialHarnessGraderGateway,
@@ -124,7 +125,6 @@ from trimem_official_harness_loader import (  # noqa: E402
     build_official_harness_python_loader,
 )
 from trimem_official_harness_loader_preflight import (  # noqa: E402
-    SWE_IMPORT_PROBE_CODE,
     build_invocation_construction_evidence,
 )
 from trimem_multi_swe_entrypoint import (  # noqa: E402
@@ -137,7 +137,7 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     TriggerPreflightError,
     validate_request_document as validate_grader_smoke_request_document,
 )
-from trimem_development_trigger_d119 import (  # noqa: E402
+from trimem_development_trigger_d120 import (  # noqa: E402
     EXPECTED_WORKFLOW_REF as DEVELOPMENT_WORKFLOW_REF,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
@@ -701,9 +701,16 @@ def validate_official_harness_loader_preflight_evidence(
         set(swe_import)
         != {"argv", "cwd", "exit_code", "modules", "status", "stderr_sha256", "stdout_sha256"}
         or swe_import.get("exit_code") != 0
-        or swe_import.get("cwd") != str(swe_root)
+        or swe_import.get("cwd") != "<TASK_LOCAL_PREFLIGHT_ROOT>"
         or swe_import.get("argv")
-        != [str(expected_python), "-c", SWE_IMPORT_PROBE_CODE]
+        != [
+            str(expected_python),
+            "-P",
+            str(SWE_ENTRYPOINT),
+            "--harness-root",
+            str(swe_root),
+            "--self-check",
+        ]
         or not isinstance(swe_modules, Mapping)
         or set(swe_modules) != expected_swe_modules
         or not isinstance(swe_import.get("stdout_sha256"), str)

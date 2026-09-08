@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import trimem_development_trigger_d118 as d118
 import trimem_development_trigger_d119 as d119
+import trimem_development_trigger_d120 as d120
 import trimem_d119_loader_rehearsal as d119_collector
 
 
@@ -360,10 +361,12 @@ def test_d119_workflow_keeps_strict_decoder_and_active_route(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     files = {
-        d119.EXACT_HEAD_GATE_WORKFLOW_PATH: (
-            ROOT / d119.EXACT_HEAD_GATE_WORKFLOW_PATH
-        ).read_bytes(),
-        d119.EXPECTED_WORKFLOW_PATH: (ROOT / d119.EXPECTED_WORKFLOW_PATH).read_bytes(),
+        d119.EXACT_HEAD_GATE_WORKFLOW_PATH: d119.commit_bytes(
+            ROOT, d120.PREVIOUS_SOURCE_HEAD, d119.EXACT_HEAD_GATE_WORKFLOW_PATH
+        ),
+        d119.EXPECTED_WORKFLOW_PATH: d119.commit_bytes(
+            ROOT, d120.PREVIOUS_SOURCE_HEAD, d119.EXPECTED_WORKFLOW_PATH
+        ),
     }
     monkeypatch.setattr(d119, "commit_bytes", lambda _r, _h, path: files[path])
     d119._validate_workflow(ROOT, "a" * 40)
@@ -382,5 +385,13 @@ def test_d119_workflow_keeps_strict_decoder_and_active_route(
         d119._validate_workflow(ROOT, "a" * 40)
 
 
-def test_d119_current_history_has_no_uncommitted_or_committed_019() -> None:
-    assert d119.validate_optional_exec_019_boundary(ROOT) is None
+def test_d119_history_preserves_exact_immutable_exec_019() -> None:
+    request = d119.validate_sentinel_commit(
+        ROOT,
+        d120.PREVIOUS_EXECUTION_HEAD,
+        expected_parent=d120.PREVIOUS_SOURCE_HEAD,
+        require_checked_out_head=False,
+    )
+
+    assert request["request_id"] == d119.REQUEST_ID
+    assert request["source_head"] == d120.PREVIOUS_SOURCE_HEAD

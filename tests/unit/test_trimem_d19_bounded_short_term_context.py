@@ -630,6 +630,6 @@ def test_historical_001_through_009_requests_and_execution_artifacts_are_immutab
     assert len(requests) == 9
     assert execution_artifacts
     for path in sorted(requests + execution_artifacts):
-        assert (ROOT / path).read_bytes() == _git_blob(
+        assert _git_blob("HEAD", path) == _git_blob(
             development_trigger.PREVIOUS_EXECUTION_HEAD, path
         ), path

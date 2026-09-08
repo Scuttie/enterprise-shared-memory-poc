@@ -1184,6 +1184,11 @@ def test_swe_invocation_private_bytes_are_unchanged_by_multi_profile(
         "need_clone": None,
         "report_module": "swebench.harness.run_evaluation",
         "report_mode": "inline",
+        "source_checkout_custody": "FULL_PRISTINE_PRE_AND_POST_EXECUTION",
+        "source_import_binding": "PINNED_GIT_BLOB_AND_EXACT_MODULE_ORIGIN",
+        "parent_timeout_postflight": True,
+        "task_local_output_cwd": True,
+        "python_safe_path": True,
         "source_image_build_calls": 0,
         "host_prepare_script_reads": 0,
         "submitted_patch_bytes": 16,
@@ -1200,8 +1205,13 @@ def test_swe_invocation_private_bytes_are_unchanged_by_multi_profile(
         "schema": "trimem/official-grader-execution-control/1.0",
         "harness_revision": official_grader.SWE_HARNESS_REVISION,
         "profile": "SWE_BENCH_OFFICIAL_PREDICTION",
-        "proof_basis": "PINNED_CONTROL_FLOW_AND_FIXED_ARGV",
-        "dispatch": "main(task_repo=None,rewrite_reports=False)->run_instances",
+        "proof_basis": "PINNED_CONTROL_FLOW_FIXED_ARGV_AND_TASK_LOCAL_CWD",
+        "dispatch": (
+            "trimem_swe_bench_entrypoint(-P,exact-origin,pristine-pre-post)"
+            "->swebench.harness.run_evaluation.main"
+            "(task_repo=None,rewrite_reports=False)->run_instances"
+        ),
+        "source_checkout_mutation_allowed": False,
         "source_build_guard": {
             "expression": "task_repo and not rewrite_reports",
             "task_repo_argv_present": False,

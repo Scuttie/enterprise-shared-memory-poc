@@ -27,6 +27,7 @@ from trimem_harness_lock import (  # noqa: E402
 )
 from trimem_official_grader import (  # noqa: E402
     MULTI_HARNESS_REVISION,
+    SWE_ENTRYPOINT,
     SWE_HARNESS_REVISION,
     FrozenOfficialTarget,
     build_harness_invocation,
@@ -54,21 +55,6 @@ ZERO_COUNTERS: Mapping[str, object] = {
     "grader_containers": 0,
     "usd": 0,
 }
-SWE_IMPORT_PROBE_CODE = r'''import hashlib,importlib,json,pathlib
-root=pathlib.Path.cwd().resolve(strict=True)
-names=("swebench.harness.run_evaluation","docker","datasets","unidiff")
-rows={}
-for name in names:
-    module=importlib.import_module(name)
-    raw_path=getattr(module,"__file__",None)
-    path=pathlib.Path(str(raw_path)).resolve(strict=True) if raw_path else None
-    within=bool(path is not None and (path==root or root in path.parents))
-    if name.startswith("swebench.") and not within:
-        raise RuntimeError("SWE-bench entry module escaped pinned checkout")
-    raw=path.read_bytes() if path is not None and path.is_file() else b""
-    rows[name]={"bytes":len(raw),"path":path.relative_to(root).as_posix() if within else None,"sha256":hashlib.sha256(raw).hexdigest()}
-print(json.dumps({"modules":rows,"schema":"trimem/swe-bench-loader-import-probe/1.0","status":"PASS"},sort_keys=True,separators=(",",":")))
-'''
 
 
 class OfficialHarnessLoaderPreflightError(RuntimeError):
@@ -183,14 +169,25 @@ def _swe_import_check(
     runner: ProcessRunner,
     environment: Mapping[str, str],
 ) -> dict[str, object]:
-    argv = [python_binary, "-c", SWE_IMPORT_PROBE_CODE]
-    completed, stdout, stderr = _run(
-        runner,
-        argv,
-        cwd=root,
-        environment=environment,
-        description="SWE-bench import probe",
-    )
+    with tempfile.TemporaryDirectory(
+        prefix="trimem-swe-task-local-preflight-"
+    ) as directory:
+        task_local_root = Path(directory).resolve(strict=True)
+        argv = [
+            python_binary,
+            "-P",
+            str(SWE_ENTRYPOINT),
+            "--harness-root",
+            str(root.resolve(strict=True)),
+            "--self-check",
+        ]
+        completed, stdout, stderr = _run(
+            runner,
+            argv,
+            cwd=task_local_root,
+            environment=environment,
+            description="task-local SWE-bench entrypoint import probe",
+        )
     payload = _strict_object(stdout, description="SWE-bench import probe output")
     if (
         payload.get("schema") != SWE_IMPORT_PROBE_SCHEMA
@@ -203,7 +200,7 @@ def _swe_import_check(
         raise OfficialHarnessLoaderPreflightError("SWE-bench import probe contract differs")
     return {
         "argv": argv,
-        "cwd": str(root.resolve(strict=True)),
+        "cwd": "<TASK_LOCAL_PREFLIGHT_ROOT>",
         "exit_code": completed.returncode,
         "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
         "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
@@ -344,9 +341,16 @@ def build_invocation_construction_evidence(
         )
         if (
             swe.argv[0] != python_binary
+            or swe.argv[1:5]
+            != (
+                "-P",
+                str(SWE_ENTRYPOINT),
+                "--harness-root",
+                str(swe_root),
+            )
             or multi.argv[0] != python_binary
             or multi.report_argv[0] != python_binary
-            or swe.cwd.resolve() != swe_root.resolve()
+            or swe.cwd.resolve() != (temporary / "swe").resolve()
             or multi.cwd.resolve() != multi_root.resolve()
             or any("prepare.sh" in item for item in (*swe.argv, *multi.argv, *multi.report_argv))
         ):
@@ -375,7 +379,7 @@ def build_invocation_construction_evidence(
             "multi_report_argv_sha256": hashlib.sha256(
                 json.dumps(multi_report_argv, separators=(",", ":")).encode("utf-8")
             ).hexdigest(),
-            "swe_cwd": str(swe.cwd.resolve(strict=True)),
+            "swe_cwd": "<PREFLIGHT_RUN_ROOT>/swe",
             "multi_cwd": str(multi.cwd.resolve(strict=True)),
             "exact_python_binary": python_binary,
             "execution_environment_identity_sha256": environment_identity_sha256,

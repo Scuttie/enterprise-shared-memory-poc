@@ -136,7 +136,7 @@ def test_benchmark_installs_and_byte_verifies_pinned_gh_before_exec_gate() -> No
     assert "--approval-file" in gate_block
 
 
-def test_benchmark_has_only_the_d117_017_active_development_trigger() -> None:
+def test_benchmark_has_only_the_d118_018_active_development_trigger() -> None:
     text = _read(BENCHMARK_WORKFLOW)
     trigger = text[text.index("on:"):text.index("\nconcurrency:")]
     assert trigger == (
@@ -147,15 +147,16 @@ def test_benchmark_has_only_the_d117_017_active_development_trigger() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_017.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json\n"
     )
     assert (
         "- artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_017.json"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json"
     ) in text
-    assert "group: trimem-v1-development-tuning-exec-017" in text
+    assert "group: trimem-v1-development-tuning-exec-018" in text
     preflight = _step_block(text, "Verify one-time zero-authority DEV trigger")
-    assert "scripts/trimem_development_trigger_d117.py" in preflight
+    assert "scripts/trimem_development_trigger_d118.py" in preflight
+    assert "scripts/trimem_development_trigger_d117.py" not in preflight
     assert "scripts/trimem_development_trigger_d116.py" not in preflight
     assert "scripts/trimem_development_trigger_d115.py" not in preflight
     assert "scripts/trimem_development_trigger_d114.py" not in preflight
@@ -427,6 +428,11 @@ def test_toolchain_rehearsal_is_narrow_credential_free_and_github_hosted() -> No
         assert text.count(d115_test) == 1
     assert text.count("tests/unit/test_trimem_d116_trigger.py") == 1
     assert text.count("tests/unit/test_trimem_d117_trigger.py") == 1
+    assert text.count("tests/unit/test_trimem_d118_trigger.py") == 1
+    assert (
+        text.count("tests/unit/test_trimem_d118_grader_factory_rehearsal.py")
+        == 1
+    )
     assert "environment:" not in text
     assert "services:" not in text
     assert "secrets." not in text
@@ -451,13 +457,13 @@ def test_toolchain_runs_production_round_trip_before_credentialed_attestation() 
     text = _read(TOOLCHAIN_WORKFLOW)
     _assert_production_round_trip_precedes(
         text,
-        "Validate exact D1.17 credential-free recovery source",
+        "Validate exact D1.18 credential-free recovery source",
         "Install exact pinned GitHub CLI",
         "Verify official smoke attestation only with zero scientific work",
     )
     _assert_context_round_trip_precedes(
         text,
-        "Validate exact D1.17 credential-free recovery source",
+        "Validate exact D1.18 credential-free recovery source",
         "Install exact pinned GitHub CLI",
         "Verify official smoke attestation only with zero scientific work",
     )
@@ -465,14 +471,15 @@ def test_toolchain_runs_production_round_trip_before_credentialed_attestation() 
     context_round_trip = _step_block(text, CONTEXT_ROUND_TRIP_STEP)
     source_validation = _step_block(
         text,
-        "Validate exact D1.17 credential-free recovery source",
+        "Validate exact D1.18 credential-free recovery source",
     )
     for block in (round_trip, context_round_trip):
         assert "secrets." not in block
         assert "OPENAI_API_KEY" not in block
         assert "GH_TOKEN" not in block
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in source_validation
-    assert "scripts/trimem_development_trigger_d117.py" in source_validation
+    assert "scripts/trimem_development_trigger_d118.py" in source_validation
+    assert "scripts/trimem_development_trigger_d117.py" not in source_validation
     assert "scripts/trimem_development_trigger_d116.py" not in source_validation
     assert "--validate-current" in source_validation
     assert "python scripts/trimem_d115_reseal.py --check" not in source_validation
@@ -504,7 +511,7 @@ def test_required_static_gate_includes_company_handoff_and_secret_scan() -> None
     assert "persist-credentials: false" in text
     assert "ref: ${{ github.event.pull_request.head.sha || github.sha }}" in text
     assert "python -I -S scripts/trimem_compiled_prefix_alias.py --help" in text
-    assert "python -I -S scripts/trimem_development_trigger_d117.py --help" in text
+    assert "python -I -S scripts/trimem_development_trigger_d118.py --help" in text
     assert "python scripts/make_handoff_manifest.py --check" in text
     assert "python scripts/release_check.py --secrets" in text
 
@@ -598,6 +605,63 @@ def test_benchmark_exact_loader_preflight_precedes_every_credential_and_exec_ste
     assert "scripts/trimem_official_harness_loader_preflight.py" in preflight_block
     assert "secrets." not in preflight_block
     assert "OPENAI_API_KEY" not in preflight_block
+
+    execution_block = _step_block(
+        text, "Execute frozen serial streams with one atomic phase ledger"
+    )
+    assert (
+        '"$pythonLocation/bin/python3.11" scripts/trimem_run_with_resume.py'
+        in execution_block
+    )
+    assert "\n          python scripts/trimem_run_with_resume.py" not in execution_block
+
+    factory_rehearsal = _step_block(
+        text,
+        "Rehearse full grader factory across launcher aliases before credentials",
+    )
+    assert "python scripts/trimem_d118_grader_factory_rehearsal.py" in factory_rehearsal
+    assert '--preflight "$RUNNER_TEMP/trimem-official-harness-loader-preflight.json"' in factory_rehearsal
+    assert '--harness-root "$RUNNER_TEMP/trimem-d112-harnesses"' in factory_rehearsal
+    assert '--dataset-cache-root "$RUNNER_TEMP/trimem-d117-datasets"' in factory_rehearsal
+    assert "--synthetic" not in factory_rehearsal
+    assert "secrets." not in factory_rehearsal
+    assert "OPENAI_API_KEY" not in factory_rehearsal
+    unprotected_loader = text.index(
+        "- name: Gate protected job on unprotected exact loader preflight"
+    )
+    assert unprotected_loader < text.index(
+        "- name: Rehearse full grader factory across launcher aliases before credentials"
+    ) < text.index("  frozen-serial-phase:")
+
+    protected_factory_name = (
+        "Rehearse protected grader factory across launcher aliases before credentials"
+    )
+    protected_factory = _step_block(text, protected_factory_name)
+    assert "python scripts/trimem_d118_grader_factory_rehearsal.py" in (
+        protected_factory
+    )
+    assert "--synthetic" in protected_factory
+    assert (
+        "--preflight artifacts/trimem_v1/benchmark_exec/control/"
+        "official-harness-loader-preflight.json"
+    ) in protected_factory
+    assert "--harness-root .trimem-exec/harnesses" in protected_factory
+    assert "secrets." not in protected_factory
+    assert "OPENAI_API_KEY" not in protected_factory
+
+    rehearsal_markers = (
+        "Rehearse full grader factory across launcher aliases before credentials",
+        protected_factory_name,
+    )
+    for rehearsal_name in rehearsal_markers:
+        rehearsal_index = text.index(f"- name: {rehearsal_name}")
+        for later_name in (
+            "Materialize protected external approval",
+            "Validate exact OpenAI credential format before network access",
+            "Retrieve exact model metadata before image materialization",
+        ):
+            assert rehearsal_index < text.index(f"- name: {later_name}")
+    assert preflight < text.index(f"- name: {protected_factory_name}")
 
 
 def test_benchmark_loader_preflight_is_not_hidden_behind_protected_environment() -> None:

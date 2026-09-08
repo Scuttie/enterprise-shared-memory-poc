@@ -1,9 +1,10 @@
 """Fail-closed TriMem V1 readiness and external EXEC gate verifier.
 
-Historical P0.1.5 evidence establishes grader semantics/discrimination, while
-the immutable DEV ``_010`` attempt failed before the exact grader Python or a
-grader container started.  D1.10 keeps those facts separate and never promotes
-the pre-result infrastructure correction into a performance claim.
+Historical P0.1.5 evidence establishes grader semantics/discrimination.  The
+immutable DEV ``_017`` attempt consumed a bounded partial model trajectory but
+failed before the official grader Python or a grader container started.  D1.18
+keeps those facts separate and never promotes the pre-result infrastructure
+correction into a score or performance claim.
 """
 from __future__ import annotations
 
@@ -172,7 +173,7 @@ from trimem_development_trigger_d19 import (  # noqa: E402
     validate_correction_source as validate_d19_correction_source,
     validate_previous_execution_receipt as validate_d19_previous_execution_receipt,
 )
-from trimem_development_trigger_d117 import (  # noqa: E402
+from trimem_development_trigger_d118 import (  # noqa: E402
     REQUEST_ID as DEVELOPMENT_REQUEST_ID,
     REQUIRED_EXTERNAL_AUTHORIZATION as DEVELOPMENT_EXECUTION_AUTHORIZATION,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
@@ -180,6 +181,7 @@ from trimem_development_trigger_d117 import (  # noqa: E402
 )
 import trimem_development_trigger_d116 as d116_trigger  # noqa: E402
 import trimem_development_trigger_d117 as d117_trigger  # noqa: E402
+import trimem_development_trigger_d118 as d118_trigger  # noqa: E402
 import trimem_d111_reseal as d111_reseal  # noqa: E402
 import trimem_d112_reseal as d112_reseal  # noqa: E402
 import trimem_d113_reseal as d113_reseal  # noqa: E402
@@ -341,6 +343,18 @@ D117_STATUS_FIELDS = {
     "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
     "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "NOT_REACHED_ON_EXEC_016",
     "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "NOT_REACHED_ON_EXEC_016",
+    "PERFORMANCE": "NOT_MEASURED",
+}
+D118_ENDPOINT = d118_trigger.AMENDMENT_ENDPOINT
+D118_AMENDMENT_CLASSIFICATION = d118_trigger.AMENDMENT_CLASSIFICATION
+D118_FAILURE_SUBTYPE = d118_trigger.PREVIOUS_FAILURE_SUBTYPE
+D118_STATUS_FIELDS = {
+    "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": (
+        "ESTABLISHED_BY_P0_1_5"
+    ),
+    "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
+    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "NOT_REACHED_ON_EXEC_017",
+    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "NOT_REACHED_ON_EXEC_017",
     "PERFORMANCE": "NOT_MEASURED",
 }
 D15_CORRECTION_SOURCE_HEAD = "38573cb2a499aec67b970cfcd4a7a2e119de3a70"
@@ -4304,24 +4318,32 @@ def validate_readiness_plan(
     historical_exec_016_checkout_portability_failure = (
         d117_trigger.current_failure_record()
     )
-    current_activation = d117_trigger.current_recovery_record()
+    historical_exec_017_python_launcher_alias_failure = (
+        d118_trigger.current_failure_record()
+    )
+    current_activation = d118_trigger.current_recovery_record()
     # The broad historical smoke ``official_grader_viability`` field remains
     # valid only inside its immutable evidence schema.  It is never emitted as
     # current readiness after the DEV loader failure.
     derived["current_status"].pop("OFFICIAL_GRADER_VIABILITY", None)
-    derived["current_status"].update(D117_STATUS_FIELDS)
-    derived["current_status"]["CLASSIFICATION"] = D117_AMENDMENT_CLASSIFICATION
+    derived["current_status"].update(D118_STATUS_FIELDS)
+    derived["current_status"]["CLASSIFICATION"] = D118_AMENDMENT_CLASSIFICATION
     derived["current_status"]["DEV_APPROVAL_ALLOWED"] = "NO"
     derived["current_status"]["DEV_EXECUTION_ALLOWED"] = "NO"
-    derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = "NOT_STARTED_ON_EXEC_016"
-    derived["current_status"]["ENDPOINT"] = D117_ENDPOINT
-    derived["current_status"]["FAILURE_SUBTYPE"] = D117_FAILURE_SUBTYPE
+    derived["current_status"]["DEV_SCIENTIFIC_STATUS"] = (
+        "STARTED_NO_COMPLETED_CELL_ON_EXEC_017"
+    )
+    derived["current_status"]["ENDPOINT"] = D118_ENDPOINT
+    derived["current_status"]["FAILURE_SUBTYPE"] = D118_FAILURE_SUBTYPE
     derived["current_status"]["PERFORMANCE"] = "NOT_MEASURED"
     derived["current_status"]["SCIENTIFIC_RESULT"] = (
         "NO_DEVELOPMENT_SCIENTIFIC_RESULT"
     )
     derived["development_execution_failure"] = development_failure
     derived["current_development_activation"] = current_activation
+    derived["historical_development_exec_017_python_launcher_alias_failure"] = (
+        historical_exec_017_python_launcher_alias_failure
+    )
     derived["historical_development_exec_016_checkout_portability_failure"] = (
         historical_exec_016_checkout_portability_failure
     )
@@ -4414,14 +4436,25 @@ def validate_readiness_plan(
         ),
         "D1.17 credential-free checkout rehearsal requirement is absent",
     )
+    require(
+        any(
+            "full official grader factory" in item
+            and "lexical Python launcher aliases" in item
+            and "before provider access" in item
+            and "synthetic three-adapter protected repetition" in item
+            and "before approval materialization" in item
+            for item in readiness_requirements
+        ),
+        "D1.18 credential-free grader-factory alias rehearsal requirement is absent",
+    )
     authorization = plan.get("development_authorization_boundary", {})
     require(
         isinstance(authorization, dict)
         and authorization.get("active_development_approval") is False
         and authorization.get("amendment_classification")
-        == D117_AMENDMENT_CLASSIFICATION
+        == D118_AMENDMENT_CLASSIFICATION
         and authorization.get("amendment_evidence_path")
-        == d117_trigger.AMENDMENT_PATH
+        == d118_trigger.AMENDMENT_PATH
         and authorization.get("approval_request_eligible") is False
         and authorization.get("attempt_one_consumed") is True
         and authorization.get("attempt_two_allowed") is False
@@ -4435,17 +4468,17 @@ def validate_readiness_plan(
         and authorization.get("model_id") == "gpt-5.4-mini-2026-03-17"
         and authorization.get("prior_failed_run_reusable") is False
         and authorization.get("recovery_authorization")
-        == "REQUEST_017_CREATION_AUTHORITY_RECEIVED"
+        == "REQUEST_018_CREATION_AUTHORITY_RECEIVED"
         and authorization.get("recovery_authorization_received") is True
         and authorization.get("required_external_authorization")
         == DEVELOPMENT_EXECUTION_AUTHORIZATION
         and authorization.get("external_execution_approval_received") is False
         and authorization.get("historical_failed_request_id")
-        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_016"
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_017"
         and authorization.get("historical_failed_request_path")
-        == d117_trigger.PREVIOUS_SENTINEL_PATH
+        == d118_trigger.PREVIOUS_SENTINEL_PATH
         and authorization.get("fresh_execution_request")
-        == "REQUEST_017_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
+        == "REQUEST_018_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
         and authorization.get("fresh_execution_request_creation_authorized")
         is True
         and authorization.get(
@@ -4514,15 +4547,25 @@ def validate_readiness_plan(
         and authorization.get(
             "request_017_allowed_after_exact_remote_gates_and_rehearsal"
         )
+        is False
+        and authorization.get("request_017_authorized") is True
+        and authorization.get("request_017_created") is True
+        and authorization.get("request_017_attempt_one_consumed") is True
+        and authorization.get("request_017_attempt_two_allowed") is False
+        and authorization.get("request_017_rerun_allowed") is False
+        and authorization.get(
+            "request_018_allowed_after_exact_remote_gates_and_rehearsal"
+        )
         is True
-        and authorization.get("request_017_authorized") is False
-        and authorization.get("request_017_created") is False
+        and authorization.get("request_018_authorized") is False
+        and authorization.get("request_018_created") is False
+        and authorization.get("request_018_execution_authorized") is False
         and authorization.get(
             "solve_execution_contract_rehearsal_required_before_request_005"
         )
         is False
         and authorization.get("rerun_allowed") is False,
-        "D1.17 development authorization boundary differs",
+        "D1.18 development authorization boundary differs",
     )
     counts = plan.get("frozen_counts", {})
     require((counts.get("development_physical_task_arm_runs"), counts.get("heldout_physical_task_arm_runs"), counts.get("total_benchmark_physical_task_arm_runs")) == (72, 81, 153), "readiness physical-run counts drift")
@@ -4574,7 +4617,12 @@ def validate_readiness_plan(
     )
     require(
         plan.get("current_development_activation") == current_activation,
-        "readiness DEV _017 recovery state differs",
+        "readiness DEV _018 recovery state differs",
+    )
+    require(
+        plan.get("historical_development_exec_017_python_launcher_alias_failure")
+        == historical_exec_017_python_launcher_alias_failure,
+        "readiness DEV _017 Python-launcher-alias history differs",
     )
     require(
         plan.get("historical_development_exec_016_checkout_portability_failure")
@@ -4635,8 +4683,8 @@ def validate_readiness_plan(
     require(
         "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION=ESTABLISHED_BY_P0_1_5"
         in static_meaning
-        and "DEV _016" in static_meaning
-        and "D1.17" in static_meaning
+        and "DEV _017" in static_meaning
+        and "D1.18" in static_meaning
         and "request-creation authority remains separate" in static_meaning
         and "PERFORMANCE remains NOT_MEASURED" in static_meaning,
         "post-smoke static-CI evidence boundary differs",
@@ -4646,8 +4694,8 @@ def validate_readiness_plan(
         isinstance(remaining, list)
         and remaining
         and any(
-            "D1.17 source" in str(item)
-            and "zero-authority _017 sentinel" in str(item)
+            "D1.18 source" in str(item)
+            and "zero-authority _018 sentinel" in str(item)
             for item in remaining
         ),
         "post-smoke remaining phase gates differ",
@@ -4964,21 +5012,48 @@ def validate_d116_exec_016_recovery() -> None:
 
 
 def validate_d117_exec_017_recovery() -> None:
-    """Validate the D1.17 source or its exact zero-authority ``_017`` child."""
+    """Validate spent ``_017`` through the active immutable D1.18 history."""
 
-    execution_head = d117_trigger.validate_optional_exec_017_boundary(ROOT)
-    result = d117_trigger.validate_current_recovery(ROOT)
-    recovery = d117_trigger.current_recovery_record()
+    result = d118_trigger.current_failure_record()
+    boundary = result.get("failure_boundary", {})
     require(
-        result.get("request_016_attempt_one_consumed") is True
-        and result.get("request_016_rerun_allowed") is False
-        and result.get("request_017_created") is (execution_head is not None)
-        and result.get("request_017_execution_authorized") is False
-        and recovery.get("consumed_exec_016_actuals")
-        == d117_trigger.HISTORICAL_EXECUTION_ACTUALS
+        result.get("workflow_run", {}).get("id") == d118_trigger.PREVIOUS_RUN_ID
+        and result.get("workflow_run", {}).get("conclusion") == "failure"
+        and result.get("schema")
+        == "trimem/development-exec-017-python-launcher-alias-failure/1.0"
+        and result.get("scientific_status")
+        == "PARTIAL_FIRST_CELL_NO_TERMINAL_RESULT"
+        and result.get("pass_at_1") is None
+        and result.get("performance_measured") is False
+        and boundary.get("scientific_model_calls") == 17
+        and boundary.get("task_arm_reservation_started") is True
+        and boundary.get("terminal_cells") == 0
+        and result.get("process_disposition", {}).get("attempt_one_consumed")
+        is True
+        and result.get("process_disposition", {}).get("request_017_rerun_allowed")
+        is False
+        and result.get("observed_execution_actuals")
+        == d118_trigger.HISTORICAL_EXECUTION_ACTUALS,
+        "immutable D1.17/exec-017 Python-launcher-alias boundary differs",
+    )
+
+
+def validate_d118_exec_018_recovery() -> None:
+    """Validate the D1.18 source or its exact zero-authority ``_018`` child."""
+
+    execution_head = d118_trigger.validate_optional_exec_018_boundary(ROOT)
+    result = d118_trigger.validate_current_recovery(ROOT)
+    recovery = d118_trigger.current_recovery_record()
+    require(
+        result.get("request_017_attempt_one_consumed") is True
+        and result.get("request_017_rerun_allowed") is False
+        and result.get("request_018_created") is (execution_head is not None)
+        and result.get("request_018_execution_authorized") is False
+        and recovery.get("consumed_exec_017_actuals")
+        == d118_trigger.HISTORICAL_EXECUTION_ACTUALS
         and recovery.get("current_execution_actuals")
-        == d117_trigger.ZERO_CURRENT_EXECUTION_ACTUALS,
-        "D1.17 recovery seal or zero-authority boundary differs",
+        == d118_trigger.ZERO_CURRENT_EXECUTION_ACTUALS,
+        "D1.18 recovery seal or zero-authority boundary differs",
     )
 
 
@@ -4995,6 +5070,7 @@ def validate_runtime_and_candidates() -> None:
     validate_d115_exec_015_recovery()
     validate_d116_exec_016_recovery()
     validate_d117_exec_017_recovery()
+    validate_d118_exec_018_recovery()
     bundle = load_bundle()
     require(bundle.get("candidate_order") == list(CANDIDATE_IDS), "M2 candidate order drift")
     require(bundle.get("development_contract", {}).get("candidate_task_arm_runs") == 48, "M2 candidate run count drift")
@@ -5297,7 +5373,7 @@ def validate_workflows() -> None:
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
     stdlib_preflight_rehearsal = (
-        "python -I -S scripts/trimem_development_trigger_d117.py --help"
+        "python -I -S scripts/trimem_development_trigger_d118.py --help"
     )
     require(
         static.count(stdlib_freeze_rehearsal) == 1
@@ -5306,7 +5382,7 @@ def validate_workflows() -> None:
         < static.index("python -m pip install --require-hashes")
         and static.index(stdlib_preflight_rehearsal)
         < static.index("python -m pip install --require-hashes"),
-        "static CI lacks the dependency-free D1.17 preflight import rehearsal",
+        "static CI lacks the dependency-free D1.18 preflight import rehearsal",
     )
     service = automatic[1].read_text(encoding="utf-8")
     require("test_real_services_e2e.py" in service and "postgres@sha256:" in service and "qdrant/qdrant@sha256:" in service, "real PostgreSQL/Qdrant CI is absent")
@@ -5618,7 +5694,8 @@ def validate_workflows() -> None:
         and "push:" in benchmark_text
         and "      - codex/trimem-coder-v1" in benchmark_text
         and f"      - {DEVELOPMENT_SENTINEL_PATH}" in benchmark_text
-        and "group: trimem-v1-development-tuning-exec-017" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-018" in benchmark_text
+        and "group: trimem-v1-development-tuning-exec-017" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-014" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-013" not in benchmark_text
         and "group: trimem-v1-development-tuning-exec-012" not in benchmark_text
@@ -5633,7 +5710,8 @@ def validate_workflows() -> None:
         and "cancel-in-progress: false" in benchmark_text
         and "branch-trigger-preflight:" in benchmark_text
         and "needs: branch-trigger-preflight" in benchmark_text
-        and "trimem_development_trigger_d117.py" in benchmark_text
+        and "trimem_development_trigger_d118.py" in benchmark_text
+        and "trimem_development_trigger_d117.py" not in benchmark_text
         and "trimem_development_trigger_d116.py" not in benchmark_text
         and "trimem_development_trigger_d114.py" not in benchmark_text
         and "trimem_development_trigger_d113.py" not in benchmark_text
@@ -5655,9 +5733,13 @@ def validate_workflows() -> None:
         and "persist-credentials: false" in benchmark_preflight
         and "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in benchmark_preflight
-        and "python -I -S scripts/trimem_development_trigger_d117.py"
+        and "python -I -S scripts/trimem_development_trigger_d118.py"
         in benchmark_preflight
         and "python scripts/trimem_d117_checkout_rehearsal.py"
+        in benchmark_preflight
+        and "python scripts/trimem_d118_grader_factory_rehearsal.py"
+        in benchmark_preflight
+        and "--preflight \"$RUNNER_TEMP/trimem-official-harness-loader-preflight.json\""
         in benchmark_preflight
         and "GH_TOKEN: ${{ github.token }}" in benchmark_preflight
         and "secrets." not in benchmark_preflight
@@ -5668,10 +5750,38 @@ def validate_workflows() -> None:
         and "trimem_official_grader" not in benchmark_preflight
         and "trimem_pull_locked_images.py" not in benchmark_preflight
         and "docker " not in benchmark_preflight.lower(),
-        "DEV branch preflight is not credential-free and non-protected",
+        "DEV branch preflight is not credential-free, alias-rehearsed, and non-protected",
     )
     benchmark_protected = benchmark_text.split("  frozen-serial-phase:", 1)[1]
     benchmark_job_header = benchmark_protected.split("    steps:", 1)[0]
+    protected_loader_preflight = benchmark_protected.find(
+        "- name: Verify exact official harness Python loader before credentials"
+    )
+    protected_grader_factory_rehearsal = benchmark_protected.find(
+        "- name: Rehearse protected grader factory across launcher aliases before credentials"
+    )
+    protected_approval_materialization = benchmark_protected.find(
+        "- name: Materialize protected external approval"
+    )
+    require(
+        0
+        <= protected_loader_preflight
+        < protected_grader_factory_rehearsal
+        < protected_approval_materialization
+        and "python scripts/trimem_d118_grader_factory_rehearsal.py"
+        in benchmark_protected[
+            protected_grader_factory_rehearsal:protected_approval_materialization
+        ]
+        and "--synthetic"
+        in benchmark_protected[
+            protected_grader_factory_rehearsal:protected_approval_materialization
+        ]
+        and benchmark_text.count(
+            "python scripts/trimem_d118_grader_factory_rehearsal.py"
+        )
+        == 2,
+        "protected synthetic grader-factory rehearsal is not before approval materialization",
+    )
     public_upload = benchmark_protected.split(
         "      - name: Upload public benchmark result", 1
     )[1].split("      - name: Inventory complete restricted benchmark evidence", 1)[0]
@@ -5952,7 +6062,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         ),
         "DEV _011 historical activation accounting differs at readiness output",
     )
-    development_accounting = dict(d117_trigger.ZERO_SCIENTIFIC_ACTUALS)
+    development_accounting = dict(d118_trigger.ZERO_CURRENT_EXECUTION_ACTUALS)
     smoke_counters = readiness_state["execution_counters"]
     require(
         all(smoke_counters.get(key) == value for key, value in smoke_actual.items()),
@@ -5965,13 +6075,19 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "support_image_digests_frozen": 1,
         "target_image_digests_frozen": 45,
         "execution_counter_scope": (
-            "DEVELOPMENT_TUNING_EXEC_017_PRE_EXEC_RECOVERY"
+            "DEVELOPMENT_TUNING_EXEC_018_PRE_EXEC_RECOVERY"
         ),
         "task_arm_runs": development_accounting["task_arm_runs"],
         "model_calls": development_accounting["model_generation_calls"],
         "official_grader_runs": development_accounting["official_grader_runs"],
         "paid_model_calls": development_accounting["paid_model_calls"],
         "development_execution_accounting": development_accounting,
+        "historical_development_execution_counter_scope": (
+            "DEVELOPMENT_TUNING_EXEC_017_RUN_34200331390_ATTEMPT_1"
+        ),
+        "historical_spent_development_execution_accounting": dict(
+            d118_trigger.HISTORICAL_EXECUTION_ACTUALS
+        ),
         "grader_smoke_history": {
             "execution_counter_scope": readiness_state["execution_counter_scope"],
             "execution_counters": smoke_counters,
@@ -5986,7 +6102,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "scientific_result": readiness_state["current_status"][
             "SCIENTIFIC_RESULT"
         ],
-        **D117_STATUS_FIELDS,
+        **D118_STATUS_FIELDS,
         "performance": smoke["performance"],
         "multi_swe_report_semantics_sha256": contracts["module_sha256"],
         "multi_swe_report_semantics_lock_sha256": contracts["lock_sha256"],
@@ -6009,10 +6125,11 @@ def preapproval_blockers() -> list[str]:
         validate_d115_exec_015_recovery()
         validate_d116_exec_016_recovery()
         validate_d117_exec_017_recovery()
+        validate_d118_exec_018_recovery()
     except (OSError, ValueError, subprocess.SubprocessError) as exc:
-        return [f"D1.17 credential-free recovery validation failed: {exc}"]
-    if d117_trigger.validate_optional_exec_017_boundary(ROOT) is None:
-        return ["fresh _017 zero-authority sentinel is required"]
+        return [f"D1.18 credential-free recovery validation failed: {exc}"]
+    if d118_trigger.validate_optional_exec_018_boundary(ROOT) is None:
+        return ["fresh _018 zero-authority sentinel is required"]
     return []
 
 
@@ -6172,7 +6289,7 @@ def main() -> int:
         }
         # Never flatten the historical broad smoke label into current status.
         report.pop("official_grader_viability", None)
-        for field, value in D117_STATUS_FIELDS.items():
+        for field, value in D118_STATUS_FIELDS.items():
             report[field] = evidence.get(field, value)
         if (
             args.level == "benchmark-exec"

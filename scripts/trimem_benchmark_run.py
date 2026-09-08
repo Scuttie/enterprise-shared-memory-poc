@@ -137,7 +137,7 @@ from trimem_grader_smoke_trigger_preflight import (  # noqa: E402
     TriggerPreflightError,
     validate_request_document as validate_grader_smoke_request_document,
 )
-from trimem_development_trigger_d117 import (  # noqa: E402
+from trimem_development_trigger_d118 import (  # noqa: E402
     EXPECTED_WORKFLOW_REF as DEVELOPMENT_WORKFLOW_REF,
     SENTINEL_PATH as DEVELOPMENT_SENTINEL_PATH,
     DevelopmentTriggerError,
@@ -5426,12 +5426,13 @@ def grader_factory(
     *,
     loader_preflight_evidence: Optional[Mapping[str, Any]] = None,
 ):
+    validated_loader_preflight: Optional[dict[str, Any]] = None
     if loader_preflight_evidence is not None:
-        validate_official_harness_loader_preflight_evidence(
+        validated_loader_preflight = validate_official_harness_loader_preflight_evidence(
             loader_preflight_evidence
         )
         validate_preflight_harness_root_binding(
-            loader_preflight_evidence, harnesses
+            validated_loader_preflight, harnesses
         )
     harness_revision = (
         SWE_HARNESS_REVISION
@@ -5446,39 +5447,34 @@ def grader_factory(
         harness_image_tag=image["harness_image_tag"], harness_revision=harness_revision,
     )
     multi_support = support if target["benchmark_id"].startswith("multi_swe_bench") else ()
+    # setup-python exposes multiple lexical launcher aliases (for example,
+    # ``python`` and ``python3.11``) that resolve to the same interpreter bytes.
+    # Build the grader with the exact alias recorded by the protected preflight
+    # so its complete loader evidence (including ``python_binary``) is
+    # identical to the evidence that was approved.  The gateway resolves and
+    # hashes that launcher before retaining only the verified realpath for
+    # execution.
+    grader_python_binary: str | Path = sys.executable
+    if validated_loader_preflight is not None:
+        grader_python_binary = str(
+            validated_loader_preflight["python_loader"]["python_binary"]
+        )
     grader = OfficialHarnessGraderGateway(
         frozen, source_row=row, harness_root=harnesses[target["benchmark_id"]],
         output_root=output_root, model_name=f"trimem-v1-{arm}", support_images=multi_support,
+        python_binary=grader_python_binary,
     )
-    if loader_preflight_evidence is not None:
-        expected_loader = loader_preflight_evidence["python_loader"]
-        observed_loader = grader.python_loader_evidence
-        identity_fields = (
-            "schema",
-            "status",
-            "python_binary_realpath",
-            "python_binary_sha256",
-            "python_binary_bytes",
-            "python_version",
-            "python_prefix",
-            "libdir",
-            "libpython_realpath",
-            "libpython_sha256",
-            "libpython_bytes",
+    if validated_loader_preflight is not None:
+        # Exercise the same complete comparison used immediately before a
+        # grader process starts.  Keeping it in the factory guarantees that a
+        # loader-binding defect is terminal before the agent can spend a
+        # scientific model call for this cell.
+        validate_official_harness_loader_preflight_evidence(
+            validated_loader_preflight,
+            python_binary=grader_python_binary,
+            _runtime_loader_evidence=grader.python_loader_evidence,
+            _runtime_environment=grader.execution_env,
         )
-        if any(
-            observed_loader.get(name) != expected_loader.get(name)
-            for name in identity_fields
-        ) or (
-            sorted(grader.execution_env)
-            != loader_preflight_evidence.get("environment_keys")
-        ) or sha256_bytes(canonical_bytes(grader.execution_env)) != (
-            loader_preflight_evidence.get("environment_identity_sha256")
-        ):
-            raise BenchmarkProcessFailure(
-                "GLOBAL_ENVIRONMENT_FAILURE",
-                "official grader loader identity differs from workflow preflight",
-            )
     return grader
 
 
@@ -8400,6 +8396,11 @@ def run_arm_stream(
                 official_grader,
                 journal,
                 preflight_evidence=official_harness_loader_preflight,
+                python_binary=str(
+                    official_harness_loader_preflight["python_loader"][
+                        "python_binary"
+                    ]
+                ),
             )
             task_gateway = JournaledModelGateway(gateway, journal)
             runtime = TriMemAgentRuntime(

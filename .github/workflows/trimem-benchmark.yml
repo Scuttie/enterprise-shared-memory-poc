@@ -6,10 +6,10 @@ on:
     branches:
       - codex/trimem-coder-v1
     paths:
-      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_017.json
+      - artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_018.json
 
 concurrency:
-  group: trimem-v1-development-tuning-exec-017
+  group: trimem-v1-development-tuning-exec-018
   cancel-in-progress: false
 
 permissions:
@@ -62,7 +62,7 @@ jobs:
         run: |
           set -euo pipefail
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked
-          python -I -S scripts/trimem_development_trigger_d117.py \
+          python -I -S scripts/trimem_development_trigger_d118.py \
             --repository "$GITHUB_WORKSPACE" \
             --event-path "$GITHUB_EVENT_PATH"
 
@@ -92,7 +92,7 @@ jobs:
           RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
         run: >-
           /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python
-          -I -S scripts/trimem_development_trigger_d117.py
+          -I -S scripts/trimem_development_trigger_d118.py
           --repository "$GITHUB_WORKSPACE"
           --pre-setup-cache-host-event-path "$GITHUB_EVENT_PATH"
       - name: Set up exact Python
@@ -106,7 +106,7 @@ jobs:
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d117.py
+          python -I -S scripts/trimem_development_trigger_d118.py
           --repository "$GITHUB_WORKSPACE"
           --runner-host-preflight-event-path "$GITHUB_EVENT_PATH"
       - name: Install hash-locked environment
@@ -175,6 +175,14 @@ jobs:
               python_binary=sys.argv[2],
           )
           PY
+      - name: Rehearse full grader factory across launcher aliases before credentials
+        run: >-
+          python scripts/trimem_d118_grader_factory_rehearsal.py
+          --preflight "$RUNNER_TEMP/trimem-official-harness-loader-preflight.json"
+          --harness-root "$RUNNER_TEMP/trimem-d112-harnesses"
+          --dataset-cache-root "$RUNNER_TEMP/trimem-d117-datasets"
+          --output-root "$RUNNER_TEMP/trimem-d118-grader-factory"
+          --report "$RUNNER_TEMP/trimem-d118-grader-factory-rehearsal.json"
 
   frozen-serial-phase:
     needs: [branch-trigger-preflight, bounded-context-preflight]
@@ -215,7 +223,7 @@ jobs:
           RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
         run: >-
           /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python
-          -I -S scripts/trimem_development_trigger_d117.py
+          -I -S scripts/trimem_development_trigger_d118.py
           --repository "$GITHUB_WORKSPACE"
           --pre-setup-cache-host-event-path "$GITHUB_EVENT_PATH"
       - name: Set up exact Python
@@ -229,21 +237,21 @@ jobs:
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d117.py
+          python -I -S scripts/trimem_development_trigger_d118.py
           --repository "$GITHUB_WORKSPACE"
           --protected-runner-preflight-event-path "$GITHUB_EVENT_PATH"
       - name: Start exact cache-only benchmark services
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d117.py
+          python -I -S scripts/trimem_development_trigger_d118.py
           --repository "$GITHUB_WORKSPACE"
           --start-protected-services-event-path "$GITHUB_EVENT_PATH"
       - name: Verify exact cache-only benchmark services
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d117.py
+          python -I -S scripts/trimem_development_trigger_d118.py
           --repository "$GITHUB_WORKSPACE"
           --verify-protected-services-event-path "$GITHUB_EVENT_PATH"
       - name: Install hash-locked environment
@@ -318,6 +326,15 @@ jobs:
               python_binary=sys.argv[2],
           )
           PY
+      - name: Rehearse protected grader factory across launcher aliases before credentials
+        run: >-
+          python scripts/trimem_d118_grader_factory_rehearsal.py
+          --synthetic
+          --preflight artifacts/trimem_v1/benchmark_exec/control/official-harness-loader-preflight.json
+          --harness-root .trimem-exec/harnesses
+          --dataset-cache-root "$RUNNER_TEMP/trimem-d118-unused-datasets"
+          --output-root "$RUNNER_TEMP/trimem-d118-protected-grader-factory"
+          --report "$RUNNER_TEMP/trimem-d118-protected-grader-factory.json"
       - name: Materialize protected external approval
         id: approval_materialization
         env:
@@ -415,7 +432,7 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$OPENAI_API_KEY"
-          python scripts/trimem_run_with_resume.py \
+          "$pythonLocation/bin/python3.11" scripts/trimem_run_with_resume.py \
             --split "$TRIMEM_EXEC_SPLIT" \
             --approval-file "$RUNNER_TEMP/trimem-exec-approval.json"
       - name: Aggregate exact stream and target set fail closed
@@ -573,6 +590,6 @@ jobs:
         env:
           LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
         run: >-
-          python -I -S scripts/trimem_development_trigger_d117.py
+          python -I -S scripts/trimem_development_trigger_d118.py
           --repository "$GITHUB_WORKSPACE"
           --cleanup-protected-services-event-path "$GITHUB_EVENT_PATH"

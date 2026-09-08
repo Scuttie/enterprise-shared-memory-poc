@@ -28,6 +28,7 @@ import trimem_development_trigger_d114 as trigger_d114  # noqa: E402
 import trimem_development_trigger_d115 as trigger_d115  # noqa: E402
 import trimem_development_trigger_d116 as trigger_d116  # noqa: E402
 import trimem_development_trigger_d117 as trigger_d117  # noqa: E402
+import trimem_development_trigger_d118 as trigger_d118  # noqa: E402
 import trimem_d111_gate_contract as d111_gate  # noqa: E402
 import trimem_exec_approval as approval_validator  # noqa: E402
 import trimem_approved_phase as approved_phase  # noqa: E402
@@ -667,12 +668,12 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "      - codex/trimem-coder-v1\n"
         "    paths:\n"
         "      - artifacts/trimem_v1/exec_requests/"
-        "DEVELOPMENT_TUNING_EXEC_REQUEST_017.json\n"
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json\n"
     )
     assert "branch-trigger-preflight:" in workflow
     assert "needs: branch-trigger-preflight" in workflow
     assert workflow.count("github.run_attempt == 1") >= 2
-    assert "group: trimem-v1-development-tuning-exec-017" in workflow
+    assert "group: trimem-v1-development-tuning-exec-018" in workflow
     assert "group: trimem-v1-development-tuning-exec-014" not in workflow
     assert "group: trimem-v1-development-tuning-exec-013" not in workflow
     assert "group: trimem-v1-development-tuning-exec-010" not in workflow
@@ -684,7 +685,8 @@ def test_workflow_triggers_only_on_exact_sentinel_path_and_dispatch() -> None:
         "  frozen-serial-phase:", 1
     )[0]
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in preflight
-    assert "python -I -S scripts/trimem_development_trigger_d117.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d118.py" in preflight
+    assert "python -I -S scripts/trimem_development_trigger_d117.py" not in preflight
     assert "python -I -S scripts/trimem_development_trigger_d116.py" not in preflight
     assert "python -I -S scripts/trimem_development_trigger_d115.py" not in preflight
     assert "python -I -S scripts/trimem_development_trigger_d114.py" not in preflight
@@ -726,7 +728,7 @@ def test_static_ci_rehearses_preflight_before_dependency_install() -> None:
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
     )
     alias_rehearsal = "python -I -S scripts/trimem_compiled_prefix_alias.py --help"
-    rehearsal = "python -I -S scripts/trimem_development_trigger_d117.py --help"
+    rehearsal = "python -I -S scripts/trimem_development_trigger_d118.py --help"
     install = "python -m pip install --require-hashes"
     assert workflow.count(freeze_rehearsal) == 1
     assert workflow.count(alias_rehearsal) == 1
@@ -2744,7 +2746,21 @@ def _d18_receipt_fixture() -> dict[str, object]:
     }
 
 
-def test_d117_is_the_only_active_development_reader_contract() -> None:
+def test_d118_is_the_only_active_development_reader_contract() -> None:
+    assert trigger_d118.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_018"
+    assert trigger_d118.SENTINEL_PATH.endswith(
+        "DEVELOPMENT_TUNING_EXEC_REQUEST_018.json"
+    )
+    assert (
+        trigger_d118.REQUIRED_EXTERNAL_AUTHORIZATION
+        == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_018_APPROVED_ONCE"
+    )
+    assert benchmark_run.DEVELOPMENT_EXEC_REQUEST == Path(
+        trigger_d118.SENTINEL_PATH
+    )
+    assert benchmark_matrix.DEVELOPMENT_SENTINEL_PATH == trigger_d118.SENTINEL_PATH
+
+    # D1.17 remains immutable execution history, not an active benchmark reader.
     assert trigger_d117.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_017"
     assert trigger_d117.SENTINEL_PATH.endswith(
         "DEVELOPMENT_TUNING_EXEC_REQUEST_017.json"
@@ -2753,10 +2769,6 @@ def test_d117_is_the_only_active_development_reader_contract() -> None:
         trigger_d117.REQUIRED_EXTERNAL_AUTHORIZATION
         == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_017_APPROVED_ONCE"
     )
-    assert benchmark_run.DEVELOPMENT_EXEC_REQUEST == Path(
-        trigger_d117.SENTINEL_PATH
-    )
-    assert benchmark_matrix.DEVELOPMENT_SENTINEL_PATH == trigger_d117.SENTINEL_PATH
 
     # D1.16 remains immutable execution history, not an active benchmark reader.
     assert trigger_d116.REQUEST_ID == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_016"

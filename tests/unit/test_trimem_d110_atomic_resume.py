@@ -518,6 +518,139 @@ def test_grader_runtime_loader_must_match_the_exact_preflight(tmp_path: Path) ->
     assert delegate.calls == 0
 
 
+def test_grader_factory_reuses_exact_preflight_launcher_and_full_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A runner-local ``python`` alias must not surface only after solving."""
+
+    preflight = _preflight(tmp_path)
+    preflight_launcher = str(
+        Path(str(preflight["python_loader"]["python_binary_realpath"])).parent
+        / ".."
+        / "bin"
+        / "exact-python-fixture"
+    )
+    preflight["python_loader"]["python_binary"] = preflight_launcher
+    observed_validation: list[dict[str, object]] = []
+
+    def validate(value: object, **kwargs: object) -> dict[str, object]:
+        assert value is preflight
+        observed_validation.append(dict(kwargs))
+        return preflight
+
+    class FactoryGateway:
+        def __init__(self, _target: object, **kwargs: object) -> None:
+            assert kwargs["python_binary"] == preflight_launcher
+            self.python_loader_evidence = dict(preflight["python_loader"])
+            self.execution_env = _preflight_environment(preflight)
+
+    monkeypatch.setattr(
+        benchmark,
+        "validate_official_harness_loader_preflight_evidence",
+        validate,
+    )
+    monkeypatch.setattr(
+        benchmark, "validate_preflight_harness_root_binding", lambda *_args: None
+    )
+    monkeypatch.setattr(benchmark, "OfficialHarnessGraderGateway", FactoryGateway)
+
+    target = {
+        "target_id": "target-001",
+        "benchmark_id": "swebench_verified",
+        "instance_id": "owner__repo-1",
+        "repository": "owner/repo",
+        "base_commit": "a" * 40,
+        "dataset_revision": "b" * 40,
+        "source_row_sha256": "c" * 64,
+    }
+    image = {
+        "image": "registry.example/target@sha256:" + "d" * 64,
+        "harness_image_tag": "registry.example/target:locked",
+    }
+    grader = benchmark.grader_factory(
+        target,
+        {"instance_id": target["instance_id"]},
+        image,
+        {"swebench_verified": tmp_path},
+        tmp_path / "grader",
+        "M2",
+        (),
+        loader_preflight_evidence=preflight,
+    )
+
+    assert isinstance(grader, FactoryGateway)
+    assert observed_validation == [
+        {},
+        {
+            "python_binary": preflight_launcher,
+            "_runtime_loader_evidence": preflight["python_loader"],
+            "_runtime_environment": _preflight_environment(preflight),
+        },
+    ]
+
+
+def test_grader_factory_rejects_full_loader_drift_before_returning(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Fields omitted by the old factory subset are now checked up front."""
+
+    preflight = _preflight(tmp_path)
+    original_validate = benchmark.validate_official_harness_loader_preflight_evidence
+
+    def validate(value: object, **kwargs: object) -> dict[str, object]:
+        if not kwargs:
+            return preflight
+        return original_validate(value, **kwargs)
+
+    class DriftedGateway:
+        def __init__(self, _target: object, **kwargs: object) -> None:
+            assert kwargs["python_binary"] == preflight["python_loader"][
+                "python_binary"
+            ]
+            self.python_loader_evidence = dict(preflight["python_loader"])
+            self.python_loader_evidence["loader_probe_stdout_sha256"] = "f" * 64
+            self.execution_env = _preflight_environment(preflight)
+
+    monkeypatch.setattr(
+        benchmark,
+        "validate_official_harness_loader_preflight_evidence",
+        validate,
+    )
+    monkeypatch.setattr(
+        benchmark, "validate_preflight_harness_root_binding", lambda *_args: None
+    )
+    monkeypatch.setattr(benchmark, "OfficialHarnessGraderGateway", DriftedGateway)
+    target = {
+        "target_id": "target-001",
+        "benchmark_id": "swebench_verified",
+        "instance_id": "owner__repo-1",
+        "repository": "owner/repo",
+        "base_commit": "a" * 40,
+        "dataset_revision": "b" * 40,
+        "source_row_sha256": "c" * 64,
+    }
+
+    with pytest.raises(
+        benchmark.BenchmarkProcessFailure,
+        match="current exact loader/environment identity differs",
+    ) as failure:
+        benchmark.grader_factory(
+            target,
+            {"instance_id": target["instance_id"]},
+            {
+                "image": "registry.example/target@sha256:" + "d" * 64,
+                "harness_image_tag": "registry.example/target:locked",
+            },
+            {"swebench_verified": tmp_path},
+            tmp_path / "grader",
+            "M2",
+            (),
+            loader_preflight_evidence=preflight,
+        )
+
+    assert failure.value.disposition == "GLOBAL_ENVIRONMENT_FAILURE"
+
+
 def test_grader_lifecycle_success_is_validated_and_replayed_once(tmp_path: Path) -> None:
     request = _request(tmp_path)
     delegate = _FakeGrader(_grade(request.task_id))

@@ -1,0 +1,87 @@
+{
+  "authority_boundary": {
+    "development_execution_authorized": false,
+    "external_execution_approval_received": false,
+    "request_017_attempt_one_consumed": true,
+    "request_017_rerun_allowed": false,
+    "request_018_created_in_source": false,
+    "request_018_execution_authorized": false,
+    "request_018_request_creation_authorized": true,
+    "required_external_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_018_APPROVED_ONCE"
+  },
+  "classification": "POST_EXEC_017_PARTIAL_MODEL_PRE_GRADER_PYTHON_LAUNCHER_ALIAS_RECOVERY",
+  "consumed_execution_actuals": {
+    "benchmark_image_pulls": 13,
+    "cached_input_tokens": 0,
+    "completed_task_arm_runs": 0,
+    "decomposition_calls": 1,
+    "exact_model_metadata_requests": 1,
+    "extraction_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 197498,
+    "model_generation_calls": 18,
+    "official_grader_runs": 0,
+    "output_tokens": 5068,
+    "paid_model_calls": 18,
+    "protocol_canary_generation_calls": 1,
+    "provider_control_plane_requests": 1,
+    "reasoning_tokens": 3157,
+    "scientific_model_calls": 17,
+    "solve_calls": 16,
+    "task_arm_reservations": 1,
+    "task_arm_runs": 0,
+    "terminal_cells": 0,
+    "total_tokens": 202566,
+    "total_usd": "0.170929500000"
+  },
+  "endpoint": "TRIMEM_V1_READY_FOR_EXEC_018_REQUEST",
+  "frozen_scientific_identity": {
+    "arms": [
+      "M2-baseline",
+      "M2-precision",
+      "M2-recall",
+      "M2-balanced",
+      "M0",
+      "M1"
+    ],
+    "expected_usd": 10.8,
+    "grader_containers": 72,
+    "hard_cap_usd": 50.0,
+    "model_id": "gpt-5.4-mini-2026-03-17",
+    "paid_model_call_cap": 1873,
+    "reasoning_effort": "medium",
+    "scientific_generation_call_cap": 1872,
+    "task_arm_runs": 72,
+    "targets": 12,
+    "unchanged": [
+      "model",
+      "pricing",
+      "prompts",
+      "tools",
+      "parsers",
+      "targets",
+      "arms",
+      "budgets",
+      "grader locks",
+      "image locks"
+    ]
+  },
+  "implementation_sha256": {
+    ".github/workflows/trimem-benchmark.yml": "20115c0b9639918a678538ed6abb7c4d88e03a9021e3eac5d778191ffc028f87",
+    "scripts/trimem_benchmark_matrix.py": "03b4f3ae692f902349acbdfe9b9da331b781bf2338ace1066f22c9543f782a86",
+    "scripts/trimem_benchmark_run.py": "0370d144e74bd4ce2672141fae49acd9a3d18ccac42e11564c9fc27902e2f63c",
+    "scripts/trimem_d118_grader_factory_rehearsal.py": "918ad4a10cfdf8344d74f342bbf939e2db541a8a3e8966e57b0dea6e9e6e79c9",
+    "scripts/trimem_d118_loader_rehearsal.py": "a4c60da27f5c8e6e355c0a71281b14236923cf28a7057eaa8fa3b988a802f337",
+    "scripts/trimem_development_trigger_d118.py": "7ac7d4dfa249d9f0596a6bdc8862ab18a83316f5fdba46c07e2bf103986a008b"
+  },
+  "recovery_contract": {
+    "factory_full_identity_check_before_model": true,
+    "factory_reuses_preflight_lexical_launcher": true,
+    "journal_reuses_preflight_lexical_launcher": true,
+    "protected_driver_uses_exact_python3_11": true,
+    "protected_precredential_synthetic_rehearsal": true,
+    "twelve_target_credential_free_factory_rehearsal": true
+  },
+  "schema": "trimem/development-exec-018-launcher-binding-amendment/1.0",
+  "status": "FROZEN_CREDENTIAL_FREE_EXEC_017_PARTIAL_MODEL_PRE_GRADER_FAILURE_READY_FOR_EXEC_018_REQUEST"
+}

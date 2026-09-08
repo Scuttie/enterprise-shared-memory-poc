@@ -25,14 +25,15 @@ import trimem_development_trigger_d117 as d117_trigger  # noqa: E402
 import trimem_development_trigger_d118 as d118_trigger  # noqa: E402
 import trimem_development_trigger_d119 as d119_trigger  # noqa: E402
 import trimem_development_trigger_d120 as d120_trigger  # noqa: E402
-import trimem_development_trigger_d121 as current_trigger  # noqa: E402
+import trimem_development_trigger_d121 as d121_trigger  # noqa: E402
+import trimem_development_trigger_d122 as current_trigger  # noqa: E402
 
 
 CURRENT_STATUS_FIELDS = {
     "OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION": "ESTABLISHED_BY_P0_1_5",
     "OFFICIAL_GRADER_IMAGE_INTEGRITY": "ESTABLISHED",
-    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "PASS_ON_EXEC_020_FIRST_CELL",
-    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "PASS_ON_EXEC_020_FIRST_CELL",
+    "OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH": "PASS_ON_EXEC_021_24_CELLS",
+    "OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START": "PASS_ON_EXEC_021_24_CELLS",
     "PERFORMANCE": "NOT_MEASURED",
 }
 
@@ -75,7 +76,36 @@ def test_exec_010_failure_remains_incomplete_and_pre_result() -> None:
     }
 
 
-def test_exec_020_is_spent_and_only_021_request_creation_is_authorized() -> None:
+def test_exec_021_is_spent_and_022_remains_unauthorized() -> None:
+    readiness = read("artifacts/trimem_v1/readiness_requirements.json")
+    authority = readiness["development_authorization_boundary"]
+
+    assert readiness[
+        "historical_development_exec_021_qdrant_nofile_portability_failure"
+    ] == current_trigger.current_failure_record()
+    assert readiness["current_development_activation"] == (
+        current_trigger.current_recovery_record()
+    )
+    assert authority["historical_failed_request_id"] == (
+        "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_021"
+    )
+    assert authority["historical_failed_request_path"] == (
+        current_trigger.PREVIOUS_SENTINEL_PATH
+    )
+    assert authority["request_021_attempt_one_consumed"] is True
+    assert authority["request_021_attempt_two_allowed"] is False
+    assert authority["request_021_rerun_allowed"] is False
+    assert authority["request_022_creation_authorized"] is False
+    assert authority["request_022_created"] is False
+    assert authority["request_022_execution_authorized"] is False
+    assert authority["cross_run_resume_allowed"] is False
+    assert authority["historical_partial_results_reusable"] is False
+    assert authority["partial_checkpoint_selection_allowed"] is False
+    assert authority["required_external_authorization"] is None
+    assert authority["fresh_execution_request_creation_authorized"] is False
+
+
+def _legacy_d121_authorization_assertions() -> None:
     readiness = read("artifacts/trimem_v1/readiness_requirements.json")
     authority = readiness["development_authorization_boundary"]
     assert readiness[
@@ -95,9 +125,9 @@ def test_exec_020_is_spent_and_only_021_request_creation_is_authorized() -> None
     ] == d120_trigger.current_failure_record()
     assert readiness[
         "historical_development_exec_020_swe_outcome_classification_failure"
-    ] == current_trigger.current_failure_record()
+    ] == d121_trigger.current_failure_record()
     assert readiness["current_development_activation"] == (
-        current_trigger.current_recovery_record()
+        d121_trigger.current_recovery_record()
     )
     exec_017_actuals = readiness[
         "historical_development_exec_017_python_launcher_alias_failure"
@@ -126,7 +156,7 @@ def test_exec_020_is_spent_and_only_021_request_creation_is_authorized() -> None
         "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_020"
     )
     assert authority["historical_failed_request_path"] == (
-        current_trigger.PREVIOUS_SENTINEL_PATH
+        d121_trigger.PREVIOUS_SENTINEL_PATH
     )
     assert authority["fresh_execution_request"] == (
         "REQUEST_021_CREATION_AUTHORIZED_PENDING_EXACT_REMOTE_GATES_AND_REHEARSAL"
@@ -136,14 +166,14 @@ def test_exec_020_is_spent_and_only_021_request_creation_is_authorized() -> None
         "REQUEST_021_CREATION_AUTHORITY_RECEIVED"
     )
     assert authority["required_external_authorization"] == (
-        current_trigger.REQUIRED_EXTERNAL_AUTHORIZATION
+        d121_trigger.REQUIRED_EXTERNAL_AUTHORIZATION
     )
     assert authority["recovery_authorization_received"] is True
     assert authority["future_recovery_authority_received"] is True
     assert authority["recovery_request_id"] == (
-        current_trigger.REQUEST_ID
+        d121_trigger.REQUEST_ID
     )
-    assert authority["recovery_request_path"] == current_trigger.SENTINEL_PATH
+    assert authority["recovery_request_path"] == d121_trigger.SENTINEL_PATH
     assert authority["request_011_allowed_after_exact_remote_gates"] is False
     assert authority["request_011_attempt_one_consumed"] is True
     assert authority["request_011_attempt_two_allowed"] is False

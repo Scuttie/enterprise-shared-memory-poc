@@ -235,12 +235,18 @@ ALLOWED_RECOVERY_PATHS = frozenset(
         "artifacts/trimem_v1/readiness_requirements.json",
         "scripts/trimem_development_trigger_d112.py",
         "scripts/trimem_d113_reseal.py",
+        "scripts/trimem_d114_reseal.py",
         "scripts/trimem_freeze.py",
         "scripts/trimem_verify_ready.py",
         "tests/unit/test_trimem_benchmark_readiness.py",
+        "tests/unit/test_trimem_d110_status_and_reseal.py",
         "tests/unit/test_trimem_d112_e1_trigger.py",
+        "tests/unit/test_trimem_d120_trigger.py",
+        "tests/unit/test_trimem_d121_trigger.py",
         "tests/unit/test_trimem_d122_trigger.py",
         "tests/unit/test_trimem_dev_toolchain_workflows.py",
+        "tests/unit/test_trimem_development_trigger.py",
+        "tests/unit/test_trimem_d16_native_action.py",
     }
 )
 
@@ -259,12 +265,18 @@ REQUIRED_RECOVERY_CHANGES: dict[str, str] = {
     "artifacts/trimem_v1/readiness_requirements.json": "M",
     "scripts/trimem_development_trigger_d112.py": "M",
     "scripts/trimem_d113_reseal.py": "M",
+    "scripts/trimem_d114_reseal.py": "M",
     "scripts/trimem_freeze.py": "M",
     "scripts/trimem_verify_ready.py": "M",
     "tests/unit/test_trimem_benchmark_readiness.py": "M",
+    "tests/unit/test_trimem_d110_status_and_reseal.py": "M",
     "tests/unit/test_trimem_d112_e1_trigger.py": "M",
+    "tests/unit/test_trimem_d120_trigger.py": "M",
+    "tests/unit/test_trimem_d121_trigger.py": "M",
     "tests/unit/test_trimem_d122_trigger.py": "A",
     "tests/unit/test_trimem_dev_toolchain_workflows.py": "M",
+    "tests/unit/test_trimem_development_trigger.py": "M",
+    "tests/unit/test_trimem_d16_native_action.py": "M",
 }
 
 IMPLEMENTATION_SEAL_PATHS = frozenset(
@@ -274,6 +286,7 @@ IMPLEMENTATION_SEAL_PATHS = frozenset(
         TRIGGER_PATH,
         "scripts/trimem_development_trigger_d112.py",
         "scripts/trimem_d113_reseal.py",
+        "scripts/trimem_d114_reseal.py",
     }
 )
 

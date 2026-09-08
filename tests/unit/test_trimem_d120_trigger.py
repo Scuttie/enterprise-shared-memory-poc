@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import trimem_development_trigger_d119 as d119
 import trimem_development_trigger_d120 as d120
 import trimem_development_trigger_d121 as d121
+import trimem_development_trigger_d122 as d122
 import trimem_d120_loader_rehearsal as d120_collector
 
 
@@ -275,14 +276,21 @@ def test_d120_recovery_scope_excludes_science_and_historical_d119() -> None:
     assert forbidden.isdisjoint(d120.ALLOWED_RECOVERY_PATHS)
 
 
-def test_d121_history_validates_spent_exec_020_and_has_no_exec_021() -> None:
-    request = d120.validate_sentinel_commit(
+def test_d121_history_validates_spent_exec_020_and_exact_exec_021() -> None:
+    request_020 = d120.validate_sentinel_commit(
         ROOT,
         d121.PREVIOUS_EXECUTION_HEAD,
         expected_parent=d121.PREVIOUS_SOURCE_HEAD,
         require_checked_out_head=False,
     )
-    assert request["request_id"] == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_020"
-    assert request["source_head"] == d121.PREVIOUS_SOURCE_HEAD
-    assert request["request_path"] == d121.PREVIOUS_SENTINEL_PATH
-    assert d121.validate_optional_exec_021_boundary(ROOT) is None
+    assert request_020["request_id"] == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_020"
+    assert request_020["source_head"] == d121.PREVIOUS_SOURCE_HEAD
+    request_021 = d121.validate_sentinel_commit(
+        ROOT,
+        d122.PREVIOUS_EXECUTION_HEAD,
+        expected_parent=d122.PREVIOUS_SOURCE_HEAD,
+        require_checked_out_head=False,
+    )
+    assert request_021["request_id"] == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_021"
+    assert request_021["source_head"] == d122.PREVIOUS_SOURCE_HEAD
+    assert request_021["request_path"] == d122.PREVIOUS_SENTINEL_PATH

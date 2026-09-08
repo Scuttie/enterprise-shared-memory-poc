@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import trimem_d121_reseal as reseal
 import trimem_development_trigger_d120 as d120
 import trimem_development_trigger_d121 as d121
+import trimem_development_trigger_d122 as d122
 
 
 def _fixture_bytes() -> bytes:
@@ -259,5 +260,14 @@ def test_d121_report_and_reseal_freeze_exact_boundary() -> None:
     assert fixture["scientific_cell"]["computed_resolved"] is False
 
 
-def test_d121_current_history_has_no_uncommitted_or_committed_021() -> None:
-    assert d121.validate_optional_exec_021_boundary(ROOT) is None
+def test_d121_history_has_one_exact_spent_exec_021() -> None:
+    request = d121.validate_sentinel_commit(
+        ROOT,
+        d122.PREVIOUS_EXECUTION_HEAD,
+        expected_parent=d122.PREVIOUS_SOURCE_HEAD,
+        require_checked_out_head=False,
+    )
+    assert request["request_id"] == "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_021"
+    assert request["request_path"] == d122.PREVIOUS_SENTINEL_PATH
+    assert request["source_head"] == d122.PREVIOUS_SOURCE_HEAD
+    assert not (ROOT / d122.FUTURE_SENTINEL_PATH).exists()

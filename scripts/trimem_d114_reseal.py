@@ -173,6 +173,10 @@ IMMUTABLE_D113_CURRENT_PATHS = tuple(
     if relative
     not in {
         D113_FREEZE_PATH,
+        # D1.22 changes only D1.13's current-tree compatibility allowlist so
+        # the original D1.13 Git blob remains immutable while the shared
+        # D1.12 Qdrant launcher receives its portable nofile contract.
+        "scripts/trimem_d113_reseal.py",
         "tests/unit/test_trimem_d113_status_and_reseal.py",
     }
 )

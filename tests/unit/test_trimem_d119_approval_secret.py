@@ -411,6 +411,23 @@ def test_d119_cli_has_no_single_secret_install_route() -> None:
         )
 
 
+def test_d119_cli_imports_with_dependency_free_isolated_python() -> None:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-S",
+            str(ROOT / "scripts/trimem_d119_approval_secret.py"),
+            "--help",
+        ],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert "--install-required" in completed.stdout
+
+
 def test_d119_cli_writes_encoded_output_with_write_bytes(tmp_path: Path) -> None:
     raw, encoded = producer.encode_approval_document(_document())
     approval_path = tmp_path / "approval.json"

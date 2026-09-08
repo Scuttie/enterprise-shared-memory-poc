@@ -23,7 +23,11 @@ from typing import Any, Mapping, Sequence
 
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
+SCRIPT_DIRECTORY = str(Path(__file__).resolve().parent)
+SOURCE_DIRECTORY = str(ROOT / "src")
+for import_root in (SCRIPT_DIRECTORY, SOURCE_DIRECTORY):
+    if import_root not in sys.path:
+        sys.path.insert(0, import_root)
 from enterprise_memory.providers.openai_credential import (  # noqa: E402
     OpenAICredentialValidationError,
     validate_openai_api_key,

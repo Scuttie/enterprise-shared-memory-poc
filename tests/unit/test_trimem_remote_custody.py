@@ -39,8 +39,9 @@ def binding(label: str) -> custody.ArtifactBinding:
 
 
 class FakeRunner:
-    def __init__(self) -> None:
+    def __init__(self, names: dict[str, str] | None = None) -> None:
         self.calls: list[list[str]] = []
+        self.names = dict(NAMES if names is None else names)
 
     def __call__(self, argv: list[str]) -> subprocess.CompletedProcess[str]:
         self.calls.append(list(argv))
@@ -48,7 +49,7 @@ class FakeRunner:
         label = next(key for key, value in IDS.items() if value == artifact_id)
         payload = {
             "id": int(artifact_id),
-            "name": NAMES[label],
+            "name": self.names[label],
             "expired": False,
             "size_in_bytes": 17,
             "digest": "sha256:" + DIGESTS[label],
@@ -98,6 +99,66 @@ def test_failure_path_requires_only_encrypted_and_inventory_artifacts() -> None:
     assert [row["label"] for row in result["verified_artifacts"]] == [
         "RESTRICTED",
         "INVENTORY",
+    ]
+    assert len(runner.calls) == 2
+
+
+def test_cli_failure_path_uses_explicit_names_and_empty_public_outputs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    diagnostic_names = {
+        "PUBLIC": "trimem-dev-activation-diagnostic-public",
+        "RESTRICTED": "trimem-dev-activation-diagnostic-restricted-encrypted",
+        "INVENTORY": "trimem-dev-activation-diagnostic-evidence-inventory",
+    }
+    runner = FakeRunner(diagnostic_names)
+
+    def fake_run(argv, **_kwargs):
+        return runner(list(argv))
+
+    output = tmp_path / "custody.json"
+    monkeypatch.setattr(custody.subprocess, "run", fake_run)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "trimem_verify_remote_custody.py",
+            "--repository",
+            REPOSITORY,
+            "--workflow-run-id",
+            str(RUN_ID),
+            "--public-upload-outcome",
+            "skipped",
+            "--public-artifact-name",
+            diagnostic_names["PUBLIC"],
+            "--public-artifact-id",
+            "",
+            "--public-artifact-digest",
+            "",
+            "--restricted-artifact-name",
+            diagnostic_names["RESTRICTED"],
+            "--restricted-artifact-id",
+            IDS["RESTRICTED"],
+            "--restricted-artifact-digest",
+            DIGESTS["RESTRICTED"],
+            "--inventory-artifact-name",
+            diagnostic_names["INVENTORY"],
+            "--inventory-artifact-id",
+            IDS["INVENTORY"],
+            "--inventory-artifact-digest",
+            DIGESTS["INVENTORY"],
+            "--output",
+            str(output),
+        ],
+    )
+
+    assert custody.main() == 0
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert result["status"] == custody.FAILURE_MARKER
+    assert result["public_artifact"] == "ABSENT_EXPECTED"
+    assert [row["name"] for row in result["verified_artifacts"]] == [
+        diagnostic_names["RESTRICTED"],
+        diagnostic_names["INVENTORY"],
     ]
     assert len(runner.calls) == 2
 

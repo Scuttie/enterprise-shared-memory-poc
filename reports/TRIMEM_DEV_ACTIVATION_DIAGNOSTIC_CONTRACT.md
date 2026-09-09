@@ -2,11 +2,31 @@
 
 ## Current endpoint
 
-`POST_DEV_ACTIVATION_DIAGNOSTIC_PRE_EXEC_READY_AWAITING_EXTERNAL_APPROVAL`
+`POST_DEV_ACTIVATION_DIAGNOSTIC_EXEC_001_PREFLIGHT_FAILURE_CORRECTED_AWAITING_NEW_HEAD_CI`
 
 This is a post-DEV diagnostic contract, not a development-selection rerun, a
 HELDOUT result, or a performance claim. No model, image, grader, or benchmark
 executor is authorized by this change.
+
+Run `34359716328` attempt 2 is preserved as a zero-work preflight failure. Its
+frozen-source check passed, but its isolated pre-editable import omitted the
+`src` tree; its failure custody then lacked the pinned GitHub CLI. Subsequent
+static review also identified a latent diagnostic-versus-generic artifact-name
+mismatch. Model/API calls, image pulls, task-arm runs, grader containers,
+tokens, and USD were all zero. The spent attempt and approval are not reusable.
+Recovery requires a new exact-head push run, a clean attempt-1 handshake, and
+a fresh attempt-2 approval.
+
+The corrected order keeps the standard-library freeze check before any
+installation, installs and verifies the pinned custody CLI, installs only the
+hash-locked dependencies, runs the diagnostic preflight with site packages
+enabled and the uninstalled `scripts`/`src` trees explicit, and installs the
+editable project only after that preflight passes. An `always()` custody guard
+also idempotently installs and verifies the exact pinned CLI, including when a
+preceding preflight step failed. Artifact names are now explicit inputs to the
+shared custody verifier. The exact corrected success path and all later
+credential-free dataset, harness-loader, and grader-factory stages were
+rehearsed on the Ubuntu runner without model, image, or grader work.
 
 The historical `_022` sentinel at the selected-recall execution head is now
 selection evidence only. This diagnostic commit is its descendant, so the old

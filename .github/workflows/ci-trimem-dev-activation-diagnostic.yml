@@ -221,27 +221,15 @@ jobs:
         with:
           python-version: 3.11.10
           cache: ""
-      - name: Verify frozen diagnostic before editable code installation
+      - name: Verify frozen source before any installation
         run: |
           set -euo pipefail
           umask 077
           python -I -S scripts/trimem_freeze.py --check --require-git-tracked \
             > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stdout.log) \
             2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stderr.log >&2)
-          python -I -S -c "import runpy,sys; sys.path[:0]=['scripts','.']; sys.argv=['trimem_dev_activation_diagnostic.py','preflight']; runpy.run_path('scripts/trimem_dev_activation_diagnostic.py',run_name='__main__')" \
-            > >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stdout.log) \
-            2> >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stderr.log >&2)
-      - name: Install hash-locked production environment
-        run: |
-          set -euo pipefail
-          umask 077
-          python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock \
-            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stdout.log) \
-            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stderr.log >&2)
-          python -m pip install --no-deps --no-build-isolation -e . \
-            > >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stdout.log) \
-            2> >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stderr.log >&2)
       - name: Install exact pinned GitHub CLI for evidence custody
+        id: pinned_gh_install
         run: |
           set -euo pipefail
           umask 077
@@ -254,6 +242,7 @@ jobs:
           test "$observed_bin" = "$expected_bin"
           printf '%s\n' "$observed_bin" >> "$GITHUB_PATH"
       - name: Verify exact pinned GitHub CLI before credentials
+        id: pinned_gh_verification
         run: |
           set -euo pipefail
           umask 077
@@ -264,6 +253,27 @@ jobs:
             --prefix "$RUNNER_TEMP/trimem-devdiag-gh" \
             > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/github-cli-verification.stdout.log) \
             2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/github-cli-verification.stderr.log >&2)
+      - name: Install hash-locked production dependencies
+        run: |
+          set -euo pipefail
+          umask 077
+          python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stderr.log >&2)
+      - name: Verify frozen diagnostic before editable code installation
+        run: |
+          set -euo pipefail
+          umask 077
+          python -I -c "import runpy,sys; sys.path[:0]=['scripts','src','.']; sys.argv=['trimem_dev_activation_diagnostic.py','preflight']; runpy.run_path('scripts/trimem_dev_activation_diagnostic.py',run_name='__main__')" \
+            > >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stdout.log) \
+            2> >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stderr.log >&2)
+      - name: Install editable project after diagnostic preflight
+        run: |
+          set -euo pipefail
+          umask 077
+          python -m pip install --no-deps --no-build-isolation -e . \
+            > >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stdout.log) \
+            2> >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stderr.log >&2)
       - name: Rehearse exact DEV dataset and checkout materialization before credentials
         run: |
           set -euo pipefail
@@ -466,6 +476,25 @@ jobs:
             --evidence-root artifacts/trimem_v1/dev_activation_diagnostic/image-cleanup \
             > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/image-cleanup.stdout.log) \
             2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/image-cleanup.stderr.log >&2)
+      - name: Ensure exact pinned GitHub CLI for every custody path
+        id: custody_gh_recovery
+        if: always()
+        run: |
+          set -euo pipefail
+          umask 077
+          expected_bin="$RUNNER_TEMP/trimem-devdiag-gh/bin"
+          observed_bin="$(
+            python scripts/trimem_install_pinned_gh.py \
+              --lock configs/trimem_v1/gh_cli_lock.json \
+              --prefix "$RUNNER_TEMP/trimem-devdiag-gh"
+          )"
+          test "$observed_bin" = "$expected_bin"
+          printf '%s\n' "$observed_bin" >> "$GITHUB_PATH"
+          python scripts/trimem_verify_gh_lock.py \
+            --lock configs/trimem_v1/gh_cli_lock.json \
+            --prefix "$RUNNER_TEMP/trimem-devdiag-gh" \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/custody-github-cli-verification.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/custody-github-cli-verification.stderr.log >&2)
       - name: Inventory complete restricted diagnostic evidence
         id: diagnostic_evidence_inventory
         if: always()
@@ -541,10 +570,13 @@ jobs:
             --repository "$GITHUB_REPOSITORY" \
             --workflow-run-id "$GITHUB_RUN_ID" \
             --public-upload-outcome "$PUBLIC_UPLOAD_OUTCOME" \
+            --public-artifact-name trimem-dev-activation-diagnostic-public \
             --public-artifact-id "$PUBLIC_ARTIFACT_ID" \
             --public-artifact-digest "$PUBLIC_ARTIFACT_DIGEST" \
+            --restricted-artifact-name trimem-dev-activation-diagnostic-restricted-encrypted \
             --restricted-artifact-id "$RESTRICTED_ARTIFACT_ID" \
             --restricted-artifact-digest "$RESTRICTED_ARTIFACT_DIGEST" \
+            --inventory-artifact-name trimem-dev-activation-diagnostic-evidence-inventory \
             --inventory-artifact-id "$INVENTORY_ARTIFACT_ID" \
             --inventory-artifact-digest "$INVENTORY_ARTIFACT_DIGEST" \
             --output "$RUNNER_TEMP/trimem-dev-activation-diagnostic-remote-custody.json"

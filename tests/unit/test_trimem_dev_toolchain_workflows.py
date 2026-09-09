@@ -350,8 +350,14 @@ def test_benchmark_evidence_uploads_stop_on_cancellation_but_cleanup_is_fail_clo
     assert "GH_TOKEN: ${{ github.token }}" in custody
     assert "python scripts/trimem_verify_remote_custody.py" in custody
     assert '--public-upload-outcome "$PUBLIC_UPLOAD_OUTCOME"' in custody
+    assert "--public-artifact-name trimem-benchmark-public" in custody
     assert '--restricted-artifact-id "$RESTRICTED_ARTIFACT_ID"' in custody
+    assert (
+        "--restricted-artifact-name trimem-benchmark-restricted-encrypted"
+        in custody
+    )
     assert '--inventory-artifact-id "$INVENTORY_ARTIFACT_ID"' in custody
+    assert "--inventory-artifact-name trimem-benchmark-evidence-inventories" in custody
     assert '--output "$RUNNER_TEMP/trimem-remote-custody-result.json"' in custody
     assert "id: custody-result-upload" in custody_upload
     assert "steps.external-custody-verification.outcome == 'success'" in custody_upload

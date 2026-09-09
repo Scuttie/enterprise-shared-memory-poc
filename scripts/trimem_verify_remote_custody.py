@@ -180,10 +180,13 @@ def main() -> int:
     parser.add_argument(
         "--public-upload-outcome", choices=("success", "skipped"), required=True
     )
+    parser.add_argument("--public-artifact-name", required=True)
     parser.add_argument("--public-artifact-id")
     parser.add_argument("--public-artifact-digest")
+    parser.add_argument("--restricted-artifact-name", required=True)
     parser.add_argument("--restricted-artifact-id", required=True)
     parser.add_argument("--restricted-artifact-digest", required=True)
+    parser.add_argument("--inventory-artifact-name", required=True)
     parser.add_argument("--inventory-artifact-id", required=True)
     parser.add_argument("--inventory-artifact-digest", required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -195,19 +198,19 @@ def main() -> int:
             public_upload_outcome=args.public_upload_outcome,
             public=_binding(
                 "PUBLIC",
-                "trimem-benchmark-public",
+                args.public_artifact_name,
                 args.public_artifact_id,
                 args.public_artifact_digest,
             ),
             restricted=ArtifactBinding(
                 "RESTRICTED",
-                "trimem-benchmark-restricted-encrypted",
+                args.restricted_artifact_name,
                 args.restricted_artifact_id,
                 args.restricted_artifact_digest,
             ),
             inventory=ArtifactBinding(
                 "INVENTORY",
-                "trimem-benchmark-evidence-inventories",
+                args.inventory_artifact_name,
                 args.inventory_artifact_id,
                 args.inventory_artifact_digest,
             ),

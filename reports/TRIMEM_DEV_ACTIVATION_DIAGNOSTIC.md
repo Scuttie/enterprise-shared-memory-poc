@@ -7,15 +7,23 @@ result of DEV EXEC-022. It is not an M2 selection run, a held-out estimate, or
 evidence for a final performance claim.
 
 ```text
-TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = CREDENTIAL_FREE_PRE_EXEC_CLOSURE_COMPLETE
+TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = EXEC_001_ZERO_WORK_PREFLIGHT_FAILURE_PRESERVED
 HISTORICAL_ABSTENTION_ROOT_CAUSE = UNIDENTIFIABLE_FROM_RETAINED_EVIDENCE
 SOURCE_BANK = FROZEN_VERIFIED_TARGET_DISJOINT_12_OF_12
-EXECUTION_WORKFLOW = CONNECTED_EXACT_ATTEMPT_2_AWAITING_EXTERNAL_APPROVAL
+RECOVERY_IMPLEMENTATION = PRE_EXEC_REHEARSED_AWAITING_NEW_HEAD_CI
 MODEL_EXECUTION = NOT_STARTED
 OFFICIAL_GRADER_EXECUTION = NOT_STARTED
 PAID_MODEL_CALLS_THIS_DIAGNOSTIC = 0
 USD_THIS_DIAGNOSTIC = 0
 ```
+
+Run `34359716328` attempt 2 is a spent, zero-work preflight failure, not a
+scientific or evaluator run. The frozen-source check passed, after which the
+uninstalled source package was absent from the isolated import path. The
+separate failure report preserves the exact run, evidence, zero-call
+accounting, and recovery boundary. The correction changes only execution and
+custody plumbing: the scientific matrix, source bank, model, prompts, tools,
+parsers, budgets, images, grader locks, and verdict rules are unchanged.
 
 ## EXEC-022 retrospective boundary
 

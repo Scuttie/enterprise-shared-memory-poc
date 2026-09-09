@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import venv
 
 import pytest
 
@@ -165,6 +166,74 @@ def _read_lf(path: Path) -> str:
     return raw.decode("utf-8")
 
 
+def test_isolated_preinstall_preflight_keeps_site_packages_and_adds_src(
+    tmp_path: Path,
+) -> None:
+    runtime = tmp_path / "runtime"
+    venv.EnvBuilder(with_pip=False).create(runtime)
+    runtime_python = (
+        runtime / "Scripts" / "python.exe"
+        if os.name == "nt"
+        else runtime / "bin" / "python"
+    )
+    purelib_result = subprocess.run(
+        [
+            str(runtime_python),
+            "-c",
+            "import sysconfig; print(sysconfig.get_path('purelib'))",
+        ],
+        check=True,
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+    )
+    purelib = Path(purelib_result.stdout.strip())
+    purelib.mkdir(parents=True, exist_ok=True)
+    (purelib / "trimem_dependency_probe.py").write_text(
+        "TOKEN = 'dependency-site-packages'\n", encoding="utf-8"
+    )
+    scripts = tmp_path / "scripts"
+    source = tmp_path / "src"
+    scripts.mkdir()
+    source.mkdir()
+    (source / "trimem_source_probe.py").write_text(
+        "TOKEN = 'source-tree'\n", encoding="utf-8"
+    )
+    (scripts / "trimem_dev_activation_diagnostic.py").write_text(
+        "from trimem_dependency_probe import TOKEN as dependency_token\n"
+        "from trimem_source_probe import TOKEN as source_token\n"
+        "assert dependency_token == 'dependency-site-packages'\n"
+        "assert source_token == 'source-tree'\n"
+        "print('TRIMEM_ISOLATED_PREINSTALL_PREFLIGHT_PASS')\n",
+        encoding="utf-8",
+    )
+    command = (
+        "import runpy,sys; sys.path[:0]=['scripts','src','.']; "
+        "sys.argv=['trimem_dev_activation_diagnostic.py','preflight']; "
+        "runpy.run_path('scripts/trimem_dev_activation_diagnostic.py',"
+        "run_name='__main__')"
+    )
+    completed = subprocess.run(
+        [str(runtime_python), "-I", "-c", command],
+        cwd=tmp_path,
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert "TRIMEM_ISOLATED_PREINSTALL_PREFLIGHT_PASS" in completed.stdout
+
+    site_suppressed = subprocess.run(
+        [str(runtime_python), "-I", "-S", "-c", command],
+        cwd=tmp_path,
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    assert site_suppressed.returncode != 0
+    assert "trimem_dependency_probe" in site_suppressed.stderr
+
+
 def _approval(now: datetime) -> tuple[dict, dict]:
     policy = diagnostic.strict_json_load(ROOT / diagnostic.POLICY_PATH)
     bindings = {
@@ -260,6 +329,38 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
     assert production.index(
         "Verify cached protected runner toolchain before setup-python"
     ) < production.index("actions/setup-python@")
+    preinstall_order = (
+        "Verify frozen source before any installation",
+        "Install exact pinned GitHub CLI for evidence custody",
+        "Verify exact pinned GitHub CLI before credentials",
+        "Install hash-locked production dependencies",
+        "Verify frozen diagnostic before editable code installation",
+        "Install editable project after diagnostic preflight",
+    )
+    assert list(map(production.index, preinstall_order)) == sorted(
+        map(production.index, preinstall_order)
+    )
+    assert (
+        "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
+        in production
+    )
+    assert (
+        "python -I -c \"import runpy,sys; "
+        "sys.path[:0]=['scripts','src','.']; "
+        "sys.argv=['trimem_dev_activation_diagnostic.py','preflight']; "
+        "runpy.run_path('scripts/trimem_dev_activation_diagnostic.py',"
+        "run_name='__main__')\""
+        in production
+    )
+    assert "python -I -S -c \"import runpy,sys" not in production
+    assert "id: pinned_gh_install" in production
+    assert "id: pinned_gh_verification" in production
+    inventory_step = production[
+        production.index("- name: Inventory complete restricted diagnostic evidence") :
+        production.index("- name: Encrypt complete restricted diagnostic evidence")
+    ]
+    assert "if: always()" in inventory_step
+    assert "pinned_gh_verification" not in inventory_step
     assert "secrets.TRIMEM_DEV_ACTIVATION_APPROVAL_B64" in production
     assert "python -I -S scripts/trimem_dev_activation_gate.py" in production
     assert '--output-approval "$RUNNER_TEMP/trimem-dev-activation-approval.json"' in production
@@ -286,6 +387,48 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
     assert "python scripts/trimem_evidence_inventory.py" in production
     assert "openssl enc -aes-256-cbc -salt -pbkdf2" in production
     assert "python scripts/trimem_verify_remote_custody.py" in production
+    for artifact_name in (
+        "trimem-dev-activation-diagnostic-public",
+        "trimem-dev-activation-diagnostic-restricted-encrypted",
+        "trimem-dev-activation-diagnostic-evidence-inventory",
+    ):
+        assert f"name: {artifact_name}" in production
+    custody_step = production[
+        production.index(
+            "- name: Verify durable external artifact custody before plaintext cleanup"
+        ) : production.index("- name: Upload sanitized diagnostic custody result")
+    ]
+    assert "steps.public_upload.outcome == 'success' ||" in custody_step
+    assert "steps.public_upload.outcome == 'skipped'" in custody_step
+    assert "PUBLIC_UPLOAD_OUTCOME: ${{ steps.public_upload.outcome }}" in custody_step
+    assert (
+        "--public-artifact-name trimem-dev-activation-diagnostic-public"
+        in custody_step
+    )
+    assert '--public-artifact-id "$PUBLIC_ARTIFACT_ID"' in custody_step
+    assert '--public-artifact-digest "$PUBLIC_ARTIFACT_DIGEST"' in custody_step
+    assert (
+        "--restricted-artifact-name "
+        "trimem-dev-activation-diagnostic-restricted-encrypted"
+        in custody_step
+    )
+    assert (
+        "--inventory-artifact-name "
+        "trimem-dev-activation-diagnostic-evidence-inventory"
+        in custody_step
+    )
+    custody_gh_step = production[
+        production.index(
+            "- name: Ensure exact pinned GitHub CLI for every custody path"
+        ) : production.index("- name: Inventory complete restricted diagnostic evidence")
+    ]
+    assert "if: always()" in custody_gh_step
+    assert "python scripts/trimem_install_pinned_gh.py" in custody_gh_step
+    assert "python scripts/trimem_verify_gh_lock.py" in custody_gh_step
+    assert 'printf \'%s\\n\' "$observed_bin" >> "$GITHUB_PATH"' in custody_gh_step
+    assert production.index(
+        "- name: Ensure exact pinned GitHub CLI for every custody path"
+    ) < production.index("- name: Inventory complete restricted diagnostic evidence")
     assert production.count(
         "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
     ) == 4

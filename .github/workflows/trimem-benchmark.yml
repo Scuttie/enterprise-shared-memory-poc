@@ -535,10 +535,13 @@ jobs:
             --repository "$GITHUB_REPOSITORY" \
             --workflow-run-id "$GITHUB_RUN_ID" \
             --public-upload-outcome "$PUBLIC_UPLOAD_OUTCOME" \
+            --public-artifact-name trimem-benchmark-public \
             --public-artifact-id "$PUBLIC_ARTIFACT_ID" \
             --public-artifact-digest "$PUBLIC_ARTIFACT_DIGEST" \
+            --restricted-artifact-name trimem-benchmark-restricted-encrypted \
             --restricted-artifact-id "$RESTRICTED_ARTIFACT_ID" \
             --restricted-artifact-digest "$RESTRICTED_ARTIFACT_DIGEST" \
+            --inventory-artifact-name trimem-benchmark-evidence-inventories \
             --inventory-artifact-id "$INVENTORY_ARTIFACT_ID" \
             --inventory-artifact-digest "$INVENTORY_ARTIFACT_DIGEST" \
             --output "$RUNNER_TEMP/trimem-remote-custody-result.json"

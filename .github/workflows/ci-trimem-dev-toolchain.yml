@@ -1,0 +1,223 @@
+name: TriMem V1 credential-free DEV toolchain rehearsal
+# D1.23 credential-free EXEC-022 source/sentinel activation and historical replay.
+# This exact-source gate intentionally has no paths or paths-ignore filter.
+
+on:
+  push:
+    branches:
+      - codex/trimem-coder-v1
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  pinned-gh-and-smoke-attestation-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact correction commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.11.10
+          cache: ""
+      - name: Install hash-locked environment
+        run: |
+          python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Verify production terminal-cell round trip before provider access
+        run: >-
+          python scripts/trimem_pytest_no_skip.py
+          tests/unit/test_trimem_d18_terminal_contract_integration.py
+          tests/unit/test_trimem_d110_atomic_resume.py
+          tests/unit/test_trimem_d110_checkout_custody.py
+          tests/unit/test_trimem_d110_official_harness_loader.py
+          tests/unit/test_trimem_d110_resume_fail_closed.py
+          tests/unit/test_trimem_d111_gate_contract.py
+          tests/unit/test_trimem_d112_e1_trigger.py
+          tests/unit/test_trimem_d112_status_and_reseal.py
+          tests/unit/test_trimem_d113_e1_trigger.py
+          tests/unit/test_trimem_d113_gate_contract.py
+          tests/unit/test_trimem_d113_status_and_reseal.py
+          tests/unit/test_trimem_d114_e1_trigger.py
+          tests/unit/test_trimem_d114_gate_contract.py
+          tests/unit/test_trimem_d114_post_setup_environment.py
+          tests/unit/test_trimem_d114_status_and_reseal.py
+          tests/unit/test_trimem_d115_compiled_prefix_alias.py
+          tests/unit/test_trimem_d115_gate_contract.py
+          tests/unit/test_trimem_d115_status_and_reseal.py
+          tests/unit/test_trimem_d115_trigger.py
+          tests/unit/test_trimem_d116_trigger.py
+          tests/unit/test_trimem_d117_trigger.py
+          tests/unit/test_trimem_d118_trigger.py
+          tests/unit/test_trimem_d118_grader_factory_rehearsal.py
+          tests/unit/test_trimem_d119_trigger.py
+          tests/unit/test_trimem_d119_approval_secret.py
+          tests/unit/test_trimem_d120_trigger.py
+          tests/unit/test_trimem_d121_trigger.py
+          tests/unit/test_trimem_d122_qdrant_nofile_rehearsal.py
+          tests/unit/test_trimem_d122_trigger.py
+          tests/unit/test_trimem_d123_trigger.py
+          tests/unit/test_trimem_remote_custody.py
+          tests/unit/test_trimem_d19_bounded_short_term_context.py::test_mixed_72_cell_aggregate_public_and_terminal_ledger_round_trip
+      - name: Verify bounded context round trip before provider access
+        run: python scripts/trimem_context_roundtrip.py
+      - name: Validate exact D1.23 source or sentinel-only child
+        run: |
+          python -I -S scripts/trimem_freeze.py --check --require-git-tracked
+          python -I -S scripts/trimem_d111_gate_contract.py \
+            --fixture tests/fixtures/trimem_d111/exec_011_branch_transition.json
+          python -I -S scripts/trimem_d113_gate_contract.py \
+            --fixture tests/fixtures/trimem_d113/exec_012_preprotected_failure.json
+          python -I -S scripts/trimem_d114_gate_contract.py \
+            --fixture tests/fixtures/trimem_d114/exec_013_post_setup_failure.json
+          python -I -S scripts/trimem_d115_gate_contract.py \
+            --fixture tests/fixtures/trimem_d115/exec_014_loader_failure.json
+          python scripts/trimem_verify_ready.py \
+            --level static \
+            --require-git-tracked
+      - name: Rehearse exact Qdrant nofile topology with zero model or grader work
+        run: |
+          set -euo pipefail
+          qdrant_image="qdrant/qdrant@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636"
+          docker pull "$qdrant_image"
+          qdrant_repo_digests="$RUNNER_TEMP/trimem-d122-qdrant-repo-digests.json"
+          docker image inspect "$qdrant_image" \
+            --format '{{json .RepoDigests}}' | tee "$qdrant_repo_digests"
+          python - "$qdrant_repo_digests" "$qdrant_image" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          observed = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          expected = sys.argv[2]
+          if (
+              not isinstance(observed, list)
+              or not observed
+              or any(not isinstance(value, str) for value in observed)
+              or expected not in observed
+          ):
+              raise SystemExit(
+                  f"pinned Qdrant RepoDigest differs: expected {expected!r}, "
+                  f"observed {observed!r}"
+              )
+          PY
+          report="$RUNNER_TEMP/trimem-d122-qdrant-nofile-rehearsal.json"
+          python scripts/trimem_d122_qdrant_nofile_rehearsal.py \
+            --report "$report"
+          python - "$report" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          expected = {
+              "benchmark_image_pulls": 0,
+              "credential_access": False,
+              "grader_containers": 0,
+              "model_api_calls": 0,
+              "model_calls": 0,
+              "official_grader_runs": 0,
+              "paid_model_calls": 0,
+              "rehearsal_process_image_pulls": 0,
+              "task_arm_runs": 0,
+              "tokens": 0,
+              "total_usd": 0.0,
+          }
+          if report.get("status") != "PASS":
+              raise SystemExit("D1.22 Qdrant rehearsal did not pass")
+          if {name: report.get(name) for name in expected} != expected:
+              raise SystemExit("D1.22 rehearsal scientific accounting is not zero")
+          topology = report.get("topology")
+          if not isinstance(topology, dict) or topology.get("collection_count") != 12:
+              raise SystemExit("D1.22 rehearsal collection count differs")
+          if topology.get("payload_index_count") != 72:
+              raise SystemExit("D1.22 rehearsal payload-index count differs")
+          print(json.dumps(report, sort_keys=True, separators=(",", ":")))
+          print(json.dumps({
+              "benchmark_image_pulls": 0,
+              "support_service_image_pulls": 1,
+          }, sort_keys=True, separators=(",", ":")))
+          PY
+      - name: Install exact pinned GitHub CLI
+        run: |
+          set -euo pipefail
+          expected_bin="$RUNNER_TEMP/trimem-gh/bin"
+          observed_bin="$(
+            python scripts/trimem_install_pinned_gh.py \
+              --lock configs/trimem_v1/gh_cli_lock.json \
+              --prefix "$RUNNER_TEMP/trimem-gh"
+          )"
+          test "$observed_bin" = "$expected_bin"
+          printf '%s\n' "$observed_bin" >> "$GITHUB_PATH"
+      - name: Verify exact GitHub CLI
+        run: |
+          set -euo pipefail
+          resolved_gh="$(command -v gh)"
+          test "$resolved_gh" = "$RUNNER_TEMP/trimem-gh/bin/gh"
+          gh --version
+          python scripts/trimem_verify_gh_lock.py \
+            --lock configs/trimem_v1/gh_cli_lock.json \
+            --prefix "$RUNNER_TEMP/trimem-gh"
+      - name: Verify official smoke attestation only with zero scientific work
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          report="$RUNNER_TEMP/trimem-smoke-attestation-only.json"
+          python scripts/trimem_verify_ready.py \
+            --level smoke-attestation-only \
+            --require-git-tracked \
+            | tee "$report"
+          python - "$report" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          expected_zero_fields = {
+              "api_calls",
+              "database_operations",
+              "decomposition_calls",
+              "docker_image_pulls",
+              "extraction_calls",
+              "grader_calls",
+              "grader_containers",
+              "input_tokens",
+              "model_calls",
+              "model_gateway_calls",
+              "official_grader_runs",
+              "output_tokens",
+              "paid_model_calls",
+              "reasoning_tokens",
+              "solve_calls",
+              "support_service_containers",
+              "support_service_image_pulls",
+              "target_image_pulls",
+              "task_arm_runs",
+              "total_usd",
+          }
+          attestation = report.get("attestation_verification")
+          actuals = report.get("attestation_only_execution")
+          if report.get("status") != "PASS":
+              raise SystemExit("smoke-attestation-only did not pass")
+          if not isinstance(attestation, dict) or attestation.get("status") != "PASS":
+              raise SystemExit("cryptographic smoke attestation was not verified")
+          if attestation.get("live_run_attempt_query_count") != 1:
+              raise SystemExit("exactly one live historical run-attempt query is required")
+          if not isinstance(actuals, dict) or set(actuals) != expected_zero_fields:
+              raise SystemExit("attestation-only operation counter field set differs")
+          nonzero = {
+              name: value
+              for name, value in actuals.items()
+              if type(value) not in {int, float} or value != 0
+          }
+          if nonzero:
+              raise SystemExit(f"attestation-only performed scientific work: {nonzero!r}")
+          PY

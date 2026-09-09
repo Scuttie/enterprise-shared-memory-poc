@@ -6,15 +6,19 @@ on:
     paths: ['scripts/demo_company_handoff.py', 'src/enterprise_memory/**',
             'tests/integration/test_company_demo.py', '.github/workflows/ci-company-demo.yml', 'reports/CI_TRIGGER_MARKER.txt']
   pull_request:
-    paths: ['scripts/demo_company_handoff.py', 'src/enterprise_memory/**', 'tests/integration/test_company_demo.py']
+    paths: ['scripts/demo_company_handoff.py', 'src/enterprise_memory/**', 'tests/integration/test_company_demo.py', '.github/workflows/ci-company-demo.yml']
   workflow_dispatch: {}
 jobs:
   demo:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: {python-version: '3.11'}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with: {python-version: '3.11.10', cache: ''}
       - name: Install (editable)
         run: pip install -q -e ".[dev]" pytest pyyaml || pip install -q -e . pytest pyyaml
       - name: Offline company demo -> DEMO_PASS

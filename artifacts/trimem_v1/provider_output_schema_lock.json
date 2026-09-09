@@ -1,0 +1,22 @@
+{
+  "arm_contract": {
+    "arms": [
+      "M0",
+      "M1",
+      "M2"
+    ],
+    "identical_role_bindings": true,
+    "source_of_truth": "enterprise_memory.trimem.provider_output_contracts.SCHEMAS"
+  },
+  "classification": "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT",
+  "config_path": "configs/trimem_v1/provider_output_schemas.json",
+  "config_sha256": "2cdb1d62972776b492ee178801a91610bccadb97d9e67eb53c014ed1025562d1",
+  "schema": "trimem/provider-output-schema-lock/1.0",
+  "schema_sha256": {
+    "trimem_decomposition_v1": "2d54ebb679f54fbe0d0947b5ebda80ca6dece13a53260bbaf9fac69e5fd34321",
+    "trimem_experience_extraction_v1": "f493150cb382ceee4e75b856c9660b7ab6587b953128af28be1054d40bed88cf"
+  },
+  "source_path": "src/enterprise_memory/trimem/provider_output_contracts.py",
+  "source_sha256": "6b2e5711ae78057b7a29ce7424ad88e0c63e03e0051ac452dc96e67e4885f906",
+  "status": "FROZEN_PRE_RESULT_AMENDMENT"
+}

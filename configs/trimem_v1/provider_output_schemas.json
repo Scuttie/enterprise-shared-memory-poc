@@ -1,0 +1,181 @@
+{
+  "role_bindings": {
+    "decompose": "trimem_decomposition_v1",
+    "extract": "trimem_experience_extraction_v1",
+    "solve": null
+  },
+  "schema": "trimem/provider-output-schemas/1.0",
+  "schemas": {
+    "trimem_decomposition_v1": {
+      "json_schema": {
+        "$defs": {
+          "string_list": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "subtasks": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "apis": {
+                  "$ref": "#/$defs/string_list"
+                },
+                "depends_on": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "errors": {
+                  "$ref": "#/$defs/string_list"
+                },
+                "files": {
+                  "$ref": "#/$defs/string_list"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "invariants": {
+                  "$ref": "#/$defs/string_list"
+                },
+                "objective": {
+                  "type": "string"
+                },
+                "preconditions": {
+                  "$ref": "#/$defs/string_list"
+                },
+                "predicted_operation": {
+                  "type": "string"
+                },
+                "required_memory_facets": {
+                  "$ref": "#/$defs/string_list"
+                },
+                "symbols": {
+                  "$ref": "#/$defs/string_list"
+                },
+                "tests": {
+                  "description": "Public tests or other concrete completion-evidence descriptions.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "id",
+                "objective",
+                "predicted_operation",
+                "depends_on",
+                "preconditions",
+                "invariants",
+                "files",
+                "symbols",
+                "apis",
+                "errors",
+                "tests",
+                "required_memory_facets"
+              ],
+              "type": "object"
+            },
+            "maxItems": 24,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "subtasks"
+        ],
+        "type": "object"
+      },
+      "json_schema_sha256": "2d54ebb679f54fbe0d0947b5ebda80ca6dece13a53260bbaf9fac69e5fd34321",
+      "strict": true
+    },
+    "trimem_experience_extraction_v1": {
+      "json_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "episode": {
+            "additionalProperties": false,
+            "properties": {
+              "action": {
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "passed",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "summary",
+              "action",
+              "outcome"
+            ],
+            "type": "object"
+          },
+          "semantic_candidate": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "applicability_scope": {
+                    "enum": [
+                      "EXACT_REPOSITORY",
+                      "CROSS_REPOSITORY"
+                    ],
+                    "type": "string"
+                  },
+                  "invariant": {
+                    "type": "string"
+                  },
+                  "non_applicability": {
+                    "type": "string"
+                  },
+                  "operation": {
+                    "type": "string"
+                  },
+                  "preconditions": {
+                    "type": "string"
+                  },
+                  "verification": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "preconditions",
+                  "operation",
+                  "invariant",
+                  "non_applicability",
+                  "verification",
+                  "applicability_scope"
+                ],
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "required": [
+          "episode",
+          "semantic_candidate"
+        ],
+        "type": "object"
+      },
+      "json_schema_sha256": "f493150cb382ceee4e75b856c9660b7ab6587b953128af28be1054d40bed88cf",
+      "strict": true
+    }
+  },
+  "status": "FROZEN_PRE_RESULT_AMENDMENT"
+}

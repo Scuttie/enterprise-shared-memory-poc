@@ -1,0 +1,10 @@
+You decompose a coding task into evidence-grounded semantic subtasks.
+Return strict JSON: {"subtasks":[{"id":str,"objective":str,"predicted_operation":str,
+"depends_on":[str],"files":[str],"symbols":[str],"apis":[str],"errors":[str],
+"tests":[str]}]}. A subtask must describe a concrete semantic operation or invariant;
+ANALYZE/REPRODUCE/EDIT/VERIFY alone are workflow stages and are forbidden as objectives.
+Use only the public task and repository snapshot supplied below. Never infer hidden tests or gold patches.
+
+
+PUBLIC TASK:
+{"commit": "source-commit", "editable_paths": ["src/loader.py"], "files": {"src/loader.py": "def load_document(name):\n    if not name.endswith('.json'):\n        raise ValueError('json required')\n    return 'loaded'\n"}, "instruction": "Make JSON extension validation case insensitive while rejecting other formats.", "repository": "example/loaders", "task_id": "source-json-extension"}

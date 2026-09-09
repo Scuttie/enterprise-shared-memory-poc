@@ -1,0 +1,105 @@
+{
+  "credential_free_replay_actuals": {
+    "benchmark_image_pulls": 0,
+    "model_api_calls": 0,
+    "model_generation_calls": 0,
+    "official_grader_executions": 0,
+    "paid_model_calls": 0,
+    "total_usd": 0
+  },
+  "evidence_custody": {
+    "evidence_inventories": {
+      "digest": "sha256:3bf1856ffd385dac10daac17d006ed5ef037c75817c1b1fba76cd0f12d8c0433",
+      "id": 9982017330,
+      "name": "trimem-benchmark-evidence-inventories",
+      "size_in_bytes": 7804
+    },
+    "plaintext_inventory": {
+      "bytes": 9828804,
+      "files": 176,
+      "root_sha256": "dbecd53c1673a006f90e6350370cb6200b00230e803a6b69aca5fd4d0d7f7132"
+    },
+    "restricted_encrypted": {
+      "digest": "sha256:7a76d6626206e3174b5c6f0ee8cfdd3bf571b54fe49064a6714ed82ecc1bead8",
+      "id": 9982016857,
+      "name": "trimem-benchmark-restricted-encrypted",
+      "size_in_bytes": 10079456
+    },
+    "status": "TRIMEM_FAILURE_EVIDENCE_CUSTODY_PASS"
+  },
+  "expected_regression": {
+    "banned_legacy_diagnostic": "task-arm cap ledger state does not match the stream cursor",
+    "cell_result_count": 0,
+    "first_disposition": "GLOBAL_GRADER_INFRA_FAILURE",
+    "grader_delegate_calls": 1,
+    "ledger_status": "RESERVED",
+    "process_count": 1,
+    "process_stderr_utf8": "/opt/trimem-official/python/bin/python: error while loading shared libraries: libpython3.11.so.1.0: cannot open shared object file: No such file or directory\n",
+    "process_stdout_utf8": "{\"error\":\"official grader execution failed\",\"process_disposition\":\"GLOBAL_GRADER_INFRA_FAILURE\",\"status\":\"FAIL\"}\n",
+    "resume_eligible": false,
+    "resume_started": false,
+    "task_arm_cursor": 0,
+    "terminal_task_arm_runs": 0
+  },
+  "grader_target": {
+    "expected_digest": "sha256:768b2dd7ecee6c437c64441966687c4a1597230169c7c929e14374660a2ecdab",
+    "image": "swebench/sweb.eval.x86_64.django_1776_django-16100@sha256:768b2dd7ecee6c437c64441966687c4a1597230169c7c929e14374660a2ecdab"
+  },
+  "historical_failure_boundary": {
+    "cell_terminal_records": 0,
+    "container_started": false,
+    "context_projections_bounded": 8,
+    "context_projections_total": 8,
+    "decomposition_calls": 1,
+    "exact_child_python_exit_code": 127,
+    "grader_adapter_invoked": true,
+    "grader_containers": 0,
+    "official_grader_runs": 0,
+    "partial_patch_nonempty": true,
+    "per_subtask_step_cap_reached": true,
+    "public_aggregate_present": false,
+    "solve_calls": 8,
+    "stderr_class": "LIBPYTHON3_11_SO_1_0_UNAVAILABLE",
+    "stream": "M2-baseline",
+    "target": "swebench_verified--django__django-16100",
+    "task_arm_cursor": 0
+  },
+  "historical_usage": {
+    "decomposition_calls": 1,
+    "extraction_calls": 0,
+    "grader_containers": 0,
+    "official_grader_runs": 0,
+    "paid_model_calls": 10,
+    "protocol_canary_calls": 1,
+    "scientific_model_calls": 9,
+    "solve_calls": 8,
+    "terminal_task_arm_runs": 0,
+    "total_usd": "0.051215550000"
+  },
+  "provenance": {
+    "correction_source_head": "2d4a4535e68c8bfa923c93ef6d9d191ec579423a",
+    "execution_head": "ea261f4fa783559d559e0df52800099ca98064f7",
+    "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json",
+    "request_raw_sha256": "f42389df5a12c8f0d06bcd3eb2c97c69b0fde39667f8c880832e1c01bf998d9f",
+    "repository": "Scuttie/enterprise-shared-memory-poc",
+    "workflow_run_attempt": 1,
+    "workflow_run_id": 34008674563
+  },
+  "safe_partial_patch": {
+    "bytes": 194,
+    "content_base64": "ZGlmZiAtLWdpdCBhL3RyaW1lbV9kMTEwX2ZpeHR1cmUucHkgYi90cmltZW1fZDExMF9maXh0dXJlLnB5Cm5ldyBmaWxlIG1vZGUgMTAwNjQ0CmluZGV4IDAwMDAwMDAuLjRmODhiMWIKLS0tIC9kZXYvbnVsbAorKysgYi90cmltZW1fZDExMF9maXh0dXJlLnB5CkBAIC0wLDAgKzEgQEAKK1BBUlRJQUxfUEFUQ0hfUFJFU0VSVkVEID0gVHJ1ZQo=",
+    "historical_patch_bytes_copied": false,
+    "media_type": "text/x-diff; charset=utf-8",
+    "path": "sanitized-inputs/exec-010.partial.patch",
+    "sha256": "0513e328793ec2ffe063d5625d299daf635d6c98055b7d0ec0f726e0a076a3a6",
+    "utf8_text": "diff --git a/trimem_d110_fixture.py b/trimem_d110_fixture.py\nnew file mode 100644\nindex 0000000..4f88b1b\n--- /dev/null\n+++ b/trimem_d110_fixture.py\n@@ -0,0 +1 @@\n+PARTIAL_PATCH_PRESERVED = True\n"
+  },
+  "sanitization": {
+    "historical_patch_content_included": false,
+    "purpose": "Deterministic non-sensitive substitute preserving the exact non-empty partial-patch transport and hash boundary only",
+    "raw_historical_evidence_included": false,
+    "source_kind": "SANITIZED_DERIVATIVE_NOT_HISTORICAL_RAW_EVIDENCE"
+  },
+  "schema": "trimem/d110-exec-010-sanitized-regression-fixture/1.0",
+  "status": "SANITIZED_CREDENTIAL_FREE_REGRESSION_ONLY"
+}

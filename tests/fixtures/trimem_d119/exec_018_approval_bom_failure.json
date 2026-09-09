@@ -1,0 +1,136 @@
+{
+  "actuals": {
+    "benchmark_image_pulls": 0,
+    "cached_input_tokens": 0,
+    "completed_task_arm_runs": 0,
+    "decomposition_calls": 0,
+    "exact_model_metadata_requests": 0,
+    "extraction_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_generation_calls": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "protocol_canary_generation_calls": 0,
+    "provider_control_plane_requests": 0,
+    "reasoning_tokens": 0,
+    "scientific_model_calls": 0,
+    "solve_calls": 0,
+    "task_arm_reservations": 0,
+    "task_arm_runs": 0,
+    "terminal_cells": 0,
+    "total_tokens": 0,
+    "total_usd": "0.000000000000"
+  },
+  "approval_boundary": {
+    "approval_json_bytes": 1027,
+    "approval_json_sha256": "7d737413fcb3a0ff179f49016f7a71aa1c90a841238f71df2f9c1af9b821e6d5",
+    "approval_materialization": "FAIL_CLOSED",
+    "decoder": "base64.b64decode(value, validate=True)",
+    "environment_secret_count_after_cleanup": 0,
+    "exec_gate": "NOT_REACHED",
+    "intended_base64_bytes": 1372,
+    "intended_base64_sha256": "f84f47603ec73e8a443a01ead6c58b286878514c1bd8d551442ea47f19049417",
+    "intended_base64_validated": true,
+    "observed_non_ascii_character": "U+FEFF",
+    "observed_non_ascii_position": 0,
+    "protected_environment_entered": true
+  },
+  "boundary": {
+    "aggregate_entered": false,
+    "bounded_context_preflight": "PASS",
+    "branch_trigger_preflight": "PASS",
+    "cache_only_service_cleanup": "PASS",
+    "campaign_result_available": false,
+    "exact_model_metadata": "NOT_REACHED",
+    "failure_stage": "PROTECTED_APPROVAL_MATERIALIZATION_PRE_EXEC_GATE",
+    "final_custody_cleanup": "FAIL_CLOSED_CUSTODY_OUTPUTS_SKIPPED",
+    "image_materialization": "NOT_REACHED",
+    "protected_grader_factory_rehearsal": "PASS",
+    "protocol_canary": "NOT_REACHED",
+    "task_arm_reservation_started": false
+  },
+  "branch": "codex/trimem-coder-v1",
+  "evidence_custody": {
+    "github_artifacts": [],
+    "public_result": "ABSENT_EXPECTED",
+    "remote_custody_status": "NOT_APPLICABLE_PRE_APPROVAL_MATERIALIZATION",
+    "runner_removed_after_failure": true,
+    "secrets_removed_after_failure": true
+  },
+  "execution_head": "5cce6502a61c81c2e0490578dc5a2a3045f8c179",
+  "failure": {
+    "exception_chain": [
+      "UnicodeEncodeError",
+      "ValueError"
+    ],
+    "final_message": "string argument should contain only ASCII characters",
+    "frozen_job_log_bytes": 140761,
+    "frozen_job_log_sha256": "fb32b0d75e9d8732d7437dde095681e11ae89b2312882782697dca3286ec97ad",
+    "process_exit_code": 1,
+    "request_018_attempt_one_consumed": true,
+    "request_018_rerun_allowed": false,
+    "resume_eligible": false
+  },
+  "jobs": [
+    {
+      "completed_at": "2026-09-08T09:42:58Z",
+      "conclusion": "success",
+      "id": 102013284681,
+      "name": "branch-trigger-preflight",
+      "started_at": "2026-09-08T09:42:35Z"
+    },
+    {
+      "completed_at": "2026-09-08T09:48:14Z",
+      "conclusion": "success",
+      "id": 102013411023,
+      "name": "bounded-context-preflight",
+      "started_at": "2026-09-08T09:43:02Z"
+    },
+    {
+      "completed_at": "2026-09-08T09:59:23Z",
+      "conclusion": "failure",
+      "id": 102014971076,
+      "name": "frozen-serial-phase",
+      "started_at": "2026-09-08T09:58:30Z"
+    }
+  ],
+  "pass_at_1": null,
+  "performance_measured": false,
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "request": {
+    "id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_018",
+    "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_018.json",
+    "payload_sha256": "f008b7d7a117966ae389a11d0c645fec64e0a0687c654f870a49968bd4ce3f43",
+    "raw_sha256": "9264a90a8ace461f515e4725d4058e5ee486fa7304364cf75d65dfba6be603a0",
+    "source_head": "3236bd546ff581e396ca6123bb1655bad5294ce4"
+  },
+  "root_cause": {
+    "classification": "APPROVAL_SECRET_TRANSPORT_ENCODING_FAILURE",
+    "failure_subtype": "EXTERNAL_APPROVAL_BASE64_UFEFF_PREFIX",
+    "recovery_contract": {
+      "approval_document_rebuilt_for_new_run_attempt_one": true,
+      "base64_ascii_no_bom_whitespace_validation": true,
+      "base64_round_trip_validation": true,
+      "byte_only_external_secret_production": true,
+      "strict_workflow_decoder_preserved": true
+    },
+    "scope": "EXTERNAL_POWERSHELL_STDIN_SECRET_UPLOAD",
+    "scientific_result": false
+  },
+  "schema": "trimem/development-exec-018-approval-secret-bom-failure/1.0",
+  "source_head": "3236bd546ff581e396ca6123bb1655bad5294ce4",
+  "workflow_run": {
+    "conclusion": "failure",
+    "created_at": "2026-09-08T09:42:33Z",
+    "event": "push",
+    "head_sha": "5cce6502a61c81c2e0490578dc5a2a3045f8c179",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34211486542",
+    "id": 34211486542,
+    "path": ".github/workflows/trimem-benchmark.yml",
+    "run_attempt": 1,
+    "status": "completed",
+    "updated_at": "2026-09-08T09:59:23Z"
+  }
+}

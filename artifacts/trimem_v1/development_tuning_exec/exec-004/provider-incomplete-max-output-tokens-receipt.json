@@ -1,0 +1,305 @@
+{
+  "schema": "trimem/development-provider-terminal-failure-receipt/1.0",
+  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+  "status": "FAILED_CLOSED_AFTER_SIX_PROVIDER_CALLS_BEFORE_ANY_COMPLETED_TASK_ARM",
+  "scientific_status": "STARTED_NO_COMPLETED_CELL",
+  "performance": "NOT_MEASURED",
+  "failure_label": "TRIMEM_DEV_FIRST_TASK_SOLVE_RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+  "sentinel": {
+    "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_004",
+    "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_004.json",
+    "raw_sha256": "sha256:20bccf63d7f09e4130e7297bc0b1c07b4d97f15baefa77099b582e105874dd80",
+    "source_head": "ded36427f03b60256305a32266fd0537f3602798",
+    "execution_head": "795c589c7da0b815bbe4f6188191fd0165f85649",
+    "sole_change": "A\tartifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_004.json",
+    "immutable": true
+  },
+  "workflow_run": {
+    "repository": "Scuttie/enterprise-shared-memory-poc",
+    "id": 33840007588,
+    "run_attempt": 1,
+    "event": "push",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "795c589c7da0b815bbe4f6188191fd0165f85649",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-09-04T05:18:32Z",
+    "updated_at": "2026-09-04T05:29:42Z",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/33840007588"
+  },
+  "approval": {
+    "approval_actor": "Scuttie",
+    "approval_timestamp": "2026-09-04T05:20:08.484Z",
+    "approved_git_commit": "795c589c7da0b815bbe4f6188191fd0165f85649",
+    "approved_source_git_commit": "ded36427f03b60256305a32266fd0537f3602798",
+    "approved_freeze_sha256": "sha256:669d9a55f0dd13666d3297f055c50f95620d830918c4189e9c181c14ebe2e1a4",
+    "approved_request_sha256": "sha256:20bccf63d7f09e4130e7297bc0b1c07b4d97f15baefa77099b582e105874dd80",
+    "approved_phase": "DEVELOPMENT_TUNING",
+    "approved_task_arm_runs": 72,
+    "approved_grader_containers": 72,
+    "approved_paid_model_call_cap": 1872,
+    "approved_input_token_cap": 36000000,
+    "approved_output_token_cap": 4718592,
+    "approved_currency_hard_cap_usd": 50.0,
+    "approved_workflow_run_id": 33840007588,
+    "approved_workflow_run_attempt": 1,
+    "materialization_status": "PASS",
+    "exec_gate_status": "PASS",
+    "raw_json_bytes": 861,
+    "raw_json_sha256": "sha256:7d808349cc9d720e47163bbf4bd50a23e82c8bb180aa0957e75bb048e71f1ed0",
+    "base64_bytes": 1148,
+    "base64_sha256": "sha256:08d1e5ef8de77e39c205500b6e2fd5c97cf70a0b3e2c8886155ca1f7ebc74a81"
+  },
+  "jobs": {
+    "branch_trigger_preflight": {
+      "id": 100920204327,
+      "conclusion": "success",
+      "started_at": "2026-09-04T05:18:35Z",
+      "completed_at": "2026-09-04T05:18:50Z"
+    },
+    "protected_execution": {
+      "id": 100920257487,
+      "name": "frozen-serial-phase",
+      "conclusion": "failure",
+      "started_at": "2026-09-04T05:21:51Z",
+      "completed_at": "2026-09-04T05:29:41Z",
+      "failed_step": {
+        "number": 15,
+        "name": "Execute frozen serial streams with one atomic phase ledger",
+        "started_at": "2026-09-04T05:24:21Z",
+        "completed_at": "2026-09-04T05:29:27Z"
+      }
+    }
+  },
+  "control_plane": {
+    "protected_environment": "trimem-benchmark-exec",
+    "protected_environment_worked": true,
+    "deployment_id": 6258391716,
+    "protected_environment_approval_count": 1,
+    "approval_materialization_status": "PASS",
+    "exec_gate_status": "PASS",
+    "image_materialization_status": "PASS",
+    "encrypted_restricted_artifact_count": 1,
+    "public_benchmark_artifact_count": 0
+  },
+  "root_cause": {
+    "stage": "FIRST_M2_BASELINE_TARGET_FIFTH_SOLVE_CALL",
+    "stream": "M2-baseline",
+    "task_id": "swebench_verified--django__django-16100",
+    "logical_call_id": "swebench_verified--django__django-16100:M2:solve:0005",
+    "model": "gpt-5.4-mini-2026-03-17",
+    "response_http_status": 200,
+    "response_status": "incomplete",
+    "incomplete_reason": "max_output_tokens",
+    "terminal_classification": "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+    "output_item_types": [
+      "reasoning",
+      "message"
+    ],
+    "content_item_types": [
+      "output_text"
+    ],
+    "refusal_present": false,
+    "structured_output_bytes": 0,
+    "extracted_visible_text_bytes": 8271,
+    "response_id_sha256": "sha256:997541ede981488646b661938db5e2241ae1e7ee9c9fdb48f30f0cfbb8c2a9b2",
+    "provider_request_id_sha256": "sha256:0658b8595b9006fe28b38490805e0ba975c5fc3b3a8d521069f5a0109ab2620e",
+    "raw_response_json_bytes": 13464,
+    "raw_response_json_sha256": "sha256:4abc745836b3756f26099d3f6f359e3bbd19afa2ad22dc5d104b31e62c85a109",
+    "provider_reported_usage_available": true,
+    "interpretation": "The D1.3 response envelope and state machine established the provider outcome before output consumption. Decomposition succeeded; the terminal condition occurred in an unchanged solve call whose 2,048-token solve ceiling was exhausted. No scientific task-arm result or grader result exists."
+  },
+  "execution_accounting": {
+    "api_calls": 6,
+    "model_gateway_calls": 6,
+    "model_calls": 6,
+    "paid_model_calls": 6,
+    "decomposition_calls": 1,
+    "solve_calls": 5,
+    "extraction_calls": 0,
+    "input_tokens": 54620,
+    "cached_input_tokens": 17664,
+    "output_tokens": 4203,
+    "reasoning_tokens": 1485,
+    "started_task_arm_runs": 1,
+    "completed_task_arm_runs": 0,
+    "task_arm_runs": 0,
+    "grader_containers": 0,
+    "official_grader_runs": 0,
+    "target_image_pulls": 12,
+    "support_image_pulls": 1,
+    "total_usd": 0.0479553,
+    "provider_reported_usage_available_for_all_calls": true,
+    "provider_status_distribution": {
+      "SUCCESS": 5,
+      "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS": 1
+    }
+  },
+  "call_accounting": [
+    {
+      "logical_call_id": "swebench_verified--django__django-16100:M2:decompose:0001",
+      "call_kind": "decompose",
+      "status": "SUCCESS",
+      "input_tokens": 449,
+      "cached_input_tokens": 0,
+      "output_tokens": 1755,
+      "reasoning_tokens": 1002,
+      "wall_time_ms": 15829,
+      "total_usd": 0.00823425
+    },
+    {
+      "logical_call_id": "swebench_verified--django__django-16100:M2:solve:0001",
+      "call_kind": "solve",
+      "status": "SUCCESS",
+      "input_tokens": 861,
+      "cached_input_tokens": 0,
+      "output_tokens": 63,
+      "reasoning_tokens": 30,
+      "wall_time_ms": 1502,
+      "total_usd": 0.00092925
+    },
+    {
+      "logical_call_id": "swebench_verified--django__django-16100:M2:solve:0002",
+      "call_kind": "solve",
+      "status": "SUCCESS",
+      "input_tokens": 8753,
+      "cached_input_tokens": 0,
+      "output_tokens": 82,
+      "reasoning_tokens": 48,
+      "wall_time_ms": 1789,
+      "total_usd": 0.00693375
+    },
+    {
+      "logical_call_id": "swebench_verified--django__django-16100:M2:solve:0003",
+      "call_kind": "solve",
+      "status": "SUCCESS",
+      "input_tokens": 14134,
+      "cached_input_tokens": 3840,
+      "output_tokens": 131,
+      "reasoning_tokens": 103,
+      "wall_time_ms": 2703,
+      "total_usd": 0.008598
+    },
+    {
+      "logical_call_id": "swebench_verified--django__django-16100:M2:solve:0004",
+      "call_kind": "solve",
+      "status": "SUCCESS",
+      "input_tokens": 14632,
+      "cached_input_tokens": 6912,
+      "output_tokens": 124,
+      "reasoning_tokens": 90,
+      "wall_time_ms": 1940,
+      "total_usd": 0.0068664
+    },
+    {
+      "logical_call_id": "swebench_verified--django__django-16100:M2:solve:0005",
+      "call_kind": "solve",
+      "status": "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+      "input_tokens": 15791,
+      "cached_input_tokens": 6912,
+      "output_tokens": 2048,
+      "reasoning_tokens": 212,
+      "wall_time_ms": 28916,
+      "total_usd": 0.01639365
+    }
+  ],
+  "first_task": {
+    "decomposition_status": "SUCCESS",
+    "semantic_subtask_count": 3,
+    "semantic_dag_sha256": "sha256:a2511472f93b696cb21c2255d8d93efd50ce6ea56e8a468eeced388a564514e6",
+    "solve_calls": 5,
+    "successful_tool_calls": 4,
+    "memory_bank_decisions": [
+      "ABSTAIN",
+      "ABSTAIN",
+      "ABSTAIN"
+    ],
+    "memory_injections": 0,
+    "event_count": 19,
+    "model_request_events": 6,
+    "terminal_model_outcome_events": 6,
+    "model_response_events": 5,
+    "model_failure_events": 1,
+    "actual_provider_calls": 6,
+    "duplicate_request_or_terminal_events": 0
+  },
+  "process_resume": {
+    "bounded_resume_attempts": 1,
+    "additional_provider_calls": 0,
+    "additional_model_request_events": 0,
+    "additional_terminal_model_outcome_events": 0,
+    "outcome": "FAILED_CLOSED_EVIDENCE_SUFFIX_OUTSIDE_SOLVE_CRASH_WINDOW",
+    "interpretation": "This was one bounded process-level resume inside workflow run 33840007588 attempt 1. It was not a GitHub Actions rerun or attempt 2."
+  },
+  "image_materialization": {
+    "status": "PASS",
+    "docker_pull_count": 13,
+    "target_images": 12,
+    "support_images": 1,
+    "all_expected_and_observed_digests_match": true,
+    "report_bytes": 15070,
+    "report_raw_sha256": "sha256:755b38c995728ba3e998e34e488f16fab3cdca8dc08227fdd67b1119ab4d526d"
+  },
+  "evidence": {
+    "encrypted_restricted_artifact": {
+      "id": 9924796142,
+      "name": "trimem-benchmark-restricted-encrypted",
+      "archive_bytes": 9843861,
+      "archive_digest": "sha256:337116f8200d9008f8ee99df9380bb1af7875ecca1508c01f06dd95adbfa5580",
+      "ciphertext_bytes": 9840672,
+      "ciphertext_raw_sha256": "sha256:8d567e84863b08e4b262829569cf1ae38f6e020ed0fcd81b4d4d0cfc5a9f184e",
+      "created_at": "2026-09-04T05:29:34Z",
+      "expires_at": "2026-09-18T05:29:27Z",
+      "expired": false
+    },
+    "restricted_inventory": {
+      "status": "PASS",
+      "total_files": 134,
+      "total_bytes": 9671681,
+      "inventory_sha256": "sha256:96b1b00f90a5d28fedbb547b31458e8f4ecbf86f8d28d4ecfc180f30c9e74793",
+      "plaintext_persisted_during_audit": false
+    },
+    "full_workflow_logs": {
+      "archive_bytes": 81706,
+      "archive_raw_sha256": "sha256:09876ba5ab16a30f73dd3161a187fa3244f3194a1acb59f99a4d049049a2df9a",
+      "member_count": 35,
+      "content_free_inventory_raw_sha256": "sha256:50af6ae7c6928ad28803feac7ff3b1977577878ab914a76abb88b7cc7894ec19"
+    }
+  },
+  "cleanup": {
+    "environment_secret_count_after_cleanup": 0,
+    "repository_runner_count_after_cleanup": 0,
+    "pending_deployment_count_after_completion": 0,
+    "exact_secret_hits_in_full_workflow_logs": {
+      "OPENAI_API_KEY": 0,
+      "TRIMEM_EVIDENCE_PASSPHRASE": 0,
+      "TRIMEM_EXEC_APPROVAL_B64": 0
+    },
+    "api_key_scope": "ACTUAL_AUTHORIZED_BENCHMARK_ONLY",
+    "api_key_value_persisted_in_repository": false,
+    "api_key_value_printed": false,
+    "ephemeral_runner_registration_removed": true,
+    "ephemeral_runner_credentials_removed": true
+  },
+  "performance_result": {
+    "complete_cells": 0,
+    "expected_cells": 72,
+    "selected_m2_candidate": null,
+    "pass_at_1": "NOT_MEASURED",
+    "benchmark_family_results": "NOT_MEASURED",
+    "fail_to_pass_targets": [],
+    "pass_to_fail_targets": []
+  },
+  "terminal_boundary": {
+    "run_33788493773_rerun_performed": false,
+    "run_33840007588_rerun_performed": false,
+    "github_actions_attempt_2_created": false,
+    "development_request_005_created": false,
+    "grader_smoke_rerun_performed": false,
+    "heldout_run_performed": false,
+    "ablation_performed": false,
+    "merge_performed": false,
+    "tag_or_release_performed": false,
+    "further_execution_authorized": false
+  }
+}

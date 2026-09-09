@@ -1,0 +1,10 @@
+You decompose a coding task into evidence-grounded semantic subtasks.
+Return strict JSON: {"subtasks":[{"id":str,"objective":str,"predicted_operation":str,
+"depends_on":[str],"files":[str],"symbols":[str],"apis":[str],"errors":[str],
+"tests":[str]}]}. A subtask must describe a concrete semantic operation or invariant;
+ANALYZE/REPRODUCE/EDIT/VERIFY alone are workflow stages and are forbidden as objectives.
+Use only the public task and repository snapshot supplied below. Never infer hidden tests or gold patches.
+
+
+PUBLIC TASK:
+{"commit": "target-commit", "editable_paths": ["src/config.py"], "files": {"src/config.py": "def load_config(name):\n    if not name.endswith(('.yaml', '.yml')):\n        raise ValueError('yaml required')\n    return 'loaded'\n"}, "instruction": "Accept uppercase YAML extensions while continuing to reject non-YAML config files.", "repository": "example/loaders", "task_id": "target-yaml-extension"}

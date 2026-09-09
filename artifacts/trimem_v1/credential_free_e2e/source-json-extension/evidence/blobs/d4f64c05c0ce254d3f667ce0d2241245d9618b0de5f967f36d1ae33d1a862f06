@@ -1,0 +1,8 @@
+--- a/src/loader.py
++++ b/src/loader.py
+@@ -1,4 +1,4 @@
+ def load_document(name):
+-    if not name.endswith('.json'):
++    if not name.casefold().endswith('.json'):
+         raise ValueError('json required')
+     return 'loaded'

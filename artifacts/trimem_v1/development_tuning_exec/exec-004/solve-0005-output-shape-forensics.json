@@ -1,0 +1,86 @@
+{
+  "classification": "SOLVE_TRUNCATED_WRITE_FILE_CONTENT",
+  "decision": "PROCEED_SECTIONS_3_THROUGH_9",
+  "existing_file_duplication_check": {
+    "assessment": "PARTIAL_CONTENT_PREFIX_COMPARED_IN_MEMORY",
+    "exact_existing_file_prefix_bytes": 7341,
+    "existing_file_bytes": 97954,
+    "recovered_content_prefix_bytes": 7929,
+    "sequence_similarity_ratio": 0.149834,
+    "substantially_reproduces_existing_file": false
+  },
+  "forensic_status": "CLASSIFIED_A",
+  "generated_at_utc": "2026-09-04T07:45:40.864419Z",
+  "preceding_read_file_result": {
+    "base_commit": "c6350d594c359151ee17b0c4f354bb44f28ff69e",
+    "full_file_sha256": "5ab151338b6d726cffe4d0823ff585d77c5de8a13da1eae8c3219d204e2c5c96",
+    "public_path": "django/contrib/admin/options.py",
+    "requested_max_lines": 40,
+    "requested_start_line": 2088,
+    "returned_end_line": 2127,
+    "returned_slice_sha256": "983ca93a57f6abd107c41ff7ae30932fc1f5ea514d39b30e9eda289e9b9e8ab8",
+    "returned_slice_utf8_bytes": 1457,
+    "returned_start_line": 2088,
+    "total_file_bytes": 97954,
+    "workspace_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "privacy": {
+    "analysis_mode": "stream_decrypt_in_memory_sanitized_metadata_only",
+    "patch_or_source_text_in_artifact": false,
+    "plaintext_response_persisted": false,
+    "raw_content_in_artifact": false
+  },
+  "provider_terminal": {
+    "api_terminal_cause": "RESPONSE_INCOMPLETE_MAX_OUTPUT_TOKENS",
+    "content_item_types": [
+      "output_text"
+    ],
+    "incomplete_reason": "max_output_tokens",
+    "output_item_types": [
+      "reasoning",
+      "message"
+    ],
+    "output_tokens": 2048,
+    "reasoning_exhaustion_primary_explanation": "REJECTED",
+    "reasoning_tokens": 212,
+    "response_status": "incomplete"
+  },
+  "schema": "trimem/d14-solve-output-shape-forensics/1.0",
+  "scientific_state": {
+    "completed_dev_cells_before_amendment": 0,
+    "grader_calls_for_forensic": 0,
+    "model_api_calls_for_forensic": 0,
+    "paid_model_calls_for_forensic": 0,
+    "performance": "NOT_MEASURED"
+  },
+  "source": {
+    "checkpoint_sha256": "e5799c1515d357935f7d08491a4ff4a24e5e4f75b3816b95c09ca0d741ce8edd",
+    "events_sha256": "3778a9b5fd6e8b20570c740917cd20a617f00efe9bf3e4fadccdd9d69832b0ec",
+    "logical_call_id": "swebench_verified--django__django-16100:M2:solve:0005",
+    "raw_response_bytes": 13464,
+    "raw_response_sha256": "4abc745836b3756f26099d3f6f359e3bbd19afa2ad22dc5d104b31e62c85a109",
+    "run_attempt": 1,
+    "run_id": 33840007588
+  },
+  "visible_text": {
+    "argument_key_names": [
+      "path",
+      "content"
+    ],
+    "bytes": 8271,
+    "lexical_json_nesting_depth_at_truncation": 2,
+    "maximum_lexical_json_nesting_depth": 2,
+    "open_argument": "content",
+    "path_value_sha256": "e77dfa6935de3fac94356ffd1029a679f8aa23f2979fe9b31aea7f93e1dccad3",
+    "public_benchmark_repository_path": "django/contrib/admin/options.py",
+    "sha256": "90c066a5641eb62423c6dc3603ec5c53552fbbf0f9c403de59f635d175f6eefa",
+    "starts_with_json_object": true,
+    "tool_name": "write_file",
+    "top_level_key_names": [
+      "tool",
+      "arguments"
+    ],
+    "truncated_inside_json_string": true,
+    "utf8_valid": true
+  }
+}

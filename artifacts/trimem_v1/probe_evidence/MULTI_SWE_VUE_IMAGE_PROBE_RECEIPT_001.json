@@ -1,0 +1,134 @@
+{
+  "accounting": {
+    "api_calls": 0,
+    "grader_containers": 0,
+    "grader_executions": 0,
+    "image_contract_probe_containers": 1,
+    "image_pulls": 1,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "official_tests": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "patch_applications": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0.0
+  },
+  "artifact": {
+    "api_url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9845231922",
+    "archive_download_url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9845231922/zip",
+    "created_at": "2026-09-02T11:55:18Z",
+    "digest": "sha256:e11bfb00d9a37755d2a01f111b5bb509959eeeec13c92c60dac0a84c8c85ce08",
+    "expired": false,
+    "expires_at": "2026-10-02T11:55:18Z",
+    "id": 9845231922,
+    "name": "trimem-multi-swe-vue-image-probe",
+    "result_member": "multi_swe_vue_image_probe.json",
+    "result_member_bytes": 749,
+    "result_member_raw_sha256": "sha256:4e3aaebcc4a7a812d480145f252cbf0851ad478cc078a6ef7b4aa606d7dd1dba",
+    "size_in_bytes": 533
+  },
+  "correction_head": "fd06c5f9d6d4e19af428a658b099fb48614b8284",
+  "marker_head": "2add387b7abb82508659758913ff6408f22658b8",
+  "observed_at_utc": "2026-09-02T11:58:12Z",
+  "phase": "MULTI_SWE_PREBUILT_IMAGE_CONTRACT_PROBE",
+  "probe_request": {
+    "bytes": 2651,
+    "document_sha256": "sha256:6dc24549248ddf6a7c4c0158be321bd323de3214ac106e06e938b5bf1a6b5045",
+    "path": "artifacts/trimem_v1/probe_requests/MULTI_SWE_VUE_IMAGE_PROBE_REQUEST_001.json",
+    "raw_sha256": "sha256:87c9ca4f860fb546ab2190ab83212efd07eb1787a8c7e4ff78d5fe83a8bacd29"
+  },
+  "probe_result": {
+    "bytes": 749,
+    "path": "artifacts/trimem_v1/probe_evidence/MULTI_SWE_VUE_IMAGE_PROBE_RESULT_001.json",
+    "raw_sha256": "sha256:4e3aaebcc4a7a812d480145f252cbf0851ad478cc078a6ef7b4aa606d7dd1dba",
+    "schema": "trimem/multi-swe-prebuilt-image-contract-probe/1.0",
+    "status": "PASS"
+  },
+  "receipt_payload_sha256": "sha256:92c5188efd02f9e54b04a5b24e48c3b0a0944cb60a0472a94cf148f03d036b5e",
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "schema": "trimem/multi-swe-vue-image-probe-receipt/1.0",
+  "source_documents": {
+    "artifact_api": {
+      "bytes": 739,
+      "raw_sha256": "sha256:264af912b2b491f6b2ea10a55e81e7e0bf3051a6da13b836682e8dd0efd74a82",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9845231922"
+    },
+    "artifact_archive": {
+      "bytes": 533,
+      "raw_sha256": "sha256:e11bfb00d9a37755d2a01f111b5bb509959eeeec13c92c60dac0a84c8c85ce08",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9845231922/zip"
+    },
+    "workflow_jobs_api": {
+      "bytes": 6364,
+      "raw_sha256": "sha256:bb014afb148c155272fac04e2b5a028cc25aaa374950502489b569538217922b",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33626769644/attempts/1/jobs?filter=all&per_page=100"
+    },
+    "workflow_run_attempt_api": {
+      "bytes": 14515,
+      "raw_sha256": "sha256:5a939ce016868c983fa9896cbf5d0c2cb42c0cdd6d7678b0a9e3d6c13f4ffd51",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33626769644/attempts/1"
+    }
+  },
+  "status": "PASS",
+  "workflow_job": {
+    "api_url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/jobs/100237113081",
+    "conclusion": "success",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "2add387b7abb82508659758913ff6408f22658b8",
+    "id": 100237113081,
+    "name": "One-time marker-bound exact Vue image contract probe",
+    "run_id": 33626769644,
+    "status": "completed",
+    "steps": [
+      {
+        "conclusion": "success",
+        "name": "Checkout exact probe source",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Set up exact Python",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Classify checked-out Git push and validate an exact marker request",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Preserve sanitized probe-gate evidence",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Pull, observe, inspect metadata, and remove the exact Vue image",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Preserve only the sanitized probe result on pass or failure",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Fail closed if an exact request did not reach the image probe",
+        "status": "completed"
+      }
+    ]
+  },
+  "workflow_run": {
+    "api_url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33626769644/attempts/1",
+    "attempt": 1,
+    "conclusion": "success",
+    "event": "push",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "2add387b7abb82508659758913ff6408f22658b8",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/33626769644",
+    "id": 33626769644,
+    "name": "TriMem Multi-SWE prebuilt contract",
+    "path": ".github/workflows/ci-trimem-multi-swe-contract.yml",
+    "status": "completed"
+  }
+}

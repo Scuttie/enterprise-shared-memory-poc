@@ -1,0 +1,69 @@
+{
+  "schema": "trimem/d19-historical-request-only-boundary-fixture/1.0",
+  "status": "EXACT_SANITIZED_CONTENT_ADDRESS_FIXTURE",
+  "workflow_run": {
+    "id": 33979936824,
+    "attempt": 1,
+    "head_sha": "db548919f29fd044cce1e066c74d2a7040a28f49",
+    "source_head_sha": "ef10493a7352bd6cf914e5e465a9580be6462eb0"
+  },
+  "cell": {
+    "stream": "M2-baseline",
+    "runtime_arm": "M2",
+    "target_id": "swebench_verified--django__django-16100",
+    "repository": "django/django",
+    "base_commit": "c6350d594c359151ee17b0c4f354bb44f28ff69e",
+    "next_step": 8,
+    "completed_decomposition_calls": 1,
+    "completed_solve_calls": 7,
+    "completed_extraction_calls": 0,
+    "step_8_provider_call": false,
+    "step_8_ledger_reservation": false,
+    "step_8_terminal_provider_outcome": false
+  },
+  "captured_restricted_identities": {
+    "list_files_result_blob": {
+      "bytes": 319417,
+      "sha256": "29345b6f8ea4540d6678d0886f96a4099668d885f31121b23ea6ce4d6961244f"
+    },
+    "step_8_prompt_blob": {
+      "bytes": 709714,
+      "sha256": "74208572ed213779b9a232b1ecb2a1b986a1db0a29459dd1a51acb2c17dfa894"
+    },
+    "agent_checkpoint": {
+      "bytes": 3892609,
+      "sha256": "2a16ede2233cefe7a20b750419a2ded68cab2d7f06b0c9d638bf54cd8bd9c467"
+    },
+    "prepared_task_checkpoint": {
+      "bytes": 6003086,
+      "sha256": "ba797b400f1326648c75c533c1cadf9bc7d696e7ea1c1de2a0c645965407f227"
+    },
+    "evidence_events": {
+      "bytes": 53193,
+      "sha256": "c108c681164f62c6d7da6e5c61c9a0150e08f5263ae5170ebb9f5dd1b76440fb"
+    },
+    "step_8_request_journal": {
+      "bytes": 283,
+      "path_digest": "0edb7f77f49989cb67aed24f6c1b55a0770ae8b36c0ea0ab4cbd7e0dc91a4db3",
+      "sha256": "ca7db95fee5e9315ec48fd6fda0c4ec10884088dfd07892f6e4468641b459931"
+    },
+    "budget_ledger": {
+      "bytes": 6925,
+      "sha256": "c3de00109b3cebb6172409fb315d91125df1923749e49fa9dae5851ef82d15d6"
+    }
+  },
+  "custody": {
+    "restricted_artifact_id": 9973677497,
+    "restricted_artifact_digest": "sha256:92546b5cda2fff8964068a530a50421627b0e896a5f9a3006cf772f6dab6ec0b",
+    "inventory_artifact_id": 9973678034,
+    "inventory_artifact_digest": "sha256:268200ad6c9319013269960e795f7c4f8715d558f829bb7a97a7e4f88d05e37a",
+    "inventory_document_sha256": "045da1aec4d7d51242ddaed616fa818a6835a18f3ee386909aff9ab69974fa70",
+    "restricted_payload_committed": false,
+    "restricted_payload_encrypted": true
+  },
+  "replay_contract": {
+    "function_tools_sha256": "5c035f219b9e023c2fb5c7792a7a51c0c4c783a718a9367d723e26b7253039eb",
+    "prompt_content_policy": "CONTENT_ADDRESS_ONLY_RESTRICTED_PAYLOAD_NOT_COMMITTED",
+    "adapter_test_policy": "SHAPE_EQUIVALENT_PROMPT_USES_EXACT_CAPTURED_BYTE_COUNT_NOT_CAPTURED_CONTENT"
+  }
+}

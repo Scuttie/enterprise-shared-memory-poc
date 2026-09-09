@@ -1,0 +1,326 @@
+{
+  "approval": {
+    "approved_currency_hard_cap_usd": 50.0,
+    "approved_freeze_sha256": "sha256:dd8e5169acda78e45aaf13a918c0dfe6d566ecd776a9ca8e9190a1fc02fe380f",
+    "approved_git_commit": "c2738cae074351927dde117b628c601b1e296cf2",
+    "approved_grader_containers": 72,
+    "approved_input_token_cap": 36000000,
+    "approved_output_token_cap": 3796992,
+    "approved_paid_model_call_cap": 1872,
+    "approved_phase": "DEVELOPMENT_TUNING",
+    "approved_request_sha256": "sha256:c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98",
+    "approved_source_git_commit": "98dd37fec7c826f6ed5b3b8734f2ca8dcab96e4a",
+    "approved_task_arm_runs": 72,
+    "approved_workflow_run_attempt": 1,
+    "approved_workflow_run_id": 33739545314,
+    "materialization_status": "PASS",
+    "phase_and_event_checks_status": "PASS",
+    "raw_bytes": 857,
+    "raw_sha256": "sha256:a055cf4298049be35f1a3f5d4d7186256a1cfaab7d6ac256b91e0372784dff9f",
+    "timestamp": "2026-09-03T09:36:27Z"
+  },
+  "cleanup": {
+    "environment": "trimem-benchmark-exec",
+    "environment_secret_count_after_cleanup": 0,
+    "fork_pull_request_contributor_approval_policy_after_cleanup": "first_time_contributors",
+    "prior_wsl_distribution": {
+      "name": "Ubuntu",
+      "untouched": true
+    },
+    "repository_runner_count_after_cleanup": 0,
+    "runner_wsl_distribution": {
+      "deleted": true,
+      "name": "TriMemRunner2404"
+    }
+  },
+  "control_plane": {
+    "deployment_id": 6241058439,
+    "encrypted_restricted_artifact_count": 1,
+    "pending_deployments_after_failure": 0,
+    "protected_environment_approval_reached": true,
+    "protected_environment_worked": true,
+    "public_benchmark_artifact_count": 0,
+    "runner": {
+      "ephemeral": true,
+      "name": "trimem-dev-33739545314-a1"
+    }
+  },
+  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+  "evidence": {
+    "encrypted_restricted_artifact": {
+      "api_digest": "sha256:c1e2e245ffbeedfdd311e509bcb5e5eaceb57d04f418ffdde423c9791fbe7e20",
+      "api_url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9888089129",
+      "archive_bytes": 10461,
+      "archive_raw_sha256": "sha256:c1e2e245ffbeedfdd311e509bcb5e5eaceb57d04f418ffdde423c9791fbe7e20",
+      "ciphertext_member": {
+        "bytes": 10272,
+        "path": "trimem-benchmark-restricted.tar.enc",
+        "raw_sha256": "sha256:c2ab8141aae6062ae362dcadedde529b1681e095faa2b14db907d82a1256fac3"
+      },
+      "created_at": "2026-09-03T10:01:01Z",
+      "expired": false,
+      "expires_at": "2026-09-17T10:00:59Z",
+      "id": 9888089129,
+      "name": "trimem-benchmark-restricted-encrypted",
+      "observed_at_utc": "2026-09-03T10:03:00.060Z"
+    },
+    "full_workflow_logs": {
+      "bytes": 71392,
+      "failed_step_member": {
+        "bytes": 3223,
+        "path": "frozen-serial-phase/10_Verify exact phase EXEC gate.txt",
+        "raw_sha256": "sha256:60f81c06804c109a13c4c9e4554010f6e78220eaba59c529fab794787e087733"
+      },
+      "observed_at_utc": "2026-09-03T10:07:37.834Z",
+      "raw_sha256": "sha256:31de05544526d0a9e8d2cde3baf6abd64f027e4b74fe2d6a646b7428684ee488",
+      "secret_scan": {
+        "exact_secret_hits": 0,
+        "scanned_secret_classes": [
+          "OPENAI_API_KEY",
+          "TRIMEM_EXEC_APPROVAL_B64",
+          "TRIMEM_EVIDENCE_PASSPHRASE"
+        ],
+        "status": "PASS"
+      }
+    },
+    "pre_job_exact_run_hook_receipt": {
+      "bytes": 216,
+      "head": "c2738cae074351927dde117b628c601b1e296cf2",
+      "job": "frozen-serial-phase",
+      "created_at_utc": "2026-09-03T09:58:21.632Z",
+      "raw_sha256": "sha256:73b7aa67cda2be2c083bec43526eae4850e3b5103ef5df24ae030085e8cbfbbf",
+      "repository": "Scuttie/enterprise-shared-memory-poc",
+      "run_attempt": 1,
+      "run_id": 33739545314,
+      "source_head": "98dd37fec7c826f6ed5b3b8734f2ca8dcab96e4a",
+      "status": "PASS"
+    },
+    "restricted_tar_stream_audit": {
+      "members": [
+        {
+          "path": "benchmark_exec/",
+          "type": "directory"
+        },
+        {
+          "path": "benchmark_exec/control/",
+          "type": "directory"
+        },
+        {
+          "bytes": 857,
+          "path": "benchmark_exec/control/restricted-external-approval.json",
+          "raw_sha256": "sha256:a055cf4298049be35f1a3f5d4d7186256a1cfaab7d6ac256b91e0372784dff9f",
+          "type": "file"
+        }
+      ],
+      "plaintext_tar_persisted": false,
+      "ciphertext_extracted_at_utc": "2026-09-03T10:02:46.407Z",
+      "status": "PASS"
+    }
+  },
+  "execution_accounting": {
+    "api_calls": 0,
+    "cached_input_tokens": 0,
+    "decomposition_calls": 0,
+    "extraction_calls": 0,
+    "grader_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "model_gateway_calls": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "reasoning_tokens": 0,
+    "solve_calls": 0,
+    "support_service_containers": 2,
+    "support_service_image_pulls": 2,
+    "target_image_pulls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0.0
+  },
+  "failure_label": "TRIMEM_DEV_EXEC_GATE_GH_CLI_MISSING",
+  "jobs": {
+    "hosted_preflight": {
+      "completed_at": "2026-09-03T09:34:13Z",
+      "conclusion": "success",
+      "id": 100597978462,
+      "name": "branch-trigger-preflight",
+      "started_at": "2026-09-03T09:33:57Z"
+    },
+    "protected_execution": {
+      "completed_at": "2026-09-03T10:01:10Z",
+      "conclusion": "failure",
+      "failed_step": {
+        "conclusion": "failure",
+        "name": "Verify exact phase EXEC gate",
+        "number": 10
+      },
+      "id": 100598063576,
+      "name": "frozen-serial-phase",
+      "runner_name": "trimem-dev-33739545314-a1",
+      "skipped_before_scientific_execution": [
+        {
+          "conclusion": "skipped",
+          "name": "Verify required protected runtime secrets before paid work",
+          "number": 11
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Apply exact migration head",
+          "number": 12
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Pull committed images by digest and verify local observations",
+          "number": 13
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Execute frozen serial streams with one atomic phase ledger",
+          "number": 14
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Aggregate exact stream and target set fail closed",
+          "number": 15
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Build public allowlisted result",
+          "number": 16
+        }
+      ],
+      "started_at": "2026-09-03T09:58:14Z"
+    }
+  },
+  "performance": "NOT_MEASURED",
+  "recovery_boundary": {
+    "attempt_two_created": false,
+    "future_recovery_authority_received": false,
+    "prohibited_without_new_explicit_authority": [
+      "attempt_2_or_rerun",
+      "DEVELOPMENT_TUNING_EXEC_REQUEST_003",
+      "HELDOUT_BENCHMARK",
+      "component_ablation",
+      "merge",
+      "tag",
+      "release"
+    ],
+    "request_002_and_run_33739545314_attempt_1_immutable": true,
+    "request_003_created": false,
+    "rerun_performed": false
+  },
+  "repository": {
+    "branch": "codex/trimem-coder-v1",
+    "name": "Scuttie/enterprise-shared-memory-poc"
+  },
+  "root_cause": {
+    "blocker": "official grader smoke attestation verification failed: gh CLI is required for cryptographic smoke attestation verification",
+    "failure_stage": "PROTECTED_EXEC_GATE_BEFORE_RUNTIME_SECRET_CHECK",
+    "interpretation": "The protected environment, external approval materialization, and event/phase checks succeeded. The fail-closed EXEC gate then required the GitHub CLI for cryptographic official-grader-smoke attestation verification, but gh was unavailable on the ephemeral runner. Runtime-secret validation and every scientific step remained unreached."
+  },
+  "schema": "trimem/development-protected-exec-gate-failure-receipt/1.0",
+  "scientific_run": false,
+  "sentinel": {
+    "execution_head": "c2738cae074351927dde117b628c601b1e296cf2",
+    "immutable": true,
+    "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
+    "raw_sha256": "sha256:c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98",
+    "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
+    "sole_change": "A\tartifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json",
+    "source_head": "98dd37fec7c826f6ed5b3b8734f2ca8dcab96e4a"
+  },
+  "source_documents": {
+    "artifact_metadata_api": {
+      "bytes": 746,
+      "observed_at_utc": "2026-09-03T10:13:09.568Z",
+      "raw_sha256": "sha256:f0e4813dca33ab66a40324ad57fedc605b7e00dc8c71ed52fd83c4075a81f187",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9888089129"
+    },
+    "artifacts_api": {
+      "bytes": 778,
+      "observed_at_utc": "2026-09-03T10:13:09.118Z",
+      "raw_sha256": "sha256:925d0c2daf90d4a10e9b017db50e1068c2d30bcb8aa932a4151b58c1f9279118",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33739545314/artifacts?per_page=100"
+    },
+    "deployment_statuses_api": {
+      "bytes": 8574,
+      "observed_at_utc": "2026-09-03T10:13:11.201Z",
+      "raw_sha256": "sha256:e79c56eee0685c08fa9f1a9cbc6a411b8d7f13a3424ad214d630bbe4a2caf112",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/deployments/6241058439/statuses"
+    },
+    "environment_secrets_after_cleanup_api": {
+      "bytes": 30,
+      "observed_at_utc": "2026-09-03T10:13:12.118Z",
+      "raw_sha256": "sha256:28c5423a249b6b471b90805492666338fab88266ac6a72b4f2b711fa65c03a68",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/environments/trimem-benchmark-exec/secrets"
+    },
+    "fork_policy_after_cleanup_api": {
+      "bytes": 45,
+      "observed_at_utc": "2026-09-03T10:13:12.537Z",
+      "raw_sha256": "sha256:5966a549bbdab958b28083c68aef92d689109ecf2f8106293ca322c832e7e2ed",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/permissions/fork-pr-contributor-approval"
+    },
+    "jobs_api": {
+      "bytes": 7617,
+      "observed_at_utc": "2026-09-03T10:13:08.358Z",
+      "raw_sha256": "sha256:3988a6df0f9b86e5cb0b1e2befd2628f1be0b7ea59cd1d1c767e257a01036576",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33739545314/attempts/1/jobs?filter=all&per_page=100"
+    },
+    "matching_deployments_api": {
+      "bytes": 3895,
+      "observed_at_utc": "2026-09-03T10:13:10.668Z",
+      "raw_sha256": "sha256:c5273454d02abf9ca6cc6bf988c12dc0f1513eff0454d8b28486ff6bc1e54520",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/deployments?sha=c2738cae074351927dde117b628c601b1e296cf2&environment=trimem-benchmark-exec"
+    },
+    "pending_deployments_api": {
+      "bytes": 2,
+      "observed_at_utc": "2026-09-03T10:13:10.117Z",
+      "raw_sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33739545314/pending_deployments"
+    },
+    "repository_runners_after_cleanup_api": {
+      "bytes": 30,
+      "observed_at_utc": "2026-09-03T10:13:11.692Z",
+      "raw_sha256": "sha256:3f0ea89dee64544046623ff19c82d9443bdc098ade1db35a4c9be094b13cfd47",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runners"
+    },
+    "workflow_run_attempt_api": {
+      "bytes": 14521,
+      "observed_at_utc": "2026-09-03T10:13:07.790Z",
+      "raw_sha256": "sha256:3148724d8ec920cf9c8ad5bf9f7a2f3cad8952845404b0981530cd02c5151736",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33739545314/attempts/1"
+    }
+  },
+  "status": "FAILED_AT_PROTECTED_EXEC_GATE_BEFORE_SCIENTIFIC_EXECUTION",
+  "support_services": [
+    {
+      "container_count": 1,
+      "image": "postgres@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412",
+      "image_pull_count": 1,
+      "role": "postgres"
+    },
+    {
+      "container_count": 1,
+      "image": "qdrant/qdrant@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636",
+      "image_pull_count": 1,
+      "role": "qdrant"
+    }
+  ],
+  "workflow_run": {
+    "actor": "Scuttie",
+    "conclusion": "failure",
+    "event": "push",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "c2738cae074351927dde117b628c601b1e296cf2",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/33739545314",
+    "id": 33739545314,
+    "name": "TriMem V1 approved benchmark phase",
+    "path": ".github/workflows/trimem-benchmark.yml",
+    "run_attempt": 1,
+    "run_started_at": "2026-09-03T09:33:55Z",
+    "status": "completed",
+    "updated_at": "2026-09-03T10:01:11Z",
+    "workflow_id": 349104146
+  }
+}

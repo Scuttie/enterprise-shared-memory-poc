@@ -1,0 +1,59 @@
+diff --git a/CHANGES b/CHANGES
+index 26ea1afb62f..de9c8aa3b3b 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -32,6 +32,7 @@ Bugs fixed
+ * #6655: image URLs containing ``data:`` causes gettext builder crashed
+ * #6584: i18n: Error when compiling message catalogs on Hindi
+ * #6718: i18n: KeyError is raised if section title and table title are same
++* #6743: i18n: :confval:`rst_prolog` breaks the translation
+ * #6708: mathbase: Some deprecated functions have removed
+ * #6709: autodoc: mock object does not work as a class decorator
+ * #6712: Allow not to install sphinx.testing as runtime (mainly for ALT Linux)
+diff --git a/sphinx/transforms/i18n.py b/sphinx/transforms/i18n.py
+index 8435d4b7a77..6512fd43d6b 100644
+--- a/sphinx/transforms/i18n.py
++++ b/sphinx/transforms/i18n.py
+@@ -53,21 +53,28 @@ def publish_msgstr(app: "Sphinx", source: str, source_path: str, source_line: in
+     :return: document
+     :rtype: docutils.nodes.document
+     """
+-    from sphinx.io import SphinxI18nReader
+-    reader = SphinxI18nReader()
+-    reader.setup(app)
+-    parser = app.registry.create_source_parser(app, 'restructuredtext')
+-    doc = reader.read(
+-        source=StringInput(source=source,
+-                           source_path="%s:%s:<translated>" % (source_path, source_line)),
+-        parser=parser,
+-        settings=settings,
+-    )
+     try:
+-        doc = doc[0]  # type: ignore
+-    except IndexError:  # empty node
+-        pass
+-    return doc
++        # clear rst_prolog temporarily
++        rst_prolog = config.rst_prolog
++        config.rst_prolog = None  # type: ignore
++
++        from sphinx.io import SphinxI18nReader
++        reader = SphinxI18nReader()
++        reader.setup(app)
++        parser = app.registry.create_source_parser(app, 'restructuredtext')
++        doc = reader.read(
++            source=StringInput(source=source,
++                               source_path="%s:%s:<translated>" % (source_path, source_line)),
++            parser=parser,
++            settings=settings,
++        )
++        try:
++            doc = doc[0]  # type: ignore
++        except IndexError:  # empty node
++            pass
++        return doc
++    finally:
++        config.rst_prolog = rst_prolog  # type: ignore
+ 
+ 
+ class PreserveTranslatableMessages(SphinxTransform):

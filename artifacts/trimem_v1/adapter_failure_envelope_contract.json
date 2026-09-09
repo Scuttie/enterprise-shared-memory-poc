@@ -1,0 +1,385 @@
+{
+  "adapter_evidence": {
+    "canonical_root": "_trimem",
+    "compatibility_aliases": [],
+    "evidence_fields": [
+      "schema",
+      "benchmark_id",
+      "dataset_revision",
+      "harness_revision",
+      "source_row_sha256",
+      "execution_contract",
+      "execution_control_evidence",
+      "image_evidence",
+      "invocation_argv",
+      "harness_invocation_status",
+      "report_invocation_argv",
+      "report_invocation_status",
+      "harness_restricted_raw_streams",
+      "report_restricted_raw_streams",
+      "materialized_private_inputs",
+      "materialized_patch_evidence",
+      "restricted_raw_report",
+      "test_output",
+      "official_test_status",
+      "container_exit_status",
+      "container_exit_summary",
+      "semantic_normalization",
+      "adapter_status",
+      "adapter_failure_stage",
+      "adapter_primary_error",
+      "adapter_secondary_evidence_failures",
+      "official_final_report_resolved",
+      "adapter_normalized",
+      "scientific_resolved"
+    ],
+    "evidence_schema": "trimem/official-grader-adapter-evidence/2.0",
+    "top_level_fields": [
+      "task_id",
+      "status",
+      "failure_stage",
+      "reason",
+      "_trimem"
+    ],
+    "top_level_policy": "NON_TRIMEM_TOP_LEVEL_IS_PUBLIC_SUMMARY; _trimem_IS_RESTRICTED_ADAPTER_EVIDENCE"
+  },
+  "authority_recovery": {
+    "canonical_state_after": "FALSE",
+    "canonical_states_before": [
+      "ABSENT",
+      "FALSE",
+      "INCOMPLETE",
+      "MIXED",
+      "TRUE"
+    ],
+    "cause_taxonomy": {
+      "aggregate": "aggregate_failures",
+      "artifact_upload": "infrastructure_failures",
+      "attestation": "aggregate_failures",
+      "authority_finalization": "infrastructure_failures",
+      "evidence_encryption": "infrastructure_failures",
+      "evidence_inventory": "infrastructure_failures",
+      "external_aggregate": "aggregate_failures",
+      "image_cleanup": "image_lifecycle_failures",
+      "public_artifact": "aggregate_failures",
+      "scientific_aggregate": "aggregate_failures"
+    },
+    "grant_capability": false,
+    "failure_closure_requires_recovery_success_or_skip": true,
+    "finalization_journal_required_for_run_smoke_authority_qualification": true,
+    "recovery_sources": [
+      "canonical_false",
+      "promotion_original",
+      "rollback_replacement"
+    ],
+    "schema": "trimem/grader-smoke-authority-recovery/1.0",
+    "transaction_markers": [
+      ".authority-promotion.",
+      ".authority-rollback."
+    ]
+  },
+  "authority_rollback": {
+    "cause_taxonomy": {
+      "aggregate": "aggregate_failures",
+      "artifact_upload": "infrastructure_failures",
+      "attestation": "aggregate_failures",
+      "authority_finalization": "infrastructure_failures",
+      "evidence_encryption": "infrastructure_failures",
+      "evidence_inventory": "infrastructure_failures",
+      "external_aggregate": "aggregate_failures",
+      "image_cleanup": "image_lifecycle_failures",
+      "public_artifact": "aggregate_failures",
+      "scientific_aggregate": "aggregate_failures"
+    },
+    "grant_capability": false,
+    "release_authority_additional_requirements": [
+      "exact successful GitHub workflow run attempt",
+      "restricted evidence inventory and encrypted upload",
+      "cleaned plaintext",
+      "verified attestation subject and bundle"
+    ],
+    "schema": "trimem/grader-smoke-authority-rollback/1.0",
+    "scientific_authority_scope": "authoritative_cell is cell-level scientific authority; final campaign eligibility additionally requires the exact successful signed workflow attempt",
+    "transition": {
+      "after": false,
+      "before": true
+    }
+  },
+  "campaign_finalization_journal": {
+    "expected_terminal_record_count": 12,
+    "path": "restricted-evidence/campaign-finalization-journal.json",
+    "schema": "trimem/grader-smoke-campaign-finalization/1.0",
+    "status_taxonomy": {
+      "AUTHORITY_PROMOTION_COMMITTED": null,
+      "AUTHORITY_PROMOTION_STARTED": "infrastructure_failures",
+      "SCIENTIFIC_AGGREGATE_REJECTED": "aggregate_failures"
+    },
+    "required_before_authority_promotion": true,
+    "required_for_scientific_aggregate_rejection": true,
+    "required_to_qualify_false_tree_run_smoke_failure": true,
+    "terminal_bytes_content_bound": true,
+    "transition": [
+      "AUTHORITY_PROMOTION_STARTED",
+      "AUTHORITY_PROMOTION_COMMITTED"
+    ]
+  },
+  "failure_contract": {
+    "adapter_failure": {
+      "adapter_normalized": false,
+      "authoritative_cell": false,
+      "grade_result_resolved_authority": "NON_AUTHORITATIVE_COMPATIBILITY_VALUE",
+      "scientific_resolved": null
+    },
+    "original_primary_error_preserved": true,
+    "adapter_secondary_evidence_field": "adapter_secondary_evidence_failures",
+    "evidence_preservation_pipeline": {
+      "encrypted_upload": "ALWAYS_WHEN_ENCRYPTION_SUCCEEDS",
+      "encryption": "ALWAYS_AFTER_APPROVAL_MATERIALIZATION; INCLUDES_INVENTORY_WHEN_AVAILABLE",
+      "failure_closure": "REQUIRES_INVENTORY_SUCCESS_AND_AUTHORITY_RECOVERY_SUCCESS_OR_SKIP",
+      "failure_closure_upload": "ALWAYS_WHEN_FAILURE_CLOSURE_SUCCEEDS",
+      "inventory": "ALWAYS_AFTER_APPROVAL_MATERIALIZATION; INDEPENDENT_OF_AUTHORITY_RECOVERY_OUTCOME",
+      "inventory_upload": "ALWAYS_WHEN_INVENTORY_SUCCEEDS",
+      "plaintext_cleanup": "REQUIRES_ENCRYPTED_UPLOAD_SUCCESS; OTHERWISE_PRESERVE_PLAINTEXT_AND_CIPHERTEXT_AND_FAIL"
+    },
+    "primary_failure_fields": [
+      "stage",
+      "status",
+      "reason"
+    ],
+    "process_error_prefix": "PRIMARY_FAILURE_REASON",
+    "secondary_evidence_failures": "SEPARATE_ORDERED_LIST_NEVER_REPLACES_PRIMARY"
+  },
+  "failure_taxonomy_fields": [
+    "environment_failures",
+    "infrastructure_failures",
+    "image_lifecycle_failures",
+    "official_harness_failures",
+    "official_report_failures",
+    "adapter_contract_failures",
+    "aggregate_failures"
+  ],
+  "failure_taxonomy_rules": [
+    {
+      "counter": "image_lifecycle_failures",
+      "exact_stages": [],
+      "fallback": false,
+      "stage_prefixes": [
+        "image_"
+      ]
+    },
+    {
+      "counter": "official_harness_failures",
+      "exact_stages": [
+        "official_harness"
+      ],
+      "fallback": false,
+      "stage_prefixes": []
+    },
+    {
+      "counter": "official_report_failures",
+      "exact_stages": [
+        "official_report"
+      ],
+      "fallback": false,
+      "stage_prefixes": []
+    },
+    {
+      "counter": "environment_failures",
+      "exact_stages": [
+        "approval_materialization",
+        "benchmark_environment",
+        "exec_gate",
+        "protected_environment",
+        "workflow_environment"
+      ],
+      "fallback": false,
+      "stage_prefixes": [
+        "environment_"
+      ]
+    },
+    {
+      "counter": "infrastructure_failures",
+      "exact_stages": [
+        "official_grader_invocation",
+        "terminal_evidence_persistence",
+        "workflow_runner",
+        "harness_preparation"
+      ],
+      "fallback": false,
+      "stage_prefixes": [
+        "infrastructure_"
+      ]
+    },
+    {
+      "counter": "aggregate_failures",
+      "exact_stages": [
+        "aggregate",
+        "scientific_aggregate",
+        "scientific_outcome",
+        "public_artifact",
+        "attestation"
+      ],
+      "fallback": false,
+      "stage_prefixes": [
+        "aggregate_"
+      ]
+    },
+    {
+      "counter": "adapter_contract_failures",
+      "exact_stages": [],
+      "fallback": true,
+      "stage_prefixes": []
+    }
+  ],
+  "historical_p014_classification": {
+    "adapter_contract_failures": 1,
+    "aggregate_failures": 0,
+    "environment_failures": 0,
+    "image_lifecycle_failures": 0,
+    "infrastructure_failures": 0,
+    "official_harness_failures": 0,
+    "official_report_failures": 0,
+    "run_attempt": 1,
+    "run_id": 33630256522
+  },
+  "official_outcome_contract": {
+    "adapter_failure_after_final_report": {
+      "adapter_normalized": false,
+      "official_final_report_resolved": "PRESERVE_OBSERVED_BOOLEAN",
+      "scientific_resolved": null
+    },
+    "aggregate_authority_predicate": "status == success AND adapter_normalized == true",
+    "success": {
+      "adapter_normalized": true,
+      "official_final_report_resolved": "EQUALS_SCIENTIFIC_RESOLVED",
+      "scientific_resolved": "BOOLEAN"
+    }
+  },
+  "pre_cell_failure": {
+    "actual_execution": {
+      "api_calls": 0,
+      "grader_containers": 0,
+      "input_tokens": 0,
+      "model_calls": 0,
+      "model_gateway_calls": 0,
+      "official_grader_runs": 0,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "support_image_pulls": 0,
+      "target_image_pulls": 0,
+      "task_arm_runs": 0,
+      "total_usd": 0
+    },
+    "schema": "trimem/grader-smoke-pre-cell-failure/1.0",
+    "stage_taxonomy": {
+      "BENCHMARK_ENVIRONMENT_VALIDATION": "environment_failures",
+      "CELL_PREPARATION": "infrastructure_failures",
+      "EXEC_GATE": "environment_failures",
+      "HARNESS_PREPARATION": "infrastructure_failures",
+      "IMAGE_LIFECYCLE_INITIALIZATION": "image_lifecycle_failures"
+    },
+    "terminal_record_count": 0
+  },
+  "public_privacy": {
+    "adapter_trimem_root": "RESTRICTED_EVIDENCE_NOT_THE_PUBLIC_ARTIFACT",
+    "private_failure_reasons": "DIGEST_AND_BYTE_COUNT_ONLY_IN_PUBLIC_FAILURE_CLOSURE",
+    "public_outcome_fields": [
+      "target_id",
+      "benchmark_id",
+      "order_index",
+      "probe",
+      "resolved",
+      "applied_patch_sha256",
+      "official_test_output_sha256",
+      "official_test_status_sha256",
+      "container_exit_status_sha256",
+      "execution_contract_sha256",
+      "execution_control_sha256",
+      "submitted_patch_identity_sha256",
+      "semantic_normalization",
+      "patch_applied",
+      "tests_executed",
+      "digest_match",
+      "submitted_patch_identity",
+      "host_prepare_sh_access_count",
+      "source_image_build_count",
+      "api_calls",
+      "container_exit_status_code",
+      "container_exit_acceptance"
+    ],
+    "raw_test_names_published": false
+  },
+  "scope": {
+    "docker_calls": 0,
+    "grader_calls": 0,
+    "model_api_calls": 0,
+    "paid_model_calls": 0
+  },
+  "schema": "trimem/adapter-failure-envelope-contract/1.0",
+  "status": "FROZEN_PRE_EXEC",
+  "terminal_cell": {
+    "exactly_one_per_attempted_cell": true,
+    "required_lifecycle_fields": [
+      "target_id",
+      "order_index",
+      "probe",
+      "grader_invoked",
+      "container_started",
+      "harness_completed",
+      "final_report_generated",
+      "official_tests_executed",
+      "raw_test_evidence_captured",
+      "submitted_patch_identity_verified",
+      "digest_verified",
+      "adapter_normalized",
+      "authoritative_cell",
+      "official_final_report_resolved",
+      "scientific_resolved",
+      "primary_failure",
+      "secondary_evidence_failures"
+    ],
+    "record_fields": [
+      "actual_accounting",
+      "adapter_normalized",
+      "authoritative_cell",
+      "container_started",
+      "digest_verified",
+      "evidence",
+      "execution_evidence",
+      "execution_status",
+      "final_report_generated",
+      "grader_invoked",
+      "harness_completed",
+      "official_final_report_resolved",
+      "official_tests_executed",
+      "order_index",
+      "primary_failure",
+      "probe",
+      "raw_test_evidence_captured",
+      "schema",
+      "scientific_resolved",
+      "secondary_evidence_failures",
+      "submitted_patch_identity_verified",
+      "target_id"
+    ],
+    "schema": "trimem/grader-smoke-terminal-cell/2.0"
+  },
+  "terminal_accounting": {
+    "adapter_normalized_count": "sum(adapter_normalized is true)",
+    "attempted_cell_count": "count(exact terminal records)",
+    "authoritative_cell_count": "sum(authoritative_cell is true)",
+    "complete_execution_evidence_count": "sum(complete execution lifecycle evidence is true)",
+    "historical_six_five_fixture": {
+      "adapter_normalized_cell_count": 5,
+      "attempted_cell_count": 6,
+      "authoritative_cell_count": 0,
+      "complete_execution_evidence_count": 6,
+      "official_execution_count": 6,
+      "required_cell_count": 12,
+      "unattempted_cell_count": 6
+    },
+    "official_execution_count": "sum(container_started is true)",
+    "terminal_record_count": "count(exact terminal records)",
+    "unattempted_cell_count": "max(0, expected_cell_count - attempted_cell_count)"
+  }
+}

@@ -1,0 +1,204 @@
+{
+  "schema": "trimem/development-provider-terminal-failure-receipt/1.1",
+  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+  "status": "FAILED_CLOSED_AFTER_FIRST_PROVIDER_REQUEST_BEFORE_ANY_COMPLETED_TASK_ARM",
+  "scientific_status": "STARTED_NO_COMPLETED_CELL",
+  "performance": "NOT_MEASURED",
+  "failure_label": "TRIMEM_DEV_FIRST_DECOMPOSITION_HTTP_AUTH_ERROR",
+  "sentinel": {
+    "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_005",
+    "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_005.json",
+    "raw_sha256": "sha256:97e2ce227418ace0db1edbf816391cdf0fda4f8d29359da4a3f81687f1aa19de",
+    "source_head": "5e80da790db0aa5b7cf1a8ce29020fedad7f6254",
+    "execution_head": "57db1a21fca3b036a64629c439ca196fb1606638",
+    "sole_change": "A\tartifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_005.json",
+    "immutable": true
+  },
+  "workflow_run": {
+    "repository": "Scuttie/enterprise-shared-memory-poc",
+    "id": 33859839836,
+    "run_attempt": 1,
+    "event": "push",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "57db1a21fca3b036a64629c439ca196fb1606638",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-09-04T09:44:37Z",
+    "updated_at": "2026-09-04T09:54:37Z",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/33859839836"
+  },
+  "approval": {
+    "approval_actor": "Scuttie",
+    "approval_timestamp": "2026-09-04T09:46:11Z",
+    "approved_git_commit": "57db1a21fca3b036a64629c439ca196fb1606638",
+    "approved_source_git_commit": "5e80da790db0aa5b7cf1a8ce29020fedad7f6254",
+    "approved_freeze_sha256": "sha256:015dc6542d0b42655b02bb95df2caefb4f23aa8035671451e5da44603a9ba7dc",
+    "approved_request_sha256": "sha256:97e2ce227418ace0db1edbf816391cdf0fda4f8d29359da4a3f81687f1aa19de",
+    "approved_phase": "DEVELOPMENT_TUNING",
+    "approved_task_arm_runs": 72,
+    "approved_grader_containers": 72,
+    "approved_paid_model_call_cap": 1872,
+    "approved_input_token_cap": 36000000,
+    "approved_output_token_cap": 4718592,
+    "approved_currency_hard_cap_usd": 50.0,
+    "approved_workflow_run_id": 33859839836,
+    "approved_workflow_run_attempt": 1,
+    "materialization_status": "PASS",
+    "exec_gate_status": "PASS",
+    "raw_json_bytes": 857,
+    "raw_json_sha256": "sha256:18dfdf59823107ff958aac534f695313193b6182ecb257c07f12f44cf0f4424f",
+    "base64_bytes": 1144,
+    "base64_sha256": "sha256:f2bfcaf83b7b99c9a39ed5fe188222fe32b29ca200f854cb578397d03970d16e"
+  },
+  "jobs": {
+    "branch_trigger_preflight": {
+      "id": 100981514515,
+      "conclusion": "success",
+      "started_at": "2026-09-04T09:44:41Z",
+      "completed_at": "2026-09-04T09:44:59Z"
+    },
+    "protected_execution": {
+      "id": 100981605216,
+      "name": "frozen-serial-phase",
+      "conclusion": "failure",
+      "started_at": "2026-09-04T09:49:13Z",
+      "completed_at": "2026-09-04T09:54:37Z",
+      "failed_step": {
+        "number": 15,
+        "name": "Execute frozen serial streams with one atomic phase ledger",
+        "started_at": "2026-09-04T09:51:23Z",
+        "completed_at": "2026-09-04T09:54:24Z"
+      }
+    }
+  },
+  "control_plane": {
+    "protected_environment": "trimem-benchmark-exec",
+    "protected_environment_worked": true,
+    "deployment_id": 6261836606,
+    "protected_environment_approval_count": 1,
+    "approval_materialization_status": "PASS",
+    "exec_gate_status": "PASS",
+    "image_materialization_status": "PASS",
+    "encrypted_restricted_artifact_count": 1,
+    "public_benchmark_artifact_count": 0
+  },
+  "root_cause": {
+    "stage": "FIRST_M2_BASELINE_TARGET_DECOMPOSITION_CALL",
+    "stream": "M2-baseline",
+    "task_id": "swebench_verified--django__django-16100",
+    "logical_call_id": "swebench_verified--django__django-16100:M2:decompose:0001",
+    "model": "gpt-5.4-mini-2026-03-17",
+    "terminal_classification": "HTTP_AUTH_ERROR",
+    "provider_reported_usage_available": false,
+    "interpretation": "The exact protected run reached the provider once, but the supplied protected credential was rejected before any usable model response. HTTP_AUTH_ERROR covers an HTTP 401 or 403 response; public evidence does not distinguish malformed, revoked, unauthorized, or otherwise invalid credential material. This is an authentication/control-plane failure, not a model-capability, memory-controller, retrieval, solve-tool, or grader result."
+  },
+  "execution_accounting": {
+    "api_calls": 1,
+    "model_gateway_calls": 1,
+    "model_calls": 1,
+    "paid_model_calls": 1,
+    "paid_model_calls_semantics": "FAIL_CLOSED_LEDGER_COUNT; NOT PROOF OF PROVIDER BILLING",
+    "decomposition_calls": 1,
+    "solve_calls": 0,
+    "extraction_calls": 0,
+    "input_tokens": null,
+    "cached_input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "provider_reported_usage": "UNAVAILABLE_HTTP_AUTH_ERROR",
+    "ledger_conservative_reservation": {
+      "input_tokens": 5069,
+      "output_tokens": 8192,
+      "total_usd": 0.04066575,
+      "derivation": "(5069 * 0.75 + 8192 * 4.50) / 1000000"
+    },
+    "actual_provider_billing": "UNKNOWN; NO PROVIDER USAGE OBJECT",
+    "started_task_arm_runs": 1,
+    "completed_task_arm_runs": 0,
+    "task_arm_runs": 0,
+    "grader_containers": 0,
+    "official_grader_runs": 0,
+    "target_image_pulls": 12,
+    "support_image_pulls": 1,
+    "provider_status_distribution": {
+      "HTTP_AUTH_ERROR": 1
+    }
+  },
+  "process_resume": {
+    "bounded_resume_attempts": 1,
+    "additional_provider_calls": 0,
+    "additional_model_request_events": 0,
+    "additional_terminal_model_outcome_events": 0,
+    "outcome": "REPLAYED_ORIGINAL_HTTP_AUTH_ERROR",
+    "interpretation": "The second identical log line is the same terminal-journal failure replayed by the one bounded process-level resume inside workflow attempt 1. It is not a second API request, GitHub Actions rerun, or attempt 2."
+  },
+  "image_materialization": {
+    "status": "PASS",
+    "docker_pull_count": 13,
+    "target_images": 12,
+    "support_images": 1,
+    "all_expected_and_observed_digests_match": true,
+    "public_log_summary": {
+      "images": 13,
+      "status": "PASS"
+    }
+  },
+  "evidence": {
+    "encrypted_restricted_artifact": {
+      "id": 9931958997,
+      "name": "trimem-benchmark-restricted-encrypted",
+      "archive_bytes": 6207551,
+      "archive_digest": "sha256:a7bdb0a02d3725b3d15d43048a03320ec4ecaff4e3deadcc9eb7f74e3476b1c2",
+      "ciphertext_bytes": 6205472,
+      "ciphertext_raw_sha256": "sha256:2858db3dd128ce136a316d7622ef4039b39cc89d58ccca03f4a6513c7da74c83",
+      "created_at": "2026-09-04T09:54:28Z",
+      "expires_at": "2026-09-18T09:54:24Z",
+      "expired": false
+    },
+    "restricted_inventory": {
+      "status": "NOT_RECONSTRUCTED",
+      "reason": "The one-time evidence passphrase was deleted with the environment secrets and was not retained locally. Ciphertext is preserved and hash-bound, but this closure does not claim a post-run plaintext inventory audit."
+    },
+    "full_workflow_logs": {
+      "archive_bytes": 80751,
+      "archive_raw_sha256": "sha256:247add01b369c567674af3f63a5cc9a0ff09ed092ab9755681e74059aa190cbd",
+      "member_count": 35,
+      "content_free_inventory_raw_sha256": "sha256:eb4d6e4e397861307856babc92af946aff028df5e97f9a2a2f83502199950533",
+      "exact_secret_hits": {
+        "OPENAI_API_KEY": 0,
+        "TRIMEM_EXEC_APPROVAL_B64": 0,
+        "TRIMEM_EVIDENCE_PASSPHRASE": "NOT_AUDITABLE_AFTER_NONRETENTION"
+      }
+    }
+  },
+  "cleanup": {
+    "environment_secret_count_after_cleanup": 0,
+    "repository_runner_count_after_cleanup": 0,
+    "pending_deployment_count_after_completion": 0,
+    "api_key_scope": "ACTUAL_AUTHORIZED_BENCHMARK_ONLY",
+    "api_key_value_persisted_in_repository": false,
+    "api_key_value_printed": false,
+    "ephemeral_runner_registration_removed": true,
+    "ephemeral_runner_credentials_removed": true
+  },
+  "performance_result": {
+    "complete_cells": 0,
+    "expected_cells": 72,
+    "selected_m2_candidate": null,
+    "pass_at_1": "NOT_MEASURED",
+    "benchmark_family_results": "NOT_MEASURED",
+    "fail_to_pass_targets": [],
+    "pass_to_fail_targets": []
+  },
+  "terminal_boundary": {
+    "run_33859839836_rerun_performed": false,
+    "github_actions_attempt_2_created": false,
+    "development_request_006_created": false,
+    "grader_smoke_rerun_performed": false,
+    "heldout_run_performed": false,
+    "ablation_performed": false,
+    "merge_performed": false,
+    "tag_or_release_performed": false,
+    "further_execution_authorized": false
+  }
+}

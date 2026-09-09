@@ -1,0 +1,345 @@
+{
+  "approval": {
+    "approved_currency_hard_cap_usd": 50.0,
+    "approved_freeze_sha256": "sha256:b9dfb797ecdc420ed2226ed36148380cf8fbe43e22e84ad7874f425da02ffd30",
+    "approved_git_commit": "bc70e1979c2987cd52347b2ef2fd7c43dc3014df",
+    "approved_grader_containers": 72,
+    "approved_input_token_cap": 36000000,
+    "approved_output_token_cap": 3796992,
+    "approved_paid_model_call_cap": 1872,
+    "approved_phase": "DEVELOPMENT_TUNING",
+    "approved_request_sha256": "sha256:3d6b4291f7a1ab8b72203e4756a2f7e4614c1139c9f6e0da74a3a949fa78ca56",
+    "approved_source_git_commit": "763cec6c399714151860aebabc93bdbeac2e1cff",
+    "approved_task_arm_runs": 72,
+    "approved_workflow_run_attempt": 1,
+    "approved_workflow_run_id": 33788493773,
+    "materialization_status": "PASS",
+    "phase_and_event_checks_status": "PASS",
+    "raw_bytes": 857,
+    "raw_sha256": "sha256:105912cc13eacfe6f98685eccd9e9e14940bae3729fa134ea1ce105be991d64b",
+    "timestamp": "2026-09-03T18:07:00Z"
+  },
+  "cleanup": {
+    "environment": "trimem-benchmark-exec",
+    "environment_secret_count_after_cleanup": 0,
+    "exact_secret_hits_in_full_workflow_logs": {
+      "OPENAI_API_KEY": 0,
+      "TRIMEM_EVIDENCE_PASSPHRASE": 0,
+      "TRIMEM_EXEC_APPROVAL_B64": 0
+    },
+    "original_api_key_file_modified": false,
+    "pending_deployment_count_after_completion": 0,
+    "repository_runner_count_after_cleanup": 0,
+    "runner": {
+      "directory_removed": true,
+      "ephemeral": true,
+      "name": "trimem-dev-exec-33788493773",
+      "registration_removed": true,
+      "version": "2.337.0"
+    }
+  },
+  "control_plane": {
+    "deployment_id": 6249860285,
+    "environment_id": 21138935165,
+    "environment_name": "trimem-benchmark-exec",
+    "encrypted_restricted_artifact_count": 1,
+    "exec_gate_status": "PASS",
+    "image_materialization_status": "PASS",
+    "protected_environment_approval_count": 1,
+    "protected_environment_worked": true,
+    "public_benchmark_artifact_count": 0
+  },
+  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+  "evidence": {
+    "driver": {
+      "attempt_1": {
+        "exit_code": 1,
+        "resume": false,
+        "stderr_bytes": 0,
+        "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 71,
+        "stdout_sha256": "sha256:067e4e69f0f7dc0e729e70200fc20d9a0c38f1af41e6cead01091c9e634ef667"
+      },
+      "attempt_2": {
+        "exit_code": 1,
+        "interpretation": "One bounded same-workflow process resume replayed the terminal journal and made no second provider call. This is not a GitHub Actions rerun or run attempt 2.",
+        "resume": true,
+        "stderr_bytes": 0,
+        "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 71,
+        "stdout_sha256": "sha256:067e4e69f0f7dc0e729e70200fc20d9a0c38f1af41e6cead01091c9e634ef667"
+      },
+      "attempts_manifest_bytes": 1318,
+      "attempts_manifest_sha256": "sha256:62b4016f883c1f6cb8aebe0b440e1f125eb6f4bb980b3daf24e6c59254368c53"
+    },
+    "encrypted_restricted_artifact": {
+      "api_digest": "sha256:51e0f03c1fa0f88cbdeb2ee8d7300c92b3e2326e4eaa9206fc29f6e35166be66",
+      "api_url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9907351616",
+      "archive_bytes": 6207551,
+      "archive_raw_sha256": "sha256:51e0f03c1fa0f88cbdeb2ee8d7300c92b3e2326e4eaa9206fc29f6e35166be66",
+      "ciphertext_member": {
+        "bytes": 6205472,
+        "path": "trimem-benchmark-restricted.tar.enc",
+        "raw_sha256": "sha256:27637be3a11c4cdeb0c943a48e803d7e2bd8b58a4f570d137251ee3db9c0510c"
+      },
+      "created_at": "2026-09-03T18:32:43Z",
+      "expired": false,
+      "expires_at": "2026-09-17T18:32:39Z",
+      "id": 9907351616,
+      "name": "trimem-benchmark-restricted-encrypted"
+    },
+    "external_approval_evidence": {
+      "bytes": 522,
+      "raw_sha256": "sha256:8b96a22b4087f5706d9ab39e29f414737474f8b07b62f49b0210539d286db746",
+      "status": "PASS"
+    },
+    "first_task": {
+      "event_log": {
+        "bytes": 2750,
+        "event_types": [
+          "model_request",
+          "model_failure",
+          "model_request",
+          "model_failure"
+        ],
+        "raw_sha256": "sha256:6007f2c5d5178f805c4c0b0f5e0d43a590de921b193832f0dfb2dd369d26e6fb"
+      },
+      "prepared_checkpoint": {
+        "bytes": 6003086,
+        "raw_sha256": "sha256:e5adbbc03196052c3f72cc33b17eb8bc93bec6621088f2df2fb5bd33438f364c"
+      },
+      "prompt_blob": {
+        "bytes": 973,
+        "raw_sha256": "sha256:3ff08903467f4ef47a9188b4578cd0487cc70d23cfb506bf84982af8a7a661a7"
+      },
+      "response_blob": {
+        "bytes": 0,
+        "raw_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "terminal_journal": {
+        "bytes": 578,
+        "raw_sha256": "sha256:69adbe0934bb256e70a913ba75e7e25729d79962c6d40717e7d15fdf39ec5f10"
+      }
+    },
+    "full_workflow_logs": {
+      "archive_bytes": 80479,
+      "archive_raw_sha256": "sha256:2a3c0725b51098235eb31f9ca051da453ce5e1fb8cffa6331e739a412f52a360",
+      "failed_step_member": {
+        "bytes": 2238,
+        "path": "frozen-serial-phase/15_Execute frozen serial streams with one atomic phase ledger.txt",
+        "raw_sha256": "sha256:a08eb675e1bfa1ee419e89b6850d0b515101bb116c90339c8ee2e2da565f6e3a"
+      },
+      "member_count": 35
+    },
+    "image_materialization_report": {
+      "bytes": 15080,
+      "docker_pull_count": 13,
+      "raw_sha256": "sha256:9118b5760969f5cd6a5f70df8f38aed0a461320fdaaf0cc789abd7d91b60402d",
+      "status": "PASS",
+      "target_images": 12,
+      "support_images": 1
+    },
+    "ledger": {
+      "bytes": 2623,
+      "raw_sha256": "sha256:9cebaf044fba9ee8f34b204f77ee258be252329157c526dcd2f474f97f5bd822",
+      "request_count": 1,
+      "request_status": "PROVIDER_FAILURE_CONSERVATIVE",
+      "task_arm_status": "RESERVED"
+    },
+    "restricted_inventory": {
+      "archive_entry_count": 141,
+      "extracted_file_count": 102,
+      "inventory_document_raw_sha256": "sha256:0152156ac7b9a90158c56d89a0b38e39b89a211470306ad7654e2679da315d26",
+      "inventory_sha256": "sha256:25565e04f8b4110d93606d581f5e0d1beae10895c228741a6de5bd52289d7ca9",
+      "status": "PASS",
+      "total_bytes": 6102297
+    }
+  },
+  "execution_accounting": {
+    "api_calls": 1,
+    "cached_input_tokens": 0,
+    "completed_task_arm_runs": 0,
+    "decomposition_calls": 1,
+    "extraction_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 5069,
+    "model_calls": 1,
+    "official_grader_runs": 0,
+    "output_tokens": 2048,
+    "paid_model_calls": 1,
+    "provider_reported_usage_available_on_failure": false,
+    "reasoning_tokens": 0,
+    "solve_calls": 0,
+    "started_task_arm_runs": 1,
+    "support_service_containers": 2,
+    "target_image_pulls": 12,
+    "task_arm_runs": 0,
+    "total_usd": 0.01301775,
+    "usage_interpretation": "The atomic ledger charges the full reserved 5,069 input and 2,048 output tokens after the parser failure. These are fail-closed conservative accounting values, not a claim that the provider exposed exact failure-path usage."
+  },
+  "failure_label": "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_RESPONSE_PARSER_FAILURE",
+  "jobs": {
+    "hosted_preflight": {
+      "completed_at": "2026-09-03T18:06:28Z",
+      "conclusion": "success",
+      "id": 100759012786,
+      "name": "branch-trigger-preflight",
+      "started_at": "2026-09-03T18:06:11Z"
+    },
+    "protected_execution": {
+      "completed_at": "2026-09-03T18:32:52Z",
+      "conclusion": "failure",
+      "failed_step": {
+        "completed_at": "2026-09-03T18:32:39Z",
+        "name": "Execute frozen serial streams with one atomic phase ledger",
+        "number": 15,
+        "started_at": "2026-09-03T18:29:06Z"
+      },
+      "id": 100759124913,
+      "name": "frozen-serial-phase",
+      "runner_name": "trimem-dev-exec-33788493773",
+      "started_at": "2026-09-03T18:18:29Z"
+    }
+  },
+  "performance": {
+    "benchmark_family_results": {
+      "multi_swe_bench_flash": "NOT_MEASURED_0_OF_24_CELLS_COMPLETE",
+      "multi_swe_bench_mini": "NOT_MEASURED_0_OF_24_CELLS_COMPLETE",
+      "swebench_verified": "NOT_MEASURED_0_OF_24_CELLS_COMPLETE"
+    },
+    "fail_to_pass_targets": [],
+    "pass_to_fail_targets": [],
+    "selected_m2_candidate": null,
+    "status": "NOT_MEASURED",
+    "streams": {
+      "M0": "NOT_MEASURED_0_OF_12_CELLS_COMPLETE",
+      "M1": "NOT_MEASURED_0_OF_12_CELLS_COMPLETE",
+      "M2-balanced": "NOT_MEASURED_0_OF_12_CELLS_COMPLETE",
+      "M2-baseline": "NOT_MEASURED_0_OF_12_CELLS_COMPLETE",
+      "M2-precision": "NOT_MEASURED_0_OF_12_CELLS_COMPLETE",
+      "M2-recall": "NOT_MEASURED_0_OF_12_CELLS_COMPLETE"
+    }
+  },
+  "recovery_boundary": {
+    "attempt_2_created": false,
+    "development_request_004_created": false,
+    "future_recovery_authority_received": false,
+    "grader_smoke_rerun_performed": false,
+    "heldout_run_performed": false,
+    "old_run_33739545314_rerun_performed": false,
+    "prohibited_without_new_explicit_authority": [
+      "GitHub Actions rerun or attempt 2",
+      "DEVELOPMENT_TUNING_EXEC_REQUEST_004",
+      "another DEVELOPMENT_TUNING campaign",
+      "HELDOUT_BENCHMARK",
+      "component ablation",
+      "merge",
+      "tag",
+      "release"
+    ],
+    "run_33788493773_attempt_1_immutable": true
+  },
+  "retrieval_and_injection": {
+    "decomposition_completed": false,
+    "injection_events": 0,
+    "retrieval_events": 0,
+    "solver_started": false,
+    "status": "NOT_REACHED"
+  },
+  "root_cause": {
+    "causal_limit": "The failure evidence records an empty response and parser status but the provider failure path does not persist the Responses API incomplete_details reason or exact usage. Output-budget exhaustion is therefore a hypothesis, not an established cause.",
+    "failure_stage": "FIRST_M2_BASELINE_TARGET_DECOMPOSITION",
+    "first_target": "swebench_verified--django__django-16100",
+    "interpretation": "The exact model request reached the provider. The provider's HTTP-success parsing path found zero output-text bytes, emitted parser status, and the benchmark failed closed before decomposition, solving, retrieval, injection, extraction, or grading could complete.",
+    "logical_call_id": "swebench_verified--django__django-16100:M2:decompose:0001",
+    "max_output_tokens": 2048,
+    "model": "gpt-5.4-mini-2026-03-17",
+    "model_call_wall_time_ms": 15624,
+    "provider": "openai-responses",
+    "response_bytes": 0,
+    "response_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "parser"
+  },
+  "schema": "trimem/development-model-parser-failure-receipt/1.0",
+  "scientific_status": "STARTED_NO_COMPLETED_CELL",
+  "sentinel": {
+    "execution_head": "bc70e1979c2987cd52347b2ef2fd7c43dc3014df",
+    "immutable": true,
+    "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_003.json",
+    "raw_sha256": "sha256:3d6b4291f7a1ab8b72203e4756a2f7e4614c1139c9f6e0da74a3a949fa78ca56",
+    "request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
+    "sole_change": "A\tartifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_003.json",
+    "source_head": "763cec6c399714151860aebabc93bdbeac2e1cff"
+  },
+  "source_documents": {
+    "artifact_metadata_api": {
+      "bytes": 748,
+      "observed_at_utc": "2026-09-03T18:39:46.131Z",
+      "raw_sha256": "sha256:834dee6763f49c3718dc65358a4e5a92c2f7f40cece22eb9b65db2d3069997af"
+    },
+    "artifacts_api": {
+      "bytes": 780,
+      "observed_at_utc": "2026-09-03T18:39:46.131Z",
+      "raw_sha256": "sha256:36979812ecb2dfe575d67f6f61b4e6520397d27143739e80b62857baed3e9f48"
+    },
+    "deployment_statuses_api": {
+      "bytes": 8574,
+      "observed_at_utc": "2026-09-03T18:39:46.131Z",
+      "raw_sha256": "sha256:d5b74686b5fccc4a9db5158366ac34046fb2a843792ad3df6ac1e7b24af41367"
+    },
+    "environment_secrets_after_cleanup_api": {
+      "bytes": 30,
+      "observed_at_utc": "2026-09-03T18:39:46.131Z",
+      "raw_sha256": "sha256:28c5423a249b6b471b90805492666338fab88266ac6a72b4f2b711fa65c03a68"
+    },
+    "jobs_api": {
+      "bytes": 8168,
+      "observed_at_utc": "2026-09-03T18:39:46.131Z",
+      "raw_sha256": "sha256:2930abf8c56dce06e06c7abf1bff6ff87be73d12bfaf33dbdbc1dff3f177f1a3"
+    },
+    "matching_deployments_api": {
+      "bytes": 3895,
+      "observed_at_utc": "2026-09-03T18:39:46.131Z",
+      "raw_sha256": "sha256:18ec4f1b8ced92af64e8faa50e14fc1aa3e7941a62353f908fca50d1614215db"
+    },
+    "pending_deployments_api": {
+      "bytes": 2,
+      "observed_at_utc": "2026-09-03T18:39:46.131Z",
+      "raw_sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "repository_runners_after_cleanup_api": {
+      "bytes": 30,
+      "observed_at_utc": "2026-09-03T18:39:46.131Z",
+      "raw_sha256": "sha256:3f0ea89dee64544046623ff19c82d9443bdc098ade1db35a4c9be094b13cfd47"
+    },
+    "workflow_run_attempt_api": {
+      "bytes": 14503,
+      "observed_at_utc": "2026-09-03T18:39:46.131Z",
+      "raw_sha256": "sha256:f1195dffdc764b2c81bc682d94a2c385cffffa1f1812288f3199e7500b0e6fb8"
+    }
+  },
+  "status": "FAILED_CLOSED_AT_FIRST_MODEL_RESPONSE_BEFORE_ANY_COMPLETED_TASK_ARM",
+  "timing": {
+    "execute_step_wall_seconds": 213,
+    "image_materialization_wall_seconds": 542,
+    "model_call_wall_seconds": 15.624,
+    "protected_job_wall_seconds": 863,
+    "workflow_wall_seconds": 1605
+  },
+  "workflow_run": {
+    "actor": "Scuttie",
+    "conclusion": "failure",
+    "event": "push",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "bc70e1979c2987cd52347b2ef2fd7c43dc3014df",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/33788493773",
+    "id": 33788493773,
+    "name": "TriMem V1 approved benchmark phase",
+    "path": ".github/workflows/trimem-benchmark.yml",
+    "run_attempt": 1,
+    "run_started_at": "2026-09-03T18:06:08Z",
+    "status": "completed",
+    "updated_at": "2026-09-03T18:32:53Z",
+    "workflow_id": 349104146
+  }
+}

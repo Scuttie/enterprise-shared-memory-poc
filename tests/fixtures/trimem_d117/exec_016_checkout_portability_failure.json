@@ -1,0 +1,161 @@
+{
+  "actuals": {
+    "benchmark_image_pulls": 13,
+    "cached_input_tokens": 0,
+    "completed_task_arm_runs": 0,
+    "exact_model_metadata_requests": 1,
+    "grader_containers": 0,
+    "input_tokens": 950,
+    "model_generation_calls": 1,
+    "official_grader_runs": 0,
+    "output_tokens": 28,
+    "paid_model_calls": 1,
+    "protocol_canary_generation_calls": 1,
+    "provider_control_plane_requests": 1,
+    "reasoning_tokens": 0,
+    "scientific_model_calls": 0,
+    "task_arm_reservations": 0,
+    "task_arm_runs": 0,
+    "terminal_cells": 0,
+    "total_tokens": 978,
+    "total_usd": "0.000838500000"
+  },
+  "approval_boundary": {
+    "approval_artifact_sha256": "0f7be5d6b7fbb16551b7d3c212206f4ca3e05648745c7ccbeaca365096e869ff",
+    "approval_materialization": "PASS",
+    "approved_request_sha256": "4f423e31e130240d1747647bd05909f244f2d840699e9ff25b6de6711f2f6533",
+    "approved_workflow_run_attempt": 1,
+    "approved_workflow_run_id": 34185194819,
+    "environment_secret_count_after_cleanup": 0,
+    "exec_gate": "PASS",
+    "protected_environment_entered": true
+  },
+  "boundary": {
+    "aggregate_entered": false,
+    "bounded_context_preflight": "PASS",
+    "branch_trigger_preflight": "PASS",
+    "campaign_result_available": false,
+    "checkout_target_order_index": 5,
+    "failure_stage": "FROZEN_SERIAL_STREAM_FIRST_CHECKOUT_PREPARATION",
+    "first_stream": "M2-baseline",
+    "image_materialization": "PASS",
+    "model_metadata": "PASS",
+    "protocol_canary": "PASS",
+    "task_arm_reservation_started": false
+  },
+  "branch": "codex/trimem-coder-v1",
+  "evidence_custody": {
+    "decrypted_restricted_tar": {
+      "bytes": 204800,
+      "sha256": "f2e4685f5e43a5802af97d9143e11e2960b3042085402a9ccbde06ff14b7ca47"
+    },
+    "github_artifacts": [
+      {
+        "digest": "sha256:36b6f6240b65c7be7b426b19df5339aacd41744dd1dd3c6ae2bf2efe73b7c345",
+        "id": 10040491733,
+        "name": "trimem-benchmark-restricted-encrypted",
+        "size_in_bytes": 205081
+      },
+      {
+        "digest": "sha256:04778d32091021a21a92d67f1adee068af9ae0647e67b71d2b7e9f93f72efab6",
+        "id": 10040492534,
+        "name": "trimem-benchmark-evidence-inventories",
+        "size_in_bytes": 3740
+      },
+      {
+        "digest": "sha256:cd5a4260cc41dca218093ccb04b280ad036530925ef2a31a45d27ebdac97254f",
+        "id": 10040493782,
+        "name": "trimem-benchmark-remote-custody",
+        "size_in_bytes": 645
+      }
+    ],
+    "public_result": "ABSENT_EXPECTED",
+    "recomputed_inventory": {
+      "inventory_sha256": "71c6bf1d778850c94ca808b457165da9307cac19aae00187933cf331ab6b955f",
+      "matches_uploaded_inventory": true,
+      "total_bytes": 104729,
+      "total_files": 96
+    },
+    "remote_custody_status": "TRIMEM_FAILURE_EVIDENCE_CUSTODY_PASS"
+  },
+  "execution_head": "0b31ee30abadae4242ce24d5a5821f01c727c6cc",
+  "failure": {
+    "failed_target_commit": "560c412e0eb23a0b922a9ba3bea064c14f18d84a",
+    "failed_target_id": "multi_swe_bench_mini--ponylang__ponyc-1981",
+    "failed_target_repository": "ponylang/ponyc",
+    "message": "new checkout is not exact and clean: multi_swe_bench_mini--ponylang__ponyc-1981",
+    "process_disposition": "UNKNOWN_FAILURE",
+    "process_exit_code": 1,
+    "resume_eligible": false,
+    "resume_started": false,
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 153,
+    "stdout_sha256": "93fa0601911ad56bf1b28d02da918439f84517708d5ac77a8acd1c135ae4f3d3"
+  },
+  "jobs": [
+    {
+      "completed_at": "2026-09-08T03:56:07Z",
+      "conclusion": "success",
+      "id": 101932012418,
+      "name": "branch-trigger-preflight",
+      "started_at": "2026-09-08T03:55:48Z"
+    },
+    {
+      "completed_at": "2026-09-08T03:57:08Z",
+      "conclusion": "success",
+      "id": 101932067617,
+      "name": "bounded-context-preflight",
+      "started_at": "2026-09-08T03:56:10Z"
+    },
+    {
+      "completed_at": "2026-09-08T04:09:19Z",
+      "conclusion": "failure",
+      "id": 101932227679,
+      "name": "frozen-serial-phase",
+      "started_at": "2026-09-08T04:04:06Z"
+    }
+  ],
+  "pass_at_1": null,
+  "performance_measured": false,
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "root_cause": {
+    "classification": "GIT_BLOB_WORKTREE_EOL_PORTABILITY_FAILURE",
+    "committed_attribute": "[attr]win text eol=crlf",
+    "expected_source_identity": "PINNED_GIT_BLOB_BYTES_AT_REVISION",
+    "failure_subtype": "ORDINARY_CHECKOUT_APPLIED_COMMITTED_CRLF_TRANSFORM",
+    "first_mismatch": {
+      "git_blob_bytes": 2064,
+      "git_blob_object_id": "a361570c90c84b2ee43101dd29cd227edb842922",
+      "git_blob_sha256": "a47f559b325592d5026f496c3d8c63d91f1e5575faec9357a52950f63b620955",
+      "lf_count": 98,
+      "path": "make.bat",
+      "worktree_bytes": 2162,
+      "worktree_object_id": "6e9d5eefd3fb6c0b4a130e9de4c46875416c9c95",
+      "worktree_sha256": "d0cccd201e37e052a8b873258d9c9b6ed1a67a4e7b4ce52bf4769c5b948378dc"
+    },
+    "reproduction": {
+      "facebook_zstd_transformed_bytes_inserted": 6401,
+      "facebook_zstd_transformed_paths": 30,
+      "other_targets_with_zero_transformed_paths": 10,
+      "ponylang_ponyc_transformed_paths": 1,
+      "targets_checked": 12
+    },
+    "scientific_result": false,
+    "validator_disposition": "CORRECT_FAIL_CLOSED_REJECTION_OF_NON_BLOB_BYTES"
+  },
+  "schema": "trimem/d117-exec-016-checkout-portability-failure/1.0",
+  "source_head": "c39b3dbfcf16ecc938ba7c958b044306f1874ff0",
+  "workflow_run": {
+    "conclusion": "failure",
+    "created_at": "2026-09-08T03:55:46Z",
+    "event": "push",
+    "head_sha": "0b31ee30abadae4242ce24d5a5821f01c727c6cc",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34185194819",
+    "id": 34185194819,
+    "path": ".github/workflows/trimem-benchmark.yml",
+    "run_attempt": 1,
+    "status": "completed",
+    "updated_at": "2026-09-08T04:09:20Z"
+  }
+}

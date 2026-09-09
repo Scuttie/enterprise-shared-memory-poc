@@ -1,0 +1,91 @@
+{
+  "authority_boundary": {
+    "development_execution_authorized": false,
+    "external_execution_approval_received": false,
+    "request_015_cancelled_unapproved": true,
+    "request_015_rerun_allowed": false,
+    "request_016_created_in_source": false,
+    "request_016_execution_authorized": false,
+    "request_016_request_creation_authorized": true,
+    "required_external_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_016_APPROVED_ONCE"
+  },
+  "classification": "POST_EXEC_015_ZERO_MODEL_APPROVAL_DELAY_FRESHNESS_RECOVERY",
+  "endpoint": "TRIMEM_V1_READY_FOR_EXEC_016_REQUEST",
+  "frozen_scientific_identity": {
+    "arms": [
+      "M2-baseline",
+      "M2-precision",
+      "M2-recall",
+      "M2-balanced",
+      "M0",
+      "M1"
+    ],
+    "grader_containers": 72,
+    "hard_cap_usd": 50.0,
+    "model_id": "gpt-5.4-mini-2026-03-17",
+    "paid_model_call_cap": 1873,
+    "task_arm_runs": 72,
+    "targets": 12,
+    "unchanged": [
+      "model",
+      "pricing",
+      "prompts",
+      "tools",
+      "parsers",
+      "targets",
+      "arms",
+      "budgets",
+      "grader locks",
+      "image locks"
+    ]
+  },
+  "historical_exec_015": {
+    "bounded_context_preflight": "PASS",
+    "branch_trigger_preflight": "PASS",
+    "deployment_approved": false,
+    "environment_secrets": 0,
+    "execution_head": "221a23be33597fdfa37b9b2d9ed2a7ffba2767f3",
+    "frozen_serial_phase": "CANCELLED_WHILE_WAITING_FOR_APPROVAL",
+    "model_api_calls": 0,
+    "official_grader_runs": 0,
+    "paid_model_calls": 0,
+    "run_attempt": 1,
+    "run_id": 34160843621,
+    "source_head": "de4b42be532910bf1a6349241b535ca31a93b6af",
+    "task_arm_runs": 0,
+    "total_usd": 0.0
+  },
+  "implementation_sha256": {
+    "scripts/trimem_benchmark_matrix.py": "90b7834cc3cf26f2028bb8bac4a9c511073d8083b047f53b3aea830b6b7fe984"
+  },
+  "recovery_contract": {
+    "immutable_record_validation": "FULL_CONTENT_HASH_BINDING_AND_CANONICAL_BYTES_WITHOUT_PRESENT_WALL_CLOCK_EXPIRY",
+    "loader_collector_generation_binding": "D1.16_WRAPPER_HOLDS_COMPLETE_INHERITED_RUNTIME_CONTEXT_IN_THE_SEPARATE_POSIX_PROCESS",
+    "live_freshness_required_at": [
+      "request_write",
+      "branch_trigger",
+      "unprotected_bounded_preflight"
+    ],
+    "protected_revalidation": [
+      "live protected runner re-observation",
+      "exact cache-only service verification",
+      "exact pinned harness materialization",
+      "exact official-harness loader preflight"
+    ]
+  },
+  "schema": "trimem/development-exec-016-approval-delay-amendment/1.0",
+  "status": "FROZEN_CREDENTIAL_FREE_EXEC_015_CANCELLED_READY_FOR_EXEC_016_REQUEST",
+  "zero_scientific_recovery_actuals": {
+    "benchmark_image_pulls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_api_calls": 0,
+    "model_generation_calls": 0,
+    "model_metadata_requests": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0.0
+  }
+}

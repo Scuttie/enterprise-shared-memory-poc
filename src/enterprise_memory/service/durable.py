@@ -28,6 +28,45 @@ def episode_id_for_job(job_id: str) -> str:
     return str(uuid.uuid5(_JOB_NS, "episode:%s" % job_id))
 
 
+async def persist_private_episode_candidate(
+    connection,
+    *,
+    org_id,
+    user_id,
+    repo_id,
+    job_id,
+    episode_canonical,
+) -> tuple[str, str]:
+    """Append the live-v0.3 private episode and candidate event atomically.
+
+    ``connection`` must be an already-open tenant transaction.  Keeping this
+    helper connection-level is intentional: callers cannot accidentally commit
+    the episode separately from its ``CONTRACT_CANDIDATE`` outbox event.
+    """
+    from ..persistence.postgres import publish_outbox
+
+    episode_id = episode_id_for_job(str(job_id))
+    content_hash = "sha256:" + sha(
+        json.dumps(episode_canonical, sort_keys=True)
+    )[:32]
+    await connection.execute(text(
+        "INSERT INTO private_episodes(id,org_id,owner_user_id,repository_id,canonical_json,content_hash,"
+        "state) VALUES(cast(:i as uuid),:o,:u,:r,cast(:j as jsonb),:h,'success') "
+        "ON CONFLICT (id) DO NOTHING"),
+        {"i": episode_id, "o": org_id, "u": user_id, "r": repo_id,
+         "j": json.dumps(episode_canonical), "h": content_hash})
+    await publish_outbox(
+        connection,
+        org_id,
+        "CONTRACT_CANDIDATE",
+        "private_episode",
+        episode_id,
+        1,
+        {"job_id": str(job_id)},
+    )
+    return episode_id, content_hash
+
+
 # ---------------------------------------------------------------- submission (API, api_service role)
 async def create_solve_job(engine, *, org_id, user_id, repo_id, task_policy_id, task_policy_version,
                            installation_id, requested_ref, commit_sha, tree_sha, instruction,
@@ -211,9 +250,8 @@ async def finalize_success_atomic(engine, org_id, job_id, worker_id, *, cross_us
 
     Idempotent by job: the outcome has a UNIQUE(org_id,job_id); the episode id is deterministic per job (ON
     CONFLICT DO NOTHING); the candidate outbox event is idempotent by its unique key. Returns the episode id."""
-    from ..persistence.postgres import publish_outbox, emit_audit
+    from ..persistence.postgres import emit_audit
     ep_id = episode_id_for_job(job_id)
-    ep_hash = "sha256:" + sha(json.dumps(episode_canonical, sort_keys=True))[:32]
     async with tenant_tx(engine, org_id, user_id) as c:
         # 1 lease-owned terminal transition — exactly one worker wins; a stale worker gets rowcount 0
         n = (await c.execute(text(
@@ -239,14 +277,18 @@ async def finalize_success_atomic(engine, org_id, job_id, worker_id, *, cross_us
             " VALUES(:o,:j,:p1,:e1,:p2,cast(:im as jsonb),:h) ON CONFLICT (org_id,job_id) DO NOTHING"),
             {"o": org_id, "j": job_id, "p1": outcome["pass1"], "e1": outcome["exec1"], "p2": outcome["pass2"],
              "im": json.dumps(outcome.get("injected", [])), "h": outcome.get("content_hash")})
-        # 4 single deterministic private episode
-        await c.execute(text(
-            "INSERT INTO private_episodes(id,org_id,owner_user_id,repository_id,canonical_json,content_hash,"
-            "state) VALUES(cast(:i as uuid),:o,:u,:r,cast(:j as jsonb),:h,'success') ON CONFLICT (id) DO NOTHING"),
-            {"i": ep_id, "o": org_id, "u": user_id, "r": repo_id,
-             "j": json.dumps(episode_canonical), "h": ep_hash})
-        # 5 single candidate-extraction outbox event (idempotent by unique key)
-        await publish_outbox(c, org_id, "CONTRACT_CANDIDATE", "private_episode", ep_id, 1, {"job_id": job_id})
+        # 4 + 5 one connection-level private-episode/candidate append.  The
+        # surrounding tenant transaction is the sole commit boundary.
+        appended_id, _ = await persist_private_episode_candidate(
+            c,
+            org_id=org_id,
+            user_id=user_id,
+            repo_id=repo_id,
+            job_id=job_id,
+            episode_canonical=episode_canonical,
+        )
+        if appended_id != ep_id:
+            raise RuntimeError("private episode identity changed during finalisation")
         # 6 terminal audit + 7 terminal job_event
         await emit_audit(c, org_id, "solve_succeeded", "job", job_id,
                          {"episode_id": ep_id, "cross_user_private_injection_count": cross_user_count},

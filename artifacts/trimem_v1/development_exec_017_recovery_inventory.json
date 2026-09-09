@@ -1,0 +1,51 @@
+{
+  "classification": "POST_EXEC_016_PRE_TASK_GIT_BLOB_WORKTREE_PORTABILITY_RECOVERY",
+  "historical_boundary": {
+    "evidence_inventory_sha256": "71c6bf1d778850c94ca808b457165da9307cac19aae00187933cf331ab6b955f",
+    "execution_head": "0b31ee30abadae4242ce24d5a5821f01c727c6cc",
+    "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_016.json",
+    "request_payload_sha256": "d04c884033be9fe1f39ae6d1cd6523434419f4c1a46ffdefb38545d514217edf",
+    "request_raw_sha256": "4f423e31e130240d1747647bd05909f244f2d840699e9ff25b6de6711f2f6533",
+    "run_attempt": 1,
+    "run_id": 34185194819,
+    "source_head": "c39b3dbfcf16ecc938ba7c958b044306f1874ff0"
+  },
+  "implementation_sha256": {
+    "scripts/trimem_benchmark_matrix.py": "2fc1a753cc52ba90236f3e967bebd7a09110c8791e9d854caef963d9698e0da8",
+    "scripts/trimem_benchmark_run.py": "f34aef14773cb2031b7ab07cf4fb8159a11fdbac9af40c9e539996302bdc7269",
+    "scripts/trimem_d117_checkout_rehearsal.py": "2cb95b75c978a14dbe31d8aa27232267d710281f271b6a8ec6c5e94dc45ef25f",
+    "scripts/trimem_d117_loader_rehearsal.py": "cc53be21bbbbe6ae4a40036568a244c25d82f1ad44c292906e9009e4a1e05044",
+    "scripts/trimem_development_trigger_d117.py": "526ddfa2118abd5265472328523bc6c49665557badf12273ed4649522deec173"
+  },
+  "schema": "trimem/development-exec-017-checkout-portability-inventory/1.0",
+  "source_changed_paths": [
+    ".github/workflows/ci-trimem-dev-toolchain.yml",
+    ".github/workflows/ci-trimem.yml",
+    ".github/workflows/trimem-benchmark.yml",
+    "artifacts/trimem_v1/development_exec_017_recovery_amendment.json",
+    "artifacts/trimem_v1/development_exec_017_recovery_inventory.json",
+    "artifacts/trimem_v1/freeze.json",
+    "artifacts/trimem_v1/readiness_requirements.json",
+    "reports/TRIMEM_D117_EXEC_017_RECOVERY.md",
+    "scripts/trimem_benchmark_matrix.py",
+    "scripts/trimem_benchmark_run.py",
+    "scripts/trimem_d117_checkout_rehearsal.py",
+    "scripts/trimem_d117_loader_rehearsal.py",
+    "scripts/trimem_development_trigger_d117.py",
+    "scripts/trimem_freeze.py",
+    "scripts/trimem_multi_swe_contract.py",
+    "scripts/trimem_verify_ready.py",
+    "tests/fixtures/trimem_d117/exec_016_checkout_portability_failure.json",
+    "tests/unit/test_trimem_benchmark_readiness.py",
+    "tests/unit/test_trimem_d110_atomic_resume.py",
+    "tests/unit/test_trimem_d110_checkout_custody.py",
+    "tests/unit/test_trimem_d110_status_and_reseal.py",
+    "tests/unit/test_trimem_d114_post_setup_environment.py",
+    "tests/unit/test_trimem_d117_trigger.py",
+    "tests/unit/test_trimem_d16_native_action.py",
+    "tests/unit/test_trimem_dev_toolchain_workflows.py",
+    "tests/unit/test_trimem_development_trigger.py",
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py"
+  ],
+  "status": "FROZEN_CREDENTIAL_FREE_EXEC_016_PRE_TASK_CHECKOUT_FAILURE_READY_FOR_EXEC_017_REQUEST"
+}

@@ -1,0 +1,70 @@
+{
+  "attestation_action": {
+    "exact_uses": "actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6",
+    "inputs": {
+      "create-storage-record": false,
+      "push-to-registry": false,
+      "subject-path": "${{ runner.temp }}/attestation-subject.json"
+    }
+  },
+  "certificate_policy": {
+    "oidc_issuer": "https://token.actions.githubusercontent.com",
+    "protected_environment": "trimem-grader-smoke-exec",
+    "protected_environment_oid": "1.3.6.1.4.1.57264.1.23",
+    "runner_environment": "github-hosted",
+    "runner_invocation_uri_template": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/{run_id}/attempts/{run_attempt}"
+  },
+  "expected_repository": "Scuttie/enterprise-shared-memory-poc",
+  "source_ref_by_event": {
+    "push": "refs/heads/codex/trimem-coder-v1",
+    "workflow_dispatch": "refs/heads/main"
+  },
+  "schema": "trimem/smoke-attestation-policy/1.0",
+  "signer_workflow": ".github/workflows/trimem-grader-smoke.yml",
+  "trusted_root": {
+    "bytes": 34634,
+    "generated_at_utc": "2026-09-01T03:44:48Z",
+    "generated_by": "gh attestation trusted-root",
+    "generator": "gh version 2.97.0 (2026-07-31)",
+    "line_count": 2,
+    "path": "configs/trimem_v1/sigstore_trusted_root.jsonl",
+    "raw_sha256": "65ca537f6ed8a47fd0e560c421baa1f6c1efb8b25fc200d8c5c02c0e92eb2b9c",
+    "source": "https://cli.github.com/manual/gh_attestation_trusted-root"
+  },
+  "verification": {
+    "cryptographic_gate_phases": [
+      "DEVELOPMENT_TUNING",
+      "HELDOUT_BENCHMARK"
+    ],
+    "gh_cli_tcb": {
+      "exact_version_first_line": "gh version 2.97.0 (2026-07-31)",
+      "trust_boundary": "trusted host/runner installation plus exact version; executable bytes are neither vendored nor byte-pinned"
+    },
+    "live_run_attempt": {
+      "accept": "application/vnd.github+json",
+      "api_version": "2022-11-28",
+      "api_route_template": "repos/{repository}/actions/runs/{run_id}/attempts/{run_attempt}",
+      "authentication": "GH_TOKEN from github.token scoped to the benchmark EXEC gate step only",
+      "exact_conclusion": "success",
+      "exact_status": "completed",
+      "json_projection": "{id,run_attempt,event,status,conclusion,head_sha,head_branch,path,workflow_id,repository_full_name:.repository.full_name}",
+      "transport": "gh api --hostname github.com"
+    },
+    "required_cli_flags": [
+      "--bundle",
+      "--cert-identity",
+      "--cert-oidc-issuer",
+      "--custom-trusted-root",
+      "--digest-alg=sha256",
+      "--deny-self-hosted-runners",
+      "--format=json",
+      "--predicate-type=https://slsa.dev/provenance/v1",
+      "--repo",
+      "--signer-digest",
+      "--source-digest",
+      "--source-ref"
+    ],
+    "static_scope": "exact bytes, hashes, subject/bundle structure and signed identity fields only; no cryptographic viability claim",
+    "trusted_root_mutation_after_smoke": "PROHIBITED"
+  }
+}

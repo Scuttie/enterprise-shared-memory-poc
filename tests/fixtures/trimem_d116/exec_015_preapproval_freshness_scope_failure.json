@@ -1,0 +1,67 @@
+{
+  "approval_boundary": {
+    "deployment_approved": false,
+    "environment_secret_count": 0,
+    "protected_environment_entered": false
+  },
+  "branch": "codex/trimem-coder-v1",
+  "execution_head": "221a23be33597fdfa37b9b2d9ed2a7ffba2767f3",
+  "jobs": [
+    {
+      "completed_at": "2026-09-07T20:49:40Z",
+      "conclusion": "success",
+      "id": 101862200095,
+      "name": "branch-trigger-preflight",
+      "started_at": "2026-09-07T20:49:18Z"
+    },
+    {
+      "completed_at": "2026-09-07T20:50:41Z",
+      "conclusion": "success",
+      "id": 101862274185,
+      "name": "bounded-context-preflight",
+      "started_at": "2026-09-07T20:49:43Z"
+    },
+    {
+      "completed_at": "2026-09-08T01:40:07Z",
+      "conclusion": "cancelled",
+      "id": 101862456797,
+      "name": "frozen-serial-phase",
+      "started_at": "2026-09-07T20:50:41Z"
+    }
+  ],
+  "observed_actuals": {
+    "benchmark_image_pulls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_api_calls": 0,
+    "model_generation_calls": 0,
+    "model_metadata_requests": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0.0
+  },
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "root_cause": {
+    "classification": "PRE_APPROVAL_CONTROL_PLANE_FRESHNESS_COUPLING_AVOIDED",
+    "failure_message": "the immutable loader rehearsal would expire while protected approval waits",
+    "failure_subtype": "IMMUTABLE_LOADER_REHEARSAL_WALL_CLOCK_EXPIRY",
+    "loader_rehearsal_observed_at_utc": "2026-09-07T20:43:18.456Z",
+    "maximum_age_seconds": 3600,
+    "scientific_result": false
+  },
+  "schema": "trimem/d116-exec-015-preapproval-cancellation/1.0",
+  "source_head": "de4b42be532910bf1a6349241b535ca31a93b6af",
+  "workflow": {
+    "conclusion": "cancelled",
+    "created_at": "2026-09-07T20:49:15Z",
+    "event": "push",
+    "head_sha": "221a23be33597fdfa37b9b2d9ed2a7ffba2767f3",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34160843621",
+    "id": 34160843621,
+    "run_attempt": 1,
+    "status": "completed",
+    "updated_at": "2026-09-08T01:40:09Z"
+  }
+}

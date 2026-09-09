@@ -1,0 +1,35 @@
+{
+  "schema": "trimem/development-provider-outcome-terminology-amendment/1.0",
+  "recorded_at_utc": "2026-09-04T02:57:07Z",
+  "historical_endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+  "historical_run": {
+    "run_id": 33788493773,
+    "run_attempt": 1,
+    "execution_head": "bc70e1979c2987cd52347b2ef2fd7c43dc3014df",
+    "api_calls": 1,
+    "completed_cells": 0
+  },
+  "refined_subtype": "TRIMEM_DEV_FIRST_DECOMPOSITION_EMPTY_EXTRACTED_TEXT",
+  "raw_provider_outcome_class": "UNAVAILABLE_DUE_TO_ADAPTER_OBSERVABILITY_GAP",
+  "observed_fact": "The historical adapter extracted zero visible response-text bytes.",
+  "not_established": [
+    "raw HTTP response body was empty",
+    "provider returned no output item",
+    "model refused",
+    "response failed",
+    "response was incomplete because of max_output_tokens",
+    "reasoning tokens exhausted the output budget",
+    "GPT-5.4 Mini cannot perform decomposition"
+  ],
+  "superseded_labels": [
+    "model empty response",
+    "output-budget exhaustion",
+    "model parser bug",
+    "model capability failure"
+  ],
+  "immutable_historical_receipt": {
+    "path": "artifacts/trimem_v1/development_tuning_exec/exec-003/model-parser-failure-receipt.json",
+    "sha256": "6fbfbf4bf169e6365439f25bb7ea14bcac114e30fde9df1f814c93ba8ebc75be",
+    "modified_by_this_amendment": false
+  }
+}

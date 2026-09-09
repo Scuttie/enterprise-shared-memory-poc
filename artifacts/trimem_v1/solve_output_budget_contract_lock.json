@@ -1,0 +1,15 @@
+{
+  "schema": "trimem/solve-output-budget-contract-lock/1.0",
+  "status": "FROZEN_PRE_RESULT",
+  "classification": "PRE_RESULT_SOLVE_EXECUTION_CONTRACT_AMENDMENT",
+  "contract_path": "configs/trimem_v1/solve_output_budget_contract.json",
+  "contract_sha256": "49943aa6527bd8192c051ac72b2798f36976f66fa5aaff0d62525398494156e4",
+  "implementation_sha256": {
+    "scripts/trimem_benchmark_matrix.py": "54205086c98421b80d1ca765dd65c12349d2fb5d21b2030dec7edbec5c65b8b2",
+    "scripts/trimem_benchmark_run.py": "b2d16337ab1819575936b2a006ec734fe957ee9d4b598d73273a20e23a05cedd",
+    "src/enterprise_memory/trimem/agent_runtime.py": "692dcbd7066205a3a64ae1a85ab288ea4b592b9ab37af9c38b839013f1e5e9af",
+    "src/enterprise_memory/trimem/git_workspace.py": "e237386ddbe6d8b991325ad341358bd8ae882ccdded8dbe6807570a0f744f54d",
+    "src/enterprise_memory/trimem/workspace.py": "046800bb40b09150f89628fa1efe4124e1efb3965ef0df03411a9a777c00a38d",
+    "src/enterprise_memory/trimem/runtime_lock.py": "77686f1d8b58cbabee85286e1d502495fae28b70b5279ec4dbe7133ea4440ae5"
+  }
+}

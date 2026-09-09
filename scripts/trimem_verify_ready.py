@@ -5687,6 +5687,9 @@ def validate_runtime_and_candidates(
     require(all(state in runtime_source for state in ("PATCH_FINALIZED", "GRADED", "EXTRACTED", "LIFECYCLE_STORED", "LIFECYCLE_CREDITED", "DONE")), "terminal checkpoint phase set is incomplete")
     require(all(item is not None for item in (AtomicBudgetLedger, BudgetedModelGateway, JournaledModelGateway, JournaledGraderGateway)), "budget/journal execution boundary is missing")
     benchmark_source = (ROOT / "scripts/trimem_benchmark_run.py").read_text(encoding="utf-8")
+    checkout_rehearsal_source = (
+        ROOT / "scripts/trimem_d117_checkout_rehearsal.py"
+    ).read_text(encoding="utf-8")
     aggregate_source = (ROOT / "scripts/trimem_benchmark_matrix.py").read_text(encoding="utf-8")
     require(callable(seed_benchmark_identities) and "os.environ.pop(\"TRIMEM_ADMIN_DATABASE_URL\"" in benchmark_source and "identity_seed_evidence=" in benchmark_source, "admin-only deterministic benchmark identity seed boundary is missing")
     require(
@@ -5694,6 +5697,18 @@ def validate_runtime_and_candidates(
         and "_benchmark_endpoint_totals" in aggregate_source
         and "DESCRIPTIVE_POOLED_ALL_BENCHMARKS" in aggregate_source,
         "per-benchmark primary/secondary endpoint aggregation is not frozen",
+    )
+    require(
+        '"--literal-pathspecs"' in benchmark_source
+        and '"--renormalize"' in benchmark_source
+        and '"write-tree"' in benchmark_source
+        and "fresh task index differs after Git-blob materialization"
+        in benchmark_source
+        and "fresh task checkout is not Git-clean after blob materialization"
+        in benchmark_source
+        and 'evidence.get("initial_status") != ""'
+        in checkout_rehearsal_source,
+        "Git-blob checkout index/status portability closure is missing",
     )
 
 

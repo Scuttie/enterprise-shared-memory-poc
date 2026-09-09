@@ -8,6 +8,25 @@ This is a post-DEV diagnostic contract, not a development-selection rerun, a
 HELDOUT result, or a performance claim. No model, image, grader, or benchmark
 executor is authorized by this change.
 
+Run `34379166677` attempt 2 is preserved as a third pre-scientific failure. It
+passed the corrected approval gate, 13 digest-pinned image pulls, credential
+format, and run-bound key commitment, but both executor invocations failed in
+the 36-workspace preflight with `pre-execution diagnostic checkout is not
+pristine`. The credential checks were local-only and the paid gateway is
+constructed strictly after this preflight, so task-arm runs, model/API calls,
+tokens, grader containers/runs, and USD were all zero. Failure custody and
+cleanup passed. That run and approval are spent and are not reusable.
+
+Exact Linux reconstruction showed that immutable LF Git-blob bytes for one
+ponyc file and 30 zstd files were correct, while the mutable index/stat state
+still represented their committed `eol=crlf` checkout form and produced
+porcelain `.M` rows. The corrected construction renormalizes only those exact
+transformed tracked paths with literal pathspecs after complete raw-byte and
+inventory validation, then fails closed unless `write-tree` equals the pinned
+commit tree and porcelain is empty. The credential-free rehearsal now
+explicitly requires empty `initial_status`; the corrected exact 12-target Linux
+path passes with all 31 normalized files.
+
 Run `34372037270` attempt 2 is preserved as the second zero-work pre-execution
 failure. The corrected isolated preinstall path, editable installation, exact
 DEV checkout rehearsal, pinned harness materialization, official loader, and
@@ -85,8 +104,11 @@ only the bound durable checkpoint;
 attempt 3 and later remain unauthorized.
 
 Before constructing a paid model gateway, the executor materializes all 36
-fresh workspaces as exact base-only, one-commit Git object closures. It then
-runs the production solver sandbox once for each target. The rehearsal proves
+fresh workspaces as exact base-only, one-commit Git object closures. It runs
+raw Git-blob normalization, refreshes only the corresponding tracked index
+paths, proves both exact commit-tree identity and empty porcelain status, and
+then runs the production solver sandbox once for each target. The rehearsal
+proves
 that no target-history refs, remotes, reflogs, or unreachable objects are
 available; for Multi-SWE images it additionally masks the baked repository
 `.git`, `fix.patch`, `test.patch`, and the five evaluator scripts. Host secrets

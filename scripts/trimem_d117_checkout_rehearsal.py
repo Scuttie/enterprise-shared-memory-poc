@@ -135,6 +135,7 @@ def build_rehearsal(
             or evidence.get("checkout_origin") != "FRESH_BASE_ONLY_FETCH"
             or not isinstance(evidence.get("argv"), list)
             or len(evidence["argv"]) != 4
+            or evidence.get("initial_status") != ""
             or not _valid_history_isolation_evidence(
                 evidence.get("history_isolation"),
                 expected_commit=task.commit,

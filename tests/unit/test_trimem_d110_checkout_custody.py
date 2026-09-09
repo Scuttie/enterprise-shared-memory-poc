@@ -199,6 +199,12 @@ def test_fresh_checkout_materialization_restores_exact_git_blob_bytes(
         evidence,
         expected_commit=commit,
     )
+    assert _git(
+        checkout,
+        "status",
+        "--porcelain=v2",
+        "--untracked-files=all",
+    ) == ""
     harness_lock.validate_pristine_checkout(checkout.absolute(), commit)
     resume_driver._validate_checkout_tree_bytes(
         checkout.absolute(),
@@ -225,6 +231,12 @@ def test_fresh_checkout_materialization_handles_zstd_style_file_set(
     assert evidence["normalized_paths"] == sorted(files)
     for relative, raw in files.items():
         assert (checkout / relative).read_bytes() == raw
+    assert _git(
+        checkout,
+        "status",
+        "--porcelain=v2",
+        "--untracked-files=all",
+    ) == ""
     harness_lock.validate_pristine_checkout(checkout.absolute(), commit)
 
 
@@ -322,9 +334,11 @@ def test_prepare_checkouts_fresh_clone_uses_materialization_and_records_origin(
         commit=commit,
     )
     real_runner = benchmark_run._run_hermetic_git
+    observed_commands: list[list[str]] = []
 
     def local_fetch(arguments: object) -> object:
         argv = list(arguments)
+        observed_commands.append(argv)
         if "remote" in argv and argv[-3:-1] == ["add", "origin"]:
             argv[-1] = str(source)
         return real_runner(argv)
@@ -352,6 +366,22 @@ def test_prepare_checkouts_fresh_clone_uses_materialization_and_records_origin(
         "PASS_BASE_ONLY_OBJECT_CLOSURE"
     )
     assert evidence["task-0"]["history_isolation"]["commit_object_count"] == 1
+    assert evidence["task-0"]["initial_status"] == ""
+    renormalize_commands = [
+        argv
+        for argv in observed_commands
+        if "add" in argv and "--renormalize" in argv
+    ]
+    assert len(renormalize_commands) == 1
+    assert renormalize_commands[0][0] == "--literal-pathspecs"
+    assert renormalize_commands[0][-2:] == ["--", "make.bat"]
+    assert "." not in renormalize_commands[0]
+    assert _git(
+        checkout,
+        "status",
+        "--porcelain=v2",
+        "--untracked-files=all",
+    ) == ""
     harness_lock.validate_pristine_checkout(checkout, commit)
 
 

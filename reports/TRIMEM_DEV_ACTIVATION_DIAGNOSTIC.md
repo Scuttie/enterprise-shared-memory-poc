@@ -7,15 +7,28 @@ result of DEV EXEC-022. It is not an M2 selection run, a held-out estimate, or
 evidence for a final performance claim.
 
 ```text
-TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = EXEC_002_ZERO_WORK_APPROVAL_GATE_FAILURE_PRESERVED
+TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = EXEC_003_ZERO_SCIENTIFIC_WORK_WORKSPACE_STATUS_FAILURE_PRESERVED
 HISTORICAL_ABSTENTION_ROOT_CAUSE = UNIDENTIFIABLE_FROM_RETAINED_EVIDENCE
 SOURCE_BANK = FROZEN_VERIFIED_TARGET_DISJOINT_12_OF_12
-RECOVERY_IMPLEMENTATION = APPROVAL_GATE_REHEARSED_AWAITING_NEW_HEAD_CI
+RECOVERY_IMPLEMENTATION = GIT_INDEX_RENORMALIZATION_REHEARSED_AWAITING_NEW_HEAD_CI
 MODEL_EXECUTION = NOT_STARTED
 OFFICIAL_GRADER_EXECUTION = NOT_STARTED
 PAID_MODEL_CALLS_THIS_DIAGNOSTIC = 0
 USD_THIS_DIAGNOSTIC = 0
 ```
+
+Run `34379166677` attempt 2 passed the protected approval gate, frozen image
+materialization, credential-format check, and run-bound billing-key commitment.
+The executor then stopped before paid-client construction because one exact
+Git-blob-normalized checkout still appeared modified to porcelain status. Both
+the initial invocation and its same-attempt resume retry failed closed. The
+separate EXEC-003 report preserves the evidence, 13 image-pull accounting, and
+zero task/model/grader/token/USD result. Exact Linux reconstruction identified
+one ponyc and 30 zstd committed-CRLF paths whose immutable LF blob bytes were
+correct while the mutable index/stat state was stale. Literal-pathspec,
+tracked-only hermetic renormalization followed by exact commit-tree and
+empty-status checks corrects that portability boundary; the corrected
+12-target rehearsal passes.
 
 Run `34372037270` attempt 2 is a second spent, zero-work pre-execution
 failure. It proved the corrected preinstall path, dataset checkout, pinned
@@ -163,13 +176,19 @@ The instance-ID suffix is treated only as the target solution-PR identity and
 is never used as the target issue number. The chronology cache and all 60
 public raw responses (59 GitHub plus one Trac page), together with 12 dedicated
 payloads, are content-addressed and included in the explicit research freeze.
-Execution remains blocked until a fresh exact run-attempt approval passes.
+Execution remains blocked until the corrected exact head has passed CI and a
+fresh exact run-attempt approval passes.
 Partial coverage remains a valid execution shape for future rebuilt banks, but
 anything below 12/12 takes verdict precedence as
 `RETRIEVAL_BANK_COVERAGE_INSUFFICIENT`.
 
 Every one of the 36 solver workspaces is fetched at its exact base SHA and then
 reduced to a single-commit Git object closure before a paid client exists.
+Committed CRLF checkout transforms are replaced with immutable Git-blob bytes;
+only those transformed tracked paths are then renormalized to refresh index
+checkout state, with `write-tree` required to equal the pinned commit tree and
+porcelain required to be empty. The credential-free 12-target rehearsal
+enforces that status before an execution approval can lead to paid work.
 Branches, tags, remotes, reflogs, alternates, promisor state, and unreachable
 post-base objects are removed and audited. The production solver runner keeps
 networking disabled and exposes only that checkout. For Multi-SWE images it

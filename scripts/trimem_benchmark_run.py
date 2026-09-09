@@ -5447,6 +5447,57 @@ def _materialize_exact_git_blob_checkout(
                 temporary.unlink()
         normalized.append(relative)
     normalized.sort()
+
+    # Replacing a checkout-only CRLF transform with the immutable LF blob
+    # bytes can leave Git's mutable index stat cache reporting a synthetic
+    # work-tree modification even though the clean-filtered blob identity is
+    # unchanged.  Refresh that cache through Git's tracked-file-only
+    # renormalization path, then prove that it neither staged a different tree
+    # nor left any porcelain-visible change.  The complete raw work-tree
+    # inventory and every transformed path have already been validated above;
+    # hermetic Git configuration prevents external filters from being loaded.
+    if normalized:
+        _run_hermetic_git(
+            [
+                "--literal-pathspecs",
+                f"--git-dir={git_dir}",
+                f"--work-tree={repository}",
+                "add",
+                "--renormalize",
+                "--",
+                *normalized,
+            ]
+        )
+    refreshed_tree_object_id = _run_hermetic_git(
+        [
+            f"--git-dir={git_dir}",
+            f"--work-tree={repository}",
+            "write-tree",
+        ]
+    ).stdout.strip()
+    if refreshed_tree_object_id != tree_object_id:
+        raise BenchmarkExecutionError(
+            "fresh task index differs after Git-blob materialization"
+        )
+    refreshed_status = _run_hermetic_git(
+        [
+            f"--git-dir={git_dir}",
+            f"--work-tree={repository}",
+            "status",
+            "--porcelain=v2",
+            "--untracked-files=all",
+        ]
+    ).stdout
+    if refreshed_status:
+        raise BenchmarkExecutionError(
+            "fresh task checkout is not Git-clean after blob materialization"
+        )
+    try:
+        validate_pristine_checkout(repository, commit)
+    except HarnessLockError as exc:
+        raise BenchmarkExecutionError(
+            "fresh task raw checkout differs after index refresh"
+        ) from exc
     return {
         "schema": _GIT_BLOB_MATERIALIZATION_SCHEMA,
         "status": "PASS",
@@ -5796,12 +5847,13 @@ def prepare_checkouts(
                 materialization = _materialize_exact_git_blob_checkout(
                     checkout, task.commit
                 )
-            try:
-                validate_pristine_checkout(checkout, task.commit)
-            except HarnessLockError as exc:
-                raise BenchmarkExecutionError(
-                    f"new checkout is not exact and clean: {task.task_id}"
-                ) from exc
+            else:
+                try:
+                    validate_pristine_checkout(checkout, task.commit)
+                except HarnessLockError as exc:
+                    raise BenchmarkExecutionError(
+                        f"new checkout is not exact and clean: {task.task_id}"
+                    ) from exc
         history_isolation = _base_only_git_object_closure(checkout, task.commit)
         try:
             validate_safe_local_git_configuration(checkout)

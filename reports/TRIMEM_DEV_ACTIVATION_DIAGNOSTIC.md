@@ -7,15 +7,23 @@ result of DEV EXEC-022. It is not an M2 selection run, a held-out estimate, or
 evidence for a final performance claim.
 
 ```text
-TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = EXEC_001_ZERO_WORK_PREFLIGHT_FAILURE_PRESERVED
+TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = EXEC_002_ZERO_WORK_APPROVAL_GATE_FAILURE_PRESERVED
 HISTORICAL_ABSTENTION_ROOT_CAUSE = UNIDENTIFIABLE_FROM_RETAINED_EVIDENCE
 SOURCE_BANK = FROZEN_VERIFIED_TARGET_DISJOINT_12_OF_12
-RECOVERY_IMPLEMENTATION = PRE_EXEC_REHEARSED_AWAITING_NEW_HEAD_CI
+RECOVERY_IMPLEMENTATION = APPROVAL_GATE_REHEARSED_AWAITING_NEW_HEAD_CI
 MODEL_EXECUTION = NOT_STARTED
 OFFICIAL_GRADER_EXECUTION = NOT_STARTED
 PAID_MODEL_CALLS_THIS_DIAGNOSTIC = 0
 USD_THIS_DIAGNOSTIC = 0
 ```
+
+Run `34372037270` attempt 2 is a second spent, zero-work pre-execution
+failure. It proved the corrected preinstall path, dataset checkout, pinned
+harnesses, official loader, grader factory, and complete failure-custody path.
+The approval gate then repeated the same import error because its own command
+still used `-S` after the editable installation. The separate EXEC-002 report
+preserves the exact evidence and recovery boundary. No image, OpenAI, executor,
+or official grader step was reached.
 
 Run `34359716328` attempt 2 is a spent, zero-work preflight failure, not a
 scientific or evaluator run. The frozen-source check passed, after which the

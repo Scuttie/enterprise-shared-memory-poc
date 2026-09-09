@@ -5940,8 +5940,10 @@ def validate_workflows() -> None:
         < diagnostic_execution_job.index("actions/setup-python@")
         and "TRIMEM_DEV_ACTIVATION_APPROVAL_B64: ${{ secrets.TRIMEM_DEV_ACTIVATION_APPROVAL_B64 }}"
         in diagnostic_execution_job
-        and "python -I -S scripts/trimem_dev_activation_gate.py"
+        and "python -I scripts/trimem_dev_activation_gate.py"
         in diagnostic_execution_job
+        and "python -I -S scripts/trimem_dev_activation_gate.py"
+        not in diagnostic_execution_job
         and '--output-approval "$RUNNER_TEMP/trimem-dev-activation-approval.json"'
         in diagnostic_execution_job
         and "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
@@ -5960,7 +5962,7 @@ def validate_workflows() -> None:
         "from trimem_harness_lock import prepare_harnesses",
         "scripts/trimem_official_harness_loader_preflight.py",
         "python scripts/trimem_d118_grader_factory_rehearsal.py",
-        "python -I -S scripts/trimem_dev_activation_gate.py",
+        "python -I scripts/trimem_dev_activation_gate.py",
         "python scripts/trimem_dev_activation_executor.py prepare-images",
         "python scripts/trimem_validate_openai_credential.py",
         "python scripts/trimem_verify_openai_key_binding.py",
@@ -5987,6 +5989,13 @@ def validate_workflows() -> None:
         )
         == 4
         and "first_executor_status" in diagnostic_execution_job
+        and "id: custody_gh_recovery" in diagnostic_execution_job
+        and "steps.custody_gh_recovery.outcome == 'success'"
+        in diagnostic_execution_job
+        and "CUSTODY_GH_RECOVERY_OUTCOME: ${{ steps.custody_gh_recovery.outcome }}"
+        in diagnostic_execution_job
+        and '[ "$CUSTODY_GH_RECOVERY_OUTCOME" != "success" ]'
+        in diagnostic_execution_job
         and "retry_arguments+=(--resume)" in diagnostic_execution_job
         and "executor-invocation-2.stdout.log" in diagnostic_execution_job
         and "--workspace-root .trimem-exec/devdiag-workspaces"

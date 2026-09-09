@@ -359,7 +359,7 @@ jobs:
         run: |
           set -euo pipefail
           umask 077
-          python -I -S scripts/trimem_dev_activation_gate.py \
+          python -I scripts/trimem_dev_activation_gate.py \
             --repository "${{ github.repository }}" \
             --workflow-run-id "${{ github.run_id }}" \
             --workflow-run-attempt "${{ github.run_attempt }}" \
@@ -550,6 +550,7 @@ jobs:
         if: >-
           always() &&
           !cancelled() &&
+          steps.custody_gh_recovery.outcome == 'success' &&
           steps.restricted_upload.outcome == 'success' &&
           steps.inventory_upload.outcome == 'success' &&
           (steps.public_upload.outcome == 'success' ||
@@ -596,6 +597,7 @@ jobs:
         if: always()
         env:
           IMAGE_CLEANUP_OUTCOME: ${{ steps.image_cleanup.outcome }}
+          CUSTODY_GH_RECOVERY_OUTCOME: ${{ steps.custody_gh_recovery.outcome }}
           RESTRICTED_UPLOAD_OUTCOME: ${{ steps.restricted_upload.outcome }}
           INVENTORY_UPLOAD_OUTCOME: ${{ steps.inventory_upload.outcome }}
           EXTERNAL_CUSTODY_OUTCOME: ${{ steps.external_custody_verification.outcome }}
@@ -605,6 +607,7 @@ jobs:
           umask 077
           if { [ "$IMAGE_CLEANUP_OUTCOME" != "success" ] && \
                [ "$IMAGE_CLEANUP_OUTCOME" != "skipped" ]; } || \
+             [ "$CUSTODY_GH_RECOVERY_OUTCOME" != "success" ] || \
              [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ] || \
              [ "$INVENTORY_UPLOAD_OUTCOME" != "success" ] || \
              [ "$EXTERNAL_CUSTODY_OUTCOME" != "success" ] || \

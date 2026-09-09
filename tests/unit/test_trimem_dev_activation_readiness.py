@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import base64
 from datetime import datetime, timedelta, timezone
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -270,6 +271,135 @@ def _approval(now: datetime) -> tuple[dict, dict]:
     return document, bindings
 
 
+def test_exact_gate_subprocess_keeps_editable_site_under_isolated_mode(
+    tmp_path: Path,
+) -> None:
+    runtime = tmp_path / "gate-runtime"
+    venv.EnvBuilder(with_pip=False).create(runtime)
+    runtime_python = (
+        runtime / "Scripts" / "python.exe"
+        if os.name == "nt"
+        else runtime / "bin" / "python"
+    )
+    purelib_result = subprocess.run(
+        [
+            str(runtime_python),
+            "-c",
+            "import sysconfig; print(sysconfig.get_path('purelib'))",
+        ],
+        check=True,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    purelib = Path(purelib_result.stdout.strip())
+    purelib.mkdir(parents=True, exist_ok=True)
+    sqlalchemy_spec = importlib.util.find_spec("sqlalchemy")
+    assert sqlalchemy_spec is not None and sqlalchemy_spec.origin is not None
+    dependency_site = Path(sqlalchemy_spec.origin).resolve().parents[1]
+    (purelib / "trimem_editable_source.pth").write_text(
+        str(ROOT / "src") + "\n" + str(dependency_site) + "\n",
+        encoding="utf-8",
+    )
+
+    manifest, policy, cells, source_bank_sha256 = (
+        diagnostic.load_and_validate_contract(
+            ROOT,
+            require_source_bank=True,
+            require_tracked=True,
+        )
+    )
+    assert len(cells) == 36
+    assert source_bank_sha256 is not None
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        check=True,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    document = approval_builder.build_approval_document(
+        diagnostic_id=manifest["diagnostic_id"],
+        repository="Scuttie/enterprise-shared-memory-poc",
+        git_head=head,
+        workflow_run_id=123456,
+        matrix_raw_sha256=diagnostic.file_sha256(ROOT / diagnostic.MATRIX_PATH),
+        policy_raw_sha256=diagnostic.file_sha256(ROOT / diagnostic.POLICY_PATH),
+        source_bank_manifest_sha256=source_bank_sha256,
+        model_id=policy["frozen_inputs"]["model_lock"]["model_id"],
+        hard_caps=policy["hard_caps"],
+        approval_actor="isolated-subprocess-regression",
+        approval_nonce="f" * 32,
+        approved_at_utc=now.isoformat().replace("+00:00", "Z"),
+        expires_at_utc=(now + timedelta(hours=1)).isoformat().replace(
+            "+00:00", "Z"
+        ),
+        openai_api_key=TEST_API_KEY,
+    )
+    raw = approval_builder.canonical_approval_bytes(document)
+    environment = {
+        key: value
+        for key, value in os.environ.items()
+        if key
+        not in {
+            "GH_TOKEN",
+            "GITHUB_TOKEN",
+            "OPENAI_API_KEY",
+            "TRIMEM_EVIDENCE_PASSPHRASE",
+        }
+    }
+    environment["TRIMEM_DEV_ACTIVATION_APPROVAL_B64"] = base64.b64encode(
+        raw
+    ).decode("ascii")
+    output = tmp_path / "materialized-approval.json"
+    command = [
+        str(ROOT / "scripts" / "trimem_dev_activation_gate.py"),
+        "--repository",
+        "Scuttie/enterprise-shared-memory-poc",
+        "--workflow-run-id",
+        "123456",
+        "--workflow-run-attempt",
+        "2",
+        "--workflow-event",
+        "push",
+        "--output-approval",
+        str(output),
+    ]
+    completed = subprocess.run(
+        [str(runtime_python), "-I", *command],
+        check=False,
+        cwd=ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    result = json.loads(completed.stdout)
+    assert result["status"] == "APPROVAL_GATE_PASS_READY_FOR_BOUND_EXECUTOR"
+    assert result["cell_count"] == 36
+    assert output.read_bytes() == raw
+
+    suppressed = subprocess.run(
+        [
+            str(runtime_python),
+            "-I",
+            "-S",
+            *command[:-1],
+            str(tmp_path / "site-suppressed-approval.json"),
+        ],
+        check=False,
+        cwd=ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+    )
+    assert suppressed.returncode == 2
+    suppressed_result = json.loads(suppressed.stdout)
+    assert suppressed_result["status"] == "FAIL_CLOSED_NO_EXECUTION"
+    assert "enterprise_memory" in suppressed_result["reason"]
+
+
 def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_job() -> None:
     text = _read_lf(WORKFLOW)
     contract, production = text.split("  diagnostic-execution:", 1)
@@ -344,6 +474,9 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
         "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
         in production
     )
+    assert re.findall(
+        r"(?m)^\s+python -I -S (scripts/[^\s\\]+)", production
+    ) == ["scripts/trimem_freeze.py"]
     assert (
         "python -I -c \"import runpy,sys; "
         "sys.path[:0]=['scripts','src','.']; "
@@ -362,7 +495,8 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
     assert "if: always()" in inventory_step
     assert "pinned_gh_verification" not in inventory_step
     assert "secrets.TRIMEM_DEV_ACTIVATION_APPROVAL_B64" in production
-    assert "python -I -S scripts/trimem_dev_activation_gate.py" in production
+    assert "python -I scripts/trimem_dev_activation_gate.py" in production
+    assert "python -I -S scripts/trimem_dev_activation_gate.py" not in production
     assert '--output-approval "$RUNNER_TEMP/trimem-dev-activation-approval.json"' in production
     assert "python scripts/trimem_d117_checkout_rehearsal.py" in production
     assert production.index(
@@ -398,6 +532,7 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
             "- name: Verify durable external artifact custody before plaintext cleanup"
         ) : production.index("- name: Upload sanitized diagnostic custody result")
     ]
+    assert "steps.custody_gh_recovery.outcome == 'success'" in custody_step
     assert "steps.public_upload.outcome == 'success' ||" in custody_step
     assert "steps.public_upload.outcome == 'skipped'" in custody_step
     assert "PUBLIC_UPLOAD_OUTCOME: ${{ steps.public_upload.outcome }}" in custody_step
@@ -429,6 +564,17 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
     assert production.index(
         "- name: Ensure exact pinned GitHub CLI for every custody path"
     ) < production.index("- name: Inventory complete restricted diagnostic evidence")
+    cleanup_step = production[
+        production.index(
+            "- name: Remove plaintext and temporary diagnostic execution material"
+        ) :
+    ]
+    assert (
+        "CUSTODY_GH_RECOVERY_OUTCOME: "
+        "${{ steps.custody_gh_recovery.outcome }}"
+        in cleanup_step
+    )
+    assert '[ "$CUSTODY_GH_RECOVERY_OUTCOME" != "success" ]' in cleanup_step
     assert production.count(
         "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
     ) == 4
@@ -437,7 +583,7 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
         "from trimem_harness_lock import prepare_harnesses",
         "scripts/trimem_official_harness_loader_preflight.py",
         "python scripts/trimem_d118_grader_factory_rehearsal.py",
-        "python -I -S scripts/trimem_dev_activation_gate.py",
+        "python -I scripts/trimem_dev_activation_gate.py",
         "python scripts/trimem_dev_activation_executor.py prepare-images",
         "python scripts/trimem_validate_openai_credential.py",
         "python scripts/trimem_verify_openai_key_binding.py",

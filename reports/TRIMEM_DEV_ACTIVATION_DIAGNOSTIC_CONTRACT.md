@@ -2,11 +2,40 @@
 
 ## Current endpoint
 
-`POST_DEV_ACTIVATION_DIAGNOSTIC_EXEC_001_PREFLIGHT_FAILURE_CORRECTED_AWAITING_NEW_HEAD_CI`
+`POST_DEV_ACTIVATION_DIAGNOSTIC_EXEC_002_APPROVAL_GATE_FAILURE_CORRECTED_AWAITING_NEW_HEAD_CI`
 
 This is a post-DEV diagnostic contract, not a development-selection rerun, a
 HELDOUT result, or a performance claim. No model, image, grader, or benchmark
 executor is authorized by this change.
+
+Run `34372037270` attempt 2 is preserved as the second zero-work pre-execution
+failure. The corrected isolated preinstall path, editable installation, exact
+DEV checkout rehearsal, pinned harness materialization, official loader, and
+grader-factory rehearsal all passed. The next approval-gate command still used
+`python -I -S`, which suppressed the site packages containing the editable
+project and failed with `No module named 'enterprise_memory'` before
+reconstructing the frozen runtime contract or validating the approval. Image
+pulls, OpenAI requests, task-arm runs,
+official grader runs, tokens, and USD were all zero. The new failure-custody
+guard, encrypted upload, inventory upload, remote verification, sanitized
+custody upload, and plaintext cleanup all passed. That run and approval are
+spent and are not reusable.
+
+The approval gate now keeps isolated mode while permitting Python's normal
+site initialization: `python -I scripts/trimem_dev_activation_gate.py`. This
+matches the post-editable-install boundary. Against the preserved exact runner
+checkout and the spent run-bound approval, the corrected command returned
+`APPROVAL_GATE_PASS_READY_FOR_BOUND_EXECUTOR`, reproduced all 36 cells, and
+byte-matched approval SHA-256
+`9e954f699d71fc4f53bdf25a846a346e089cad01f60d21af1717d3ff00f42d2e`;
+the former `-I -S` import remained a deterministic failure. This rehearsal
+made no network, image, model, executor, or grader call.
+
+The custody verifier and final plaintext cleanup now also require the
+`custody_gh_recovery` step itself to have succeeded. This prevents an unpinned
+system `gh` from satisfying remote custody if both the early pinned install and
+the `always()` recovery fail; evidence is preserved and the job fails closed
+instead.
 
 Run `34359716328` attempt 2 is preserved as a zero-work preflight failure. Its
 frozen-source check passed, but its isolated pre-editable import omitted the

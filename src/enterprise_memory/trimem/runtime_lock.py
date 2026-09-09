@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Mapping
 
 from .accounting import canonical_bytes, sha256_bytes
+from .adaptive_horizon import AdaptiveHorizonPolicy
 from .context_projection import (
     MODEL_VISIBLE_OBSERVATION_PROJECTION_SHA256,
     PROMPT_CONTEXT_CONTRACT_SHA256,
@@ -130,6 +131,25 @@ class RuntimeLock:
     tool_schema: tuple[Mapping[str, Any], ...] = TOOL_SCHEMA
     action_parser: Mapping[str, Any] = field(default_factory=lambda: dict(ACTION_PARSER))
     limits: RuntimeLimits = field(default_factory=RuntimeLimits)
+    adaptive_horizon: AdaptiveHorizonPolicy = field(
+        default_factory=AdaptiveHorizonPolicy
+    )
+
+    def __post_init__(self) -> None:
+        policy = self.adaptive_horizon
+        if policy.enabled and (
+            self.limits.max_steps_per_subtask
+            + policy.extension_steps * policy.maximum_extensions_per_subtask
+            != policy.maximum_steps_per_subtask
+        ):
+            raise ValueError(
+                "adaptive horizon must be an exact base-plus-extensions contract"
+            )
+        if policy.enabled and policy.maximum_steps_per_subtask > min(
+            self.limits.max_agent_steps,
+            self.limits.max_solve_calls,
+        ):
+            raise ValueError("adaptive horizon cannot exceed global solve ceilings")
 
     @property
     def prompt_hashes(self) -> dict[str, str]:
@@ -156,7 +176,7 @@ class RuntimeLock:
         return FUNCTION_TOOLS_SHA256
 
     def to_manifest(self) -> dict[str, Any]:
-        return {
+        manifest = {
             "version": self.version,
             "prompt_hashes": self.prompt_hashes,
             "tool_hash": self.tool_hash,
@@ -178,6 +198,13 @@ class RuntimeLock:
             "parallel_tool_calls": False,
             "limits": asdict(self.limits),
         }
+        # The disabled default is deliberately absent so historical runtime
+        # lock manifests and hashes remain byte-for-byte stable.
+        if self.adaptive_horizon.enabled:
+            manifest["adaptive_horizon"] = self.adaptive_horizon.manifest(
+                base_steps_per_subtask=self.limits.max_steps_per_subtask
+            )
+        return manifest
 
     @property
     def content_hash(self) -> str:

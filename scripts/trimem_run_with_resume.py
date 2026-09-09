@@ -2632,6 +2632,7 @@ def _close_ambiguous_grader_processes(execution_root: Path) -> int:
         row = benchmark.TerminalInvocationJournal._validated_grader_row(secured)
         if row.get("status") in {
             "GRADER_PROCESS_STARTED",
+            "GRADER_RETRY_PROCESS_STARTED",
             "GRADER_CONTAINER_STARTED",
         }:
             ambiguous.append(secured)

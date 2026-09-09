@@ -26,6 +26,9 @@ from trimem_grader_smoke_protocol import (  # noqa: E402
     SmokeProtocolError,
     validate_serial_targets,
 )
+from enterprise_memory.trimem.git_workspace import (  # noqa: E402
+    _docker_cli_environment,
+)
 
 
 MANIFESTS = {
@@ -91,7 +94,12 @@ def _run(
 ) -> tuple[subprocess.CompletedProcess[str], dict[str, Any]]:
     try:
         completed = subprocess.run(
-            argv, capture_output=True, text=False, check=False, timeout=3600
+            argv,
+            capture_output=True,
+            text=False,
+            check=False,
+            timeout=3600,
+            env=_docker_cli_environment(),
         )
     except subprocess.TimeoutExpired as exc:
         message = f"Docker {stage} timed out after 3600 seconds"

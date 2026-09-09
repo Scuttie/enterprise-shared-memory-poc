@@ -148,6 +148,60 @@ def test_qdrant_shortlist_precedes_postgres_canonical_reload():
     ))
     assert order == ["qdrant_search", "postgres_reload"]
     assert tuple(snapshot.records) == (node.node_id,)
+    assert snapshot.query_telemetry == {
+        "candidate_count_before_filter": 1,
+        "candidate_count_after_vector_filter": 1,
+        "candidate_count_after_canonical_filter": 1,
+        "embedding_scores": {node.node_id: 0.9},
+        "filter_reason_codes": [],
+    }
+
+
+def test_forced_safe_mode_cannot_reintroduce_canonical_self_memory():
+    graph, node, rows = _rows(source_task_id="target-task")
+    order = []
+    reference = VectorReference(
+        graph_id=graph.graph_id, node_id=node.node_id, content_hash=node.content_hash,
+        org_id=graph.org_id, namespace=NAMESPACE, memory_kind=graph.kind,
+        owner_user_id=graph.owner_user_id, repository_id=graph.repository_id,
+    )
+    async_store = AsyncPostgresQdrantRetrievalStore(
+        _StubPostgres(rows, order),
+        _StubIndex(reference, order),
+        DeterministicHashEmbedder(8),
+        excluded_source_task_id="target-task",
+    )
+    snapshot = asyncio.run(async_store.snapshot_for_query(
+        MemoryKind.EPISODIC,
+        user_id="alice",
+        org_id="org-a",
+        repository="repo-a",
+        query_text="reflected operator",
+    ))
+
+    assert snapshot.records == {}
+    assert snapshot.query_telemetry["candidate_count_before_filter"] == 1
+    assert snapshot.query_telemetry["candidate_count_after_canonical_filter"] == 0
+    assert snapshot.query_telemetry["filter_reason_codes"] == [
+        "LEAKAGE_GATE_REJECTED"
+    ]
+    working = _working_graph()
+    decision = TriMemoryRetriever(
+        InMemoryMemoryGraphStore({MemoryKind.EPISODIC: snapshot}),
+        RetrievalConfig(min_confidence=1.0, min_margin=1.0),
+        selection_mode="FORCED_SAFE_TOP1",
+    ).recall(
+        working,
+        RetrievalSessionState(working.task_id),
+        user_id="alice",
+        org_id="org-a",
+        repository="repo-a",
+    )
+    assert decision.injections == ()
+    episodic = decision.decision_telemetry[0]
+    assert episodic["candidate_count_before_filter"] == 1
+    assert episodic["candidate_count_after_filter"] == 0
+    assert episodic["final_reason_code"] == "LEAKAGE_GATE_REJECTED"
 
 
 def _working_graph():

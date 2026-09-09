@@ -79,10 +79,9 @@ jobs:
             --fixture tests/fixtures/trimem_d114/exec_013_post_setup_failure.json
           python -I -S scripts/trimem_d115_gate_contract.py \
             --fixture tests/fixtures/trimem_d115/exec_014_loader_failure.json
-          python -I -S scripts/trimem_d123_reseal.py --check
-          python -I -S scripts/trimem_development_trigger_d123.py \
-            --repository "$GITHUB_WORKSPACE" \
-            --validate-current
+          python scripts/trimem_verify_ready.py \
+            --level static \
+            --require-git-tracked
       - name: Rehearse exact Qdrant nofile topology with zero model or grader work
         run: |
           set -euo pipefail

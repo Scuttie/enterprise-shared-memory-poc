@@ -22,6 +22,12 @@
     "cpu_limit": "4",
     "host_environment_forwarded_to_container": false,
     "image": "per-target exact image@sha256 from grader_image_lock.json",
+    "image_path_masking": {
+      "content_hash_binds_exact_masks": true,
+      "directory_projection": "read-only empty tmpfs",
+      "file_projection": "read-only /dev/null bind",
+      "overlapping_or_noncanonical_masks_rejected": true
+    },
     "max_output_bytes_per_stream": 262144,
     "max_timeout_seconds": 120,
     "memory_limit": "8g",
@@ -30,7 +36,7 @@
     "pids_limit": 1024,
     "pull": "never",
     "root_filesystem": "read-only",
-    "schema": "trimem/docker-command-runner/1.0",
+    "schema": "trimem/docker-command-runner/1.1",
     "tmpfs_size_bytes": 1073741824,
     "writable_mounts": [
       "task checkout",
@@ -78,12 +84,12 @@
       "sha256": "a66e78ca451b530a83bb5f55f7923b9d2e3b8a79263ac8db3c9235b14e412631"
     },
     "src/enterprise_memory/trimem/agent_runtime.py": {
-      "bytes": 220651,
-      "sha256": "43c096e77e93c3be28aff1f6e4346dcb2b19dea38173029d73a659e882c1a5d9"
+      "bytes": 227737,
+      "sha256": "e35bfc84fe6b544d9f7dcce0ff707d42acf1b905fc3ca64f2e72e40513f62628"
     },
     "src/enterprise_memory/trimem/checkpoint.py": {
-      "bytes": 12496,
-      "sha256": "fa2741535a670a0378b5b1e6091a0aa20b1c0b7959abe1545a26f02881c43798"
+      "bytes": 14881,
+      "sha256": "634ca3d6ec4fd12b044ba34e837c474a78753779268f89038fd355e2129cedfe"
     },
     "src/enterprise_memory/trimem/context_projection.py": {
       "bytes": 26292,
@@ -102,16 +108,16 @@
       "sha256": "77ff9ef190d9b5837f66c71e24eb2f50b45645c3856db45a66995362e3a9035c"
     },
     "src/enterprise_memory/trimem/git_workspace.py": {
-      "bytes": 45919,
-      "sha256": "0975569dce86ebcebf5dd1781b621e57d7145ef933aa8d729d01d4fe209400da"
+      "bytes": 48879,
+      "sha256": "9c1d4b4526c5fc17d971b3965f9c01cea0e0011a2556209af02a908fb5c735c7"
     },
     "src/enterprise_memory/trimem/production_runtime.py": {
       "bytes": 136643,
       "sha256": "cf502d265281d2abe12b19c204214e256dfe23d7702958ee3fe47fefa69a7247"
     },
     "src/enterprise_memory/trimem/runtime_lock.py": {
-      "bytes": 8337,
-      "sha256": "0bd730294197f67fb080688f5d5e29f65959725b253e78bcffeaab556797f387"
+      "bytes": 9532,
+      "sha256": "1ed5b6b5e075c9a0b37421503a2c1b67b825e993c153f47591fb7b1b6205797c"
     },
     "src/enterprise_memory/trimem/workspace.py": {
       "bytes": 27238,

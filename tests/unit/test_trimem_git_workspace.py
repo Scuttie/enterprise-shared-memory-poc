@@ -144,6 +144,52 @@ def test_digest_pinned_docker_runner_lock_is_fail_closed():
     assert left.content_hash == right.content_hash
 
 
+def test_docker_runner_masks_evaluator_files_and_baked_git_before_image():
+    image = "example/task@sha256:" + "a" * 64
+    masked_files = (
+        "/home/fix.patch",
+        "/home/test.patch",
+        "/home/check_git_changes.sh",
+        "/home/prepare.sh",
+        "/home/run.sh",
+        "/home/test-run.sh",
+        "/home/fix-run.sh",
+    )
+    runner = DockerSandboxCommandRunner(
+        image,
+        masked_image_files=masked_files,
+        masked_image_directories=("/home/repository/.git",),
+    )
+    command = runner._docker_command(
+        checkout=Path("/safe/checkout"),
+        git_metadata=Path("/safe/checkout/.git"),
+        workdir="/testbed",
+        cid_name="/safe/cid",
+        argv=("python", "-m", "pytest"),
+    )
+    image_index = command.index(image)
+    for path in masked_files:
+        expected = f"type=bind,source=/dev/null,target={path},readonly"
+        assert expected in command
+        assert command.index(expected) < image_index
+    expected_git_mask = "/home/repository/.git:ro,noexec,nosuid,nodev,size=4096"
+    assert expected_git_mask in command
+    assert command.index(expected_git_mask) < image_index
+    assert "OPENAI_API_KEY" not in "\n".join(command)
+    assert command[image_index + 1 :] == ["-m", "pytest"]
+
+    with pytest.raises(ValueError, match="canonical absolute"):
+        DockerSandboxCommandRunner(
+            image, masked_image_files=("/home/../test.patch",)
+        )
+    with pytest.raises(ValueError, match="overlap"):
+        DockerSandboxCommandRunner(
+            image,
+            masked_image_files=("/home/test.patch",),
+            masked_image_directories=("/home",),
+        )
+
+
 def test_common_runtime_uses_injected_git_workspace_and_checkout_grader_context(tmp_path):
     root, commit = _repository(tmp_path)
     task = CodingTask(

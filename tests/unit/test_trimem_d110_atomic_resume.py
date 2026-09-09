@@ -360,6 +360,32 @@ class _CrashingGrader(_FakeGrader):
         raise RuntimeError("grader process disappeared without a result")
 
 
+class _SequencedGrader:
+    def __init__(self, outcomes: list[GradeResult | BaseException]):
+        self.outcomes = list(outcomes)
+        self.calls = 0
+
+    def grade(self, _request: GradeRequest) -> GradeResult:
+        if self.calls >= len(self.outcomes):
+            raise AssertionError("grader delegate was called more than expected")
+        outcome = self.outcomes[self.calls]
+        self.calls += 1
+        if isinstance(outcome, BaseException):
+            raise outcome
+        return outcome
+
+    def validate_captured_result(
+        self, request: GradeRequest, result: GradeResult
+    ) -> None:
+        retained = [
+            outcome
+            for outcome in self.outcomes
+            if isinstance(outcome, GradeResult)
+        ]
+        if request.task_id != result.task_id or result not in retained:
+            raise ValueError("sequenced retained grader evidence differs")
+
+
 class _RoutingFakeGrader:
     def __init__(self) -> None:
         self.task_ids: list[str] = []
@@ -381,7 +407,7 @@ class _RoutingFakeGrader:
 
 
 def _gateway(
-    tmp_path: Path, delegate: _FakeGrader
+    tmp_path: Path, delegate: _FakeGrader | _SequencedGrader
 ) -> benchmark.JournaledGraderGateway:
     preflight = _preflight(tmp_path)
     delegate.python_loader_evidence = dict(preflight["python_loader"])
@@ -431,6 +457,41 @@ def _seed_grader_process_state(
             },
         )
     return path
+
+
+def _seed_precontainer_retry_state(
+    gateway: benchmark.JournaledGraderGateway,
+    request: GradeRequest,
+    *,
+    retry_process_started: bool,
+) -> tuple[Path, GradeResult]:
+    path = _seed_grader_process_state(
+        gateway, request, container_started=False
+    )
+    failure = _grade(request.task_id, container_started=False)
+    payload = asdict(failure)
+    gateway.journal.transition_grader(
+        path,
+        expected=("GRADER_PROCESS_STARTED",),
+        status="PRECONTAINER_RETRY_AUTHORIZED",
+        values={
+            "precontainer_retry_attempt": 1,
+            "attempt1_failure": payload,
+            "attempt1_failure_sha256": benchmark.sha256_bytes(
+                benchmark.canonical_bytes(payload)
+            ),
+            "official_grader_runs": 0,
+            "grader_containers": 0,
+            "grader_capacity_disposition": "NOT_CONSUMED",
+        },
+    )
+    if retry_process_started:
+        gateway.journal.transition_grader(
+            path,
+            expected=("PRECONTAINER_RETRY_AUTHORIZED",),
+            status="GRADER_RETRY_PROCESS_STARTED",
+        )
+    return path, failure
 
 
 def test_loader_preflight_binds_exact_python_and_zero_execution_counters(
@@ -679,24 +740,176 @@ def test_grader_lifecycle_success_is_validated_and_replayed_once(tmp_path: Path)
     assert (row["official_grader_runs"], row["grader_containers"]) == (1, 1)
 
 
+@pytest.mark.parametrize("failure_is_raised", (False, True))
+def test_one_precontainer_failure_is_retried_inline_and_replayed_without_third_call(
+    tmp_path: Path, failure_is_raised: bool
+) -> None:
+    request = _request(tmp_path)
+    attempt1 = _grade(request.task_id, container_started=False)
+    terminal = _grade(request.task_id, container_started=True, resolved=True)
+    first: GradeResult | BaseException = (
+        GraderInvocationFailure(attempt1) if failure_is_raised else attempt1
+    )
+    delegate = _SequencedGrader([first, terminal])
+    gateway = _gateway(tmp_path, delegate)
+
+    assert gateway.grade(request) == terminal
+    assert gateway.grade(request) == terminal
+    assert delegate.calls == 2
+
+    path = next((tmp_path / "terminal-journal/grader").glob("*.json"))
+    row = benchmark.TerminalInvocationJournal._validated_grader_row(path)
+    assert row["transitions"] == [
+        "GRADER_NOT_PREPARED",
+        "GRADER_PREFLIGHT_PASSED",
+        "GRADER_REQUEST_RECORDED",
+        "GRADER_PROCESS_STARTED",
+        "PRECONTAINER_RETRY_AUTHORIZED",
+        "GRADER_RETRY_PROCESS_STARTED",
+        "GRADER_CONTAINER_STARTED",
+        "GRADER_TERMINAL_RESULT_CAPTURED",
+        "GRADER_RESULT_VALIDATED",
+    ]
+    assert row["precontainer_retry_attempt"] == 1
+    assert row["attempt1_failure"] == asdict(attempt1)
+    assert row["attempt1_failure_sha256"] == benchmark.sha256_bytes(
+        benchmark.canonical_bytes(asdict(attempt1))
+    )
+    assert row["result"] == asdict(terminal)
+    assert (row["official_grader_runs"], row["grader_containers"]) == (1, 1)
+    assert row["grader_capacity_disposition"] == "AUTHORITATIVE_RESULT"
+
+
+def test_restart_from_retry_authorization_starts_only_the_remaining_attempt(
+    tmp_path: Path,
+) -> None:
+    request = _request(tmp_path)
+    terminal = _grade(request.task_id, resolved=True)
+    delegate = _SequencedGrader([terminal])
+    gateway = _gateway(tmp_path, delegate)
+    path, attempt1 = _seed_precontainer_retry_state(
+        gateway, request, retry_process_started=False
+    )
+
+    assert gateway.grade(request) == terminal
+    assert gateway.grade(request) == terminal
+    assert delegate.calls == 1
+    row = benchmark.TerminalInvocationJournal._validated_grader_row(path)
+    assert row["status"] == "GRADER_RESULT_VALIDATED"
+    assert row["attempt1_failure"] == asdict(attempt1)
+    assert row["transitions"].count("GRADER_RETRY_PROCESS_STARTED") == 1
+
+
+def test_restart_from_retry_process_marker_closes_unknown_without_delegate(
+    tmp_path: Path,
+) -> None:
+    request = _request(tmp_path)
+    delegate = _SequencedGrader([])
+    gateway = _gateway(tmp_path, delegate)
+    path, attempt1 = _seed_precontainer_retry_state(
+        gateway, request, retry_process_started=True
+    )
+
+    failures: list[GradeResult] = []
+    for _ in range(2):
+        with pytest.raises(GraderInvocationFailure) as failure:
+            gateway.grade(request)
+        failures.append(failure.value.result)
+
+    assert delegate.calls == 0
+    assert failures[0] == failures[1]
+    row = benchmark.TerminalInvocationJournal._validated_grader_row(path)
+    assert row["status"] == "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START"
+    assert row["attempt1_failure"] == asdict(attempt1)
+    assert (row["official_grader_runs"], row["grader_containers"]) == (1, 1)
+    assert row["grader_capacity_disposition"] == "CONSERVATIVELY_CONSUMED"
+    assert row["transitions"][-3:] == [
+        "GRADER_RETRY_PROCESS_STARTED",
+        "GRADER_CONTAINER_STARTED",
+        "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+    ]
+
+
+def test_retry_delegate_crash_is_unknown_and_never_gets_a_third_call(
+    tmp_path: Path,
+) -> None:
+    request = _request(tmp_path)
+    attempt1 = _grade(request.task_id, container_started=False)
+    delegate = _SequencedGrader(
+        [
+            GraderInvocationFailure(attempt1),
+            RuntimeError("retry grader process disappeared"),
+        ]
+    )
+    gateway = _gateway(tmp_path, delegate)
+
+    for _ in range(2):
+        with pytest.raises(GraderInvocationFailure):
+            gateway.grade(request)
+
+    assert delegate.calls == 2
+    path = next((tmp_path / "terminal-journal/grader").glob("*.json"))
+    row = benchmark.TerminalInvocationJournal._validated_grader_row(path)
+    assert row["status"] == "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START"
+    assert row["attempt1_failure"] == asdict(attempt1)
+    assert (row["official_grader_runs"], row["grader_containers"]) == (1, 1)
+
+
+def test_36_cell_diagnostic_liveness_survives_one_precontainer_failure_per_cell(
+    tmp_path: Path,
+) -> None:
+    delegates: list[_SequencedGrader] = []
+    for index in range(36):
+        cell_root = tmp_path / f"cell-{index:02d}"
+        request = _request(cell_root, task_id=f"diagnostic-target-{index:02d}")
+        attempt1 = _grade(request.task_id, container_started=False)
+        terminal = _grade(request.task_id, resolved=index % 2 == 0)
+        delegate = _SequencedGrader(
+            [GraderInvocationFailure(attempt1), terminal]
+        )
+        delegates.append(delegate)
+        gateway = _gateway(cell_root, delegate)
+
+        assert gateway.grade(request) == terminal
+        row_path = next(
+            (cell_root / "terminal-journal/grader").glob("*.json")
+        )
+        row = benchmark.TerminalInvocationJournal._validated_grader_row(
+            row_path
+        )
+        assert row["status"] == "GRADER_RESULT_VALIDATED"
+        assert (row["official_grader_runs"], row["grader_containers"]) == (1, 1)
+
+    assert len(delegates) == 36
+    assert sum(delegate.calls for delegate in delegates) == 72
+
+
 @pytest.mark.parametrize(
-    ("container_started", "state", "counters", "capacity"),
+    ("container_started", "state", "counters", "capacity", "delegate_calls"),
     (
-        (False, "GRADER_INFRA_FAILURE_BEFORE_CONTAINER", (0, 0), "NOT_CONSUMED"),
+        (
+            False,
+            "GRADER_RETRY_INFRA_FAILURE_BEFORE_CONTAINER",
+            (0, 0),
+            "NOT_CONSUMED",
+            2,
+        ),
         (
             True,
             "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
             (1, 1),
             "CONSERVATIVELY_CONSUMED",
+            1,
         ),
     ),
 )
-def test_grader_failures_are_nonterminal_and_never_retried(
+def test_grader_failures_retry_only_one_explicit_no_container_outcome(
     tmp_path: Path,
     container_started: bool,
     state: str,
     counters: tuple[int, int],
     capacity: str,
+    delegate_calls: int,
 ) -> None:
     request = _request(tmp_path)
     delegate = _FakeGrader(
@@ -706,18 +919,24 @@ def test_grader_failures_are_nonterminal_and_never_retried(
     for _ in range(2):
         with pytest.raises(GraderInvocationFailure):
             gateway.grade(request)
-    assert delegate.calls == 1
+    assert delegate.calls == delegate_calls
     path = next((tmp_path / "terminal-journal/grader").glob("*.json"))
     row = benchmark.TerminalInvocationJournal._validated_grader_row(path)
     assert row["status"] == state
     assert (row["official_grader_runs"], row["grader_containers"]) == counters
     assert row["grader_capacity_disposition"] == capacity
+    if not container_started:
+        assert row["precontainer_retry_attempt"] == 1
+        assert row["attempt1_failure"] == row["result"]
+        assert row["attempt1_failure_sha256"] == benchmark.sha256_bytes(
+            benchmark.canonical_bytes(row["attempt1_failure"])
+        )
 
 
 @pytest.mark.parametrize(
     ("container_started", "expected_state"),
     (
-        (False, "GRADER_INFRA_FAILURE_BEFORE_CONTAINER"),
+        (False, "GRADER_RETRY_INFRA_FAILURE_BEFORE_CONTAINER"),
         (True, "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START"),
     ),
 )
@@ -759,6 +978,56 @@ def test_resealed_terminal_grader_result_must_retain_exact_journal_binding(
         match="grader lifecycle terminal result binding differs",
     ):
         benchmark.TerminalInvocationJournal._validated_grader_row(path)
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    (
+        "attempt_number",
+        "attempt_number_boolean",
+        "attempt_hash",
+        "attempt_payload",
+        "missing_attempt_payload",
+        "unexpected_retry_field",
+        "boolean_accounting",
+    ),
+)
+def test_retry_authorization_rejects_resealed_attempt1_tampering_before_delegate(
+    tmp_path: Path, mutation: str
+) -> None:
+    request = _request(tmp_path)
+    delegate = _SequencedGrader([])
+    gateway = _gateway(tmp_path, delegate)
+    path, _attempt1 = _seed_precontainer_retry_state(
+        gateway, request, retry_process_started=False
+    )
+    row = benchmark.TerminalInvocationJournal._validated_grader_row(path)
+
+    if mutation == "attempt_number":
+        row["precontainer_retry_attempt"] = 2
+    elif mutation == "attempt_number_boolean":
+        row["precontainer_retry_attempt"] = True
+    elif mutation == "attempt_hash":
+        row["attempt1_failure_sha256"] = "f" * 64
+    elif mutation == "attempt_payload":
+        row["attempt1_failure"]["container_started"] = True
+        row["attempt1_failure_sha256"] = benchmark.sha256_bytes(
+            benchmark.canonical_bytes(row["attempt1_failure"])
+        )
+    elif mutation == "missing_attempt_payload":
+        del row["attempt1_failure"]
+    elif mutation == "unexpected_retry_field":
+        del row["transitions"][-1]
+        row["status"] = "GRADER_PROCESS_STARTED"
+    else:
+        row["official_grader_runs"] = False
+    benchmark.write_json(
+        path, benchmark.TerminalInvocationJournal._sealed_row(row)
+    )
+
+    with pytest.raises(benchmark.BenchmarkExecutionError):
+        gateway.grade(request)
+    assert delegate.calls == 0
 
 
 @pytest.mark.parametrize("container_started", (False, True))
@@ -1500,6 +1769,24 @@ def _record(
             "head": "a" * 40,
             "initial_status": "",
             "materialization": None,
+            "history_isolation": {
+                "schema": benchmark._GIT_HISTORY_ISOLATION_SCHEMA,
+                "status": "PASS_BASE_ONLY_OBJECT_CLOSURE",
+                "head": "a" * 40,
+                "shallow_root": "a" * 40,
+                "reference_count": 0,
+                "remote_count": 0,
+                "reflog_file_count": 0,
+                "commit_object_count": 1,
+                "object_count": 1,
+                "object_inventory_sha256": "b" * 64,
+                "network_capable_git_config_count": 0,
+                "alternates_present": False,
+                "promisor_markers_present": False,
+            },
+            "command_sandbox_content_hash": "c" * 64,
+            "masked_image_files": [],
+            "masked_image_directories": [],
         }
         benchmark.write_json(checkout_path, checkout)
         if not events_path.exists():
@@ -4935,7 +5222,8 @@ def test_exec_010_sanitized_fixture_exercises_pre_container_failure_and_wrapper(
     assert len(attempts["attempts"]) == expected["process_count"]
     assert len(process_calls) == expected["process_count"]
     assert len(delegates) == 1
-    assert delegates[0].calls == expected["grader_delegate_calls"]
+    assert expected["grader_delegate_calls"] == 1
+    assert delegates[0].calls == 2
 
     journal_path = next(
         (task_dir / "terminal-journal/grader").glob("*.json")
@@ -4943,7 +5231,11 @@ def test_exec_010_sanitized_fixture_exercises_pre_container_failure_and_wrapper(
     journal = benchmark.TerminalInvocationJournal._validated_grader_row(
         journal_path
     )
-    assert journal["status"] == "GRADER_INFRA_FAILURE_BEFORE_CONTAINER"
+    assert journal["status"] == (
+        "GRADER_RETRY_INFRA_FAILURE_BEFORE_CONTAINER"
+    )
+    assert journal["precontainer_retry_attempt"] == 1
+    assert journal["attempt1_failure"] == journal["result"]
     assert journal["official_grader_runs"] == boundary["official_grader_runs"]
     assert journal["grader_containers"] == boundary["grader_containers"]
     assert journal["grader_capacity_disposition"] == "NOT_CONSUMED"

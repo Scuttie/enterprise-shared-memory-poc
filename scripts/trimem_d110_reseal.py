@@ -36,6 +36,10 @@ CLASSIFICATION = "PRE_RESULT_GRADER_LAUNCH_AND_STREAM_COMMIT_CORRECTION"
 ENDPOINT = "TRIMEM_V1_GRADER_LAUNCH_AND_STREAM_COMMIT_READY_FOR_DEV_APPROVAL"
 EXECUTION_HEAD = "ea261f4fa783559d559e0df52800099ca98064f7"
 CORRECTION_SOURCE_HEAD = "2d4a4535e68c8bfa923c93ef6d9d191ec579423a"
+# The source-lock refresh was intentionally committed immediately after the
+# D1.10 correction seal.  Audit that immutable pair by Git blobs so later,
+# separately sealed runtime work does not have to masquerade as D1.10.
+D110_TOOL_ENVIRONMENT_LOCK_HEAD = "3757934c569dc3f9419b6493bc01e88bf5094e24"
 RUN_ID = 34_008_674_563
 REQUEST_PATH = (
     "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_010.json"
@@ -567,10 +571,15 @@ def verify_immutable_history_untouched(paths: tuple[str, ...]) -> None:
 
 
 def verify_tool_environment_lock_amendment() -> None:
-    """Permit only source-identity refreshes required by D1.10 hardening."""
+    """Verify the immutable D1.10 source-lock amendment by Git blobs."""
 
-    current = read_json(ROOT / TOOL_ENVIRONMENT_LOCK_PATH)
     try:
+        current = json.loads(
+            git_blob(
+                D110_TOOL_ENVIRONMENT_LOCK_HEAD,
+                TOOL_ENVIRONMENT_LOCK_PATH,
+            ).decode("utf-8")
+        )
         historical = json.loads(
             git_blob(EXECUTION_HEAD, TOOL_ENVIRONMENT_LOCK_PATH).decode("utf-8")
         )
@@ -578,6 +587,8 @@ def verify_tool_environment_lock_amendment() -> None:
         raise D110ResealError("historical tool environment lock is invalid") from exc
     if not isinstance(historical, Mapping):
         raise D110ResealError("historical tool environment lock is not an object")
+    if not isinstance(current, Mapping):
+        raise D110ResealError("D1.10 tool environment lock is not an object")
     current_static = {
         key: value for key, value in current.items() if key != "source_files"
     }
@@ -603,7 +614,7 @@ def verify_tool_environment_lock_amendment() -> None:
     if changed != TOOL_ENVIRONMENT_SOURCE_AMENDMENTS:
         raise D110ResealError("D1.10 tool source-lock amendment scope differs")
     for relative, record in current_sources.items():
-        raw = source_bytes(str(relative))
+        raw = git_blob(D110_TOOL_ENVIRONMENT_LOCK_HEAD, str(relative))
         if (
             not isinstance(record, Mapping)
             or set(record) != {"bytes", "sha256"}

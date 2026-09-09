@@ -22,6 +22,10 @@ from .accounting import (
     sha256_bytes,
     strict_json_loads,
 )
+from .adaptive_horizon import (
+    ADAPTIVE_HORIZON_TERMINAL_KEY,
+    AdaptiveHorizonTracker,
+)
 from .checkpoint import CheckpointMismatch, FileCheckpointStore, RuntimeCheckpoint
 from .context_projection import (
     ContextProjectionError,
@@ -54,7 +58,12 @@ from .grader import (
     GraderInvocationFailure,
     RecordingGraderGateway,
 )
-from .retrieval import MemoryInjection, RecallDecision
+from .retrieval import (
+    MemoryInjection,
+    RecallDecision,
+    RecallError,
+    normalize_recall_decision_telemetry,
+)
 from .provider_output_contracts import output_contract
 from .runtime_lock import RuntimeLock
 from .working_graph import Evidence, ShortTermWorkingGraph, SubtaskSpec
@@ -675,6 +684,12 @@ def _validate_evidence_suffix(
         for name in ("injections", "bank_trace", "rejections"):
             if not isinstance(recall.get(name), list):
                 raise CheckpointMismatch("evidence suffix recall payload is malformed")
+        if "decision_telemetry" in recall:
+            _normalized_recall_telemetry(
+                recall.get("decision_telemetry"),
+                target_id=task.task_id,
+                error_type=CheckpointMismatch,
+            )
         logical_call_id = "%s:%s:solve:%04d" % (
             task.task_id,
             arm,
@@ -1502,13 +1517,62 @@ def _grader_suffix_result(
     return grade, record
 
 
+def _normalized_recall_telemetry(
+    rows: object,
+    *,
+    target_id: str,
+    error_type: type[Exception] = RuntimeFailure,
+) -> list[dict[str, object]]:
+    if not isinstance(rows, (list, tuple)):
+        raise error_type("recall decision telemetry must be a sequence")
+    normalized: list[dict[str, object]] = []
+    attempts: set[str] = set()
+    try:
+        for raw in rows:
+            row = normalize_recall_decision_telemetry(
+                raw, expected_target_id=target_id
+            )
+            attempt_id = str(row["recall_attempt_id"])
+            if attempt_id in attempts:
+                raise RecallError("duplicate recall_attempt_id")
+            attempts.add(attempt_id)
+            normalized.append(row)
+    except RecallError as exc:
+        raise error_type("recall decision telemetry is malformed") from exc
+    return normalized
+
+
+def _append_recall_telemetry_exactly_once(
+    accumulated: list[dict[str, object]],
+    decision: RecallDecision,
+    *,
+    target_id: str,
+) -> None:
+    observed = _normalized_recall_telemetry(
+        decision.decision_telemetry, target_id=target_id
+    )
+    if not observed:
+        return
+    existing = {str(row["recall_attempt_id"]) for row in accumulated}
+    duplicate = sorted(
+        str(row["recall_attempt_id"])
+        for row in observed
+        if str(row["recall_attempt_id"]) in existing
+    )
+    if duplicate:
+        raise RuntimeFailure(
+            "recall decision telemetry would be recorded more than once"
+        )
+    accumulated.extend(observed)
+
+
 def _recall_payload(task: "CodingTask", arm: str, decision: RecallDecision) -> dict[str, Any]:
     injections = []
     for item in decision.injections:
         if not item.verify():
             raise RuntimeFailure("injection bytes/hash mismatch")
         injections.append(_injection_dict(item))
-    return {
+    payload = {
         "task_id": task.task_id,
         "arm": arm,
         "active_node_id": decision.active_node_id,
@@ -1516,6 +1580,12 @@ def _recall_payload(task: "CodingTask", arm: str, decision: RecallDecision) -> d
         "bank_trace": list(decision.bank_trace),
         "rejections": list(decision.rejections),
     }
+    telemetry = _normalized_recall_telemetry(
+        decision.decision_telemetry, target_id=task.task_id
+    )
+    if telemetry:
+        payload["decision_telemetry"] = telemetry
+    return payload
 
 
 def _recall_decision_from_bound_payload(
@@ -1528,10 +1598,13 @@ def _recall_decision_from_bound_payload(
 ) -> RecallDecision:
     if (
         not isinstance(value, Mapping)
-        or set(value) != {
+        or set(value) not in ({
             "task_id", "arm", "active_node_id", "injections",
             "bank_trace", "rejections",
-        }
+        }, {
+            "task_id", "arm", "active_node_id", "injections",
+            "bank_trace", "rejections", "decision_telemetry",
+        })
         or value.get("task_id") != task.task_id
         or value.get("arm") != arm
         or value.get("active_node_id") != active_node_id
@@ -1540,15 +1613,25 @@ def _recall_decision_from_bound_payload(
         or not isinstance(value.get("rejections"), list)
         or any(not isinstance(row, Mapping) for row in value["bank_trace"])
         or any(not isinstance(row, Mapping) for row in value["rejections"])
+        or (
+            "decision_telemetry" in value
+            and not isinstance(value.get("decision_telemetry"), list)
+        )
         or canonical_bytes(value["injections"])
         != canonical_bytes([_injection_dict(item) for item in injections])
     ):
         raise CheckpointMismatch("prepared recall payload is malformed")
+    telemetry = _normalized_recall_telemetry(
+        value.get("decision_telemetry", ()),
+        target_id=task.task_id,
+        error_type=CheckpointMismatch,
+    )
     decision = RecallDecision(
         active_node_id=active_node_id,
         injections=injections,
         bank_trace=tuple(dict(row) for row in value["bank_trace"]),
         rejections=tuple(dict(row) for row in value["rejections"]),
+        decision_telemetry=tuple(telemetry),
     )
     if canonical_bytes(_recall_payload(task, arm, decision)) != canonical_bytes(value):
         raise CheckpointMismatch("prepared recall payload is not reproducible")
@@ -2489,6 +2572,11 @@ class TriMemAgentRuntime:
             recall_rejections = [
                 dict(row) for row in terminal_payload.get("recall_rejections", ())
             ]
+            recall_decisions = _normalized_recall_telemetry(
+                terminal_payload.get("recall_decisions", ()),
+                target_id=task.task_id,
+                error_type=CheckpointMismatch,
+            )
             phase_state = checkpoint.state
         else:
             accounting = RunAccounting()
@@ -2504,7 +2592,26 @@ class TriMemAgentRuntime:
             completed_call_ids: set[str] = set()
             terminal_payload: dict[str, Any] = {}
             recall_rejections: list[dict[str, Any]] = []
+            recall_decisions: list[dict[str, object]] = []
             phase_state = "INITIAL"
+
+        adaptive_horizon: Optional[AdaptiveHorizonTracker] = None
+        if self.lock.adaptive_horizon.enabled:
+            saved_horizon = terminal_payload.get(ADAPTIVE_HORIZON_TERMINAL_KEY)
+            if saved_horizon is not None and not isinstance(saved_horizon, Mapping):
+                raise CheckpointMismatch("adaptive horizon checkpoint state is malformed")
+            try:
+                adaptive_horizon = AdaptiveHorizonTracker(
+                    self.lock.adaptive_horizon,
+                    base_steps_per_subtask=(
+                        self.lock.limits.max_steps_per_subtask
+                    ),
+                    checkpoint_state=saved_horizon,
+                )
+            except ValueError as exc:
+                raise CheckpointMismatch(
+                    "adaptive horizon checkpoint state is invalid"
+                ) from exc
 
         model = RecordingModelGateway(self.model_delegate, accounting, self.evidence)
         tools = RecordingToolExecutor(workspace, accounting, self.evidence, task_id=task.task_id, arm=arm)
@@ -2949,6 +3056,15 @@ class TriMemAgentRuntime:
                     terminal_payload["recall_rejections"] = list(
                         recall_rejections
                     )
+                    _append_recall_telemetry_exactly_once(
+                        recall_decisions,
+                        decision,
+                        target_id=task.task_id,
+                    )
+                    if recall_decisions:
+                        terminal_payload["recall_decisions"] = list(
+                            recall_decisions
+                        )
 
                 if solve_recovery is None:
                     prepared_recall = decision
@@ -3100,6 +3216,21 @@ class TriMemAgentRuntime:
                         graph.complete_active(tool_evidence)
                     else:
                         graph.update_from_evidence(tool_evidence)
+                    if (
+                        adaptive_horizon is not None
+                        and tools.history[-1].get("status") == "success"
+                    ):
+                        adaptive_horizon.observe_successful_tool_result(
+                            node_id=node.node_id,
+                            step_no=next_step,
+                            tool=tool,
+                            arguments=arguments,
+                            result=result,
+                            canonical_git_diff=workspace.patch(),
+                        )
+                        terminal_payload[ADAPTIVE_HORIZON_TERMINAL_KEY] = (
+                            adaptive_horizon.checkpoint_state()
+                        )
                     next_step += 1
                     save_checkpoint(
                         "RUNNING" if not graph.complete else "AGENT_COMPLETE",
@@ -3149,6 +3280,13 @@ class TriMemAgentRuntime:
                 self._record_recall(task, arm, decision)
                 recall_rejections.extend(dict(row) for row in decision.rejections)
                 terminal_payload["recall_rejections"] = list(recall_rejections)
+                _append_recall_telemetry_exactly_once(
+                    recall_decisions,
+                    decision,
+                    target_id=task.task_id,
+                )
+                if recall_decisions:
+                    terminal_payload["recall_decisions"] = list(recall_decisions)
             node_steps = sum(
                 1 for record in accounting.calls
                 if record.call_kind == "solve" and record.active_node_id == node.node_id
@@ -3156,8 +3294,30 @@ class TriMemAgentRuntime:
             while graph.active_node is not None:
                 if solve_calls >= self.lock.limits.max_solve_calls or next_step > self.lock.limits.max_agent_steps:
                     raise RuntimeFailure("solve-call or global step cap reached")
-                if node_steps >= self.lock.limits.max_steps_per_subtask:
-                    raise RuntimeFailure("per-subtask step cap reached")
+                node_step_limit = (
+                    adaptive_horizon.current_limit(node.node_id)
+                    if adaptive_horizon is not None
+                    else self.lock.limits.max_steps_per_subtask
+                )
+                if node_steps >= node_step_limit:
+                    extension = (
+                        adaptive_horizon.extend_at_boundary(
+                            node_id=node.node_id,
+                            observed_node_steps=node_steps,
+                            next_step_no=next_step,
+                        )
+                        if adaptive_horizon is not None
+                        else None
+                    )
+                    if extension is None:
+                        raise RuntimeFailure("per-subtask step cap reached")
+                    terminal_payload[ADAPTIVE_HORIZON_TERMINAL_KEY] = (
+                        adaptive_horizon.checkpoint_state()
+                    )
+                    # Persist the consumed progress and new ceiling before the
+                    # additional model request can start.  Resume therefore
+                    # cannot grant the same extension twice.
+                    save_checkpoint("RUNNING", node.node_id)
                 active_injections = self.memory.context_for(node.node_id)
                 logical_id = f"{task.task_id}:{arm}:solve:{next_step:04d}"
                 self._active_call_kind = "solve"
@@ -3257,6 +3417,21 @@ class TriMemAgentRuntime:
                     graph.complete_active(evidence)
                 else:
                     graph.update_from_evidence(evidence)
+                if (
+                    adaptive_horizon is not None
+                    and tools.history[-1].get("status") == "success"
+                ):
+                    adaptive_horizon.observe_successful_tool_result(
+                        node_id=node.node_id,
+                        step_no=next_step,
+                        tool=tool,
+                        arguments=arguments,
+                        result=result,
+                        canonical_git_diff=workspace.patch(),
+                    )
+                    terminal_payload[ADAPTIVE_HORIZON_TERMINAL_KEY] = (
+                        adaptive_horizon.checkpoint_state()
+                    )
                 next_step += 1
                 save_checkpoint("RUNNING" if not graph.complete else "AGENT_COMPLETE", graph.active_node_id)
 
@@ -3538,6 +3713,10 @@ class TriMemAgentRuntime:
             "lifecycle": lifecycle_result,
             "accounting": accounting.summary(),
         }
+        if adaptive_horizon is not None:
+            expected_finished[ADAPTIVE_HORIZON_TERMINAL_KEY] = (
+                adaptive_horizon.checkpoint_state()
+            )
         if recovered_finished is not None:
             if canonical_bytes(recovered_finished) != canonical_bytes(
                 expected_finished
@@ -4302,6 +4481,13 @@ class TriMemAgentRuntime:
             "lifecycle": lifecycle_result,
             "accounting": accounting.summary(),
         }
+        adaptive_horizon_state = terminal_payload.get(
+            ADAPTIVE_HORIZON_TERMINAL_KEY
+        )
+        if isinstance(adaptive_horizon_state, Mapping):
+            finished[ADAPTIVE_HORIZON_TERMINAL_KEY] = dict(
+                adaptive_horizon_state
+            )
         if phase_state == "CELL_FAILURE_LIFECYCLE_CREDITED":
             if suffix:
                 recorded_finished = _require_suffix_payload(
@@ -4894,24 +5080,15 @@ class TriMemAgentRuntime:
         return extraction
 
     def _record_recall(self, task, arm, decision):
-        injections = []
         for item in decision.injections:
             if not item.verify():
                 raise RuntimeFailure("injection bytes/hash mismatch")
             blob = self.evidence.put_blob(item.exact_utf8)
             if blob["sha256"] != item.sha256 or blob["bytes"] != item.byte_count:
                 raise RuntimeFailure("persisted injection differs from actual bytes")
-            injections.append(_injection_dict(item))
         self.evidence.append(
             "memory_recall",
-            {
-                "task_id": task.task_id,
-                "arm": arm,
-                "active_node_id": decision.active_node_id,
-                "injections": injections,
-                "bank_trace": list(decision.bank_trace),
-                "rejections": list(decision.rejections),
-            },
+            _recall_payload(task, arm, decision),
         )
 
     @staticmethod

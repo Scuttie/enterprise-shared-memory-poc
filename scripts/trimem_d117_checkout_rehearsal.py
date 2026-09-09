@@ -21,6 +21,7 @@ from trimem_benchmark_run import (  # noqa: E402
     _GIT_BLOB_MATERIALIZATION_SCHEMA,
     _GIT_BLOB_SOURCE_IDENTITY,
     _GIT_BLOB_TRANSFORM_RULE,
+    _valid_history_isolation_evidence,
     _valid_checkout_materialization_evidence,
     atomic_write,
     canonical_bytes,
@@ -131,9 +132,13 @@ def build_rehearsal(
         ]
         if (
             not isinstance(materialization, dict)
-            or evidence.get("checkout_origin") != "FRESH_CLONE"
+            or evidence.get("checkout_origin") != "FRESH_BASE_ONLY_FETCH"
             or not isinstance(evidence.get("argv"), list)
-            or len(evidence["argv"]) != 2
+            or len(evidence["argv"]) != 4
+            or not _valid_history_isolation_evidence(
+                evidence.get("history_isolation"),
+                expected_commit=task.commit,
+            )
             or not _valid_checkout_materialization_evidence(
                 materialization,
                 expected_commit=task.commit,

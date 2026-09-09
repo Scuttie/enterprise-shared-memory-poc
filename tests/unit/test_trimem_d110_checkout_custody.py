@@ -323,13 +323,13 @@ def test_prepare_checkouts_fresh_clone_uses_materialization_and_records_origin(
     )
     real_runner = benchmark_run._run_hermetic_git
 
-    def local_clone(arguments: object) -> object:
+    def local_fetch(arguments: object) -> object:
         argv = list(arguments)
-        if argv[:2] == ["clone", "--no-checkout"]:
-            argv[-2] = str(source)
+        if "remote" in argv and argv[-3:-1] == ["add", "origin"]:
+            argv[-1] = str(source)
         return real_runner(argv)
 
-    monkeypatch.setattr(benchmark_run, "_run_hermetic_git", local_clone)
+    monkeypatch.setattr(benchmark_run, "_run_hermetic_git", local_fetch)
     factory, evidence = benchmark_run.prepare_checkouts(
         [task],
         [{"instance_id": "fixture-instance"}],
@@ -344,11 +344,57 @@ def test_prepare_checkouts_fresh_clone_uses_materialization_and_records_origin(
 
     checkout = factory.checkout_roots["task-0"]
     assert (checkout / "make.bat").read_bytes() == raw
-    assert evidence["task-0"]["checkout_origin"] == "FRESH_CLONE"
+    assert evidence["task-0"]["checkout_origin"] == "FRESH_BASE_ONLY_FETCH"
     assert evidence["task-0"]["materialization"]["normalized_paths"] == [
         "make.bat"
     ]
+    assert evidence["task-0"]["history_isolation"]["status"] == (
+        "PASS_BASE_ONLY_OBJECT_CLOSURE"
+    )
+    assert evidence["task-0"]["history_isolation"]["commit_object_count"] == 1
     harness_lock.validate_pristine_checkout(checkout, commit)
+
+
+def test_base_only_git_object_closure_removes_existing_future_refs_objects_and_messages(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source-with-future"
+    base = _committed_checkout(source)
+    (source / "tracked.txt").write_text("GOLD_SECRET\n", encoding="utf-8")
+    _git(source, "add", "--", "tracked.txt")
+    _git(
+        source,
+        "-c",
+        "user.name=TriMem Test",
+        "-c",
+        "user.email=trimem-test@example.invalid",
+        "commit",
+        "--quiet",
+        "-m",
+        "GOLD_SECRET target solution",
+    )
+    future = _git(source, "rev-parse", "HEAD")
+    _git(source, "tag", "target-solution", future)
+    _git(source, "checkout", "--detach", base)
+    evidence = benchmark_run._base_only_git_object_closure(source, base)
+    assert _git(source, "rev-list", "--count", "HEAD") == "1"
+    assert _git(source, "for-each-ref", "--format=%(refname)") == ""
+    assert "GOLD_SECRET" not in _git(source, "log", "--all", "--oneline")
+    unavailable = subprocess.run(
+        ["git", "-C", str(source), "cat-file", "-e", future],
+        capture_output=True,
+        text=True,
+        check=False,
+        env={
+            "PATH": os.environ.get("PATH", ""),
+            "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+        },
+    )
+    assert unavailable.returncode != 0
+    assert evidence["object_count"] > 0
+    assert evidence["commit_object_count"] == 1
 
 
 def test_preexisting_checkout_is_never_repaired_as_fresh(

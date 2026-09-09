@@ -205,6 +205,100 @@ def test_hard_child_death_closes_started_grader_without_resume(
     )
 
 
+def test_hard_child_death_closes_retry_marker_without_a_third_process(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def short_fixture_write(path: Path, raw: bytes) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(raw)
+
+    monkeypatch.setattr(benchmark, "atomic_write", short_fixture_write)
+    monkeypatch.setattr(resume_driver, "ROOT", tmp_path)
+    execution_root = (
+        tmp_path / "artifacts/trimem_v1/benchmark_exec/development"
+    )
+    journal = benchmark.TerminalInvocationJournal(
+        execution_root / "M0/000-target-001/terminal-journal"
+    )
+    request_sha256 = "a" * 64
+    path = journal.begin_grader_request(
+        "target-001:" + request_sha256, request_sha256
+    )
+    journal.transition_grader(
+        path,
+        expected=("GRADER_NOT_PREPARED",),
+        status="GRADER_PREFLIGHT_PASSED",
+        values={"loader_preflight_evidence_sha256": "b" * 64},
+    )
+    journal.transition_grader(
+        path,
+        expected=("GRADER_PREFLIGHT_PASSED",),
+        status="GRADER_REQUEST_RECORDED",
+    )
+    journal.transition_grader(
+        path,
+        expected=("GRADER_REQUEST_RECORDED",),
+        status="GRADER_PROCESS_STARTED",
+    )
+    attempt1 = {
+        "task_id": "target-001",
+        "resolved": False,
+        "exit_code": 127,
+        "stdout": "",
+        "stderr": "loader failed",
+        "report": {"task_id": "target-001", "resolved": False},
+        "grader_id": "official-fixture",
+        "container_digest": "fixture@sha256:" + "c" * 64,
+        "official": True,
+        "wall_time_ms": 1,
+        "container_started": False,
+        "status": "harness_launch_failed",
+    }
+    journal.transition_grader(
+        path,
+        expected=("GRADER_PROCESS_STARTED",),
+        status="PRECONTAINER_RETRY_AUTHORIZED",
+        values={
+            "precontainer_retry_attempt": 1,
+            "attempt1_failure": attempt1,
+            "attempt1_failure_sha256": benchmark.sha256_bytes(
+                benchmark.canonical_bytes(attempt1)
+            ),
+            "official_grader_runs": 0,
+            "grader_containers": 0,
+            "grader_capacity_disposition": "NOT_CONSUMED",
+        },
+    )
+    journal.transition_grader(
+        path,
+        expected=("PRECONTAINER_RETRY_AUTHORIZED",),
+        status="GRADER_RETRY_PROCESS_STARTED",
+    )
+    calls: list[list[str]] = []
+
+    def fake_run(argv, **_kwargs):
+        calls.append(list(argv))
+        return subprocess.CompletedProcess(argv, -9, stdout=b"", stderr=b"")
+
+    monkeypatch.setattr(resume_driver.subprocess, "run", fake_run)
+    assert resume_driver.run_with_one_resume(
+        "development", tmp_path / "approval.json"
+    ) == 1
+    assert len(calls) == 1
+    row = benchmark.TerminalInvocationJournal._validated_grader_row(path)
+    assert row["status"] == "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START"
+    assert row["attempt1_failure"] == attempt1
+    assert (row["official_grader_runs"], row["grader_containers"]) == (1, 1)
+    manifest = json.loads(
+        (execution_root / "driver-evidence/attempts.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert manifest["first_disposition"] == "GLOBAL_GRADER_INFRA_FAILURE"
+    assert manifest["resume_started"] is False
+    assert manifest["attempts"][0]["reconciled_ambiguous_grader_processes"] == 1
+
+
 def test_hard_second_child_death_closes_started_grader_without_third_process(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

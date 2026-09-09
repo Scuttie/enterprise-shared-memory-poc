@@ -15,6 +15,7 @@ from .accounting import (
     strict_json_loads,
     utc_now,
 )
+from .retrieval import RecallError, normalize_recall_decision_telemetry
 
 
 @dataclass(frozen=True)
@@ -56,6 +57,22 @@ class RuntimeCheckpoint:
         }.items():
             if len(value) != 64 or any(ch not in "0123456789abcdef" for ch in value):
                 raise ValueError(f"{name} is not a sha256 digest")
+        terminal_recall_decisions = self.terminal_payload.get("recall_decisions")
+        normalized_terminal_decisions: dict[str, Mapping[str, Any]] = {}
+        if terminal_recall_decisions is not None:
+            if not isinstance(terminal_recall_decisions, list):
+                raise ValueError("checkpoint recall telemetry is malformed")
+            try:
+                for raw in terminal_recall_decisions:
+                    row = normalize_recall_decision_telemetry(
+                        raw, expected_target_id=self.task_id
+                    )
+                    attempt_id = str(row["recall_attempt_id"])
+                    if attempt_id in normalized_terminal_decisions:
+                        raise RecallError("duplicate recall_attempt_id")
+                    normalized_terminal_decisions[attempt_id] = row
+            except RecallError as exc:
+                raise ValueError("checkpoint recall telemetry is malformed") from exc
         if self.state == "DECOMPOSE_PREPARED":
             if not isinstance(self.prepared_request, Mapping):
                 raise ValueError(
@@ -160,6 +177,32 @@ class RuntimeCheckpoint:
                 != self.prepared_request.get("memory_injection_sha256")
             ):
                 raise ValueError("prepared request recall decision differs")
+            telemetry = recall_decision.get("decision_telemetry")
+            if telemetry is not None:
+                if not isinstance(telemetry, list):
+                    raise ValueError("prepared recall telemetry is malformed")
+                attempts: set[str] = set()
+                try:
+                    for raw in telemetry:
+                        row = normalize_recall_decision_telemetry(
+                            raw, expected_target_id=self.task_id
+                        )
+                        attempt_id = str(row["recall_attempt_id"])
+                        if attempt_id in attempts:
+                            raise RecallError("duplicate recall_attempt_id")
+                        attempts.add(attempt_id)
+                        if (
+                            attempt_id not in normalized_terminal_decisions
+                            or canonical_bytes(normalized_terminal_decisions[attempt_id])
+                            != canonical_bytes(row)
+                        ):
+                            raise RecallError(
+                                "prepared recall telemetry is not terminal-bound"
+                            )
+                except RecallError as exc:
+                    raise ValueError(
+                        "prepared recall telemetry is malformed"
+                    ) from exc
             projection_record = self.prepared_request.get("projection_record")
             if (
                 not isinstance(projection_record, Mapping)

@@ -223,6 +223,41 @@ class AsyncPostgresQdrantRetrievalStore:
             repository=canonical_repository,
             excluded_source_task_id=self.excluded_source_task_id,
         )
+        filter_reason_codes = {
+            "VECTOR_%s" % rejection.reason.value
+            for rejection in result.rejections
+        }
+        returned_ids = {hit.reference.node_id for hit in result.hits}
+        projected_ids = set(snapshot.records)
+        unprojected_ids = returned_ids - projected_ids
+        self_excluded_ids = {
+            node.node_id
+            for node in rows.nodes
+            if node.node_id in unprojected_ids
+            and self.excluded_source_task_id
+            and isinstance(node.canonical_payload.get("provenance"), Mapping)
+            and str(node.canonical_payload["provenance"].get("source_task_id", ""))
+            == self.excluded_source_task_id
+        }
+        if self_excluded_ids:
+            filter_reason_codes.add("LEAKAGE_GATE_REJECTED")
+        if unprojected_ids - self_excluded_ids:
+            # The remaining projection checks form one fail-closed canonical
+            # boundary.  Do not claim a narrower cause than was observed.
+            filter_reason_codes.add("CANONICAL_GATE_REJECTED")
+        snapshot = replace(
+            snapshot,
+            query_telemetry={
+                "candidate_count_before_filter": len(result.hits) + len(result.rejections),
+                "candidate_count_after_vector_filter": len(result.hits),
+                "candidate_count_after_canonical_filter": len(snapshot.records),
+                "embedding_scores": {
+                    hit.reference.node_id: float(hit.score)
+                    for hit in sorted(result.hits, key=lambda item: item.reference.node_id)
+                },
+                "filter_reason_codes": sorted(filter_reason_codes),
+            },
+        )
         return _repository_alias(snapshot, canonical_repository, repository)
 
 

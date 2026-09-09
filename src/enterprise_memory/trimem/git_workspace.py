@@ -39,6 +39,27 @@ TOOL_NAMES = frozenset({
 })
 
 _DIGEST_IMAGE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/:@-]*@sha256:[0-9a-f]{64}$")
+_CONTAINER_PATH = re.compile(r"^/(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$")
+
+
+def _masked_container_paths(values: object, *, label: str) -> tuple[str, ...]:
+    if not isinstance(values, (tuple, list)):
+        raise ValueError(f"{label} must be a sequence")
+    if any(not isinstance(value, str) for value in values):
+        raise ValueError(f"{label} must contain unique canonical absolute paths")
+    normalized = tuple(sorted(set(values)))
+    if (
+        len(normalized) != len(values)
+        or any(
+            _CONTAINER_PATH.fullmatch(value) is None
+            or value in {"/", "/dev/null", "/proc", "/sys"}
+            or "," in value
+            or any(part in {"", ".", ".."} for part in value.split("/")[1:])
+            for value in normalized
+        )
+    ):
+        raise ValueError(f"{label} must contain unique canonical absolute paths")
+    return normalized
 
 
 def validate_safe_local_git_configuration(root: Path) -> None:
@@ -116,7 +137,7 @@ class DockerSandboxCommandRunner:
     boundary from silently resolving a tag or downloading an image.
     """
 
-    schema_version = "trimem/docker-command-runner/1.0"
+    schema_version = "trimem/docker-command-runner/1.1"
 
     def __init__(
         self,
@@ -130,6 +151,8 @@ class DockerSandboxCommandRunner:
         cpu_limit: str = "4",
         pids_limit: int = 1024,
         tmpfs_size_bytes: int = 1_073_741_824,
+        masked_image_files: tuple[str, ...] = (),
+        masked_image_directories: tuple[str, ...] = (),
     ):
         if not _DIGEST_IMAGE.fullmatch(str(image)):
             raise ValueError("command runner image must be frozen by sha256 digest")
@@ -150,6 +173,21 @@ class DockerSandboxCommandRunner:
         self.cpu_limit = str(cpu_limit)
         self.pids_limit = int(pids_limit)
         self.tmpfs_size_bytes = int(tmpfs_size_bytes)
+        self.masked_image_files = _masked_container_paths(
+            masked_image_files, label="masked image files"
+        )
+        self.masked_image_directories = _masked_container_paths(
+            masked_image_directories, label="masked image directories"
+        )
+        if set(self.masked_image_files) & set(self.masked_image_directories):
+            raise ValueError("masked image file and directory paths must be disjoint")
+        all_masks = self.masked_image_files + self.masked_image_directories
+        if any(
+            left != right and right.startswith(left.rstrip("/") + "/")
+            for left in self.masked_image_directories
+            for right in all_masks
+        ):
+            raise ValueError("masked image directory paths must not overlap other masks")
         self.content_hash = sha256_bytes(canonical_bytes({
             "schema": self.schema_version,
             "image": self.image,
@@ -166,6 +204,10 @@ class DockerSandboxCommandRunner:
             },
             "root_filesystem": "read_only_except_checkout_and_tmpfs",
             "checkout_git_metadata": "nested_read_only_bind",
+            "masked_image_files": list(self.masked_image_files),
+            "masked_image_file_source": "/dev/null",
+            "masked_image_directories": list(self.masked_image_directories),
+            "masked_image_directory_projection": "read_only_empty_tmpfs",
             "max_timeout_seconds": self.max_timeout_seconds,
             "max_output_bytes_per_stream": self.max_output_bytes_per_stream,
             "memory_limit": self.memory_limit,
@@ -206,21 +248,13 @@ class DockerSandboxCommandRunner:
         fd, cid_name = tempfile.mkstemp(prefix="trimem-docker-cid-")
         os.close(fd)
         os.unlink(cid_name)  # Docker requires a not-yet-existing cidfile.
-        command = [
-            self.docker_binary, "run", "--rm", "--pull=never", "--cidfile", cid_name,
-            "--network", "none", "--cap-drop", "ALL",
-            "--security-opt", "no-new-privileges", "--pids-limit", str(self.pids_limit),
-            "--memory", self.memory_limit, "--cpus", self.cpu_limit,
-            "--read-only", "--env", "CI=1", "--env", "HOME=/tmp/trimem-home",
-            "--env", "PYTHONDONTWRITEBYTECODE=1", "--env", "TMPDIR=/tmp",
-            "--tmpfs", f"/tmp:rw,nosuid,nodev,size={self.tmpfs_size_bytes}",
-            "--mount", f"type=bind,source={checkout},target={self.container_workspace}",
-            "--mount", (
-                f"type=bind,source={git_metadata},"
-                f"target={self.container_workspace}/.git,readonly"
-            ),
-            "--workdir", workdir, "--entrypoint", argv[0], self.image, *argv[1:],
-        ]
+        command = self._docker_command(
+            checkout=checkout,
+            git_metadata=git_metadata,
+            workdir=workdir,
+            cid_name=cid_name,
+            argv=argv,
+        )
         cli_env = _docker_cli_environment()
         process = subprocess.Popen(
             command,
@@ -299,6 +333,48 @@ class DockerSandboxCommandRunner:
             timed_out=timed_out,
             output_truncated=output_truncated,
         )
+
+    def _docker_command(
+        self,
+        *,
+        checkout: Path,
+        git_metadata: Path,
+        workdir: str,
+        cid_name: str,
+        argv: tuple[str, ...],
+    ) -> list[str]:
+        command = [
+            self.docker_binary, "run", "--rm", "--pull=never", "--cidfile", cid_name,
+            "--network", "none", "--cap-drop", "ALL",
+            "--security-opt", "no-new-privileges", "--pids-limit", str(self.pids_limit),
+            "--memory", self.memory_limit, "--cpus", self.cpu_limit,
+            "--read-only", "--env", "CI=1", "--env", "HOME=/tmp/trimem-home",
+            "--env", "PYTHONDONTWRITEBYTECODE=1", "--env", "TMPDIR=/tmp",
+            "--tmpfs", f"/tmp:rw,nosuid,nodev,size={self.tmpfs_size_bytes}",
+            "--mount", f"type=bind,source={checkout},target={self.container_workspace}",
+            "--mount", (
+                f"type=bind,source={git_metadata},"
+                f"target={self.container_workspace}/.git,readonly"
+            ),
+        ]
+        for path in self.masked_image_files:
+            command.extend(
+                [
+                    "--mount",
+                    f"type=bind,source=/dev/null,target={path},readonly",
+                ]
+            )
+        for path in self.masked_image_directories:
+            command.extend(
+                [
+                    "--tmpfs",
+                    f"{path}:ro,noexec,nosuid,nodev,size=4096",
+                ]
+            )
+        command.extend(
+            ["--workdir", workdir, "--entrypoint", argv[0], self.image, *argv[1:]]
+        )
+        return command
 
     def _remove_container(self, cid_name: str, environment: Mapping[str, str]) -> None:
         try:

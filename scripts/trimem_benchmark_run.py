@@ -326,9 +326,12 @@ GRADER_LIFECYCLE_STATES = (
     "GRADER_PREFLIGHT_PASSED",
     "GRADER_REQUEST_RECORDED",
     "GRADER_PROCESS_STARTED",
+    "PRECONTAINER_RETRY_AUTHORIZED",
+    "GRADER_RETRY_PROCESS_STARTED",
     "GRADER_CONTAINER_STARTED",
     "GRADER_TERMINAL_RESULT_CAPTURED",
     "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+    "GRADER_RETRY_INFRA_FAILURE_BEFORE_CONTAINER",
     "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
     "GRADER_RESULT_VALIDATED",
 )
@@ -926,7 +929,12 @@ def json_file_bytes(value: Any) -> bytes:
 
 def git_head() -> str:
     completed = subprocess.run(
-        ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=False
+        _hermetic_git_command(["rev-parse", "HEAD"]),
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_hermetic_git_environment(),
     )
     if completed.returncode != 0 or not HEX40.fullmatch(completed.stdout.strip()):
         raise BenchmarkExecutionError("cannot resolve exact Git HEAD")
@@ -943,11 +951,14 @@ def validate_grader_smoke_sentinel(request_path: Path) -> dict[str, Any]:
     execution_head = git_head()
     if os.environ.get("GITHUB_EVENT_NAME") == "push":
         parents = subprocess.run(
-            ["git", "rev-list", "--parents", "-n", "1", execution_head],
+            _hermetic_git_command(
+                ["rev-list", "--parents", "-n", "1", execution_head]
+            ),
             cwd=ROOT,
             capture_output=True,
             text=True,
             check=False,
+            env=_hermetic_git_environment(),
         )
         parent_fields = parents.stdout.strip().split()
         if (
@@ -973,8 +984,12 @@ def validate_grader_smoke_sentinel(request_path: Path) -> dict[str, Any]:
 def git_tracked(path: Path) -> None:
     relative = path.resolve().relative_to(ROOT.resolve()).as_posix()
     completed = subprocess.run(
-        ["git", "ls-files", "--error-unmatch", "--", relative], cwd=ROOT,
+        _hermetic_git_command(
+            ["ls-files", "--error-unmatch", "--", relative]
+        ),
+        cwd=ROOT,
         capture_output=True, text=True, check=False,
+        env=_hermetic_git_environment(),
     )
     if completed.returncode != 0:
         raise BenchmarkExecutionError(f"required execution artifact is not git-tracked: {relative}")
@@ -3012,17 +3027,45 @@ class TerminalInvocationJournal:
             or supplied != expected
         ):
             raise BenchmarkExecutionError("grader lifecycle journal integrity failure")
-        common = [
+        common = (
             "GRADER_NOT_PREPARED",
             "GRADER_PREFLIGHT_PASSED",
             "GRADER_REQUEST_RECORDED",
             "GRADER_PROCESS_STARTED",
-        ]
+        )
+        retry_authorized = (*common, "PRECONTAINER_RETRY_AUTHORIZED")
+        retry_started = (*retry_authorized, "GRADER_RETRY_PROCESS_STARTED")
         valid_transitions = {
             tuple(common[:1]),
             tuple(common[:2]),
             tuple(common[:3]),
             tuple(common),
+            retry_authorized,
+            retry_started,
+            (
+                *retry_started,
+                "GRADER_RETRY_INFRA_FAILURE_BEFORE_CONTAINER",
+            ),
+            (*retry_started, "GRADER_CONTAINER_STARTED"),
+            (
+                *retry_started,
+                "GRADER_CONTAINER_STARTED",
+                "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
+            ),
+            (
+                *retry_started,
+                "GRADER_CONTAINER_STARTED",
+                "GRADER_TERMINAL_RESULT_CAPTURED",
+            ),
+            (
+                *retry_started,
+                "GRADER_CONTAINER_STARTED",
+                "GRADER_TERMINAL_RESULT_CAPTURED",
+                "GRADER_RESULT_VALIDATED",
+            ),
+            # Keep the pre-retry terminal readable.  New executions never
+            # write it: without a durable retry authorization marker an old
+            # row remains fail-closed and cannot acquire a fresh invocation.
             (*common, "GRADER_INFRA_FAILURE_BEFORE_CONTAINER"),
             (*common, "GRADER_CONTAINER_STARTED"),
             (
@@ -3070,8 +3113,17 @@ class TerminalInvocationJournal:
         allowed_fields = set(base_fields)
         if state != "GRADER_NOT_PREPARED":
             allowed_fields.add("loader_preflight_evidence_sha256")
+        retry_derived = "PRECONTAINER_RETRY_AUTHORIZED" in row["transitions"]
+        retry_fields = {
+            "precontainer_retry_attempt",
+            "attempt1_failure",
+            "attempt1_failure_sha256",
+        }
+        if retry_derived:
+            allowed_fields.update(retry_fields)
         terminal_states = {
             "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+            "GRADER_RETRY_INFRA_FAILURE_BEFORE_CONTAINER",
             "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
             "GRADER_TERMINAL_RESULT_CAPTURED",
             "GRADER_RESULT_VALIDATED",
@@ -3083,7 +3135,11 @@ class TerminalInvocationJournal:
             "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
         }:
             allowed_fields.add("container_start_observed")
-        if not base_fields <= set(row) or not set(row) <= allowed_fields:
+        if (
+            not base_fields <= set(row)
+            or (retry_derived and not retry_fields <= set(row))
+            or not set(row) <= allowed_fields
+        ):
             raise BenchmarkExecutionError(
                 "grader lifecycle journal field set differs"
             )
@@ -3101,7 +3157,10 @@ class TerminalInvocationJournal:
             in {"GRADER_TERMINAL_RESULT_CAPTURED", "GRADER_RESULT_VALIDATED"}
             else (0, 0, "NOT_CONSUMED")
         )
-        if (*counters, capacity) != expected_accounting:
+        if (
+            any(type(value) is not int for value in counters)
+            or (*counters, capacity) != expected_accounting
+        ):
             raise BenchmarkExecutionError(
                 "grader lifecycle capacity accounting differs"
             )
@@ -3114,51 +3173,82 @@ class TerminalInvocationJournal:
             )
         if state in terminal_states and not isinstance(row.get("result"), Mapping):
             raise BenchmarkExecutionError("grader lifecycle terminal result is absent")
+        result_fields = {
+            "task_id",
+            "resolved",
+            "exit_code",
+            "stdout",
+            "stderr",
+            "report",
+            "grader_id",
+            "container_digest",
+            "official",
+            "wall_time_ms",
+            "container_started",
+            "status",
+        }
+
+        def valid_result_payload(
+            result: object,
+            *,
+            expected_container_started: bool,
+            must_be_unresolved: bool,
+        ) -> bool:
+            return bool(
+                isinstance(result, Mapping)
+                and set(result) == result_fields
+                and result.get("task_id") == task_id
+                and type(result.get("resolved")) is bool
+                and (not must_be_unresolved or result.get("resolved") is False)
+                and type(result.get("exit_code")) is int
+                and isinstance(result.get("stdout"), str)
+                and isinstance(result.get("stderr"), str)
+                and isinstance(result.get("report"), Mapping)
+                and isinstance(result.get("grader_id"), str)
+                and bool(result["grader_id"])
+                and isinstance(result.get("container_digest"), str)
+                and bool(result["container_digest"])
+                and result.get("official") is True
+                and type(result.get("wall_time_ms")) is int
+                and result["wall_time_ms"] >= 0
+                and result.get("container_started")
+                is expected_container_started
+                and isinstance(result.get("status"), str)
+                and bool(result["status"])
+            )
+
+        if retry_derived:
+            attempt1_failure = row.get("attempt1_failure")
+            attempt1_hash = row.get("attempt1_failure_sha256")
+            if (
+                type(row.get("precontainer_retry_attempt")) is not int
+                or row.get("precontainer_retry_attempt") != 1
+                or not valid_result_payload(
+                    attempt1_failure,
+                    expected_container_started=False,
+                    must_be_unresolved=True,
+                )
+                or not isinstance(attempt1_hash, str)
+                or SHA256.fullmatch(attempt1_hash) is None
+                or attempt1_hash
+                != sha256_bytes(canonical_bytes(attempt1_failure))
+            ):
+                raise BenchmarkExecutionError(
+                    "grader lifecycle retry attempt-one failure binding differs"
+                )
         if state in terminal_states:
             result = row["result"]
-            result_fields = {
-                "task_id",
-                "resolved",
-                "exit_code",
-                "stdout",
-                "stderr",
-                "report",
-                "grader_id",
-                "container_digest",
-                "official",
-                "wall_time_ms",
-                "container_started",
-                "status",
+            no_container_terminal = state in {
+                "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+                "GRADER_RETRY_INFRA_FAILURE_BEFORE_CONTAINER",
             }
-            expected_container_started = state != (
-                "GRADER_INFRA_FAILURE_BEFORE_CONTAINER"
-            )
-            if (
-                set(result) != result_fields
-                or result.get("task_id") != task_id
-                or type(result.get("resolved")) is not bool
-                or (
-                    state
-                    in {
-                        "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
-                        "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
-                    }
-                    and result.get("resolved") is not False
-                )
-                or type(result.get("exit_code")) is not int
-                or not isinstance(result.get("stdout"), str)
-                or not isinstance(result.get("stderr"), str)
-                or not isinstance(result.get("report"), Mapping)
-                or not isinstance(result.get("grader_id"), str)
-                or not result["grader_id"]
-                or not isinstance(result.get("container_digest"), str)
-                or not result["container_digest"]
-                or result.get("official") is not True
-                or type(result.get("wall_time_ms")) is not int
-                or result["wall_time_ms"] < 0
-                or result.get("container_started") is not expected_container_started
-                or not isinstance(result.get("status"), str)
-                or not result["status"]
+            if not valid_result_payload(
+                result,
+                expected_container_started=not no_container_terminal,
+                must_be_unresolved=(
+                    no_container_terminal
+                    or state == "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START"
+                ),
             ):
                 raise BenchmarkExecutionError(
                     "grader lifecycle terminal result binding differs"
@@ -4401,10 +4491,10 @@ def close_ambiguous_grader_journal(
     result = _unknown_grader_result(
         task_id=task_id, container_digest=container_digest
     )
-    if state == "GRADER_PROCESS_STARTED":
+    if state in {"GRADER_PROCESS_STARTED", "GRADER_RETRY_PROCESS_STARTED"}:
         TerminalInvocationJournal.transition_grader(
             path,
-            expected=("GRADER_PROCESS_STARTED",),
+            expected=(state,),
             status="GRADER_CONTAINER_STARTED",
             values={
                 "official_grader_runs": 1,
@@ -4556,11 +4646,11 @@ class JournaledGraderGateway:
     ) -> GraderInvocationFailure:
         """Conservatively close a launched process with no terminal result.
 
-        ``GRADER_PROCESS_STARTED`` is the durable before-delegate marker.  A
-        process death after that marker cannot prove that no container was
-        created, so recovery consumes exactly one grader/container slot and
-        records an outcome-unknown result.  It must never call the delegate a
-        second time.
+        ``GRADER_PROCESS_STARTED`` and ``GRADER_RETRY_PROCESS_STARTED`` are
+        durable before-delegate markers.  A process death after either marker
+        cannot prove that no container was created, so recovery consumes
+        exactly one grader/container slot and records an outcome-unknown
+        result.  It must never call the delegate again.
         """
 
         target = getattr(self.delegate, "target", None)
@@ -4609,6 +4699,7 @@ class JournaledGraderGateway:
             return result
         if state in {
             "GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+            "GRADER_RETRY_INFRA_FAILURE_BEFORE_CONTAINER",
             "GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
         }:
             raise GraderInvocationFailure(self._result(row["result"]))
@@ -4621,7 +4712,11 @@ class JournaledGraderGateway:
                 status="GRADER_RESULT_VALIDATED",
             )
             return result
-        if state in {"GRADER_PROCESS_STARTED", "GRADER_CONTAINER_STARTED"}:
+        if state in {
+            "GRADER_PROCESS_STARTED",
+            "GRADER_RETRY_PROCESS_STARTED",
+            "GRADER_CONTAINER_STARTED",
+        }:
             raise self._unknown_after_process_start(
                 request, path, state=state
             )
@@ -4641,21 +4736,96 @@ class JournaledGraderGateway:
                 status="GRADER_REQUEST_RECORDED",
             )
             state = "GRADER_REQUEST_RECORDED"
-        if state != "GRADER_REQUEST_RECORDED":
+        if state == "GRADER_REQUEST_RECORDED":
+            self.journal.transition_grader(
+                path,
+                expected=("GRADER_REQUEST_RECORDED",),
+                status="GRADER_PROCESS_STARTED",
+            )
+            invocation_state = "GRADER_PROCESS_STARTED"
+        elif state == "PRECONTAINER_RETRY_AUTHORIZED":
+            # This is the only restart point from which another delegate call
+            # is safe.  The fsynced authorization proves attempt one ended
+            # before any container was created.
+            self.journal.transition_grader(
+                path,
+                expected=("PRECONTAINER_RETRY_AUTHORIZED",),
+                status="GRADER_RETRY_PROCESS_STARTED",
+            )
+            invocation_state = "GRADER_RETRY_PROCESS_STARTED"
+        else:
             raise BenchmarkExecutionError("unknown grader lifecycle state")
-        self.journal.transition_grader(
-            path,
-            expected=("GRADER_REQUEST_RECORDED",),
-            status="GRADER_PROCESS_STARTED",
-        )
-        try:
-            result = self.delegate.grade(request)
-        except GraderInvocationFailure as exc:
-            result_payload = asdict(exc.result)
-            if exc.result.container_started:
+
+        while True:
+            invocation_failure: GraderInvocationFailure | None = None
+            try:
+                result = self.delegate.grade(request)
+            except GraderInvocationFailure as exc:
+                result = exc.result
+                invocation_failure = exc
+            except Exception as exc:
+                raise self._unknown_after_process_start(
+                    request, path, state=invocation_state
+                ) from exc
+
+            container_started = getattr(result, "container_started", None)
+            if container_started is False:
+                result_payload = asdict(result)
+                if invocation_state == "GRADER_PROCESS_STARTED":
+                    # A single explicit, authoritative no-container outcome
+                    # authorizes exactly one retry.  Its complete payload and
+                    # canonical hash are fsynced before the retry marker.
+                    self.journal.transition_grader(
+                        path,
+                        expected=("GRADER_PROCESS_STARTED",),
+                        status="PRECONTAINER_RETRY_AUTHORIZED",
+                        values={
+                            "precontainer_retry_attempt": 1,
+                            "attempt1_failure": result_payload,
+                            "attempt1_failure_sha256": sha256_bytes(
+                                canonical_bytes(result_payload)
+                            ),
+                            "official_grader_runs": 0,
+                            "grader_containers": 0,
+                            "grader_capacity_disposition": "NOT_CONSUMED",
+                        },
+                    )
+                    # Validate the exact retry evidence before crossing the
+                    # second and final before-delegate marker.
+                    self.journal._validated_grader_row(path)
+                    self.journal.transition_grader(
+                        path,
+                        expected=("PRECONTAINER_RETRY_AUTHORIZED",),
+                        status="GRADER_RETRY_PROCESS_STARTED",
+                    )
+                    invocation_state = "GRADER_RETRY_PROCESS_STARTED"
+                    continue
+
                 self.journal.transition_grader(
                     path,
-                    expected=("GRADER_PROCESS_STARTED",),
+                    expected=("GRADER_RETRY_PROCESS_STARTED",),
+                    status="GRADER_RETRY_INFRA_FAILURE_BEFORE_CONTAINER",
+                    values={
+                        "result": result_payload,
+                        "official_grader_runs": 0,
+                        "grader_containers": 0,
+                        "grader_capacity_disposition": "NOT_CONSUMED",
+                    },
+                )
+                raise invocation_failure or GraderInvocationFailure(result)
+
+            if container_started is not True:
+                unknown = self._unknown_after_process_start(
+                    request, path, state=invocation_state
+                )
+                if invocation_failure is not None:
+                    raise unknown from invocation_failure
+                raise unknown
+
+            if invocation_failure is not None:
+                self.journal.transition_grader(
+                    path,
+                    expected=(invocation_state,),
                     status="GRADER_CONTAINER_STARTED",
                     values={
                         "official_grader_runs": 1,
@@ -4668,70 +4838,42 @@ class JournaledGraderGateway:
                     expected=("GRADER_CONTAINER_STARTED",),
                     status="GRADER_OUTCOME_UNKNOWN_AFTER_CONTAINER_START",
                     values={
-                        "result": result_payload,
+                        "result": asdict(result),
                         "official_grader_runs": 1,
                         "grader_containers": 1,
                         "grader_capacity_disposition": "CONSERVATIVELY_CONSUMED",
                     },
                 )
-            else:
-                self.journal.transition_grader(
-                    path,
-                    expected=("GRADER_PROCESS_STARTED",),
-                    status="GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
-                    values={
-                        "result": result_payload,
-                        "official_grader_runs": 0,
-                        "grader_containers": 0,
-                        "grader_capacity_disposition": "NOT_CONSUMED",
-                    },
-                )
-            raise
-        except Exception as exc:
-            raise self._unknown_after_process_start(
-                request, path, state="GRADER_PROCESS_STARTED"
-            ) from exc
-        if not result.container_started:
+                raise invocation_failure
+
             self.journal.transition_grader(
                 path,
-                expected=("GRADER_PROCESS_STARTED",),
-                status="GRADER_INFRA_FAILURE_BEFORE_CONTAINER",
+                expected=(invocation_state,),
+                status="GRADER_CONTAINER_STARTED",
                 values={
-                    "result": asdict(result),
-                    "official_grader_runs": 0,
-                    "grader_containers": 0,
-                    "grader_capacity_disposition": "NOT_CONSUMED",
+                    "official_grader_runs": 1,
+                    "grader_containers": 1,
+                    "grader_capacity_disposition": "CONSERVATIVELY_CONSUMED",
                 },
             )
-            raise GraderInvocationFailure(result)
-        self.journal.transition_grader(
-            path,
-            expected=("GRADER_PROCESS_STARTED",),
-            status="GRADER_CONTAINER_STARTED",
-            values={
-                "official_grader_runs": 1,
-                "grader_containers": 1,
-                "grader_capacity_disposition": "CONSERVATIVELY_CONSUMED",
-            },
-        )
-        self.journal.transition_grader(
-            path,
-            expected=("GRADER_CONTAINER_STARTED",),
-            status="GRADER_TERMINAL_RESULT_CAPTURED",
-            values={
-                "result": asdict(result),
-                "official_grader_runs": 1,
-                "grader_containers": 1,
-                "grader_capacity_disposition": "AUTHORITATIVE_RESULT",
-            },
-        )
-        self._validate_result(request, result)
-        self.journal.transition_grader(
-            path,
-            expected=("GRADER_TERMINAL_RESULT_CAPTURED",),
-            status="GRADER_RESULT_VALIDATED",
-        )
-        return result
+            self.journal.transition_grader(
+                path,
+                expected=("GRADER_CONTAINER_STARTED",),
+                status="GRADER_TERMINAL_RESULT_CAPTURED",
+                values={
+                    "result": asdict(result),
+                    "official_grader_runs": 1,
+                    "grader_containers": 1,
+                    "grader_capacity_disposition": "AUTHORITATIVE_RESULT",
+                },
+            )
+            self._validate_result(request, result)
+            self.journal.transition_grader(
+                path,
+                expected=("GRADER_TERMINAL_RESULT_CAPTURED",),
+                status="GRADER_RESULT_VALIDATED",
+            )
+            return result
 
 
 class _EnvironmentSecret:
@@ -4763,7 +4905,9 @@ def build_paid_model_gateway(
     runner = getattr(session, "coroutine_runner", None)
     if not callable(runner):
         raise BenchmarkExecutionError("production arm has no long-lived coroutine runner")
-    client = httpx.AsyncClient()
+    # Do not allow host proxy or TLS environment variables to become an
+    # unapproved credential-routing boundary for paid benchmark requests.
+    client = httpx.AsyncClient(trust_env=False)
     provider = OpenAIResponsesProvider(
         "https://api.openai.com/v1", model, _EnvironmentSecret(), family="gpt5.4",
         reasoning_effort="medium", max_retries=1, http_client=client,
@@ -4925,7 +5069,16 @@ def repository_identity_resolver(experiment_id: str, arm: str) -> Callable[[Codi
 
 
 def _run_command(argv: Sequence[str], *, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
-    completed = subprocess.run(list(argv), cwd=cwd, capture_output=True, text=True, check=False)
+    if not argv or argv[0] != "git":
+        raise BenchmarkExecutionError("only hermetic Git commands are supported")
+    completed = subprocess.run(
+        _hermetic_git_command(list(argv)[1:]),
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_hermetic_git_environment(),
+    )
     if completed.returncode != 0:
         raise BenchmarkExecutionError(f"command failed ({argv[0]}): {completed.stderr.strip()}")
     return completed
@@ -4998,6 +5151,16 @@ def _git_blob_object_id(raw: bytes) -> str:
 _GIT_BLOB_MATERIALIZATION_SCHEMA = "trimem/git-blob-worktree-materialization/1.0"
 _GIT_BLOB_SOURCE_IDENTITY = "PINNED_GIT_BLOB_BYTES_AT_REVISION"
 _GIT_BLOB_TRANSFORM_RULE = "COMMITTED_TEXT_SET_EOL_CRLF_ONLY"
+_GIT_HISTORY_ISOLATION_SCHEMA = "trimem/base-only-git-object-closure/1.0"
+MULTI_SWE_EVALUATOR_GENERATED_FILES = (
+    "/home/fix.patch",
+    "/home/test.patch",
+    "/home/check_git_changes.sh",
+    "/home/prepare.sh",
+    "/home/run.sh",
+    "/home/test-run.sh",
+    "/home/fix-run.sh",
+)
 _GIT_BLOB_ATTRIBUTE_NAMES = (
     "text",
     "eol",
@@ -5298,6 +5461,245 @@ def _materialize_exact_git_blob_checkout(
     }
 
 
+def _run_hermetic_git_optional(
+    arguments: Sequence[str], *, accepted_returncodes: frozenset[int]
+) -> subprocess.CompletedProcess[str]:
+    argv = _hermetic_git_command(arguments)
+    completed = subprocess.run(
+        argv,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_hermetic_git_environment(),
+    )
+    if completed.returncode not in accepted_returncodes:
+        raise BenchmarkExecutionError(
+            f"command failed ({argv[0]}): {completed.stderr.strip()}"
+        )
+    return completed
+
+
+def _remove_git_control_file(git_dir: Path, name: str) -> None:
+    candidate = git_dir / name
+    if _is_link_or_reparse(candidate):
+        raise BenchmarkExecutionError("checkout Git control file is linked or reparsed")
+    if candidate.exists():
+        if not candidate.is_file():
+            raise BenchmarkExecutionError("checkout Git control path is not a file")
+        candidate.unlink()
+
+
+def _remove_empty_reflogs(git_dir: Path) -> None:
+    logs = git_dir / "logs"
+    if not logs.exists():
+        return
+    if _is_link_or_reparse(logs) or not logs.is_dir():
+        raise BenchmarkExecutionError("checkout reflog root is unsafe")
+    paths = sorted(logs.rglob("*"), key=lambda value: len(value.parts), reverse=True)
+    for candidate in paths:
+        if _is_link_or_reparse(candidate):
+            raise BenchmarkExecutionError("checkout reflog path is linked or reparsed")
+        if candidate.is_file():
+            if candidate.read_bytes():
+                raise BenchmarkExecutionError("checkout reflog retained history")
+            candidate.unlink()
+        elif candidate.is_dir():
+            candidate.rmdir()
+        else:
+            raise BenchmarkExecutionError("checkout reflog path is not regular")
+    logs.rmdir()
+
+
+def _base_only_git_object_closure(repository: Path, commit: str) -> dict[str, Any]:
+    """Remove every ref/object outside one exact base snapshot and attest it.
+
+    The solve container exposes ``.git`` for ordinary status/diff operations.
+    Therefore a detached checkout alone is not an isolation boundary: a normal
+    clone also retains post-base refs and objects.  This function makes the
+    base commit a shallow root, removes every ref/remote/reflog, prunes all
+    unreachable objects, and proves that the complete local object inventory
+    is exactly the object closure reachable from that one commit.
+    """
+
+    repository = repository.resolve(strict=True)
+    git_dir = repository / ".git"
+    if (
+        not repository.is_dir()
+        or HEX40.fullmatch(commit) is None
+        or _is_link_or_reparse(git_dir)
+        or not git_dir.is_dir()
+    ):
+        raise BenchmarkExecutionError("checkout history isolation input is unsafe")
+    head = _run_hermetic_git(
+        [f"--git-dir={git_dir}", f"--work-tree={repository}", "rev-parse", "HEAD"]
+    ).stdout.strip()
+    if head != commit:
+        raise BenchmarkExecutionError("checkout history isolation HEAD differs")
+    # Convert a branch-attached HEAD into an exact detached direct reference
+    # before deleting branch refs; otherwise a resumed legacy checkout could
+    # leave HEAD pointing at the now-removed symbolic branch.
+    _run_hermetic_git(
+        [f"--git-dir={git_dir}", "update-ref", "--no-deref", "HEAD", commit]
+    )
+
+    forbidden_metadata = (
+        git_dir / "objects" / "info" / "alternates",
+        git_dir / "info" / "grafts",
+        git_dir / "objects" / "info" / "commit-graph",
+    )
+    if any(path.exists() or _is_link_or_reparse(path) for path in forbidden_metadata):
+        raise BenchmarkExecutionError("checkout has external or derived Git history metadata")
+
+    shallow = git_dir / "shallow"
+    if _is_link_or_reparse(shallow) or (shallow.exists() and not shallow.is_file()):
+        raise BenchmarkExecutionError("checkout shallow boundary is unsafe")
+    shallow.write_bytes((commit + "\n").encode("ascii"))
+
+    references = _run_hermetic_git(
+        [f"--git-dir={git_dir}", "for-each-ref", "--format=%(refname)"]
+    ).stdout.splitlines()
+    if any(not value.startswith("refs/") or any(ch.isspace() for ch in value) for value in references):
+        raise BenchmarkExecutionError("checkout contains malformed Git reference")
+    for reference in references:
+        _run_hermetic_git([f"--git-dir={git_dir}", "update-ref", "-d", reference])
+
+    remotes = _run_hermetic_git(
+        [f"--git-dir={git_dir}", "remote"]
+    ).stdout.splitlines()
+    if any(not re.fullmatch(r"[A-Za-z0-9._-]+", value) for value in remotes):
+        raise BenchmarkExecutionError("checkout contains malformed Git remote")
+    for remote in remotes:
+        _run_hermetic_git([f"--git-dir={git_dir}", "remote", "remove", remote])
+    _run_hermetic_git_optional(
+        [
+            f"--git-dir={git_dir}",
+            "config",
+            "--local",
+            "--unset-all",
+            "extensions.partialclone",
+        ],
+        accepted_returncodes=frozenset({0, 1, 5}),
+    )
+    _run_hermetic_git(
+        [
+            f"--git-dir={git_dir}",
+            "reflog",
+            "expire",
+            "--expire=now",
+            "--expire-unreachable=now",
+            "--all",
+        ]
+    )
+    for name in ("FETCH_HEAD", "ORIG_HEAD", "MERGE_HEAD", "CHERRY_PICK_HEAD"):
+        _remove_git_control_file(git_dir, name)
+
+    pack_root = git_dir / "objects" / "pack"
+    if _is_link_or_reparse(pack_root) or not pack_root.is_dir():
+        raise BenchmarkExecutionError("checkout Git pack root is unsafe")
+    for marker in pack_root.glob("*.promisor"):
+        if _is_link_or_reparse(marker) or not marker.is_file():
+            raise BenchmarkExecutionError("checkout promisor marker is unsafe")
+        marker.unlink()
+    _run_hermetic_git([f"--git-dir={git_dir}", "repack", "-Ad"])
+    _run_hermetic_git([f"--git-dir={git_dir}", "prune-packed"])
+    _run_hermetic_git([f"--git-dir={git_dir}", "prune", "--expire=now"])
+    _run_hermetic_git([f"--git-dir={git_dir}", "repack", "-ad"])
+    _remove_empty_reflogs(git_dir)
+    # Git may discard a redundant shallow marker when ``commit`` is itself a
+    # root commit.  Reassert the explicit one-commit boundary after all object
+    # maintenance so the resume audit observes byte-identical metadata.
+    shallow.write_bytes((commit + "\n").encode("ascii"))
+
+    if _run_hermetic_git(
+        [f"--git-dir={git_dir}", "for-each-ref", "--format=%(refname)"]
+    ).stdout:
+        raise BenchmarkExecutionError("checkout retained a Git reference")
+    if _run_hermetic_git([f"--git-dir={git_dir}", "remote"]).stdout:
+        raise BenchmarkExecutionError("checkout retained a Git remote")
+    unsafe_config = _run_hermetic_git_optional(
+        [
+            f"--git-dir={git_dir}",
+            "config",
+            "--local",
+            "--name-only",
+            "--get-regexp",
+            r"^(remote\.|extensions\.partial[Cc]lone|url\.|http\.|credential\.)",
+        ],
+        accepted_returncodes=frozenset({0, 1}),
+    ).stdout.strip()
+    if unsafe_config:
+        raise BenchmarkExecutionError("checkout retained network-capable Git configuration")
+    if shallow.read_bytes() != (commit + "\n").encode("ascii"):
+        raise BenchmarkExecutionError("checkout shallow boundary differs")
+    if _run_hermetic_git(
+        [f"--git-dir={git_dir}", "rev-list", "--count", "HEAD"]
+    ).stdout.strip() != "1":
+        raise BenchmarkExecutionError("checkout history is not base-only")
+
+    reachable = {
+        value
+        for value in _run_hermetic_git(
+            [
+                f"--git-dir={git_dir}",
+                "rev-list",
+                "--objects",
+                "--no-object-names",
+                "HEAD",
+            ]
+        ).stdout.splitlines()
+        if value
+    }
+    typed_rows = _run_hermetic_git(
+        [
+            f"--git-dir={git_dir}",
+            "cat-file",
+            "--batch-all-objects",
+            "--batch-check=%(objectname) %(objecttype)",
+        ]
+    ).stdout.splitlines()
+    inventory: set[str] = set()
+    commit_objects: set[str] = set()
+    for row in typed_rows:
+        fields = row.split(" ")
+        if len(fields) != 2 or HEX40.fullmatch(fields[0]) is None:
+            raise BenchmarkExecutionError("checkout object inventory is malformed")
+        inventory.add(fields[0])
+        if fields[1] == "commit":
+            commit_objects.add(fields[0])
+    if not inventory or inventory != reachable or commit_objects != {commit}:
+        raise BenchmarkExecutionError("checkout contains objects outside the base closure")
+    _run_hermetic_git([f"--git-dir={git_dir}", "fsck", "--full", "--no-reflogs"])
+    return {
+        "schema": _GIT_HISTORY_ISOLATION_SCHEMA,
+        "status": "PASS_BASE_ONLY_OBJECT_CLOSURE",
+        "head": commit,
+        "shallow_root": commit,
+        "reference_count": 0,
+        "remote_count": 0,
+        "reflog_file_count": 0,
+        "commit_object_count": 1,
+        "object_count": len(inventory),
+        "object_inventory_sha256": sha256_bytes(canonical_bytes(sorted(inventory))),
+        "network_capable_git_config_count": 0,
+        "alternates_present": False,
+        "promisor_markers_present": False,
+    }
+
+
+def solver_image_masks(
+    task: CodingTask, target: Mapping[str, Any]
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    benchmark_id = str(target.get("benchmark_id"))
+    if benchmark_id not in {"multi_swe_bench_mini", "multi_swe_bench_flash"}:
+        return (), ()
+    repository_leaf = task.repository.rsplit("/", 1)[-1]
+    if re.fullmatch(r"[A-Za-z0-9._-]+", repository_leaf) is None:
+        raise BenchmarkExecutionError(f"task repository leaf is unsafe: {task.task_id}")
+    return MULTI_SWE_EVALUATOR_GENERATED_FILES, (
+        f"/home/{repository_leaf}/.git",
+    )
+
+
 def prepare_checkouts(
     tasks: Sequence[CodingTask], targets: Sequence[Mapping[str, Any]],
     images: Mapping[str, Mapping[str, Any]], root: Path, *, resume: bool,
@@ -5329,13 +5731,34 @@ def prepare_checkouts(
         if not checkout.exists():
             if resume:
                 raise BenchmarkExecutionError(f"resume checkout is missing: {task.task_id}")
-            clone_arguments = ["clone", "--no-checkout", "--filter=blob:none",
-                               f"https://github.com/{task.repository}.git", str(checkout)]
-            clone = _hermetic_git_command(clone_arguments)
-            result = _run_hermetic_git(clone_arguments)
-            stdout_parts.append(result.stdout); stderr_parts.append(result.stderr); argv_rows.append(clone)
+            init_arguments = ["init", "--quiet", str(checkout)]
+            init_command = _hermetic_git_command(init_arguments)
+            result = _run_hermetic_git(init_arguments)
+            stdout_parts.append(result.stdout); stderr_parts.append(result.stderr); argv_rows.append(init_command)
+            git_dir = checkout / ".git"
+            remote_arguments = [
+                f"--git-dir={git_dir}",
+                "remote",
+                "add",
+                "origin",
+                f"https://github.com/{task.repository}.git",
+            ]
+            remote_command = _hermetic_git_command(remote_arguments)
+            result = _run_hermetic_git(remote_arguments)
+            stdout_parts.append(result.stdout); stderr_parts.append(result.stderr); argv_rows.append(remote_command)
+            fetch_arguments = [
+                f"--git-dir={git_dir}",
+                "fetch",
+                "--depth=1",
+                "--no-tags",
+                "origin",
+                task.commit,
+            ]
+            fetch_command = _hermetic_git_command(fetch_arguments)
+            result = _run_hermetic_git(fetch_arguments)
+            stdout_parts.append(result.stdout); stderr_parts.append(result.stderr); argv_rows.append(fetch_command)
             checkout_arguments = [
-                f"--git-dir={checkout / '.git'}",
+                f"--git-dir={git_dir}",
                 f"--work-tree={checkout}",
                 "checkout",
                 "--detach",
@@ -5379,6 +5802,13 @@ def prepare_checkouts(
                 raise BenchmarkExecutionError(
                     f"new checkout is not exact and clean: {task.task_id}"
                 ) from exc
+        history_isolation = _base_only_git_object_closure(checkout, task.commit)
+        try:
+            validate_safe_local_git_configuration(checkout)
+        except Exception as exc:
+            raise BenchmarkExecutionError(
+                f"isolated task checkout Git configuration is unsafe: {task.task_id}"
+            ) from exc
         status = _run_hermetic_git(
             [
                 f"--git-dir={git_dir}",
@@ -5392,12 +5822,22 @@ def prepare_checkouts(
         image = images.get(str(target.get("instance_id")), {}).get("image")
         if not isinstance(image, str):
             raise BenchmarkExecutionError(f"task command image is missing: {task.task_id}")
-        command_runners[task.task_id] = DockerSandboxCommandRunner(image)
+        masked_files, masked_directories = solver_image_masks(task, target)
+        command_runner = DockerSandboxCommandRunner(
+            image,
+            masked_image_files=masked_files,
+            masked_image_directories=masked_directories,
+        )
+        command_runners[task.task_id] = command_runner
         evidence[task.task_id] = {
             "argv": argv_rows, "stdout": "".join(stdout_parts), "stderr": "".join(stderr_parts),
             "head": head, "initial_status": status,
-            "checkout_origin": "FRESH_CLONE" if created else "EXISTING_CHECKOUT",
+            "checkout_origin": "FRESH_BASE_ONLY_FETCH" if created else "EXISTING_CHECKOUT",
             "materialization": materialization,
+            "history_isolation": history_isolation,
+            "command_sandbox_content_hash": command_runner.content_hash,
+            "masked_image_files": list(command_runner.masked_image_files),
+            "masked_image_directories": list(command_runner.masked_image_directories),
         }
     factory = GitCheckoutWorkspaceFactory(roots, commits, command_runners=command_runners)
     if factory.production_capable is not True or type(factory) is not GitCheckoutWorkspaceFactory:
@@ -6543,6 +6983,47 @@ def _valid_checkout_materialization_evidence(
     return True
 
 
+def _valid_history_isolation_evidence(
+    value: object,
+    *,
+    expected_commit: str,
+) -> bool:
+    return bool(
+        isinstance(value, Mapping)
+        and set(value)
+        == {
+            "schema",
+            "status",
+            "head",
+            "shallow_root",
+            "reference_count",
+            "remote_count",
+            "reflog_file_count",
+            "commit_object_count",
+            "object_count",
+            "object_inventory_sha256",
+            "network_capable_git_config_count",
+            "alternates_present",
+            "promisor_markers_present",
+        }
+        and value.get("schema") == _GIT_HISTORY_ISOLATION_SCHEMA
+        and value.get("status") == "PASS_BASE_ONLY_OBJECT_CLOSURE"
+        and value.get("head") == expected_commit
+        and value.get("shallow_root") == expected_commit
+        and value.get("reference_count") == 0
+        and value.get("remote_count") == 0
+        and value.get("reflog_file_count") == 0
+        and value.get("commit_object_count") == 1
+        and type(value.get("object_count")) is int
+        and value["object_count"] > 0
+        and isinstance(value.get("object_inventory_sha256"), str)
+        and SHA256.fullmatch(str(value["object_inventory_sha256"])) is not None
+        and value.get("network_capable_git_config_count") == 0
+        and value.get("alternates_present") is False
+        and value.get("promisor_markers_present") is False
+    )
+
+
 def _validated_restricted_grader_references(
     task_dir: Path,
     references: object,
@@ -6864,6 +7345,10 @@ def _validate_cell_session_result_against_done_checkpoint_impl(
             "head",
             "initial_status",
             "materialization",
+            "history_isolation",
+            "command_sandbox_content_hash",
+            "masked_image_files",
+            "masked_image_directories",
         }
         or not isinstance(checkout.get("argv"), list)
         or any(
@@ -6872,11 +7357,11 @@ def _validate_cell_session_result_against_done_checkpoint_impl(
             for argv in checkout["argv"]
         )
         or checkout.get("checkout_origin")
-        not in {"FRESH_CLONE", "EXISTING_CHECKOUT"}
+        not in {"FRESH_BASE_ONLY_FETCH", "EXISTING_CHECKOUT"}
         or (
-            checkout.get("checkout_origin") == "FRESH_CLONE"
+            checkout.get("checkout_origin") == "FRESH_BASE_ONLY_FETCH"
             and (
-                len(checkout["argv"]) != 2
+                len(checkout["argv"]) != 4
                 or checkout.get("materialization") is None
             )
         )
@@ -6892,6 +7377,14 @@ def _validate_cell_session_result_against_done_checkpoint_impl(
             for name in ("stdout", "stderr", "head", "initial_status")
         )
         or checkout.get("head") != expected_target["base_commit"]
+        or not _valid_history_isolation_evidence(
+            checkout.get("history_isolation"),
+            expected_commit=str(expected_target["base_commit"]),
+        )
+        or not isinstance(checkout.get("command_sandbox_content_hash"), str)
+        or SHA256.fullmatch(str(checkout["command_sandbox_content_hash"])) is None
+        or not isinstance(checkout.get("masked_image_files"), list)
+        or not isinstance(checkout.get("masked_image_directories"), list)
         or not _valid_checkout_materialization_evidence(
             checkout.get("materialization"),
             expected_commit=str(expected_target["base_commit"]),

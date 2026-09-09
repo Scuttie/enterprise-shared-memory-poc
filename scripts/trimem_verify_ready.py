@@ -65,6 +65,13 @@ from trimem_freeze import (  # noqa: E402
     OFFICIAL_SMOKE_PUBLIC_RESULT_PATH,
     check_freeze,
 )
+from trimem_dev_activation_diagnostic import (  # noqa: E402
+    DiagnosticContractError as DevActivationContractError,
+    load_and_validate_contract as load_dev_activation_contract,
+)
+from trimem_dev_activation_source_bank import (  # noqa: E402
+    load_committed_contracts as load_dev_activation_source_bank_plan,
+)
 from trimem_grader_smoke_protocol import (  # noqa: E402
     NOOP_BASELINE_CONTENT,
     NOOP_BASELINE_LOCK,
@@ -5400,8 +5407,104 @@ def validate_d122_exec_021_qdrant_recovery() -> None:
     )
 
 
+def validate_historical_d123_exec_022_evidence(
+    historical_request_head: str,
+) -> str:
+    """Validate an immutable ``_022`` ancestor as selection evidence only."""
+
+    current_head = git_head()
+    require(
+        isinstance(historical_request_head, str)
+        and HEX40.fullmatch(historical_request_head) is not None,
+        "diagnostic historical `_022` request head is invalid",
+    )
+    require(
+        historical_request_head != current_head
+        and _execution_head_is_ancestor(historical_request_head),
+        "diagnostic historical `_022` request is not a strict ancestor",
+    )
+    additions = subprocess.run(
+        [
+            "git",
+            "log",
+            "--format=%H",
+            "--diff-filter=A",
+            current_head,
+            "--",
+            d123_trigger.SENTINEL_PATH,
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    require(
+        additions.returncode == 0
+        and additions.stdout.splitlines() == [historical_request_head],
+        "diagnostic historical `_022` addition identity differs",
+    )
+    parents = subprocess.run(
+        [
+            "git",
+            "rev-list",
+            "--parents",
+            "-n",
+            "1",
+            historical_request_head,
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    parent_fields = parents.stdout.strip().split()
+    require(
+        parents.returncode == 0
+        and len(parent_fields) == 2
+        and parent_fields[0] == historical_request_head,
+        "diagnostic historical `_022` parent identity differs",
+    )
+    unchanged = subprocess.run(
+        [
+            "git",
+            "diff",
+            "--quiet",
+            historical_request_head,
+            current_head,
+            "--",
+            d123_trigger.SENTINEL_PATH,
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    target = ROOT / d123_trigger.SENTINEL_PATH
+    require(
+        unchanged.returncode == 0
+        and target.is_file()
+        and not target.is_symlink()
+        and target.read_bytes()
+        == _historical_git_file(
+            historical_request_head,
+            d123_trigger.SENTINEL_PATH,
+        ),
+        "diagnostic historical `_022` sentinel bytes changed",
+    )
+    request = d123_trigger.validate_sentinel_commit(
+        ROOT,
+        historical_request_head,
+        expected_parent=parent_fields[1],
+        require_checked_out_head=False,
+    )
+    require(
+        request.get("request_id") == d123_trigger.REQUEST_ID,
+        "diagnostic historical `_022` request identity differs",
+    )
+    return historical_request_head
+
+
 def validate_d123_exec_022_activation() -> str | None:
-    """Validate the D1.23 source or its exact sentinel-only ``_022`` child."""
+    """Validate the D1.23 source or its exact live sentinel-only child."""
 
     execution_head = d123_trigger.validate_optional_exec_022_boundary(ROOT)
     result = d123_trigger.validate_current_activation(ROOT)
@@ -5419,7 +5522,9 @@ def validate_d123_exec_022_activation() -> str | None:
     return execution_head
 
 
-def validate_runtime_and_candidates() -> None:
+def validate_runtime_and_candidates(
+    *, historical_request_head: str | None = None
+) -> None:
     validate_d15_credential_control_amendment()
     validate_d16_action_protocol_amendment()
     validate_d17_approval_consumer_amendment()
@@ -5436,7 +5541,10 @@ def validate_runtime_and_candidates() -> None:
     validate_d119_exec_019_recovery()
     validate_d120_exec_020_recovery()
     validate_d122_exec_021_qdrant_recovery()
-    validate_d123_exec_022_activation()
+    if historical_request_head is None:
+        validate_d123_exec_022_activation()
+    else:
+        validate_historical_d123_exec_022_evidence(historical_request_head)
     bundle = load_bundle()
     require(bundle.get("candidate_order") == list(CANDIDATE_IDS), "M2 candidate order drift")
     require(bundle.get("development_contract", {}).get("candidate_task_arm_runs") == 48, "M2 candidate run count drift")
@@ -5551,7 +5659,17 @@ def validate_runtime_and_candidates() -> None:
         path = ROOT / relative
         require(path.is_file() and len(path.read_bytes()) == expected.get("bytes") and hashlib.sha256(path.read_bytes()).hexdigest() == expected.get("sha256"), f"tool source lock drift: {relative}")
     docker = tool.get("docker_command_runner", {})
-    require((docker.get("container_workspace"), docker.get("pull"), docker.get("network"), docker.get("root_filesystem"), docker.get("host_environment_forwarded_to_container")) == ("/testbed", "never", "none", "read-only", False), "production command sandbox lock drift")
+    require((docker.get("schema"), docker.get("container_workspace"), docker.get("pull"), docker.get("network"), docker.get("root_filesystem"), docker.get("host_environment_forwarded_to_container")) == ("trimem/docker-command-runner/1.1", "/testbed", "never", "none", "read-only", False), "production command sandbox lock drift")
+    require(
+        docker.get("image_path_masking")
+        == {
+            "content_hash_binds_exact_masks": True,
+            "directory_projection": "read-only empty tmpfs",
+            "file_projection": "read-only /dev/null bind",
+            "overlapping_or_noncanonical_masks_rejected": True,
+        },
+        "production image-path mask lock drift",
+    )
     require(tool.get("benchmark_workspace", {}).get("all_tasks_require_digest_bound_command_runner") is True, "production workspace can omit command runner")
 
     required_methods = ("after_task_and_checkpoint", "resume_canonical_stream", "finalize_development", "run_coroutine")
@@ -5722,6 +5840,9 @@ def validate_workflows() -> None:
     loader_workflow = ROOT / ".github/workflows/ci-trimem-grader-loader.yml"
     smoke_workflow = ROOT / ".github/workflows/trimem-grader-smoke.yml"
     benchmark_workflow = ROOT / ".github/workflows/trimem-benchmark.yml"
+    diagnostic_workflow = (
+        ROOT / ".github/workflows/ci-trimem-dev-activation-diagnostic.yml"
+    )
     manual = [smoke_workflow, benchmark_workflow]
     for path in [*automatic, portability, loader_workflow, *manual]:
         text = path.read_text(encoding="utf-8")
@@ -5730,6 +5851,170 @@ def validate_workflows() -> None:
         require("inputs:" not in text, f"workflow has free-form inputs: {path.name}")
         for match in re.finditer(r"uses:\s*([^\s]+)", text):
             require(re.fullmatch(r"[^@\s]+@[0-9a-f]{40}", match.group(1)) is not None, f"workflow action is not commit-pinned: {path.name}")
+    diagnostic_text = diagnostic_workflow.read_text(encoding="utf-8")
+    for forbidden in ("continue-on-error", "|| true", ":latest", "pull_request_target:"):
+        require(
+            forbidden not in diagnostic_text,
+            f"forbidden diagnostic workflow construct {forbidden}",
+        )
+    for match in re.finditer(r"uses:\s*([^\s]+)", diagnostic_text):
+        require(
+            re.fullmatch(r"[^@\s]+@[0-9a-f]{40}", match.group(1)) is not None,
+            "diagnostic workflow action is not commit-pinned",
+        )
+    diagnostic_contract_job, diagnostic_execution_job = diagnostic_text.split(
+        "  diagnostic-execution:", 1
+    )
+    require(
+        "pull_request:" in diagnostic_contract_job
+        and "push:" in diagnostic_contract_job
+        and "workflow_dispatch:" in diagnostic_contract_job
+        and "python scripts/trimem_dev_activation_diagnostic.py contract"
+        in diagnostic_contract_job
+        and "reports/TRIMEM_DEV_ACTIVATION_DIAGNOSTIC*.md"
+        in diagnostic_contract_job
+        and "artifacts/trimem_v1/**" in diagnostic_contract_job
+        and "configs/trimem_v1/**" in diagnostic_contract_job
+        and "scripts/trimem_*.py" in diagnostic_contract_job
+        and "tests/trimem/e2e/**" in diagnostic_contract_job
+        and "configs/trimem_v1/dev_activation_source_bank_payloads/**"
+        in diagnostic_contract_job
+        and "configs/trimem_v1/m2_candidates/recall.json"
+        in diagnostic_contract_job
+        and "artifacts/trimem_v1/grader_image_lock.json"
+        in diagnostic_contract_job
+        and "scripts/trimem_benchmark_run.py" in diagnostic_contract_job
+        and "scripts/trimem_d117_checkout_rehearsal.py"
+        in diagnostic_contract_job
+        and "scripts/trimem_d118_grader_factory_rehearsal.py"
+        in diagnostic_contract_job
+        and "src/enterprise_memory/trimem/**" in diagnostic_contract_job
+        and "scripts/trimem_freeze.py" in diagnostic_contract_job
+        and "scripts/trimem_verify_ready.py" in diagnostic_contract_job
+        and "src/enterprise_memory/trimem/checkpoint.py"
+        in diagnostic_contract_job
+        and "src/enterprise_memory/trimem/retrieval_store.py"
+        in diagnostic_contract_job
+        and "tests/unit/test_trimem_working_retrieval.py"
+        in diagnostic_contract_job
+        and "tests/unit/test_trimem_postgres_retrieval.py"
+        in diagnostic_contract_job
+        and "tests/unit/test_trimem_dev_activation_executor.py"
+        in diagnostic_contract_job
+        and "tests/unit/test_trimem_dev_activation_github_capture.py"
+        in diagnostic_contract_job
+        and "tests/unit/test_trimem_dev_activation_source_bank.py"
+        in diagnostic_contract_job
+        and "secrets." not in diagnostic_contract_job
+        and "environment:" not in diagnostic_contract_job
+        and "OPENAI_API_KEY" not in diagnostic_contract_job
+        and "trimem_dev_activation_gate.py" not in diagnostic_contract_job,
+        "automatic diagnostic contract job is not credential-free",
+    )
+    require(
+        "diagnostic-approval-handshake:" in diagnostic_contract_job
+        and "github.run_attempt == 1" in diagnostic_contract_job
+        and "workflow_run_attempt=2" in diagnostic_contract_job
+        and "model_calls=0 grader_runs=0 paid_model_calls=0 total_usd=0"
+        in diagnostic_contract_job,
+        "diagnostic attempt-1 approval handshake is not clean/credential-free",
+    )
+    require(
+        "if: github.event_name == 'push' && github.run_attempt == 2"
+        in diagnostic_execution_job
+        and "github.run_attempt >= 2" not in diagnostic_execution_job
+        and "runs-on: [self-hosted, linux, x64, trimem-dev-activation-diagnostic]"
+        in diagnostic_execution_job
+        and "timeout-minutes: 7200" in diagnostic_execution_job
+        and "environment: trimem-benchmark-exec" in diagnostic_execution_job
+        and diagnostic_execution_job.count("          set -euo pipefail") > 0
+        and diagnostic_execution_job.count(
+            "          set -euo pipefail\n          umask 077"
+        )
+        == diagnostic_execution_job.count("          set -euo pipefail")
+        and "Verify cached protected runner toolchain before setup-python"
+        in diagnostic_execution_job
+        and diagnostic_execution_job.index(
+            "Verify cached protected runner toolchain before setup-python"
+        )
+        < diagnostic_execution_job.index("actions/setup-python@")
+        and "TRIMEM_DEV_ACTIVATION_APPROVAL_B64: ${{ secrets.TRIMEM_DEV_ACTIVATION_APPROVAL_B64 }}"
+        in diagnostic_execution_job
+        and "python -I -S scripts/trimem_dev_activation_gate.py"
+        in diagnostic_execution_job
+        and '--output-approval "$RUNNER_TEMP/trimem-dev-activation-approval.json"'
+        in diagnostic_execution_job
+        and "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
+        in diagnostic_execution_job
+        and diagnostic_execution_job.index(
+            "python -I -S scripts/trimem_freeze.py --check --require-git-tracked"
+        )
+        < diagnostic_execution_job.index("python -m pip install --require-hashes")
+        and "python scripts/trimem_install_pinned_gh.py"
+        in diagnostic_execution_job
+        and "python scripts/trimem_verify_gh_lock.py" in diagnostic_execution_job,
+        "diagnostic attempt-2 protected runner/approval gate differs",
+    )
+    diagnostic_execution_markers = (
+        "python scripts/trimem_d117_checkout_rehearsal.py",
+        "from trimem_harness_lock import prepare_harnesses",
+        "scripts/trimem_official_harness_loader_preflight.py",
+        "python scripts/trimem_d118_grader_factory_rehearsal.py",
+        "python -I -S scripts/trimem_dev_activation_gate.py",
+        "python scripts/trimem_dev_activation_executor.py prepare-images",
+        "python scripts/trimem_validate_openai_credential.py",
+        "python scripts/trimem_verify_openai_key_binding.py",
+        "python scripts/trimem_dev_activation_executor.py execute",
+        "python scripts/trimem_dev_activation_diagnostic.py aggregate",
+        "python scripts/trimem_dev_activation_executor.py cleanup-images",
+        "python scripts/trimem_evidence_inventory.py",
+        "openssl enc -aes-256-cbc -salt -pbkdf2",
+        "python scripts/trimem_verify_remote_custody.py",
+        "Remove plaintext and temporary diagnostic execution material",
+    )
+    require(
+        all(marker in diagnostic_execution_job for marker in diagnostic_execution_markers)
+        and [
+            diagnostic_execution_job.index(marker)
+            for marker in diagnostic_execution_markers
+        ]
+        == sorted(
+            diagnostic_execution_job.index(marker)
+            for marker in diagnostic_execution_markers
+        )
+        and diagnostic_execution_job.count(
+            "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        )
+        == 4
+        and "first_executor_status" in diagnostic_execution_job
+        and "retry_arguments+=(--resume)" in diagnostic_execution_job
+        and "executor-invocation-2.stdout.log" in diagnostic_execution_job
+        and "--workspace-root .trimem-exec/devdiag-workspaces"
+        in diagnostic_execution_job
+        and "--synthetic" not in diagnostic_execution_job
+        and "trimem_action_canary.py" not in diagnostic_execution_job
+        and "trimem_pull_locked_images.py" not in diagnostic_execution_job
+        and "trimem_benchmark_run.py" not in diagnostic_execution_job
+        and "trimem_official_grader.py" not in diagnostic_execution_job
+        and "docker run" not in diagnostic_execution_job.casefold()
+        and "postgres" not in diagnostic_execution_job.casefold()
+        and "qdrant" not in diagnostic_execution_job.casefold()
+        and "alembic" not in diagnostic_execution_job.casefold()
+        and "heldout" not in diagnostic_execution_job.casefold(),
+        "diagnostic production preparation/execution/evidence order differs",
+    )
+    diagnostic_secrets = set(
+        re.findall(r"\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)", diagnostic_text)
+    )
+    require(
+        diagnostic_secrets
+        == {
+            "OPENAI_API_KEY",
+            "TRIMEM_DEV_ACTIVATION_APPROVAL_B64",
+            "TRIMEM_EVIDENCE_PASSPHRASE",
+        },
+        "diagnostic workflow secret surface differs",
+    )
     for path in automatic:
         text = path.read_text(encoding="utf-8")
         require("pull_request:" in text and "trimem_pytest_no_skip.py" in text, f"automatic no-skip PR CI missing: {path.name}")
@@ -6393,6 +6678,90 @@ def validate_eol_policy() -> None:
     require(blob_attr.returncode == 0 and "text: unset" in blob_attr.stdout, "content-addressed evidence blobs are not binary-stable")
 
 
+def validate_dev_activation_diagnostic_contract(
+    *,
+    require_git_tracked: bool,
+) -> dict[str, Any]:
+    manifest, policy, cells, _ = load_dev_activation_contract(
+        ROOT,
+        require_source_bank=False,
+        require_tracked=require_git_tracked,
+    )
+    source_bank_plan, _, _, _source_dataset_specs = (
+        load_dev_activation_source_bank_plan(ROOT)
+    )
+    source_bank_plan_path = (
+        ROOT / "configs/trimem_v1/dev_activation_source_bank_plan.json"
+    )
+    source_status = "FROZEN_VERIFIED_TARGET_DISJOINT"
+    source_sha256: str | None = None
+    source_snapshot_sha256: str | None = None
+    source_covered_target_count = 0
+    source_zero_candidate_target_count = 12
+    try:
+        _, _, _, source_sha256 = load_dev_activation_contract(
+            ROOT,
+            require_source_bank=True,
+            require_tracked=require_git_tracked,
+        )
+        source_manifest = read_json(
+            ROOT / policy["source_bank"]["manifest_path"]
+        )
+        source_snapshot_sha256 = source_manifest["snapshot_sha256"]
+        source_covered_target_count = source_manifest["covered_target_count"]
+        source_zero_candidate_target_count = len(
+            source_manifest["zero_candidate_target_ids"]
+        )
+    except DevActivationContractError as exc:
+        reason = str(exc)
+        if reason not in {
+            "SOURCE_BANK_MANIFEST_MISSING",
+            "SOURCE_BANK_HASH_NOT_FROZEN",
+        }:
+            raise
+        source_status = reason
+    return {
+        "status": "FROZEN_CONTRACT_SOURCE_BANK_PENDING"
+        if source_sha256 is None
+        else "FROZEN_CONTRACT_SOURCE_BANK_READY",
+        "diagnostic_id": manifest["diagnostic_id"],
+        "cell_count": len(cells),
+        "arms": [row["arm_id"] for row in manifest["arms"]],
+        "source_bank_plan_status": source_bank_plan["status"],
+        "source_bank_plan_raw_sha256": hashlib.sha256(
+            source_bank_plan_path.read_bytes()
+        ).hexdigest(),
+        "source_bank_source_mode": source_bank_plan["source_universe"]["mode"],
+        "source_bank_declared_oracle_pr_count": len(
+            source_bank_plan["source_universe"]["oracle_source_prs"]
+        ),
+        "source_bank_status": source_status,
+        "source_bank_manifest_sha256": source_sha256,
+        "source_bank_snapshot_sha256": source_snapshot_sha256,
+        "source_bank_covered_target_count": source_covered_target_count,
+        "source_bank_zero_candidate_target_count": (
+            source_zero_candidate_target_count
+        ),
+        "selected_m2_candidate_id": policy["development_protocol_binding"][
+            "selected_candidate_id"
+        ],
+        "historical_exec_022_request_head": policy[
+            "development_protocol_binding"
+        ]["selection_execution_head"],
+        "selected_runtime_lock_sha256": policy[
+            "development_protocol_binding"
+        ]["historical_runtime_lock_sha256"],
+        "adaptive_runtime_lock_sha256": policy[
+            "development_protocol_binding"
+        ]["adaptive_runtime_lock_sha256"],
+        "external_approval_status": "MISSING_NOT_EVALUATED_BY_STATIC_READINESS",
+        "execution_allowed": False,
+        "model_calls_for_readiness": 0,
+        "official_grader_runs_for_readiness": 0,
+        "hard_caps": dict(policy["hard_caps"]),
+    }
+
+
 def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     check_freeze(ROOT, require_git_tracked=require_git_tracked)
     validate_smoke_attestation_policy()
@@ -6404,7 +6773,14 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
     validate_noop_baseline_audit(targets)
     validate_model_cost_environment()
     contracts = validate_p015_semantics_and_envelope_contracts()
-    validate_runtime_and_candidates()
+    dev_activation_diagnostic = validate_dev_activation_diagnostic_contract(
+        require_git_tracked=require_git_tracked
+    )
+    validate_runtime_and_candidates(
+        historical_request_head=dev_activation_diagnostic[
+            "historical_exec_022_request_head"
+        ]
+    )
     validate_workflows()
     credential = verify_bundle(ARTIFACT / "credential_free_e2e")
     request = read_json(CONFIG / "benchmark_exec_request.json")
@@ -6516,6 +6892,7 @@ def validate_static(require_git_tracked: bool) -> dict[str, Any]:
         "adapter_failure_envelope_contract_sha256": contracts[
             "adapter_failure_envelope_contract_sha256"
         ],
+        "dev_activation_diagnostic": dev_activation_diagnostic,
     }
 
 

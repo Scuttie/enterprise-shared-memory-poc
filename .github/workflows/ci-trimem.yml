@@ -57,27 +57,19 @@ jobs:
             --fixture tests/fixtures/trimem_d114/exec_013_post_setup_failure.json
           python -I -S scripts/trimem_d115_gate_contract.py \
             --fixture tests/fixtures/trimem_d115/exec_014_loader_failure.json
-          python -I -S scripts/trimem_d123_reseal.py --check
-          python -I -S scripts/trimem_development_trigger_d123.py \
-            --repository "$GITHUB_WORKSPACE" \
-            --validate-current
           python scripts/trimem_verify_ready.py --level static --require-git-tracked
           python - <<'PY'
           import json
-          from pathlib import Path
           import subprocess
           import sys
 
-          sentinel_present = Path(
-              "artifacts/trimem_v1/exec_requests/"
-              "DEVELOPMENT_TUNING_EXEC_REQUEST_022.json"
-          ).is_file()
           cases = (
               (
                   "benchmark-approval",
-                  0 if sentinel_present else 1,
-                  [] if sentinel_present else [
-                      "exact fresh `_022` sentinel is required"
+                  1,
+                  [
+                      "D1.23 credential-free activation validation failed: "
+                      "commits exist after the active `_022` request"
                   ],
               ),
               (
@@ -156,9 +148,7 @@ jobs:
                   raise SystemExit(
                       f"{level}: D1.23 split status differs: {observed_split!r}"
                   )
-              expected_dev_approval = (
-                  level == "benchmark-approval" and sentinel_present
-              )
+              expected_dev_approval = False
               if report.get("dev_approval_allowed") is not expected_dev_approval:
                   raise SystemExit(
                       f"{level}: D1.23 approval eligibility differs"

@@ -3891,15 +3891,15 @@ def test_workflows_are_pinned_no_input_fail_closed_and_protect_raw_evidence() ->
     assert "tests/unit/test_trimem_*.py" in static
     assert "tests/trimem/e2e/test_full_replay.py" in static
     assert "D1.23 source or sentinel-only boundary" in static
-    assert "scripts/trimem_development_trigger_d123.py" in static
+    assert "scripts/trimem_verify_ready.py" in static
     assert "scripts/trimem_d119_approval_secret.py --help" in static
-    assert "--validate-current" in static
+    assert "--level static --require-git-tracked" in static
     assert "python scripts/trimem_d115_reseal.py --check" not in static
     assert "scripts/trimem_d115_gate_contract.py" in static
     assert '"--require-git-tracked"' in static
     assert '"status": "PASS" if not expected_blockers else "FAIL_CLOSED"' in static
     assert "expected exact D1.23 readiness report" in static
-    assert "exact fresh `_022` sentinel is required" in static
+    assert "commits exist after the active `_022` request" in static
     assert "execution became allowed without external approval" in static
     assert "broad grader viability leaked" in static
     assert '"benchmark-exec"' in static

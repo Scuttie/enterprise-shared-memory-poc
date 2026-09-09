@@ -228,6 +228,31 @@ class CanonicalRetrievalStore:
         provenance = payload.get("provenance")
         if isinstance(provenance, Mapping):
             metadata["provenance"] = dict(provenance)
+        # DEV activation diagnostics may preload a frozen, read-only source
+        # pool.  Copy only its explicitly namespaced canonical metadata; the
+        # retrieval gate validates every required field and fails closed when
+        # any field is absent or malformed.  Ordinary records are unchanged.
+        diagnostic_safe_pool = payload.get("diagnostic_safe_pool")
+        if isinstance(diagnostic_safe_pool, Mapping):
+            for key in (
+                "source_task_id",
+                "source_dataset_id",
+                "source_repository",
+                "source_commit",
+                "source_timestamp",
+                "bank_type",
+                "verification_evidence_sha256",
+                "provenance_sha256",
+                "payload_sha256",
+                "permission_scope",
+                "tenant_scope",
+                "version_scope",
+                "path_scope",
+                "quarantined",
+                "target_derived",
+            ):
+                if key in diagnostic_safe_pool:
+                    metadata[key] = diagnostic_safe_pool[key]
 
         return MemoryRecord(
             memory_id=node.node_id,

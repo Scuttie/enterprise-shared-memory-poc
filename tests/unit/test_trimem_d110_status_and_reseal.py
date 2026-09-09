@@ -286,9 +286,14 @@ def test_d19_and_d110_triggers_are_immutable_history() -> None:
     assert "scripts/trimem_d111_gate_contract.py" in d111_reseal.IMPLEMENTATION_PATHS
 
 
-def test_tool_environment_lock_changes_only_d110_source_identities() -> None:
+def test_historical_tool_environment_lock_changes_only_d110_source_identities() -> None:
     reseal.verify_tool_environment_lock_amendment()
-    current = read(reseal.TOOL_ENVIRONMENT_LOCK_PATH)
+    current = json.loads(
+        reseal.git_blob(
+            reseal.D110_TOOL_ENVIRONMENT_LOCK_HEAD,
+            reseal.TOOL_ENVIRONMENT_LOCK_PATH,
+        ).decode("utf-8")
+    )
     historical = json.loads(
         reseal.git_blob(
             reseal.EXECUTION_HEAD,

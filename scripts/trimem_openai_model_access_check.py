@@ -52,17 +52,34 @@ def credential_binding_from_approval(document: Mapping[str, Any]) -> dict[str, s
     approval = document.get("approval")
     if not isinstance(approval, Mapping):
         raise ValueError("restricted approval binding is missing")
-    fields = {
-        "request_id": document.get("request_id"),
-        "execution_head": approval.get("approved_git_commit"),
-        "source_head": approval.get("approved_source_git_commit"),
-        "workflow_run_id": str(approval.get("approved_workflow_run_id", "")),
-        "workflow_run_attempt": str(
-            approval.get("approved_workflow_run_attempt", "")
-        ),
-        "model_id": MODEL_ID,
-        "approval_nonce": approval.get("approval_nonce"),
-    }
+    if document.get("schema") == "trimem/dev-activation-exec-approval/1.1":
+        fields = {
+            "request_id": approval.get("diagnostic_id"),
+            "execution_head": approval.get("git_head"),
+            "source_head": approval.get("source_bank_manifest_sha256"),
+            "workflow_run_id": str(
+                approval.get("approved_workflow_run_id", "")
+            ),
+            "workflow_run_attempt": str(
+                approval.get("approved_workflow_run_attempt", "")
+            ),
+            "model_id": approval.get("approved_model_id"),
+            "approval_nonce": approval.get("approval_nonce"),
+        }
+    else:
+        fields = {
+            "request_id": document.get("request_id"),
+            "execution_head": approval.get("approved_git_commit"),
+            "source_head": approval.get("approved_source_git_commit"),
+            "workflow_run_id": str(
+                approval.get("approved_workflow_run_id", "")
+            ),
+            "workflow_run_attempt": str(
+                approval.get("approved_workflow_run_attempt", "")
+            ),
+            "model_id": MODEL_ID,
+            "approval_nonce": approval.get("approval_nonce"),
+        }
     if not all(isinstance(value, str) and value for value in fields.values()):
         raise ValueError("restricted approval credential-binding fields differ")
     return fields  # type: ignore[return-value]

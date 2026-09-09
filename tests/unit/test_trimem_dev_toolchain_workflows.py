@@ -497,15 +497,15 @@ def test_toolchain_runs_production_round_trip_before_credentialed_attestation() 
         assert "OPENAI_API_KEY" not in block
         assert "GH_TOKEN" not in block
     assert "python -I -S scripts/trimem_freeze.py --check --require-git-tracked" in source_validation
-    assert "scripts/trimem_development_trigger_d123.py" in source_validation
+    assert "scripts/trimem_verify_ready.py" in source_validation
     assert "scripts/trimem_development_trigger_d122.py" not in source_validation
     assert "scripts/trimem_development_trigger_d121.py" not in source_validation
-    assert "python -I -S scripts/trimem_d123_reseal.py --check" in source_validation
+    assert "--level static" in source_validation
     assert "scripts/trimem_development_trigger_d119.py" not in source_validation
     assert "scripts/trimem_development_trigger_d118.py" not in source_validation
     assert "scripts/trimem_development_trigger_d117.py" not in source_validation
     assert "scripts/trimem_development_trigger_d116.py" not in source_validation
-    assert "--validate-current" in source_validation
+    assert "--require-git-tracked" in source_validation
     assert "python scripts/trimem_d115_reseal.py --check" not in source_validation
     assert "scripts/trimem_d115_gate_contract.py" in source_validation
     assert "scripts/trimem_d114_gate_contract.py" in source_validation

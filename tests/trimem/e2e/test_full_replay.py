@@ -221,10 +221,21 @@ def _target_task():
     )
 
 
-def _runtime(tmp_path, task, policy, lifecycle, index, model, evaluator):
+def _runtime(
+    tmp_path,
+    task,
+    policy,
+    lifecycle,
+    index,
+    model,
+    evaluator,
+    *,
+    diagnostic_telemetry=False,
+):
     retrieval = TriMemoryRetriever(
         index,
         RetrievalConfig(min_confidence=0.0, min_margin=0.0, ppr_iterations=24),
+        diagnostic_telemetry=diagnostic_telemetry,
     )
     controller = ActiveNodeTriMemController(retrieval, task_id=task.task_id)
     evidence = RawEvidenceLedger(tmp_path / task.task_id / "evidence")
@@ -327,6 +338,16 @@ def test_source_to_target_full_replay_traverses_dqn_storage_ppr_grader_and_credi
         assert result.grade.official is False
         assert result.patch
     assert all(row["active_node_id"] != "" for row in target_result.injections)
+    for observed_runtime in (source_runtime, target_runtime):
+        recall_payloads = [
+            json.loads(line)["payload"]
+            for line in observed_runtime.evidence.events_path.read_text(
+                encoding="utf-8"
+            ).splitlines()
+            if line and json.loads(line)["event_type"] == "memory_recall"
+        ]
+        assert recall_payloads
+        assert all("decision_telemetry" not in row for row in recall_payloads)
 
     lifecycle.resolve_unreused(next_task_succeeded=True)
     checkpoint = policy.freeze_checkpoint()
@@ -398,6 +419,107 @@ def test_checkpoint_resume_does_not_repeat_completed_model_calls(tmp_path):
     runtime.model_config_hash = sha256_bytes(b"changed-model-configuration")
     with pytest.raises(CheckpointMismatch, match="runtime lock changed"):
         runtime.run(task, arm="M2", run_id="resume-run", resume=True)
+
+
+def test_diagnostic_recall_telemetry_is_raw_and_checkpointed_exactly_once_on_resume(
+    tmp_path,
+):
+    schema = FeatureSchema(8, 8, 8, 3)
+    policy = DoubleDQNMemoryPolicy(
+        DoubleDQNConfig(
+            schema,
+            hidden_dim=4,
+            replay_capacity=8,
+            batch_size=1,
+            min_replay_size=1,
+            seed=7,
+        )
+    )
+    index = InMemoryMemoryGraphStore()
+    lifecycle = DQNExperienceLifecycle(
+        policy,
+        ConsolidationService(8, 8, 8),
+        index,
+        split="credential_free_replay",
+        evaluation=False,
+        clock=lambda: "2026-08-31T00:00:00Z",
+    )
+    task = _source_task()
+    model = ReplayModelGateway(_replay_resolver)
+    runtime = _runtime(
+        tmp_path,
+        task,
+        policy,
+        lifecycle,
+        index,
+        model,
+        lambda files: ("casefold" in files["src/loader.py"], "passed", ""),
+        diagnostic_telemetry=True,
+    )
+
+    with pytest.raises(InjectedCrash):
+        runtime.run(
+            task,
+            arm="M2",
+            run_id="diagnostic-resume",
+            crash_after_checkpoints=2,
+        )
+    checkpoint_store = FileCheckpointStore(
+        tmp_path / task.task_id / "checkpoints"
+    )
+    prepared = checkpoint_store.load(
+        "diagnostic-resume", required_config_hashes=None
+    )
+    assert prepared.state == "RECALL_PREPARED"
+    prepared_rows = prepared.prepared_request["recall_decision"][
+        "decision_telemetry"
+    ]
+    terminal_rows = prepared.terminal_payload["recall_decisions"]
+    assert prepared_rows
+    assert {
+        row["recall_attempt_id"] for row in prepared_rows
+    } <= {
+        row["recall_attempt_id"] for row in terminal_rows
+    }
+    duplicate_terminal = dict(prepared.terminal_payload)
+    duplicate_terminal["recall_decisions"] = [
+        *terminal_rows,
+        dict(terminal_rows[0]),
+    ]
+    with pytest.raises(ValueError, match="checkpoint recall telemetry is malformed"):
+        replace(prepared, terminal_payload=duplicate_terminal)
+    unbound_terminal = dict(prepared.terminal_payload)
+    unbound_terminal.pop("recall_decisions")
+    with pytest.raises(ValueError, match="prepared recall telemetry is malformed"):
+        replace(prepared, terminal_payload=unbound_terminal)
+
+    result = runtime.run(
+        task, arm="M2", run_id="diagnostic-resume", resume=True
+    )
+    assert result.resolved is True
+    finished = checkpoint_store.load(
+        "diagnostic-resume",
+        required_config_hashes=None,
+        required_evidence_hash=result.evidence_tail_hash,
+    )
+    rows = finished.terminal_payload["recall_decisions"]
+    attempt_ids = [row["recall_attempt_id"] for row in rows]
+    assert len(attempt_ids) == len(set(attempt_ids))
+
+    events = [
+        json.loads(line)
+        for line in runtime.evidence.events_path.read_text(encoding="utf-8").splitlines()
+        if line
+    ]
+    recall_events = [
+        event for event in events if event["event_type"] == "memory_recall"
+    ]
+    raw_rows = [
+        row
+        for event in recall_events
+        for row in event["payload"]["decision_telemetry"]
+    ]
+    assert [row["recall_attempt_id"] for row in raw_rows] == attempt_ids
 
 
 @pytest.mark.parametrize("terminal_checkpoint", [7, 8, 9, 10, 11, 12])

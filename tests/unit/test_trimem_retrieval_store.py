@@ -145,6 +145,59 @@ def test_private_episode_projection_is_hash_bound_and_builds_edge_adjacency():
     assert record.metadata["provenance"]["result_hash"] == "sha256:result"
 
 
+def test_canonical_projection_copies_only_namespaced_diagnostic_safe_pool_metadata():
+    store = InMemoryTriMemStore()
+    context = AccessContext("org-1", "alice")
+    graph = UserEpisodicGraph(
+        graph_id="diagnostic-source-pool",
+        org_id=context.org_id,
+        owner_user_id=context.user_id,
+        repository_id="acme/math",
+        temporal=_temporal(),
+    )
+    safe_pool = {
+        "source_task_id": "historical-task",
+        "source_dataset_id": "dataset@revision",
+        "source_repository": "source/repository",
+        "source_commit": "b" * 40,
+        "source_timestamp": "2025-01-02T03:04:05Z",
+        "bank_type": "HISTORICAL_VERIFIED",
+        "verification_evidence_sha256": "c" * 64,
+        "provenance_sha256": "d" * 64,
+        "payload_sha256": "e" * 64,
+        "permission_scope": "PUBLIC_READ",
+        "tenant_scope": "BENCHMARK_ISOLATED",
+        "version_scope": "EXACT_SOURCE_COMMIT",
+        "path_scope": "src/",
+        "quarantined": False,
+        "target_derived": False,
+    }
+    episode = _node(
+        graph,
+        "diagnostic-memory",
+        NodeType.EPISODE,
+        _payload(
+            version="b" * 40,
+            diagnostic_safe_pool=safe_pool,
+            # A lookalike top-level key is not an authority source.
+            permission_scope="UNTRUSTED_TOP_LEVEL",
+        ),
+    )
+    store.put_graph(context, graph)
+    store.put_node(context, episode)
+
+    record = CanonicalRetrievalStore(store).snapshot(
+        MemoryKind.EPISODIC,
+        user_id="alice",
+        org_id="org-1",
+        repository="acme/math",
+    ).records["diagnostic-memory"]
+    assert {
+        key: record.metadata[key] for key in safe_pool
+    } == safe_pool
+    assert record.metadata["permission_scope"] == "PUBLIC_READ"
+
+
 def test_private_owner_org_and_repository_queries_are_non_disclosing():
     store = InMemoryTriMemStore()
     alice = AccessContext("org-1", "alice")

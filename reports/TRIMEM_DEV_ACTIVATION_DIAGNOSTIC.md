@@ -7,15 +7,169 @@ result of DEV EXEC-022. It is not an M2 selection run, a held-out estimate, or
 evidence for a final performance claim.
 
 ```text
-TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = EXEC_004_ZERO_SCIENTIFIC_WORK_SOLVER_SANDBOX_MOUNT_FAILURE_PRESERVED
+TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = COMPLETE_36_OF_36_OFFICIAL_CELLS
+EXECUTION_HEAD = be0aa3fc567cda91b05df9794d83ff0bfc76a540
+WORKFLOW_RUN = 34401179674_ATTEMPT_2_SUCCESS
 HISTORICAL_ABSTENTION_ROOT_CAUSE = UNIDENTIFIABLE_FROM_RETAINED_EVIDENCE
 SOURCE_BANK = FROZEN_VERIFIED_TARGET_DISJOINT_12_OF_12
-RECOVERY_IMPLEMENTATION = CREDENTIAL_FREE_ALL_12_REHEARSAL_PASS_REMOTE_CI_PENDING
-MODEL_EXECUTION = NOT_STARTED
-OFFICIAL_GRADER_EXECUTION = NOT_STARTED
-PAID_MODEL_CALLS_THIS_DIAGNOSTIC = 0
-USD_THIS_DIAGNOSTIC = 0
+MODEL = gpt-5.4-mini-2026-03-17
+MODEL_EXECUTION = COMPLETE_36_OF_36
+OFFICIAL_GRADER_EXECUTION = COMPLETE_36_OF_36
+PAID_MODEL_CALLS_THIS_DIAGNOSTIC = 372
+USD_THIS_DIAGNOSTIC = 2.940267450000
+VERDICT = FORCED_MEMORY_NO_DEV_LIFT_READER_OR_CONTENT_LIMITED
+HELDOUT_EXECUTED = NO
+COMPONENT_ABLATION_EXECUTED = NO
+PROTECTED_ENVIRONMENT_SECRETS_REMAINING = 0
 ```
+
+## Final diagnostic result
+
+Run [34401179674 attempt 2](https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34401179674)
+completed successfully on the exact execution head. All 36 fresh cells reached
+a terminal journal state and all 36 were scored by the official grader. The
+public aggregate status is `COMPLETE_36_OF_36_OFFICIAL_CELLS`.
+
+| arm | injected tasks | total injections | terminal/12 | partial patch | no-op | solved/12 | Pass@1 | model calls | USD |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| C0 | 0 | 0 | 12 | 1 | 11 | 1 | 8.33% | 119 | 0.839772300000 |
+| C1 | 12 | 12 | 12 | 1 | 11 | 0 | 0.00% | 124 | 1.046211000000 |
+| C2 | 12 | 12 | 12 | 1 | 11 | 1 | 8.33% | 129 | 1.054284150000 |
+
+Equal maximum budgets did not produce equal actual compute. Exact accounting
+was:
+
+| arm | decomposition | solve | extraction | input tokens | cached input | output tokens | model wall ms | tool wall ms | grader wall ms | task wall ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| C0 | 12 | 95 | 12 | 732,130 | 9,984 | 66,092 | 463,344 | 1,446 | 587,720 | 1,217,154 |
+| C1 | 12 | 100 | 12 | 935,930 | 16,640 | 78,999 | 621,972 | 1,412 | 586,054 | 1,380,818 |
+| C2 | 12 | 105 | 12 | 1,019,431 | 13,312 | 66,377 | 610,093 | 1,853 | 586,677 | 1,392,991 |
+| total | 36 | 300 | 36 | 2,687,491 | 39,936 | 211,468 | 1,695,409 | 4,711 | 1,760,451 | 3,990,963 |
+
+There were no C2-minus-C0 target-level flips. C2-minus-C1 had one
+fail-to-pass flip, `swebench_verified--django__django-16100`; C1-minus-C0 had
+the opposite pass-to-fail flip on that same target. Django was the only
+officially solved target in C0 and C2. C1's only partial patch was Bat and did
+not pass. The C0 SymPy cell contained one model failure, recorded a canonical
+no-op, and was still officially graded; execution continued as required.
+
+The adaptive horizon granted two four-step extensions: C1 Bat and C2 Django.
+There were no second extensions, `AGENT_COMPLETED` occurred 0 times, and
+`PER_SUBTASK_STEP_CAP_REACHED` occurred 35 times. The remaining terminal cell
+was the contained C0 SymPy model failure.
+
+## Abstention diagnosis
+
+The retained EXEC-022 evidence cannot support a fabricated six-way split of
+the historical 179 decisions. Fourteen are known intentional M0 no-memory
+controls. The other 165 lack candidate funnel, scores, thresholds, Q values,
+and stable recall-attempt identities in the historical raw schema, so their
+final reason remains `UNKNOWN_NOT_RECORDED_EXEC_022`. The committed 179-row
+projection records every requested field as known, not applicable, or unknown;
+it does not invent target/subtask attribution. The historical zero-injection
+root cause therefore remains unidentifiable from retained evidence.
+
+The fresh C1/C2 telemetry is fully classified:
+
+| requested reason class | count |
+| --- | ---: |
+| no candidate generated | 50 |
+| rejected by permission/tenant/repository/path/version/provenance/leakage gate | 0 |
+| below semantic/PPR threshold | 0 |
+| DQN selected ABSTAIN despite valid candidate | 0 |
+| context/injection budget rejection | 1 |
+| other explicit reason | 0 |
+
+The single context/injection-budget rejection is C2 Django's second recall
+after the same top candidate had already been injected
+(`ALREADY_INJECTED_REJECTION`). C1 recorded 24 `NO_CANDIDATE_GENERATED` and 12
+`INJECTED` decisions. C2 recorded 26 `NO_CANDIDATE_GENERATED`, 12 `INJECTED`,
+and one `ALREADY_INJECTED_REJECTION`. `Q_USE` and `Q_ABSTAIN` are `null` and
+the router policy is `N/A`, because the frozen DQN is a post-grade retention
+policy rather than a recall-time USE/ABSTAIN router.
+
+Only `ORG_SEMANTIC` supplied candidates. C1 covered 12/12 targets with 12 safe
+candidate observations; C2 covered 12/12 with 13 observations because of the
+extra Django recall. `EPISODIC` and `USER_SEMANTIC` coverage was 0/12. Every
+accepted ORG candidate had one candidate before and after safety filtering,
+embedding score 1.0, PPR score 1.0, minimum confidence 0.1, and minimum margin
+0.0. Both C1 and C2 injected the same memory into the matching target, so the
+forced-safe bypass did not increase exposure in this frozen bank.
+
+## Injected-memory overlap
+
+The following twelve source memories were each injected once in C1 and once
+in C2. All source repositories matched their target repositories; all sources
+were independently verified historical PRs and none was target-derived. For
+all rows, target-issue path overlap and error overlap were zero. Active-subtask
+error overlap was also zero. The table's active-subtask column is the C1
+projection; the fixed target-issue overlap columns apply equally to C1 and C2.
+
+| target | injected memory / source PR | C1 active file or symbol overlap | target-issue API overlap | target-issue token overlap |
+| --- | --- | --- | ---: | ---: |
+| `django__django-16100` | `dev-oracle-pr-cc2b26f26fea85cbc5e74038` / `django__django--7143` | `django/contrib/admin/options.py` | 0 | 7 |
+| `sympy__sympy-23262` | `dev-oracle-pr-4812e05cf6aa81c3adb7f0f9` / `sympy__sympy--21546` | none | 0 | 14 |
+| `sphinx-doc__sphinx-11445` | `dev-oracle-pr-683fd95f612e2df649b1706b` / `sphinx-doc__sphinx--6746` | `sphinx/transforms/i18n.py`; symbol `rst_prolog` | 0 | 5 |
+| `matplotlib__matplotlib-25311` | `dev-oracle-pr-ed4e79f0ae2c09ac44398c33` / `matplotlib__matplotlib--23913` | `lib/matplotlib/tests/test_legend.py` | 2 | 12 |
+| `mui__material-ui-29880` | `dev-oracle-pr-3bdfdaaa518355d9e1f9b9d8` / `mui__material-ui--24794` | none | 2 | 26 |
+| `ponylang__ponyc-1981` | `dev-oracle-pr-24cbaa00f46b3199d9590a95` / `ponylang__ponyc--1130` | `src/libponyc/expr/lambda.c` | 0 | 1 |
+| `clap-rs__clap-3960` | `dev-oracle-pr-c931d65f581b85c01eef7e48` / `clap-rs__clap--3334` | none | 0 | 24 |
+| `facebook__zstd-938` | `dev-oracle-pr-7be5cc2797a009597e08cf88` / `facebook__zstd--656` | `programs/util.h` | 1 | 2 |
+| `sharkdp__bat-1276` | `dev-oracle-pr-f1e7262f5174a5eea5458477` / `sharkdp__bat--579` | `src/printer.rs` | 0 | 9 |
+| `catchorg__Catch2-1616` | `dev-oracle-pr-0859e0498c3f1036248ea022` / `catchorg__Catch2--845` | none | 0 | 15 |
+| `clap-rs__clap-3394` | `dev-oracle-pr-e695df4afd5cce205694e452` / `clap-rs__clap--2876` | none | 0 | 10 |
+| `cli__cli-869` | `dev-oracle-pr-1b9c47efc4c90f09bc94c418` / `cli__cli--302` | `command/pr.go`, `command/pr_checkout.go`, `command/pr_checkout_test.go` | 2 | 18 |
+
+Across the twelve distinct target-memory pairs, repository overlap was 12/12
+in each arm. C1 active declared overlap covered files on 7/12 targets (9 file
+entries), symbols on 1/12, APIs on 0/12, and errors on 0/12. C2 covered files
+on 5/12 targets (7 entries), symbols on 1/12, APIs on Django only (2 entries:
+`router.db_for_write` and `transaction.atomic`), and errors on 0/12. The frozen
+target-issue comparison, identical for both arms, had API overlap on 4/12
+targets (7 entries), symbol overlap on 1/12, path and error overlap on 0/12,
+and positive token overlap on 12/12 (143 tokens per arm).
+
+## Diagnostic verdict
+
+Safe candidate coverage was sufficient at 12/12, but C2 equalled C0 at 1/12.
+The frozen primary verdict is therefore:
+
+```text
+FORCED_MEMORY_NO_DEV_LIFT_READER_OR_CONTENT_LIMITED
+```
+
+C1 did activate and inject on all twelve targets, but it scored 0/12 versus
+C0's 1/12, so `CURRENT_ROUTER_ACTIVATED_POSITIVE` does not apply. Because C1
+and C2 exposed every target to the same memory, C2-minus-C1 is not a
+forced-versus-abstained router contrast in this execution. The result shows no
+DEV lift from these safe historical memories under this reader; it does not
+measure HELDOUT performance.
+
+## Evidence custody and cleanup
+
+- Public aggregate artifact: ID `10126754892`, raw ZIP SHA-256
+  `c289adf462554901ffad0801e9ce40acef8f494a60dfb6c1f0b04f68e4eab906`.
+- Encrypted restricted artifact: ID `10126758836`, raw ZIP SHA-256
+  `b4d5011dcaa094f84099cb3cb86550db7878ab6b326d5bf3b7975a208a74a17f`.
+- Inventory artifact: ID `10126760434`, raw ZIP SHA-256
+  `954204416e69b774221d28f99273b23fa5b1ca505f7b6b9d13ef9a5af9296215`.
+- Remote-custody artifact: ID `10126763114`, raw ZIP SHA-256
+  `7f146587d165b366736e7c31a1e3071be850229fb8bb6c0dd18d8f02a1660ac4`.
+- Public aggregate SHA-256:
+  `50523d22a49410377eb9234ca324f050229eb1403c53da1d7359a84b29bdd498`.
+- Restricted inventory seal:
+  `2b06f38e4eee082dcab39a99eb6f63ea9c37dce65ef69c777db19301b2e5fecb`.
+
+The four downloaded raw ZIPs matched GitHub artifact metadata exactly. A
+zero-plaintext streaming decrypt matched all 4,095 restricted files and
+113,065,654 bytes bidirectionally against the inventory. Recomputed,
+restricted, and public aggregate bytes were identical. Workflow custody and
+plaintext cleanup passed; the three protected environment secrets were
+deleted and the environment is empty; the ephemeral runner was deregistered
+and its exact 774 MB local runner directory was removed. The original user
+API-key file was not modified or deleted.
+
+## Pre-execution recovery history
 
 Run `34386328359` attempt 2 passed all 36 base-only workspace preflights but
 stopped in the first pre-spend solver sandbox: the capability-free
@@ -37,10 +191,10 @@ execution also passed twice with identical report SHA-256
 `5f8f5b98570e444e09bffc27b82a7bd7c18fdb428243ff28ad08d34176c08fe7`.
 Across these four local passes the infrastructure totals were 48 image-config
 inspections and 80 non-grader probe containers; model/API, official grader,
-token, and USD totals remained zero. These hashes are non-durable local
-observations; the workflow's restricted evidence will make the rehearsal
-durable on the exact remote head. Remote exact-head CI is still required
-before a new execution approval is materialized.
+token, and USD totals remained zero. These hashes were initially non-durable
+local observations. Run 34401179674 later preserved the rehearsal evidence on
+the exact remote head, after all 22 exact-head credential-free workflows had
+passed, and entered execution only with the fresh attempt-2 approval.
 
 The rehearsed byte identities were executor
 `b0285478396dc6310f66f0ae9d13921fbf306689b67037160f54021450ca0650`,
@@ -208,8 +362,8 @@ The instance-ID suffix is treated only as the target solution-PR identity and
 is never used as the target issue number. The chronology cache and all 60
 public raw responses (59 GitHub plus one Trac page), together with 12 dedicated
 payloads, are content-addressed and included in the explicit research freeze.
-Execution remains blocked until the corrected exact head has passed CI and a
-fresh exact run-attempt approval passes.
+This pre-execution gate was later satisfied by exact head
+`be0aa3fc567cda91b05df9794d83ff0bfc76a540` and run 34401179674 attempt 2.
 Partial coverage remains a valid execution shape for future rebuilt banks, but
 anything below 12/12 takes verdict precedence as
 `RETRIEVAL_BANK_COVERAGE_INSUFFICIENT`.
@@ -301,5 +455,6 @@ requires a C1-positive target flip on a target that actually received a C1
 injection; an injection and a positive flip on disjoint targets are not treated
 as causal activation evidence.
 
-No HELDOUT run, component ablation, model change, benchmark generation, or
-official grading has been performed during this implementation stage.
+No HELDOUT run, component ablation, model change, or benchmark generation was
+performed. The only new official grading was the authorized 36-cell diagnostic
+reported above.

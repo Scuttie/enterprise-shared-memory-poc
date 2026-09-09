@@ -40,6 +40,16 @@ TOOL_NAMES = frozenset({
 
 _DIGEST_IMAGE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/:@-]*@sha256:[0-9a-f]{64}$")
 _CONTAINER_PATH = re.compile(r"^/(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$")
+_NUMERIC_CONTAINER_USER = re.compile(r"^[1-9][0-9]{0,9}:[1-9][0-9]{0,9}$")
+DEFAULT_CONTAINER_USER = "1000:1000"
+
+
+def _is_link_or_reparse(path: Path) -> bool:
+    observed = os.lstat(path)
+    return stat.S_ISLNK(observed.st_mode) or bool(
+        getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+        & getattr(observed, "st_file_attributes", 0)
+    )
 
 
 def _masked_container_paths(values: object, *, label: str) -> tuple[str, ...]:
@@ -137,7 +147,7 @@ class DockerSandboxCommandRunner:
     boundary from silently resolving a tag or downloading an image.
     """
 
-    schema_version = "trimem/docker-command-runner/1.1"
+    schema_version = "trimem/docker-command-runner/1.2"
 
     def __init__(
         self,
@@ -151,6 +161,7 @@ class DockerSandboxCommandRunner:
         cpu_limit: str = "4",
         pids_limit: int = 1024,
         tmpfs_size_bytes: int = 1_073_741_824,
+        container_user: str = DEFAULT_CONTAINER_USER,
         masked_image_files: tuple[str, ...] = (),
         masked_image_directories: tuple[str, ...] = (),
     ):
@@ -164,6 +175,13 @@ class DockerSandboxCommandRunner:
             raise ValueError("command output cap must be in 1024..16777216 bytes")
         if int(pids_limit) <= 0 or int(tmpfs_size_bytes) <= 0:
             raise ValueError("container resource limits must be positive")
+        if _NUMERIC_CONTAINER_USER.fullmatch(str(container_user)) is None:
+            raise ValueError("container user must be a non-root numeric uid:gid")
+        container_uid, container_gid = (
+            int(value) for value in str(container_user).split(":", 1)
+        )
+        if max(container_uid, container_gid) > 2_147_483_647:
+            raise ValueError("container user numeric uid/gid is out of range")
         self.image = str(image)
         self.docker_binary = str(docker_binary)
         self.container_workspace = container_workspace.rstrip("/") or "/workspace"
@@ -173,6 +191,9 @@ class DockerSandboxCommandRunner:
         self.cpu_limit = str(cpu_limit)
         self.pids_limit = int(pids_limit)
         self.tmpfs_size_bytes = int(tmpfs_size_bytes)
+        self.container_user = str(container_user)
+        self.container_uid = container_uid
+        self.container_gid = container_gid
         self.masked_image_files = _masked_container_paths(
             masked_image_files, label="masked image files"
         )
@@ -204,6 +225,8 @@ class DockerSandboxCommandRunner:
             },
             "root_filesystem": "read_only_except_checkout_and_tmpfs",
             "checkout_git_metadata": "nested_read_only_bind",
+            "container_user": self.container_user,
+            "container_user_policy": "fixed_non_root_numeric_checkout_owner",
             "masked_image_files": list(self.masked_image_files),
             "masked_image_file_source": "/dev/null",
             "masked_image_directories": list(self.masked_image_directories),
@@ -226,10 +249,22 @@ class DockerSandboxCommandRunner:
         cwd: Optional[str],
         timeout_seconds: int,
     ) -> PublicCommandResult:
-        checkout = Path(root).resolve(strict=True)
-        git_metadata = (checkout / ".git").resolve(strict=True)
-        if not checkout.is_dir() or not git_metadata.is_dir():
+        lexical_checkout = Path(root).absolute()
+        lexical_git_metadata = lexical_checkout / ".git"
+        if (
+            _is_link_or_reparse(lexical_checkout)
+            or _is_link_or_reparse(lexical_git_metadata)
+        ):
+            raise ToolExecutionError("command root or Git metadata is linked")
+        checkout = lexical_checkout.resolve(strict=True)
+        git_metadata = lexical_git_metadata.resolve(strict=True)
+        if (
+            not checkout.is_dir()
+            or not git_metadata.is_dir()
+            or git_metadata != checkout / ".git"
+        ):
             raise ToolExecutionError("command root is not a Git checkout")
+        self._validate_checkout_mount_owner(checkout, git_metadata)
         if "," in str(checkout):
             raise ToolExecutionError("Docker mount source containing a comma is unsupported")
         if not argv or any(not isinstance(item, str) or not item or "\x00" in item for item in argv):
@@ -334,6 +369,33 @@ class DockerSandboxCommandRunner:
             output_truncated=output_truncated,
         )
 
+    def _validate_checkout_mount_owner(
+        self,
+        checkout: Path,
+        git_metadata: Path,
+    ) -> None:
+        """Require the frozen container identity to own both bind roots.
+
+        The protected runner creates workspaces under ``umask 077``.  Docker's
+        image-default root user cannot traverse those directories after all
+        capabilities are dropped, and adding DAC capabilities would weaken the
+        isolation boundary.  Running as the already-frozen host service
+        identity preserves the private modes and keeps the checkout writable.
+        """
+
+        required_mode = stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR
+        for label, path in (("checkout", checkout), ("Git metadata", git_metadata)):
+            observed = path.stat()
+            observed_mode = stat.S_IMODE(observed.st_mode)
+            if (
+                getattr(observed, "st_uid", None) != self.container_uid
+                or getattr(observed, "st_gid", None) != self.container_gid
+                or observed_mode & required_mode != required_mode
+            ):
+                raise ToolExecutionError(
+                    f"{label} owner/mode differs from frozen container user"
+                )
+
     def _docker_command(
         self,
         *,
@@ -348,6 +410,7 @@ class DockerSandboxCommandRunner:
             "--network", "none", "--cap-drop", "ALL",
             "--security-opt", "no-new-privileges", "--pids-limit", str(self.pids_limit),
             "--memory", self.memory_limit, "--cpus", self.cpu_limit,
+            "--user", self.container_user,
             "--read-only", "--env", "CI=1", "--env", "HOME=/tmp/trimem-home",
             "--env", "PYTHONDONTWRITEBYTECODE=1", "--env", "TMPDIR=/tmp",
             "--tmpfs", f"/tmp:rw,nosuid,nodev,size={self.tmpfs_size_bytes}",
@@ -1118,6 +1181,7 @@ def _docker_cli_environment() -> dict[str, str]:
 
 
 __all__ = [
+    "DEFAULT_CONTAINER_USER",
     "DockerSandboxCommandRunner",
     "GitCheckoutWorkspace",
     "GitCheckoutWorkspaceFactory",

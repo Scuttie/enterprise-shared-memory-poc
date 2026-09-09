@@ -40,7 +40,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from enterprise_memory.trimem.agent_runtime import TriMemAgentRuntime  # noqa: E402
 from enterprise_memory.trimem.benchmark_seed import seed_benchmark_identities  # noqa: E402
-from enterprise_memory.trimem.git_workspace import DockerSandboxCommandRunner, GitCheckoutWorkspaceFactory  # noqa: E402
+from enterprise_memory.trimem.git_workspace import DEFAULT_CONTAINER_USER, DockerSandboxCommandRunner, GitCheckoutWorkspaceFactory  # noqa: E402
 from enterprise_memory.trimem.arms import CurrentV03MemoryController  # noqa: E402
 from enterprise_memory.trimem.postgres_retrieval import production_v03_controller_factory  # noqa: E402
 from enterprise_memory.trimem.production_runtime import BenchmarkArmSession, open_benchmark_arm  # noqa: E402
@@ -5659,7 +5659,23 @@ def validate_runtime_and_candidates(
         path = ROOT / relative
         require(path.is_file() and len(path.read_bytes()) == expected.get("bytes") and hashlib.sha256(path.read_bytes()).hexdigest() == expected.get("sha256"), f"tool source lock drift: {relative}")
     docker = tool.get("docker_command_runner", {})
-    require((docker.get("schema"), docker.get("container_workspace"), docker.get("pull"), docker.get("network"), docker.get("root_filesystem"), docker.get("host_environment_forwarded_to_container")) == ("trimem/docker-command-runner/1.1", "/testbed", "never", "none", "read-only", False), "production command sandbox lock drift")
+    require((docker.get("schema"), docker.get("container_workspace"), docker.get("pull"), docker.get("network"), docker.get("root_filesystem"), docker.get("host_environment_forwarded_to_container")) == ("trimem/docker-command-runner/1.2", "/testbed", "never", "none", "read-only", False), "production command sandbox lock drift")
+    require(
+        docker.get("container_user") == "1000:1000"
+        and docker.get("container_user_policy")
+        == "fixed_non_root_numeric_checkout_owner",
+        "production command sandbox container identity drift",
+    )
+    require(
+        DockerSandboxCommandRunner.schema_version == docker.get("schema")
+        and DEFAULT_CONTAINER_USER == docker.get("container_user")
+        and docker.get("checkout_mount_owner") == DEFAULT_CONTAINER_USER
+        and docker.get("container_supplementary_groups") == []
+        and "--group-add" not in inspect.getsource(
+            DockerSandboxCommandRunner._docker_command
+        ),
+        "implementation/frozen container identity drift",
+    )
     require(
         docker.get("image_path_masking")
         == {
@@ -5949,6 +5965,21 @@ def validate_workflows() -> None:
         == diagnostic_execution_job.count("          set -euo pipefail")
         and "Verify cached protected runner toolchain before setup-python"
         in diagnostic_execution_job
+        and 'test "$(id -u)" = "1000"' in diagnostic_execution_job
+        and 'test "$(id -g)" = "1000"' in diagnostic_execution_job
+        and 'test "$(id -G)" = "1000 108"' in diagnostic_execution_job
+        and 'test -z "${DOCKER_HOST+x}"' in diagnostic_execution_job
+        and 'test -z "${DOCKER_CONTEXT+x}"' in diagnostic_execution_job
+        and 'test "$(docker context show)" = "default"'
+        in diagnostic_execution_job
+        and 'test "$(stat -Lc \'%u:%g\' /var/run/docker.sock)" = "0:108"'
+        in diagnostic_execution_job
+        and "unix:///var/run/docker.sock" in diagnostic_execution_job
+        and "{{json .SecurityOptions}}" in diagnostic_execution_job
+        and "rootless" in diagnostic_execution_job
+        and "userns" in diagnostic_execution_job
+        and 'test "$(docker info --format \'{{.DockerRootDir}}\')" = "/var/lib/docker"'
+        in diagnostic_execution_job
         and diagnostic_execution_job.index(
             "Verify cached protected runner toolchain before setup-python"
         )
@@ -5972,6 +6003,43 @@ def validate_workflows() -> None:
         and "python scripts/trimem_verify_gh_lock.py" in diagnostic_execution_job,
         "diagnostic attempt-2 protected runner/approval gate differs",
     )
+    prebilling_heading = (
+        "- name: Rehearse exact 12 solver sandboxes before billing credential"
+    )
+    credential_heading = "- name: Validate exact OpenAI credential format"
+    prebilling_start = diagnostic_execution_job.index(prebilling_heading)
+    prebilling_end = diagnostic_execution_job.index(
+        credential_heading, prebilling_start
+    )
+    prebilling_step = diagnostic_execution_job[prebilling_start:prebilling_end]
+    prebilling_command = (
+        "python scripts/trimem_dev_activation_executor.py "
+        "rehearse-solver-sandboxes"
+    )
+    require(
+        diagnostic_execution_job.count(prebilling_heading) == 1
+        and diagnostic_execution_job.count(prebilling_command) == 1
+        and "env:" not in prebilling_step
+        and "secrets." not in prebilling_step
+        and "OPENAI_API_KEY:" not in prebilling_step
+        and "TRIMEM_DEV_ACTIVATION_APPROVAL_B64:" not in prebilling_step
+        and "TRIMEM_EVIDENCE_PASSPHRASE:" not in prebilling_step
+        and 'test -z "${OPENAI_API_KEY+x}"' in prebilling_step
+        and 'test -z "${TRIMEM_DEV_ACTIVATION_APPROVAL_B64+x}"'
+        in prebilling_step
+        and 'test -z "${TRIMEM_EVIDENCE_PASSPHRASE+x}"'
+        in prebilling_step
+        and '--checkout-root "$RUNNER_TEMP/trimem-devdiag-task-checkouts"'
+        in prebilling_step
+        and "--dataset-cache-root .trimem-exec/datasets" in prebilling_step
+        and "--evidence-root artifacts/trimem_v1/dev_activation_diagnostic/"
+        "workflow-evidence/pre-billing-solver-sandbox" in prebilling_step
+        and prebilling_end
+        < diagnostic_execution_job.index(
+            "OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}"
+        ),
+        "pre-billing sandbox rehearsal credential boundary drift",
+    )
     diagnostic_execution_markers = (
         "python scripts/trimem_d117_checkout_rehearsal.py",
         "from trimem_harness_lock import prepare_harnesses",
@@ -5979,6 +6047,7 @@ def validate_workflows() -> None:
         "python scripts/trimem_d118_grader_factory_rehearsal.py",
         "python -I scripts/trimem_dev_activation_gate.py",
         "python scripts/trimem_dev_activation_executor.py prepare-images",
+        "python scripts/trimem_dev_activation_executor.py rehearse-solver-sandboxes",
         "python scripts/trimem_validate_openai_credential.py",
         "python scripts/trimem_verify_openai_key_binding.py",
         "python scripts/trimem_dev_activation_executor.py execute",

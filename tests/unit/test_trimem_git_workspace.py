@@ -142,6 +142,18 @@ def test_digest_pinned_docker_runner_lock_is_fail_closed():
     left = DockerSandboxCommandRunner("example/task@sha256:" + "a" * 64)
     right = DockerSandboxCommandRunner("example/task@sha256:" + "a" * 64)
     assert left.content_hash == right.content_hash
+    assert left.container_user == "1000:1000"
+    different_user = DockerSandboxCommandRunner(
+        "example/task@sha256:" + "a" * 64,
+        container_user="1001:1002",
+    )
+    assert different_user.content_hash != left.content_hash
+    for invalid in ("root", "0:0", "1000", "01000:1000", "1000:-1"):
+        with pytest.raises(ValueError, match="container user"):
+            DockerSandboxCommandRunner(
+                "example/task@sha256:" + "a" * 64,
+                container_user=invalid,
+            )
 
 
 def test_docker_runner_masks_evaluator_files_and_baked_git_before_image():
@@ -168,6 +180,10 @@ def test_docker_runner_masks_evaluator_files_and_baked_git_before_image():
         argv=("python", "-m", "pytest"),
     )
     image_index = command.index(image)
+    assert command[command.index("--user") + 1] == "1000:1000"
+    assert command.index("--user") < image_index
+    assert "--privileged" not in command
+    assert "--cap-add" not in command
     for path in masked_files:
         expected = f"type=bind,source=/dev/null,target={path},readonly"
         assert expected in command

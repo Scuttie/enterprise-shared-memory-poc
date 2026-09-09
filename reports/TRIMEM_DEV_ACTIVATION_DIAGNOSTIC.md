@@ -7,15 +7,47 @@ result of DEV EXEC-022. It is not an M2 selection run, a held-out estimate, or
 evidence for a final performance claim.
 
 ```text
-TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = EXEC_003_ZERO_SCIENTIFIC_WORK_WORKSPACE_STATUS_FAILURE_PRESERVED
+TRIMEM_DEV_ACTIVATION_DIAGNOSTIC = EXEC_004_ZERO_SCIENTIFIC_WORK_SOLVER_SANDBOX_MOUNT_FAILURE_PRESERVED
 HISTORICAL_ABSTENTION_ROOT_CAUSE = UNIDENTIFIABLE_FROM_RETAINED_EVIDENCE
 SOURCE_BANK = FROZEN_VERIFIED_TARGET_DISJOINT_12_OF_12
-RECOVERY_IMPLEMENTATION = GIT_INDEX_RENORMALIZATION_REHEARSED_AWAITING_NEW_HEAD_CI
+RECOVERY_IMPLEMENTATION = CREDENTIAL_FREE_ALL_12_REHEARSAL_PASS_REMOTE_CI_PENDING
 MODEL_EXECUTION = NOT_STARTED
 OFFICIAL_GRADER_EXECUTION = NOT_STARTED
 PAID_MODEL_CALLS_THIS_DIAGNOSTIC = 0
 USD_THIS_DIAGNOSTIC = 0
 ```
+
+Run `34386328359` attempt 2 passed all 36 base-only workspace preflights but
+stopped in the first pre-spend solver sandbox: the capability-free
+image-default root identity could not enter the owner-only `/testbed` bind.
+The separate EXEC-004 report preserves exact failure custody and zero
+task/model/grader/token/USD accounting. The runner now uses the frozen
+non-root checkout owner `1000:1000`; capabilities remain fully dropped and
+permissions remain private. A new workflow stage exercises all 12 exact image
+sandboxes, including writeability, history/mask isolation, and effective UID,
+before any API-key step.
+
+The current runner/executor bytes passed the exact frozen 12-target rehearsal
+twice on the protected WSL/Docker topology with identical report SHA-256
+`076c892f481fc246ba538d5fa714809696fbe4550d6056c8ea537cbac6d3b8b0`.
+Each pass used 12 masked solver probes plus 8 raw Multi-SWE image probes,
+kept all 12 mode-0700 checkouts pristine, and made zero model, grader, token,
+or paid calls. The separate non-mutating path used by fresh scientific
+execution also passed twice with identical report SHA-256
+`5f8f5b98570e444e09bffc27b82a7bd7c18fdb428243ff28ad08d34176c08fe7`.
+Across these four local passes the infrastructure totals were 48 image-config
+inspections and 80 non-grader probe containers; model/API, official grader,
+token, and USD totals remained zero. These hashes are non-durable local
+observations; the workflow's restricted evidence will make the rehearsal
+durable on the exact remote head. Remote exact-head CI is still required
+before a new execution approval is materialized.
+
+The rehearsed byte identities were executor
+`b0285478396dc6310f66f0ae9d13921fbf306689b67037160f54021450ca0650`,
+Docker runner `18543a9980f36e20ea7489812f7b8a3cbcd65b2cd2c46ad6bfd36a2a35fedd39`,
+and tool-environment lock
+`3329bd288136dd64dd1e24ecd5140bdd18c59050125f7b38f14584aebcf80111`;
+the Windows staged files and executed WSL copies matched exactly.
 
 Run `34379166677` attempt 2 passed the protected approval gate, frozen image
 materialization, credential-format check, and run-bound billing-key commitment.
@@ -193,9 +225,17 @@ Branches, tags, remotes, reflogs, alternates, promisor state, and unreachable
 post-base objects are removed and audited. The production solver runner keeps
 networking disabled and exposes only that checkout. For Multi-SWE images it
 also masks the baked repository Git database and the evaluator-generated
-`fix.patch`, `test.patch`, and five harness scripts. A zero-model rehearsal
-starts the exact runner for all 12 targets and fails closed unless the base-only
-history, empty masks, and secret-free container environment are observed.
+`fix.patch`, `test.patch`, and five harness scripts. A zero-model disposable
+pre-billing rehearsal starts the exact runner for all 12 targets and fails
+closed unless the base-only
+history, empty masks, secret-free environment, fixed effective UID/GID,
+loopback-only network, required toolchain paths, read-only root/Git mounts,
+writable HOME tmpfs, host-created mode-0600 file update, nested checkout write,
+and post-probe pristine checkout are observed. The workflow performs this
+mutating-but-reversible rehearsal before its first API-key-bearing step; the
+fresh 36-cell executor repeats the same identity, toolchain, history, masks,
+mount-mode, network, and pristine checks without mutating its scientific
+checkout before constructing a paid gateway.
 Docker/Git subprocesses use fixed non-secret environments, and the OpenAI HTTP
 client does not inherit host proxy or TLS environment routing.
 
@@ -209,11 +249,13 @@ secret is read, that job verifies the frozen contract, DEV dataset/checkouts,
 pinned harnesses, official loader, and grader factory. Its ephemeral runner
 requires the unique `trimem-dev-activation-diagnostic` label and omits the
 historical `trimem-benchmark` label, so the two protected workflow families
-cannot select one another's runner. After a fresh exact
-approval passes, it verifies digest-only image materialization, exposes the API
-key only after its HMAC commitment matches the diagnostic ID, exact head,
-source-bank manifest, run ID, attempt 2, model snapshot, and nonce, and then
-runs a live image digest reinspection, compiles all 12 source-store views,
+cannot select one another's runner. After a fresh exact approval passes, it
+verifies digest-only image materialization and completes the pre-billing
+sandbox rehearsal before the first local key-format check. It then verifies
+the key's HMAC commitment against the diagnostic ID, exact head, source-bank
+manifest, run ID, attempt 2, model snapshot, and nonce before any
+executor/provider/network use, runs a live image digest reinspection, compiles
+all 12 source-store views,
 prewarms the pinned 384-dimensional retrieval embedder, and then runs the 36
 cells serially. The run-bound approval may live for at most seven
 days, covering the 120-hour job ceiling without opening an attempt-3 route. A

@@ -35,6 +35,7 @@ import os
 from pathlib import Path
 from pathlib import PurePosixPath
 import re
+import stat
 import subprocess
 import sys
 import time
@@ -60,7 +61,7 @@ RETRIEVAL_REHEARSAL_SCHEMA = (
     "trimem/dev-activation-production-retrieval-rehearsal/1.0"
 )
 SOLVER_SANDBOX_REHEARSAL_SCHEMA = (
-    "trimem/dev-activation-solver-sandbox-rehearsal/1.0"
+    "trimem/dev-activation-solver-sandbox-rehearsal/1.3"
 )
 EMBEDDER_PROBE = (
     "TriMem deterministic retrieval preflight probe: repository path symbol "
@@ -2015,11 +2016,13 @@ def rehearse_production_solver_sandbox(
     targets_by_id: Mapping[str, Mapping[str, Any]],
     prepared_workspaces: Mapping[str, tuple[Any, Mapping[str, Any]]],
     evidence_root: Path,
+    mutate_checkout: bool = False,
 ) -> str:
     """Prove target history and evaluator files are inaccessible before spend."""
 
     import trimem_benchmark_run as benchmark
     from enterprise_memory.trimem.accounting import strict_json_loads
+    from enterprise_memory.trimem.git_workspace import DEFAULT_CONTAINER_USER
 
     report_path = evidence_root / "report.json"
     prior_report = (
@@ -2027,7 +2030,7 @@ def rehearse_production_solver_sandbox(
         if report_path.exists()
         else None
     )
-    allowed_names = {"report.json"}
+    allowed_names = {"progress.json", "report.json"}
     for order_index, target in enumerate(contract.manifest["targets"]):
         allowed_names.update(
             {
@@ -2061,9 +2064,80 @@ def rehearse_production_solver_sandbox(
         raise DiagnosticExecutorError("solver sandbox rehearsal target order differs")
 
     rows: list[dict[str, Any]] = []
+    image_config_inspection_attempts = 0
+    image_config_inspections = 0
+    raw_image_probe_attempts = 0
     raw_image_probe_containers = 0
+    masked_solver_probe_attempts = 0
     masked_solver_probe_containers = 0
+    progress_path = evidence_root / "progress.json"
+
+    def write_progress(
+        stage: str,
+        *,
+        current_target_id: str | None,
+        current_order_index: int | None,
+    ) -> None:
+        _atomic_write_json(
+            progress_path,
+            {
+                "schema": "trimem/dev-activation-solver-sandbox-progress/1.0",
+                "diagnostic_id": contract.manifest["diagnostic_id"],
+                "stage": stage,
+                "current_target_id": current_target_id,
+                "current_order_index": current_order_index,
+                "completed_target_ids": [row["target_id"] for row in rows],
+                "completed_target_count": len(rows),
+                "image_config_inspection_attempts": image_config_inspection_attempts,
+                "image_config_inspections": image_config_inspections,
+                "raw_image_probe_attempts": raw_image_probe_attempts,
+                "raw_image_probe_containers": raw_image_probe_containers,
+                "masked_solver_probe_attempts": masked_solver_probe_attempts,
+                "masked_solver_probe_containers": masked_solver_probe_containers,
+                "non_grader_probe_containers": (
+                    raw_image_probe_containers + masked_solver_probe_containers
+                ),
+                "task_arm_runs": 0,
+                "terminal_cells": 0,
+                "model_api_calls": 0,
+                "model_generation_calls": 0,
+                "model_calls": 0,
+                "paid_model_calls": 0,
+                "decomposition_calls": 0,
+                "solve_calls": 0,
+                "extraction_calls": 0,
+                "grader_calls": 0,
+                "grader_containers": 0,
+                "official_grader_runs": 0,
+                "input_tokens": 0,
+                "cached_input_tokens": 0,
+                "output_tokens": 0,
+                "reasoning_tokens": 0,
+                "total_tokens": 0,
+                "total_usd": "0.000000000000",
+            },
+        )
+
+    write_progress("STARTED", current_target_id=None, current_order_index=None)
+    toolchain_probes_by_repository = {
+        "django/django": ("python --version",),
+        "sympy/sympy": ("python --version",),
+        "sphinx-doc/sphinx": ("python --version",),
+        "matplotlib/matplotlib": ("python --version",),
+        "mui/material-ui": ("node --version", "npm --version"),
+        "ponylang/ponyc": ("cmake --version", "make --version", "cc --version"),
+        "clap-rs/clap": ("cargo --version", "rustc --version"),
+        "facebook/zstd": ("make --version", "cc --version"),
+        "sharkdp/bat": ("cargo --version", "rustc --version"),
+        "catchorg/Catch2": ("cmake --version", "make --version", "c++ --version"),
+        "cli/cli": ("go version",),
+    }
     for order_index, target_id in enumerate(expected_order):
+        write_progress(
+            "TARGET_STARTED",
+            current_target_id=target_id,
+            current_order_index=order_index,
+        )
         request = first_request_by_target[target_id]
         target = targets_by_id[target_id]
         task = tasks_by_target_id[target_id]
@@ -2086,25 +2160,65 @@ def rehearse_production_solver_sandbox(
             raise DiagnosticExecutorError("solver sandbox mask binding differs")
         image = str(runner.image)
 
+        image_config_inspection_attempts += 1
+        write_progress(
+            "IMAGE_CONFIG_INSPECTION_STARTED",
+            current_target_id=target_id,
+            current_order_index=order_index,
+        )
         inspect, inspect_evidence = _run_docker_sandbox_probe(
             [
                 "docker",
                 "image",
                 "inspect",
                 "--format",
-                "{{json .Config.Env}}",
+                (
+                    '{"environment":{{json .Config.Env}},'
+                    '"image_default_user":{{json .Config.User}}}'
+                ),
                 image,
             ],
             evidence_root=evidence_root,
             stem=f"{order_index:02d}-config-env",
         )
+        image_config_inspections += 1
+        write_progress(
+            "IMAGE_CONFIG_INSPECTION_COMPLETED",
+            current_target_id=target_id,
+            current_order_index=order_index,
+        )
         if inspect.returncode != 0:
             raise DiagnosticExecutorError("solver image Config.Env inspection failed")
         try:
-            config_env = strict_json_loads(inspect.stdout.strip())
+            image_config = strict_json_loads(inspect.stdout.strip())
         except (UnicodeError, ValueError, json.JSONDecodeError) as exc:
-            raise DiagnosticExecutorError("solver image Config.Env is not strict JSON") from exc
-        environment = _solver_image_environment(config_env, target_id=target_id)
+            raise DiagnosticExecutorError(
+                "solver image config projection is not strict JSON"
+            ) from exc
+        if (
+            not isinstance(image_config, Mapping)
+            or set(image_config) != {"environment", "image_default_user"}
+            or image_config.get("image_default_user") is not None
+            and not isinstance(image_config.get("image_default_user"), str)
+        ):
+            raise DiagnosticExecutorError("solver image config projection is malformed")
+        environment = _solver_image_environment(
+            image_config.get("environment"), target_id=target_id
+        )
+
+        checkout_path = Path(checkout)
+        git_metadata_path = checkout_path / ".git"
+        checkout_stat = checkout_path.stat()
+        git_metadata_stat = git_metadata_path.stat()
+        expected_container_user = DEFAULT_CONTAINER_USER
+        if (
+            getattr(runner, "container_user", None) != expected_container_user
+            or (checkout_stat.st_uid, checkout_stat.st_gid) != (1000, 1000)
+            or (git_metadata_stat.st_uid, git_metadata_stat.st_gid) != (1000, 1000)
+        ):
+            raise DiagnosticExecutorError(
+                "solver checkout owner differs from frozen container identity"
+            )
 
         raw_probe_evidence: Mapping[str, Any] | None = None
         if expected_files:
@@ -2117,6 +2231,12 @@ def rehearse_production_solver_sandbox(
                 f"test \"$(git -C {repository_path} rev-parse HEAD)\" = \"$1\"; "
                 f"test -z \"$(git -C {repository_path} status --porcelain=v1 "
                 "--untracked-files=all)\"; printf '%s\\n' \"$1\""
+            )
+            raw_image_probe_attempts += 1
+            write_progress(
+                "RAW_IMAGE_PROBE_STARTED",
+                current_target_id=target_id,
+                current_order_index=order_index,
             )
             raw_probe, raw_probe_evidence = _run_docker_sandbox_probe(
                 [
@@ -2141,6 +2261,11 @@ def rehearse_production_solver_sandbox(
                 stem=f"{order_index:02d}-raw-image",
             )
             raw_image_probe_containers += 1
+            write_progress(
+                "RAW_IMAGE_PROBE_COMPLETED",
+                current_target_id=target_id,
+                current_order_index=order_index,
+            )
             if raw_probe.returncode != 0 or raw_probe.stdout != (task.commit + "\n").encode(
                 "ascii"
             ):
@@ -2150,6 +2275,11 @@ def rehearse_production_solver_sandbox(
 
         masked_checks = [
             "set -eu",
+            'test "$(id -u)" = 1000',
+            'test "$(id -g)" = 1000',
+            'test "$(id -G)" = 1000',
+            "git --version >/dev/null 2>&1",
+            "test -x /bin/sh",
             "test \"$(git -C /testbed rev-parse HEAD)\" = \"$1\"",
             "test \"$(git -C /testbed rev-list --count HEAD)\" = 1",
             "test -z \"$(git -C /testbed for-each-ref --format='%(refname)')\"",
@@ -2157,36 +2287,161 @@ def rehearse_production_solver_sandbox(
             "test -z \"$(env | grep -E '^(OPENAI_API_KEY|GH_TOKEN|GITHUB_TOKEN|TRIMEM_)=' || true)\"",
         ]
         if expected_files:
+            masked_git_directory = expected_directories[0]
             masked_checks.extend(
                 [
                     "for path in "
                     + " ".join(expected_files)
                     + '; do test -e "$path"; test ! -s "$path"; '
                     + 'test "$(wc -c < "$path")" = 0; done',
-                    "for gitdir in $(find /home -xdev -type d -name .git -print); "
-                    'do test ! -e "$gitdir/HEAD"; test ! -e "$gitdir/objects"; done',
+                    f"test -d {masked_git_directory}",
+                    f"test -z \"$(find {masked_git_directory} -mindepth 1 "
+                    "-print -quit)\"",
                 ]
             )
+        toolchain_probes = toolchain_probes_by_repository.get(task.repository)
+        if toolchain_probes is None:
+            raise DiagnosticExecutorError(
+                "solver rehearsal toolchain repository is not frozen"
+            )
+        masked_checks.extend(
+            [
+                *(probe + " >/dev/null 2>&1" for probe in toolchain_probes),
+                "set -- /sys/class/net/*",
+                'test "$#" = 1',
+                'test "${1##*/}" = lo',
+                "mkdir -p /tmp/trimem-home",
+                "test -d /tmp/trimem-home",
+                ': > /tmp/trimem-home/write-probe',
+                "rm /tmp/trimem-home/write-probe",
+                "awk '$5 == \"/\" && $6 ~ /(^|,)ro(,|$)/ { found=1 } "
+                "END { exit(found ? 0 : 1) }' /proc/self/mountinfo",
+                "awk '$5 == \"/testbed\" && $6 ~ /(^|,)rw(,|$)/ { found=1 } "
+                "END { exit(found ? 0 : 1) }' /proc/self/mountinfo",
+                "awk '$5 == \"/testbed/.git\" && $6 ~ /(^|,)ro(,|$)/ "
+                "{ found=1 } END { exit(found ? 0 : 1) }' /proc/self/mountinfo",
+                "awk '$5 == \"/tmp\" && $6 ~ /(^|,)rw(,|$)/ { found=1 } "
+                "END { exit(found ? 0 : 1) }' /proc/self/mountinfo",
+            ]
+        )
+        if mutate_checkout:
+            masked_checks.extend(
+                [
+                    "if touch /.trimem-rootfs-write-probe 2>/dev/null; then "
+                    "rm -f /.trimem-rootfs-write-probe; exit 91; fi",
+                    "if touch /testbed/.git/trimem-write-probe 2>/dev/null; then "
+                    "rm -f /testbed/.git/trimem-write-probe; exit 92; fi",
+                    "probe=/testbed/.trimem-solver-sandbox-write-probe",
+                    'test -f "$probe"',
+                    'printf \'CONTAINER_UPDATED\\n\' > "$probe"',
+                    "mkdir /testbed/.trimem-solver-sandbox-write-directory",
+                    "printf 'NESTED_WRITE\\n' > "
+                    "/testbed/.trimem-solver-sandbox-write-directory/probe",
+                ]
+            )
+        else:
+            masked_checks.append("test -w /testbed")
         masked_checks.append("printf 'PASS_SOLVER_SANDBOX\\n'")
         masked_script = "; ".join(masked_checks)
-        masked_probe = runner.run(
-            Path(checkout),
-            ("/bin/sh", "-ceu", masked_script, "trimem-solver-mask-probe", task.commit),
-            cwd=None,
-            timeout_seconds=120,
+        host_probe = checkout_path / ".trimem-solver-sandbox-write-probe"
+        host_probe_directory = (
+            checkout_path / ".trimem-solver-sandbox-write-directory"
         )
-        masked_solver_probe_containers += 1
-        masked_stdout_path = evidence_root / f"{order_index:02d}-masked.stdout"
-        masked_stderr_path = evidence_root / f"{order_index:02d}-masked.stderr"
-        _atomic_write_bytes(masked_stdout_path, masked_probe.stdout.encode("utf-8"))
-        _atomic_write_bytes(masked_stderr_path, masked_probe.stderr.encode("utf-8"))
+        host_nested_probe = host_probe_directory / "probe"
+        if mutate_checkout:
+            if (
+                host_probe.exists()
+                or host_probe.is_symlink()
+                or host_probe_directory.exists()
+                or host_probe_directory.is_symlink()
+            ):
+                raise DiagnosticExecutorError("solver write probe path already exists")
+            _atomic_write_bytes(host_probe, b"HOST_PREPARED\n")
+            host_probe.chmod(0o600)
+        host_write_verified = not mutate_checkout
+        try:
+            masked_solver_probe_attempts += 1
+            write_progress(
+                "MASKED_SOLVER_PROBE_STARTED",
+                current_target_id=target_id,
+                current_order_index=order_index,
+            )
+            masked_probe = runner.run(
+                checkout_path,
+                (
+                    "/bin/sh",
+                    "-ceu",
+                    masked_script,
+                    "trimem-solver-mask-probe",
+                    task.commit,
+                ),
+                cwd=None,
+                timeout_seconds=120,
+            )
+            masked_solver_probe_containers += 1
+            write_progress(
+                "MASKED_SOLVER_PROBE_COMPLETED",
+                current_target_id=target_id,
+                current_order_index=order_index,
+            )
+            masked_stdout_path = evidence_root / f"{order_index:02d}-masked.stdout"
+            masked_stderr_path = evidence_root / f"{order_index:02d}-masked.stderr"
+            _atomic_write_bytes(masked_stdout_path, masked_probe.stdout.encode("utf-8"))
+            _atomic_write_bytes(masked_stderr_path, masked_probe.stderr.encode("utf-8"))
+            probe_terminal_pass = (
+                masked_probe.exit_code == 0
+                and not masked_probe.timed_out
+                and not masked_probe.output_truncated
+                and masked_probe.stdout == "PASS_SOLVER_SANDBOX\n"
+            )
+            if mutate_checkout and probe_terminal_pass:
+                probe_stat = os.lstat(host_probe)
+                directory_stat = os.lstat(host_probe_directory)
+                nested_stat = os.lstat(host_nested_probe)
+                if (
+                    not stat.S_ISREG(probe_stat.st_mode)
+                    or probe_stat.st_nlink != 1
+                    or (probe_stat.st_uid, probe_stat.st_gid) != (1000, 1000)
+                    or not stat.S_ISDIR(directory_stat.st_mode)
+                    or (directory_stat.st_uid, directory_stat.st_gid) != (1000, 1000)
+                    or not stat.S_ISREG(nested_stat.st_mode)
+                    or nested_stat.st_nlink != 1
+                    or (nested_stat.st_uid, nested_stat.st_gid) != (1000, 1000)
+                ):
+                    raise DiagnosticExecutorError(
+                        f"solver write probe node identity differs: {target_id}"
+                    )
+                # The container has exited before runner.run returns, so these
+                # lstat-then-read checks have no concurrent container writer.
+                host_write_verified = (
+                    host_probe.read_bytes() == b"CONTAINER_UPDATED\n"
+                    and host_nested_probe.read_bytes() == b"NESTED_WRITE\n"
+                )
+        finally:
+            if mutate_checkout:
+                if host_probe_directory.is_symlink():
+                    raise DiagnosticExecutorError(
+                        "solver write probe directory became a symlink"
+                    )
+                if host_nested_probe.exists() or host_nested_probe.is_symlink():
+                    host_nested_probe.unlink()
+                if host_probe_directory.exists():
+                    host_probe_directory.rmdir()
+                if host_probe.exists() or host_probe.is_symlink():
+                    host_probe.unlink()
+        try:
+            benchmark.validate_pristine_checkout(checkout_path, task.commit)
+        except Exception as exc:
+            raise DiagnosticExecutorError(
+                "solver rehearsal did not restore a pristine checkout"
+            ) from exc
         if (
-            masked_probe.exit_code != 0
-            or masked_probe.timed_out
-            or masked_probe.output_truncated
-            or masked_probe.stdout != "PASS_SOLVER_SANDBOX\n"
+            not probe_terminal_pass
+            or not host_write_verified
         ):
-            raise DiagnosticExecutorError("production solver sandbox mask rehearsal failed")
+            raise DiagnosticExecutorError(
+                f"production solver sandbox mask rehearsal failed: {target_id}"
+            )
         rows.append(
             {
                 "order_index": order_index,
@@ -2201,6 +2456,37 @@ def rehearse_production_solver_sandbox(
                 "masked_image_files": list(expected_files),
                 "masked_image_directories": list(expected_directories),
                 "image_environment": environment,
+                "image_default_user": image_config.get("image_default_user"),
+                "effective_container_user": expected_container_user,
+                "required_toolchain_commands": list(toolchain_probes),
+                "checkout_write_probe": (
+                    "PASS_HOST_0600_AND_NESTED_WRITE"
+                    if mutate_checkout
+                    else "PASS_OWNER_WRITE_ACCESS_WITHOUT_MUTATION"
+                ),
+                "home_tmpfs_write_probe": "PASS",
+                "root_filesystem_write_probe": (
+                    "PASS_READ_ONLY_MOUNT_AND_ACTIVE_DENIAL"
+                    if mutate_checkout
+                    else "PASS_READ_ONLY_MOUNT"
+                ),
+                "git_metadata_write_probe": (
+                    "PASS_READ_ONLY_MOUNT_AND_ACTIVE_DENIAL"
+                    if mutate_checkout
+                    else "PASS_READ_ONLY_MOUNT"
+                ),
+                "network_interface_probe": "LOOPBACK_ONLY",
+                "post_probe_checkout": "PRISTINE_AT_BASE_COMMIT",
+                "checkout_mount_identity": {
+                    "uid": checkout_stat.st_uid,
+                    "gid": checkout_stat.st_gid,
+                    "mode": f"{stat.S_IMODE(checkout_stat.st_mode):04o}",
+                },
+                "git_metadata_mount_identity": {
+                    "uid": git_metadata_stat.st_uid,
+                    "gid": git_metadata_stat.st_gid,
+                    "mode": f"{stat.S_IMODE(git_metadata_stat.st_mode):04o}",
+                },
                 "config_env_evidence": inspect_evidence,
                 "raw_image_probe_evidence": raw_probe_evidence,
                 "masked_probe_evidence": {
@@ -2217,17 +2503,44 @@ def rehearse_production_solver_sandbox(
                 "status": "PASS_NO_TARGET_HISTORY_OR_EVALUATOR_FILES_VISIBLE",
             }
         )
+        write_progress(
+            "TARGET_COMPLETED",
+            current_target_id=target_id,
+            current_order_index=order_index,
+        )
     report = {
         "schema": SOLVER_SANDBOX_REHEARSAL_SCHEMA,
         "status": "PASS_ALL_12_PRODUCTION_SOLVER_SANDBOXES",
         "diagnostic_id": contract.manifest["diagnostic_id"],
         "target_count": 12,
+        "checkout_mutation_probe": mutate_checkout,
+        "image_config_inspection_attempts": image_config_inspection_attempts,
+        "image_config_inspections": image_config_inspections,
+        "raw_image_probe_attempts": raw_image_probe_attempts,
         "raw_image_probe_containers": raw_image_probe_containers,
+        "masked_solver_probe_attempts": masked_solver_probe_attempts,
         "masked_solver_probe_containers": masked_solver_probe_containers,
+        "non_grader_probe_containers": (
+            raw_image_probe_containers + masked_solver_probe_containers
+        ),
+        "task_arm_runs": 0,
+        "terminal_cells": 0,
+        "model_api_calls": 0,
+        "model_generation_calls": 0,
+        "decomposition_calls": 0,
+        "solve_calls": 0,
+        "extraction_calls": 0,
+        "grader_calls": 0,
         "grader_containers": 0,
         "official_grader_runs": 0,
         "model_calls": 0,
         "paid_model_calls": 0,
+        "input_tokens": 0,
+        "cached_input_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+        "total_tokens": 0,
+        "total_usd": "0.000000000000",
         "rows": rows,
     }
     if prior_report is not None and diagnostic.canonical_bytes(
@@ -2235,7 +2548,52 @@ def rehearse_production_solver_sandbox(
     ) != diagnostic.canonical_bytes(report):
         raise DiagnosticExecutorError("solver sandbox resume evidence drift")
     _atomic_write_json(report_path, report)
+    write_progress("COMPLETE", current_target_id=None, current_order_index=None)
     return hashlib.sha256(report_path.read_bytes()).hexdigest()
+
+
+def rehearse_existing_dev_solver_sandboxes(
+    *,
+    contract: ExecutionContract,
+    checkout_root: Path,
+    dataset_cache_root: Path,
+    evidence_root: Path,
+) -> str:
+    """Run the exact 12 production solver probes without approval or secrets."""
+
+    import trimem_benchmark_run as benchmark
+
+    targets, rows = benchmark.load_frozen_rows("development", dataset_cache_root)
+    if diagnostic.canonical_bytes(targets) != diagnostic.canonical_bytes(
+        contract.manifest["targets"]
+    ):
+        raise DiagnosticExecutorError("rehearsal DEV target set/order differs")
+    tasks = benchmark.coding_tasks(targets, rows)
+    if len(tasks) != 12:
+        raise DiagnosticExecutorError("rehearsal DEV task set is not exact")
+    images, _support = benchmark.image_entries(require_benchmark=True)
+    factory, attestations = benchmark.prepare_checkouts(
+        tasks,
+        targets,
+        images,
+        checkout_root,
+        resume=True,
+    )
+    requests: list[dict[str, str]] = []
+    prepared: dict[str, tuple[Any, Mapping[str, Any]]] = {}
+    for task in tasks:
+        cell_id = "PRE_BILLING_REHEARSAL--" + task.task_id
+        requests.append({"cell_id": cell_id, "target_id": task.task_id})
+        prepared[cell_id] = (factory, attestations[task.task_id])
+    return rehearse_production_solver_sandbox(
+        contract=contract,
+        requests=requests,
+        tasks_by_target_id={task.task_id: task for task in tasks},
+        targets_by_id={str(row["target_id"]): row for row in targets},
+        prepared_workspaces=prepared,
+        evidence_root=evidence_root,
+        mutate_checkout=True,
+    )
 
 
 def materialize_diagnostic_images(
@@ -4124,6 +4482,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             "image-materialization/report.json"
         ),
     )
+    rehearse = commands.add_parser(
+        "rehearse-solver-sandboxes",
+        help="run exact 12 already-materialized solver sandboxes without secrets",
+    )
+    rehearse.add_argument("--checkout-root", type=Path, required=True)
+    rehearse.add_argument("--dataset-cache-root", type=Path, required=True)
+    rehearse.add_argument("--evidence-root", type=Path, required=True)
     cleanup.add_argument(
         "--evidence-root",
         type=Path,
@@ -4167,6 +4532,58 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parser.parse_args(argv)
     try:
         contract = load_execution_contract(ROOT, require_tracked=True)
+        if args.command == "rehearse-solver-sandboxes":
+            report_sha256 = rehearse_existing_dev_solver_sandboxes(
+                contract=contract,
+                checkout_root=args.checkout_root,
+                dataset_cache_root=args.dataset_cache_root,
+                evidence_root=args.evidence_root,
+            )
+            rehearsal_report = _read_exact_json(
+                args.evidence_root / "report.json",
+                "pre-billing solver sandbox rehearsal",
+            )
+            raw_image_probe_containers = int(
+                rehearsal_report["raw_image_probe_containers"]
+            )
+            masked_solver_probe_containers = int(
+                rehearsal_report["masked_solver_probe_containers"]
+            )
+            print(
+                json.dumps(
+                    {
+                        "status": "PASS_ALL_12_PRE_BILLING_SOLVER_SANDBOXES",
+                        "report_sha256": report_sha256,
+                        "image_config_inspection_attempts": int(
+                            rehearsal_report["image_config_inspection_attempts"]
+                        ),
+                        "image_config_inspections": int(
+                            rehearsal_report["image_config_inspections"]
+                        ),
+                        "raw_image_probe_attempts": int(
+                            rehearsal_report["raw_image_probe_attempts"]
+                        ),
+                        "raw_image_probe_containers": raw_image_probe_containers,
+                        "masked_solver_probe_attempts": int(
+                            rehearsal_report["masked_solver_probe_attempts"]
+                        ),
+                        "masked_solver_probe_containers": (
+                            masked_solver_probe_containers
+                        ),
+                        "non_grader_probe_containers": (
+                            raw_image_probe_containers
+                            + masked_solver_probe_containers
+                        ),
+                        "model_calls": 0,
+                        "paid_model_calls": 0,
+                        "official_grader_runs": 0,
+                        "total_usd": "0.000000000000",
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                )
+            )
+            return 0
         if args.command == "cleanup-images":
             report = cleanup_diagnostic_images(
                 contract=contract,
@@ -4298,6 +4715,7 @@ __all__ = [
     "production_capabilities",
     "rehearse_production_retrieval",
     "rehearse_production_solver_sandbox",
+    "rehearse_existing_dev_solver_sandboxes",
     "reinspect_diagnostic_images",
     "validate_diagnostic_image_materialization",
 ]

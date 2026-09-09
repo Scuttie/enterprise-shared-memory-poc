@@ -456,6 +456,21 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
         production.count("          set -euo pipefail")
     )
     assert "Verify cached protected runner toolchain before setup-python" in production
+    assert 'test "$(id -u)" = "1000"' in production
+    assert 'test "$(id -g)" = "1000"' in production
+    assert 'test "$(id -G)" = "1000 108"' in production
+    assert 'test -z "${DOCKER_HOST+x}"' in production
+    assert 'test -z "${DOCKER_CONTEXT+x}"' in production
+    assert 'test "$(docker context show)" = "default"' in production
+    assert 'test "$(stat -Lc \'%u:%g\' /var/run/docker.sock)" = "0:108"' in production
+    assert "unix:///var/run/docker.sock" in production
+    assert "{{json .SecurityOptions}}" in production
+    assert "rootless" in production
+    assert "userns" in production
+    assert (
+        'test "$(docker info --format \'{{.DockerRootDir}}\')" = "/var/lib/docker"'
+        in production
+    )
     assert production.index(
         "Verify cached protected runner toolchain before setup-python"
     ) < production.index("actions/setup-python@")
@@ -509,6 +524,42 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
     assert "python scripts/trimem_d118_grader_factory_rehearsal.py" in production
     assert "--synthetic" not in production
     assert "python scripts/trimem_dev_activation_executor.py prepare-images" in production
+    assert (
+        "python scripts/trimem_dev_activation_executor.py "
+        "rehearse-solver-sandboxes"
+        in production
+    )
+    prebilling_heading = (
+        "- name: Rehearse exact 12 solver sandboxes before billing credential"
+    )
+    credential_heading = "- name: Validate exact OpenAI credential format"
+    prebilling_start = production.index(prebilling_heading)
+    prebilling_end = production.index(credential_heading, prebilling_start)
+    prebilling_step = production[prebilling_start:prebilling_end]
+    assert production.count(prebilling_heading) == 1
+    assert production.count(
+        "python scripts/trimem_dev_activation_executor.py "
+        "rehearse-solver-sandboxes"
+    ) == 1
+    assert "env:" not in prebilling_step
+    assert "secrets." not in prebilling_step
+    assert "OPENAI_API_KEY:" not in prebilling_step
+    assert "TRIMEM_DEV_ACTIVATION_APPROVAL_B64:" not in prebilling_step
+    assert "TRIMEM_EVIDENCE_PASSPHRASE:" not in prebilling_step
+    assert 'test -z "${OPENAI_API_KEY+x}"' in prebilling_step
+    assert 'test -z "${TRIMEM_DEV_ACTIVATION_APPROVAL_B64+x}"' in prebilling_step
+    assert 'test -z "${TRIMEM_EVIDENCE_PASSPHRASE+x}"' in prebilling_step
+    assert '--checkout-root "$RUNNER_TEMP/trimem-devdiag-task-checkouts"' in prebilling_step
+    assert "--dataset-cache-root .trimem-exec/datasets" in prebilling_step
+    assert (
+        "--evidence-root artifacts/trimem_v1/dev_activation_diagnostic/"
+        "workflow-evidence/pre-billing-solver-sandbox"
+        in prebilling_step
+    )
+    assert production.index(
+        "python scripts/trimem_dev_activation_executor.py "
+        "rehearse-solver-sandboxes"
+    ) < production.index("python scripts/trimem_validate_openai_credential.py")
     assert "python scripts/trimem_validate_openai_credential.py" in production
     assert "python scripts/trimem_verify_openai_key_binding.py" in production
     assert "python scripts/trimem_dev_activation_executor.py execute" in production
@@ -585,6 +636,7 @@ def test_separate_workflow_has_clean_handshake_and_exact_attempt_2_production_jo
         "python scripts/trimem_d118_grader_factory_rehearsal.py",
         "python -I scripts/trimem_dev_activation_gate.py",
         "python scripts/trimem_dev_activation_executor.py prepare-images",
+        "python scripts/trimem_dev_activation_executor.py rehearse-solver-sandboxes",
         "python scripts/trimem_validate_openai_credential.py",
         "python scripts/trimem_verify_openai_key_binding.py",
         "python scripts/trimem_dev_activation_executor.py execute",

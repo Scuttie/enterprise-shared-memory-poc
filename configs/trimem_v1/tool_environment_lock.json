@@ -18,6 +18,10 @@
       "PYTHONDONTWRITEBYTECODE": "1",
       "TMPDIR": "/tmp"
     },
+    "checkout_mount_owner": "1000:1000",
+    "container_supplementary_groups": [],
+    "container_user": "1000:1000",
+    "container_user_policy": "fixed_non_root_numeric_checkout_owner",
     "container_workspace": "/testbed",
     "cpu_limit": "4",
     "host_environment_forwarded_to_container": false,
@@ -36,7 +40,7 @@
     "pids_limit": 1024,
     "pull": "never",
     "root_filesystem": "read-only",
-    "schema": "trimem/docker-command-runner/1.1",
+    "schema": "trimem/docker-command-runner/1.2",
     "tmpfs_size_bytes": 1073741824,
     "writable_mounts": [
       "task checkout",
@@ -108,8 +112,8 @@
       "sha256": "77ff9ef190d9b5837f66c71e24eb2f50b45645c3856db45a66995362e3a9035c"
     },
     "src/enterprise_memory/trimem/git_workspace.py": {
-      "bytes": 48879,
-      "sha256": "9c1d4b4526c5fc17d971b3965f9c01cea0e0011a2556209af02a908fb5c735c7"
+      "bytes": 51743,
+      "sha256": "18543a9980f36e20ea7489812f7b8a3cbcd65b2cd2c46ad6bfd36a2a35fedd39"
     },
     "src/enterprise_memory/trimem/production_runtime.py": {
       "bytes": 136643,

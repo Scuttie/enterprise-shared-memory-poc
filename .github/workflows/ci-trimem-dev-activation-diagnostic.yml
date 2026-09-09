@@ -207,6 +207,15 @@ jobs:
           cached_python="/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python"
           test -x "$cached_python"
           test "$($cached_python -I -S -c 'import platform; print(platform.python_version())')" = "3.11.10"
+          test "$(id -u)" = "1000"
+          test "$(id -g)" = "1000"
+          test "$(id -G)" = "1000 108"
+          test -z "${DOCKER_HOST+x}"
+          test -z "${DOCKER_CONTEXT+x}"
+          test "$(docker context show)" = "default"
+          test -S /var/run/docker.sock
+          test "$(stat -Lc '%u:%g' /var/run/docker.sock)" = "0:108"
+          test "$(docker context inspect default --format '{{.Endpoints.docker.Host}}')" = "unix:///var/run/docker.sock"
           "$cached_python" -I -S -c 'import json,os,platform; print(json.dumps({"python": platform.python_version(), "runner_arch": os.environ["RUNNER_ARCH"], "runner_os": os.environ["RUNNER_OS"]}, sort_keys=True))' \
             > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stdout.log) \
             2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stderr.log >&2)
@@ -216,6 +225,11 @@ jobs:
           docker info --format '{{json .DockerRootDir}}' \
             > >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stdout.log) \
             2> >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stderr.log >&2)
+          docker_security_options="$(docker info --format '{{json .SecurityOptions}}')"
+          test "$(docker info --format '{{.DockerRootDir}}')" = "/var/lib/docker"
+          "$cached_python" -I -S -c 'import json,sys; value=json.loads(sys.argv[1]); assert isinstance(value,list) and value; assert all(isinstance(item,str) for item in value); assert not any("rootless" in item.lower() or "userns" in item.lower() for item in value)' "$docker_security_options"
+          printf '%s\n' "$docker_security_options" \
+            >> artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stdout.log
       - name: Set up exact Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
@@ -393,6 +407,19 @@ jobs:
             --evidence-root artifacts/trimem_v1/dev_activation_diagnostic/image-materialization \
             > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/image-materialization.stdout.log) \
             2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/image-materialization.stderr.log >&2)
+      - name: Rehearse exact 12 solver sandboxes before billing credential
+        run: |
+          set -euo pipefail
+          umask 077
+          test -z "${OPENAI_API_KEY+x}"
+          test -z "${TRIMEM_DEV_ACTIVATION_APPROVAL_B64+x}"
+          test -z "${TRIMEM_EVIDENCE_PASSPHRASE+x}"
+          python scripts/trimem_dev_activation_executor.py rehearse-solver-sandboxes \
+            --checkout-root "$RUNNER_TEMP/trimem-devdiag-task-checkouts" \
+            --dataset-cache-root .trimem-exec/datasets \
+            --evidence-root artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/pre-billing-solver-sandbox \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/pre-billing-solver-sandbox.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/pre-billing-solver-sandbox.stderr.log >&2)
       - name: Validate exact OpenAI credential format after approval and image locks
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

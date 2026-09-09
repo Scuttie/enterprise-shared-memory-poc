@@ -2,11 +2,30 @@
 
 ## Current endpoint
 
-`POST_DEV_ACTIVATION_DIAGNOSTIC_EXEC_002_APPROVAL_GATE_FAILURE_CORRECTED_AWAITING_NEW_HEAD_CI`
+`POST_DEV_ACTIVATION_DIAGNOSTIC_EXEC_004_SOLVER_SANDBOX_MOUNT_IDENTITY_FAILURE_CREDENTIAL_FREE_REHEARSAL_PASS_REMOTE_CI_PENDING`
 
 This is a post-DEV diagnostic contract, not a development-selection rerun, a
 HELDOUT result, or a performance claim. No model, image, grader, or benchmark
 executor is authorized by this change.
+
+Run `34386328359` attempt 2 is preserved as a fourth pre-scientific failure.
+It passed approval, 13 digest-pinned pulls, key commitment, and all 36
+base-only workspace preflights, then both fresh and same-attempt resume calls
+failed on the first solver probe with `/testbed` permission denied. The
+pre-spend ordering proves zero task-arm/model/grader/token/USD work. Complete
+encrypted evidence custody and cleanup passed; that run and approval are spent.
+
+All 12 immutable target images use a null or empty OCI `Config.User`. Combined with
+`--cap-drop=ALL`, their default root process could not traverse/write the
+UID/GID-1000 owner-only checkout. The correction freezes `--user 1000:1000`
+in runner schema 1.2 and its content hash, verifies exact bind-root ownership,
+and keeps all capabilities dropped. The workflow asserts the protected host
+identity and runs the exact 12-image sandbox/history/mask/write rehearsal
+before the first API-key-bearing step. The fresh executor repeats its
+non-mutating sandbox/history/mask/mount validation before constructing the
+ledger or paid gateway. Current runner/executor bytes passed both paths twice
+across all 12 frozen targets credential-free; remote exact-head CI remains
+pending.
 
 Run `34379166677` attempt 2 is preserved as a third pre-scientific failure. It
 passed the corrected approval gate, 13 digest-pinned image pulls, credential
@@ -95,7 +114,8 @@ loader and grader factory before reading an approval secret. The strict gate
 then writes the byte-identical validated approval to a mode-restricted temporary
 file. The approval contains only an HMAC commitment to the billing key, bound to
 the diagnostic ID, exact head, source-bank manifest, run ID, attempt 2, model
-snapshot, and nonce; the protected key must verify that commitment before use.
+snapshot, and nonce; after its local format check, the protected key must
+verify that commitment before executor/provider/network use.
 Its maximum lifetime is seven days, long enough for the 120-hour job ceiling but
 still bound to this one head/run/attempt. Digest-locked images are pulled and
 observed before the API credential is made available, and the production

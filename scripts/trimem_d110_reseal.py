@@ -625,17 +625,47 @@ def verify_tool_environment_lock_amendment() -> None:
 
 
 def verify_product_status_compatibility() -> None:
-    """Allow only the mechanical workflow-count refresh; never research status."""
+    """Allow only mechanical workflow-inventory refreshes; never research status."""
 
     historical = git_blob(EXECUTION_HEAD, "docs/STATUS.yaml")
-    marker = (
+    count_marker = (
         b"workflow_count: 73                     # structural tree inventory; "
         b"research readiness is separately sealed"
     )
-    replacement = marker.replace(b"workflow_count: 73", b"workflow_count: 74")
-    if historical.count(marker) != 1:
+    note_marker = (
+        b'workflow_table_note: "73 workflows in this tree; '
+        b'ci-docs validates structural inventory only."'
+    )
+    tracked = subprocess.run(
+        [
+            *_git_prefix(),
+            "ls-files",
+            "-z",
+            "--",
+            ".github/workflows/*.yml",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+        env=_hermetic_git_environment(),
+    )
+    if tracked.returncode != 0:
+        raise D110ResealError("cannot count tracked workflow inventory")
+    workflows = [path for path in tracked.stdout.split(b"\0") if path]
+    workflow_count = len(workflows)
+    if workflow_count < 73 or len(set(workflows)) != workflow_count:
+        raise D110ResealError("tracked workflow inventory is invalid")
+    count_replacement = count_marker.replace(
+        b"workflow_count: 73", f"workflow_count: {workflow_count}".encode("ascii")
+    )
+    note_replacement = note_marker.replace(
+        b"73 workflows", f"{workflow_count} workflows".encode("ascii")
+    )
+    if historical.count(count_marker) != 1 or historical.count(note_marker) != 1:
         raise D110ResealError("historical product workflow count is unexpected")
-    expected = historical.replace(marker, replacement)
+    expected = historical.replace(count_marker, count_replacement).replace(
+        note_marker, note_replacement
+    )
     observed = source_bytes("docs/STATUS.yaml")
     if b"\r" in observed.replace(b"\r\n", b""):
         raise D110ResealError("product STATUS contains a non-CRLF carriage return")

@@ -273,6 +273,10 @@ def test_d121_history_has_one_exact_spent_exec_021() -> None:
     assert request["source_head"] == d122.PREVIOUS_SOURCE_HEAD
     future = ROOT / d122.FUTURE_SENTINEL_PATH
     if future.exists():
-        assert d123.validate_optional_exec_022_boundary(ROOT) is not None
+        with pytest.raises(
+            d123.DevelopmentTriggerError,
+            match="commits exist after the active `_022` request",
+        ):
+            d123.validate_optional_exec_022_boundary(ROOT)
     else:
         assert d123.validate_optional_exec_022_boundary(ROOT) is None

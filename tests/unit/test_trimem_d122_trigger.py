@@ -102,7 +102,11 @@ def test_d122_resume_and_authority_boundary_is_fail_closed() -> None:
     if future.exists():
         with pytest.raises(d122.D122RecoveryError, match="unauthorized"):
             d122.validate_no_exec_022(ROOT)
-        assert d123.validate_optional_exec_022_boundary(ROOT) is not None
+        with pytest.raises(
+            d123.DevelopmentTriggerError,
+            match="commits exist after the active `_022` request",
+        ):
+            d123.validate_optional_exec_022_boundary(ROOT)
     else:
         d122.validate_no_exec_022(ROOT)
         assert d123.validate_optional_exec_022_boundary(ROOT) is None

@@ -1,0 +1,62 @@
+diff --git a/requests/models.py b/requests/models.py
+index 136427f..ae3c1be 100644
+--- a/requests/models.py
++++ b/requests/models.py
+@@ -413,7 +413,10 @@ class Request(object):
+         if not scheme in SCHEMAS:
+             raise InvalidSchema("Invalid scheme %r" % scheme)
+ 
+-        netloc = netloc.encode('idna').decode('utf-8')
++        try:
++            netloc = netloc.encode('idna').decode('utf-8')
++        except UnicodeError:
++            raise InvalidURL('URL has an invalid label.')
+ 
+         if not path:
+             path = '/'
+diff --git a/tests/test_requests.py b/tests/test_requests.py
+index f43ccac..b0af83b 100755
+--- a/tests/test_requests.py
++++ b/tests/test_requests.py
+@@ -77,6 +77,41 @@ class RequestsTestSuite(TestSetup, TestBaseMixin, unittest.TestCase):
+     def test_invalid_url(self):
+         self.assertRaises(ValueError, get, 'hiwpefhipowhefopw')
+ 
++    def test_idna_empty_label(self):
++        request = requests.Request('http://example..com/')
++        self.assertRaises(requests.exceptions.InvalidURL,
++                          getattr, request, 'full_url')
++
++    def test_idna_label_too_long(self):
++        request = requests.Request('http://' + 'a' * 64 + '.com/')
++        self.assertRaises(requests.exceptions.InvalidURL,
++                          getattr, request, 'full_url')
++
++    def test_idna_prohibited_character(self):
++        request = requests.Request(u'http://\u2603\u200e.example/')
++        self.assertRaises(requests.exceptions.InvalidURL,
++                          getattr, request, 'full_url')
++
++    def test_idna_valid_unicode_url(self):
++        request = requests.Request(u'http://b\u00fccher.example/\u00e9')
++        self.assertEqual(request.full_url,
++                         'http://xn--bcher-kva.example/%C3%A9')
++
++    def test_idna_valid_ascii_urls(self):
++        for url in ('http://example.com/',
++                    'http://xn--bcher-kva.example/',
++                    'http://' + 'a' * 63 + '.com/',
++                    'http://example.com./'):
++            self.assertEqual(requests.Request(url).full_url, url)
++
++    def test_idna_preserves_url_validation(self):
++        for url, exception in (
++                ('', requests.exceptions.URLRequired),
++                ('example..com', requests.exceptions.MissingSchema),
++                ('ftp://example..com', requests.exceptions.InvalidSchema)):
++            self.assertRaises(exception, getattr,
++                              requests.Request(url), 'full_url')
++
+     def test_path_is_not_double_encoded(self):
+         request = requests.Request("http://0.0.0.0/get/test case")
+ 

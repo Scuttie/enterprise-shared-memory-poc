@@ -1,0 +1,51 @@
+{
+  "candidate": {
+    "base": "9cbea134220b0b951587e11b63e2c832c7246cbc",
+    "id": "sympy__sympy-14976"
+  },
+  "pairs": [
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-14976",
+      "stderr": "",
+      "target": "sympy__sympy-16766"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-14976",
+      "stderr": "",
+      "target": "sympy__sympy-19346"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-14976",
+      "stderr": "",
+      "target": "sympy__sympy-20916"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-14976",
+      "stderr": "",
+      "target": "sympy__sympy-21930"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-14976",
+      "stderr": "",
+      "target": "sympy__sympy-22080"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-14976",
+      "stderr": "",
+      "target": "sympy__sympy-22456"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-14976",
+      "stderr": "",
+      "target": "sympy__sympy-22914"
+    }
+  ],
+  "scope": "PUBLIC_COMMIT_ANCESTRY_ONLY_NO_SOLVER_OR_GRADER"
+}

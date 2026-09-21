@@ -1,0 +1,59 @@
+{
+  "schema": "skhynix/native-architecture-reflection-proposals/1.0",
+  "reflection_sha256": "2f3df268ebf37b5f4ea7c3ab59ea8eee70b565950a13bd92e014d4fa165ea8a1",
+  "proposals": [
+    {
+      "template": {
+        "subgoal_signature": "Advance req to prepared_request in Python Requests redirect loops whose next hop derives request state from req. Insert the assignment after preparing the current redirect and before the next iteration. This procedure covers request-reference advancement only. Source-2's passing checkpoint also depended on cookie-storage, copying, and merging edits at steps 33–37; its test result does not establish that reference advancement alone repairs cookie handling. Evidence is limited to the supplied historical checkpoints and does not certify later mutations, final repairs, or official benchmark success.",
+        "parameters": [
+          "path",
+          "old_text",
+          "assignment_prefix",
+          "assignment_suffix",
+          "test_argv"
+        ],
+        "preconditions": [
+          "Inspect the current public checkout and validate the bound public test command; this workflow does not certify a target repair."
+        ],
+        "steps": [
+          "replace_text {path}\nold_text: {old_text}\nnew_text: {assignment_prefix}            req = prepared_request\n{assignment_suffix}",
+          "run_command {test_argv}"
+        ],
+        "verification_command": "{test_argv}",
+        "language": "python"
+      },
+      "observations": [
+        {
+          "source_alias": "source-1",
+          "bindings": {
+            "path": "requests/sessions.py",
+            "old_text": "            resp = self.send(\n                prepared_request,\n",
+            "assignment_prefix": "            # Use the redirected request as the starting point for the next hop.\n",
+            "assignment_suffix": "\n            resp = self.send(\n                prepared_request,\n",
+            "test_argv": "[\"/opt/miniconda3/envs/testbed/bin/python\",\"-m\",\"pytest\",\"test_redirects.py\",\"-q\"]"
+          },
+          "step_numbers": [
+            15,
+            16
+          ],
+          "red_step": 14
+        },
+        {
+          "source_alias": "source-2",
+          "bindings": {
+            "path": "requests/sessions.py",
+            "old_text": "            extract_cookies_to_jar(self.cookies, prepared_request, resp.raw)\n\n            i += 1",
+            "assignment_prefix": "            extract_cookies_to_jar(self.cookies, prepared_request, resp.raw)\n",
+            "assignment_suffix": "\n            i += 1",
+            "test_argv": "[\"/opt/miniconda3/envs/testbed/bin/python\",\"-m\",\"pytest\",\"test_cookiejar_inputs.py\",\"-q\",\"-p\",\"no:cacheprovider\",\"--tb=short\"]"
+          },
+          "step_numbers": [
+            38,
+            39
+          ],
+          "red_step": 32
+        }
+      ]
+    }
+  ]
+}

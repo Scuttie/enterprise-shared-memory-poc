@@ -1,0 +1,44 @@
+{
+    "schema":  "skhynix/quota-recovery-driver-intent/1.0",
+    "at":  "2026-09-15T07:40:39.5482692Z",
+    "source_references":  [
+                              {
+                                  "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\prepare_skhynix_scale_recovery_v4.py",
+                                  "sha256":  "40fd6f9b87bbf0eafc120910de2200919c1992e09cd7afd8b67040520a59c2ef"
+                              },
+                              {
+                                  "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\validate_skhynix_scale_recovery_v4.py",
+                                  "sha256":  "380420837030df20c0e98e9e9c69f212a2fa9f8e81f691cbfc7b49c47ffaaf68"
+                              },
+                              {
+                                  "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\Activate-SkhynixScaleRecoveryV4.ps1",
+                                  "sha256":  "43af894b2e9dcffad07e554179dc6476640b9073c4fcc06bc98729f9f1fb9248"
+                              },
+                              {
+                                  "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\Continue-SkhynixScaleRecoveryV4.ps1",
+                                  "sha256":  "888dc131e1efb14388991bf110b7da1a4c423a3bc842dffa0639882ad916f01c"
+                              },
+                              {
+                                  "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\Start-SkhynixScalePipeline.ps1",
+                                  "sha256":  "ef7bbd424c96127505b4d7e58d5c399ce41c931b49effabd64654ba08bd04055"
+                              },
+                              {
+                                  "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\configs\\skhynix_v1\\architecture_002_pipeline_v4.json",
+                                  "sha256":  "4b7b7b735eb62e4a4f978e7eb6bb30c832469bab609ab07e9b69b052b083743c"
+                              }
+                          ],
+    "preparation_processes":  [
+                                  {
+                                      "process_id":  53608,
+                                      "process_started_at":  "2026-09-15T07:23:39.9716969Z"
+                                  },
+                                  {
+                                      "process_id":  54200,
+                                      "process_started_at":  "2026-09-15T07:23:39.9903383Z"
+                                  }
+                              ],
+    "controller_sha256":  "83ca91baa7b5987b61df9b34eccb1dc5b75b7a347dcc5b48af8b3d8812741f3e",
+    "tests_xml_sha256":  "926ce27bfb759c70192b687f15a14f4e89e390591161aa4f2b720c54cac26975",
+    "automatic_solver_retries":  false,
+    "preparation_only_recovery_attempts_allowed":  1
+}

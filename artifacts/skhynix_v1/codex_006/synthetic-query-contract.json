@@ -1,0 +1,26 @@
+{
+  "checks": [
+    "Synthetic cell directories only; evaluation actions remain zero before and after.",
+    "NO_MEMORY returns no injection.",
+    "M2 and PDF expose identical promoted public procedure content as an eligible candidate.",
+    "PDF synthetic query selects the actual named-v2 SKILL.",
+    "M2 selection is measured; candidate eligibility does not guarantee skill rank over observations."
+  ],
+  "frozen_at_unix_seconds": 1789233700.0989995,
+  "grader_calls": 0,
+  "live_solver_query_unchanged": true,
+  "procedure_declaration_sha256": "70437a961574d980293c8cbce99fdc871d788606da590513a5c71cae76868c94",
+  "procedure_id": "python-public-named-regression-red-green-v2",
+  "procedure_template_hash": "sha256:000c8c3d3b8d19d23cd1dfa7eccc328aa4d3929bf10254141225dc2b7b07fab2",
+  "query": {
+    "apis": [],
+    "errors": [],
+    "node_id": "synthetic-public-regression",
+    "objective": "Python regression workflow: reproduce an assertion failure, repair implementation, and verify one declared public regression test",
+    "operation": "reproduce assertion failure repair implementation verify focused public tests",
+    "symbols": []
+  },
+  "schema": "skhynix/native006-synthetic-delivery-contract/1.0",
+  "solver_model_calls": 0,
+  "synthetic_results_not_counted_as_actual_solver_injections": true
+}

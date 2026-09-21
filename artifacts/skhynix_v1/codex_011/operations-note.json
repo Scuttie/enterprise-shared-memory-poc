@@ -1,0 +1,41 @@
+{
+  "grader_retries": 0,
+  "launch_rejections": [
+    {
+      "cell": "C",
+      "name": "transfer-13615-r1",
+      "reason": "collab spawn failed: agent thread limit reached",
+      "recorded_at_unix_seconds": 1789307639.8475728,
+      "requested_agent": "/root/native011_13615_c",
+      "resolution": "Wait for available agent capacity, then use the same frozen prompt without outcome feedback.",
+      "solver_actions": 0,
+      "solver_created": false
+    },
+    {
+      "cell": "A",
+      "name": "transfer-15875-r1",
+      "reason": "collab spawn failed: agent thread limit reached",
+      "recorded_at_unix_seconds": 1789308134.300031,
+      "requested_agent": "/root/native011_15875_a",
+      "resolution": "Wait for available agent capacity, then use the same frozen prompt without outcome feedback.",
+      "solver_actions": 0,
+      "solver_created": false
+    }
+  ],
+  "observed_concurrency_limit": "Two active fresh solvers accepted; remaining arm starts after capacity is available. Contract maximum three is not exceeded.",
+  "pre_enrollment_initialization_note": "First initialization stopped at public runtime help validation before manifest/config/sourcefreeze/plans/solvers. Original partial artifacts preserved; corrected validator accepts both optparse and argparse help formats.",
+  "pre_solver_runtime_notes": "Partial public history archive failed before runtime probes; same pinned public bases fetched by codeload. All attempts preserved.",
+  "schema": "skhynix/native011-operations/1.0",
+  "setup_events": [
+    {
+      "event": "PREPARE_WRAPPER_REQUEST_BEFORE_SNAPSHOT_COMPLETION",
+      "grader_calls": 0,
+      "prior_plan_or_submission_overwritten": false,
+      "resolution": "Waited for the running snapshot to complete; then prepared the three cells once.",
+      "result": "Wrapper refused missing source-snapshot.json before calling broker.prepare.",
+      "run": "transfer-15875-r1",
+      "solver_calls": 0
+    }
+  ],
+  "solver_outcome_retries": 0
+}

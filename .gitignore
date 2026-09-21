@@ -29,3 +29,7 @@ artifacts/bigcode_r2/results/*_raw.*.json
 
 # generated OSS release acceptance artifacts (SBOM / license report)
 reports/oss_release/
+
+# frozen SK hynix memory bank (required to run ON-arm evaluation on another host)
+!artifacts/skhynix_v1/architecture_scale_001/frozen-bank-240/
+!artifacts/skhynix_v1/architecture_scale_001/frozen-bank-240/*.sqlite3

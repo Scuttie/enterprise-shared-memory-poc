@@ -1,0 +1,31 @@
+{
+  "attestations": [
+    {
+      "agent": "native005_train_19637",
+      "cell": "A",
+      "limitations": "Python3.9ASTerrors described as pre-existing bysolver, not independently baseline-verified yet.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "ec08b8f33897e3958202a47985813d6dc4b567e9666e1f5e3fe268371d8d1322",
+      "public_test_summary": "Actual RED AssertionError observed. Focused2tests passed. Fullsuite42passed5skipped2expectedfailures but2ASTerrors; full declared command did not reachGREEN.",
+      "run": "training-19637"
+    },
+    {
+      "agent": "native005_train_19783",
+      "cell": "A",
+      "limitations": "Optional NumPy/SciPy tests skipped.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "7a2738d9217d62b0e401e7c35bb478d3db7834ccb483cdd02427fc68367b4dd4",
+      "public_test_summary": "Declared command recorded actual RED AssertionError thenGREEN4passed2skipped, identical testbytes and noeditsafterGREEN.",
+      "run": "training-19783"
+    }
+  ],
+  "fork_turns": "none",
+  "limitations": "Solver self-attestation plus broker journals is protocol evidence, not independent OS-level absence proof of all host activity. Exact native model snapshot/tokens/cost unmeasured.",
+  "requested_model": "gpt-6-astra",
+  "schema": "skhynix/native-solver-attestations/1.0",
+  "source": "ROOT_TRANSCRIPTION_OF_ACTUAL_AGENT_FINAL_MESSAGES"
+}

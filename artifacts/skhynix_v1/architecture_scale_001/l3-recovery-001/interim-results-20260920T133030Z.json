@@ -1,0 +1,988 @@
+{
+  "by_repository": [
+    {
+      "arm": "BASELINE",
+      "official_complete": 5,
+      "phase": "DEVELOPMENT",
+      "repository": "astropy/astropy",
+      "resolved": 3,
+      "solve_rate": 0.6,
+      "unresolved": 2
+    },
+    {
+      "arm": "BASELINE",
+      "official_complete": 8,
+      "phase": "DEVELOPMENT",
+      "repository": "django/django",
+      "resolved": 8,
+      "solve_rate": 1.0,
+      "unresolved": 0
+    },
+    {
+      "arm": "BASELINE",
+      "official_complete": 2,
+      "phase": "DEVELOPMENT",
+      "repository": "matplotlib/matplotlib",
+      "resolved": 2,
+      "solve_rate": 1.0,
+      "unresolved": 0
+    }
+  ],
+  "cohorts": [
+    {
+      "arms": [
+        "BASELINE"
+      ],
+      "cohort_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cohort/cohort.json",
+        "sha256": "6f671d1c8343afd77c518a079f2f6a4a28d7d5716af80de49a4e8441fb28d415"
+      },
+      "event_tail_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cohort/events/00000156.json",
+        "sha256": "a07bbe268242b23c9907c5290b3ed7800b96c232403d20b35ca34620592d5051"
+      },
+      "last_event": {
+        "arm": "BASELINE",
+        "at": 1789910054.5435379,
+        "stage": "INFRA_ERROR",
+        "task_id": "swebench--matplotlib__matplotlib-20374"
+      },
+      "mean_cleanup_interval_minutes": 12.88128601596469,
+      "median_cleanup_interval_minutes": 12.614095610380172,
+      "name": "baseline",
+      "not_started": 44,
+      "official_complete": 15,
+      "phase": "DEVELOPMENT",
+      "planned": 60,
+      "resolved": 13,
+      "solve_rate": 0.8666666666666667,
+      "status": "PARTIAL",
+      "unresolved": 2,
+      "unscored_started": 1
+    },
+    {
+      "arms": [
+        "PDF_MEMORY"
+      ],
+      "name": "bank-240",
+      "official_complete": 0,
+      "phase": "DEVELOPMENT",
+      "planned": 60,
+      "resolved": 0,
+      "status": "NOT_STARTED"
+    },
+    {
+      "arms": [
+        "BASELINE",
+        "PDF_MEMORY"
+      ],
+      "name": "verified500",
+      "official_complete": 0,
+      "phase": "FINAL",
+      "planned": 1000,
+      "resolved": 0,
+      "status": "NOT_STARTED"
+    }
+  ],
+  "configuration_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_002_pipeline_v15.json",
+    "sha256": "8b4f078f8506e18723243b9b294d0518fcefc1f31676c0565fd85c0e9e9dd643"
+  },
+  "grader_runs": 0,
+  "model_calls": 0,
+  "monitor_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/monitor/latest.json",
+    "sha256": "1121f6b42e830edcc4cb19b597a3f8b2fa08fa4a7286af4e49952e9a5d4766fb"
+  },
+  "observed_at_kst": "2026-09-20T22:30:30.211085+09:00",
+  "paired": {
+    "DEVELOPMENT": {
+      "baseline_resolved": 0,
+      "delta_percentage_points": null,
+      "memory_resolved": 0,
+      "paired_tasks": 0
+    },
+    "FINAL": {
+      "baseline_resolved": 0,
+      "delta_percentage_points": null,
+      "memory_resolved": 0,
+      "paired_tasks": 0
+    }
+  },
+  "pipeline_event_tail_reference": {
+    "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/events/00000035.json",
+    "sha256": "a2ee62a880b7ddd502f5f9964d0cd60a783fc23c03924c5cd1a7636a84867b54"
+  },
+  "pipeline_last_event": {
+    "at": 1789910056.8645325,
+    "details": {
+      "error_type": "PipelineError",
+      "final_outcomes_used_for_training": false,
+      "native_outcome_retries": false,
+      "reason": "cohort blocked; immutable attempt preserved, no native outcome retry: baseline"
+    },
+    "job": null,
+    "stage": "PIPELINE_BLOCKED"
+  },
+  "private_grader_payloads_read": 0,
+  "raw_model_transcripts_read": 0,
+  "rows": [
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-14484/BASELINE/execution-audit.json",
+        "sha256": "80674b5ff5b91faa93efcaf77299d13fd10088a3e89f41c86241c2c2b5319e73"
+      },
+      "graded_at_kst": "2026-09-20T18:53:54.147016+09:00",
+      "grader_seconds": 46.514,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 1,
+      "outcome": "UNRESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "astropy/astropy",
+      "requests": 37,
+      "resolved": false,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-14484/BASELINE/public-result.json",
+        "sha256": "ac44a19d637db49be8375f68b0d02c254670b0c60f01067519e1fc059009813f"
+      },
+      "solver_seconds": 447.49309825897217,
+      "task_id": "swebench--astropy__astropy-14484"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-7858/BASELINE/execution-audit.json",
+        "sha256": "7d99743cc8bc8b6849061e719d04ff3c87a3a45082047ec2d6d9f37841867b26"
+      },
+      "graded_at_kst": "2026-09-20T19:04:27.190571+09:00",
+      "grader_seconds": 23.196,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 2,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "astropy/astropy",
+      "requests": 23,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-7858/BASELINE/public-result.json",
+        "sha256": "cd15ead6b9060d657d4a1b05b63ad1080ac5de89583645d8ce3fc9b3d498eaba"
+      },
+      "solver_seconds": 342.0531497001648,
+      "task_id": "swebench--astropy__astropy-7858"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-11693/BASELINE/execution-audit.json",
+        "sha256": "41a3bbb105e63d841bd02d6f9f510d966d07bc3993aa7cc3d3006f3cb9de99f6"
+      },
+      "graded_at_kst": "2026-09-20T19:17:54.609690+09:00",
+      "grader_seconds": 57.628,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 3,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "astropy/astropy",
+      "requests": 32,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-11693/BASELINE/public-result.json",
+        "sha256": "8d5e8c2cd81c12e1dea5a1fd237de24a09b65365bf6a9d799bb4aaccaf0937be"
+      },
+      "solver_seconds": 458.76959133148193,
+      "task_id": "swebench--astropy__astropy-11693"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-14701/BASELINE/execution-audit.json",
+        "sha256": "192560812a4b9c3fa7f62a524fc6093f7faee0d4815b09e2df4eb1d541dc08e4"
+      },
+      "graded_at_kst": "2026-09-20T19:36:26.660447+09:00",
+      "grader_seconds": 48.336,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 4,
+      "outcome": "UNRESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "astropy/astropy",
+      "requests": 64,
+      "resolved": false,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-14701/BASELINE/public-result.json",
+        "sha256": "f4749cb422edbd5644d4a2e66c321c01c9acbb478f69de6e2afb61f4a5b402b6"
+      },
+      "solver_seconds": 801.282496213913,
+      "task_id": "swebench--astropy__astropy-14701"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-14213/BASELINE/execution-audit.json",
+        "sha256": "90c546895276731620a9a90cc8fb5798ba608233fe9f3b69c15b97b245e02fb0"
+      },
+      "graded_at_kst": "2026-09-20T19:50:39.456401+09:00",
+      "grader_seconds": 57.148,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 5,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "astropy/astropy",
+      "requests": 42,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--astropy__astropy-14213/BASELINE/public-result.json",
+        "sha256": "196c5461b52bc5f17cb53bcc92b9e31496215793a10564284f858c145e087bec"
+      },
+      "solver_seconds": 532.4637184143066,
+      "task_id": "swebench--astropy__astropy-14213"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-14374/BASELINE/execution-audit.json",
+        "sha256": "881a11cbd7db973fd6a1d2ded0816a09ee1ff7e2d5fb653b9f28f2bd3961f1f6"
+      },
+      "graded_at_kst": "2026-09-20T20:11:12.390285+09:00",
+      "grader_seconds": 23.493,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 6,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "django/django",
+      "requests": 80,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-14374/BASELINE/public-result.json",
+        "sha256": "e6978af303d299c345daf0e06c52aacbbf7d3d2cbf04f885ce78d7651be3af19"
+      },
+      "solver_seconds": 942.1222410202026,
+      "task_id": "swebench--django__django-14374"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-15052/BASELINE/execution-audit.json",
+        "sha256": "5ab70242bd5600b47cbf8bb1e9d3fcf2109559ea7ceb5e710331728604dafa4f"
+      },
+      "graded_at_kst": "2026-09-20T20:19:10.928938+09:00",
+      "grader_seconds": 23.317,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 7,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "django/django",
+      "requests": 16,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-15052/BASELINE/public-result.json",
+        "sha256": "6760b0454bd23a8000858ea6ff33902604a71ca95616b61c188474cc5275460d"
+      },
+      "solver_seconds": 188.20802903175354,
+      "task_id": "swebench--django__django-15052"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-16588/BASELINE/execution-audit.json",
+        "sha256": "64304a01e23e1d0ea7ff2e557cf1d1d8d16eba41270fb7e8a0ef28fb4f417b86"
+      },
+      "graded_at_kst": "2026-09-20T20:27:56.549686+09:00",
+      "grader_seconds": 22.938,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 8,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "django/django",
+      "requests": 18,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-16588/BASELINE/public-result.json",
+        "sha256": "a5e6f10713aaa51358102126bdfcbbbed72fb6c32014df52e10f0672d4af7dee"
+      },
+      "solver_seconds": 255.97980523109436,
+      "task_id": "swebench--django__django-16588"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-11727/BASELINE/execution-audit.json",
+        "sha256": "eae0cfe66c70dfb0401939819f2b875d4cf040834125d825fc0188e9d8e6706b"
+      },
+      "graded_at_kst": "2026-09-20T20:37:03.901753+09:00",
+      "grader_seconds": 24.185,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 9,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "django/django",
+      "requests": 19,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-11727/BASELINE/public-result.json",
+        "sha256": "757f9110b9dd646752ad92f3f7d45a01db83e77f89d2fde9c47377904ed353f0"
+      },
+      "solver_seconds": 255.73371362686157,
+      "task_id": "swebench--django__django-11727"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-11638/BASELINE/execution-audit.json",
+        "sha256": "d5efaf3ce584e3567829ee7a59903343a250ef80e4ac4bcc040f1be52881db83"
+      },
+      "graded_at_kst": "2026-09-20T20:47:49.770889+09:00",
+      "grader_seconds": 23.506,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 10,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "django/django",
+      "requests": 27,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-11638/BASELINE/public-result.json",
+        "sha256": "07df4d5d57fae533ecc92c0a15bbd8fbc20a680d862a1df9c4fae6f9a9ffd599"
+      },
+      "solver_seconds": 356.5872919559479,
+      "task_id": "swebench--django__django-11638"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-13250/BASELINE/execution-audit.json",
+        "sha256": "9de56ec4ec69b6b1987a2bf5c489bffb12b3d6eca01d1ecbc44c720bad7ae38a"
+      },
+      "graded_at_kst": "2026-09-20T21:03:05.769139+09:00",
+      "grader_seconds": 23.568,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 11,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "django/django",
+      "requests": 56,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-13250/BASELINE/public-result.json",
+        "sha256": "e3394a86d6d624de267232989a94fc234ad2af9c4b6b4a52ae386fcda5c1d156"
+      },
+      "solver_seconds": 618.4640460014343,
+      "task_id": "swebench--django__django-13250"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-12198/BASELINE/execution-audit.json",
+        "sha256": "1498ebd1df70b3c27cf4bf9b8e8679f947692f5295f9e7fe04a69eaff9842284"
+      },
+      "graded_at_kst": "2026-09-20T21:13:56.433459+09:00",
+      "grader_seconds": 23.505,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 12,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "django/django",
+      "requests": 28,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-12198/BASELINE/public-result.json",
+        "sha256": "90f3612e65f7de86d67fe55bb8dc2f1cf75094d50d5fb2cacf1e5d4cd2f33907"
+      },
+      "solver_seconds": 352.9537003040314,
+      "task_id": "swebench--django__django-12198"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-14812/BASELINE/execution-audit.json",
+        "sha256": "3a62a457b26005b9a036f55242a79edcd1c20669ac81fd7f92dc13f8e12eff2d"
+      },
+      "graded_at_kst": "2026-09-20T21:26:13.292832+09:00",
+      "grader_seconds": 23.468,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 13,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "django/django",
+      "requests": 36,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--django__django-14812/BASELINE/public-result.json",
+        "sha256": "32fa5159aad16528ae4fb904253c6e7783f205cddaa96ff9f7e4121d2f32a304"
+      },
+      "solver_seconds": 442.7596764564514,
+      "task_id": "swebench--django__django-14812"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--matplotlib__matplotlib-24265/BASELINE/execution-audit.json",
+        "sha256": "af6f16e6105cada73c18f94357712156d75e04dfc298e59e01c481f5103e491f"
+      },
+      "graded_at_kst": "2026-09-20T21:41:19.824348+09:00",
+      "grader_seconds": 51.477,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 14,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "matplotlib/matplotlib",
+      "requests": 36,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--matplotlib__matplotlib-24265/BASELINE/public-result.json",
+        "sha256": "a85e0c592bf3f78c55f3e3d581cc99d26b1547f76fd26fb8813292a075d41e7a"
+      },
+      "solver_seconds": 519.5111243724823,
+      "task_id": "swebench--matplotlib__matplotlib-24265"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "execution_audit_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--matplotlib__matplotlib-22926/BASELINE/execution-audit.json",
+        "sha256": "306e908c2c12b4c7bf3dee19ab73f896e32f3c9b986b7f5df411460d578e14a6"
+      },
+      "graded_at_kst": "2026-09-20T21:53:54.353327+09:00",
+      "grader_seconds": 30.789,
+      "last_stage": "CLEANED",
+      "memory_injections": 0,
+      "ordinal": 15,
+      "outcome": "RESOLVED",
+      "phase": "DEVELOPMENT",
+      "repository": "matplotlib/matplotlib",
+      "requests": 27,
+      "resolved": true,
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--matplotlib__matplotlib-22926/BASELINE/public-result.json",
+        "sha256": "349f3e9ad879ff7c1210e237d049093ea056fe62f00da45df987136d435a9f17"
+      },
+      "solver_seconds": 357.21581292152405,
+      "task_id": "swebench--matplotlib__matplotlib-22926"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": "INFRA_ERROR",
+      "ordinal": 16,
+      "outcome": "UNSCORED",
+      "phase": "DEVELOPMENT",
+      "repository": "matplotlib/matplotlib",
+      "resolved": null,
+      "task_id": "swebench--matplotlib__matplotlib-20374"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 17,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "matplotlib/matplotlib",
+      "resolved": null,
+      "task_id": "swebench--matplotlib__matplotlib-25565"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 18,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "matplotlib/matplotlib",
+      "resolved": null,
+      "task_id": "swebench--matplotlib__matplotlib-23031"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 19,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "mwaskom/seaborn",
+      "resolved": null,
+      "task_id": "swebench--mwaskom__seaborn-3010"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 20,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "mwaskom/seaborn",
+      "resolved": null,
+      "task_id": "swebench--mwaskom__seaborn-2846"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 21,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "mwaskom/seaborn",
+      "resolved": null,
+      "task_id": "swebench--mwaskom__seaborn-2853"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 22,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "mwaskom/seaborn",
+      "resolved": null,
+      "task_id": "swebench--mwaskom__seaborn-3407"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 23,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pallets/flask",
+      "resolved": null,
+      "task_id": "swebench--pallets__flask-4642"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 24,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pallets/flask",
+      "resolved": null,
+      "task_id": "swebench--pallets__flask-4992"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 25,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pallets/flask",
+      "resolved": null,
+      "task_id": "swebench--pallets__flask-5063"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 26,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pallets/flask",
+      "resolved": null,
+      "task_id": "swebench--pallets__flask-4169"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 27,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "psf/requests",
+      "resolved": null,
+      "task_id": "swebench--psf__requests-3362"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 28,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "psf/requests",
+      "resolved": null,
+      "task_id": "swebench--psf__requests-2678"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 29,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "psf/requests",
+      "resolved": null,
+      "task_id": "swebench--psf__requests-1733"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 30,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "psf/requests",
+      "resolved": null,
+      "task_id": "swebench--psf__requests-4106"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 31,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pydata/xarray",
+      "resolved": null,
+      "task_id": "swebench--pydata__xarray-4827"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 32,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pydata/xarray",
+      "resolved": null,
+      "task_id": "swebench--pydata__xarray-5187"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 33,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pydata/xarray",
+      "resolved": null,
+      "task_id": "swebench--pydata__xarray-5455"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 34,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pydata/xarray",
+      "resolved": null,
+      "task_id": "swebench--pydata__xarray-4442"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 35,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pydata/xarray",
+      "resolved": null,
+      "task_id": "swebench--pydata__xarray-5682"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 36,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pylint-dev/pylint",
+      "resolved": null,
+      "task_id": "swebench--pylint-dev__pylint-5951"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 37,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pylint-dev/pylint",
+      "resolved": null,
+      "task_id": "swebench--pylint-dev__pylint-7228"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 38,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pylint-dev/pylint",
+      "resolved": null,
+      "task_id": "swebench--pylint-dev__pylint-8312"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 39,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pylint-dev/pylint",
+      "resolved": null,
+      "task_id": "swebench--pylint-dev__pylint-5175"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 40,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pytest-dev/pytest",
+      "resolved": null,
+      "task_id": "swebench--pytest-dev__pytest-7500"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 41,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pytest-dev/pytest",
+      "resolved": null,
+      "task_id": "swebench--pytest-dev__pytest-9624"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 42,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pytest-dev/pytest",
+      "resolved": null,
+      "task_id": "swebench--pytest-dev__pytest-7352"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 43,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pytest-dev/pytest",
+      "resolved": null,
+      "task_id": "swebench--pytest-dev__pytest-7939"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 44,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "pytest-dev/pytest",
+      "resolved": null,
+      "task_id": "swebench--pytest-dev__pytest-8124"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 45,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "scikit-learn/scikit-learn",
+      "resolved": null,
+      "task_id": "swebench--scikit-learn__scikit-learn-13618"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 46,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "scikit-learn/scikit-learn",
+      "resolved": null,
+      "task_id": "swebench--scikit-learn__scikit-learn-13960"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 47,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "scikit-learn/scikit-learn",
+      "resolved": null,
+      "task_id": "swebench--scikit-learn__scikit-learn-26242"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 48,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "scikit-learn/scikit-learn",
+      "resolved": null,
+      "task_id": "swebench--scikit-learn__scikit-learn-26318"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 49,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "scikit-learn/scikit-learn",
+      "resolved": null,
+      "task_id": "swebench--scikit-learn__scikit-learn-14024"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 50,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sphinx-doc/sphinx",
+      "resolved": null,
+      "task_id": "swebench--sphinx-doc__sphinx-8713"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 51,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sphinx-doc/sphinx",
+      "resolved": null,
+      "task_id": "swebench--sphinx-doc__sphinx-11502"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 52,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sphinx-doc/sphinx",
+      "resolved": null,
+      "task_id": "swebench--sphinx-doc__sphinx-7597"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 53,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sphinx-doc/sphinx",
+      "resolved": null,
+      "task_id": "swebench--sphinx-doc__sphinx-10320"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 54,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sphinx-doc/sphinx",
+      "resolved": null,
+      "task_id": "swebench--sphinx-doc__sphinx-9467"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 55,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sympy/sympy",
+      "resolved": null,
+      "task_id": "swebench--sympy__sympy-14104"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 56,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sympy/sympy",
+      "resolved": null,
+      "task_id": "swebench--sympy__sympy-18650"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 57,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sympy/sympy",
+      "resolved": null,
+      "task_id": "swebench--sympy__sympy-20691"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 58,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sympy/sympy",
+      "resolved": null,
+      "task_id": "swebench--sympy__sympy-21849"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 59,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sympy/sympy",
+      "resolved": null,
+      "task_id": "swebench--sympy__sympy-14180"
+    },
+    {
+      "arm": "BASELINE",
+      "cohort": "baseline",
+      "last_stage": null,
+      "ordinal": 60,
+      "outcome": "NOT_STARTED",
+      "phase": "DEVELOPMENT",
+      "repository": "sympy/sympy",
+      "resolved": null,
+      "task_id": "swebench--sympy__sympy-11796"
+    }
+  ],
+  "schema": "skhynix/official-interim-results/1.0",
+  "validation": "Cohort checksum and complete event chain; GRADED result SHA; official fields; execution audit SHA/patch/event tail; baseline zero injections; stable reread"
+}

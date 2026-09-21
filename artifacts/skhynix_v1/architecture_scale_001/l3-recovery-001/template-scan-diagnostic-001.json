@@ -1,0 +1,462 @@
+{
+  "created_utc": "2026-09-20T09:17:49.188382+00:00",
+  "declared_placeholder_syntax_normalized_only": true,
+  "diagnostic_scope": "IDENTICAL_ORIGINAL_NATIVE_PROPOSAL_READ_ONLY_SCAN_AND_RENDER_COMPARISON",
+  "finding": "The generic raw-source heuristic counted nine declared-placeholder action/verification lines and two prose lines containing semicolons as eleven code-like lines. No secret, PII or high-entropy finding occurred. The typed classifier preserves original text scanning, normalizes only validated declared placeholder syntax for source-excerpt classification, retains literal/prose content and the threshold eight, and returns PASS for the unchanged template.",
+  "ingestions": 0,
+  "job_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/l3-recovery-001/publisher/group-01/job-complete.json",
+    "sha256": "9b79bdcede9d92be82ce6273a961115e25561e9d16108c7085eea5a7d3e50577"
+  },
+  "memory_writes": 0,
+  "native_model_calls": 0,
+  "no_secret_pii_or_entropy_findings": true,
+  "official_grader_runs": 0,
+  "offline_promotion_runtime_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/l3-recovery-001/offline-promotion-runtime-001.json",
+    "sha256": "e83f56f3a54a938f7bd48c7b7c121d04f56005bb1c6ae063634172bfe74c8607"
+  },
+  "original": {
+    "fresh_process": true,
+    "implementation_references": {
+      "observed_action_verifier": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-source-v6/scripts/trimem_skhynix_architecture_memory.py",
+        "sha256": "8b88087fad6099361907d1b673a08ae99fb046daffd45cf6a4802ece3bb11b63"
+      },
+      "security_scan": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-source-v6/src/enterprise_memory/promotion/security_scan.py",
+        "sha256": "2f699118d839fa170b7e52179510b3b03a07e8343d97750d451540186a70f481"
+      },
+      "skill_memory": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-source-v6/src/enterprise_memory/trimem/skill_memory.py",
+        "sha256": "ef827d2f2bc70bc15c13ea710d048c01d3365539d399e17e3ddf9b34627d3951"
+      }
+    },
+    "ingestions": 0,
+    "memory_writes": 0,
+    "mode": "original",
+    "model_calls": 0,
+    "observations": [
+      {
+        "green_outcome": "GREEN",
+        "red_outcome": "RED",
+        "red_step": 21,
+        "rendered_actions_equal_public_observations": true,
+        "rendered_actions_sha256": "ad8fa8470c7a040d50fb168a264bd567ebc64f2adedf6efdb91bed5bf9502e6b",
+        "source_alias": "source-1",
+        "step_numbers": [
+          21,
+          22,
+          23
+        ]
+      },
+      {
+        "green_outcome": "GREEN",
+        "red_outcome": "RED",
+        "red_step": 58,
+        "rendered_actions_equal_public_observations": true,
+        "rendered_actions_sha256": "9ba9ec2133bfc652265e3489c590eec907a4287f1187f7b18fe506f2e4f5140a",
+        "source_alias": "source-2",
+        "step_numbers": [
+          58,
+          60,
+          61
+        ]
+      }
+    ],
+    "official_grader_runs": 0,
+    "original_scan_text_sha256": "1cb5b4b2158a8b0829ef973e6598186b1e5a34d5faab1f2d7ffe89fa986a6b48",
+    "per_field_counts": [
+      {
+        "code_like_line_count": 1,
+        "field": "subgoal_signature",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              ";"
+            ],
+            "text": "Promote a numeric operand to double-precision floating point before arithmetic that otherwise retains an unsuitable dtype. Insert the conversion before histogram bin geometry or weighted-mean arithmetic, preserving the surrounding source and any dtype guard. Observed regression coverage supports float16 histogram edges and small integer weighted means; it does not establish exactness at every magnitude or independently verify boolean inputs. Verification applies only to the supplied historical checkpoints, not later mutations, final repairs, or official benchmark outcomes."
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 1,
+        "field": "preconditions[0]",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              ";"
+            ],
+            "text": "Inspect the current public checkout and validate the bound public test command; this workflow does not certify a target repair."
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 1,
+        "field": "steps[0]",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "run_command {test_argv}"
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 6,
+        "field": "steps[1]",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "replace_text {source_path}"
+          },
+          {
+            "line": 2,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "old_text: {anchor_before}"
+          },
+          {
+            "line": 3,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "{anchor_after}"
+          },
+          {
+            "line": 4,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "new_text: {anchor_before}"
+          },
+          {
+            "line": 5,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "{promotion_block}"
+          },
+          {
+            "line": 6,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "{anchor_after}"
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 1,
+        "field": "steps[2]",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "run_command {test_argv}"
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 1,
+        "field": "verification_command",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "{test_argv}"
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 0,
+        "field": "language",
+        "matched_lines": []
+      },
+      {
+        "code_like_line_count": 0,
+        "field": "skill_id",
+        "matched_lines": []
+      }
+    ],
+    "proposal_bytes_sha256": "8b5a395744e890f68e9e80194192041e01cc46e1c28eed9bb450a714854a1273",
+    "raw_code_like_line_count": 11,
+    "raw_scan_result": {
+      "blocking": false,
+      "findings": [
+        [
+          "REVIEW_SOURCE_EXCERPT",
+          "11 code-like lines"
+        ]
+      ],
+      "result": "REVIEW_SOURCE_EXCERPT"
+    },
+    "reflection_bytes_sha256": "5c543c4d20ca5ed7c31d94891c4958780c2124eb47765d33d07108a79e544412",
+    "source_root": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-source-v6",
+    "template_content_hash": "sha256:a6186677b0c72b5287d7a5d94fc31e735345d821fd118bb220bf14924d71d872",
+    "typed_literal_code_like_line_count": null,
+    "typed_literal_scan_result": null,
+    "typed_scan_result": null
+  },
+  "original_ingestion_outcome": {
+    "error_type": "PromotionRejected",
+    "index": 0,
+    "reason": "shared procedure failed privacy/security scan",
+    "status": "REJECTED"
+  },
+  "original_ingestion_reference": {
+    "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v14/learning-240/learning-ingestions/cc941c438f19f23171c4b3c882b98aa1c6c263971e9b3bb30d0e7bfe77119b73.json",
+    "sha256": "fcb5ccd29b8684fbcf7424745b7f59a06f4dd8850f32745ac679d7829226887a"
+  },
+  "original_rejection_preserved": true,
+  "patched": {
+    "fresh_process": true,
+    "implementation_references": {
+      "observed_action_verifier": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-promotion-v1/scripts/trimem_skhynix_architecture_memory.py",
+        "sha256": "8b88087fad6099361907d1b673a08ae99fb046daffd45cf6a4802ece3bb11b63"
+      },
+      "security_scan": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-promotion-v1/src/enterprise_memory/promotion/security_scan.py",
+        "sha256": "2f699118d839fa170b7e52179510b3b03a07e8343d97750d451540186a70f481"
+      },
+      "skill_memory": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-promotion-v1/src/enterprise_memory/trimem/skill_memory.py",
+        "sha256": "61a9366262d206fc4961719e715b7a13cf932b9ae1dcde06bdd4ff714ba3bf3b"
+      }
+    },
+    "ingestions": 0,
+    "memory_writes": 0,
+    "mode": "patched",
+    "model_calls": 0,
+    "observations": [
+      {
+        "green_outcome": "GREEN",
+        "red_outcome": "RED",
+        "red_step": 21,
+        "rendered_actions_equal_public_observations": true,
+        "rendered_actions_sha256": "ad8fa8470c7a040d50fb168a264bd567ebc64f2adedf6efdb91bed5bf9502e6b",
+        "source_alias": "source-1",
+        "step_numbers": [
+          21,
+          22,
+          23
+        ]
+      },
+      {
+        "green_outcome": "GREEN",
+        "red_outcome": "RED",
+        "red_step": 58,
+        "rendered_actions_equal_public_observations": true,
+        "rendered_actions_sha256": "9ba9ec2133bfc652265e3489c590eec907a4287f1187f7b18fe506f2e4f5140a",
+        "source_alias": "source-2",
+        "step_numbers": [
+          58,
+          60,
+          61
+        ]
+      }
+    ],
+    "official_grader_runs": 0,
+    "original_scan_text_sha256": "1cb5b4b2158a8b0829ef973e6598186b1e5a34d5faab1f2d7ffe89fa986a6b48",
+    "per_field_counts": [
+      {
+        "code_like_line_count": 1,
+        "field": "subgoal_signature",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              ";"
+            ],
+            "text": "Promote a numeric operand to double-precision floating point before arithmetic that otherwise retains an unsuitable dtype. Insert the conversion before histogram bin geometry or weighted-mean arithmetic, preserving the surrounding source and any dtype guard. Observed regression coverage supports float16 histogram edges and small integer weighted means; it does not establish exactness at every magnitude or independently verify boolean inputs. Verification applies only to the supplied historical checkpoints, not later mutations, final repairs, or official benchmark outcomes."
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 1,
+        "field": "preconditions[0]",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              ";"
+            ],
+            "text": "Inspect the current public checkout and validate the bound public test command; this workflow does not certify a target repair."
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 1,
+        "field": "steps[0]",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "run_command {test_argv}"
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 6,
+        "field": "steps[1]",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "replace_text {source_path}"
+          },
+          {
+            "line": 2,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "old_text: {anchor_before}"
+          },
+          {
+            "line": 3,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "{anchor_after}"
+          },
+          {
+            "line": 4,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "new_text: {anchor_before}"
+          },
+          {
+            "line": 5,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "{promotion_block}"
+          },
+          {
+            "line": 6,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "{anchor_after}"
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 1,
+        "field": "steps[2]",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "run_command {test_argv}"
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 1,
+        "field": "verification_command",
+        "matched_lines": [
+          {
+            "line": 1,
+            "matching_syntax": [
+              "{",
+              "}"
+            ],
+            "text": "{test_argv}"
+          }
+        ]
+      },
+      {
+        "code_like_line_count": 0,
+        "field": "language",
+        "matched_lines": []
+      },
+      {
+        "code_like_line_count": 0,
+        "field": "skill_id",
+        "matched_lines": []
+      }
+    ],
+    "proposal_bytes_sha256": "8b5a395744e890f68e9e80194192041e01cc46e1c28eed9bb450a714854a1273",
+    "raw_code_like_line_count": 11,
+    "raw_scan_result": {
+      "blocking": false,
+      "findings": [
+        [
+          "REVIEW_SOURCE_EXCERPT",
+          "11 code-like lines"
+        ]
+      ],
+      "result": "REVIEW_SOURCE_EXCERPT"
+    },
+    "reflection_bytes_sha256": "5c543c4d20ca5ed7c31d94891c4958780c2124eb47765d33d07108a79e544412",
+    "source_root": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-promotion-v1",
+    "template_content_hash": "sha256:a6186677b0c72b5287d7a5d94fc31e735345d821fd118bb220bf14924d71d872",
+    "typed_literal_code_like_line_count": 2,
+    "typed_literal_scan_result": {
+      "blocking": false,
+      "findings": [],
+      "result": "PASS"
+    },
+    "typed_scan_result": {
+      "blocking": false,
+      "findings": [],
+      "result": "PASS"
+    }
+  },
+  "promotion_or_gate_b_success_claimed": false,
+  "proposal_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/l3-recovery-001/publisher/group-01/output/proposals.json",
+    "sha256": "8b5a395744e890f68e9e80194192041e01cc46e1c28eed9bb450a714854a1273"
+  },
+  "prose_semicolons_retained_in_typed_code_like_count": 2,
+  "raw_reasoning_read": false,
+  "reflection_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/l3-recovery-001/publisher/group-01/public-reflection.json",
+    "sha256": "5c543c4d20ca5ed7c31d94891c4958780c2124eb47765d33d07108a79e544412"
+  },
+  "schema": "skhynix/typed-template-scan-diagnostic/1.0",
+  "solver_runs": 0,
+  "source_excerpt_threshold_unchanged": 8,
+  "unchanged_generic_scanner_bytes": true,
+  "unchanged_original_proposal": true,
+  "unchanged_rendered_observed_actions": true,
+  "unchanged_template_content_hash": true
+}

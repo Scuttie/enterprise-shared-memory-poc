@@ -1,0 +1,74 @@
+{
+  "schema": "skhynix/request-validation-timing/1.0",
+  "operation": "READ_ONLY_LOAD_EXPERIMENT_TWO_FRESH_TRANSACTIONS",
+  "evidence_origin": "Previously observed measurement stdout; retained without rerunning",
+  "execution_runtime_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/scripts/trimem_skhynix_architecture_run.py",
+    "sha256": "50ee480752d85e2a161989d43a507ff8e73a5b11c993931a04a8523b09710aae"
+  },
+  "configuration_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_002_training_120_v10.json",
+    "sha256": "e6c11c3445c5935ee4b13b61f90bc938e2a14c21b0ddbec6ba5f56ea17961a51"
+  },
+  "configuration_pipeline_version": 12,
+  "measurement": {
+    "clock": "time.perf_counter",
+    "reported_duration_decimal_places": 3,
+    "unrounded_durations_retained": false,
+    "import_time_included": false,
+    "instrumentation": "Path.stat and Path.read_bytes wrappers call the original methods unchanged; transaction finish wrapper calls the original full-byte recheck unchanged",
+    "io_count_scope": "Instrumented Path.stat and Path.read_bytes methods; not a count of every operating-system I/O operation",
+    "cross_call_validation_cache": false,
+    "final_unique_dependency_byte_recheck": true
+  },
+  "calls": [
+    {
+      "attempt": 1,
+      "status": "PASS",
+      "seconds": 26.211,
+      "transaction_cleared": true,
+      "unique_files": 1607,
+      "unique_bytes": 31768491,
+      "validated_nodes": {
+        "_scale_targets": 1,
+        "_adopted_scale_sources": 6,
+        "_scale_enrollment": 6,
+        "execution_enrollment": 11,
+        "load_experiment": 6
+      },
+      "final_recheck_seconds": 11.868,
+      "final_recheck_unique_files": 1607,
+      "final_recheck_unique_bytes": 31768491,
+      "stat_calls": 6759,
+      "read_bytes_calls": 3259,
+      "read_bytes_total": 67840513
+    },
+    {
+      "attempt": 2,
+      "status": "PASS",
+      "seconds": 24.746,
+      "transaction_cleared": true,
+      "unique_files": 1607,
+      "unique_bytes": 31768491,
+      "validated_nodes": {
+        "_scale_targets": 1,
+        "_adopted_scale_sources": 6,
+        "_scale_enrollment": 6,
+        "execution_enrollment": 11,
+        "load_experiment": 6
+      },
+      "final_recheck_seconds": 10.595,
+      "final_recheck_unique_files": 1607,
+      "final_recheck_unique_bytes": 31768491,
+      "stat_calls": 6759,
+      "read_bytes_calls": 3259,
+      "read_bytes_total": 67840513
+    }
+  ],
+  "model_calls": 0,
+  "solver_runs": 0,
+  "official_grader_runs": 0,
+  "benchmark_calls": 0,
+  "production_code_changes_during_retention": false,
+  "timing_rerun_during_retention": false
+}

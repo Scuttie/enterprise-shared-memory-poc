@@ -1,0 +1,42 @@
+{
+  "all_downloads_digest_pinned": true,
+  "base_checkouts_public_unpatched": true,
+  "candidate_source_sha256": "351974c275075ea689d272abb2ca3f9faba358bd9ae80e3880402a678f7f409b",
+  "failures": [
+    {
+      "instance_id": "sympy__sympy-13615",
+      "message": "PUBLIC_BASE_ARCHIVE_FAILED",
+      "type": "AssertionError"
+    },
+    {
+      "instance_id": "sympy__sympy-15875",
+      "message": "PUBLIC_BASE_ARCHIVE_FAILED",
+      "type": "AssertionError"
+    },
+    {
+      "instance_id": "sympy__sympy-18698",
+      "message": "PUBLIC_BASE_ARCHIVE_FAILED",
+      "type": "AssertionError"
+    },
+    {
+      "instance_id": "sympy__sympy-19495",
+      "message": "PUBLIC_BASE_ARCHIVE_FAILED",
+      "type": "AssertionError"
+    }
+  ],
+  "issue_probes": 0,
+  "model_calls": 0,
+  "official_grader_calls": 0,
+  "provisional_ids": [
+    "sympy__sympy-13615",
+    "sympy__sympy-15875",
+    "sympy__sympy-18698",
+    "sympy__sympy-19495"
+  ],
+  "read_only_no_network_runtime_containers": true,
+  "results": [],
+  "schema": "skhynix/native011-provisional-public-runtime/1.0",
+  "selection_status": "PROVISIONAL_RUNTIME_ONLY_NOT_TARGET_ENROLLMENT",
+  "status": "INCOMPLETE",
+  "test_commands": 0
+}

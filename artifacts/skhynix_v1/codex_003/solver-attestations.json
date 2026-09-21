@@ -1,0 +1,187 @@
+{
+  "codex_tokens_and_cost": null,
+  "fork_turns": "none",
+  "new_native_solver_sessions": 11,
+  "requested_model": "gpt-6-astra",
+  "rows": [
+    {
+      "cell": "A",
+      "python_311_validated": null,
+      "run": "training-24066",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 1,
+        "passed": 32,
+        "skipped": 0
+      },
+      "submitted_patch_sha256": "324aa6408fbc73fb57e0f3987f4f52975991b7322d4d16bc39ec675cabbcbae3",
+      "task_name": "/root/native003_train_24066"
+    },
+    {
+      "cell": "A",
+      "python_311_validated": null,
+      "run": "training-24213",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 1,
+        "passed": 72,
+        "skipped": 0
+      },
+      "submitted_patch_sha256": "8aa3eefe61fcb7374f75bd76d72544fa7bf61106b593aedea5896e0bda13a5ce",
+      "task_name": "/root/native003_train_24213"
+    },
+    {
+      "cell": "A",
+      "python_311_validated": null,
+      "run": "eval-24443",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 0,
+        "passed": 11,
+        "skipped": 1
+      },
+      "submitted_patch_sha256": "f349426ba99f78125629c910145631af531c7f1606e4776182551cd8d2b81409",
+      "task_name": "/root/native003_24443_a"
+    },
+    {
+      "cell": "B",
+      "python_311_validated": null,
+      "run": "eval-24443",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 0,
+        "passed": 10,
+        "skipped": 1
+      },
+      "submitted_patch_sha256": "d14da4119e32df569d835124458e4017c6300c6dc80c75632c3f158356c3d1cd",
+      "task_name": "/root/native003_24443_b"
+    },
+    {
+      "cell": "C",
+      "python_311_validated": null,
+      "run": "eval-24443",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 0,
+        "passed": 4,
+        "skipped": 0
+      },
+      "submitted_patch_sha256": "809ab965f627629361f7d85f3f6ed74975b9122e630d281a3accf38c91ad21e9",
+      "task_name": "/root/native003_24443_c"
+    },
+    {
+      "cell": "A",
+      "python_311_validated": null,
+      "run": "eval-24539",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 1,
+        "passed": 85,
+        "skipped": 0
+      },
+      "submitted_patch_sha256": "25705050ec5c58ede7e2b0256fa0836c4a2c76deb8fafe3d4a9c7b9f834ae1f5",
+      "task_name": "/root/native003_24539_a"
+    },
+    {
+      "cell": "B",
+      "python_311_validated": null,
+      "run": "eval-24539",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 1,
+        "passed": 85,
+        "skipped": 0
+      },
+      "submitted_patch_sha256": "bcb393aaeaad07266869a05125ba299c5e9c165f460e567d06bb24ff8392cf50",
+      "task_name": "/root/native003_24539_b"
+    },
+    {
+      "cell": "C",
+      "python_311_validated": null,
+      "run": "eval-24539",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 0,
+        "passed": 64,
+        "skipped": 0
+      },
+      "submitted_patch_sha256": "25705050ec5c58ede7e2b0256fa0836c4a2c76deb8fafe3d4a9c7b9f834ae1f5",
+      "task_name": "/root/native003_24539_c"
+    },
+    {
+      "cell": "A",
+      "python_311_validated": false,
+      "run": "eval-24562",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 1,
+        "passed": 107,
+        "skipped": 1
+      },
+      "submitted_patch_sha256": "e2dcf22bfa5a4429d4a139001b0760a012fb783177596904c2ab21049e36d413",
+      "task_name": "/root/native003_24562_a"
+    },
+    {
+      "cell": "B",
+      "python_311_validated": false,
+      "run": "eval-24562",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 1,
+        "passed": 107,
+        "skipped": 1
+      },
+      "submitted_patch_sha256": "2cd03f6794027127e3bf1d83eaaa7d80da773cff0d728ba496caf964134f289a",
+      "task_name": "/root/native003_24562_b"
+    },
+    {
+      "cell": "C",
+      "python_311_validated": false,
+      "run": "eval-24562",
+      "self_attestation_no_external_access": true,
+      "self_attestation_no_subagents": true,
+      "self_attestation_only_assigned_broker": true,
+      "self_reported_full_suite_run": false,
+      "self_reported_public_tests": {
+        "expected_failures": 5,
+        "passed": 248,
+        "skipped": 6
+      },
+      "submitted_patch_sha256": "c183bd84fcd035368feb7da96bae6dfd14e9868d4bb7013afcb3533861b70b5b",
+      "task_name": "/root/native003_24562_c"
+    }
+  ],
+  "schema": "skhynix/native-solver-attestations/1.0",
+  "separate_model_api_calls": 0,
+  "source": "Manager transcription of collaboration agent final messages; self-attestations are not OS access logs."
+}

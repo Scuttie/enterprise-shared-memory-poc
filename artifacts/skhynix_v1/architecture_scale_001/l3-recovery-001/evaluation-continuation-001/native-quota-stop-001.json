@@ -1,0 +1,67 @@
+{
+  "schema": "skhynix/native-quota-stop/1.0",
+  "observed_at_kst": "2026-09-20T23:35:39.268526+09:00",
+  "stopped_at_kst": "2026-09-20T23:27:31.156493+09:00",
+  "task_id": "swebench--matplotlib__matplotlib-25565",
+  "arm": "BASELINE",
+  "reason": "NATIVE_SERVICE_USAGE_LIMIT",
+  "terminal_service_errors": [
+    {
+      "type": "error",
+      "message": "You've hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 22nd, 2026 3:58 PM."
+    },
+    {
+      "type": "turn.failed",
+      "message": "You've hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 22nd, 2026 3:58 PM."
+    }
+  ],
+  "service_retry_time_text": "Sep 22nd, 2026 3:58 PM",
+  "service_retry_timezone_explicit": false,
+  "references": {
+    "pipeline_event": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v16/events/00000006.json",
+      "sha256": "f36e44cd09791c4acb2ac0bf81152761fe424cc3590ddd6adb9ac659a8881483"
+    },
+    "cohort_event": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cohort/events/00000160.json",
+      "sha256": "0041082076a112d26c3b68fa94193c800aec4de12bf5134f4ecb515c35d6a98c"
+    },
+    "execution_audit": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--matplotlib__matplotlib-25565/BASELINE/execution-audit.json",
+      "sha256": "de5a7a1fcd0003cc9aced48ffd434c7ccd1218d7496addfa0720d4fc0a06e523"
+    },
+    "launcher_failure": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/cells/EVALUATION/swebench--matplotlib__matplotlib-25565/BASELINE/native-execution-failure.json",
+      "sha256": "c2ddec8e1d7bfa507cbbc8ee3a2815b71223dd14bbc747805f9311ee454389db"
+    },
+    "native_completion": {
+      "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-evaluation-v15/baseline/EVALUATION/matplotlib__matplotlib-25565/BASELINE/worker-003/output/completion.json",
+      "sha256": "69429d8ac9e453d46ee5971ef531592f61a3017364b832ed74b1b371b68c7b86"
+    },
+    "native_event_stream": {
+      "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-evaluation-v15/baseline/EVALUATION/matplotlib__matplotlib-25565/BASELINE/worker-003/output/events.jsonl",
+      "sha256": "f9aafd058cf1ee8c6e7a98bb131c041986d6e18d3ae69496fb2c86af5c36e045"
+    },
+    "monitor_stop": {
+      "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/monitor/samples/20260920T143140.3308401Z.json",
+      "sha256": "dcde18be31523e3f812d349d9db829fd9c232e1fcd1287ebbb99df3a8857b9c8"
+    }
+  },
+  "official_result_exists": false,
+  "official_failure_assigned": false,
+  "native_retry_started": false,
+  "automatic_restart_scheduled_by_this_diagnostic": false,
+  "prior_scores": {
+    "official_complete": 15,
+    "resolved": 13,
+    "unresolved": 2,
+    "grader_undetermined": 1
+  },
+  "remaining_off_schedule_entries_including_interrupted": 44,
+  "remaining_development_condition_runs_including_interrupted": 104,
+  "new_model_calls": 0,
+  "new_grader_calls": 0,
+  "native_assistant_or_reasoning_content_emitted": false,
+  "recovery_requirement": "Usage availability plus explicit audited disposition of the retained interrupted native attempt; restarting the same frozen failed cohort alone is not sufficient.",
+  "eta_note": "Previous uninterrupted calendar estimates are superseded by the stop. 26-43.33 hours of development and 276-460 hours including final remain provisional after an eligible continuation; interrupted-cell disposition and transition overhead are not yet timed."
+}

@@ -1,0 +1,107 @@
+diff --git a/sympy/sets/handlers/comparison.py b/sympy/sets/handlers/comparison.py
+index 6f7a19f..fa31680 100644
+--- a/sympy/sets/handlers/comparison.py
++++ b/sympy/sets/handlers/comparison.py
+@@ -49,6 +49,11 @@ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return tfn[fuzzy_and(map(fuzzy_bool, eqs))]
+ 
+ 
++@dispatch(ProductSet, FiniteSet) # type:ignore
++def _eval_is_eq(lhs, rhs): # noqa: F811
++    return fuzzy_and([lhs.is_subset(rhs), rhs.is_subset(lhs)])
++
++
+ @dispatch(Set, Basic) # type:ignore
+ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return False
+diff --git a/sympy/sets/handlers/issubset.py b/sympy/sets/handlers/issubset.py
+index fdca060..282fa3a 100644
+--- a/sympy/sets/handlers/issubset.py
++++ b/sympy/sets/handlers/issubset.py
+@@ -1,7 +1,7 @@
+ from sympy import S, Symbol
+ from sympy.core.logic import fuzzy_and, fuzzy_bool, fuzzy_not, fuzzy_or
+ from sympy.core.relational import Eq
+-from sympy.sets.sets import FiniteSet, Interval, Set, Union
++from sympy.sets.sets import FiniteSet, Interval, ProductSet, Set, Union
+ from sympy.sets.fancysets import Complexes, Reals, Range, Rationals
+ from sympy.multipledispatch import dispatch
+ 
+@@ -12,6 +12,12 @@
+ def is_subset_sets(a, b): # noqa:F811
+     return None
+ 
++@dispatch(ProductSet, FiniteSet)  # type: ignore # noqa:F811
++def is_subset_sets(a, b): # noqa:F811
++    a_finite = a.rewrite(FiniteSet)
++    if a_finite.is_FiniteSet:
++        return a_finite.is_subset(b)
++
+ @dispatch(Interval, Interval)  # type: ignore # noqa:F811
+ def is_subset_sets(a, b): # noqa:F811
+     # This is correct but can be made more comprehensive...
+diff --git a/sympy/sets/sets.py b/sympy/sets/sets.py
+index 3c4aa86..8b6f494 100644
+--- a/sympy/sets/sets.py
++++ b/sympy/sets/sets.py
+@@ -766,6 +766,10 @@ def __new__(cls, *sets, **assumptions):
+     def sets(self):
+         return self.args
+ 
++    def _eval_rewrite_as_FiniteSet(self, *args, **kwargs):
++        if all(s.is_FiniteSet for s in args):
++            return FiniteSet(*iproduct(*args))
++
+     def flatten(self):
+         def _flatten(sets):
+             for s in sets:
+diff --git a/sympy/sets/tests/test_sets.py b/sympy/sets/tests/test_sets.py
+index d29a046..be2dddd 100644
+--- a/sympy/sets/tests/test_sets.py
++++ b/sympy/sets/tests/test_sets.py
+@@ -618,6 +618,45 @@ def test_ProductSet():
+     assert Contains((1, 2), Z2) is S.true
+ 
+ 
++def test_ProductSet_finite_subset():
++    a = FiniteSet(1, 2)
++    product = ProductSet(a, a)
++    explicit = FiniteSet((1, 1), (1, 2), (2, 1), (2, 2))
++    assert product.intersection(explicit) == explicit.intersection(product)
++    assert product.is_subset(explicit) is True
++    assert explicit.is_subset(product) is True
++    assert product.is_subset(explicit - FiniteSet((2, 2))) is False
++    assert product.is_subset(explicit | FiniteSet((3, 3))) is True
++    assert Eq(product, explicit) is S.true
++    assert Eq(explicit, product) is S.true
++    assert Eq(product, explicit).simplify() is S.true
++    assert Eq(product, explicit - FiniteSet((2, 2))) is S.false
++    assert Eq(product, explicit | FiniteSet((3, 3))) is S.false
++
++    symbolic = ProductSet(FiniteSet(x), a)
++    assert symbolic.is_subset(FiniteSet((x, 1), (x, 2))) is True
++    assert symbolic.is_subset(FiniteSet((1, 1), (1, 2))) is None
++    assert unchanged(Eq, symbolic, FiniteSet((1, 1), (1, 2)))
++    assert ProductSet(S.Integers, a).is_subset(explicit) is False
++    assert Eq(ProductSet(S.Integers, a), explicit) is S.false
++
++
++def test_ProductSet_rewrite_FiniteSet():
++    a = FiniteSet(1, 2)
++    assert ProductSet(a, a).rewrite(FiniteSet) == \
++        FiniteSet((1, 1), (1, 2), (2, 1), (2, 2))
++    assert ProductSet(a).rewrite(FiniteSet) == FiniteSet((1,), (2,))
++    assert ProductSet(FiniteSet(x), a).rewrite(FiniteSet) == \
++        FiniteSet((x, 1), (x, 2))
++    assert ProductSet(ProductSet(a), a).rewrite(FiniteSet) == \
++        FiniteSet(((1,), 1), ((1,), 2), ((2,), 1), ((2,), 2))
++    assert ProductSet().rewrite(FiniteSet) == FiniteSet(())
++    assert ProductSet(a, S.EmptySet).rewrite(FiniteSet) is S.EmptySet
++    assert ProductSet(a, S.Integers).rewrite(FiniteSet) == ProductSet(a, S.Integers)
++    assert ProductSet(a, Interval(x, y)).rewrite(FiniteSet) == \
++        ProductSet(a, Interval(x, y))
++
++
+ def test_ProductSet_of_single_arg_is_not_arg():
+     assert unchanged(ProductSet, Interval(0, 1))
+     assert unchanged(ProductSet, ProductSet(Interval(0, 1)))

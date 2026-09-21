@@ -1,0 +1,9 @@
+{
+  "base_commit": "50d8a102f0735da8e165a0369bbb994c7d0592a6",
+  "bytes": 5641307,
+  "fetched_at_utc": "2026-09-13T13:36:11.465673+00:00",
+  "http_status": 200,
+  "sha256": "81c90cc9a6131a1c130591f19ae3887b85beb4f26c48e895b18dd57deedecc25",
+  "source": "PINNED_PUBLIC_GITHUB_BASE_ARCHIVE_NO_GOLD_OR_SOLUTION_PATCH",
+  "url": "https://codeload.github.com/sympy/sympy/tar.gz/50d8a102f0735da8e165a0369bbb994c7d0592a6"
+}

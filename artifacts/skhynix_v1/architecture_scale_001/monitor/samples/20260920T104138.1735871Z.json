@@ -1,0 +1,190 @@
+{
+    "schema":  "skhynix/scale-local-health/1.0",
+    "checked_at":  "2026-09-20T10:41:38.1505871Z",
+    "checked_at_kst":  "2026-09-20T19:41:38.1585871+09:00",
+    "status":  "PROGRESSING",
+    "severity":  "INFO",
+    "interval_minutes":  5,
+    "stale_minutes":  60,
+    "configuration":  "architecture_002_pipeline_v15.json",
+    "configuration_sha256":  "8b4f078f8506e18723243b9b294d0518fcefc1f31676c0565fd85c0e9e9dd643",
+    "controller_running":  true,
+    "controller_process_ids":  [
+                                   11744
+                               ],
+    "process_check_completed":  true,
+    "controller_stderr_bytes":  0,
+    "wsl_running":  true,
+    "host_c_free_gib":  46.37,
+    "probe_error":  null,
+    "warnings":  [
+
+                 ],
+    "probe":  {
+                  "activity_age_seconds":  11.9,
+                  "adopted_official_complete":  19,
+                  "adopted_sources":  21,
+                  "disk_free_gib":  824.94,
+                  "evaluation_cohort":  {
+                                            "completed":  4,
+                                            "completed_is_lower_bound":  true,
+                                            "current":  {
+                                                            "actions":  7,
+                                                            "pending_actions":  0,
+                                                            "state":  "ACTIVE",
+                                                            "worker_status_counts":  {
+                                                                                         "ADMITTED":  1,
+                                                                                         "REVOKED":  1
+                                                                                     },
+                                                            "workers":  2
+                                                        },
+                                            "last_event":  {
+                                                               "at":  1789900801.5404513,
+                                                               "error_type":  null,
+                                                               "stage":  "SOLVE_STARTED",
+                                                               "task_id":  "swebench--astropy__astropy-14213"
+                                                           },
+                                            "official_complete":  4,
+                                            "planned":  60,
+                                            "resolved":  2
+                                        },
+                  "latest_activity_at":  1789900886.4747455,
+                  "observed_at":  "2026-09-20T10:41:38.408941+00:00",
+                  "pipeline":  {
+                                   "at":  1789900754.658066,
+                                   "error_type":  null,
+                                   "stage":  "COHORT_ADVANCE_STARTED",
+                                   "task_id":  null
+                               },
+                  "process_liveness":  "NOT_OBSERVED",
+                  "schema":  "skhynix/scale-health/1.0",
+                  "stages":  [
+                                 {
+                                     "cohort":  {
+                                                    "completed":  3,
+                                                    "completed_is_lower_bound":  true,
+                                                    "current":  {
+                                                                    "actions":  51,
+                                                                    "pending_actions":  0,
+                                                                    "state":  "SUBMITTED",
+                                                                    "worker_status_counts":  {
+                                                                                                 "REVOKED":  3
+                                                                                             },
+                                                                    "workers":  3
+                                                                },
+                                                    "last_event":  {
+                                                                       "at":  1789438392.7652688,
+                                                                       "error_type":  null,
+                                                                       "stage":  "CLEANED",
+                                                                       "task_id":  "swebench--sympy__sympy-11384"
+                                                                   },
+                                                    "official_complete":  3,
+                                                    "planned":  3,
+                                                    "resolved":  2
+                                                },
+                                     "learning":  {
+                                                      "L1_episodes":  111,
+                                                      "L2_nodes":  698,
+                                                      "L2_relations":  645,
+                                                      "L3_skills":  0,
+                                                      "captures":  111,
+                                                      "cells":  24,
+                                                      "edges":  645,
+                                                      "ingestions":  0,
+                                                      "knowledge":  698,
+                                                      "reflections":  0,
+                                                      "skills":  0
+                                                  },
+                                     "size":  24
+                                 },
+                                 {
+                                     "cohort":  {
+                                                    "completed":  34,
+                                                    "completed_is_lower_bound":  true,
+                                                    "current":  {
+                                                                    "actions":  21,
+                                                                    "pending_actions":  0,
+                                                                    "state":  "SUBMITTED",
+                                                                    "worker_status_counts":  {
+                                                                                                 "REVOKED":  3
+                                                                                             },
+                                                                    "workers":  3
+                                                                },
+                                                    "last_event":  {
+                                                                       "at":  1789712878.6116524,
+                                                                       "error_type":  null,
+                                                                       "stage":  "CLEANED",
+                                                                       "task_id":  "swebench--sympy__sympy-11831"
+                                                                   },
+                                                    "official_complete":  33,
+                                                    "planned":  34,
+                                                    "resolved":  14
+                                                },
+                                     "learning":  {
+                                                      "L1_episodes":  485,
+                                                      "L2_nodes":  2396,
+                                                      "L2_relations":  2157,
+                                                      "L3_skills":  0,
+                                                      "captures":  485,
+                                                      "cells":  120,
+                                                      "edges":  2157,
+                                                      "ingestions":  8,
+                                                      "knowledge":  2396,
+                                                      "reflections":  8,
+                                                      "skills":  0
+                                                  },
+                                     "size":  120
+                                 },
+                                 {
+                                     "cohort":  {
+                                                    "completed":  120,
+                                                    "completed_is_lower_bound":  true,
+                                                    "current":  {
+                                                                    "actions":  39,
+                                                                    "pending_actions":  0,
+                                                                    "state":  "SUBMITTED",
+                                                                    "worker_status_counts":  {
+                                                                                                 "REVOKED":  3
+                                                                                             },
+                                                                    "workers":  3
+                                                                },
+                                                    "last_event":  {
+                                                                       "at":  1789853942.5027127,
+                                                                       "error_type":  null,
+                                                                       "stage":  "CLEANED",
+                                                                       "task_id":  "swebench--sympy__sympy-15555"
+                                                                   },
+                                                    "official_complete":  115,
+                                                    "planned":  120,
+                                                    "resolved":  61
+                                                },
+                                     "learning":  {
+                                                      "L1_episodes":  919,
+                                                      "L2_nodes":  4653,
+                                                      "L2_relations":  4193,
+                                                      "L3_skills":  1,
+                                                      "captures":  916,
+                                                      "cells":  240,
+                                                      "edges":  4193,
+                                                      "ingestions":  19,
+                                                      "knowledge":  4653,
+                                                      "reflections":  19,
+                                                      "skills":  1
+                                                  },
+                                     "size":  240
+                                 }
+                             ],
+                  "stale_after_seconds":  3600.0,
+                  "status":  "PROGRESSING",
+                  "warnings":  [
+
+                               ]
+              },
+    "last_successful_probe_at":  "2026-09-20T10:41:38.1505871Z",
+    "alert_fingerprint":  "8b4f078f8506e18723243b9b294d0518fcefc1f31676c0565fd85c0e9e9dd643|PROGRESSING|",
+    "desktop_notification":  "NOT_REQUESTED",
+    "automatic_solver_retries":  false,
+    "automatic_grader_retries":  false,
+    "automatic_pipeline_restart":  false,
+    "monitor_source_sha256":  "012762be96b1cc5542e2a8424ce4028e8022a83286b1a06a9a12dde873ba3b71"
+}

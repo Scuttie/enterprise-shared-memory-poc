@@ -1,0 +1,15 @@
+{
+    "grader_calls":  0,
+    "scope":  "Native011 selection isolation, immutable binding, public runtime receipt verification, legacy enrollment compatibility",
+    "solver_calls":  0,
+    "source_sha256":  {
+                          "scripts/trimem_skhynix_native_controlled_dataset.py":  "9ee35748e50cb04af300a40fcdb6b005e34a8c1168d6cd1e520dae85140166d8",
+                          "scripts/trimem_skhynix_native_dataset.py":  "58245753ada8ff4f2ae54c8bfb7c0ab39b8c7d8b7c13dd962fec3cd4ed7e5a83",
+                          "tests/unit/test_trimem_skhynix_native_controlled_dataset.py":  "95f8f9fb5c44638dd7eaf55000feebce2a13e742876a6d211878bf1248673d32",
+                          "tests/unit/test_trimem_skhynix_native_dataset.py":  "46b3318b51461ce7fd4688f76ab74b57b3f451e3938a55194afd20ce9ed59562",
+                          "tests/unit/test_trimem_skhynix_native_transfer_dataset.py":  "fecbb9a72efb3f7e347663bbb0009cb111b025ce6283edfbc0ff4461d0ea6f5c"
+                      },
+    "status":  "PASS",
+    "tests":  215,
+    "xml_sha256":  "fe26347aea2252ea4fbb9a5795c6f19e8325b49d4497928266a994330d3c0223"
+}

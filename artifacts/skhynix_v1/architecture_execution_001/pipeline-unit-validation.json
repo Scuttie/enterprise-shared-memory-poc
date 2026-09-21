@@ -1,0 +1,50 @@
+{
+    "schema":  "skhynix/architecture-pipeline-unit-validation/1.0",
+    "status":  "PASS",
+    "scope":  "SYNTHETIC_ORCHESTRATION_REAL_NATIVE_PROOF_CHECKS_AND_READ_ONLY_FROZEN_IMPORT_SMOKE",
+    "tests":  51,
+    "failures":  0,
+    "errors":  0,
+    "skipped":  0,
+    "by_class":  {
+                     "tests.unit.test_trimem_skhynix_architecture_pipeline":  35,
+                     "tests.unit.test_trimem_skhynix_architecture_publisher":  16
+                 },
+    "source_sha256":  {
+                          "scripts/trimem_skhynix_architecture_pipeline.py":  "adb409d2a2fbd239175b8f6d2fe95c884de19237d95f12a3c7a15dee822d035c",
+                          "tests/unit/test_trimem_skhynix_architecture_pipeline.py":  "a1f71e6b6c3083a98ac0ed7ba0548af2c0733083c36bc851214a38d54ec814e0",
+                          "scripts/trimem_skhynix_architecture_publisher.py":  "21054f026ae764411d5f6f180fcaad4e333b112e969a7d713b220b7ae847cb28",
+                          "tests/unit/test_trimem_skhynix_architecture_publisher.py":  "1f19645eadef7d382f74557b3bf55d1f7452cf646c5ff7184489494417fd54e4"
+                      },
+    "xml_path":  "C:/Users/jewon/AppData/Local/Temp/native_architecture_pipeline_validation.xml",
+    "xml_sha256":  "79741f84e435ca637e30ce28b976a8461c340eb0f42ee1e9477d6769bce6f4f8",
+    "preliminary_runs":  [
+                             {
+                                 "path":  "C:/Users/jewon/AppData/Local/Temp/native_architecture_pipeline_validation.v1.xml",
+                                 "sha256":  "5277db45a6bd801aa2f8e86bfea47a565388ffe363e6f54fdbe825a98f1ec52e",
+                                 "tests":  44,
+                                 "failures":  0,
+                                 "errors":  0,
+                                 "source_hashes_not_recorded":  true
+                             },
+                             {
+                                 "path":  "C:/Users/jewon/AppData/Local/Temp/native_architecture_pipeline_validation.v2.xml",
+                                 "sha256":  "cf496367daae3e7611d12018d60f855501fabf872207c386ca038f48633877e5",
+                                 "tests":  48,
+                                 "failures":  0,
+                                 "errors":  0,
+                                 "source_hashes_not_recorded":  true
+                             }
+                         ],
+    "frozen_import_smoke":  {
+                                "path":  "C:/Users/jewon/AppData/Local/Temp/native_architecture_pipeline_import_smoke.json",
+                                "sha256":  "701154d9977539567ab7956e97f2a5e389293dea1b3bd6333746d2fc0d1e4ecd"
+                            },
+    "native_solver_runs":  0,
+    "native_publisher_runs":  0,
+    "separate_model_api_calls":  0,
+    "official_grades":  0,
+    "containers_started":  0,
+    "real_cleanup_operations":  0,
+    "full_pipeline_execution_attested":  false
+}

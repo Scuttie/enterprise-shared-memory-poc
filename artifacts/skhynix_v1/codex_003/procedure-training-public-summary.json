@@ -1,0 +1,183 @@
+{
+  "additional_procedure_support_observations": 2,
+  "observational_gate_a_episodes": 4,
+  "private_episode_contents_exported": false,
+  "procedure_parameter_values_exported": false,
+  "same_public_skill_bytes_for_memory_arms": true,
+  "schema": "skhynix/public-procedure-training-summary/1.0",
+  "support_tasks": [
+    {
+      "attestation_sha256": "685d96173491caea0947d8cfea50cfce25f47f85f29ad0a5e6c8daf871ef9b09",
+      "contributor_id": "native-codex-003-training-24066",
+      "contributor_kind": "INDEPENDENT_NATIVE_CODEX_SESSION_NOT_HUMAN_USER",
+      "declaration_sha256": "d9b624e3db77154d952fa9a6bbd115c8c30ff9ecb055dc9bff7751d7e7ca8529",
+      "green_patch_sha256": "324aa6408fbc73fb57e0f3987f4f52975991b7322d4d16bc39ec675cabbcbae3",
+      "official_training_resolved": true,
+      "private_attestation_file_sha256": "2ac77c195818c3a531d30a404fadcd20e8751426b4d89a09dfa6a0585a927801",
+      "public_test_passed_counts": [
+        32
+      ],
+      "red_patch_sha256": "8d67c0021b4dcc25f258b275162c16d55e0df13d08fcd2abbc96daa30974ad32",
+      "regression_test_unchanged": true,
+      "repository": "sympy/sympy",
+      "runner_sha256": "da4284cc210d8db5109f916248d97a8e82f725547e60c5d9a4d6c43573e3e9d5",
+      "source_revision": "514579c655bf22e2af14f0743376ae1d7befe345",
+      "stages": [
+        {
+          "broker_sequences": [
+            4,
+            6
+          ],
+          "request_sha256": [
+            "110ea809430a2b13fc0f57176cdb54c195342d911a7a40778756348ed2bb1a03",
+            "12345c5d86f4f4c923b6a4d2a43f1ac2d6465fd0e09642c41faa5bb20f265dc8"
+          ],
+          "response_sha256": [
+            "0eca359547ce5da5c255acd415bf14e6e36b2efc65eb042cb1a216019055a505",
+            "a3fdfe615ca20aeb1fb9f7f92f6eb87d6076d599a0a0a67773a9dcb6b3ec443a"
+          ],
+          "stage": "INSPECT"
+        },
+        {
+          "broker_sequences": [
+            8
+          ],
+          "request_sha256": [
+            "7faf835032d6a5de76f387fb4bbeee3cd038ec10d588943634934b2c5a8dae44"
+          ],
+          "response_sha256": [
+            "47baa83756a6a4e6fb160d4aee0736d8e60482e240a31b22da07b6b896ccb36d"
+          ],
+          "stage": "ADD_REGRESSION"
+        },
+        {
+          "broker_sequences": [
+            9
+          ],
+          "request_sha256": [
+            "449463c871fcbc199c87e9141cc03438dd307d28f4e3477d5d72de610622f7cd"
+          ],
+          "response_sha256": [
+            "b4b76d493f7d09ebc06302a9ea01e725d039bbe2f80b7d903147be62e6250cef"
+          ],
+          "stage": "RED"
+        },
+        {
+          "broker_sequences": [
+            10
+          ],
+          "request_sha256": [
+            "cd64163c89a7231f02593e03ac9a8f5045489fc817edf8d9d2612db1ba22d05d"
+          ],
+          "response_sha256": [
+            "d037c8d79949dc9b66e0f9a65d4e6e4095d80215ac016c95510e5626745a1a94"
+          ],
+          "stage": "REPAIR_IMPLEMENTATION"
+        },
+        {
+          "broker_sequences": [
+            11
+          ],
+          "request_sha256": [
+            "449463c871fcbc199c87e9141cc03438dd307d28f4e3477d5d72de610622f7cd"
+          ],
+          "response_sha256": [
+            "43dc3caab506eba1068bb80b481277a73023f701a71efa2636f8940f587d6a1f"
+          ],
+          "stage": "GREEN"
+        }
+      ],
+      "target_fix_validated": false,
+      "task_id": "swebench_verified--sympy__sympy-24066",
+      "template_hash": "sha256:fbd4d54981d3b80e328fe8665a0706364a035a7c5d00953b8840436736701b03"
+    },
+    {
+      "attestation_sha256": "ba3832e3dd170803f9ecdb07fe09e9b24c0850541e7aca0b8a664ea44b16af47",
+      "contributor_id": "native-codex-003-training-24213",
+      "contributor_kind": "INDEPENDENT_NATIVE_CODEX_SESSION_NOT_HUMAN_USER",
+      "declaration_sha256": "d9b624e3db77154d952fa9a6bbd115c8c30ff9ecb055dc9bff7751d7e7ca8529",
+      "green_patch_sha256": "8aa3eefe61fcb7374f75bd76d72544fa7bf61106b593aedea5896e0bda13a5ce",
+      "official_training_resolved": true,
+      "private_attestation_file_sha256": "1276be1f159fdb5408643b2aba6cef772204e1975a27c808331db58d4c35161e",
+      "public_test_passed_counts": [
+        9
+      ],
+      "red_patch_sha256": "be5ac016bc31d5bb9b80e06cbd8699159c861b80e06caca0d00b34a50bf881a4",
+      "regression_test_unchanged": true,
+      "repository": "sympy/sympy",
+      "runner_sha256": "da4284cc210d8db5109f916248d97a8e82f725547e60c5d9a4d6c43573e3e9d5",
+      "source_revision": "e8c22f6eac7314be8d92590bfff92ced79ee03e2",
+      "stages": [
+        {
+          "broker_sequences": [
+            3,
+            4
+          ],
+          "request_sha256": [
+            "110ea809430a2b13fc0f57176cdb54c195342d911a7a40778756348ed2bb1a03",
+            "898778f6a90a60bf24bc9d9495c85df9ba002e5474704faca00d1abc938edeac"
+          ],
+          "response_sha256": [
+            "840b7fa0d388ad429d5c8209f391c46881ac1ed8b14451376c89daa8fa812bf6",
+            "246bbaba53278581a28d219c67a8686e341f58317f7e9d3bbe4dc0ac9656a265"
+          ],
+          "stage": "INSPECT"
+        },
+        {
+          "broker_sequences": [
+            8
+          ],
+          "request_sha256": [
+            "fff4d305bfc6ce8eb7661761fd936e5bee528de967c40f0fa891e0a5516609a0"
+          ],
+          "response_sha256": [
+            "565abd10e1e2fd3ab2986812495f55989058b63083a0766103b8921b0dd3cc16"
+          ],
+          "stage": "ADD_REGRESSION"
+        },
+        {
+          "broker_sequences": [
+            9
+          ],
+          "request_sha256": [
+            "67355ebb9d5aee7bf032aefa856c226fd136c9bedbe89d63ba952ea48c9609f9"
+          ],
+          "response_sha256": [
+            "838ad91bcb52f35fd97f882706c8dc40ad044dbe5bf170d6ce6dafb3df0e8cec"
+          ],
+          "stage": "RED"
+        },
+        {
+          "broker_sequences": [
+            10
+          ],
+          "request_sha256": [
+            "295059f13e8a833c90e6eaa3e929c2804be1639683a3b9afbabab41f8eed9083"
+          ],
+          "response_sha256": [
+            "0fef48e625af7fe24bd62c7f716d5258620ab529dc8c66eb87190bccfb15a354"
+          ],
+          "stage": "REPAIR_IMPLEMENTATION"
+        },
+        {
+          "broker_sequences": [
+            12
+          ],
+          "request_sha256": [
+            "67355ebb9d5aee7bf032aefa856c226fd136c9bedbe89d63ba952ea48c9609f9"
+          ],
+          "response_sha256": [
+            "e144b666b6db39ecd80ac9bd0fc764382eed47339896191c7a32f622c0ba628a"
+          ],
+          "stage": "GREEN"
+        }
+      ],
+      "target_fix_validated": false,
+      "task_id": "swebench_verified--sympy__sympy-24213",
+      "template_hash": "sha256:fbd4d54981d3b80e328fe8665a0706364a035a7c5d00953b8840436736701b03"
+    }
+  ],
+  "target_fix_validated": false,
+  "training_problem_count": 4,
+  "verified_skill_count": 1
+}

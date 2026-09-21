@@ -1,0 +1,35 @@
+{
+  "all_capture_refs_match_plan": true,
+  "all_complete_ordered_edit_windows_match": true,
+  "all_metadata_match_original": true,
+  "all_plan_representatives_present_once": true,
+  "all_red_green_verdicts_valid": true,
+  "candidate_count": 79,
+  "created_utc": "2026-09-20T08:41:22.446353+00:00",
+  "edit_count": 169,
+  "edit_status_counts": {
+    "error": 1,
+    "success": 168
+  },
+  "index_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/Temp/l3_semantic_representative_public_edits_002.json",
+    "sha256": "61e653154fc330e4554f2086fc3742caadd8a9dccd8180a259f399ef56b521fc"
+  },
+  "input_exactly_reproduced": true,
+  "input_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/l3-recovery-001/semantic-discovery/input.json",
+    "sha256": "427fb1c7f1ae9270be9cb62a1cbfb9ba7acf00e3f80b43814bab3c65547288bd"
+  },
+  "mapping_exactly_reproduced": true,
+  "memory_writes": 0,
+  "native_model_calls": 0,
+  "note": "This independent check validates the existing real input despite general builder guard gaps; it does not certify a reusable skill.",
+  "official_grader_runs": 0,
+  "official_outcomes_used": false,
+  "plan_reference": {
+    "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/reflection-plan.json",
+    "sha256": "3bf26a95683034bcf1188785dc4b6c4ffee7119a1ed4c9865ce04a00b6a02c2a"
+  },
+  "schema": "skhynix/semantic-input-authenticity-audit/1.0",
+  "task_count": 75
+}

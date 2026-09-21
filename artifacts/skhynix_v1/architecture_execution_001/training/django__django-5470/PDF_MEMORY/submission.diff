@@ -1,0 +1,216 @@
+diff --git a/django/__init__.py b/django/__init__.py
+index 3025f72..f3c9b8e 100644
+--- a/django/__init__.py
++++ b/django/__init__.py
+@@ -5,14 +5,21 @@ VERSION = (1, 10, 0, 'alpha', 0)
+ __version__ = get_version(VERSION)
+ 
+ 
+-def setup():
++def setup(set_prefix=True):
+     """
+     Configure the settings (this happens as a side effect of accessing the
+     first setting), configure logging and populate the app registry.
++    Set the thread-local urlresolvers script prefix if `set_prefix` is True.
+     """
+     from django.apps import apps
+     from django.conf import settings
++    from django.core.urlresolvers import set_script_prefix
++    from django.utils.encoding import force_text
+     from django.utils.log import configure_logging
+ 
+     configure_logging(settings.LOGGING_CONFIG, settings.LOGGING)
++    if set_prefix:
++        set_script_prefix(
++            '/' if settings.FORCE_SCRIPT_NAME is None else force_text(settings.FORCE_SCRIPT_NAME)
++        )
+     apps.populate(settings.INSTALLED_APPS)
+diff --git a/django/core/wsgi.py b/django/core/wsgi.py
+index 62aa43b..e0ded3d 100644
+--- a/django/core/wsgi.py
++++ b/django/core/wsgi.py
+@@ -10,5 +10,5 @@ def get_wsgi_application():
+     Allows us to avoid making django.core.handlers.WSGIHandler public API, in
+     case the internal WSGI implementation changes or moves in the future.
+     """
+-    django.setup()
++    django.setup(set_prefix=False)
+     return WSGIHandler()
+diff --git a/docs/ref/applications.txt b/docs/ref/applications.txt
+index 498e10c..7f3be5f 100644
+--- a/docs/ref/applications.txt
++++ b/docs/ref/applications.txt
+@@ -332,14 +332,20 @@ application registry.
+ 
+ .. currentmodule:: django
+ 
+-.. function:: setup()
++.. function:: setup(set_prefix=True)
+ 
+     Configures Django by:
+ 
+     * Loading the settings.
+     * Setting up logging.
++    * If ``set_prefix`` is True, setting the URL resolver script prefix to
++      :setting:`FORCE_SCRIPT_NAME` if defined, or ``/`` otherwise.
+     * Initializing the application registry.
+ 
++    .. versionchanged:: 1.10
++
++        The ``set_prefix`` argument was added.
++
+     This function is called automatically:
+ 
+     * When running an HTTP server via Django's WSGI support.
+diff --git a/docs/ref/settings.txt b/docs/ref/settings.txt
+index dba54e2..49772c1 100644
+--- a/docs/ref/settings.txt
++++ b/docs/ref/settings.txt
+@@ -1408,7 +1408,14 @@ Default: ``None``
+ If not ``None``, this will be used as the value of the ``SCRIPT_NAME``
+ environment variable in any HTTP request. This setting can be used to override
+ the server-provided value of ``SCRIPT_NAME``, which may be a rewritten version
+-of the preferred value or not supplied at all.
++of the preferred value or not supplied at all. It is also used by
++:func:`django.setup()` to set the URL resolver script prefix outside of the
++request/response cycle (e.g. in management commands and standalone scripts) to
++generate correct URLs when ``FORCE_SCRIPT_NAME`` is provided.
++
++.. versionchanged:: 1.10
++
++    The use of ``FORCE_SCRIPT_NAME`` in :func:`django.setup()` was added.
+ 
+ .. setting:: FORMAT_MODULE_PATH
+ 
+diff --git a/docs/releases/1.10.txt b/docs/releases/1.10.txt
+index b291dcf..4d2b0ca 100644
+--- a/docs/releases/1.10.txt
++++ b/docs/releases/1.10.txt
+@@ -209,7 +209,10 @@ Tests
+ URLs
+ ^^^^
+ 
+-* ...
++* :func:`django.setup()` now sets the URL resolver script prefix using
++  :setting:`FORCE_SCRIPT_NAME` so that URL reversing works correctly outside of
++  the request/response cycle, for example in management commands and standalone
++  scripts.
+ 
+ Validators
+ ^^^^^^^^^^
+diff --git a/tests/urlpatterns_reverse/test_setup.py b/tests/urlpatterns_reverse/test_setup.py
+new file mode 100644
+index 0000000..264ff3e
+--- /dev/null
++++ b/tests/urlpatterns_reverse/test_setup.py
+@@ -0,0 +1,62 @@
++from __future__ import unicode_literals
++
++import django
++from django.core.urlresolvers import (
++    clear_script_prefix, get_script_prefix, reverse, set_script_prefix,
++)
++from django.test import SimpleTestCase, override_settings
++
++
++@override_settings(
++    FORCE_SCRIPT_NAME=None,
++    LOGGING_CONFIG=None,
++    ROOT_URLCONF='urlpatterns_reverse.urls',
++)
++class SetupScriptPrefixTests(SimpleTestCase):
++    def setUp(self):
++        super(SetupScriptPrefixTests, self).setUp()
++        self.addCleanup(set_script_prefix, get_script_prefix())
++        clear_script_prefix()
++
++    def test_default_script_prefix(self):
++        set_script_prefix('/previous/')
++        django.setup()
++        self.assertEqual(get_script_prefix(), '/')
++        self.assertEqual(reverse('hardcoded'), '/hardcoded/')
++
++    @override_settings(FORCE_SCRIPT_NAME='')
++    def test_empty_script_prefix(self):
++        set_script_prefix('/previous/')
++        django.setup()
++        self.assertEqual(get_script_prefix(), '/')
++        self.assertEqual(reverse('hardcoded'), '/hardcoded/')
++
++    @override_settings(FORCE_SCRIPT_NAME='/site')
++    def test_force_script_name(self):
++        django.setup()
++        self.assertEqual(get_script_prefix(), '/site/')
++        self.assertEqual(reverse('hardcoded'), '/site/hardcoded/')
++
++    @override_settings(FORCE_SCRIPT_NAME='/site/')
++    def test_force_script_name_with_trailing_slash(self):
++        django.setup()
++        self.assertEqual(reverse('hardcoded'), '/site/hardcoded/')
++
++    @override_settings(FORCE_SCRIPT_NAME='/caf\u00e9')
++    def test_unicode_script_prefix(self):
++        django.setup()
++        self.assertEqual(get_script_prefix(), '/caf\u00e9/')
++        self.assertEqual(reverse('hardcoded'), '/caf%C3%A9/hardcoded/')
++
++    @override_settings(FORCE_SCRIPT_NAME=b'/site')
++    def test_bytes_script_prefix(self):
++        django.setup()
++        self.assertEqual(get_script_prefix(), '/site/')
++        self.assertEqual(reverse('hardcoded'), '/site/hardcoded/')
++
++    @override_settings(FORCE_SCRIPT_NAME='/site')
++    def test_setup_without_setting_script_prefix(self):
++        set_script_prefix('/request/')
++        django.setup(set_prefix=False)
++        self.assertEqual(get_script_prefix(), '/request/')
++        self.assertEqual(reverse('hardcoded'), '/request/hardcoded/')
+diff --git a/tests/wsgi/tests.py b/tests/wsgi/tests.py
+index ea7112a..00345fb 100644
+--- a/tests/wsgi/tests.py
++++ b/tests/wsgi/tests.py
+@@ -5,6 +5,7 @@ import unittest
+ from django.core.exceptions import ImproperlyConfigured
+ from django.core.servers.basehttp import get_internal_wsgi_application
+ from django.core.signals import request_started
++from django.core.urlresolvers import get_script_prefix, set_script_prefix
+ from django.core.wsgi import get_wsgi_application
+ from django.db import close_old_connections
+ from django.test import TestCase, override_settings
+@@ -16,11 +17,35 @@ from django.utils import six
+ class WSGITest(TestCase):
+ 
+     def setUp(self):
++        self.addCleanup(set_script_prefix, get_script_prefix())
+         request_started.disconnect(close_old_connections)
+ 
+     def tearDown(self):
+         request_started.connect(close_old_connections)
+ 
++    @override_settings(FORCE_SCRIPT_NAME='/forced')
++    def test_get_wsgi_application_preserves_script_prefix(self):
++        set_script_prefix('/request/')
++        get_wsgi_application()
++        self.assertEqual(get_script_prefix(), '/request/')
++
++    def test_request_script_prefix(self):
++        application = get_wsgi_application()
++        for forced_prefix, script_name, expected in [
++            (None, '/request', '/request/'),
++            (None, '/other', '/other/'),
++            ('/forced', '/request', '/forced/'),
++            ('', '/request', '/'),
++        ]:
++            with override_settings(FORCE_SCRIPT_NAME=forced_prefix):
++                environ = RequestFactory()._base_environ(
++                    PATH_INFO='/', SCRIPT_NAME=script_name,
++                )
++                response = application(environ, lambda status, headers: None)
++                self.assertEqual(response.status_code, 200)
++                self.assertEqual(get_script_prefix(), expected)
++                response.close()
++
+     def test_get_wsgi_application(self):
+         """
+         Verify that ``get_wsgi_application`` returns a functioning WSGI

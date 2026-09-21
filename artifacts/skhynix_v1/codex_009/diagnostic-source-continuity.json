@@ -1,0 +1,15 @@
+{
+  "exact_source_specs_reused": true,
+  "gate_b_verified_skills": 0,
+  "native008_outputs_used_for_knowledge_content": false,
+  "native008_public_recall_used_for_retrieval_design": true,
+  "probe_sha256": "41262bce2a86a70b255bc96c781fed4755045aa29133ce4b104acc8ff066155a",
+  "source_cells": {
+    "eval-20428": "A",
+    "eval-20438": "A"
+  },
+  "source_native008_bank_sha256": "080850cbadbf27afc617e478adc2e75b0fc334460768b9c8f3ffda285ff6961c",
+  "source_native008_spec_sha256": "beaf66834191831735752a0586e2c5b540da918825423d5f8136173cdc674dfe",
+  "source_run": "native007",
+  "sources_canonical_sha256": "d69aca30b557921487536c427223c332ce2c3cd5e01857e8ca84345b56eda708"
+}

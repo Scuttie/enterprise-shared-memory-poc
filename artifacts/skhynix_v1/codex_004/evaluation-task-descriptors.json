@@ -1,0 +1,50 @@
+[
+  {
+    "commit": "94fb720696f5f5d12bad8bc813699fd696afd2fb",
+    "instruction_sha256": "19d36b7db84f4d2c76063195a945f6d43ef9b4728a1cd6376fcda62b6796cd07",
+    "org_id": "833a06c1-daa9-57de-8d28-abe25935d775",
+    "repository": "sympy/sympy",
+    "task_id": "swebench_verified--sympy__sympy-19346",
+    "user_id": "feb8d107-66c6-5758-a45e-ba1cc52af60c"
+  },
+  {
+    "commit": "82298df6a51491bfaad0c6d1980e7e3ca808ae93",
+    "instruction_sha256": "349217bfcff53ad8337362978ed1800efc7eacbc34a791f83d998794295d53b3",
+    "org_id": "833a06c1-daa9-57de-8d28-abe25935d775",
+    "repository": "sympy/sympy",
+    "task_id": "swebench_verified--sympy__sympy-20916",
+    "user_id": "feb8d107-66c6-5758-a45e-ba1cc52af60c"
+  },
+  {
+    "commit": "de446c6d85f633271dfec1452f6f28ea783e293f",
+    "instruction_sha256": "cc13569d221e5dd7ef1012ad7397c3a0b895642a7d45290efa26832adc89af0d",
+    "org_id": "833a06c1-daa9-57de-8d28-abe25935d775",
+    "repository": "sympy/sympy",
+    "task_id": "swebench_verified--sympy__sympy-21930",
+    "user_id": "feb8d107-66c6-5758-a45e-ba1cc52af60c"
+  },
+  {
+    "commit": "3f8c8c2377cb8e0daaf8073e8d03ac7d87580813",
+    "instruction_sha256": "dd984898005c8133d5e0be12a75101508eae9f9356887a52f4c234b0e71a9a0d",
+    "org_id": "833a06c1-daa9-57de-8d28-abe25935d775",
+    "repository": "sympy/sympy",
+    "task_id": "swebench_verified--sympy__sympy-22080",
+    "user_id": "feb8d107-66c6-5758-a45e-ba1cc52af60c"
+  },
+  {
+    "commit": "a3475b3f9ac662cd425157dd3bdb93ad7111c090",
+    "instruction_sha256": "6fde4a58e9e8ecc91eaef6ec8d850312b75f321f681f742fa34596995e5f4ff1",
+    "org_id": "833a06c1-daa9-57de-8d28-abe25935d775",
+    "repository": "sympy/sympy",
+    "task_id": "swebench_verified--sympy__sympy-22456",
+    "user_id": "feb8d107-66c6-5758-a45e-ba1cc52af60c"
+  },
+  {
+    "commit": "c4e836cdf73fc6aa7bab6a86719a0f08861ffb1d",
+    "instruction_sha256": "1e74a5f54d233422af862a0cabbe1dc27aa9291fc9cc2b6bdbf5bd67b92e7d49",
+    "org_id": "833a06c1-daa9-57de-8d28-abe25935d775",
+    "repository": "sympy/sympy",
+    "task_id": "swebench_verified--sympy__sympy-22914",
+    "user_id": "feb8d107-66c6-5758-a45e-ba1cc52af60c"
+  }
+]

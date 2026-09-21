@@ -1,0 +1,55 @@
+{
+  "checks": [
+    {
+      "attempt": 1,
+      "cell": "A",
+      "error_type": "ProcedureEvidenceError",
+      "name": "training-19637-a1",
+      "official_resolved": true,
+      "patch_sha256": "9edb0fa5884d4386c1e72b162535a0393547267a12ba898199455867bbdde187",
+      "procedure_attested": false,
+      "public_result_sha256": "354ac08621e0e7d9482fc8b41bed1988b3ff1492398ed58eaa3913452e5954dc",
+      "reason": "exactly one successful pre-write procedure binding is required",
+      "run_root": "/home/trimem-runner/skhynix-codex-006/training-19637-a1/execution",
+      "task_id": "swebench_verified--sympy__sympy-19637"
+    },
+    {
+      "attempt": 2,
+      "cell": "A",
+      "error_type": "ProcedureEvidenceError",
+      "name": "training-19637-a2",
+      "official_resolved": true,
+      "patch_sha256": "9ef9d0aede3a10348559f8daae7f01e88da25dcb9a2c0c5554c76dd99b56791c",
+      "procedure_attested": false,
+      "public_result_sha256": "338877efad14eddad46fbb752b9202495f5fc03e662dc1365a54f9cd64208a79",
+      "reason": "no genuine added assertion failure with unchanged implementation was verified",
+      "run_root": "/home/trimem-runner/skhynix-codex-006/training-19637-a2/execution",
+      "task_id": "swebench_verified--sympy__sympy-19637"
+    },
+    {
+      "attempt": 1,
+      "cell": "A",
+      "error_type": "ProcedureEvidenceError",
+      "name": "training-19783-a1",
+      "official_resolved": false,
+      "patch_sha256": "1557cb2fd1e4255a0c4cf8a71e5ae4bcded8c57e7ba1f89904a488dc9c5d90ef",
+      "procedure_attested": false,
+      "public_result_sha256": "b92c8963b21a6d30a36f3de6b5db5203be4538f78245cf8b0f0c00d6352e81b9",
+      "reason": "training plan, authority, predeclaration or official resolution differs",
+      "run_root": "/home/trimem-runner/skhynix-codex-006/training-19783-a1/execution",
+      "task_id": "swebench_verified--sympy__sympy-19783"
+    }
+  ],
+  "evaluation_solve_rates": null,
+  "executed_evaluation_cells": 0,
+  "exhausted_task_ids": [],
+  "max_fresh_attempts_per_task": 3,
+  "official_training_grades": 3,
+  "planned_evaluation_cells": 18,
+  "retry_feedback_provided": false,
+  "schema": "skhynix/native006-training-gate-decision/1.0",
+  "selected": [],
+  "status": "TRAINING_IN_PROGRESS",
+  "training_official_resolved": 2,
+  "verified_training_procedures": 0
+}

@@ -1,0 +1,75 @@
+{
+  "arms": {
+    "A": "NO_MEMORY",
+    "C": "SKHYNIX_WITH_PUBLIC_DIAGNOSTIC_KNOWLEDGE"
+  },
+  "codex_tokens_and_cost": null,
+  "cohort_scope": "Both known native007/native008 failure tasks, each twice per arm. Same-task historical diagnostic recovery chosen using prior outcomes, not unseen transfer or a confirmatory global solve rate.",
+  "concurrency": "At most two fresh independent solvers, one matched task-replicate pair at a time.",
+  "diagnostic_bank_sha256": "74b72888e09b5ed45cbde118a8f7811a80882c3dbd1a9800d551ba488d06e6a4",
+  "diagnostic_source_continuity_sha256": "db77c706cec477a76f86ab2b28883243956a12870247c25ee7133f7ae8fd01cd",
+  "evaluation_instances": [
+    "swebench_verified--sympy__sympy-20428",
+    "swebench_verified--sympy__sympy-20438"
+  ],
+  "evaluation_template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05",
+  "expected_actual_C_injections_per_cell": 1,
+  "fork_turns": "none",
+  "frozen_at_unix_seconds": 1789292238.401699,
+  "grader_calls_so_far": 0,
+  "launch_order": {
+    "recovery-20428-r1": [
+      "A",
+      "C"
+    ],
+    "recovery-20428-r2": [
+      "C",
+      "A"
+    ],
+    "recovery-20438-r1": [
+      "C",
+      "A"
+    ],
+    "recovery-20438-r2": [
+      "A",
+      "C"
+    ]
+  },
+  "limits": {
+    "actions": 120,
+    "memory_bytes": 12000,
+    "memory_injections": 3,
+    "wall_seconds": 1200
+  },
+  "manifest_sha256": "57f369ee641b923ec551698fb52f043e7cf8569e4872f0f691883f47d399f6b9",
+  "memory_type": "Exactly unchanged native008 public analyst diagnostic content and failed native007 A episodes. Gate A failed sources=2; Gate B=0; KG relations=0.",
+  "names": [
+    "recovery-20428-r1",
+    "recovery-20428-r2",
+    "recovery-20438-r1",
+    "recovery-20438-r2"
+  ],
+  "native008_diagnostic_validation_sha256": "e4cd8de6951673abdf246ce701ce6d155c4ce8ae6a4f73cf49b79f898bc63c6c",
+  "native008_outputs_used_for_knowledge_content": false,
+  "outcome_policy": "All eight fixed cells retained, one submission and official grade each. No outcome-based retries, prompt changes, extra guidance, replacements, exclusions or memory updates.",
+  "planned_evaluation_cells": 8,
+  "primary_metric": "Official resolved C minus A over four matched task-replicate observations. Also publish both task-specific repetitions; these are two distinct issues, not four.",
+  "prior_public_retrieval_used_for_routing_design": true,
+  "public_probe_sha256": "41262bce2a86a70b255bc96c781fed4755045aa29133ce4b104acc8ff066155a",
+  "reasoning_effort": "INHERITED_PARENT_UNCHANGED",
+  "replicates_per_task_arm": 2,
+  "requested_model": "gpt-6-astra",
+  "retrieval_policy_development_sha256": "d7db88905ecae661a72726d1176667b793eef6e0f7488746071033325ffcb040",
+  "retrieval_text_policy": "EXACT_TASK_DIAGNOSTIC_ROUTE",
+  "root_cross_cell_feedback": false,
+  "scenario": "KNOWN_FAILURE_RECOVERY",
+  "schema": "skhynix/native010-launch-contract/1.0",
+  "separate_model_api_calls": 0,
+  "solver_model_calls_so_far": 0,
+  "source_freeze_sha256": "71c08c94f081dd379be5e0cbe5147490e6f78e7b1a804e016415e5fc2d2d0da2",
+  "source_specs_canonical_sha256": "d69aca30b557921487536c427223c332ce2c3cd5e01857e8ca84345b56eda708",
+  "unused_arm": "B is prepared only; never launched, graded or counted. Its existing failed/same-target safe-pool rejection is unchanged.",
+  "validation_evidence_sha256": "6c4a9cd968bf527ba5a79f9404439e2027d4e69277297467d4885748f5c792eb",
+  "validation_sha256": "5c544b40308258c508059641fd90683fadb6ae2aba6bde6ac80540a8fe31dfc5",
+  "validation_tests": 187
+}

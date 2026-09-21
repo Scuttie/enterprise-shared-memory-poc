@@ -1,0 +1,229 @@
+{
+  "attestations": [
+    {
+      "agent": "native004_train_14976",
+      "cell": "A",
+      "limitations": "Full repository suite not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "c304c78a626813ff57177fc9f2fef4886ceb182552026c4ba6890a56f6d81b02",
+      "public_test_summary": "RED: 2 new assertion failures, 8 passed. GREEN identical suite: 10 passed. Additional lambdify:54 passed,29 skipped.",
+      "run": "training-14976"
+    },
+    {
+      "agent": "native004_train_16766",
+      "cell": "A",
+      "limitations": "Verification limited to this public module.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "21ce2a9d874cc3a3cded6cc03da152bc2c0be23697e9aa76caa779685825bc6b",
+      "public_test_summary": "Public test_pycode.py: RED new AssertionError; GREEN all10passed, unchanged regression bytes and no edits after GREEN.",
+      "run": "training-16766"
+    },
+    {
+      "agent": "native004_19346_a",
+      "cell": "A",
+      "limitations": "Full public module did not pass; pre-existing attribution is solver-reported.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "bb62342e4e03b00b0811bf3d8cab6266e1ac78b25301ab80f29a2d497ed0daab",
+      "public_test_summary": "5focused tests passed. Fullfile42passed,2Python3.9parserexceptions agentreports pre-existing.",
+      "run": "eval-19346"
+    },
+    {
+      "agent": "native004_19346_b",
+      "cell": "B",
+      "limitations": "Full public module did not pass; pre-existing attribution is solver-reported.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "d631a54041dc229313fc1ac35044ef0728ee46aecd69503dde1e3087046fbc20",
+      "public_test_summary": "Focusedchecks passed. Fullmodule42passed,2Python3.9parserexceptions agentreports pre-existing.",
+      "run": "eval-19346"
+    },
+    {
+      "agent": "native004_19346_c",
+      "cell": "C",
+      "limitations": "Full public module did not pass; pre-existing attribution is solver-reported.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "5a8bfbc7b81e92de8166504f0aa1c59caa0e9102b35251c6560e62be94cdd056",
+      "public_test_summary": "4focused containertests passed. Fullmodule42passed,2Python3.9parserexceptions agentreports pre-existing.",
+      "run": "eval-19346"
+    },
+    {
+      "agent": "native004_20916_b",
+      "cell": "B",
+      "limitations": "Verification limited to the four public modules.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "d0d747489713b243b529b11376e7538e41cf273e6e13c894809895f3454052f0",
+      "public_test_summary": "407passed,3expectedfailures across conventions,pretty,LaTeX,MathML.",
+      "run": "eval-20916"
+    },
+    {
+      "agent": "native004_20916_c",
+      "cell": "C",
+      "limitations": "Verification limited to the four public modules.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "2279b64e62d2be018d4f9202c57c8693be2b3b9401172e43e6b43413f33d8ed1",
+      "public_test_summary": "Two new tests failed before fix.407passed,3expectedfailures across conventions,pretty,LaTeX,MathML.",
+      "run": "eval-20916"
+    },
+    {
+      "agent": "native004_20916_a",
+      "cell": "A",
+      "limitations": "Verification limited to the four public modules.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "53bddd246d74b79b8861cf5d357c2e2e1e03e7afff496b84028961c60ec831cb",
+      "public_test_summary": "407passed,3expectedfailures across conventions,pretty,LaTeX,MathML.",
+      "run": "eval-20916"
+    },
+    {
+      "agent": "native004_21930_c",
+      "cell": "C",
+      "limitations": "No browser rendering verification.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "869bdf2ab91e3f2d0e8a14f7b4f5b3f9dc1656608c86f5596973a58c5090bd92",
+      "public_test_summary": "Regressionfailedbeforefix. Relevantpublicsuites208passed,1skipped,2expectedfailures.",
+      "run": "eval-21930"
+    },
+    {
+      "agent": "native004_21930_a",
+      "cell": "A",
+      "limitations": "No direct Jupyter rendering verification.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "ddd7cb6d9b1891329408db7a6d39d5621c4cea08ff85a6909ea34490aa78b6d6",
+      "public_test_summary": "Regressionfailedbeforefix. Relevantpublicsuites208passed,1skipped,2expectedfailures.",
+      "run": "eval-21930"
+    },
+    {
+      "agent": "native004_21930_b",
+      "cell": "B",
+      "limitations": "No browser rendering verification.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "13e77badbe3c255ce9da6d09a0e0df8bff1027002d85e034e82d4cd9bfb49816",
+      "public_test_summary": "Regressionfailedbeforefix.Secondquant52passed1skipped;LaTeX156passed2expectedfailures.",
+      "run": "eval-21930"
+    },
+    {
+      "agent": "native004_22080_a",
+      "cell": "A",
+      "limitations": "Optional dependency coverage limited by unavailable dependencies.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "d552693d5434df57f5f2b7b1868ee253de8e28dab383f8be1c7040390c9ea605",
+      "public_test_summary": "Regressionfailedbeforefix;82passed52skipped.",
+      "run": "eval-22080"
+    },
+    {
+      "agent": "native004_22080_c",
+      "cell": "C",
+      "limitations": "NumPy unavailable; optional dependency coverage limited.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "d98ec672bbece70e7c556361ba1638e0833858c17d7eb629c79e526bb1146c5b",
+      "public_test_summary": "Regressionfailedbeforefix;92passed52skipped across3publicfiles.",
+      "run": "eval-22080"
+    },
+    {
+      "agent": "native004_22080_b",
+      "cell": "B",
+      "limitations": "Optional dependency coverage limited.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "160c9d2c38c0646c931e2367fd530bfb60b2cac913a63b880f0dd6d6beafb17b",
+      "public_test_summary": "Regressionfailedbeforefix;82passed52skipped.",
+      "run": "eval-22080"
+    },
+    {
+      "agent": "native004_22456_b",
+      "cell": "B",
+      "limitations": "Broader compiler testing blocked by /tmp execution permissions.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "4f971296fc888a722b21eab54a68b9cccdafc942651c7b62758c50214400135e",
+      "public_test_summary": "162passed,6skipped,3expectedfailures.Additional reconstruction and serialization checks passed.",
+      "run": "eval-22456"
+    },
+    {
+      "agent": "native004_22456_a",
+      "cell": "A",
+      "limitations": "Broader codegen testing encountered permission error executing a temporary compiled binary.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "946d68b7d572bedc4abf09edbdab9842cdfcac75a582a6974c10598c68810f32",
+      "public_test_summary": "163passed,2skipped,1expectedfailure.",
+      "run": "eval-22456"
+    },
+    {
+      "agent": "native004_22456_c",
+      "cell": "C",
+      "limitations": "Execution of compiled program under /tmp denied in broader codegen suite.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "7668928193df11d05560ca17133eb02da261f7815cd4b9c19aced2137df38df4",
+      "public_test_summary": "894passed in focused AST and printing checks. Broader codegen checks139passed,1exception.",
+      "run": "eval-22456"
+    },
+    {
+      "agent": "native004_22914_b",
+      "cell": "B",
+      "limitations": "Validation limited to that public module.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "acc889c4e86cad85bb8cbc7f5a4da8846233e1e6ab43a769f73235325d0e2299",
+      "public_test_summary": "Regressionfailedbeforefix.Public test_pycode.py20passed2skipped.",
+      "run": "eval-22914"
+    },
+    {
+      "agent": "native004_22914_c",
+      "cell": "C",
+      "limitations": "Optional dependencies including NumPy unavailable.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "e91cc3028b7b43f26b68789ffcd747f81c410131999a7768d449494973e5a622",
+      "public_test_summary": "99passed74skipped.",
+      "run": "eval-22914"
+    },
+    {
+      "agent": "native004_22914_a",
+      "cell": "A",
+      "limitations": "Skipped tests limit optional dependency coverage.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "d4453775c4af33c00fced6630eae83f093721566d8c8a60ef575331824882578",
+      "public_test_summary": "Regressionfailedbeforefix.Relevantpublictests37passed21skipped.",
+      "run": "eval-22914"
+    }
+  ],
+  "fork_turns": "none",
+  "limitations": "Agent self-attestations are not independent proof of all host activity. Broker actions and official receipts are separately audited.",
+  "requested_model": "gpt-6-astra",
+  "schema": "skhynix/native-solver-self-attestations/1.0",
+  "source": "ROOT_TRANSCRIPTION_OF_ACTUAL_AGENT_FINAL_MESSAGES"
+}

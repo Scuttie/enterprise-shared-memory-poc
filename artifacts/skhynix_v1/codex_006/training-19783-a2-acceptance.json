@@ -1,0 +1,13 @@
+{
+  "attempt": 2,
+  "cell": "A",
+  "error_type": "ProcedureEvidenceError",
+  "name": "training-19783-a2",
+  "official_resolved": false,
+  "patch_sha256": "319fe0425845fbdd1649a5a0994f66203ec6bd3513042d6c789f87653bee257f",
+  "procedure_attested": false,
+  "public_result_sha256": "d94a63bbb3071d7c8e02efa8b9acce022a14e7f9350288884a77ae5fd3844de6",
+  "reason": "training plan, authority, predeclaration or official resolution differs",
+  "run_root": "/home/trimem-runner/skhynix-codex-006/training-19783-a2/execution",
+  "task_id": "swebench_verified--sympy__sympy-19783"
+}

@@ -1,0 +1,43 @@
+{
+  "by_class": {
+    "tests.unit.test_trimem_skhynix_architecture_cleanup": 24,
+    "tests.unit.test_trimem_skhynix_architecture_cohort": 81,
+    "tests.unit.test_trimem_skhynix_architecture_pipeline": 47
+  },
+  "containers_started": 0,
+  "controller_revision_reference": {
+    "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cohort-training/controller-revisions/00000002.json",
+    "sha256": "01433017b9cbfab5fb5b506540677d7c52f60c2956949870826a9d3ad0a0099b"
+  },
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 152
+  },
+  "evidence_kind": "PYTEST_JUNIT_XML",
+  "frozen_cohort_reference": {
+    "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-001-cohort-source-v3/trimem_skhynix_architecture_cohort.py",
+    "sha256": "e47e16bebff3e35ba51e3018dbe99ca4a310685edaf26cd0090d216954e9a8b6"
+  },
+  "full_cohort_execution_attested": false,
+  "junit_reference": {
+    "path": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_cohort_v3_validation.xml",
+    "sha256": "f80c69783743a9c2dde63cfe16f6cab087c8af1c7d09b5663db16a40ec751489"
+  },
+  "native_solver_runs": 0,
+  "official_grades": 0,
+  "real_cleanup_operations": 0,
+  "schema": "skhynix/native-architecture-cohort-unit-validation/3.0",
+  "scope": "COHERENT_IN_PROCESS_CACHES_TERMINAL_FULL_AUDIT_AND_EXISTING_COHORT_CLEANUP_PIPELINE_INTEGRITY",
+  "separate_model_api_calls": 0,
+  "source_sha256": {
+    "scripts/trimem_skhynix_architecture_cleanup.py": "b23b9dfece2e7e813c8645547bc7abf077b4aece015f23d141c285076f7d52bb",
+    "scripts/trimem_skhynix_architecture_cohort.py": "e47e16bebff3e35ba51e3018dbe99ca4a310685edaf26cd0090d216954e9a8b6",
+    "scripts/trimem_skhynix_architecture_pipeline.py": "8d28e04f2ca69bc0dd2eebdad9980c4e804380fcbfbb105f22800ad3e4714bf9",
+    "tests/unit/test_trimem_skhynix_architecture_cleanup.py": "dba14fc2a5450de7daad4b42ccb5e7bc50fb89d40859818034243f6062439cda",
+    "tests/unit/test_trimem_skhynix_architecture_cohort.py": "c1eae7dd7159a4f397ac6ab7f5312828b9503314e74b4c47dde61a388fabdb76",
+    "tests/unit/test_trimem_skhynix_architecture_pipeline.py": "bec9d62228a7c58b09467a5aca0f7866c36000a7c35761a35878c38a7bad6f7a"
+  },
+  "status": "PASS"
+}

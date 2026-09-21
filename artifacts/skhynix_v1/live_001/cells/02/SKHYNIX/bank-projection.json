@@ -1,0 +1,28 @@
+{
+  "entries": [
+    {
+      "applicable_target_revision": "71db08c05197545944949d5aa76cd340e7143627",
+      "chronology_and_version_evidence_sha256": "e09293df6fd3b55a159f3fb5d2f78c93c0ac415c721922378f3c53bf5efe9355",
+      "knowledge_content_hash": "sha256:72120d9572a1d9b580d6fedea03e515b2529aa8dc5e2db507a3dfe3da9d24b36",
+      "knowledge_id": "knowledge:4c8247dd54f41c8a22279f36cbaf5d0447243c19cd249c337e7a13b89ca998b0",
+      "memory_id": "dev-oracle-pr-683fd95f612e2df649b1706b",
+      "shared_source_content_bytes": 2475,
+      "shared_source_content_sha256": "94bf96ee045179d723d78570b0db033cf8c10bf30cf0680d747920ede3bbf22a",
+      "source_commit": "7b9edd49ddf3fca8e95e2d0944bed021b093096d",
+      "source_task_id": "github-pr--sphinx-doc__sphinx--6746"
+    }
+  ],
+  "imported_episode_count": 0,
+  "knowledge_relation_count": 0,
+  "l3_effect_claim_allowed": false,
+  "language": "python",
+  "repository_knowledge_count": 1,
+  "schema": "skhynix/historical-source-seed/1.0",
+  "seed_snapshot_sha256": "sha256:04eee82b0ad544b3946b04103e4a15df7bef13c6efe5db85ec5d59f1ed27f31d",
+  "source_bank_snapshot_sha256": "55fe3c03ef545181986605166247f78896c5fcd2db37535d19f574781c16be1e",
+  "source_content_identical_to_existing_m2": true,
+  "source_evidence_label": "HISTORICAL_MERGED_PR_KNOWLEDGE_NOT_TESTED_PROCEDURE",
+  "target_id": "swebench_verified--sphinx-doc__sphinx-11445",
+  "verified_skill_count": 0,
+  "wire_envelope": "STANDARD_SKHYNIX_REPOSITORY_SEMANTIC_JSON"
+}

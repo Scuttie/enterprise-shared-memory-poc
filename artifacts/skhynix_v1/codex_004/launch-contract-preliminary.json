@@ -1,0 +1,67 @@
+{
+  "codex_tokens_and_cost": null,
+  "concurrency": "up to three independent cells of the same target concurrently; balanced submission order; no cross-cell messages",
+  "evaluation_instances": [
+    "sympy__sympy-19346",
+    "sympy__sympy-20916",
+    "sympy__sympy-21930",
+    "sympy__sympy-22080",
+    "sympy__sympy-22456",
+    "sympy__sympy-22914"
+  ],
+  "evaluation_template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05",
+  "fork_turns": "none",
+  "frozen_at_unix_seconds": 1789221113.1331515,
+  "launch_order_by_target": {
+    "19346": [
+      "A",
+      "B",
+      "C"
+    ],
+    "20916": [
+      "B",
+      "C",
+      "A"
+    ],
+    "21930": [
+      "C",
+      "A",
+      "B"
+    ],
+    "22080": [
+      "A",
+      "C",
+      "B"
+    ],
+    "22456": [
+      "B",
+      "A",
+      "C"
+    ],
+    "22914": [
+      "C",
+      "B",
+      "A"
+    ]
+  },
+  "limits": {
+    "actions": 120,
+    "memory_bytes": 12000,
+    "memory_injections": 3,
+    "wall_seconds": 1200
+  },
+  "outcome_policy": "One solver attempt and one completed official grading per planned cell. Retain failures and incompletes in the planned denominator. No performance-driven substitutions or patch retries.",
+  "planned_evaluation_cells": 18,
+  "prior_memory_reused": false,
+  "query_contract": "Exact native003 common prompt and query construction retained across all arms; no post-result tuning.",
+  "requested_model": "gpt-6-astra",
+  "schema": "skhynix/native004-launch-contract/1.0",
+  "selection_scope": "PUBLIC_TITLE_INFORMED_EXPLORATORY_PRINTING_CODEGEN_COHORT",
+  "separate_model_api_calls": 0,
+  "skill_policy": "Promote only if both training traces satisfy the unchanged actual Gate B verifier. Inject only for exact public-runtime compatibility certificates; do not relax runner or version checks. Fall back to observation-only memory if promotion or compatibility fails, disclose actual coverage.",
+  "training_instances": [
+    "sympy__sympy-16766",
+    "sympy__sympy-18763"
+  ],
+  "training_template_sha256": "c3df9d16f7219fb3d302a0f583df25ac45a7f312bc237f39c3e6398e24dd36cc"
+}

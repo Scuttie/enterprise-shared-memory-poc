@@ -1,0 +1,14 @@
+{
+  "agent": "/root/native007_train_19637_a1",
+  "cell": "A",
+  "filled_prompt_sha256": "059b1177205671e121bc65044c8a35635240ec7d383a7695227c12d63bb28b03",
+  "fork_turns": "none",
+  "name": "training-19637-a1",
+  "reasoning_effort": "INHERITED_PARENT_UNCHANGED",
+  "recorded_at_unix_seconds": 1789237019.273928,
+  "requested_model": "gpt-6-astra",
+  "root_cross_cell_feedback": false,
+  "schema": "skhynix/native007-solver-launch/1.0",
+  "separate_model_api_calls": 0,
+  "template_sha256": "8627752d89189a2e8c8f6ef6ef9a1fd35d18a5ad9295e50e14100d17305ebb44"
+}

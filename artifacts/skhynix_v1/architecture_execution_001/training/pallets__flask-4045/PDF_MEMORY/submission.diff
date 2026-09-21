@@ -1,0 +1,100 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index d546dca..1e3d75d 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -5,6 +5,8 @@ Version 2.0.1
+ 
+ Unreleased
+ 
++-   Raise a ``ValueError`` when a blueprint name contains a dot. Dots
++    are reserved for separating nested blueprint names.
+ -   Re-add the ``filename`` parameter in ``send_from_directory``. The
+     ``filename`` parameter has been renamed to ``path``, the old name
+     is deprecated. :pr:`4019`
+diff --git a/src/flask/blueprints.py b/src/flask/blueprints.py
+index 5fb84d8..0e89c8c 100644
+--- a/src/flask/blueprints.py
++++ b/src/flask/blueprints.py
+@@ -122,7 +122,7 @@ class Blueprint(Scaffold):
+     See :doc:`/blueprints` for more information.
+ 
+     :param name: The name of the blueprint. Will be prepended to each
+-        endpoint name.
++        endpoint name. Must not contain a dot (``.``).
+     :param import_name: The name of the blueprint package, usually
+         ``__name__``. This helps locate the ``root_path`` for the
+         blueprint.
+@@ -188,6 +188,9 @@ class Blueprint(Scaffold):
+             template_folder=template_folder,
+             root_path=root_path,
+         )
++        if "." in name:
++            raise ValueError("'name' may not contain a dot '.' character.")
++
+         self.name = name
+         self.url_prefix = url_prefix
+         self.subdomain = subdomain
+diff --git a/tests/test_blueprints.py b/tests/test_blueprints.py
+index b986ca0..5082c2e 100644
+--- a/tests/test_blueprints.py
++++ b/tests/test_blueprints.py
+@@ -253,28 +253,10 @@ def test_templates_list(test_apps):
+     assert templates == ["admin/index.html", "frontend/index.html"]
+ 
+ 
+-def test_dotted_names(app, client):
+-    frontend = flask.Blueprint("myapp.frontend", __name__)
+-    backend = flask.Blueprint("myapp.backend", __name__)
+-
+-    @frontend.route("/fe")
+-    def frontend_index():
+-        return flask.url_for("myapp.backend.backend_index")
+-
+-    @frontend.route("/fe2")
+-    def frontend_page2():
+-        return flask.url_for(".frontend_index")
+-
+-    @backend.route("/be")
+-    def backend_index():
+-        return flask.url_for("myapp.frontend.frontend_index")
+-
+-    app.register_blueprint(frontend)
+-    app.register_blueprint(backend)
+-
+-    assert client.get("/fe").data.strip() == b"/be"
+-    assert client.get("/fe2").data.strip() == b"/fe"
+-    assert client.get("/be").data.strip() == b"/fe"
++@pytest.mark.parametrize("name", ("myapp.frontend", ".frontend", "frontend.", "."))
++def test_dotted_names(name):
++    with pytest.raises(ValueError, match="'name' may not contain a dot"):
++        flask.Blueprint(name, __name__)
+ 
+ 
+ def test_dotted_names_from_app(app, client):
+@@ -852,6 +834,26 @@ def test_app_url_processors(app, client):
+     assert client.get("/de/about").data == b"/de/"
+ 
+ 
++def test_nested_blueprint_names(app):
++    parent = flask.Blueprint("parent", __name__)
++    child = flask.Blueprint("child", __name__)
++
++    @child.route("/")
++    def index():
++        return "Child"
++
++    parent.register_blueprint(child, url_prefix="/child")
++    app.register_blueprint(parent, url_prefix="/parent")
++
++    assert app.blueprints == {"parent": parent, "child": child}
++    assert parent.name == "parent"
++    assert child.name == "child"
++    assert "parent.child.index" in app.view_functions
++    adapter = app.url_map.bind("localhost")
++    assert adapter.build("parent.child.index", {}) == "/parent/child/"
++    assert adapter.match("/parent/child/") == ("parent.child.index", {})
++
++
+ def test_nested_blueprint(app, client):
+     parent = flask.Blueprint("parent", __name__)
+     child = flask.Blueprint("child", __name__)

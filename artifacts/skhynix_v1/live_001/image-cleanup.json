@@ -1,0 +1,56 @@
+{
+  "images": [
+    {
+      "image": "swebench/sweb.eval.x86_64.django_1776_django-16100@sha256:768b2dd7ecee6c437c64441966687c4a1597230169c7c929e14374660a2ecdab",
+      "removed": true
+    },
+    {
+      "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-23262@sha256:c29e2fbcef442fa9833021bc492ea4c39bc71a0fb606e61fc5521a841ae88b2e",
+      "removed": true
+    },
+    {
+      "image": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-11445@sha256:fec58c84a7ccc38fdceb65528bfb6fb923f038cb1dc95de1f79c0a85e2dde4f2",
+      "removed": true
+    },
+    {
+      "image": "swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-25311@sha256:3e08e93c4788b52c21ed959dc401e62e5dd6d95f52b92a389018a36b8f1e3142",
+      "removed": true
+    },
+    {
+      "image": "mswebench/mui_m_material-ui@sha256:decbbdb14f1b1a8fe161a7d7a58ed3b74b8534e0ec7c2e4158ecaf59424ef96f",
+      "removed": true
+    },
+    {
+      "image": "mswebench/nix_swe@sha256:64917c249ba8f26b6a0608a8a031cefa1f69da67e14afa9cebdd092e081aca4a",
+      "removed": false
+    },
+    {
+      "image": "mswebench/ponylang_m_ponyc@sha256:90f8e931297d0c512440fc0e404b751c7cb84f6883c100a81133d7c81e4d8a2d",
+      "removed": true
+    },
+    {
+      "image": "mswebench/clap-rs_m_clap@sha256:7a2d5c6b38c84d57b1c66804b28c451b354cc6ba23d84c79729dfcf544ea6727",
+      "removed": true
+    },
+    {
+      "image": "mswebench/facebook_m_zstd@sha256:a79a47529246cd44eaeebd47dd2a237da3e4786e9877b11e8afc2a44ad4bfedc",
+      "removed": true
+    },
+    {
+      "image": "mswebench/sharkdp_m_bat@sha256:e9f010c2864abead792c152eb722b4451e3355993a1e0eed9472c0a40581c26e",
+      "removed": true
+    },
+    {
+      "image": "mswebench/catchorg_m_catch2@sha256:0e7d4f5a4684924c0f87a73f4905f02bc3b3b1f5d859f020bcc92cca39fbbb96",
+      "removed": true
+    },
+    {
+      "image": "mswebench/clap-rs_m_clap@sha256:a7a33898a9cfc77cc1d6ae038053752770ecdb714279fd92482cf7c5aa0f25b0",
+      "removed": true
+    },
+    {
+      "image": "mswebench/cli_m_cli@sha256:e49482ab1aef12e2421b217dcd9740b7d2da99a2796edf425ea37d5671f2668b",
+      "removed": true
+    }
+  ]
+}

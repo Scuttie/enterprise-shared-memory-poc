@@ -1,0 +1,58 @@
+diff --git a/sympy/polys/densearith.py b/sympy/polys/densearith.py
+index bce08bb..7f7a88b 100644
+--- a/sympy/polys/densearith.py
++++ b/sympy/polys/densearith.py
+@@ -269,7 +269,7 @@ def dup_mul_ground(f, c, K):
+     if not c or not f:
+         return []
+     else:
+-        return [ cf * c for cf in f ]
++        return dup_strip([ cf * c for cf in f ])
+ 
+ 
+ def dmp_mul_ground(f, c, u, K):
+@@ -291,7 +291,7 @@ def dmp_mul_ground(f, c, u, K):
+ 
+     v = u - 1
+ 
+-    return [ dmp_mul_ground(cf, c, v, K) for cf in f ]
++    return dmp_strip([ dmp_mul_ground(cf, c, v, K) for cf in f ], u)
+ 
+ 
+ def dup_quo_ground(f, c, K):
+diff --git a/sympy/polys/tests/test_polytools.py b/sympy/polys/tests/test_polytools.py
+index c774fc4..ed6a330 100644
+--- a/sympy/polys/tests/test_polytools.py
++++ b/sympy/polys/tests/test_polytools.py
+@@ -1445,6 +1445,31 @@ def test_Poly_clear_denoms():
+         x + 3*sqrt(2), x, domain='EX') and poly.get_domain() == EX
+ 
+ 
++def test_Poly_clear_denoms_zero_coefficients():
++    # Multiplication in EX can simplify a nonzero-looking coefficient to zero.
++    r = Rational(1, 3)
++    denominator = 1 + sqrt(2)
++    coefficient = (18**r - 2**r*3**(2*r))/denominator
++
++    for gens in ((x,), (x, y), (x, y, z)):
++        zero = Poly(0, *gens, domain='EX')
++        for convert in (False, True):
++            coeff, result = Poly(coefficient, *gens, domain='EX').clear_denoms(
++                convert=convert)
++            assert coeff == denominator
++            assert result == zero
++            assert result.is_zero
++            assert result.terms_gcd() == ((0,)*len(gens), zero)
++            assert result.primitive() == (0, zero)
++
++            # Strip leading zeros at both the outer and innermost levels.
++            for gen in gens:
++                poly = Poly(coefficient*gen + 1, *gens, domain='EX')
++                coeff, result = poly.clear_denoms(convert=convert)
++                assert coeff == denominator
++                assert result == Poly(denominator, *gens, domain='EX')
++
++
+ def test_Poly_rat_clear_denoms():
+     f = Poly(x**2/y + 1, x)
+     g = Poly(x**3 + y, x)

@@ -1,0 +1,27 @@
+{
+  "file_count": 3,
+  "files": [
+    {
+      "bytes": 224448,
+      "path": "native010_public_replication_results.json",
+      "sha256": "f368f32cbd44bdfdef7e6c47c72a3b027a3bd41387905f3ddad4bb7faffb8c40",
+      "source": "C:\\Users\\jewon\\AppData\\Local\\Temp\\native010_public_replication_results.json"
+    },
+    {
+      "bytes": 9633,
+      "path": "native010_public_replication_run.py",
+      "sha256": "92a847927ff32ab932328ce829e4cf1d435556710e1a323a7685226396a3fc09",
+      "source": "C:\\Users\\jewon\\AppData\\Local\\Temp\\native010_public_replication_run.py"
+    },
+    {
+      "bytes": 3613,
+      "path": "native010_public_replication_summary.md",
+      "sha256": "2203c2d5f386a66fbee8efa47ede4727ee5a033ed6b2cb940537a7605370f8e2",
+      "source": "C:\\Users\\jewon\\AppData\\Local\\Temp\\native010_public_replication_summary.md"
+    }
+  ],
+  "native010_bank_changed": false,
+  "observations_released_to_root_after_native010_freeze": true,
+  "schema": "skhynix/native010-separate-public-replication/1.0",
+  "scientific_role": "Independent replication of unchanged Native008 public probes and submissions; NOT Native010 memory input or official grade."
+}

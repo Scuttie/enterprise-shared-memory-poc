@@ -1,0 +1,10 @@
+{
+  "prior_audit_sha256": "6ae3266d91c327f6998ccc48e8fa459a2ce71fb86f494ef4f062cc1d437c6548",
+  "prior_central": "/home/trimem-runner/skhynix-codex-005",
+  "prior_evaluation_grades": 0,
+  "prior_evaluation_solver_calls": 0,
+  "prior_manifest_sha256": "57f369ee641b923ec551698fb52f043e7cf8569e4872f0f691883f47d399f6b9",
+  "prior_patches_or_memory_reused": false,
+  "prior_status": "STOPPED_BEFORE_EVALUATION",
+  "prior_training_outcomes_used_for_procedure_redesign": true
+}

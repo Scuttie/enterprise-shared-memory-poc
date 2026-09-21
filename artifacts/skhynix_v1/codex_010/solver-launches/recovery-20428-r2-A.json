@@ -1,0 +1,14 @@
+{
+  "agent": "/root/native010_20428_r2_a",
+  "cell": "A",
+  "filled_prompt_sha256": "5f6ceb0fb9b135a2b7d34aa7f26d3e30241f49a7d66f34c247f8f15798c62639",
+  "fork_turns": "none",
+  "name": "recovery-20428-r2",
+  "reasoning_effort": "INHERITED_PARENT_UNCHANGED",
+  "recorded_at_unix_seconds": 1789293087.1781423,
+  "requested_model": "gpt-6-astra",
+  "root_cross_cell_feedback": false,
+  "schema": "skhynix/native010-solver-launch/1.0",
+  "separate_model_api_calls": 0,
+  "template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05"
+}

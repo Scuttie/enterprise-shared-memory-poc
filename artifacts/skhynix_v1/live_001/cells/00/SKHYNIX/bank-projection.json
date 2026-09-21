@@ -1,0 +1,28 @@
+{
+  "entries": [
+    {
+      "applicable_target_revision": "c6350d594c359151ee17b0c4f354bb44f28ff69e",
+      "chronology_and_version_evidence_sha256": "87f55b19e9c4f6f467d8af632d54d961cc3092549c66ee4168458910a5e2d6d6",
+      "knowledge_content_hash": "sha256:ca41af310138e272e22ddcd332bdb774fd3a2c717959342c465fdfb991f27f8c",
+      "knowledge_id": "knowledge:0f7b5a6b1ed99d055d89f6da492b5372192ffd64e9258854ee48db18362cf9f6",
+      "memory_id": "dev-oracle-pr-cc2b26f26fea85cbc5e74038",
+      "shared_source_content_bytes": 5300,
+      "shared_source_content_sha256": "c52a168c360a86caa017c989b08ee6a55b649e616860571fd1a4fa787b349bad",
+      "source_commit": "9459ec82aa12cad9b859c54c2f33f50bec057f2e",
+      "source_task_id": "github-pr--django__django--7143"
+    }
+  ],
+  "imported_episode_count": 0,
+  "knowledge_relation_count": 0,
+  "l3_effect_claim_allowed": false,
+  "language": "python",
+  "repository_knowledge_count": 1,
+  "schema": "skhynix/historical-source-seed/1.0",
+  "seed_snapshot_sha256": "sha256:9518957b4be27506ef7b6fe89476f240ec90e9dea0bf6d715c754e606a732c62",
+  "source_bank_snapshot_sha256": "55fe3c03ef545181986605166247f78896c5fcd2db37535d19f574781c16be1e",
+  "source_content_identical_to_existing_m2": true,
+  "source_evidence_label": "HISTORICAL_MERGED_PR_KNOWLEDGE_NOT_TESTED_PROCEDURE",
+  "target_id": "swebench_verified--django__django-16100",
+  "verified_skill_count": 0,
+  "wire_envelope": "STANDARD_SKHYNIX_REPOSITORY_SEMANTIC_JSON"
+}

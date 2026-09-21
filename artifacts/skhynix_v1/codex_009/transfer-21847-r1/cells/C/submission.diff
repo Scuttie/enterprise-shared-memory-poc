@@ -1,0 +1,52 @@
+diff --git a/sympy/polys/monomials.py b/sympy/polys/monomials.py
+index 0e84403..d2cd345 100644
+--- a/sympy/polys/monomials.py
++++ b/sympy/polys/monomials.py
+@@ -127,7 +127,7 @@ def itermonomials(variables, max_degrees, min_degrees=None):
+                 for variable in item:
+                     if variable != 1:
+                         powers[variable] += 1
+-                if max(powers.values()) >= min_degree:
++                if sum(powers.values()) >= min_degree:
+                     monomials_list_comm.append(Mul(*item))
+             yield from set(monomials_list_comm)
+         else:
+@@ -139,7 +139,7 @@ def itermonomials(variables, max_degrees, min_degrees=None):
+                 for variable in item:
+                     if variable != 1:
+                         powers[variable] += 1
+-                if max(powers.values()) >= min_degree:
++                if sum(powers.values()) >= min_degree:
+                     monomials_list_non_comm.append(Mul(*item))
+             yield from set(monomials_list_non_comm)
+     else:
+diff --git a/sympy/polys/tests/test_monomials.py b/sympy/polys/tests/test_monomials.py
+index 482cbee..ed08fab 100644
+--- a/sympy/polys/tests/test_monomials.py
++++ b/sympy/polys/tests/test_monomials.py
+@@ -162,6 +162,25 @@ def test_monomials():
+                     x*j**2, x*k**2, x*j*k, x**2*j**2*k**2, x*j*k**2, x**2, x**2*j*k**2
+             }
+ 
++def test_itermonomials_min_total_degree():
++    cubic = {x**3, y**3, z**3, x**2*y, x**2*z, x*y**2,
++             y**2*z, x*z**2, y*z**2, x*y*z}
++    quadratic = {x**2, y**2, z**2, x*y, x*z, y*z}
++    assert set(itermonomials([x, y, z], 3, min_degrees=3)) == cubic
++    assert set(itermonomials([x, y, z], 3, min_degrees=2)) == cubic | quadratic
++
++
++def test_itermonomials_min_total_degree_noncommutative():
++    i, j = symbols('i j', commutative=False)
++    # Exercise both noncommutative and mixed variable lists.
++    for a, b in [(i, j), (x, j)]:
++        quadratic = {a**2, a*b, b*a, b**2}
++        cubic = {a**3, a**2*b, a*b*a, b*a**2,
++                 a*b**2, b*a*b, b**2*a, b**3}
++        assert set(itermonomials([a, b], 3, min_degrees=3)) == cubic
++        assert set(itermonomials([a, b], 3, min_degrees=2)) == cubic | quadratic
++
++
+ def test_monomial_count():
+     assert monomial_count(2, 2) == 6
+     assert monomial_count(2, 3) == 10

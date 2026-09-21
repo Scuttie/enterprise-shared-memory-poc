@@ -1,0 +1,42 @@
+{
+  "evaluation_solve_rates": null,
+  "executed_evaluation_cells": 0,
+  "guards_relaxed": false,
+  "observation_only_fallback": false,
+  "official_training_grades": 2,
+  "patch_retries": 0,
+  "planned_evaluation_cells": 18,
+  "promoted_skills": 0,
+  "promotion_attempt_rejected": {
+    "error_type": "ProcedureEvidenceError",
+    "reason": "no identical public regression command passed after implementation repair"
+  },
+  "public_baseline_error_diagnostic_sha256": "3d8c0d6c61885e160bb40f17212fbaa347bd1f5ee604688c4bd54e90820d89fc",
+  "reason": "Both actual public workflow evidence and official training correctness are required.19637hasofficialsuccessbutnodeclaredfullGREEN;19783haspublicGREENbutofficialfailure.",
+  "schema": "skhynix/native005-training-gate-decision/1.0",
+  "status": "STOPPED_BEFORE_EVALUATION",
+  "training_checks": [
+    {
+      "cell": "A",
+      "error_type": "ProcedureEvidenceError",
+      "official_resolved": true,
+      "patch_sha256": "ec08b8f33897e3958202a47985813d6dc4b567e9666e1f5e3fe268371d8d1322",
+      "procedure_attested": false,
+      "public_result_sha256": "3e3215d036265f9e1d609da82b2ac8503d56a14f30a78ab8991a8c92d46a7ec3",
+      "reason": "no identical public regression command passed after implementation repair",
+      "run_root": "/home/trimem-runner/skhynix-codex-005/training-19637/execution"
+    },
+    {
+      "cell": "A",
+      "error_type": "ProcedureEvidenceError",
+      "official_resolved": false,
+      "patch_sha256": "7a2738d9217d62b0e401e7c35bb478d3db7834ccb483cdd02427fc68367b4dd4",
+      "procedure_attested": false,
+      "public_result_sha256": "28e58e93fbe787969168c8dec6d268482eb3f7ddabd7b1a0dbac8c9d13876bea",
+      "reason": "training plan, authority, predeclaration or official resolution differs",
+      "run_root": "/home/trimem-runner/skhynix-codex-005/training-19783/execution"
+    }
+  ],
+  "training_official_resolved": 1,
+  "verified_training_procedures": 0
+}

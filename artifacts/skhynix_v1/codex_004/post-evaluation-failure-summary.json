@@ -1,0 +1,52 @@
+{
+  "analysis_scope": "AFTER_ALL_THREE_SUBMISSIONS_AND_OFFICIAL_GRADES_FOR_THIS_TASK",
+  "cells": [
+    {
+      "cell": "A",
+      "fail_to_pass_failure_count": 1,
+      "fail_to_pass_success_count": 0,
+      "infra_failure": false,
+      "pass_to_pass_failure_count": 0,
+      "patch_applied": true,
+      "private_receipt_sha256": "3ca72ce01b30995c1135347f810b3992b9ac8734f3673c90870dbc3214463947",
+      "resolved": false,
+      "same_unicode_digit_boundary_failure_observed": true,
+      "test_output_sha256": "334bece10644fc011e624d1dcb26fe188bc428c3a7cb4c88383377e88525e847",
+      "test_status_sha256": "4fc1785299e03cbfa67463f40aed17f612ac31cf2a044b18b97362407190194c"
+    },
+    {
+      "cell": "B",
+      "fail_to_pass_failure_count": 1,
+      "fail_to_pass_success_count": 0,
+      "infra_failure": false,
+      "pass_to_pass_failure_count": 0,
+      "patch_applied": true,
+      "private_receipt_sha256": "d2f95ed864b9926878c6acef1b7bfac99eeb4fff4367fe8968156e9c708994ed",
+      "resolved": false,
+      "same_unicode_digit_boundary_failure_observed": true,
+      "test_output_sha256": "6589828f8db1b920974a95b9443be7403882d6e4cfb2e0317db0f3e2656631e2",
+      "test_status_sha256": "4fc1785299e03cbfa67463f40aed17f612ac31cf2a044b18b97362407190194c"
+    },
+    {
+      "cell": "C",
+      "fail_to_pass_failure_count": 1,
+      "fail_to_pass_success_count": 0,
+      "infra_failure": false,
+      "pass_to_pass_failure_count": 0,
+      "patch_applied": true,
+      "private_receipt_sha256": "a90e12a84bc59cdfbd258d83fde887993eff9bc90deed1aec1e53ee50e75b10e",
+      "resolved": false,
+      "same_unicode_digit_boundary_failure_observed": true,
+      "test_output_sha256": "24d411f71d979acb08bbcc76a5a3f553ab4396ecbc65812db8d30ae30695a1d2",
+      "test_status_sha256": "4fc1785299e03cbfa67463f40aed17f612ac31cf2a044b18b97362407190194c"
+    }
+  ],
+  "diagnosis": "All three patches addressed Greek letters followed by ordinary digits, but missed the boundary where the numeric suffix itself is a Unicode mathematical digit.",
+  "evaluation_bank_updated": false,
+  "interpretation": "Focused public regressions did not cover the full numeric-character contract; identical official failure across three arms does not establish a memory-specific cause.",
+  "patches_changed_or_regraded": false,
+  "raw_private_output_exported": false,
+  "schema": "skhynix/native-post-evaluation-diagnosis/1.0",
+  "solver_feedback_sent": false,
+  "target_id": "swebench_verified--sympy__sympy-20916"
+}

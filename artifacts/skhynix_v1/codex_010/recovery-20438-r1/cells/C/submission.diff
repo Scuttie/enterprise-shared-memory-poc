@@ -1,0 +1,163 @@
+diff --git a/sympy/core/relational.py b/sympy/core/relational.py
+index e2e0b7f..c82b513 100644
+--- a/sympy/core/relational.py
++++ b/sympy/core/relational.py
+@@ -558,6 +558,10 @@ def binary_symbols(self):
+     def _eval_simplify(self, **kwargs):
+         from .add import Add
+         from sympy.solvers.solveset import linear_coeffs
++        from sympy.sets.sets import Set
++        if isinstance(self.lhs, Set) and isinstance(self.rhs, Set):
++            # Set subtraction is a complement, not an arithmetic difference.
++            return self.func(*(arg.simplify(**kwargs) for arg in self.args))
+         # standard simplify
+         e = super()._eval_simplify(**kwargs)
+         if not isinstance(e, Equality):
+diff --git a/sympy/sets/handlers/comparison.py b/sympy/sets/handlers/comparison.py
+index 6f7a19f..ffd5443 100644
+--- a/sympy/sets/handlers/comparison.py
++++ b/sympy/sets/handlers/comparison.py
+@@ -49,6 +49,16 @@ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return tfn[fuzzy_and(map(fuzzy_bool, eqs))]
+ 
+ 
++@dispatch(ProductSet, FiniteSet) # type:ignore
++def _eval_is_eq(lhs, rhs): # noqa: F811
++    return tfn[fuzzy_and([lhs.is_subset(rhs), rhs.is_subset(lhs)])]
++
++
++@dispatch(FiniteSet, ProductSet) # type:ignore
++def _eval_is_eq(lhs, rhs): # noqa: F811
++    return _eval_is_eq(rhs, lhs)
++
++
+ @dispatch(Set, Basic) # type:ignore
+ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return False
+diff --git a/sympy/sets/sets.py b/sympy/sets/sets.py
+index 3c4aa86..c2d4954 100644
+--- a/sympy/sets/sets.py
++++ b/sympy/sets/sets.py
+@@ -425,7 +425,8 @@ def is_proper_subset(self, other):
+ 
+         """
+         if isinstance(other, Set):
+-            return self != other and self.is_subset(other)
++            return fuzzy_and([self.is_subset(other),
++                              fuzzy_not(other.is_subset(self))])
+         else:
+             raise ValueError("Unknown argument '%s'" % other)
+ 
+@@ -470,7 +471,7 @@ def is_proper_superset(self, other):
+ 
+         """
+         if isinstance(other, Set):
+-            return self != other and self.is_superset(other)
++            return other.is_proper_subset(self)
+         else:
+             raise ValueError("Unknown argument '%s'" % other)
+ 
+@@ -801,6 +802,23 @@ def _contains(self, element):
+ 
+         return fuzzy_and(s._contains(e) for s, e in zip(self.sets, element))
+ 
++    def _eval_is_subset(self, other):
++        if (isinstance(other, FiniteSet) and
++                self.is_finite_set and self.is_iterable):
++            try:
++                return fuzzy_and(other.contains(element) for element in self)
++            except (TypeError, ValueError):
++                # Some symbolic finite sets cannot be enumerated.
++                pass
++
++    def _eval_rewrite_as_FiniteSet(self, *args, **kwargs):
++        if self.is_finite_set and self.is_iterable:
++            try:
++                return FiniteSet(*self)
++            except (TypeError, ValueError):
++                # A symbolic finite Range need not have an iterable size.
++                pass
++
+     def as_relational(self, *symbols):
+         symbols = [_sympify(s) for s in symbols]
+         if len(symbols) != len(self.sets) or not all(
+diff --git a/sympy/sets/tests/test_sets.py b/sympy/sets/tests/test_sets.py
+index d29a046..0bdac5e 100644
+--- a/sympy/sets/tests/test_sets.py
++++ b/sympy/sets/tests/test_sets.py
+@@ -618,6 +618,64 @@ def test_ProductSet():
+     assert Contains((1, 2), Z2) is S.true
+ 
+ 
++def test_ProductSet_finite_comparisons():
++    explicit = FiniteSet((1, 1), (1, 2), (2, 1), (2, 2))
++    smaller = FiniteSet((1, 1), (2, 2))
++    larger = explicit | FiniteSet((3, 3))
++    for factor in [FiniteSet(1, 2), Range(1, 3)]:
++        product = ProductSet(factor, factor)
++        assert product.rewrite(FiniteSet) == explicit
++        assert product.intersection(explicit) == explicit.intersection(product)
++        for left, right in [(product, explicit), (explicit, product)]:
++            assert left.is_subset(right) is True
++            assert left.is_superset(right) is True
++            assert left.is_proper_subset(right) is False
++            assert left.is_proper_superset(right) is False
++            assert Eq(left, right) is S.true
++            assert Eq(left, right, evaluate=False).simplify() is S.true
++        assert product.is_subset(smaller) is False
++        assert product.is_proper_superset(smaller) is True
++        assert smaller.is_proper_subset(product) is True
++        assert product.is_proper_subset(larger) is True
++        assert larger.is_proper_superset(product) is True
++        assert Eq(product, smaller) is S.false
++        assert Eq(smaller, product) is S.false
++
++    # Subset queries can stop without expanding a large finite product.
++    large = ProductSet(Range(10**100), FiniteSet(1))
++    assert large.is_subset(FiniteSet((0, 1))) is False
++
++    symbolic = ProductSet(FiniteSet(x), FiniteSet(1))
++    explicit = FiniteSet((y, 1))
++    assert symbolic.rewrite(FiniteSet) == FiniteSet((x, 1))
++    for left, right in [(symbolic, explicit), (explicit, symbolic)]:
++        assert left.is_subset(right) is None
++        assert left.is_proper_subset(right) is None
++        assert left.is_proper_superset(right) is None
++        assert unchanged(Eq, left, right)
++        assert Eq(left, right).simplify() == Eq(left, right)
++        assert Eq(left, right).subs(y, x) is S.true
++        assert Eq(left, right).subs(y, x + 1) is S.false
++
++
++def test_ProductSet_rewrite_FiniteSet():
++    assert ProductSet(FiniteSet(1, 2)).rewrite(FiniteSet) == FiniteSet((1,), (2,))
++    nested = ProductSet(ProductSet(FiniteSet(1), FiniteSet(2)), FiniteSet(3))
++    assert nested.rewrite(FiniteSet) == FiniteSet(((1, 2), 3))
++    n = Symbol('n', integer=True, positive=True)
++    symbolic = ProductSet(Range(n, n + 2), FiniteSet(1))
++    assert symbolic.rewrite(FiniteSet) == FiniteSet((n, 1), (n + 1, 1))
++    for product in [
++            ProductSet(S.Integers, FiniteSet(1)),
++            ProductSet(Interval(0, 1), FiniteSet(1)),
++            ProductSet(Interval(x, y), FiniteSet(1)),
++            ProductSet(Range(n), FiniteSet(1))]:
++        assert product.rewrite(FiniteSet) == product
++    infinite = ProductSet(S.Integers, FiniteSet(1))
++    assert infinite.is_subset(FiniteSet((1, 1))) is False
++    assert Eq(infinite, FiniteSet((1, 1))) is S.false
++
++
+ def test_ProductSet_of_single_arg_is_not_arg():
+     assert unchanged(ProductSet, Interval(0, 1))
+     assert unchanged(ProductSet, ProductSet(Interval(0, 1)))
+@@ -731,6 +789,10 @@ def test_is_proper_subset():
+     assert Interval(0, 3).is_proper_subset(Interval(0, 2)) is False
+     assert S.EmptySet.is_proper_subset(FiniteSet(1, 2, 3)) is True
+ 
++    assert FiniteSet(1).is_proper_subset(FiniteSet(1, x)) is None
++    assert FiniteSet(1, x).is_proper_superset(FiniteSet(1)) is None
++    assert FiniteSet(1, x).is_proper_subset(FiniteSet(1)) is False
++
+     raises(ValueError, lambda: Interval(0, 1).is_proper_subset(0))
+ 
+ 

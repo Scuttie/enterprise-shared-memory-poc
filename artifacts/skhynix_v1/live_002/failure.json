@@ -1,0 +1,6 @@
+{
+  "completed_cells": 8,
+  "exception_type": "ModelPreflightFailure",
+  "failure_class": "PHASE_USD_CAP_EXHAUSTED",
+  "plan_sha256": "77d9a124cdca38eb310b7871824907bcbfc5587e0e4aa53bca1fde7a27e7a710"
+}

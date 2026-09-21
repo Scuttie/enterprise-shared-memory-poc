@@ -1,0 +1,29 @@
+{
+  "checks": [
+    {
+      "attempt": 1,
+      "cell": "A",
+      "error_type": "ProcedureEvidenceError",
+      "name": "training-19637-a1",
+      "official_resolved": true,
+      "patch_sha256": "9edb0fa5884d4386c1e72b162535a0393547267a12ba898199455867bbdde187",
+      "procedure_attested": false,
+      "public_result_sha256": "354ac08621e0e7d9482fc8b41bed1988b3ff1492398ed58eaa3913452e5954dc",
+      "reason": "exactly one successful pre-write procedure binding is required",
+      "run_root": "/home/trimem-runner/skhynix-codex-006/training-19637-a1/execution",
+      "task_id": "swebench_verified--sympy__sympy-19637"
+    }
+  ],
+  "evaluation_solve_rates": null,
+  "executed_evaluation_cells": 0,
+  "exhausted_task_ids": [],
+  "max_fresh_attempts_per_task": 3,
+  "official_training_grades": 1,
+  "planned_evaluation_cells": 18,
+  "retry_feedback_provided": false,
+  "schema": "skhynix/native006-training-gate-decision/1.0",
+  "selected": [],
+  "status": "TRAINING_IN_PROGRESS",
+  "training_official_resolved": 1,
+  "verified_training_procedures": 0
+}

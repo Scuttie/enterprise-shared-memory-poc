@@ -1,0 +1,78 @@
+{
+  "arms": {
+    "A": "NO_MEMORY",
+    "C": "SKHYNIX_WITH_PUBLIC_DIAGNOSTIC_KNOWLEDGE"
+  },
+  "codex_tokens_and_cost": null,
+  "cohort_scope": "FOUR_FIXED_PUBLIC_METADATA_INFORMED_TRANSFER_TARGETS_UNUSED_IN_NATIVE002_THROUGH007_ENROLLMENTS_IN_AN_INSPECTED_REPOSITORY_NOT_GLOBALLY_UNSEEN_NOT_RANDOM_NOT_DIFFICULTY_PROVEN_NOT_ORIGINAL_HELDOUT_ENDPOINT",
+  "concurrency": "At most two fresh independent solvers, one matched task pair at a time.",
+  "diagnostic_bank_sha256": "a1d0e1e496be975c72be40ca6096aa0f6cdfdc4b82d18adfde9879975c40f02f",
+  "diagnostic_source_continuity_sha256": "15f8cea41e477a2431530fe7bbed579ba75e2d2b1c87c8884d392c9b2e86e988",
+  "evaluation_instances": [
+    "swebench_verified--sympy__sympy-21612",
+    "swebench_verified--sympy__sympy-21847",
+    "swebench_verified--sympy__sympy-22714",
+    "swebench_verified--sympy__sympy-24661"
+  ],
+  "evaluation_template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05",
+  "fork_turns": "none",
+  "frozen_at_unix_seconds": 1789269773.2103553,
+  "grader_calls_so_far": 0,
+  "launch_order": {
+    "transfer-21612-r1": [
+      "A",
+      "C"
+    ],
+    "transfer-21847-r1": [
+      "C",
+      "A"
+    ],
+    "transfer-22714-r1": [
+      "A",
+      "C"
+    ],
+    "transfer-24661-r1": [
+      "C",
+      "A"
+    ]
+  },
+  "limits": {
+    "actions": 120,
+    "memory_bytes": 12000,
+    "memory_injections": 3,
+    "wall_seconds": 1200
+  },
+  "manifest_sha256": "6e2541464d3db67ab8ca6b44d05395e8907faa594faa577a1cca93fb4e58f691",
+  "memory_type": "Same frozen public diagnostic lessons and failed native007 A source episodes used by native008. Analyst interpretation, not a verified successful v3 skill. Gate B=0; KG relations=0.",
+  "names": [
+    "transfer-21612-r1",
+    "transfer-21847-r1",
+    "transfer-22714-r1",
+    "transfer-24661-r1"
+  ],
+  "native008_diagnostic_validation_sha256": "e4cd8de6951673abdf246ce701ce6d155c4ce8ae6a4f73cf49b79f898bc63c6c",
+  "native008_outputs_used_for_knowledge_content": false,
+  "native008_public_recall_used_for_retrieval_design": true,
+  "outcome_policy": "All eight fixed cells retained, one submission and official grade each. No outcome-based retries, memory edits, prompt changes, extra guidance, replacements or exclusions. Freeze before first transfer solver.",
+  "planned_evaluation_cells": 8,
+  "primary_metric": "Official resolved C minus A over four disjoint matched issues; report all eight outcomes. Small exploratory transfer sample, not a global solve-rate estimate.",
+  "public_probe_sha256": "41262bce2a86a70b255bc96c781fed4755045aa29133ce4b104acc8ff066155a",
+  "reasoning_effort": "INHERITED_PARENT_UNCHANGED",
+  "replicates_per_task_arm": 1,
+  "requested_model": "gpt-6-astra",
+  "retrieval_policy_development_sha256": "d84624256740eebe557919a6e1b72c515f67ec0bcc2fc7f91ecaf60ccfb2c55d",
+  "retrieval_text_policy": "DIAGNOSTIC_LESSON_CONTENT",
+  "retrieval_validation_evidence_sha256": "ee1e92869eb6762e7f434d1bce54ef26eea3111d980087b65aec26e8ace5e0aa",
+  "retrieval_validation_sha256": "51b0d355ba7d604e1c4ac6487573c0d623dbce1952c121875146927c4c4acb29",
+  "root_cross_cell_feedback": false,
+  "scenario": "DISJOINT_TRANSFER",
+  "schema": "skhynix/native009-launch-contract/1.0",
+  "separate_model_api_calls": 0,
+  "solver_model_calls_so_far": 0,
+  "source_freeze_sha256": "5de543287d9dfedf8d2979dbc743282ea1d5cd4e574bcb222c55d2743e93c0f2",
+  "source_specs_canonical_sha256": "d69aca30b557921487536c427223c332ce2c3cd5e01857e8ca84345b56eda708",
+  "unused_arm": "B may be prepared by the three-cell broker but is never launched, graded or included in the denominator.",
+  "validation_evidence_sha256": "9e90ed4195fef608000c35bbf498bfcac604e5b58edbdb4e81c3a6ed0e15b396",
+  "validation_sha256": "d51037267c6f0e78f4139e5d0a13e3a531da8f8fd889976168748181b1a8f491",
+  "validation_tests": 168
+}

@@ -74,6 +74,8 @@ def _committed_checkout(path: Path) -> str:
 def _committed_eol_checkout(
     path: Path,
     files: dict[str, bytes],
+    *,
+    attribute_rule: str = "text eol=crlf",
 ) -> str:
     path.mkdir(parents=True)
     completed = subprocess.run(
@@ -91,7 +93,7 @@ def _committed_eol_checkout(
     assert completed.returncode == 0, completed.stderr
     suffixes = sorted({Path(relative).suffix for relative in files})
     attributes = b"".join(
-        f"*{suffix} text eol=crlf\n".encode("ascii") for suffix in suffixes
+        f"*{suffix} {attribute_rule}\n".encode("ascii") for suffix in suffixes
     )
     (path / ".gitattributes").write_bytes(attributes)
     for relative, raw in files.items():
@@ -238,6 +240,93 @@ def test_fresh_checkout_materialization_handles_zstd_style_file_set(
         "--untracked-files=all",
     ) == ""
     harness_lock.validate_pristine_checkout(checkout.absolute(), commit)
+
+
+def test_fresh_checkout_materialization_accepts_git_implicit_text_eol_crlf(
+    tmp_path: Path,
+) -> None:
+    checkout = tmp_path / "implicit-text-checkout"
+    relative = "astropy/config/tests/data/astropy.0.3.windows.cfg"
+    raw = b"# Synthetic public Windows configuration\n[section]\nvalue = 1\n"
+    commit = _committed_eol_checkout(
+        checkout, {relative: raw}, attribute_rule="eol=crlf",
+    )
+    candidate = checkout / relative
+    candidate.unlink()
+    _git(checkout, "checkout", "HEAD", "--", relative)
+    assert candidate.read_bytes() == raw.replace(b"\n", b"\r\n")
+    assert benchmark_run._committed_git_attributes(checkout.absolute(), commit, relative) == {
+        "text": "unspecified", "eol": "crlf", "ident": "unspecified",
+        "working-tree-encoding": "unspecified", "filter": "unspecified",
+    }
+
+    evidence = benchmark_run._materialize_exact_git_blob_checkout(checkout.absolute(), commit)
+
+    assert candidate.read_bytes() == raw
+    assert evidence["normalized_paths"] == [relative]
+    assert benchmark_run._valid_checkout_materialization_evidence(evidence, expected_commit=commit)
+    assert _git(checkout, "status", "--porcelain=v2", "--untracked-files=all") == ""
+    harness_lock.validate_pristine_checkout(checkout.absolute(), commit)
+
+
+@pytest.mark.parametrize("attribute_rule", [
+    "-text eol=crlf", "text=auto eol=crlf", "eol=crlf ident",
+    "eol=crlf filter=synthetic", "eol=crlf working-tree-encoding=UTF-8", "text eol=lf",
+])
+def test_fresh_checkout_materialization_rejects_other_attributes_even_for_exact_crlf(
+    tmp_path: Path, attribute_rule: str,
+) -> None:
+    checkout = tmp_path / "other-attributes-checkout"
+    raw = b"Synthetic public configuration\nvalue = 1\n"
+    commit = _committed_eol_checkout(checkout, {"windows.cfg": raw}, attribute_rule=attribute_rule)
+    before = (checkout / "windows.cfg").read_bytes()
+    assert before == raw.replace(b"\n", b"\r\n")
+
+    with pytest.raises(benchmark_run.BenchmarkExecutionError, match="committed checkout transform"):
+        benchmark_run._materialize_exact_git_blob_checkout(checkout.absolute(), commit)
+
+    assert (checkout / "windows.cfg").read_bytes() == before
+
+
+def test_implicit_text_eol_crlf_rejects_mixed_worktree_newlines_without_writes(
+    tmp_path: Path,
+) -> None:
+    checkout = tmp_path / "implicit-mixed-newlines"
+    raw = b"first\nsecond\nthird\n"
+    commit = _committed_eol_checkout(checkout, {"windows.cfg": raw}, attribute_rule="eol=crlf")
+    mixed = b"first\r\nsecond\nthird\r\n"
+    (checkout / "windows.cfg").write_bytes(mixed)
+
+    with pytest.raises(benchmark_run.BenchmarkExecutionError, match="committed checkout transform"):
+        benchmark_run._materialize_exact_git_blob_checkout(checkout.absolute(), commit)
+
+    assert (checkout / "windows.cfg").read_bytes() == mixed
+
+
+def test_implicit_text_eol_crlf_rejects_committed_mixed_newlines_without_writes(
+    tmp_path: Path,
+) -> None:
+    checkout = tmp_path / "implicit-committed-mixed-newlines"
+    _committed_eol_checkout(checkout, {"windows.cfg": b"first\nsecond\n"},
+        attribute_rule="-text eol=crlf")
+    mixed_blob = b"first\r\nsecond\n"
+    candidate = checkout / "windows.cfg"
+    candidate.write_bytes(mixed_blob)
+    _git(checkout, "add", "--", "windows.cfg")
+    (checkout / ".gitattributes").write_bytes(b"*.cfg eol=crlf\n")
+    _git(checkout, "add", "--", ".gitattributes")
+    _git(checkout, "-c", "user.name=TriMem Test", "-c",
+        "user.email=trimem-test@example.invalid", "commit", "--quiet", "-m",
+        "Synthetic mixed blob with later implicit text attribute")
+    commit = _git(checkout, "rev-parse", "--verify", "HEAD")
+    assert benchmark_run.read_pinned_git_blob(checkout.absolute(), commit, "windows.cfg") == mixed_blob
+    observed = mixed_blob.replace(b"\n", b"\r\n")
+    candidate.write_bytes(observed)
+
+    with pytest.raises(benchmark_run.BenchmarkExecutionError, match="committed checkout transform"):
+        benchmark_run._materialize_exact_git_blob_checkout(checkout.absolute(), commit)
+
+    assert candidate.read_bytes() == observed
 
 
 def test_fresh_checkout_materialization_rejects_non_declared_tamper_atomically(

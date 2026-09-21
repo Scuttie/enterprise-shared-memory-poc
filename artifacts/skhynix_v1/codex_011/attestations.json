@@ -1,0 +1,134 @@
+[
+  {
+    "agent": "/root/native011_13615_a",
+    "cell": "A",
+    "limitations": "Hidden tests not accessed. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "2819e08761f53170f976a8b23dd20e1b4f7048fcb898aa5ac8aee6b61c689076",
+    "public_test_summary": "Public sets: 117 passed, 3 expected failures; regression failed before fix.",
+    "run": "transfer-13615-r1"
+  },
+  {
+    "agent": "/root/native011_13615_b",
+    "cell": "B",
+    "limitations": "Hidden tests not accessed. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "8de1756bc05e2928f76c11b64c589ee6b4e5d32763146343b3010b5c594c1faa",
+    "public_test_summary": "Public sets: 117 passed, 3 expected failures; regression failed before fix.",
+    "run": "transfer-13615-r1"
+  },
+  {
+    "agent": "/root/native011_13615_c",
+    "cell": "C",
+    "limitations": "Full repository suite not run. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "f1da46bd6972fabcf67e73b4ac272a2110eb8d85cc9a093bd8e24cda868f01a6",
+    "public_test_summary": "Public sets: 117 passed, 3 expected failures; regression failed before fix.",
+    "run": "transfer-13615-r1"
+  },
+  {
+    "agent": "/root/native011_15875_b",
+    "cell": "B",
+    "limitations": "Full suite not run. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "6ce04675d82c334014db532f7bfb60c3da891edc37d78f61d8114217b8505d6d",
+    "public_test_summary": "148 passed, 6 expected failures; regression failed before fix.",
+    "run": "transfer-15875-r1"
+  },
+  {
+    "agent": "/root/native011_15875_c",
+    "cell": "C",
+    "limitations": "Reported expression returns None. Hidden tests not accessed. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "5288d5a5ab26a2218fb3ec90adf53b3f7cf2ce1d45196b524eaf1fde42bed3dc",
+    "public_test_summary": "146 passed, 6 expected failures across arithmetic and assumptions suites.",
+    "run": "transfer-15875-r1"
+  },
+  {
+    "agent": "/root/native011_15875_a",
+    "cell": "A",
+    "limitations": "Reported expression returns True. Full suite and hidden tests not run. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "b9290b3db7ba110e8177a4d290d986bc25302400e7bc570433f018d2faae28e3",
+    "public_test_summary": "146 passed, 6 expected failures across public arithmetic and assumptions tests.",
+    "run": "transfer-15875-r1"
+  },
+  {
+    "agent": "/root/native011_18698_a",
+    "cell": "A",
+    "limitations": "Hidden tests not accessed or run. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "1609a43ef8f193fa98c1ff4e05affe5a6f535d897f8ff3708fba3bf2db124c6f",
+    "public_test_summary": "152 passed, 1 expected failure; equal-multiplicity sqf/sqf_list regression coverage.",
+    "run": "transfer-18698-r1"
+  },
+  {
+    "agent": "/root/native011_18698_c",
+    "cell": "C",
+    "limitations": "Hidden tests not accessed. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "fdf2979ad9a3c4d539a6bcdd00da5b6af0d2bf895a81fd67de9f7d6330f6b3ba",
+    "public_test_summary": "152 passed, 1 expected failure; regression failed before fix.",
+    "run": "transfer-18698-r1"
+  },
+  {
+    "agent": "/root/native011_18698_b",
+    "cell": "B",
+    "limitations": "Full suite and hidden tests not run. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "40c7d4d0db1238a30d47ca3262525d8c03d0de372cc36cd29239b30b47adeabe",
+    "public_test_summary": "152 passed, 1 expected failure; regression failed before fix.",
+    "run": "transfer-18698-r1"
+  },
+  {
+    "agent": "/root/native011_19495_a",
+    "cell": "A",
+    "limitations": "Hidden tests were not accessed. Only assigned broker; no external access or assistance; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "f8451458feec53b12cceba1284628e39e4e40f28076e9866e1adec30f6d060f0",
+    "public_test_summary": "305 passed, 3 skipped, 19 expected failures.",
+    "run": "transfer-19495-r1"
+  },
+  {
+    "agent": "/root/native011_19495_c",
+    "cell": "C",
+    "limitations": "Hidden tests were not accessed. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "900ebbe2f1ecd424bfaf674d5bc850ada157705fcfaeabedf33c55ec4a2368d8",
+    "public_test_summary": "305 passed, 3 skipped, 19 expected failures.",
+    "run": "transfer-19495-r1"
+  },
+  {
+    "agent": "/root/native011_19495_b",
+    "cell": "B",
+    "limitations": "Full repository and hidden tests were not run. Only assigned broker; no external access; no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "a2b75388b3e9880b2cda6682237e3ef9e0b7c6bd380b00d11c3b0d20ee51f05c",
+    "public_test_summary": "305 passed, 3 skipped, 19 expected failures.",
+    "run": "transfer-19495-r1"
+  }
+]

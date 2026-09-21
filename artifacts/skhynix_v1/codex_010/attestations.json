@@ -1,0 +1,90 @@
+[
+  {
+    "agent": "/root/native010_20428_r1_a",
+    "cell": "A",
+    "limitations": "Full suite and hidden tests were not run. Explicit self-attestation: only assigned broker, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "8198d7d4380c4e4284c0c4895cb4dc5436f28d8ddb2234792dadaf68ad2e3716",
+    "public_test_summary": "Regression tests failed before the fix; all 242 relevant public tests passed afterward.",
+    "run": "recovery-20428-r1"
+  },
+  {
+    "agent": "/root/native010_20428_r1_c",
+    "cell": "C",
+    "limitations": "Official grading pending at submission. Explicit self-attestation: only assigned broker for repository access and execution, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "2597214533471197d495dba775c63e7782ffd550a918b4e194676e51271f718e",
+    "public_test_summary": "Four new regressions failed before the fix. All 244 relevant public tests passed afterward.",
+    "run": "recovery-20428-r1"
+  },
+  {
+    "agent": "/root/native010_20428_r2_c",
+    "cell": "C",
+    "limitations": "Official grading pending at submission. Explicit self-attestation: only assigned broker through fixed client, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "342671888c6466be45f9daa63288a62ffb26165c8990dcb1ee1131dfd6ee98c6",
+    "public_test_summary": "Three new regressions failed before fix; all 262 relevant public tests passed afterward. git diff --check passed.",
+    "run": "recovery-20428-r2"
+  },
+  {
+    "agent": "/root/native010_20428_r2_a",
+    "cell": "A",
+    "limitations": "Hidden tests were not run. Explicit self-attestation: only assigned broker, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "6a89a786363ddc7e69cc98b8222b50debe5fb59b733d90c69081f62610bd970b",
+    "public_test_summary": "Regression failed before fix; all 241 relevant public tests passed afterward.",
+    "run": "recovery-20428-r2"
+  },
+  {
+    "agent": "/root/native010_20438_r1_a",
+    "cell": "A",
+    "limitations": "Expansion requires factors that rewrite to explicit FiniteSets. Explicit self-attestation: only assigned broker, no external resources or other cells, no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "2f6615c0ca2e92a7bf110ede8acf7492cebf80ccf78680b830eea834ea21af92",
+    "public_test_summary": "Public tests: 252 passed, 8 expected failures. git diff --check passed. Regressions cover simplification, symbolic uncertainty, nested products.",
+    "run": "recovery-20438-r1"
+  },
+  {
+    "agent": "/root/native010_20438_r1_c",
+    "cell": "C",
+    "limitations": "Official grading pending at submission. Explicit self-attestation: only assigned broker, no external access, hidden tests, or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "9c31c0374972c37f351cd470f85d58d008fc9368409e6f0b3ed0e2c7c2af8611",
+    "public_test_summary": "253 public tests passed and 8 expected failures. git diff --check passed.",
+    "run": "recovery-20438-r1"
+  },
+  {
+    "agent": "/root/native010_20438_r2_a",
+    "cell": "A",
+    "limitations": "Undecidable symbolic comparisons remain unevaluated. Explicit self-attestation: only assigned broker, no external access or assistance, no subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "928e781d8b8fcbb88379161f8ef5d2422eeecc04f274128cd4ad4432083af3ac",
+    "public_test_summary": "Relevant public tests: 253 passed and 8 expected failures.",
+    "run": "recovery-20438-r2"
+  },
+  {
+    "agent": "/root/native010_20438_r2_c",
+    "cell": "C",
+    "limitations": "Official grading pending at submission. Explicit self-attestation: only assigned broker, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "4b8e0da1ab3bbc37add47e52bcc02f69c39e9ddf7d206624ee38ea0d6652ce1f",
+    "public_test_summary": "302 passed, 1 skipped, 9 expected failures; diff check clean.",
+    "run": "recovery-20438-r2"
+  }
+]

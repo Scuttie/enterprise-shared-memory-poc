@@ -1,0 +1,29 @@
+{
+  "actual_pair_launch_order_unchanged": true,
+  "additional_solver_guidance": false,
+  "frozen_inputs_modified": false,
+  "prelaunch_rejections": [
+    {
+      "broker_requests_from_rejected_launch": 0,
+      "cell": "C",
+      "name": "recovery-20428-r1",
+      "outcome_based_retry": false,
+      "reason": "agent thread limit reached",
+      "recovery": "After helper agents completed, same fresh solver prompt was accepted once as /root/native010_20428_r1_c.",
+      "solver_created": false,
+      "tool": "collaboration.spawn_agent"
+    },
+    {
+      "broker_requests_from_rejected_launch": 0,
+      "cell": "A",
+      "name": "recovery-20428-r2",
+      "outcome_based_retry": false,
+      "reason": "agent thread limit reached",
+      "recovery": "Wait for capacity, then launch the same prompt in a fresh context. The separate actual solver launch receipt records acceptance.",
+      "solver_created": false,
+      "tool": "collaboration.spawn_agent"
+    }
+  ],
+  "recorded_at_unix_seconds": 1789292614.2424095,
+  "schema": "skhynix/native010-operational-note/1.0"
+}

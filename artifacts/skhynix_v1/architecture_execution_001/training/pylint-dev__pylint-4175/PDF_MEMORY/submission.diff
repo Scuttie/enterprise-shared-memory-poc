@@ -1,0 +1,96 @@
+diff --git a/pylint/checkers/similar.py b/pylint/checkers/similar.py
+index 5bf55ee..503eb3d 100644
+--- a/pylint/checkers/similar.py
++++ b/pylint/checkers/similar.py
+@@ -784,15 +784,22 @@ class SimilarChecker(BaseChecker, Similar, MapReduceMixin):
+         )
+         self.stats = None
+ 
++    @property
++    def min_lines(self) -> int:
++        """Read the threshold from the current checker configuration."""
++        return self.config.min_similarity_lines
++
++    @min_lines.setter
++    def min_lines(self, value: int) -> None:
++        self.config.min_similarity_lines = value
++
+     def set_option(self, optname, value, action=None, optdict=None):
+         """method called to set an option (registered in the options list)
+ 
+         Overridden to report options setting to Similar
+         """
+         BaseChecker.set_option(self, optname, value, action, optdict)
+-        if optname == "min-similarity-lines":
+-            self.min_lines = self.config.min_similarity_lines
+-        elif optname == "ignore-comments":
++        if optname == "ignore-comments":
+             self.ignore_comments = self.config.ignore_comments
+         elif optname == "ignore-docstrings":
+             self.ignore_docstrings = self.config.ignore_docstrings
+diff --git a/tests/checkers/unittest_similar.py b/tests/checkers/unittest_similar.py
+index db59b00..5d1ba16 100644
+--- a/tests/checkers/unittest_similar.py
++++ b/tests/checkers/unittest_similar.py
+@@ -328,6 +328,18 @@ def test_no_args():
+             pytest.fail("not system exit")
+ 
+ 
++@pytest.mark.parametrize("min_lines, expected_count", [(4, 1), (7, 1), (8, 0), (40, 0)])
++def test_checker_configured_min_similarity_lines(min_lines, expected_count):
++    """Use the current checker configuration when comparing duplicate blocks."""
++    checker = similar.SimilarChecker(PyLinter(reporter=Reporter()))
++    checker.config.min_similarity_lines = min_lines
++    source = "".join(f"value_{index} = {index}\n" for index in range(8))
++    checker.append_stream("first", StringIO(source))
++    checker.append_stream("second", StringIO(source))
++
++    assert len(checker._compute_sims()) == expected_count
++
++
+ def test_get_map_data():
+     """Tests that a SimilarChecker respects the MapReduceMixin interface"""
+     linter = PyLinter(reporter=Reporter())
+diff --git a/tests/test_self.py b/tests/test_self.py
+index de63ebd..09bb532 100644
+--- a/tests/test_self.py
++++ b/tests/test_self.py
+@@ -1106,6 +1106,38 @@ class TestRunTC:
+         expected = "Your code has been rated at 7.50/10"
+         self._test_output([path, "--jobs=2", "-ry"], expected_output=expected)
+ 
++    @pytest.mark.parametrize("min_lines, expected_code", [(4, 8), (7, 8), (8, 0), (40, 0)])
++    @pytest.mark.parametrize("configuration", ["command_line", "rcfile"])
++    @pytest.mark.parametrize("jobs", [1, 2])
++    def test_min_similarity_lines(
++        self, tmp_path, min_lines, expected_code, configuration, jobs
++    ):
++        """The configured threshold applies to eight identical lines of code."""
++        source = "".join(f"value_{index} = {index}\n" for index in range(8))
++        paths = [tmp_path / "first.py", tmp_path / "second.py"]
++        for path in paths:
++            path.write_text(source, encoding="utf-8")
++        rcfile = tmp_path / "pylintrc"
++        rcfile.write_text(
++            f"[SIMILARITIES]\nmin-similarity-lines={min_lines}\n"
++            if configuration == "rcfile"
++            else "",
++            encoding="utf-8",
++        )
++        args = [
++            *map(str, paths),
++            f"--rcfile={rcfile}",
++            f"--jobs={jobs}",
++            "--disable=all",
++            "--enable=duplicate-code",
++            "--score=no",
++        ]
++        if configuration == "command_line":
++            args.append(f"--min-similarity-lines={min_lines}")
++        output = StringIO()
++        self._run_pylint(args, out=output)
++        assert ("R0801" in output.getvalue()) == bool(expected_code)
++
+     def test_duplicate_code_raw_strings(self):
+         path = join(HERE, "regrtest_data", "duplicate_data_raw_strings")
+         expected_output = "Similar lines in 2 files"

@@ -1,0 +1,7 @@
+{
+  "response_bytes": 1129,
+  "response_sha256": "5e4f1c4c6af5cd532607784d6edc6aab28d1522fa9cd1169f183030e3acd22f9",
+  "retrieved_at_utc": "2026-09-13T13:33:39.198404+00:00",
+  "status": 200,
+  "url": "https://hub.docker.com/v2/repositories/swebench/sweb.eval.x86_64.sympy_1776_sympy-13615/tags/latest"
+}

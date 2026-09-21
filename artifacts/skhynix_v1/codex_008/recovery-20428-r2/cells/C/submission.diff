@@ -1,0 +1,134 @@
+diff --git a/sympy/polys/densearith.py b/sympy/polys/densearith.py
+index bce08bb..5794e94 100644
+--- a/sympy/polys/densearith.py
++++ b/sympy/polys/densearith.py
+@@ -269,7 +269,8 @@ def dup_mul_ground(f, c, K):
+     if not c or not f:
+         return []
+     else:
+-        return [ cf * c for cf in f ]
++        # Coefficients in EX can simplify to zero during multiplication.
++        return dup_strip([ cf * c for cf in f ])
+ 
+ 
+ def dmp_mul_ground(f, c, u, K):
+@@ -291,7 +292,7 @@ def dmp_mul_ground(f, c, u, K):
+ 
+     v = u - 1
+ 
+-    return [ dmp_mul_ground(cf, c, v, K) for cf in f ]
++    return dmp_strip([ dmp_mul_ground(cf, c, v, K) for cf in f ], u)
+ 
+ 
+ def dup_quo_ground(f, c, K):
+@@ -318,9 +319,9 @@ def dup_quo_ground(f, c, K):
+         return f
+ 
+     if K.is_Field:
+-        return [ K.quo(cf, c) for cf in f ]
++        return dup_strip([ K.quo(cf, c) for cf in f ])
+     else:
+-        return [ cf // c for cf in f ]
++        return dup_strip([ cf // c for cf in f ])
+ 
+ 
+ def dmp_quo_ground(f, c, u, K):
+@@ -346,7 +347,7 @@ def dmp_quo_ground(f, c, u, K):
+ 
+     v = u - 1
+ 
+-    return [ dmp_quo_ground(cf, c, v, K) for cf in f ]
++    return dmp_strip([ dmp_quo_ground(cf, c, v, K) for cf in f ], u)
+ 
+ 
+ def dup_exquo_ground(f, c, K):
+@@ -368,7 +369,7 @@ def dup_exquo_ground(f, c, K):
+     if not f:
+         return f
+ 
+-    return [ K.exquo(cf, c) for cf in f ]
++    return dup_strip([ K.exquo(cf, c) for cf in f ])
+ 
+ 
+ def dmp_exquo_ground(f, c, u, K):
+@@ -390,7 +391,7 @@ def dmp_exquo_ground(f, c, u, K):
+ 
+     v = u - 1
+ 
+-    return [ dmp_exquo_ground(cf, c, v, K) for cf in f ]
++    return dmp_strip([ dmp_exquo_ground(cf, c, v, K) for cf in f ], u)
+ 
+ 
+ def dup_lshift(f, n, K):
+diff --git a/sympy/polys/tests/test_densearith.py b/sympy/polys/tests/test_densearith.py
+index 55b2f47..d152ae5 100644
+--- a/sympy/polys/tests/test_densearith.py
++++ b/sympy/polys/tests/test_densearith.py
+@@ -259,6 +259,37 @@ def test_dmp_exquo_ground():
+         f, ZZ(2), 1, ZZ) == dmp_normal([[3], [1], [4]], 1, ZZ)
+ 
+ 
++def test_ground_arithmetic_strip():
++    from sympy import symbols
++    from sympy.polys.domains import EX
++
++    a = symbols('a')
++    # This coefficient becomes zero only when arithmetic simplifies it.
++    z = EX((a + 1)**2 - a**2 - 2*a - 1)
++    assert z != EX.zero
++
++    for op in (dup_mul_ground, dup_quo_ground, dup_exquo_ground):
++        c = EX(2)
++        tail = op([EX.one, EX.zero], c, EX)
++        assert op([z], c, EX) == []
++        assert op([z, z, EX.one, EX.zero], c, EX) == tail
++
++    for op in (dmp_mul_ground, dmp_quo_ground, dmp_exquo_ground):
++        c = EX(2)
++        tail = op([[EX.one, EX.zero]], c, 1, EX)
++        assert op([[z]], c, 1, EX) == [[]]
++        assert op([[z], [z, EX.one, EX.zero]], c, 1, EX) == tail
++        assert op([[[z]], [[z]]], c, 2, EX) == [[[]]]
++        assert op([[[z]], [[z], [EX.one, EX.zero]]], c, 2, EX) == [tail]
++
++    assert dup_quo_ground(ZZ.map([1, 1]), ZZ(2), ZZ) == []
++    assert dup_quo_ground(ZZ.map([1, 2, 0]), ZZ(2), ZZ) == ZZ.map([1, 0])
++    assert dmp_quo_ground(ZZ.map([[1], [1]]), ZZ(2), 1, ZZ) == [[]]
++    assert dmp_quo_ground(
++        ZZ.map([[1], [1, 2, 0]]), ZZ(2), 1, ZZ) == ZZ.map([[1, 0]])
++    assert dmp_mul_ground(ZZ.map([[1], [2]]), ZZ.zero, 1, ZZ) == [[]]
++
++
+ def test_dup_lshift():
+     assert dup_lshift([], 3, ZZ) == []
+     assert dup_lshift([1], 3, ZZ) == [1, 0, 0, 0]
+diff --git a/sympy/polys/tests/test_polytools.py b/sympy/polys/tests/test_polytools.py
+index c774fc4..94c1b46 100644
+--- a/sympy/polys/tests/test_polytools.py
++++ b/sympy/polys/tests/test_polytools.py
+@@ -1445,6 +1445,25 @@ def test_Poly_clear_denoms():
+         x + 3*sqrt(2), x, domain='EX') and poly.get_domain() == EX
+ 
+ 
++def test_Poly_clear_denoms_zero():
++    from sympy import Rational, symbols
++
++    a = symbols('a')
++    third = Rational(1, 3)
++    expr = (12**third - 2**(2*third)*3**third)/a
++    for gens in ((x,), (x, y)):
++        for convert in (False, True):
++            coeff, poly = Poly(expr, *gens, domain=EX).clear_denoms(
++                convert=convert)
++            zero = Poly(0, *gens, domain=EX)
++            assert coeff == a
++            assert poly.rep == zero.rep
++            assert poly.is_zero
++            assert poly.degree() == -oo
++            assert poly.terms_gcd() == ((0,)*len(gens), zero)
++            assert poly.primitive() == (0, zero)
++
++
+ def test_Poly_rat_clear_denoms():
+     f = Poly(x**2/y + 1, x)
+     g = Poly(x**3 + y, x)

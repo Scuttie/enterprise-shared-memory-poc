@@ -1,0 +1,328 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index a23fc7a..d091c66 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -10,6 +10,9 @@ astropy.config
+ astropy.constants
+ ^^^^^^^^^^^^^^^^^
+ 
++- Added ``set_enabled_constants`` to temporarily select a historical version
++  of the constants within a context manager.
++
+ astropy.convolution
+ ^^^^^^^^^^^^^^^^^^^
+ 
+diff --git a/astropy/constants/__init__.py b/astropy/constants/__init__.py
+index 8200be3..a6a6fe4 100644
+--- a/astropy/constants/__init__.py
++++ b/astropy/constants/__init__.py
+@@ -14,7 +14,11 @@ A typical use case might be::
+ 
+ """
+ 
++from contextlib import contextmanager as _contextmanager
++import importlib as _importlib
+ import itertools
++import sys as _sys
++from types import ModuleType as _ModuleType
+ 
+ # Hack to make circular imports with units work
+ try:
+@@ -52,3 +56,90 @@ if __doc__ is not None:
+     __doc__ += '\n'.join(_lines)
+ 
+ del _lines, _nm, _c
++
++
++def _get_constants(module):
++    return {name: value for name, value in vars(module).items()
++            if not name.startswith('_') and isinstance(value, Constant)}
++
++
++@_contextmanager
++def set_enabled_constants(modname):
++    """Temporarily use a particular version of the constants.
++
++    Parameters
++    ----------
++    modname : str or module
++        The version module, or its name: ``'astropyconst13'`` or
++        ``'astropyconst20'``.
++
++    Notes
++    -----
++    The constants in `astropy.constants`, `astropy.constants.si`, and
++    `astropy.constants.cgs` are restored when the context exits, including
++    when an exception is raised. Contexts may be nested.
++
++    Only subsequent lookups in these modules use the selected version.
++    Previously imported constants and units are unchanged. The change is
++    global, so this context manager should not be used concurrently in
++    different threads.
++
++    Examples
++    --------
++    >>> from astropy import constants as const
++    >>> with const.set_enabled_constants('astropyconst13'):
++    ...     print(const.h.value)
++    6.62606957e-34
++    """
++    if isinstance(modname, _ModuleType):
++        modname = modname.__name__
++        prefix = __name__ + '.'
++        if modname.startswith(prefix):
++            modname = modname[len(prefix):]
++    elif not isinstance(modname, str):
++        raise TypeError('Expected a constant version name or module')
++
++    if modname not in ('astropyconst13', 'astropyconst20'):
++        raise ValueError('Unknown constant version: {0!r}'.format(modname))
++    version = _importlib.import_module('.' + modname, __name__)
++
++    replacements = {}
++    replacements_si = {}
++    replacements_cgs = {}
++    for name, constant in _get_constants(version).items():
++        # Like the default constants, these must have no specific system:
++        # electromagnetic constants require an explicit choice by the user.
++        # Leave the version's registry unchanged when constructing the copy.
++        instances = constant._registry[constant.name.lower()]
++        previous = instances.pop(None, None)
++        try:
++            replacements[name] = constant.__class__(
++                constant.abbrev, constant.name, constant.value,
++                constant._unit_string, constant.uncertainty,
++                constant.reference)
++        finally:
++            instances.pop(None, None)
++            if previous is not None:
++                instances[None] = previous
++
++        replacements_si[name] = constant.si
++        # Match the ordering used when populating astropy.constants.cgs.
++        for system in ('emu', 'esu', 'gauss'):
++            if system in instances:
++                replacements_cgs[name] = instances[system]
++                break
++
++    modules = [(_sys.modules[__name__], replacements),
++               (si, replacements_si), (cgs, replacements_cgs)]
++    saved = [(module, _get_constants(module)) for module, _ in modules]
++    try:
++        for module, constants in modules:
++            for name in _get_constants(module):
++                delattr(module, name)
++            vars(module).update(constants)
++        yield
++    finally:
++        for module, constants in saved:
++            for name in _get_constants(module):
++                delattr(module, name)
++            vars(module).update(constants)
+diff --git a/astropy/constants/tests/test_context.py b/astropy/constants/tests/test_context.py
+new file mode 100644
+index 0000000..be5ae99
+--- /dev/null
++++ b/astropy/constants/tests/test_context.py
+@@ -0,0 +1,152 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++
++import importlib
++
++import pytest
++
++from ... import constants as const
++
++
++@pytest.mark.parametrize('version', ['astropyconst13', 'astropyconst20'])
++@pytest.mark.parametrize('as_module', [False, True])
++def test_set_enabled_constants(version, as_module):
++    selected = importlib.import_module('astropy.constants.' + version)
++    previous = {name: value for name, value in vars(const).items()
++                if isinstance(value, const.Constant)}
++    previous_si = {name: value for name, value in vars(const.si).items()
++                   if isinstance(value, const.Constant)}
++    previous_cgs = {name: value for name, value in vars(const.cgs).items()
++                    if isinstance(value, const.Constant)}
++
++    with const.set_enabled_constants(selected if as_module else version):
++        for name, expected in vars(selected).items():
++            if not isinstance(expected, const.Constant) or name.startswith('_'):
++                continue
++            actual = getattr(const, name)
++            assert actual.value == expected.value
++            assert actual.unit == expected.unit
++            assert actual.uncertainty == expected.uncertainty
++            assert actual.reference == expected.reference
++            assert actual.system is None
++            assert actual.si is expected.si
++            assert getattr(const.si, name) is expected.si
++
++        assert const.h.cgs.value == selected.h.cgs.value
++        assert const.e.esu is selected.e.esu
++        assert const.cgs.e is getattr(selected.e, previous_cgs['e'].system)
++        with pytest.raises(TypeError):
++            const.e * 2
++
++    for module, saved in [(const, previous), (const.si, previous_si),
++                          (const.cgs, previous_cgs)]:
++        restored = {name: value for name, value in vars(module).items()
++                    if isinstance(value, const.Constant)}
++        assert restored.keys() == saved.keys()
++        assert all(restored[name] is value for name, value in saved.items())
++
++
++def _snapshot_constants():
++    return [(module, {name: value for name, value in vars(module).items()
++                      if isinstance(value, const.Constant)})
++            for module in (const, const.si, const.cgs)]
++
++
++def _assert_restored(saved):
++    for module, constants in saved:
++        current = {name: value for name, value in vars(module).items()
++                   if isinstance(value, const.Constant)}
++        assert current.keys() == constants.keys()
++        assert all(current[name] is value for name, value in constants.items())
++
++
++@pytest.mark.parametrize('outer', ['astropyconst13', 'astropyconst20'])
++@pytest.mark.parametrize('inner', ['astropyconst13', 'astropyconst20'])
++def test_nested_constants(outer, inner):
++    original = _snapshot_constants()
++    outer_version = importlib.import_module('astropy.constants.' + outer)
++    inner_version = importlib.import_module('astropy.constants.' + inner)
++    context = const.set_enabled_constants(outer)
++    _assert_restored(original)
++
++    with context:
++        assert const.h.value == outer_version.h.value
++        outer_constants = _snapshot_constants()
++        with const.set_enabled_constants(inner):
++            assert const.h.value == inner_version.h.value
++            assert const.si.h is inner_version.h.si
++            assert const.cgs.e is inner_version.e.emu
++        _assert_restored(outer_constants)
++
++    _assert_restored(original)
++
++
++@pytest.mark.parametrize('version', ['astropyconst13', 'astropyconst20'])
++def test_constants_exception(version):
++    original = _snapshot_constants()
++    with pytest.raises(RuntimeError, match='outer'):
++        with const.set_enabled_constants(version):
++            outer_constants = _snapshot_constants()
++            with pytest.raises(RuntimeError, match='inner'):
++                with const.set_enabled_constants('astropyconst13'):
++                    raise RuntimeError('inner')
++            _assert_restored(outer_constants)
++            raise RuntimeError('outer')
++
++    _assert_restored(original)
++
++
++@pytest.mark.parametrize('version, error', [
++    ('unknown', ValueError), ('codata2010', ValueError),
++    (const, ValueError), (None, TypeError), (13, TypeError)])
++def test_invalid_constants_version(version, error):
++    with const.set_enabled_constants('astropyconst13'):
++        original = _snapshot_constants()
++        with pytest.raises(error):
++            with const.set_enabled_constants(version):
++                pytest.fail('Invalid version was accepted')
++        _assert_restored(original)
++
++
++def test_constants_version_specific_names():
++    original = _snapshot_constants()
++    with const.set_enabled_constants('astropyconst13'):
++        for name in ('GM_earth', 'GM_jup', 'GM_sun'):
++            assert not hasattr(const, name)
++            assert not hasattr(const.si, name)
++        with const.set_enabled_constants('astropyconst20'):
++            from .. import astropyconst20
++            for name in ('GM_earth', 'GM_jup', 'GM_sun'):
++                expected = getattr(astropyconst20, name)
++                assert getattr(const, name).value == expected.value
++                assert getattr(const.si, name) is expected.si
++        for name in ('GM_earth', 'GM_jup', 'GM_sun'):
++            assert not hasattr(const, name)
++            assert not hasattr(const.si, name)
++    _assert_restored(original)
++
++
++def test_constants_saved_references_and_units():
++    from ... import units as u
++    from .. import h, M_sun, astropyconst13, astropyconst20
++
++    solar_mass_unit = u.M_sun.to(u.kg)
++    with const.set_enabled_constants(astropyconst13):
++        historical_h = const.h
++        historical_e = const.e
++        assert const.h.value != h.value
++        assert h.si is astropyconst20.h.si
++        assert const.M_sun.value != M_sun.value
++        assert u.M_sun.to(u.kg) == solar_mass_unit
++        assert const.M_sun.to_value(u.kg) == astropyconst13.M_sun.value
++
++        with const.set_enabled_constants(astropyconst20):
++            assert historical_h.si is astropyconst13.h.si
++            assert historical_e.esu is astropyconst13.e.esu
++
++    assert const.h is h
++    assert const.M_sun is M_sun
++    assert historical_h.si is astropyconst13.h.si
++    assert historical_h.to_value(u.J * u.s) == astropyconst13.h.value
++    assert historical_e.esu is astropyconst13.e.esu
++    with pytest.raises(TypeError):
++        historical_e * 2
+diff --git a/docs/constants/index.rst b/docs/constants/index.rst
+index 3a826fe..e34cd67 100644
+--- a/docs/constants/index.rst
++++ b/docs/constants/index.rst
+@@ -121,6 +121,44 @@ names like ``astropyconst13`` and ``astropyconst20``.
+     corresponding constant. When using prior versions of the constants,
+     quantities should be constructed with constants instead of units.
+ 
++Temporarily selecting a version
++------------------------------
++
++Use `set_enabled_constants` as a context manager to select a version for
++code that accesses constants through the `astropy.constants` module::
++
++    >>> from astropy import constants as const
++    >>> print(const.h.value)
++    6.62607004e-34
++    >>> with const.set_enabled_constants('astropyconst13'):
++    ...     print(const.h.value)
++    6.62606957e-34
++    >>> print(const.h.value)
++    6.62607004e-34
++
++The argument can be either ``'astropyconst13'`` or ``'astropyconst20'``,
++or the corresponding version module::
++
++    >>> from astropy.constants import astropyconst13
++    >>> with const.set_enabled_constants(astropyconst13):
++    ...     print(const.h.reference)
++    CODATA 2010
++
++The selected version also applies to `astropy.constants.si` and
++`astropy.constants.cgs`. Constants absent from that version are unavailable
++within the context. The previous definitions are restored on exit, even if
++the code raises an exception. Contexts can be nested; leaving an inner
++context restores the enclosing context's version.
++
++Only subsequent lookups through these modules use the selected constants.
++A constant already imported with ``from astropy.constants import h`` keeps
++its original value. Likewise, units such as ``u.M_sun`` retain their existing
++definitions. Use the selected constants directly in calculations when their
++historical values are needed.
++
++The selection affects the whole Python process, so contexts should not be
++used concurrently in different threads.
++
+ Reference/API
+ =============
+ 

@@ -1,0 +1,316 @@
+{
+  "file_count": 61,
+  "files": [
+    {
+      "bytes": 113,
+      "path": "13615-preparation-failure.json",
+      "sha256": "6402431c3f8ae9909d657e78274cab18905ccb5e5f56aca760dcd9d27596e586"
+    },
+    {
+      "bytes": 113,
+      "path": "15875-preparation-failure.json",
+      "sha256": "27e466c71b99511be71f211b395146961dd423244516e7c85d4c01677ea5ed1f"
+    },
+    {
+      "bytes": 113,
+      "path": "18698-preparation-failure.json",
+      "sha256": "0342e0d87a626238296f988def91e77a21584e396085b4164a392cc9d593f4e5"
+    },
+    {
+      "bytes": 113,
+      "path": "19495-preparation-failure.json",
+      "sha256": "0090971ab3b99efa557f3fcc0d8994d9ea996aa5244d062283d3c1cbf963eff3"
+    },
+    {
+      "bytes": 9260,
+      "path": "images.json",
+      "sha256": "798c2ae02e25845f121f0a8d9f704423806ada1c32742f7a1170bf7534a4b504"
+    },
+    {
+      "bytes": 8873,
+      "path": "operations/native011_public_runtime_prepare.py",
+      "sha256": "46b4b42443d3eaa53762c4ca46c1a26864c27f8d8c061f6675c2b958006c73e9"
+    },
+    {
+      "bytes": 6306,
+      "path": "operations/native011_public_runtime_retry.py",
+      "sha256": "933768f08c7e66647788c9b0ed4b066d583bdf6419d6109d2db5ba63e848b6c6"
+    },
+    {
+      "bytes": 36022,
+      "path": "public-candidate-source.json",
+      "sha256": "351974c275075ea689d272abb2ca3f9faba358bd9ae80e3880402a678f7f409b"
+    },
+    {
+      "bytes": 1192,
+      "path": "runtime-summary.json",
+      "sha256": "edf2a47fb4d443ab0b879da6bb2cd90be36326f2382d5f1a1fc57a4ffd63b948"
+    },
+    {
+      "bytes": 533,
+      "path": "runtime-v2/sympy__sympy-13615/public-base-checkout.json",
+      "sha256": "0d490e60e44be0cd4ae0b029151dd629b045bcf23cc0933272adcefa8f392697"
+    },
+    {
+      "bytes": 417,
+      "path": "runtime-v2/sympy__sympy-13615/public-base-fetch.json",
+      "sha256": "3dab81a21340e8cffccd22c21cc4bc2674f0665aa08a6695be0926102e6245be"
+    },
+    {
+      "bytes": 5641307,
+      "path": "runtime-v2/sympy__sympy-13615/public-base.tar.gz",
+      "sha256": "81c90cc9a6131a1c130591f19ae3887b85beb4f26c48e895b18dd57deedecc25"
+    },
+    {
+      "bytes": 4183,
+      "path": "runtime-v2/sympy__sympy-13615/public-runtime-probe.json",
+      "sha256": "2bcbdd64ae473784ff07bdaed1e399dbc307825d738323b2deea395ee6e879cb"
+    },
+    {
+      "bytes": 1552,
+      "path": "runtime-v2/sympy__sympy-13615/result.json",
+      "sha256": "4775adeb08c203e9f7d3ade2df9df98bfd96c3f7a8ca6ba1cc2fe77514209253"
+    },
+    {
+      "bytes": 533,
+      "path": "runtime-v2/sympy__sympy-15875/public-base-checkout.json",
+      "sha256": "87fda445867f1432877de29edb6a6159f8de81ffc8393435e6b34fc2dcab825d"
+    },
+    {
+      "bytes": 417,
+      "path": "runtime-v2/sympy__sympy-15875/public-base-fetch.json",
+      "sha256": "3ce74c70dde5a87a15fff661f2afbc8957bae289cc1adf20c3972c10bddc6083"
+    },
+    {
+      "bytes": 6476653,
+      "path": "runtime-v2/sympy__sympy-15875/public-base.tar.gz",
+      "sha256": "f6e55368dd83f7115b1055e6ed0e58ba59c609fb0359cacb10800a7f1585efb8"
+    },
+    {
+      "bytes": 3944,
+      "path": "runtime-v2/sympy__sympy-15875/public-runtime-probe.json",
+      "sha256": "c0071454eb8e0cc9fc147d266f430eeecd68064a1466fecf0652eb6e6d51d89b"
+    },
+    {
+      "bytes": 1550,
+      "path": "runtime-v2/sympy__sympy-15875/result.json",
+      "sha256": "d3a693951620fbd6163444167657e45959245c7e8d46fc314668dd46bd2016e2"
+    },
+    {
+      "bytes": 533,
+      "path": "runtime-v2/sympy__sympy-18698/public-base-checkout.json",
+      "sha256": "9b5041fac97ae538bc22a5cb5dc8fd3416edb5577f9b543f877ba5b0873cfe29"
+    },
+    {
+      "bytes": 417,
+      "path": "runtime-v2/sympy__sympy-18698/public-base-fetch.json",
+      "sha256": "48b581db982211da13ced0b100b53ab4940cf4766f1bbc3ce448dc23863dc35a"
+    },
+    {
+      "bytes": 6912797,
+      "path": "runtime-v2/sympy__sympy-18698/public-base.tar.gz",
+      "sha256": "bae43b3e648f2a1ad9f1af35267025df789c703816e97b06cb0286f5aa332f86"
+    },
+    {
+      "bytes": 3294,
+      "path": "runtime-v2/sympy__sympy-18698/public-runtime-probe.json",
+      "sha256": "fcb8ea217eb0486e548e5fec1d15f2f934fded86d45d571768fc465711c0c96f"
+    },
+    {
+      "bytes": 1550,
+      "path": "runtime-v2/sympy__sympy-18698/result.json",
+      "sha256": "9ce6877e23c347b9547b259e09f469b256b77ac990013e4eec810a78cddbf839"
+    },
+    {
+      "bytes": 533,
+      "path": "runtime-v2/sympy__sympy-19495/public-base-checkout.json",
+      "sha256": "6536631cc69291f2ff675ba374bfc04023c85c069277781b99df9aa68327281c"
+    },
+    {
+      "bytes": 417,
+      "path": "runtime-v2/sympy__sympy-19495/public-base-fetch.json",
+      "sha256": "aebb70e90f8e6645c02f814273b6bde17b7c7788008f64f9826ed893624a650e"
+    },
+    {
+      "bytes": 6837052,
+      "path": "runtime-v2/sympy__sympy-19495/public-base.tar.gz",
+      "sha256": "c2d68e442c66575e132b943979cf9a80bfbefd06051c0ff7a4708763b96a69e3"
+    },
+    {
+      "bytes": 3876,
+      "path": "runtime-v2/sympy__sympy-19495/public-runtime-probe.json",
+      "sha256": "bd86296686b0fc1945f70323f47c1d110c2a20ccdf1b0251ea04559d9cc72e55"
+    },
+    {
+      "bytes": 1550,
+      "path": "runtime-v2/sympy__sympy-19495/result.json",
+      "sha256": "22f6048bcbeb722a22e0708650842fd9f4a3bf579e17fbed5083b6ba4bd72b29"
+    },
+    {
+      "bytes": 7000,
+      "path": "runtime-v2-summary.json",
+      "sha256": "ba43fc9c9261d7551954f09e8efee2345946942a9fbcafc8b5a9811ee60dea0b"
+    },
+    {
+      "bytes": 665,
+      "path": "sympy__sympy-13615/digest-verification.json",
+      "sha256": "480c005fb0ade9a448bdbf45cb05e95b6fd01486cbcf04955ce72f51ada98cc8"
+    },
+    {
+      "bytes": 2844,
+      "path": "sympy__sympy-13615/image-inspect-after.json",
+      "sha256": "b0a4e6807d8ebc5c89edcf72e624a2e5beba846b58ba2ba877738e833e0b1a07"
+    },
+    {
+      "bytes": 511,
+      "path": "sympy__sympy-13615/image-inspect-before.json",
+      "sha256": "940005839801e2ce70beee6e2bd3ac67580a4aa764adcf57a2ff45dd3a9cb110"
+    },
+    {
+      "bytes": 1106,
+      "path": "sympy__sympy-13615/image-pull.json",
+      "sha256": "e2d46c9c1dace0e881b533bfc0cb1b3edee238d170d9a104d6b5ce37c481b23e"
+    },
+    {
+      "bytes": 658,
+      "path": "sympy__sympy-13615/public-base-archive-command.json",
+      "sha256": "382ee03f29399130079cc8c9894ac110f7de0b4d7b82fc870ba0d8a35f6a30a9"
+    },
+    {
+      "bytes": 0,
+      "path": "sympy__sympy-13615/public-base.tar",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 305,
+      "path": "sympy__sympy-13615/registry-fetch.json",
+      "sha256": "5e37c83e65808f71b649a02862e4a7320f24ec96bf00ba6ef9a8e46777f41675"
+    },
+    {
+      "bytes": 1129,
+      "path": "sympy__sympy-13615/registry.json",
+      "sha256": "5e4f1c4c6af5cd532607784d6edc6aab28d1522fa9cd1169f183030e3acd22f9"
+    },
+    {
+      "bytes": 665,
+      "path": "sympy__sympy-15875/digest-verification.json",
+      "sha256": "edc4bb29c087bccd42709eb13db0e5df971c1e2054a16c202fe1e03fc814faa8"
+    },
+    {
+      "bytes": 2844,
+      "path": "sympy__sympy-15875/image-inspect-after.json",
+      "sha256": "de72b1df49ef13016a505494a85a7ca175e083fff11c8632406023428beaf6cd"
+    },
+    {
+      "bytes": 512,
+      "path": "sympy__sympy-15875/image-inspect-before.json",
+      "sha256": "c9603cfc5777c5915f32a05cdf1879c589fe3cc674b5a5d4548a416fe931420b"
+    },
+    {
+      "bytes": 1108,
+      "path": "sympy__sympy-15875/image-pull.json",
+      "sha256": "2227b1dd6c1d8701bbb440bc1a2eb9edc87a9783f7089f5c2168655ebff022a9"
+    },
+    {
+      "bytes": 657,
+      "path": "sympy__sympy-15875/public-base-archive-command.json",
+      "sha256": "15d722abef3c14f5e511761bab7aab31000268ea4077ec7775fbc0419be15575"
+    },
+    {
+      "bytes": 0,
+      "path": "sympy__sympy-15875/public-base.tar",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 305,
+      "path": "sympy__sympy-15875/registry-fetch.json",
+      "sha256": "edeb441cae58668e0c7be5a3d1d168368f6312b370b9ba03cde26d6381faf2af"
+    },
+    {
+      "bytes": 1132,
+      "path": "sympy__sympy-15875/registry.json",
+      "sha256": "24e2a1a330a8590e95dabc3991908229b48fea5f97d5f56367f727d07d7f1cda"
+    },
+    {
+      "bytes": 665,
+      "path": "sympy__sympy-18698/digest-verification.json",
+      "sha256": "1aeee19b9a33793207c4297ff3cd2c802f93162e1645e9dcdf8fd0ba77875cd4"
+    },
+    {
+      "bytes": 2844,
+      "path": "sympy__sympy-18698/image-inspect-after.json",
+      "sha256": "0be186868ab42683e2261541394f3d7e0a907ac6cccc964e476fd0e92e7af340"
+    },
+    {
+      "bytes": 512,
+      "path": "sympy__sympy-18698/image-inspect-before.json",
+      "sha256": "da3376f162d5bd2e20b6539dcd0b1c4c45721a665b7219baf1581f34d95b61ea"
+    },
+    {
+      "bytes": 1107,
+      "path": "sympy__sympy-18698/image-pull.json",
+      "sha256": "6a5c44333d87e0d08b990c3b27ac4016fb72361e41b8b6e46741130b6b4dda98"
+    },
+    {
+      "bytes": 657,
+      "path": "sympy__sympy-18698/public-base-archive-command.json",
+      "sha256": "f7b096e05737a70f734c46287f72222842642f04c32da239dc98a6baef4f4f5d"
+    },
+    {
+      "bytes": 0,
+      "path": "sympy__sympy-18698/public-base.tar",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 305,
+      "path": "sympy__sympy-18698/registry-fetch.json",
+      "sha256": "0652a80874e81b43a4c3eacc7bf89779351fa91b61643924e5bbbf5d9b8d08e2"
+    },
+    {
+      "bytes": 1132,
+      "path": "sympy__sympy-18698/registry.json",
+      "sha256": "4db5e8767b11363b45436d12e45aba997d36e728b61a73da9dd4342060cbcc9e"
+    },
+    {
+      "bytes": 665,
+      "path": "sympy__sympy-19495/digest-verification.json",
+      "sha256": "523cbd6046cd012b314f61560b6065f9d9d9b9010978e2add0c04ba7606ffd2d"
+    },
+    {
+      "bytes": 2844,
+      "path": "sympy__sympy-19495/image-inspect-after.json",
+      "sha256": "2749514dea4f965f33f71013b71057a2eee4adc443fca0bec4b922322cdddc05"
+    },
+    {
+      "bytes": 2844,
+      "path": "sympy__sympy-19495/image-inspect-before.json",
+      "sha256": "b610fa78e20f16274c6a1c2ebddea2abb254ad41fabee392468f1ff3315ad626"
+    },
+    {
+      "bytes": 657,
+      "path": "sympy__sympy-19495/public-base-archive-command.json",
+      "sha256": "23a77492937b5ac61251ba8a4a3c1a223bf49d8600416ccd952facb411214ed5"
+    },
+    {
+      "bytes": 0,
+      "path": "sympy__sympy-19495/public-base.tar",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 305,
+      "path": "sympy__sympy-19495/registry-fetch.json",
+      "sha256": "f9475437db09437d984f55285b3f6c4cb26449a1cd09ec56c86f7f1bd7d86c38"
+    },
+    {
+      "bytes": 1130,
+      "path": "sympy__sympy-19495/registry.json",
+      "sha256": "4f552fd73f6f86ce8dc82b9fb68a1813d3904d891e12643cdfed4f1927a48359"
+    }
+  ],
+  "issue_probes": 0,
+  "model_calls": 0,
+  "official_grader_calls": 0,
+  "schema": "skhynix/native011-public-preparation-artifact-manifest/1.0",
+  "scope": "Public metadata, digest image receipts, pinned base source archives, runtime import/help only; initial archive failures retained. Extracted public-base trees reconstruct from retained archives.",
+  "test_commands": 0
+}

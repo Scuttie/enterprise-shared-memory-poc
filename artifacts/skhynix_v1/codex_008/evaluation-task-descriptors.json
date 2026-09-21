@@ -1,0 +1,18 @@
+[
+  {
+    "commit": "c0e85160406f9bf2bcaa2992138587668a1cd0bc",
+    "instruction_sha256": "25ab0d27dec7b75aca8e84b90104dea0cde0d61728608ed79d379f94758b8969",
+    "org_id": "833a06c1-daa9-57de-8d28-abe25935d775",
+    "repository": "sympy/sympy",
+    "task_id": "swebench_verified--sympy__sympy-20428",
+    "user_id": "feb8d107-66c6-5758-a45e-ba1cc52af60c"
+  },
+  {
+    "commit": "33b47e4bd60e2302e42616141e76285038b724d6",
+    "instruction_sha256": "fd765160d7049b22cddabc6176449775fa71e4bbb261f4f5cdb923cc3b183cf8",
+    "org_id": "833a06c1-daa9-57de-8d28-abe25935d775",
+    "repository": "sympy/sympy",
+    "task_id": "swebench_verified--sympy__sympy-20438",
+    "user_id": "feb8d107-66c6-5758-a45e-ba1cc52af60c"
+  }
+]

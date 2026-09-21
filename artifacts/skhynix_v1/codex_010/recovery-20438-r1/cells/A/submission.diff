@@ -1,0 +1,87 @@
+diff --git a/sympy/sets/handlers/comparison.py b/sympy/sets/handlers/comparison.py
+index 6f7a19f..ffd5443 100644
+--- a/sympy/sets/handlers/comparison.py
++++ b/sympy/sets/handlers/comparison.py
+@@ -49,6 +49,16 @@ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return tfn[fuzzy_and(map(fuzzy_bool, eqs))]
+ 
+ 
++@dispatch(ProductSet, FiniteSet) # type:ignore
++def _eval_is_eq(lhs, rhs): # noqa: F811
++    return tfn[fuzzy_and([lhs.is_subset(rhs), rhs.is_subset(lhs)])]
++
++
++@dispatch(FiniteSet, ProductSet) # type:ignore
++def _eval_is_eq(lhs, rhs): # noqa: F811
++    return _eval_is_eq(rhs, lhs)
++
++
+ @dispatch(Set, Basic) # type:ignore
+ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return False
+diff --git a/sympy/sets/sets.py b/sympy/sets/sets.py
+index 3c4aa86..579d622 100644
+--- a/sympy/sets/sets.py
++++ b/sympy/sets/sets.py
+@@ -762,6 +762,16 @@ def __new__(cls, *sets, **assumptions):
+ 
+         return Basic.__new__(cls, *sets, **assumptions)
+ 
++    def _eval_rewrite_as_FiniteSet(self, *sets, **kwargs):
++        if all(s.is_FiniteSet for s in sets):
++            return FiniteSet(*iproduct(*sets))
++
++    def _eval_is_subset(self, other):
++        if isinstance(other, FiniteSet):
++            finite_self = self.rewrite(FiniteSet)
++            if isinstance(finite_self, FiniteSet):
++                return finite_self.is_subset(other)
++
+     @property
+     def sets(self):
+         return self.args
+diff --git a/sympy/sets/tests/test_sets.py b/sympy/sets/tests/test_sets.py
+index d29a046..ab9291e 100644
+--- a/sympy/sets/tests/test_sets.py
++++ b/sympy/sets/tests/test_sets.py
+@@ -1030,6 +1030,40 @@ def test_product_basic():
+     raises(TypeError, lambda: len(coin*Interval(0, 2)))
+ 
+ 
++def test_product_finiteset():
++    # issue 20438: equivalent sets need not have the same representation.
++    a = FiniteSet(1, 2)
++    product = ProductSet(a, a)
++    points = FiniteSet((1, 1), (1, 2), (2, 1), (2, 2))
++    assert product.intersection(points) == points.intersection(product)
++    assert product.is_subset(points) is True
++    assert points.is_subset(product) is True
++    assert Eq(product, points) is S.true
++    assert Eq(points, product) is S.true
++    assert Eq(product, points, evaluate=False).simplify() is S.true
++    assert Eq(points, product, evaluate=False).simplify() is S.true
++    assert product.rewrite(FiniteSet) == points
++
++    missing = FiniteSet((1, 1), (1, 2), (2, 1))
++    extra = points | FiniteSet((3, 3))
++    assert product.is_subset(missing) is False
++    assert product.is_subset(extra) is True
++    assert Eq(product, missing) is S.false
++    assert Eq(extra, product) is S.false
++
++    symbolic = ProductSet(FiniteSet(x), FiniteSet(1))
++    assert symbolic.rewrite(FiniteSet) == FiniteSet((x, 1))
++    assert symbolic.is_subset(FiniteSet((y, 1))) is None
++    assert unchanged(Eq, symbolic, FiniteSet((y, 1)))
++    assert symbolic.is_subset(FiniteSet((x, 2))) is False
++
++    nested = ProductSet(ProductSet(FiniteSet(1), FiniteSet(2)), a)
++    assert nested.rewrite(FiniteSet) == FiniteSet(((1, 2), 1), ((1, 2), 2))
++    infinite = ProductSet(a, S.Integers)
++    assert infinite.rewrite(FiniteSet) == infinite
++    assert infinite.is_subset(points) is False
++
++
+ def test_real():
+     x = Symbol('x', real=True, finite=True)
+ 

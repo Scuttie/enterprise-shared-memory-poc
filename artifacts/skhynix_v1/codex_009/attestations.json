@@ -1,0 +1,90 @@
+[
+  {
+    "agent": "/root/native009_21612_a",
+    "cell": "A",
+    "limitations": "Direct LaTeX testing unavailable because antlr4 missing; self-attested assigned broker only, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "637c807364c3399f5984ed3edec7e20919cf891b0cf20397349978e8c443abe1",
+    "public_test_summary": "156 public tests passed, 1 expected failure; new regression RED before and GREEN after denominator parenthesis fix.",
+    "run": "transfer-21612-r1"
+  },
+  {
+    "agent": "/root/native009_21612_c",
+    "cell": "C",
+    "limitations": "LaTeX integration unavailable because ANTLR missing; self-attested assigned Cell C broker only, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "f023a7b11ced9888866154ec816c6bf6eff939435d5793e1a081672071777985",
+    "public_test_summary": "156 public tests passed, 1 expected failure; new regression RED before and GREEN after denominator parenthesis fix.",
+    "run": "transfer-21612-r1"
+  },
+  {
+    "agent": "/root/native009_21847_c",
+    "cell": "C",
+    "limitations": "Full suite and hidden tests were not run. Explicit self-attestation: only the assigned broker, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "eb6662355a16d69000ff7d9b35086ba1afbdbabdc66f08dcc808c5cefd735f64",
+    "public_test_summary": "New regressions failed before the fix; all 13 public monomial tests passed afterward.",
+    "run": "transfer-21847-r1"
+  },
+  {
+    "agent": "/root/native009_21847_a",
+    "cell": "A",
+    "limitations": "Full suite and hidden tests were not run. Explicit self-attestation: only the assigned broker, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "44087dadcf96ca429e31d49659d1818448cd46a96e3d2f93582070428291ab7c",
+    "public_test_summary": "Both new regressions failed before the fix. All 13 public monomial tests passed afterward.",
+    "run": "transfer-21847-r1"
+  },
+  {
+    "agent": "/root/native009_22714_a",
+    "cell": "A",
+    "limitations": "Full repository suite and hidden tests were not run. Explicit self-attestation: only the assigned broker, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "2a75409d5ea3ef56af7666ea4533935f34fa80ad34be5f58cbe1e67bd5df348a",
+    "public_test_summary": "Regression failed before the fix. Geometry suite afterward: 111 passed and 4 skipped.",
+    "run": "transfer-22714-r1"
+  },
+  {
+    "agent": "/root/native009_22714_c",
+    "cell": "C",
+    "limitations": "Hidden tests were not accessed. Explicit self-attestation: only the assigned broker for repository access and execution, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "b2da0039b0bf640ff9d5221471ab5fe7c3262184fe742baa79a9cc176f7efd75",
+    "public_test_summary": "Public geometry tests: 111 passed and 4 skipped; imaginary-coordinate regression coverage added.",
+    "run": "transfer-22714-r1"
+  },
+  {
+    "agent": "/root/native009_24661_c",
+    "cell": "C",
+    "limitations": "Full suite and hidden tests were not run. Explicit self-attestation: used only the assigned broker, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "1bcba336155ef96aec02d4d6650b378aa0afc1dd20c8b88f801739a58ab060c6",
+    "public_test_summary": "Public parser and sympify tests: 75 passed, 5 skipped, 2 expected failures; unevaluated relational regression coverage added.",
+    "run": "transfer-24661-r1"
+  },
+  {
+    "agent": "/root/native009_24661_a",
+    "cell": "A",
+    "limitations": "Chained comparisons explicitly raise ValueError. Explicit self-attestation: used only the assigned broker, no external access, hidden tests, or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "3eaa297dc75d64cabdbab756cd1587437374d98c34e8a88292d0a55d9f88d279",
+    "public_test_summary": "Regression failed before the fix and passed afterward. Parser: 29 passed. Sympify: 46 passed, 5 skipped, 2 expected failures.",
+    "run": "transfer-24661-r1"
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "codex_tokens_and_cost": null,
+  "evaluation_template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05",
+  "fork_turns": "none",
+  "frozen_at_unix_seconds": 1789133471.2448323,
+  "limits": {
+    "actions": 120,
+    "memory_bytes": 12000,
+    "memory_injections": 3,
+    "wall_seconds": 1200
+  },
+  "query_change_from_native002": "Same short issue subgoal and public regression verification operation across all three arms, fixed before training/evaluation.",
+  "requested_model": "gpt-6-astra",
+  "schema": "skhynix/native003-launch-contract/1.0",
+  "separate_model_api_calls": 0,
+  "training_template_sha256": "c3df9d16f7219fb3d302a0f583df25ac45a7f312bc237f39c3e6398e24dd36cc"
+}

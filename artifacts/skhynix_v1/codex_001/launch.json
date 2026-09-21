@@ -1,0 +1,32 @@
+{
+  "cells": [
+    {
+      "broker_only_self_attested": true,
+      "cell": "A",
+      "submitted_sha256": "d4e3d524ea43b1c322cbf5755fb538c3c61319569f368aa55e12a17c66675be4",
+      "task_name": "/root/native_solver_a"
+    },
+    {
+      "broker_only_self_attested": true,
+      "cell": "B",
+      "submitted_sha256": "0b2d9bf34331a48dc19ca52655689df30602ad7ef84803621faba6b1479bb70d",
+      "task_name": "/root/native_solver_b"
+    },
+    {
+      "broker_only_self_attested": true,
+      "cell": "C",
+      "submitted_sha256": "99587ce7a319a1238a4f56db2d4a5b1f514e460cbe07480271ef8bfddb873441",
+      "task_name": "/root/native_solver_c"
+    }
+  ],
+  "fork_turns": "none",
+  "limitations": [
+    "Requested model identifier is recorded; underlying dated snapshot is not attested.",
+    "Broker-only behavior is instructed and self-attested; native host tools are not OS-denied.",
+    "Direct model API client is disabled; Codex usage/cost are not measured."
+  ],
+  "reasoning_effort": "inherited same parent setting; not overridden",
+  "requested_model": "gpt-6-astra",
+  "schema": "skhynix/native-codex-launch/1.0",
+  "source": "manager record of collaboration.spawn_agent tool calls"
+}

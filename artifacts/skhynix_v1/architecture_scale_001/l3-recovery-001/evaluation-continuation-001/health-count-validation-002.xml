@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.309" timestamp="2026-09-20T23:20:53.617959+09:00" hostname="DESKTOP-LP27LTC"><testcase classname="" name="tests.unit.test_trimem_skhynix_scale_health" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\jewon\esm-r23-d115-writer\tests\unit\test_trimem_skhynix_scale_health.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_trimem_skhynix_scale_health.py:9: in &lt;module&gt;
+    import trimem_skhynix_scale_health as health
+E   ModuleNotFoundError: No module named 'trimem_skhynix_scale_health'</error></testcase></testsuite></testsuites>

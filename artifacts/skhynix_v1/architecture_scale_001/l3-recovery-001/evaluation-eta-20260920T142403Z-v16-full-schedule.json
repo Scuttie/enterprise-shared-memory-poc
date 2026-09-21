@@ -1,0 +1,112 @@
+{
+  "schema": "skhynix/public-timing-estimate/2.0",
+  "observed_at_kst": "2026-09-20T23:24:03.545594+09:00",
+  "monitor_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\monitor\\samples\\20260920T142403.5545943Z.json",
+    "sha256": "e7b89fda70198c20aa38c3fd24e03b79dd083bc707ea077aebf9044f7c97358e"
+  },
+  "prior_official_results_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\l3-recovery-001\\interim-results-20260920T133030Z-v2.json",
+    "sha256": "4df88b48ad23ee6a1a6c72328562941570fc314ecfc857bf939435940cacda36"
+  },
+  "configuration_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\configs\\skhynix_v1\\architecture_002_pipeline_v16.json",
+    "sha256": "09a54437efb4849277c42686eb51698880b46dee93844e36a954b396b177fa77"
+  },
+  "current_off": {
+    "planned": 60,
+    "official_complete": 15,
+    "resolved": 13,
+    "undetermined": 1,
+    "processed": 16
+  },
+  "current_task": "swebench--matplotlib__matplotlib-25565",
+  "current_actions": 34,
+  "on_started": false,
+  "observed_off_cleanup_mean_minutes": 12.88128601596469,
+  "milestones": {
+    "development_on_start": {
+      "remaining_cells_including_current": 44,
+      "planning_minutes_per_cell": [
+        15,
+        25
+      ],
+      "remaining_hours": [
+        11.0,
+        18.333333333333332
+      ],
+      "earliest_kst": "2026-09-21T10:24:03.545594+09:00",
+      "latest_kst": "2026-09-21T17:44:03.545594+09:00",
+      "off_only_mean_extrapolation_kst": "2026-09-21T08:50:50.140676+09:00"
+    },
+    "first_10_on_attempts": {
+      "remaining_cells_including_current": 54,
+      "planning_minutes_per_cell": [
+        15,
+        25
+      ],
+      "remaining_hours": [
+        13.5,
+        22.5
+      ],
+      "earliest_kst": "2026-09-21T12:54:03.545594+09:00",
+      "latest_kst": "2026-09-21T21:54:03.545594+09:00",
+      "off_only_mean_extrapolation_kst": "2026-09-21T10:59:38.912286+09:00"
+    },
+    "development_on_complete": {
+      "remaining_cells_including_current": 104,
+      "planning_minutes_per_cell": [
+        15,
+        25
+      ],
+      "remaining_hours": [
+        26.0,
+        43.333333333333336
+      ],
+      "earliest_kst": "2026-09-22T01:24:03.545594+09:00",
+      "latest_kst": "2026-09-22T18:44:03.545594+09:00",
+      "off_only_mean_extrapolation_kst": "2026-09-21T21:43:42.770334+09:00"
+    },
+    "final_first_50_pairs": {
+      "remaining_condition_runs_including_current": 204,
+      "planning_minutes_per_condition_run": [
+        15,
+        25
+      ],
+      "remaining_hours": [
+        51.0,
+        85.0
+      ],
+      "earliest_kst": "2026-09-23T02:24:03.545594+09:00",
+      "latest_kst": "2026-09-24T12:24:03.545594+09:00"
+    },
+    "final_all_500_pairs": {
+      "remaining_condition_runs_including_current": 1104,
+      "planning_minutes_per_condition_run": [
+        15,
+        25
+      ],
+      "remaining_hours": [
+        276.0,
+        460.0
+      ],
+      "earliest_kst": "2026-10-02T11:24:03.545594+09:00",
+      "latest_kst": "2026-10-10T03:24:03.545594+09:00"
+    }
+  },
+  "assumptions": [
+    "Sequential development OFF60 then ON60; final Verified500 is a separate later stage",
+    "Uninterrupted operation without quota, host sleep or infrastructure pause",
+    "ON throughput is not observed; 15-25 minutes is a planning range, not a statistical confidence interval",
+    "Current in-progress cell is budgeted as one full cell; transition validation time is not separately estimated",
+    "Known authenticated held attempts remain unscored; completion means all scheduled attempts processed, not all official grades known"
+  ],
+  "model_calls": 0,
+  "grader_payloads_read": 0,
+  "raw_model_transcripts_read": 0,
+  "extends_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\l3-recovery-001\\evaluation-eta-20260920T142403Z-v16.json",
+    "sha256": "3ee6b3bbc76105fd7fa3364443274299063753d9243116d8cca4cf308d235b86"
+  },
+  "extension_note": "Adds final 50-pair and 500-pair planning estimates without changing the original observation or development estimates. Final throughput is unobserved."
+}

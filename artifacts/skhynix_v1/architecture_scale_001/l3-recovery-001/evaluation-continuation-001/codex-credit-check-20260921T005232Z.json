@@ -1,0 +1,61 @@
+{
+  "schema": "skhynix/read-only-codex-credit-check/1.0",
+  "checked_at_utc": "2026-09-21T00:52:32.905803+00:00",
+  "binary": "C:\\Users\\jewon\\AppData\\Local\\Temp\\skhynix-architecture-scale-001-codex-v1\\codex.exe",
+  "authentication_type": "chatgpt",
+  "plan_type": "pro",
+  "limits": {
+    "ordinaryUsageAllowed": false,
+    "rateLimits": {
+      "limitId": "codex",
+      "limitName": null,
+      "normalModelSlug": null,
+      "primary": {
+        "usedPercent": 100,
+        "windowDurationMins": 10080,
+        "resetsAt": 1790060313
+      },
+      "secondary": null,
+      "credits": {
+        "hasCredits": true,
+        "unlimited": false,
+        "balance": "439.8603800000"
+      },
+      "individualLimit": null,
+      "spendControlReached": false,
+      "planType": "pro",
+      "rateLimitReachedType": "rate_limit_reached"
+    },
+    "rateLimitsByLimitId": {
+      "codex": {
+        "limitId": "codex",
+        "limitName": null,
+        "normalModelSlug": null,
+        "primary": {
+          "usedPercent": 100,
+          "windowDurationMins": 10080,
+          "resetsAt": 1790060313
+        },
+        "secondary": null,
+        "credits": {
+          "hasCredits": true,
+          "unlimited": false,
+          "balance": "439.8603800000"
+        },
+        "individualLimit": null,
+        "spendControlReached": false,
+        "planType": "pro",
+        "rateLimitReachedType": "rate_limit_reached"
+      }
+    },
+    "rateLimitResetCredits": {
+      "availableCount": 0,
+      "credits": []
+    },
+    "accountId": "b8b45a8e-cb4d-4635-a779-abb771784e0e",
+    "rateLimitUpsell": null
+  },
+  "model_turns_started": 0,
+  "credit_resets_consumed": 0,
+  "purchases": 0
+}

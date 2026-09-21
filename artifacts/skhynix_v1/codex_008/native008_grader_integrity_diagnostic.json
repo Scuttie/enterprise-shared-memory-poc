@@ -1,0 +1,864 @@
+{
+  "aggregate": {
+    "A": {
+      "completed_attempts": 4,
+      "expected_identifiers_missing": 0,
+      "fail_to_pass_expected": 6,
+      "fail_to_pass_passed": 0,
+      "official_resolved": 0,
+      "pass_to_pass_expected": 494,
+      "pass_to_pass_passed": 494
+    },
+    "C": {
+      "completed_attempts": 4,
+      "expected_identifiers_missing": 0,
+      "fail_to_pass_expected": 6,
+      "fail_to_pass_passed": 1,
+      "official_resolved": 0,
+      "pass_to_pass_expected": 494,
+      "pass_to_pass_passed": 494
+    }
+  },
+  "distinct_reused_tasks": 2,
+  "evidence_mutations": 0,
+  "expected_identifiers_used_only_for_opaque_status_counts": true,
+  "harness_function_provenance": {
+    "_resolve_case": {
+      "function_sha256": "873999cbdcf17e47b0817517eec5c41882f8bf443d2e8b76eeb56e1d9489e48c",
+      "source_sha256": "a095273010175001a6779e365b3b77abb8657c7ac2e4f80b4bc360faa6f09483"
+    },
+    "parse_log_sympy": {
+      "function_sha256": "55853f23276e63137711ea2322962841a038bc1228e2d4116852c36195e834d9",
+      "source_sha256": "cd56156414f8327221e525665ace9b184f7d73e83b272d9eb3f545fb17c2d9bc"
+    }
+  },
+  "hidden_fixture_or_gold_patch_files_opened": false,
+  "interpretation": "All expected identifiers are parsed. Reported failures reflect failed/error outcomes, not missing test identifiers. Parsed totals may include multiple parser keys for one failure, so expected-domain counts are authoritative.",
+  "model_calls": 0,
+  "official_grader_calls": 0,
+  "primary_issue_solve_rate_unchanged": true,
+  "protected_files_verified": 40,
+  "raw_test_logs_exported": false,
+  "replicates_are_not_independent_task_samples": true,
+  "rows": [
+    {
+      "adapter_status": "SUCCESS",
+      "agent_completed": true,
+      "bad_execution_marker_counts": {
+        "APPLY_PATCH_FAIL": 0,
+        "RESET_FAILED": 0,
+        "TESTS_ERROR": 0,
+        "TESTS_TIMEOUT": 0
+      },
+      "cell": "A",
+      "domains": {
+        "FAIL_TO_PASS": {
+          "expected": 1,
+          "expected_id_set_sha256": "5986b57d66c0e3ba4dfdd9510b72f66a532847ebb720b3aabc58aa62ed1391dc",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 1,
+          "official_success": 0,
+          "parsed_status_histogram": {
+            "FAILED": 1
+          }
+        },
+        "PASS_TO_PASS": {
+          "expected": 154,
+          "expected_id_set_sha256": "40fa766e960859587490167bd936069d32c87d9220a1f71e7f6b3108be5c6899",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 0,
+          "official_success": 154,
+          "parsed_status_histogram": {
+            "PASSED": 154
+          }
+        }
+      },
+      "harness_invocation_status": "SUCCESS",
+      "infra_failure": false,
+      "marker_counts": {
+        "end": 1,
+        "start": 1
+      },
+      "official_resolved": false,
+      "parsed_status_histogram": {
+        "FAILED": 2,
+        "PASSED": 154
+      },
+      "parsed_total": 156,
+      "parser_whole_log_fallback": false,
+      "patch_applied": true,
+      "patch_exists": true,
+      "recorded_test_exit_code": 1,
+      "run": "recovery-20428-r1",
+      "runner_summary_numeric_counts": {
+        "errors": [],
+        "exceptions": [],
+        "failed": [
+          1
+        ],
+        "passed": [
+          155
+        ],
+        "skipped": [],
+        "xfailed": [],
+        "xpassed": []
+      },
+      "semantic_counts": {
+        "benchmark_id": "swebench_verified",
+        "expected_test_spec_sha256": "01916d8a7f2926e470635b47ab1c6d89aabd1616a094bbee54adf6b83aee8eb9",
+        "fail_to_pass_classified": 1,
+        "fail_to_pass_expected": 1,
+        "fail_to_pass_failures": 1,
+        "pass_to_pass_classified": 154,
+        "pass_to_pass_expected": 154,
+        "pass_to_pass_regressions": 0,
+        "resolved": false,
+        "schema": "trimem/official-test-status-summary/1.0",
+        "source": "SWE_PER_INSTANCE_REPORT"
+      },
+      "source_hashes": {
+        "official_test_status": "8d5c7df2bd81692bcb59b647b140699ae71f80fbc41f5084e85a7661f79f0058",
+        "private_grade_envelope": "65d2e71c00c94ee6229020a6f3e7a32d740f269fe1bca786f7e1f366ec3a7897",
+        "public_result": "41ba4ba846459cea504dead297fc3cfb92a45c4133f612f4f8a442b175ef8ab9",
+        "test_output": "22adb2c196ad67eccd579f6454c842a311d0ba63c9a29ab8cc4efd598ec531ae"
+      },
+      "submitted_patch_matches_grader_execution_contract": true,
+      "submitted_patch_sha256": "edf3554d55d3ccbffeea3ed47cc4836fab6248cf0ac6154cc8ab3810673cb1f9",
+      "terminal_exception_class_counts": {
+        "AssertionError": 1,
+        "AttributeError": 0,
+        "ImportError": 0,
+        "IndentationError": 0,
+        "ModuleNotFoundError": 0,
+        "NameError": 0,
+        "RuntimeError": 0,
+        "SyntaxError": 0,
+        "TypeError": 0,
+        "ValueError": 0,
+        "ZeroDivisionError": 0
+      },
+      "test_markers_present": true
+    },
+    {
+      "adapter_status": "SUCCESS",
+      "agent_completed": true,
+      "bad_execution_marker_counts": {
+        "APPLY_PATCH_FAIL": 0,
+        "RESET_FAILED": 0,
+        "TESTS_ERROR": 0,
+        "TESTS_TIMEOUT": 0
+      },
+      "cell": "C",
+      "domains": {
+        "FAIL_TO_PASS": {
+          "expected": 1,
+          "expected_id_set_sha256": "5986b57d66c0e3ba4dfdd9510b72f66a532847ebb720b3aabc58aa62ed1391dc",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 1,
+          "official_success": 0,
+          "parsed_status_histogram": {
+            "FAILED": 1
+          }
+        },
+        "PASS_TO_PASS": {
+          "expected": 154,
+          "expected_id_set_sha256": "40fa766e960859587490167bd936069d32c87d9220a1f71e7f6b3108be5c6899",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 0,
+          "official_success": 154,
+          "parsed_status_histogram": {
+            "PASSED": 154
+          }
+        }
+      },
+      "harness_invocation_status": "SUCCESS",
+      "infra_failure": false,
+      "marker_counts": {
+        "end": 1,
+        "start": 1
+      },
+      "official_resolved": false,
+      "parsed_status_histogram": {
+        "FAILED": 2,
+        "PASSED": 154
+      },
+      "parsed_total": 156,
+      "parser_whole_log_fallback": false,
+      "patch_applied": true,
+      "patch_exists": true,
+      "recorded_test_exit_code": 1,
+      "run": "recovery-20428-r1",
+      "runner_summary_numeric_counts": {
+        "errors": [],
+        "exceptions": [],
+        "failed": [
+          1
+        ],
+        "passed": [
+          155
+        ],
+        "skipped": [],
+        "xfailed": [],
+        "xpassed": []
+      },
+      "semantic_counts": {
+        "benchmark_id": "swebench_verified",
+        "expected_test_spec_sha256": "01916d8a7f2926e470635b47ab1c6d89aabd1616a094bbee54adf6b83aee8eb9",
+        "fail_to_pass_classified": 1,
+        "fail_to_pass_expected": 1,
+        "fail_to_pass_failures": 1,
+        "pass_to_pass_classified": 154,
+        "pass_to_pass_expected": 154,
+        "pass_to_pass_regressions": 0,
+        "resolved": false,
+        "schema": "trimem/official-test-status-summary/1.0",
+        "source": "SWE_PER_INSTANCE_REPORT"
+      },
+      "source_hashes": {
+        "official_test_status": "8d5c7df2bd81692bcb59b647b140699ae71f80fbc41f5084e85a7661f79f0058",
+        "private_grade_envelope": "bef40577d1a6447eea07364f33a4000e46f18fe45eadcd3a06c21ced9b89158c",
+        "public_result": "27b3fd36dcbb049051f568460b05af298fd18f0d658d3f0be37dd64deb185dec",
+        "test_output": "99075308b1e08264400056e3b3614ef682d13c939919c1426715509b0a021778"
+      },
+      "submitted_patch_matches_grader_execution_contract": true,
+      "submitted_patch_sha256": "2ae530e72c5e700cf51fa4cee3baa10e7916c2e20eae79b88311e3f30e5d1bb9",
+      "terminal_exception_class_counts": {
+        "AssertionError": 1,
+        "AttributeError": 0,
+        "ImportError": 0,
+        "IndentationError": 0,
+        "ModuleNotFoundError": 0,
+        "NameError": 0,
+        "RuntimeError": 0,
+        "SyntaxError": 0,
+        "TypeError": 0,
+        "ValueError": 0,
+        "ZeroDivisionError": 0
+      },
+      "test_markers_present": true
+    },
+    {
+      "adapter_status": "SUCCESS",
+      "agent_completed": true,
+      "bad_execution_marker_counts": {
+        "APPLY_PATCH_FAIL": 0,
+        "RESET_FAILED": 0,
+        "TESTS_ERROR": 0,
+        "TESTS_TIMEOUT": 0
+      },
+      "cell": "A",
+      "domains": {
+        "FAIL_TO_PASS": {
+          "expected": 1,
+          "expected_id_set_sha256": "5986b57d66c0e3ba4dfdd9510b72f66a532847ebb720b3aabc58aa62ed1391dc",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 1,
+          "official_success": 0,
+          "parsed_status_histogram": {
+            "FAILED": 1
+          }
+        },
+        "PASS_TO_PASS": {
+          "expected": 154,
+          "expected_id_set_sha256": "40fa766e960859587490167bd936069d32c87d9220a1f71e7f6b3108be5c6899",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 0,
+          "official_success": 154,
+          "parsed_status_histogram": {
+            "PASSED": 154
+          }
+        }
+      },
+      "harness_invocation_status": "SUCCESS",
+      "infra_failure": false,
+      "marker_counts": {
+        "end": 1,
+        "start": 1
+      },
+      "official_resolved": false,
+      "parsed_status_histogram": {
+        "FAILED": 2,
+        "PASSED": 154
+      },
+      "parsed_total": 156,
+      "parser_whole_log_fallback": false,
+      "patch_applied": true,
+      "patch_exists": true,
+      "recorded_test_exit_code": 1,
+      "run": "recovery-20428-r2",
+      "runner_summary_numeric_counts": {
+        "errors": [],
+        "exceptions": [],
+        "failed": [
+          1
+        ],
+        "passed": [
+          155
+        ],
+        "skipped": [],
+        "xfailed": [],
+        "xpassed": []
+      },
+      "semantic_counts": {
+        "benchmark_id": "swebench_verified",
+        "expected_test_spec_sha256": "01916d8a7f2926e470635b47ab1c6d89aabd1616a094bbee54adf6b83aee8eb9",
+        "fail_to_pass_classified": 1,
+        "fail_to_pass_expected": 1,
+        "fail_to_pass_failures": 1,
+        "pass_to_pass_classified": 154,
+        "pass_to_pass_expected": 154,
+        "pass_to_pass_regressions": 0,
+        "resolved": false,
+        "schema": "trimem/official-test-status-summary/1.0",
+        "source": "SWE_PER_INSTANCE_REPORT"
+      },
+      "source_hashes": {
+        "official_test_status": "8d5c7df2bd81692bcb59b647b140699ae71f80fbc41f5084e85a7661f79f0058",
+        "private_grade_envelope": "8e09e9656c987b6e57237f86f1cf83d508b2480dcd98bd4b6f3e62de49f2b8e9",
+        "public_result": "a65a682ef3d6f6efe23cbe090fa87fd598eeefa9f5b424b8897db7420c70d4d4",
+        "test_output": "12a7b7ac186cdbd0f8c2b1d20a07ee1138f44adf1cf2aa3e529cf104b0b5867f"
+      },
+      "submitted_patch_matches_grader_execution_contract": true,
+      "submitted_patch_sha256": "1126b392a41548766953d1b3feb7087d47bd260088f3d4f150696cf2599f3b87",
+      "terminal_exception_class_counts": {
+        "AssertionError": 1,
+        "AttributeError": 0,
+        "ImportError": 0,
+        "IndentationError": 0,
+        "ModuleNotFoundError": 0,
+        "NameError": 0,
+        "RuntimeError": 0,
+        "SyntaxError": 0,
+        "TypeError": 0,
+        "ValueError": 0,
+        "ZeroDivisionError": 0
+      },
+      "test_markers_present": true
+    },
+    {
+      "adapter_status": "SUCCESS",
+      "agent_completed": true,
+      "bad_execution_marker_counts": {
+        "APPLY_PATCH_FAIL": 0,
+        "RESET_FAILED": 0,
+        "TESTS_ERROR": 0,
+        "TESTS_TIMEOUT": 0
+      },
+      "cell": "C",
+      "domains": {
+        "FAIL_TO_PASS": {
+          "expected": 1,
+          "expected_id_set_sha256": "5986b57d66c0e3ba4dfdd9510b72f66a532847ebb720b3aabc58aa62ed1391dc",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 1,
+          "official_success": 0,
+          "parsed_status_histogram": {
+            "FAILED": 1
+          }
+        },
+        "PASS_TO_PASS": {
+          "expected": 154,
+          "expected_id_set_sha256": "40fa766e960859587490167bd936069d32c87d9220a1f71e7f6b3108be5c6899",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 0,
+          "official_success": 154,
+          "parsed_status_histogram": {
+            "PASSED": 154
+          }
+        }
+      },
+      "harness_invocation_status": "SUCCESS",
+      "infra_failure": false,
+      "marker_counts": {
+        "end": 1,
+        "start": 1
+      },
+      "official_resolved": false,
+      "parsed_status_histogram": {
+        "FAILED": 2,
+        "PASSED": 154
+      },
+      "parsed_total": 156,
+      "parser_whole_log_fallback": false,
+      "patch_applied": true,
+      "patch_exists": true,
+      "recorded_test_exit_code": 1,
+      "run": "recovery-20428-r2",
+      "runner_summary_numeric_counts": {
+        "errors": [],
+        "exceptions": [],
+        "failed": [
+          1
+        ],
+        "passed": [
+          155
+        ],
+        "skipped": [],
+        "xfailed": [],
+        "xpassed": []
+      },
+      "semantic_counts": {
+        "benchmark_id": "swebench_verified",
+        "expected_test_spec_sha256": "01916d8a7f2926e470635b47ab1c6d89aabd1616a094bbee54adf6b83aee8eb9",
+        "fail_to_pass_classified": 1,
+        "fail_to_pass_expected": 1,
+        "fail_to_pass_failures": 1,
+        "pass_to_pass_classified": 154,
+        "pass_to_pass_expected": 154,
+        "pass_to_pass_regressions": 0,
+        "resolved": false,
+        "schema": "trimem/official-test-status-summary/1.0",
+        "source": "SWE_PER_INSTANCE_REPORT"
+      },
+      "source_hashes": {
+        "official_test_status": "8d5c7df2bd81692bcb59b647b140699ae71f80fbc41f5084e85a7661f79f0058",
+        "private_grade_envelope": "7ca3709037242637f6c90ce42458ba550c5bd255cde4dacf4830b06bd0db3fd3",
+        "public_result": "2eb3ed7b6e097f2500386893246912a566f3658ebc1fd6a6828e9812b40f1066",
+        "test_output": "753330e77a3cc9c1bbe96b3e0cefa2cd4609b0e4fa9e7b4c8f9dd62fe61d4b92"
+      },
+      "submitted_patch_matches_grader_execution_contract": true,
+      "submitted_patch_sha256": "8fc4e3e5abf138bf6b739f692c5d0fc71ff715bac716bab315a6ed2d3899c21c",
+      "terminal_exception_class_counts": {
+        "AssertionError": 1,
+        "AttributeError": 0,
+        "ImportError": 0,
+        "IndentationError": 0,
+        "ModuleNotFoundError": 0,
+        "NameError": 0,
+        "RuntimeError": 0,
+        "SyntaxError": 0,
+        "TypeError": 0,
+        "ValueError": 0,
+        "ZeroDivisionError": 0
+      },
+      "test_markers_present": true
+    },
+    {
+      "adapter_status": "SUCCESS",
+      "agent_completed": true,
+      "bad_execution_marker_counts": {
+        "APPLY_PATCH_FAIL": 0,
+        "RESET_FAILED": 0,
+        "TESTS_ERROR": 0,
+        "TESTS_TIMEOUT": 0
+      },
+      "cell": "A",
+      "domains": {
+        "FAIL_TO_PASS": {
+          "expected": 2,
+          "expected_id_set_sha256": "1de821a113410513cbd48aba30397f6035a7e7544de5373381ab0bc36ae6caf2",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 2,
+          "official_success": 0,
+          "parsed_status_histogram": {
+            "ERROR": 1,
+            "FAILED": 1
+          }
+        },
+        "PASS_TO_PASS": {
+          "expected": 93,
+          "expected_id_set_sha256": "b5fac568b8552874e7a4c781f80831434899810abd538faa299ce0aa12e77cc5",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 0,
+          "official_success": 93,
+          "parsed_status_histogram": {
+            "PASSED": 93
+          }
+        }
+      },
+      "harness_invocation_status": "SUCCESS",
+      "infra_failure": false,
+      "marker_counts": {
+        "end": 1,
+        "start": 1
+      },
+      "official_resolved": false,
+      "parsed_status_histogram": {
+        "ERROR": 1,
+        "FAILED": 3,
+        "PASSED": 93
+      },
+      "parsed_total": 97,
+      "parser_whole_log_fallback": false,
+      "patch_applied": true,
+      "patch_exists": true,
+      "recorded_test_exit_code": 1,
+      "run": "recovery-20438-r1",
+      "runner_summary_numeric_counts": {
+        "errors": [],
+        "exceptions": [
+          1
+        ],
+        "failed": [
+          1
+        ],
+        "passed": [
+          94
+        ],
+        "skipped": [],
+        "xfailed": [],
+        "xpassed": []
+      },
+      "semantic_counts": {
+        "benchmark_id": "swebench_verified",
+        "expected_test_spec_sha256": "52beba8451fbf25a7c7802ee5a65bd34c965d63f8ef3cdf764680c4fe8e93579",
+        "fail_to_pass_classified": 2,
+        "fail_to_pass_expected": 2,
+        "fail_to_pass_failures": 2,
+        "pass_to_pass_classified": 93,
+        "pass_to_pass_expected": 93,
+        "pass_to_pass_regressions": 0,
+        "resolved": false,
+        "schema": "trimem/official-test-status-summary/1.0",
+        "source": "SWE_PER_INSTANCE_REPORT"
+      },
+      "source_hashes": {
+        "official_test_status": "2b58ddbdb80acb3fe4e8726b4ae2768e774c82e331a51857165dbf90bd470cf4",
+        "private_grade_envelope": "95e509f657266826c15ed01339c69c80d30f4b3650b9d876372da4b6780116a9",
+        "public_result": "5edd95eda2d57d03b0abc501a10930faf2fe7864645eba6c9a1fa941ba7085ab",
+        "test_output": "b0ace67f917bb05e115488ee0af65ef44f2fbf35268d4f8aee96b062830cf346"
+      },
+      "submitted_patch_matches_grader_execution_contract": true,
+      "submitted_patch_sha256": "be36d9eb0d88a1e94be77c3bb64e36361eae5b52e6ae62f142646d5a1f77dbd0",
+      "terminal_exception_class_counts": {
+        "AssertionError": 1,
+        "AttributeError": 1,
+        "ImportError": 0,
+        "IndentationError": 0,
+        "ModuleNotFoundError": 0,
+        "NameError": 0,
+        "RuntimeError": 0,
+        "SyntaxError": 0,
+        "TypeError": 0,
+        "ValueError": 0,
+        "ZeroDivisionError": 0
+      },
+      "test_markers_present": true
+    },
+    {
+      "adapter_status": "SUCCESS",
+      "agent_completed": true,
+      "bad_execution_marker_counts": {
+        "APPLY_PATCH_FAIL": 0,
+        "RESET_FAILED": 0,
+        "TESTS_ERROR": 0,
+        "TESTS_TIMEOUT": 0
+      },
+      "cell": "C",
+      "domains": {
+        "FAIL_TO_PASS": {
+          "expected": 2,
+          "expected_id_set_sha256": "1de821a113410513cbd48aba30397f6035a7e7544de5373381ab0bc36ae6caf2",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 1,
+          "official_success": 1,
+          "parsed_status_histogram": {
+            "FAILED": 1,
+            "PASSED": 1
+          }
+        },
+        "PASS_TO_PASS": {
+          "expected": 93,
+          "expected_id_set_sha256": "b5fac568b8552874e7a4c781f80831434899810abd538faa299ce0aa12e77cc5",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 0,
+          "official_success": 93,
+          "parsed_status_histogram": {
+            "PASSED": 93
+          }
+        }
+      },
+      "harness_invocation_status": "SUCCESS",
+      "infra_failure": false,
+      "marker_counts": {
+        "end": 1,
+        "start": 1
+      },
+      "official_resolved": false,
+      "parsed_status_histogram": {
+        "FAILED": 2,
+        "PASSED": 94
+      },
+      "parsed_total": 96,
+      "parser_whole_log_fallback": false,
+      "patch_applied": true,
+      "patch_exists": true,
+      "recorded_test_exit_code": 1,
+      "run": "recovery-20438-r1",
+      "runner_summary_numeric_counts": {
+        "errors": [],
+        "exceptions": [],
+        "failed": [
+          1
+        ],
+        "passed": [
+          95
+        ],
+        "skipped": [],
+        "xfailed": [],
+        "xpassed": []
+      },
+      "semantic_counts": {
+        "benchmark_id": "swebench_verified",
+        "expected_test_spec_sha256": "52beba8451fbf25a7c7802ee5a65bd34c965d63f8ef3cdf764680c4fe8e93579",
+        "fail_to_pass_classified": 2,
+        "fail_to_pass_expected": 2,
+        "fail_to_pass_failures": 1,
+        "pass_to_pass_classified": 93,
+        "pass_to_pass_expected": 93,
+        "pass_to_pass_regressions": 0,
+        "resolved": false,
+        "schema": "trimem/official-test-status-summary/1.0",
+        "source": "SWE_PER_INSTANCE_REPORT"
+      },
+      "source_hashes": {
+        "official_test_status": "2d88032d703249b2fde6a692cd22f99157206e8eebf13ade08bc9fc09ea4feb4",
+        "private_grade_envelope": "5cf1dfa25650654ce225981ddcbb87e4a4abd0281afc92bf2d402e6095f3780a",
+        "public_result": "b299fc9ad4f7a91e4e33b9721a29801fea5847cb73076ffd4d49e15af0e3a3d2",
+        "test_output": "f7e1925044077bde801ddb1353b7302d9fb69cc578708f1964c0219f124f2a78"
+      },
+      "submitted_patch_matches_grader_execution_contract": true,
+      "submitted_patch_sha256": "5f5d1c096a12af7fbd24dde9dfd4e6bcb177b7c8f75c8e359b3ea0bbade1550d",
+      "terminal_exception_class_counts": {
+        "AssertionError": 1,
+        "AttributeError": 0,
+        "ImportError": 0,
+        "IndentationError": 0,
+        "ModuleNotFoundError": 0,
+        "NameError": 0,
+        "RuntimeError": 0,
+        "SyntaxError": 0,
+        "TypeError": 0,
+        "ValueError": 0,
+        "ZeroDivisionError": 0
+      },
+      "test_markers_present": true
+    },
+    {
+      "adapter_status": "SUCCESS",
+      "agent_completed": true,
+      "bad_execution_marker_counts": {
+        "APPLY_PATCH_FAIL": 0,
+        "RESET_FAILED": 0,
+        "TESTS_ERROR": 0,
+        "TESTS_TIMEOUT": 0
+      },
+      "cell": "A",
+      "domains": {
+        "FAIL_TO_PASS": {
+          "expected": 2,
+          "expected_id_set_sha256": "1de821a113410513cbd48aba30397f6035a7e7544de5373381ab0bc36ae6caf2",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 2,
+          "official_success": 0,
+          "parsed_status_histogram": {
+            "ERROR": 1,
+            "FAILED": 1
+          }
+        },
+        "PASS_TO_PASS": {
+          "expected": 93,
+          "expected_id_set_sha256": "b5fac568b8552874e7a4c781f80831434899810abd538faa299ce0aa12e77cc5",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 0,
+          "official_success": 93,
+          "parsed_status_histogram": {
+            "PASSED": 93
+          }
+        }
+      },
+      "harness_invocation_status": "SUCCESS",
+      "infra_failure": false,
+      "marker_counts": {
+        "end": 1,
+        "start": 1
+      },
+      "official_resolved": false,
+      "parsed_status_histogram": {
+        "ERROR": 1,
+        "FAILED": 3,
+        "PASSED": 93
+      },
+      "parsed_total": 97,
+      "parser_whole_log_fallback": false,
+      "patch_applied": true,
+      "patch_exists": true,
+      "recorded_test_exit_code": 1,
+      "run": "recovery-20438-r2",
+      "runner_summary_numeric_counts": {
+        "errors": [],
+        "exceptions": [
+          1
+        ],
+        "failed": [
+          1
+        ],
+        "passed": [
+          94
+        ],
+        "skipped": [],
+        "xfailed": [],
+        "xpassed": []
+      },
+      "semantic_counts": {
+        "benchmark_id": "swebench_verified",
+        "expected_test_spec_sha256": "52beba8451fbf25a7c7802ee5a65bd34c965d63f8ef3cdf764680c4fe8e93579",
+        "fail_to_pass_classified": 2,
+        "fail_to_pass_expected": 2,
+        "fail_to_pass_failures": 2,
+        "pass_to_pass_classified": 93,
+        "pass_to_pass_expected": 93,
+        "pass_to_pass_regressions": 0,
+        "resolved": false,
+        "schema": "trimem/official-test-status-summary/1.0",
+        "source": "SWE_PER_INSTANCE_REPORT"
+      },
+      "source_hashes": {
+        "official_test_status": "2b58ddbdb80acb3fe4e8726b4ae2768e774c82e331a51857165dbf90bd470cf4",
+        "private_grade_envelope": "9ada70618f5ab59a704ad6b6557fe2a660b220ec6aa2536d3ad76ac2bde5221e",
+        "public_result": "b4a2285f7ca0a7748649b0c0c077350bba51364b92ac09657371ff95da5538a3",
+        "test_output": "4c74ad89b0054f11e609ed905cdb88e05cff300c4b8b675e465e56d8e1590627"
+      },
+      "submitted_patch_matches_grader_execution_contract": true,
+      "submitted_patch_sha256": "5356d632862bb8585853bbd7ee2c54e09061bbc0323981a68afd556c2ea131a0",
+      "terminal_exception_class_counts": {
+        "AssertionError": 1,
+        "AttributeError": 1,
+        "ImportError": 0,
+        "IndentationError": 0,
+        "ModuleNotFoundError": 0,
+        "NameError": 0,
+        "RuntimeError": 0,
+        "SyntaxError": 0,
+        "TypeError": 0,
+        "ValueError": 0,
+        "ZeroDivisionError": 0
+      },
+      "test_markers_present": true
+    },
+    {
+      "adapter_status": "SUCCESS",
+      "agent_completed": true,
+      "bad_execution_marker_counts": {
+        "APPLY_PATCH_FAIL": 0,
+        "RESET_FAILED": 0,
+        "TESTS_ERROR": 0,
+        "TESTS_TIMEOUT": 0
+      },
+      "cell": "C",
+      "domains": {
+        "FAIL_TO_PASS": {
+          "expected": 2,
+          "expected_id_set_sha256": "1de821a113410513cbd48aba30397f6035a7e7544de5373381ab0bc36ae6caf2",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 2,
+          "official_success": 0,
+          "parsed_status_histogram": {
+            "ERROR": 1,
+            "FAILED": 1
+          }
+        },
+        "PASS_TO_PASS": {
+          "expected": 93,
+          "expected_id_set_sha256": "b5fac568b8552874e7a4c781f80831434899810abd538faa299ce0aa12e77cc5",
+          "missing_identifier_sha256": [],
+          "missing_identifier_shape_diagnostics": {},
+          "official_failure": 0,
+          "official_success": 93,
+          "parsed_status_histogram": {
+            "PASSED": 93
+          }
+        }
+      },
+      "harness_invocation_status": "SUCCESS",
+      "infra_failure": false,
+      "marker_counts": {
+        "end": 1,
+        "start": 1
+      },
+      "official_resolved": false,
+      "parsed_status_histogram": {
+        "ERROR": 1,
+        "FAILED": 3,
+        "PASSED": 93
+      },
+      "parsed_total": 97,
+      "parser_whole_log_fallback": false,
+      "patch_applied": true,
+      "patch_exists": true,
+      "recorded_test_exit_code": 1,
+      "run": "recovery-20438-r2",
+      "runner_summary_numeric_counts": {
+        "errors": [],
+        "exceptions": [
+          1
+        ],
+        "failed": [
+          1
+        ],
+        "passed": [
+          94
+        ],
+        "skipped": [],
+        "xfailed": [],
+        "xpassed": []
+      },
+      "semantic_counts": {
+        "benchmark_id": "swebench_verified",
+        "expected_test_spec_sha256": "52beba8451fbf25a7c7802ee5a65bd34c965d63f8ef3cdf764680c4fe8e93579",
+        "fail_to_pass_classified": 2,
+        "fail_to_pass_expected": 2,
+        "fail_to_pass_failures": 2,
+        "pass_to_pass_classified": 93,
+        "pass_to_pass_expected": 93,
+        "pass_to_pass_regressions": 0,
+        "resolved": false,
+        "schema": "trimem/official-test-status-summary/1.0",
+        "source": "SWE_PER_INSTANCE_REPORT"
+      },
+      "source_hashes": {
+        "official_test_status": "2b58ddbdb80acb3fe4e8726b4ae2768e774c82e331a51857165dbf90bd470cf4",
+        "private_grade_envelope": "4a44db26a417da865e52168f8765114f59fa52daa76d5009c23b344e01e6b8fd",
+        "public_result": "e58e2cfb61d53a3862aa0faf80449effd7ef73ba5bfdc8ababfe52bc7e12ef38",
+        "test_output": "fb73330c313513fec829f648115b78ed495c8e6ad85b7cd477aa859421808b7c"
+      },
+      "submitted_patch_matches_grader_execution_contract": true,
+      "submitted_patch_sha256": "f407b5d9a4835a6f7a92ebde444dbc97628b41e2e99df5f239cb1f885ce1d125",
+      "terminal_exception_class_counts": {
+        "AssertionError": 1,
+        "AttributeError": 1,
+        "ImportError": 0,
+        "IndentationError": 0,
+        "ModuleNotFoundError": 0,
+        "NameError": 0,
+        "RuntimeError": 0,
+        "SyntaxError": 0,
+        "TypeError": 0,
+        "ValueError": 0,
+        "ZeroDivisionError": 0
+      },
+      "test_markers_present": true
+    }
+  ],
+  "schema": "skhynix/native008-grader-integrity-count-diagnostic/1.0",
+  "scientific_role": "SECONDARY_POSTHOC_GRADING_INTEGRITY_DIAGNOSTIC",
+  "scope": "EIGHT_COMPLETED_NATIVE008_CELLS_AND_OPTIONAL_NATIVE007_20801_A",
+  "status": "COMPLETE_READ_ONLY",
+  "test_commands_executed": 0,
+  "test_names_or_paths_exported": false
+}

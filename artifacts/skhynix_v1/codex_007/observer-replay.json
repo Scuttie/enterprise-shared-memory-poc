@@ -1,0 +1,61 @@
+{
+  "cell": "A",
+  "corrected_observer_diagnostic_verified": true,
+  "corrected_observer_sha256": "9ae723c6ac4eebbf2513a6dcd55721214a24394f07767e3a629b3058f067cabd",
+  "frozen_observer_rejection": {
+    "exception": "ProcedureEvidenceError",
+    "message": "no genuine added assertion failure with unchanged implementation was verified"
+  },
+  "frozen_observer_sha256": "b19210f2881d9c0144995ec40b0bb34cc7cf6d425a4887b1b6f18ac0fd4ddcdd",
+  "grader_executions": 0,
+  "models_executed": 0,
+  "new_training_admission": false,
+  "original_experiment": "native006",
+  "original_file_sha256": {
+    "audit.json": "db18d4b210e35daf611ad58e138b0b6470f09d4b73db8e38821c6beb400474e7",
+    "experiment-status.json": "2f88ae25c2d788f9160aa41881fc68550e6883b4b352495235348084b6c9f2bf",
+    "launch-contract.json": "2ee5e9cc316deb96caace00799e42b3cd105c290ae0bc6bae9a32383f8d882e9",
+    "procedure-declaration.json": "70437a961574d980293c8cbce99fdc871d788606da590513a5c71cae76868c94",
+    "source-freeze.json": "45f27c1ba03d193ea84a6cbcdef5c1afc3eb7f453e471ae0322a4595ec8588a0",
+    "training-19637-a2/execution/cells/A/grader-private.json": "629f67d515a6feeb222b7508f0ab9982a4773feed9b6e56151ef306a0c71df7e",
+    "training-19637-a2/execution/cells/A/procedure-binding.json": "2a4629d754d69b1320504000fe04881e6824371eeb96833004efe1249dd859ad",
+    "training-19637-a2/execution/cells/A/public-result.json": "338877efad14eddad46fbb752b9202495f5fc03e662dc1365a54f9cd64208a79",
+    "training-19637-a2/execution/cells/A/state.json": "4b8a66fae012249faf3ae78155ad9aa3f497148db3d953896e8ba958e349ebc6",
+    "training-19637-a2/execution/cells/A/submission.diff": "9ef9d0aede3a10348559f8daae7f01e88da25dcb9a2c0c5554c76dd99b56791c",
+    "training-19637-a2/execution/cells/A/submission.json": "276de78cc65d3a457c5d6024f48f14f11e7311d433208b3bda69d992482178f9",
+    "training-19637-a2/execution/cells/A/tool-events.jsonl": "ef6da3526d64269532c220d4d027503587d9336cab65359c6bddb40521715920",
+    "training-19637-a2/execution/plan.json": "e84ca1b72d689ee7165811f8393036b13fdaf69aa86758a81dbb523388d906d7",
+    "training-19637-a2/execution/plan.sha256": "dc523bef686584c2761da95e20267debb04fd0458edb2b229030a204df4620b2",
+    "training-19637-a2/source/scripts/trimem_skhynix_codex_procedures.py": "b19210f2881d9c0144995ec40b0bb34cc7cf6d425a4887b1b6f18ac0fd4ddcdd"
+  },
+  "original_files_unchanged": true,
+  "original_run": "training-19637-a2",
+  "original_training_status_relabelled": false,
+  "prior_pre_review_replay": {
+    "path": "artifacts/skhynix_v1/codex_007_observer_replay.pre_review.json",
+    "sha256": "72362d94c1fe15bf37d574631f6443171a9de5941b234c47678786d9aefc2ab8"
+  },
+  "promotion_executed": false,
+  "public_result_projections": [
+    {
+      "event_sha256": "ff69983a69f25591839817ac98812ae352e81d9c5fbae4ef0774cd084697ba6e",
+      "named_runner_outcome": true,
+      "result_projection_sha256": "4063442577b5e7e9a7d312749e4b96b9616dd44551eb0ea1e7a9a09a030271d3",
+      "sequence": 10,
+      "stdout_sha256": "db575bc64c17ea1e70b10a7b6e14fcb3c3f223b68225113f9c63b0847ef1c417"
+    },
+    {
+      "event_sha256": "cd4b5a35f4e143f2aa3a4bee491b1f490a0f5b433ad834b99c8f70655e001927",
+      "named_runner_outcome": true,
+      "result_projection_sha256": "25c24fb0e94ba494e65c1c7d29c837a31323a604e6791b0788e1ec43368d67c9",
+      "sequence": 16,
+      "stdout_sha256": "b168cab2edf8a798af1b185756e831fe7ae7dce933b165f54c944ea51c521518"
+    }
+  ],
+  "purpose": "BUGFIX_DIAGNOSTIC_NOT_RETROSPECTIVE_TRAINING_ADMISSION",
+  "schema": "skhynix/native007-observer-bugfix-replay/1.0",
+  "separate_model_api_calls": 0,
+  "status": "PASS_OBSERVER_REPLAY_ONLY",
+  "verified_final_green_sequence": 16,
+  "verified_red_sequence": 10
+}

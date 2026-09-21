@@ -1,0 +1,313 @@
+{
+  "actual_solver_actions": 0,
+  "actual_states_after": {
+    "transfer-13615-r1-A": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-13615-r1-B": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-13615-r1-C": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-15875-r1-A": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-15875-r1-B": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-15875-r1-C": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-18698-r1-A": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-18698-r1-B": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-18698-r1-C": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-19495-r1-A": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-19495-r1-B": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-19495-r1-C": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "actual_states_before": {
+    "transfer-13615-r1-A": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-13615-r1-B": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-13615-r1-C": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-15875-r1-A": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-15875-r1-B": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-15875-r1-C": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-18698-r1-A": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-18698-r1-B": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-18698-r1-C": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-19495-r1-A": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-19495-r1-B": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "transfer-19495-r1-C": {
+      "actions": 0,
+      "started_at": null,
+      "status": "OPEN",
+      "tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "batch": [
+    {
+      "cells": [
+        "A",
+        "B",
+        "C"
+      ],
+      "name": "transfer-13615-r1",
+      "plan_sha256": "3ad6ad1848f6c0e7bf138bbad050d5e0b3dabcbd293e7a4efa7bfd8921359e37",
+      "run_root": "/home/trimem-runner/skhynix-codex-011/transfer-13615-r1/execution",
+      "target_id": "swebench_verified--sympy__sympy-13615"
+    },
+    {
+      "cells": [
+        "A",
+        "B",
+        "C"
+      ],
+      "name": "transfer-15875-r1",
+      "plan_sha256": "5f521d6a21dfd54793e9382b62ba71931806a834f19330ecd8c4d03161984639",
+      "run_root": "/home/trimem-runner/skhynix-codex-011/transfer-15875-r1/execution",
+      "target_id": "swebench_verified--sympy__sympy-15875"
+    },
+    {
+      "cells": [
+        "A",
+        "B",
+        "C"
+      ],
+      "name": "transfer-18698-r1",
+      "plan_sha256": "3a76d0931441af251d5c804d893ac23d5ffd4326c633c01484de9136184c2c11",
+      "run_root": "/home/trimem-runner/skhynix-codex-011/transfer-18698-r1/execution",
+      "target_id": "swebench_verified--sympy__sympy-18698"
+    },
+    {
+      "cells": [
+        "A",
+        "B",
+        "C"
+      ],
+      "name": "transfer-19495-r1",
+      "plan_sha256": "1c3d721013c4d9ec96e502f9ec91350404e1a42789cda7e3c32145d863b3f48e",
+      "run_root": "/home/trimem-runner/skhynix-codex-011/transfer-19495-r1/execution",
+      "target_id": "swebench_verified--sympy__sympy-19495"
+    }
+  ],
+  "batch_plan_sha256": "77c3fe346add1a291984c7e2d698e73e01b32b316750a88fa01adcc720dba94b",
+  "completed_at_unix_seconds": 1789307494.7775578,
+  "contract_sha256": "6ced64e45ae3cbeb4bee8734882feceba0c2642a3c2430ef5027f095234be645",
+  "official_grades": 0,
+  "schema": "skhynix/native011-preflight/1.0",
+  "status": "PASS",
+  "synthetic_results": [
+    {
+      "cell": "A",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 0,
+      "initial_injections": 0,
+      "name": "transfer-13615-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "B",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 1670,
+      "initial_injections": 1,
+      "name": "transfer-13615-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "C",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 1670,
+      "initial_injections": 1,
+      "name": "transfer-13615-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "A",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 0,
+      "initial_injections": 0,
+      "name": "transfer-15875-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "B",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 1670,
+      "initial_injections": 1,
+      "name": "transfer-15875-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "C",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 1670,
+      "initial_injections": 1,
+      "name": "transfer-15875-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "A",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 0,
+      "initial_injections": 0,
+      "name": "transfer-18698-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "B",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 1670,
+      "initial_injections": 1,
+      "name": "transfer-18698-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "C",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 1670,
+      "initial_injections": 1,
+      "name": "transfer-18698-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "A",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 0,
+      "initial_injections": 0,
+      "name": "transfer-19495-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "B",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 1670,
+      "initial_injections": 1,
+      "name": "transfer-19495-r1",
+      "repeat_delivery": 0
+    },
+    {
+      "cell": "C",
+      "enforced_initial_recall": true,
+      "event_derived_restore": "PASS",
+      "initial_bytes": 1670,
+      "initial_injections": 1,
+      "name": "transfer-19495-r1",
+      "repeat_delivery": 0
+    }
+  ]
+}

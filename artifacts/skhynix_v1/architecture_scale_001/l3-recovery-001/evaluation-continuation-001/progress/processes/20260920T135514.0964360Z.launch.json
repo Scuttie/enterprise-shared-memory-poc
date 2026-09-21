@@ -1,0 +1,10 @@
+{
+    "schema":  "skhynix/scale-background-launch/1.0",
+    "configuration_sha256":  "09a54437efb4849277c42686eb51698880b46dee93844e36a954b396b177fa77",
+    "configuration_path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\configs\\skhynix_v1\\architecture_002_pipeline_v16.json",
+    "process_id":  47624,
+    "process_started_at":  "2026-09-20T13:55:14.1317148Z",
+    "intent_path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\l3-recovery-001\\evaluation-continuation-001\\progress\\processes\\20260920T135514.0964360Z.intent.json",
+    "stdout_path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\l3-recovery-001\\evaluation-continuation-001\\progress\\processes\\20260920T135514.0964360Z.stdout.log",
+    "stderr_path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\l3-recovery-001\\evaluation-continuation-001\\progress\\processes\\20260920T135514.0964360Z.stderr.log"
+}

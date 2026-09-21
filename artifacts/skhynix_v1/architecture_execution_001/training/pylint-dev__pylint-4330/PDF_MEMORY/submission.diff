@@ -1,0 +1,141 @@
+diff --git a/doc/whatsnew/2.8.rst b/doc/whatsnew/2.8.rst
+index 6f502fa..b68272d 100644
+--- a/doc/whatsnew/2.8.rst
++++ b/doc/whatsnew/2.8.rst
+@@ -17,6 +17,11 @@ New checkers
+ Other Changes
+ =============
+ 
++* The spelling checker now ignores inline code enclosed in matching single or double
++  backticks in comments and docstrings, while continuing to check surrounding text.
++
++  Closes #4330
++
+ * Reduce usage of blacklist/whitelist terminology. Notably, ``extension-pkg-allow-list`` is an
+   alternative to ``extension-pkg-whitelist`` and the message ``blacklisted-name`` is now emitted as
+   ``disallowed-name``. The previous names are accepted to maintain backward compatibility.
+diff --git a/pylint/checkers/spelling.py b/pylint/checkers/spelling.py
+index 95b46cd..939f30a 100644
+--- a/pylint/checkers/spelling.py
++++ b/pylint/checkers/spelling.py
+@@ -137,14 +137,14 @@ class ForwardSlashChunkder(Chunker):
+         while True:
+             if not self._text:
+                 raise StopIteration()
++            offset = self._offset
+             if "/" not in self._text:
+                 text = self._text
+-                self._offset = 0
++                self._offset += len(text)
+                 self._text = ""
+-                return (text, 0)
++                return (text, offset)
+             pre_text, post_text = self._text.split("/", 1)
+             self._text = post_text
+-            self._offset = 0
+             if (
+                 not pre_text
+                 or not post_text
+@@ -152,9 +152,10 @@ class ForwardSlashChunkder(Chunker):
+                 or not post_text[0].isalpha()
+             ):
+                 self._text = ""
+-                self._offset = 0
+-                return (pre_text + "/" + post_text, 0)
+-            return (pre_text, 0)
++                self._offset += len(pre_text) + 1 + len(post_text)
++                return (pre_text + "/" + post_text, offset)
++            self._offset += len(pre_text) + 1
++            return (pre_text, offset)
+ 
+     def _next(self):
+         while True:
+@@ -311,7 +312,14 @@ class SpellingChecker(BaseTokenChecker):
+             starts_with_comment = True
+         else:
+             starts_with_comment = False
++        # Find inline code before tokenization splits punctuation and whitespace.
++        # Require matching single or double backticks around each span.
++        code_spans = list(
++            re.finditer(r"(?<!`)(``?)(?!`).+?(?<!`)\1(?!`)", line.strip())
++        )
+         for word, word_start_at in self.tokenizer(line.strip()):
++            if any(span.start() <= word_start_at < span.end() for span in code_spans):
++                continue
+             word_start_at += initial_space
+             lower_cased_word = word.casefold()
+ 
+diff --git a/tests/checkers/unittest_spelling.py b/tests/checkers/unittest_spelling.py
+index c14062d..fecab7e 100644
+--- a/tests/checkers/unittest_spelling.py
++++ b/tests/checkers/unittest_spelling.py
+@@ -263,6 +263,69 @@ class TestSpellingChecker(CheckerTestCase):
+         self.checker.process_tokens(_tokenize_str("# https://github.com/rfk/pyenchant"))
+         assert self.linter.release_messages() == []
+ 
++    @skip_on_missing_package_or_dict
++    @pytest.mark.parametrize("delimiter", ["`", "``"])
++    @pytest.mark.parametrize(
++        "text",
++        [
++            "The {0}.qsize(){0} method works.",
++            "Use {0}qsize(coment, otherarg){0} here.",
++            "{0}qsize{0} and {0}otherarg{0}",
++        ],
++    )
++    def test_skip_inline_code(self, delimiter, text):
++        self.checker.config.spelling_dict = spell_dict
++        self.checker.open()
++        text = text.format(delimiter)
++        with self.assertNoMessages():
++            self.checker.process_tokens(_tokenize_str("# " + text))
++            stmt = astroid.extract_node(f'def fff():\n    """{text}"""\n    pass')
++            self.checker.visit_functiondef(stmt)
++
++    @skip_on_missing_package_or_dict
++    @pytest.mark.parametrize("delimiter", ["`", "``"])
++    @pytest.mark.parametrize(
++        "text",
++        [
++            "qsize {0}otherarg{0}",
++            "{0}qsize{0} qsize",
++            "{0}qsize{0} qsize {0}otherarg{0}",
++            "Use {0}otherarg{0} before/qsize",
++            "Use before/after and {0}otherarg{0} with qsize",
++            "Use {0}otherarg/qsize{0} with qsize",
++            "Use {0}qsize with care",
++            "Use qsize{0} with care",
++        ],
++    )
++    def test_check_prose_around_inline_code(self, delimiter, text):
++        self.checker.config.spelling_dict = spell_dict
++        self.checker.open()
++        text = text.format(delimiter)
++        for prefix, msgid, line_num in (
++            ("# ", "wrong-spelling-in-comment", 1),
++            ("", "wrong-spelling-in-docstring", 2),
++        ):
++            line = prefix + text
++            with self.assertAddsMessages(
++                Message(
++                    msgid,
++                    line=line_num,
++                    args=(
++                        "qsize",
++                        line,
++                        " " * line.rindex("qsize") + "^^^^^",
++                        self._get_msg_suggestions("qsize"),
++                    ),
++                )
++            ):
++                if prefix:
++                    self.checker.process_tokens(_tokenize_str(line))
++                else:
++                    stmt = astroid.extract_node(
++                        f'def fff():\n    """{line}"""\n    pass'
++                    )
++                    self.checker.visit_functiondef(stmt)
++
+     @skip_on_missing_package_or_dict
+     @set_config(spelling_dict=spell_dict)
+     def test_skip_sphinx_directives(self):

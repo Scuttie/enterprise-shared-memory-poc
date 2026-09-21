@@ -5348,10 +5348,15 @@ def _materialize_exact_git_blob_checkout(
         if _git_blob_object_id(committed_raw) != object_id:
             raise BenchmarkExecutionError("fresh task Git blob identity differs")
         attributes = _committed_git_attributes(repository, commit, relative)
+        # Git's committed eol=crlf also enables text normalization when text
+        # is unspecified. Explicit -text and text=auto remain outside this
+        # deterministic exception; every accepted difference must still be
+        # exactly LF -> CRLF with no other content-conversion attributes.
         if (
-            attributes
+            attributes.get("text") not in {"set", "unspecified"}
+            or attributes
             != {
-                "text": "set",
+                "text": attributes.get("text"),
                 "eol": "crlf",
                 "ident": "unspecified",
                 "working-tree-encoding": "unspecified",

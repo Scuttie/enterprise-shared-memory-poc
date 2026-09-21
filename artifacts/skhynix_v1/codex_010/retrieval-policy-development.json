@@ -1,0 +1,16 @@
+{
+  "budgets_changed": false,
+  "development_source": "Completed native008 recovery exposure and native009 transfer coverage public records; no new native010 outcomes observed.",
+  "hypothesis": "Improve exposure consistency and test whether the same public failure lessons change recovery outcomes in new independent sessions.",
+  "lessons_changed": false,
+  "native008_C_cells_with_memory": 2,
+  "native008_C_total_cells": 4,
+  "native009_C_cells_with_memory": 0,
+  "native009_C_total_cells": 4,
+  "policy": "EXACT_TASK_DIAGNOSTIC_ROUTE",
+  "production_default_changed": false,
+  "prompt_changed": false,
+  "routing": "Exact same-task historical diagnostic record is delivered without lexical eligibility; measured lexical score and full original provenance remain unchanged.",
+  "scope": "KNOWN_FAILURE_RECOVERY only; exact task/repository/base/public instruction and bound knowledge id",
+  "separate_transfer_effect_not_tested": true
+}

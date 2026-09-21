@@ -1,0 +1,45 @@
+diff --git a/lib/matplotlib/tests/test_png.py b/lib/matplotlib/tests/test_png.py
+index 508b465..600ca0f 100644
+--- a/lib/matplotlib/tests/test_png.py
++++ b/lib/matplotlib/tests/test_png.py
+@@ -43,6 +43,25 @@ def test_imread_png_uint16():
+     assert np.sum(img.flatten()) == 134184960
+ 
+ 
++@pytest.mark.parametrize('figsize', [
++    (0, 3), (3, 0), (0, 0), (0.005, 3), (3, 0.005), (0.005, 0.005)])
++def test_savefig_zero_dimension(figsize):
++    fig, ax = plt.subplots(figsize=figsize, dpi=100)
++    with pytest.raises(ValueError, match='Width and height must be positive'):
++        fig.savefig(BytesIO(), format='png', dpi=100)
++
++
++@pytest.mark.parametrize('shape', [(0, 2), (2, 0), (0, 0)])
++@pytest.mark.parametrize('channels', [1, 3, 4])
++def test_write_png_zero_dimension(shape, channels, capfd):
++    from matplotlib import _png
++
++    data = np.zeros((*shape, channels), dtype=np.uint8)
++    with pytest.raises(ValueError, match='Width and height must be positive'):
++        _png.write_png(data, None)
++    assert capfd.readouterr().err == ''
++
++
+ def test_truncated_file(tmpdir):
+     d = tmpdir.mkdir('test')
+     fname = str(d.join('test.png'))
+diff --git a/src/_png.cpp b/src/_png.cpp
+index da8f696..99d9465 100644
+--- a/src/_png.cpp
++++ b/src/_png.cpp
+@@ -174,6 +174,10 @@ static PyObject *Py_write_png(PyObject *self, PyObject *args, PyObject *kwds)
+ 
+     png_uint_32 width = (png_uint_32)buffer.dim(1);
+     png_uint_32 height = (png_uint_32)buffer.dim(0);
++    if (width == 0 || height == 0) {
++        PyErr_SetString(PyExc_ValueError, "Width and height must be positive");
++        return NULL;
++    }
+     npy_intp channels = buffer.dim(2);
+     std::vector<png_bytep> row_pointers(height);
+     for (png_uint_32 row = 0; row < (png_uint_32)height; ++row) {

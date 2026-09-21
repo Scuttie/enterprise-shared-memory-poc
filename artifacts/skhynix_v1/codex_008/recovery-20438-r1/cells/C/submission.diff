@@ -1,0 +1,160 @@
+diff --git a/sympy/core/relational.py b/sympy/core/relational.py
+index e2e0b7f..1636fc2 100644
+--- a/sympy/core/relational.py
++++ b/sympy/core/relational.py
+@@ -304,7 +304,7 @@ def _eval_simplify(self, **kwargs):
+         from .add import Add
+         r = self
+         r = r.func(*[i.simplify(**kwargs) for i in r.args])
+-        if r.is_Relational:
++        if r.is_Relational and all(isinstance(a, Expr) for a in r.args):
+             dif = r.lhs - r.rhs
+             # replace dif with a valid Number that will
+             # allow a definitive comparison with 0
+@@ -562,6 +562,10 @@ def _eval_simplify(self, **kwargs):
+         e = super()._eval_simplify(**kwargs)
+         if not isinstance(e, Equality):
+             return e
++        # Sets and other non-Expr objects do not support the arithmetic
++        # transformations below.
++        if not all(isinstance(a, Expr) for a in e.args):
++            return e.canonical
+         free = self.free_symbols
+         if len(free) == 1:
+             try:
+diff --git a/sympy/sets/handlers/comparison.py b/sympy/sets/handlers/comparison.py
+index 6f7a19f..ffd5443 100644
+--- a/sympy/sets/handlers/comparison.py
++++ b/sympy/sets/handlers/comparison.py
+@@ -49,6 +49,16 @@ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return tfn[fuzzy_and(map(fuzzy_bool, eqs))]
+ 
+ 
++@dispatch(ProductSet, FiniteSet) # type:ignore
++def _eval_is_eq(lhs, rhs): # noqa: F811
++    return tfn[fuzzy_and([lhs.is_subset(rhs), rhs.is_subset(lhs)])]
++
++
++@dispatch(FiniteSet, ProductSet) # type:ignore
++def _eval_is_eq(lhs, rhs): # noqa: F811
++    return _eval_is_eq(rhs, lhs)
++
++
+ @dispatch(Set, Basic) # type:ignore
+ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return False
+diff --git a/sympy/sets/sets.py b/sympy/sets/sets.py
+index 3c4aa86..ec85dac 100644
+--- a/sympy/sets/sets.py
++++ b/sympy/sets/sets.py
+@@ -425,7 +425,10 @@ def is_proper_subset(self, other):
+ 
+         """
+         if isinstance(other, Set):
+-            return self != other and self.is_subset(other)
++            is_subset = self.is_subset(other)
++            if is_subset is False:
++                return False
++            return fuzzy_and([is_subset, fuzzy_not(other.is_subset(self))])
+         else:
+             raise ValueError("Unknown argument '%s'" % other)
+ 
+@@ -470,7 +473,7 @@ def is_proper_superset(self, other):
+ 
+         """
+         if isinstance(other, Set):
+-            return self != other and self.is_superset(other)
++            return other.is_proper_subset(self)
+         else:
+             raise ValueError("Unknown argument '%s'" % other)
+ 
+@@ -766,6 +769,22 @@ def __new__(cls, *sets, **assumptions):
+     def sets(self):
+         return self.args
+ 
++    def _eval_is_subset(self, other):
++        if self.is_finite_set and self.is_iterable:
++            try:
++                return fuzzy_and(other.contains(e) for e in self)
++            except (TypeError, ValueError):
++                # A symbolic Range may be finite but not enumerable.
++                return None
++
++    def _eval_rewrite_as_FiniteSet(self, *args, **kwargs):
++        if self.is_finite_set and self.is_iterable:
++            try:
++                return FiniteSet(*self)
++            except (TypeError, ValueError):
++                # A symbolic Range may be finite but not enumerable.
++                return None
++
+     def flatten(self):
+         def _flatten(sets):
+             for s in sets:
+diff --git a/sympy/sets/tests/test_sets.py b/sympy/sets/tests/test_sets.py
+index d29a046..6286cca 100644
+--- a/sympy/sets/tests/test_sets.py
++++ b/sympy/sets/tests/test_sets.py
+@@ -1601,3 +1601,62 @@ def test_issue_20379():
+     #https://github.com/sympy/sympy/issues/20379
+     x = pi - 3.14159265358979
+     assert FiniteSet(x).evalf(2) == FiniteSet(Float('3.23108914886517e-15', 2))
++
++
++def test_ProductSet_finite_comparisons():
++    explicit = FiniteSet((1, 1), (1, 2), (2, 1), (2, 2))
++    smaller = FiniteSet((1, 1), (2, 2))
++    larger = explicit | FiniteSet((3, 3))
++    for factor in (FiniteSet(1, 2), Range(1, 3)):
++        product = ProductSet(factor, factor)
++        assert product.rewrite(FiniteSet) == explicit
++        assert product.intersection(explicit) == explicit
++        assert explicit.intersection(product) == explicit
++        for lhs, rhs in ((product, explicit), (explicit, product)):
++            assert lhs.is_subset(rhs) is True
++            assert lhs.is_superset(rhs) is True
++            assert lhs.is_proper_subset(rhs) is False
++            assert lhs.is_proper_superset(rhs) is False
++            assert Eq(lhs, rhs).simplify() is S.true
++            assert Ne(lhs, rhs).simplify() is S.false
++        for lhs, rhs in ((smaller, product), (product, larger)):
++            assert lhs.is_subset(rhs) is True
++            assert rhs.is_subset(lhs) is False
++            assert lhs.is_proper_subset(rhs) is True
++            assert rhs.is_proper_superset(lhs) is True
++            assert lhs.is_proper_superset(rhs) is False
++            assert rhs.is_proper_subset(lhs) is False
++            assert Eq(lhs, rhs).simplify() is S.false
++            assert Eq(rhs, lhs).simplify() is S.false
++        assert product.is_subset(FiniteSet(1, 2)) is False
++        assert product.is_subset(S.EmptySet) is False
++
++
++def test_ProductSet_finite_symbolic():
++    product = ProductSet(FiniteSet(x), FiniteSet(1))
++    explicit = FiniteSet((1, 1))
++    assert product.rewrite(FiniteSet) == FiniteSet((x, 1))
++    for lhs, rhs in ((product, explicit), (explicit, product)):
++        assert lhs.is_subset(rhs) is None
++        assert lhs.is_proper_subset(rhs) is None
++        assert lhs.is_proper_superset(rhs) is None
++        equality = Eq(lhs, rhs)
++        assert equality not in (S.true, S.false)
++        assert equality.simplify() == equality.canonical
++        assert equality.subs(x, 1) is S.true
++        assert equality.subs(x, 2) is S.false
++
++
++def test_ProductSet_rewrite_FiniteSet():
++    assert ProductSet(FiniteSet(1, 2)).rewrite(FiniteSet) == FiniteSet((1,), (2,))
++    nested = ProductSet(ProductSet(FiniteSet(1), FiniteSet(2)), FiniteSet(3))
++    assert nested.rewrite(FiniteSet) == FiniteSet(((1, 2), 3))
++    for factor in (S.Integers, Interval(0, 1), Interval(x, y)):
++        product = ProductSet(factor, FiniteSet(1))
++        assert product.rewrite(FiniteSet) == product
++    n = Symbol('n', integer=True, positive=True)
++    product = ProductSet(Range(n), FiniteSet(1))
++    assert product.rewrite(FiniteSet) == product
++    assert product.is_subset(FiniteSet((0, 1))) is None
++    assert ProductSet(Range(n, n + 2), FiniteSet(1)).rewrite(FiniteSet) == \
++        FiniteSet((n, 1), (n + 1, 1))

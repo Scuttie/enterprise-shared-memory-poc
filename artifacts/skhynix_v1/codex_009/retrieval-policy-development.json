@@ -1,0 +1,22 @@
+{
+  "development_source": "native008 recovery-20428-r1 C public initial recall; no transfer target trajectory or result used",
+  "diagnosis": "56 metadata tokens increased denominator without additional query overlap; original initial recall abstained.",
+  "event_sha256": "92f2a8b3a0400153ecc910ef12d92514f82faf3aab841ecc00aebcfdc57d78d0",
+  "general_retrieval_or_solve_rate_improvement_not_yet_established": true,
+  "known_query_full_record": {
+    "overlap": 9,
+    "score": 0.0410958904109589,
+    "union": 219
+  },
+  "known_query_lesson_only": {
+    "overlap": 9,
+    "score": 0.05521472392638037,
+    "union": 163
+  },
+  "matching_document": "Validated diagnostic title plus analyst_lesson; seeding and ranking use the same document. Full immutable provenance and lesson remain in the delivered wire view.",
+  "min_score": 0.05,
+  "native008_frozen_experiment_changed": false,
+  "native009_cohort_source_lessons_prompt_changed": false,
+  "policy": "DIAGNOSTIC_LESSON_CONTENT",
+  "query_sha256": "515a2781d9209a07676ed8078ae76ca4941029a5c190da06865ae09508341473"
+}

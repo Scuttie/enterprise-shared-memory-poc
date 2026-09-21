@@ -1,0 +1,58 @@
+{
+    "schema":  "skhynix/architecture-active-controller/1.0",
+    "configuration_name":  "architecture_002_pipeline_v9.json",
+    "configuration_reference":  {
+                                    "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_002_pipeline_v9.json",
+                                    "sha256":  "6e7ee69e7714b830bac2751060307ff412e43abca95819060b60ef2f5843c958"
+                                },
+    "startup_validation_reference":  {
+                                         "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/startup-validation-v9.json",
+                                         "sha256":  "5ccce8fde1c6d61830ccdbce6397b2f6b0071ff3f2b7d263d7c1445649fb6d9d"
+                                     },
+    "superseded_scale_configuration_reference":  {
+                                                     "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_002_pipeline_v8.json",
+                                                     "sha256":  "05b18c36d5a7b736479b2c29ea9e62ce3409e5c8931311ff7ce290d0ac4476bf"
+                                                 },
+    "superseded_activation_reference":  {
+                                            "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/active-controller-v8.json",
+                                            "sha256":  "eb5cc47f391cded3a90f702e56f749f925ad65ee40d6062f9f6c582cd9b0db2e"
+                                        },
+    "superseded_pilot_configuration_reference":  {
+                                                     "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_001_pipeline_v3.json",
+                                                     "sha256":  "baf6a1497cf760fce69466f747430ac19d1c5afd46b5c68d05767e1c2c202171"
+                                                 },
+    "superseded_prelaunch_configuration_reference":  {
+                                                         "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_002_pipeline_v1.json",
+                                                         "sha256":  "6f619339dc942218d23b1560dca282b0a5004693e488840f87f66d310445f8c7"
+                                                     },
+    "native_outcome_retries":  false,
+    "official_grading_retries":  false,
+    "native_infrastructure_replacements_authorized":  0,
+    "historical_native_infrastructure_replacements_authorized":  1,
+    "historical_infrastructure_replacement_reference":  {
+                                                            "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/infrastructure-replacement-004.json",
+                                                            "sha256":  "1e49d7af98dad48bc46a619164fd0465f26cd3e50f01f67c1501458782bc81a2"
+                                                        },
+    "grading_continuation_reference":  {
+                                           "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/grading-continuation-009.json",
+                                           "sha256":  "344c284facdec5ed215b5a4aa61ab1318eac0957ad4ba85b1f2c09724b99a6a2"
+                                       },
+    "historical_grading_continuation_reference":  {
+                                                      "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/grading-continuation-008.json",
+                                                      "sha256":  "0bd935b8f99e101115522781dccfe36e732d810e4c39f69bf556de48919bfd7c"
+                                                  },
+    "runtime_change_reference":  {
+                                     "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/runtime-freeze-006.json",
+                                     "sha256":  "c994328c8c31f3e6632b28a02286b33822a03d42f7741467d31b435ab2a3fc40"
+                                 },
+    "loader_preflight_reference":  {
+                                       "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/official-harness-loader-v3.json",
+                                       "sha256":  "135ca17b1bbe8eb503b38ac5a353197c9774a9d9fd41bdce307185492dbef91e"
+                                   },
+    "native_binary_reference":  {
+                                    "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/native-binary-001.json",
+                                    "sha256":  "ca5341debc058928a6dbbe03a034f70baa191a72f539e47ae671be9ca34234ac"
+                                },
+    "activated_at":  "2026-09-16T10:18:27.8460530Z",
+    "reason":  "Preserve72 sealed sources and all original outcomes including4 undetermined; continue exactly48 never-started sources using unchanged runtime, loader, native executable, and grading semantics, with no solver or grading retry."
+}

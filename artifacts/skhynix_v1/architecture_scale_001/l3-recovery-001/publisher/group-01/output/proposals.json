@@ -1,0 +1,62 @@
+{
+  "schema": "skhynix/native-architecture-reflection-proposals/1.0",
+  "reflection_sha256": "5c543c4d20ca5ed7c31d94891c4958780c2124eb47765d33d07108a79e544412",
+  "proposals": [
+    {
+      "template": {
+        "subgoal_signature": "Promote a numeric operand to double-precision floating point before arithmetic that otherwise retains an unsuitable dtype. Insert the conversion before histogram bin geometry or weighted-mean arithmetic, preserving the surrounding source and any dtype guard. Observed regression coverage supports float16 histogram edges and small integer weighted means; it does not establish exactness at every magnitude or independently verify boolean inputs. Verification applies only to the supplied historical checkpoints, not later mutations, final repairs, or official benchmark outcomes.",
+        "parameters": [
+          "source_path",
+          "anchor_before",
+          "promotion_block",
+          "anchor_after",
+          "test_argv"
+        ],
+        "preconditions": [
+          "Inspect the current public checkout and validate the bound public test command; this workflow does not certify a target repair."
+        ],
+        "steps": [
+          "run_command {test_argv}",
+          "replace_text {source_path}\nold_text: {anchor_before}\n{anchor_after}\nnew_text: {anchor_before}\n{promotion_block}\n{anchor_after}",
+          "run_command {test_argv}"
+        ],
+        "verification_command": "{test_argv}",
+        "language": "python"
+      },
+      "observations": [
+        {
+          "source_alias": "source-1",
+          "bindings": {
+            "source_path": "lib/matplotlib/axes/_axes.py",
+            "anchor_before": "        tops = np.array(tops, float)  # causes problems later if it's an int",
+            "promotion_block": "        # Use double precision for bin geometry to avoid gaps and overlaps\n        # when the input data (and hence the bin edges) have a lower precision.\n        bins = np.asarray(bins, float)",
+            "anchor_after": "        if stacked:",
+            "test_argv": "[\"/opt/miniconda3/envs/testbed/bin/python\",\"-m\",\"pytest\",\"lib/matplotlib/tests/test_axes.py\",\"-q\",\"-k\",\"test_hist_float16_bar_edges\"]"
+          },
+          "step_numbers": [
+            21,
+            22,
+            23
+          ],
+          "red_step": 21
+        },
+        {
+          "source_alias": "source-2",
+          "bindings": {
+            "source_path": "xarray/core/weighted.py",
+            "anchor_before": "    def _weighted_mean(self, da, dim=None, skipna=None):",
+            "promotion_block": "        if da.dtype.kind in \"biu\":\n            # Like numpy.average, use floating point arithmetic for integer data.\n            da = da.astype(\"float64\")",
+            "anchor_after": "        return self._weighted_sum(da, dim, skipna) / self._sum_of_weights(da, dim)",
+            "test_argv": "[\"/opt/miniconda3/envs/testbed/bin/python\",\"-m\",\"pytest\",\"xarray/tests/test_weighted_edges.py\",\"-q\",\"-p\",\"no:cacheprovider\",\"-k\",\"integer_average_matches_numpy\"]"
+          },
+          "step_numbers": [
+            58,
+            60,
+            61
+          ],
+          "red_step": 58
+        }
+      ]
+    }
+  ]
+}

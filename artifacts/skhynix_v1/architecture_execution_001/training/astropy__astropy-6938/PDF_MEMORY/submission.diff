@@ -1,0 +1,59 @@
+diff --git a/astropy/io/fits/fitsrec.py b/astropy/io/fits/fitsrec.py
+index 574b407..85d5917 100644
+--- a/astropy/io/fits/fitsrec.py
++++ b/astropy/io/fits/fitsrec.py
+@@ -1261,7 +1261,8 @@ class FITS_rec(np.recarray):
+ 
+         # Replace exponent separator in floating point numbers
+         if 'D' in format:
+-            output_field.replace(encode_ascii('E'), encode_ascii('D'))
++            output_field[:] = output_field.replace(
++                encode_ascii('E'), encode_ascii('D'))
+ 
+ 
+ def _get_recarray_field(array, key):
+diff --git a/astropy/io/fits/tests/test_checksum.py b/astropy/io/fits/tests/test_checksum.py
+index 3ee6ead..1495940 100644
+--- a/astropy/io/fits/tests/test_checksum.py
++++ b/astropy/io/fits/tests/test_checksum.py
+@@ -205,9 +205,9 @@ class TestChecksumFunctions(FitsTestCase):
+                 # The checksum ends up being different on Windows, possibly due
+                 # to slight floating point differences
+                 assert 'CHECKSUM' in hdul[1].header
+-                assert hdul[1].header['CHECKSUM'] == '51IDA1G981GCA1G9'
++                assert hdul[1].header['CHECKSUM'] == '3rKFAoI94oICAoI9'
+                 assert 'DATASUM' in hdul[1].header
+-                assert hdul[1].header['DATASUM'] == '1948208413'
++                assert hdul[1].header['DATASUM'] == '1914653725'
+ 
+     def test_compressed_image_data(self):
+         with fits.open(self.data('comp.fits')) as h1:
+diff --git a/astropy/io/fits/tests/test_table.py b/astropy/io/fits/tests/test_table.py
+index 67fe21a..7a39d19 100644
+--- a/astropy/io/fits/tests/test_table.py
++++ b/astropy/io/fits/tests/test_table.py
+@@ -300,6 +300,24 @@ class TestTableFunctions(FitsTestCase):
+         hdul.close()
+         a.close()
+ 
++    @pytest.mark.parametrize(('format_code', 'expected'), [
++        ('D', b'  1.2500D+12 -2.5000D-12  0.0000D+00'),
++        ('E', b'  1.2500E+12 -2.5000E-12  0.0000E+00')])
++    def test_ascii_table_exponent(self, format_code, expected):
++        """ASCII floating-point columns must use their declared exponent code."""
++
++        values = [1.25e12, -2.5e-12, 0.0]
++        column = fits.Column(name='TEST', format=format_code + '12.4',
++                             array=values)
++        table = fits.TableHDU.from_columns([column])
++        table.writeto(self.temp('exponent.fits'))
++
++        with fits.open(self.temp('exponent.fits')) as hdul:
++            # Inspect the serialized field, bypassing numeric conversion.
++            raw = np.rec.recarray.field(hdul[1].data, 'TEST')
++            assert raw.tostring() == expected
++            np.testing.assert_allclose(hdul[1].data['TEST'], values, atol=0)
++
+     def test_endianness(self):
+         x = np.ndarray((1,), dtype=object)
+         channelsIn = np.array([3], dtype='uint8')

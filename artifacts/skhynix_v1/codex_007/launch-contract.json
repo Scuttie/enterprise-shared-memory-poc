@@ -1,0 +1,99 @@
+{
+  "actual_injection_policy": "Count actual broker selections separately from synthetic preflight. A live abstention remains in the denominator without retry or extra guidance.",
+  "before_evaluation_gate": "Two distinct tasks/sessions with actual v3 RED/GREEN and official resolution, actual Gate B promotion, schema2 frozen bank, all six valid named runtime projections, predeclared synthetic delivery check, immutable 18-cell batch.",
+  "before_training_gate": "Frozen source, multisource named-v3 procedure, templates, retry/acceptance policy and cohort; actual all-eight exact image/Python 3.9.20/runner da4284cc compatibility, clean whole-basic and named test_structure checks must pass.",
+  "codex_tokens_and_cost": null,
+  "cohort_scope": "BYTE_IDENTICAL_NATIVE005_PUBLIC_RUNTIME_SCREENED_MANIFEST; KNOWN_TRAINING_REUSED; ALL_SIX_EVALUATION_TASKS_UNEXECUTED_BEFORE_NATIVE007; NOT_RANDOM_NOT_DIFFICULTY_PROVEN",
+  "concurrency": "At most two fresh independent solver cells. Evaluation advances one target at a time. No cross-cell messages; root may grade completed cells while another solver runs.",
+  "design_origin": "CORRECTED_OBSERVER_AND_NEW_MULTISOURCE_V3_INFORMED_BY_PUBLIC_NATIVE006_TRAINING_DIAGNOSTICS; NATIVE006_RETAINED_EARLY_ABORTED_UNCHANGED",
+  "evaluation_instances": [
+    "swebench_verified--sympy__sympy-19954",
+    "swebench_verified--sympy__sympy-20154",
+    "swebench_verified--sympy__sympy-20428",
+    "swebench_verified--sympy__sympy-20438",
+    "swebench_verified--sympy__sympy-20801",
+    "swebench_verified--sympy__sympy-21379"
+  ],
+  "evaluation_template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05",
+  "fork_turns": "none",
+  "frozen_at_unix_seconds": 1789236381.448864,
+  "grader_calls_so_far": 0,
+  "launch_order_by_target": {
+    "19954": [
+      "A",
+      "B",
+      "C"
+    ],
+    "20154": [
+      "B",
+      "C",
+      "A"
+    ],
+    "20428": [
+      "C",
+      "A",
+      "B"
+    ],
+    "20438": [
+      "A",
+      "C",
+      "B"
+    ],
+    "20801": [
+      "B",
+      "A",
+      "C"
+    ],
+    "21379": [
+      "C",
+      "B",
+      "A"
+    ]
+  },
+  "limits": {
+    "actions": 120,
+    "memory_bytes": 12000,
+    "memory_injections": 3,
+    "wall_seconds": 1200
+  },
+  "manifest_sha256": "57f369ee641b923ec551698fb52f043e7cf8569e4872f0f691883f47d399f6b9",
+  "observer_replay_history_sha256": "72362d94c1fe15bf37d574631f6443171a9de5941b234c47678786d9aefc2ab8",
+  "observer_replay_sha256": "d35757f867b3bfa842c9831fa5fec1b8a566b2883aba73e1bc89b5cbaaca6912",
+  "outcome_policy": "One solver attempt and one completed official grade per evaluation cell. No outcome-based evaluation substitutions, patch retries, threshold changes, memory updates or discarded failures.",
+  "planned_evaluation_cells": 18,
+  "planner_llm_involved": true,
+  "prior_memory_reused": false,
+  "procedure_declaration": {
+    "path": "/home/trimem-runner/skhynix-codex-007/procedure-declaration.json",
+    "procedure_id": "python-public-multisource-named-regression-red-green-v3",
+    "sha256": "20d970211fe179bd8c373d643897b66e5fdff2577a8e21d3d2d150063a164c5d",
+    "template_hash": "sha256:4c3f572aa216bec6a91ee20ae29f951752c6471c431c4ae5763049c790b9c60f"
+  },
+  "query_contract": "Exact native003/native004/native005 common evaluation prompt and initial short issue subgoal plus public regression verification operation retained across all arms; no post-result tuning.",
+  "reasoning_effort": "INHERITED_PARENT_UNCHANGED",
+  "requested_model": "gpt-6-astra",
+  "schema": "skhynix/native007-launch-contract/1.0",
+  "separate_model_api_calls": 0,
+  "solver_model_calls_so_far": 0,
+  "source_freeze_sha256": "666890dec412a3162d8ee92d6814d1f84303d7ada476ed3d7c4659984f445029",
+  "training_acceptance": {
+    "accept": "FIRST_ATTEMPT_PER_DISTINCT_TASK_WITH_ACTUAL_V3_ATTESTATION_AND_OFFICIAL_RESOLVED_TRUE",
+    "attempt_order": [
+      1,
+      2,
+      3
+    ],
+    "if_either_task_has_no_qualifier": "STOP_BEFORE_EVALUATION; NO_FALLBACK_OR_THRESHOLD_CHANGE",
+    "max_fresh_attempts_per_task": 3,
+    "retain_all_failed_attempts": true,
+    "retry_feedback": "NONE; SAME_FROZEN_TEMPLATE_AND_EMPTY_MEMORY_EACH_ATTEMPT",
+    "stop_retries_after_first_qualifier": true
+  },
+  "training_guidance_provenance_sha256": "4655ea174d09bf5f08349de6e074b12e88565b2f2c61c83b93b567b60cbd29ad",
+  "training_instances": [
+    "swebench_verified--sympy__sympy-19637",
+    "swebench_verified--sympy__sympy-19783"
+  ],
+  "training_template_sha256": "8627752d89189a2e8c8f6ef6ef9a1fd35d18a5ad9295e50e14100d17305ebb44",
+  "validation_evidence_sha256": "d9cabecb31dd824aaba6629ad61cf3003d89c9177ba035b38f66861cc563dd8c"
+}

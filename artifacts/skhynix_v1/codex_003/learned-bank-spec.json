@@ -1,0 +1,43 @@
+{
+  "evaluation_tasks": [
+    {
+      "commit": "809c53c077485ca48a206cee78340389cb83b7f1",
+      "instruction_sha256": "f5d849932bf87b51c11bd5d8c77de64b51be3a7548a22dd109b074c0de3760c4",
+      "language": "python",
+      "repository": "sympy/sympy",
+      "task_id": "swebench_verified--sympy__sympy-24443"
+    },
+    {
+      "commit": "193e3825645d93c73e31cdceb6d742cc6919624d",
+      "instruction_sha256": "0e1c0c152b9a449520cba3fa3813e4f88e3938ed2dd48f08a348b29333165f5c",
+      "language": "python",
+      "repository": "sympy/sympy",
+      "task_id": "swebench_verified--sympy__sympy-24539"
+    },
+    {
+      "commit": "b1cb676cf92dd1a48365b731979833375b188bf2",
+      "instruction_sha256": "144549f2aea8a125e0e7d72ff6561ea4657281356b2d947ea3f7c4b1ae12461a",
+      "language": "python",
+      "repository": "sympy/sympy",
+      "task_id": "swebench_verified--sympy__sympy-24562"
+    }
+  ],
+  "training_cells": [
+    {
+      "cell": "A",
+      "run_root": "/home/trimem-runner/skhynix-codex-001/execution"
+    },
+    {
+      "cell": "A",
+      "run_root": "/home/trimem-runner/skhynix-codex-002/training/execution"
+    },
+    {
+      "cell": "A",
+      "run_root": "/home/trimem-runner/skhynix-codex-003/training-24066/execution"
+    },
+    {
+      "cell": "A",
+      "run_root": "/home/trimem-runner/skhynix-codex-003/training-24213/execution"
+    }
+  ]
+}

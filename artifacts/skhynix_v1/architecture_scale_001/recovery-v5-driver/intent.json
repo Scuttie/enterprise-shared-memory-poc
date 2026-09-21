@@ -1,0 +1,54 @@
+{
+    "schema":  "skhynix/grading-continuation-driver-intent/1.0",
+    "at":  "2026-09-16T04:11:17.1843021Z",
+    "preparation_processes":  [
+                                  {
+                                      "process_id":  38804,
+                                      "process_started_at":  "2026-09-16T04:03:48.4334269Z"
+                                  },
+                                  {
+                                      "process_id":  12204,
+                                      "process_started_at":  "2026-09-16T04:03:48.4520607Z"
+                                  }
+                              ],
+    "dependencies":  [
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\prepare_skhynix_scale_recovery_v5.py",
+                             "sha256":  "8926d35ca4505d415e3f4a9843ab4a1cf6e0eb724b0820d35e97ecebb43c2dfe"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\validate_skhynix_scale_recovery_v5.py",
+                             "sha256":  "c38d621d98d27d2bdbfd9386915fbb54c443ee6f22ce09ccaafb9c9508f842b0"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\Activate-SkhynixScaleRecoveryV5.ps1",
+                             "sha256":  "823678d32d959d07416a3e5542e460a43b85dd1b05e94bfac30aa0d5c0787a62"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\Continue-SkhynixScaleRecoveryV5.ps1",
+                             "sha256":  "7092d3d94c5b2f8c807b6b4faf2b10c2e236625ab4ef2ce14bcd67b2685b47a3"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\Start-SkhynixScalePipeline.ps1",
+                             "sha256":  "ef7bbd424c96127505b4d7e58d5c399ce41c931b49effabd64654ba08bd04055"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\configs\\skhynix_v1\\architecture_002_pipeline_v5.json",
+                             "sha256":  "2bcb7188c1f7cf5096f1814e421ab6cff2530b880b8c3029c7e448f60f4bff80"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\runtime-freeze-005.json",
+                             "sha256":  "61ad053902184f6f8a5b313e635628d6b68d0f8628342fb714b151cf46ad719c"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\continuation-controller-tests-005.xml",
+                             "sha256":  "378f593c5691f04c4cf06dcad692d6b84126dd081de107396d9e7aca5c9db794"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\recovery-v5-runtime-tests.xml",
+                             "sha256":  "3a7ed5bcc611f4f858daff28e8fdf0f614c7b5119982f40744b54a54b15b4941"
+                         }
+                     ],
+    "solver_retries":  false,
+    "grader_retries":  false
+}

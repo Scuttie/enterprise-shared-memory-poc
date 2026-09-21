@@ -1,0 +1,12 @@
+{
+    "schema":  "skhynix/quota-recovery-driver-launch-validation/1.0",
+    "checked_at":  "2026-09-15T07:43:10.4803545Z",
+    "driver_running":  true,
+    "phase":  "WAITING_FOR_SOURCE_PREPARATION",
+    "all_reviewed_dependencies_match":  true,
+    "stderr_bytes":  0,
+    "related_tests_passed":  228,
+    "new_solver_started":  false,
+    "model_probe_completed":  1,
+    "preparation_only":  true
+}

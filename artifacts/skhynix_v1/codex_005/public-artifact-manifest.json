@@ -1,0 +1,824 @@
+{
+  "schema": "skhynix/native-public-manifest/1.0",
+  "file_count": 136,
+  "files": [
+    {
+      "path": "3a4713e38f94f1e0ae280d5a8119f86181560303-public-bin-test.py",
+      "source": "/home/trimem-runner/skhynix-codex-005/3a4713e38f94f1e0ae280d5a8119f86181560303-public-bin-test.py",
+      "bytes": 3991,
+      "sha256": "da4284cc210d8db5109f916248d97a8e82f725547e60c5d9a4d6c43573e3e9d5"
+    },
+    {
+      "path": "671227c8e3fe73e96dffad4caeb4271ec340ab3b-public-bin-test.py",
+      "source": "/home/trimem-runner/skhynix-codex-005/671227c8e3fe73e96dffad4caeb4271ec340ab3b-public-bin-test.py",
+      "bytes": 4766,
+      "sha256": "973e3cf784388b8e7821e4962da8eeb4b615447cd652af920452b322bd63588c"
+    },
+    {
+      "path": "audit-preliminary.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/audit-preliminary.json",
+      "bytes": 20313,
+      "sha256": "8788cc7fac0c8e2af4a57033f16c34f269b84fcb2d971a476bd4b5592fd59c58"
+    },
+    {
+      "path": "audit.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/audit.json",
+      "bytes": 27005,
+      "sha256": "6ae3266d91c327f6998ccc48e8fa459a2ce71fb86f494ef4f062cc1d437c6548"
+    },
+    {
+      "path": "audit_native005.py",
+      "source": "/home/trimem-runner/skhynix-codex-005/audit_native005.py",
+      "bytes": 76631,
+      "sha256": "9d980996127e75e129986ba10bf262563676c394c2b7a5fd9bd51d1d6f3bd515"
+    },
+    {
+      "path": "cold-bank.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/cold-bank.json",
+      "bytes": 1617,
+      "sha256": "27f4a3c58fcbacd91658505b9459a1dc264c6106099f237b06b413e2a374d600"
+    },
+    {
+      "path": "compatibility/19637-certificate.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/19637-certificate.json",
+      "bytes": 1294,
+      "sha256": "a1b8e79a48bbbcfe126df1bd198f5205aeda1be6b452afa8dff646e72a2b7846"
+    },
+    {
+      "path": "compatibility/19637-public-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/19637-public-evidence.json",
+      "bytes": 2020,
+      "sha256": "57b761047963a4ec64949b46287899219c97347be8112f60972c3cf9d36bba4d"
+    },
+    {
+      "path": "compatibility/19783-certificate.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/19783-certificate.json",
+      "bytes": 1294,
+      "sha256": "a4374fa0377a47c7592b4ce0e21210f3f1fe43bedd22489ca0021237d84155e0"
+    },
+    {
+      "path": "compatibility/19783-public-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/19783-public-evidence.json",
+      "bytes": 2020,
+      "sha256": "9feaba0d2fd6ae79e337227f2d4b8b0c0819d2217f63e374cdbd70f23b778b23"
+    },
+    {
+      "path": "compatibility/19954-certificate.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/19954-certificate.json",
+      "bytes": 1294,
+      "sha256": "d85e5c2cb375e6ecad26178fc17b0835fb4e1a005e882a310dc121bcb8af0dff"
+    },
+    {
+      "path": "compatibility/19954-public-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/19954-public-evidence.json",
+      "bytes": 2020,
+      "sha256": "1bd6441ad5cdc15873482253bca51225fa791399b8e6a25287e67defe028b6c3"
+    },
+    {
+      "path": "compatibility/20154-certificate.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/20154-certificate.json",
+      "bytes": 1294,
+      "sha256": "7ef775301081d87cb3b8045e2136f0e9e8626e04aaca2c2c5794d3ff057e16c5"
+    },
+    {
+      "path": "compatibility/20154-public-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/20154-public-evidence.json",
+      "bytes": 2020,
+      "sha256": "56dd6325d2a87b8439ec7840ced1c454855c74ca95638fd09f8f995dcd8a55e8"
+    },
+    {
+      "path": "compatibility/20428-certificate.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/20428-certificate.json",
+      "bytes": 1294,
+      "sha256": "ce285791791a7dee284310da5e73444c926daa842db37090650f3c443734b355"
+    },
+    {
+      "path": "compatibility/20428-public-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/20428-public-evidence.json",
+      "bytes": 2020,
+      "sha256": "15a8c1e2ebd29e36cf5b174c05bd38ab88dc7ddf482f851ad01e8873e6cc935c"
+    },
+    {
+      "path": "compatibility/20438-certificate.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/20438-certificate.json",
+      "bytes": 1294,
+      "sha256": "b91d5ea678927417ea2227939488247d44aca09b71b9bfbf2c8d4402ef63f43d"
+    },
+    {
+      "path": "compatibility/20438-public-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/20438-public-evidence.json",
+      "bytes": 2020,
+      "sha256": "d97932ab70589689c78784e653ae2da3cf510deaa4c278a321d08897f61a93c8"
+    },
+    {
+      "path": "compatibility/20801-certificate.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/20801-certificate.json",
+      "bytes": 1294,
+      "sha256": "236be6a53362fb9c886879d6c00baf21f9d4d5938197789c5c38b80ee18d3a68"
+    },
+    {
+      "path": "compatibility/20801-public-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/20801-public-evidence.json",
+      "bytes": 2019,
+      "sha256": "d18e041abeb58d036b866d55a12697ece5e3364571f5e88b5c6c57b9aefef075"
+    },
+    {
+      "path": "compatibility/21379-certificate.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/21379-certificate.json",
+      "bytes": 1294,
+      "sha256": "851576c49862530ceed6b9b93c7d3299599a77d32f3cc78a712c5f9ffd818042"
+    },
+    {
+      "path": "compatibility/21379-public-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/21379-public-evidence.json",
+      "bytes": 2020,
+      "sha256": "9b69fc1d18f1096df7f1c2f78e671110c993a0dc6a53e30ec2c784e60d2c9cdc"
+    },
+    {
+      "path": "compatibility/all-public-preflight-paths.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/all-public-preflight-paths.json",
+      "bytes": 618,
+      "sha256": "108c297a9bca1de5376ec9972622c72022cb4a8c6e5c9aae13c048662acaff11"
+    },
+    {
+      "path": "compatibility/before-training-gate.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/before-training-gate.json",
+      "bytes": 2564,
+      "sha256": "db27724100f63e73285971b7a0915527457312276049512bd42307d4f521e86f"
+    },
+    {
+      "path": "compatibility/certificate-paths.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/compatibility/certificate-paths.json",
+      "bytes": 464,
+      "sha256": "b303aa7121f99a2929e0d4ab535c9993c29b59ca8e7d61cb43cb4946ac813592"
+    },
+    {
+      "path": "dataset-preparation-final/images.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/images.json",
+      "bytes": 14520,
+      "sha256": "65d63ce5f1f2485111c5433b990fff8282ab63a1cc035000197ac44cb950131b"
+    },
+    {
+      "path": "dataset-preparation-final/registry-19637.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/registry-19637.json",
+      "bytes": 1131,
+      "sha256": "799346c004c639b8a88b7f70d349844433a57fbeab87a25cd8e905efd6345dff"
+    },
+    {
+      "path": "dataset-preparation-final/registry-19783.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/registry-19783.json",
+      "bytes": 1132,
+      "sha256": "dbd0878f3a54f220c3d87fc015ec4ba5352eeb5159b10bf43132c3b66b25f1b8"
+    },
+    {
+      "path": "dataset-preparation-final/registry-19954.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/registry-19954.json",
+      "bytes": 1130,
+      "sha256": "4a8a7b69e2d3dc1d7036d5be804bea0d408b996d9a0f6a2deec67fffcdff72f2"
+    },
+    {
+      "path": "dataset-preparation-final/registry-20154.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/registry-20154.json",
+      "bytes": 1130,
+      "sha256": "bda7694a4b115a80680c7407e8c674e91a05ee01f9ceeb3d875da3e7dd64338b"
+    },
+    {
+      "path": "dataset-preparation-final/registry-20428.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/registry-20428.json",
+      "bytes": 1131,
+      "sha256": "a31b284e3c09b0d2985aca278d93acdc8f962fe70afe9c0144eaea156fd90832"
+    },
+    {
+      "path": "dataset-preparation-final/registry-20438.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/registry-20438.json",
+      "bytes": 1129,
+      "sha256": "2a0d50707be05d06914272f080d71d2ac9803aab1b7bb02e98585a2b6f9b5809"
+    },
+    {
+      "path": "dataset-preparation-final/registry-20801.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/registry-20801.json",
+      "bytes": 1132,
+      "sha256": "7e5446a191d6a35b6fd05b26bfefb41849c9c5d4b22c85c6427ffdc2f0ee3776"
+    },
+    {
+      "path": "dataset-preparation-final/registry-21379.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/registry-21379.json",
+      "bytes": 1132,
+      "sha256": "d17975d7c6dac194e29c30297a1bddbd48459b50c5b62d817693a5c461cf90ff"
+    },
+    {
+      "path": "dataset-preparation-final/retained-evidence-copy-provenance.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/retained-evidence-copy-provenance.json",
+      "bytes": 1912,
+      "sha256": "f5d8e3d83c602c195c71e704a62dd6382b8093cb3ee5f796754e81df07669d34"
+    },
+    {
+      "path": "dataset-preparation-final/runtime-screening.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-final/runtime-screening.json",
+      "bytes": 36814,
+      "sha256": "3c860c2964a4f679c417eabc9855cec0b88e11bbb2f44c926cd10c35e284f0a3"
+    },
+    {
+      "path": "dataset-preparation-screening/images.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/images.json",
+      "bytes": 25407,
+      "sha256": "016535ab6e0de5c7c1b1b5d2805a308043f154a79ed3417b8bad2fc8f33d0dcd"
+    },
+    {
+      "path": "dataset-preparation-screening/initial-evidence-provenance.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/initial-evidence-provenance.json",
+      "bytes": 5347,
+      "sha256": "1b149caf28e7f68bc6a45c3763c2561c9b1a0f3050b972145be77d94dbf4158c"
+    },
+    {
+      "path": "dataset-preparation-screening/initial-registry-images.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/initial-registry-images.json",
+      "bytes": 14517,
+      "sha256": "9411e9bd3c88613fa389f99b6d0c52d8039f9ea9a1e58e8bf091d6404820dfc2"
+    },
+    {
+      "path": "dataset-preparation-screening/public-base-commit-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/public-base-commit-evidence.json",
+      "bytes": 5412,
+      "sha256": "73b6791a07a46776b6ae058cbad5c47ea65ebcf96d7e18ff0a289e1878a8d467"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-19495.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-19495.json",
+      "bytes": 1130,
+      "sha256": "1a32b53c1b839b03ee649066919cbc4f5fa02096a51adfbeba8d92aa79a0c27f"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-19637.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-19637.json",
+      "bytes": 1131,
+      "sha256": "799346c004c639b8a88b7f70d349844433a57fbeab87a25cd8e905efd6345dff"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-19783.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-19783.json",
+      "bytes": 1132,
+      "sha256": "dbd0878f3a54f220c3d87fc015ec4ba5352eeb5159b10bf43132c3b66b25f1b8"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-19954.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-19954.json",
+      "bytes": 1130,
+      "sha256": "4a8a7b69e2d3dc1d7036d5be804bea0d408b996d9a0f6a2deec67fffcdff72f2"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-20154.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-20154.json",
+      "bytes": 1130,
+      "sha256": "bda7694a4b115a80680c7407e8c674e91a05ee01f9ceeb3d875da3e7dd64338b"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-20428.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-20428.json",
+      "bytes": 1131,
+      "sha256": "a31b284e3c09b0d2985aca278d93acdc8f962fe70afe9c0144eaea156fd90832"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-20438.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-20438.json",
+      "bytes": 1129,
+      "sha256": "2a0d50707be05d06914272f080d71d2ac9803aab1b7bb02e98585a2b6f9b5809"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-20801.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-20801.json",
+      "bytes": 1132,
+      "sha256": "7e5446a191d6a35b6fd05b26bfefb41849c9c5d4b22c85c6427ffdc2f0ee3776"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-21379.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-21379.json",
+      "bytes": 1132,
+      "sha256": "d17975d7c6dac194e29c30297a1bddbd48459b50c5b62d817693a5c461cf90ff"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-21596.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-21596.json",
+      "bytes": 1132,
+      "sha256": "7aa722a14d5bcc9988b60969734f8e601d3ba95a3b055d9a968d5442e873c2b1"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-21612.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-21612.json",
+      "bytes": 1130,
+      "sha256": "fb955e760b3dcbd94def34f13a308904bc3174da3298cfc58da7b222995d5263"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-21847.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-21847.json",
+      "bytes": 1131,
+      "sha256": "2a508c6a87aef5b3b3fa6ddada2816bd275b0fe0e67aabb528243ce933fd852d"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-22714.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-22714.json",
+      "bytes": 1130,
+      "sha256": "f6c8f33ca52a11747ae883eb3e64285dcd708f6808c27dd7985e0836313b964d"
+    },
+    {
+      "path": "dataset-preparation-screening/registry-24661.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/registry-24661.json",
+      "bytes": 1132,
+      "sha256": "b0c887263609fca7801737f6344e20f59e8f8be65668f9ccffb8571f710195f7"
+    },
+    {
+      "path": "dataset-preparation-screening/runtime-screening.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/runtime-screening.json",
+      "bytes": 36814,
+      "sha256": "3c860c2964a4f679c417eabc9855cec0b88e11bbb2f44c926cd10c35e284f0a3"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-19495-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-19495-digest-verification.json",
+      "bytes": 723,
+      "sha256": "7e606e80ab40163d73fb33488866e7faba03dd6b4d11e04d629774412f39e7ca"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-19495-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-19495-public-runner-preflight.json",
+      "bytes": 819,
+      "sha256": "ccd83825277d7cf4391b7c5efc864e5010a120b0f479c5db106d690c142e1fb2"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-19637-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-19637-digest-verification.json",
+      "bytes": 723,
+      "sha256": "69f1933b4f53e4fdc3e1562c6c4df074854b6e50f7d69ac937d0494e46e05fd3"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-19637-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-19637-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "72b1e1a8ea084b1f074c9ba50a798f423ef6622089d3b3675a82ce911f209c84"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-19783-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-19783-digest-verification.json",
+      "bytes": 723,
+      "sha256": "82bf88195e347c0cbcd7115c93109f03f0e7b00f773b99a397560bd21c645443"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-19783-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-19783-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "4ab5addb9b6b69883fd9422fe49d7a0b048893cf5a98f9bc56eb65b35d32993d"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-19954-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-19954-digest-verification.json",
+      "bytes": 723,
+      "sha256": "b8afd564fdbce097f5b649f1685a605c217134583a6e2a048554bebd73069616"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-19954-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-19954-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "ef8076a0e98333301b744e3f19183a3d70ff5ba08cbd3b7d65ab7a89e3cbc323"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-20154-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-20154-digest-verification.json",
+      "bytes": 723,
+      "sha256": "a657ee361c40443ddf111210e07a5e6697577744c7b11afd07d966f18b745e30"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-20154-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-20154-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "735a710f35b0513dc499fb9b9190cc7427927b2ffa71d705297fc7abcebf6fd1"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-20428-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-20428-digest-verification.json",
+      "bytes": 723,
+      "sha256": "72fd98f0c413ca7fdb503e8b8481de4869451c638ceb534e053d7698be7a035f"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-20428-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-20428-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "01d238b3ab601e9f0463354144fd6d1828e36bee728d781aa04418f73335dae7"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-20438-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-20438-digest-verification.json",
+      "bytes": 723,
+      "sha256": "e22a4bfdc52ba862b66e89e8c48f7ab7aaa3fa10f2f2391b1cf32c245d1564ff"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-20438-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-20438-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "398630966d9b6621ae99074fd942b656714948374d4d36fcc2406173be06da81"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-20801-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-20801-digest-verification.json",
+      "bytes": 723,
+      "sha256": "e3a6ba4a2e37750ea4649b95724e741e5f193ff61d8205d75fc1967447579e71"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-20801-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-20801-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "72c0b6f649b16553fcf2d686ff86ec74bd5bd65f7599a81e54da4b06bd966b15"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-21379-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-21379-digest-verification.json",
+      "bytes": 723,
+      "sha256": "3d5b70afd51acf4a07480be93dc30090cf4baa639c05fe4c06a6cd12303d7bf8"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-21379-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-21379-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "e610e76718cf9cc465905b01553a13eb83d316d14c603ee9587fd5fbf0004668"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-21596-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-21596-digest-verification.json",
+      "bytes": 723,
+      "sha256": "610c5dd24f45647e7203a25e6bdd2f1c00f66b75000b7ffdd2446b089d7a7dd0"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-21596-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-21596-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "40ea7a3310b51bec5846afc5089ac921024391073686f97ace29a2a00fb80e18"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-21612-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-21612-digest-verification.json",
+      "bytes": 723,
+      "sha256": "2fdb369d1ad7ce2367aab7ba83c2157c15dd6684d73f0cf90cfa5033f44ce7f3"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-21612-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-21612-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "9d7ea6d3fd36fdb0a1b44475b2fdfad2bcc0b51c951847d37906435a793df247"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-21847-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-21847-digest-verification.json",
+      "bytes": 723,
+      "sha256": "f1d65c1795e9427405163042ae85822948b62d91c743a2ce0b2cfc1d7b972a18"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-21847-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-21847-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "8b6927d4f896f78e0ed2abefcad642e307568e5bd6c1aadf65d89a345cf1d00e"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-22714-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-22714-digest-verification.json",
+      "bytes": 723,
+      "sha256": "aff8f1c23630cac0aaaeff98060ba20baad946c175028ac7ca3f7981d947ae27"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-22714-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-22714-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "7a705f3b1197c8240bc4ce8d2ac5c7b774bf317acb724e35779d43abee905949"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-24661-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-24661-digest-verification.json",
+      "bytes": 723,
+      "sha256": "ed1897a477bef222db9d6370d2b194be2f498019db361fbc2ce2975a32c7b3b4"
+    },
+    {
+      "path": "dataset-preparation-screening/sympy__sympy-24661-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation-screening/sympy__sympy-24661-public-runner-preflight.json",
+      "bytes": 822,
+      "sha256": "3240c96241748fee58f4610da50a4523c5b7f04beb579d3ea6bb15f17f0f4f9e"
+    },
+    {
+      "path": "dataset-preparation/images.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/images.json",
+      "bytes": 14517,
+      "sha256": "9411e9bd3c88613fa389f99b6d0c52d8039f9ea9a1e58e8bf091d6404820dfc2"
+    },
+    {
+      "path": "dataset-preparation/public-base-commit-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/public-base-commit-evidence.json",
+      "bytes": 3228,
+      "sha256": "4cbe87ba7ec144e014f6ccde3197023fd8257d2eba52eb04ea885874a834e9bf"
+    },
+    {
+      "path": "dataset-preparation/registry-19495.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/registry-19495.json",
+      "bytes": 1130,
+      "sha256": "1a32b53c1b839b03ee649066919cbc4f5fa02096a51adfbeba8d92aa79a0c27f"
+    },
+    {
+      "path": "dataset-preparation/registry-19637.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/registry-19637.json",
+      "bytes": 1131,
+      "sha256": "799346c004c639b8a88b7f70d349844433a57fbeab87a25cd8e905efd6345dff"
+    },
+    {
+      "path": "dataset-preparation/registry-19783.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/registry-19783.json",
+      "bytes": 1132,
+      "sha256": "dbd0878f3a54f220c3d87fc015ec4ba5352eeb5159b10bf43132c3b66b25f1b8"
+    },
+    {
+      "path": "dataset-preparation/registry-19954.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/registry-19954.json",
+      "bytes": 1130,
+      "sha256": "4a8a7b69e2d3dc1d7036d5be804bea0d408b996d9a0f6a2deec67fffcdff72f2"
+    },
+    {
+      "path": "dataset-preparation/registry-20154.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/registry-20154.json",
+      "bytes": 1130,
+      "sha256": "bda7694a4b115a80680c7407e8c674e91a05ee01f9ceeb3d875da3e7dd64338b"
+    },
+    {
+      "path": "dataset-preparation/registry-20428.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/registry-20428.json",
+      "bytes": 1131,
+      "sha256": "a31b284e3c09b0d2985aca278d93acdc8f962fe70afe9c0144eaea156fd90832"
+    },
+    {
+      "path": "dataset-preparation/registry-20438.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/registry-20438.json",
+      "bytes": 1129,
+      "sha256": "2a0d50707be05d06914272f080d71d2ac9803aab1b7bb02e98585a2b6f9b5809"
+    },
+    {
+      "path": "dataset-preparation/registry-20801.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/registry-20801.json",
+      "bytes": 1132,
+      "sha256": "7e5446a191d6a35b6fd05b26bfefb41849c9c5d4b22c85c6427ffdc2f0ee3776"
+    },
+    {
+      "path": "dataset-preparation/sympy__sympy-19495-digest-verification.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/sympy__sympy-19495-digest-verification.json",
+      "bytes": 723,
+      "sha256": "7e606e80ab40163d73fb33488866e7faba03dd6b4d11e04d629774412f39e7ca"
+    },
+    {
+      "path": "dataset-preparation/sympy__sympy-19495-public-runner-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/dataset-preparation/sympy__sympy-19495-public-runner-preflight.json",
+      "bytes": 819,
+      "sha256": "ccd83825277d7cf4391b7c5efc864e5010a120b0f479c5db106d690c142e1fb2"
+    },
+    {
+      "path": "evaluation-task-descriptors.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/evaluation-task-descriptors.json",
+      "bytes": 2151,
+      "sha256": "ca78e278077bb43cec5383613bbcf1991460cb919d01a84f72ed0af760e8ba46"
+    },
+    {
+      "path": "experiment-status.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/experiment-status.json",
+      "bytes": 2324,
+      "sha256": "01b0e350d7fc745454fde1765ed3fc679309c9e02bbb4631045b9b63de50cfd2"
+    },
+    {
+      "path": "launch-contract-preliminary.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/launch-contract-preliminary.json",
+      "bytes": 3196,
+      "sha256": "f7124d3f297165a29e16620b11a3533c4b7b371ce5f71b38983007a9d1cf8ac2"
+    },
+    {
+      "path": "launch-contract.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/launch-contract.json",
+      "bytes": 2938,
+      "sha256": "0aa79fa5e8fea1d2534ace2999825065314e6a91bd545a3216fa0676f3b27f08"
+    },
+    {
+      "path": "pre-execution-supersession.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/pre-execution-supersession.json",
+      "bytes": 1068,
+      "sha256": "470ebccb67cbd7292b1b9afa285b275a393d1917348ff473879d5e3dc0ea6233"
+    },
+    {
+      "path": "procedure-declaration.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/procedure-declaration.json",
+      "bytes": 2766,
+      "sha256": "33a2a7641f77cf8b93afe003d59c1c1e88d1749ff70fb28cdd6b07fcdc06e687"
+    },
+    {
+      "path": "public-candidate-preflight-resolved.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-candidate-preflight-resolved.json",
+      "bytes": 31892,
+      "sha256": "6d68a44b0c869de7c266c125bbd00a678a531755ca349c9fd5b77b382a6a546b"
+    },
+    {
+      "path": "public-candidate-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-candidate-preflight.json",
+      "bytes": 31892,
+      "sha256": "5d51a76695cc1ad658a2c7bab9472db11f4c2292620a66b5bbc738e7558fd90b"
+    },
+    {
+      "path": "public-runner-fetch-evidence.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-runner-fetch-evidence.json",
+      "bytes": 1492,
+      "sha256": "080314d5a47e20842b3c027ca68d762f6a55bfe6d8743af25102990d30c5ac08"
+    },
+    {
+      "path": "public-selection-final.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-selection-final.json",
+      "bytes": 63375,
+      "sha256": "c5213c1b93ae018e7b0c08bc80f498f9b64e45912308c52fae8004f75860065e"
+    },
+    {
+      "path": "public-selection.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-selection.json",
+      "bytes": 26000,
+      "sha256": "e9dca2ba4d94df086dfc8889b6f8c16d704eb4eb210a15153d5a384de64b6092"
+    },
+    {
+      "path": "public-training-baseline-diagnostic.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-training-baseline-diagnostic.json",
+      "bytes": 2950,
+      "sha256": "3d8c0d6c61885e160bb40f17212fbaa347bd1f5ee604688c4bd54e90820d89fc"
+    },
+    {
+      "path": "public-training-baseline-diagnostic/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19637/control/checkout-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-training-baseline-diagnostic/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19637/control/checkout-preflight.json",
+      "bytes": 3042,
+      "sha256": "462ddce3f9cc7f5c341ec7eff2b9073f144a2d174d97d76b7741d3ed9bebd528"
+    },
+    {
+      "path": "public-training-baseline-diagnostic/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19637/control/solver-sandbox-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-training-baseline-diagnostic/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19637/control/solver-sandbox-preflight.json",
+      "bytes": 216,
+      "sha256": "6a3a995dcf8129a809818f431a38515b0f913c3578aa8fbda456b0288b27a6ba"
+    },
+    {
+      "path": "public-training-baseline-diagnostic/environment/control/local-environment-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-training-baseline-diagnostic/environment/control/local-environment-preflight.json",
+      "bytes": 2391,
+      "sha256": "d698c007e132232f8885f3839aef9648847ec2b42cbe0826d5d76457188e7d79"
+    },
+    {
+      "path": "public-training-baseline-diagnostic/environment/control/official-harness-loader-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/public-training-baseline-diagnostic/environment/control/official-harness-loader-preflight.json",
+      "bytes": 8470,
+      "sha256": "08790690fac46acad2b014123da581169ffa34736d7144ec931bdd0c26451841"
+    },
+    {
+      "path": "solver-attestations.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/solver-attestations.json",
+      "bytes": 1509,
+      "sha256": "6051adc69617ed653eecdff7ac04288345c2c757c91635b49890a144f7a03229"
+    },
+    {
+      "path": "solver_prompt_template.txt",
+      "source": "/home/trimem-runner/skhynix-codex-005/solver_prompt_template.txt",
+      "bytes": 2310,
+      "sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05"
+    },
+    {
+      "path": "supplemental-manifest.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/supplemental-manifest.json",
+      "bytes": 90316,
+      "sha256": "57f369ee641b923ec551698fb52f043e7cf8569e4872f0f691883f47d399f6b9"
+    },
+    {
+      "path": "synthetic-query-contract.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/synthetic-query-contract.json",
+      "bytes": 1074,
+      "sha256": "66b7e99489fefc3bac7d64bfa4a64f8ddb1de5e9eaff5e9488059ff24c29f862"
+    },
+    {
+      "path": "training-19637/cells/A/bank-projection.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19637/execution/cells/A/bank-projection.json",
+      "bytes": 664,
+      "sha256": "abc9b375be5a283d366bbc399a21098519607da0f1688f9af4c3c770083aa950"
+    },
+    {
+      "path": "training-19637/cells/A/public-result.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19637/execution/cells/A/public-result.json",
+      "bytes": 1297,
+      "sha256": "3e3215d036265f9e1d609da82b2ac8503d56a14f30a78ab8991a8c92d46a7ec3"
+    },
+    {
+      "path": "training-19637/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19637/control/checkout-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19637/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19637/control/checkout-preflight.json",
+      "bytes": 2937,
+      "sha256": "1de3f8655a5f8c912360cc0e288e6a1a2c69b8d63da1e4455413e725a0e4085d"
+    },
+    {
+      "path": "training-19637/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19637/control/solver-sandbox-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19637/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19637/control/solver-sandbox-preflight.json",
+      "bytes": 216,
+      "sha256": "6a3a995dcf8129a809818f431a38515b0f913c3578aa8fbda456b0288b27a6ba"
+    },
+    {
+      "path": "training-19637/environment/control/local-environment-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19637/execution/environment/control/local-environment-preflight.json",
+      "bytes": 2391,
+      "sha256": "d698c007e132232f8885f3839aef9648847ec2b42cbe0826d5d76457188e7d79"
+    },
+    {
+      "path": "training-19637/environment/control/official-harness-loader-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19637/execution/environment/control/official-harness-loader-preflight.json",
+      "bytes": 8470,
+      "sha256": "08790690fac46acad2b014123da581169ffa34736d7144ec931bdd0c26451841"
+    },
+    {
+      "path": "training-19637/plan.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19637/execution/plan.json",
+      "bytes": 38978,
+      "sha256": "606c0c3406b520a8f8e719bffd95b383da699b4df389a1150dcfe73935ab1f2b"
+    },
+    {
+      "path": "training-19637/plan.sha256",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19637/execution/plan.sha256",
+      "bytes": 65,
+      "sha256": "880fd81fa4a324ec0c34371871d3a13e568b7914740d927a23db2503509fb9b8"
+    },
+    {
+      "path": "training-19783/cells/A/bank-projection.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19783/execution/cells/A/bank-projection.json",
+      "bytes": 664,
+      "sha256": "28f41cd62b6426d41a590bcb8daa6ee404ba8052c3faa83aff786e2a8500e87c"
+    },
+    {
+      "path": "training-19783/cells/A/public-result.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19783/execution/cells/A/public-result.json",
+      "bytes": 1298,
+      "sha256": "28e58e93fbe787969168c8dec6d268482eb3f7ddabd7b1a0dbac8c9d13876bea"
+    },
+    {
+      "path": "training-19783/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19783/control/checkout-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19783/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19783/control/checkout-preflight.json",
+      "bytes": 2938,
+      "sha256": "9ea7e03cf4304bf78111e3c631a4f9271c02816fe2bae0808a33474b82c7a506"
+    },
+    {
+      "path": "training-19783/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19783/control/solver-sandbox-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19783/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-19783/control/solver-sandbox-preflight.json",
+      "bytes": 216,
+      "sha256": "82d8918c750d4370e8825a101204a791e653f0b9d914128afe20e54b0288ac6d"
+    },
+    {
+      "path": "training-19783/environment/control/local-environment-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19783/execution/environment/control/local-environment-preflight.json",
+      "bytes": 2391,
+      "sha256": "b7b9fe10654e4f1f06efd817b232f2b28d222ad94b96f6bd9abc31399f0b5b8b"
+    },
+    {
+      "path": "training-19783/environment/control/official-harness-loader-preflight.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19783/execution/environment/control/official-harness-loader-preflight.json",
+      "bytes": 8470,
+      "sha256": "339c64719bcd9446cb36b5b54d3c4343f17a733cf808838fabfc069221ca9a0c"
+    },
+    {
+      "path": "training-19783/plan.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19783/execution/plan.json",
+      "bytes": 39186,
+      "sha256": "fae86183214d4197e72cc85a55a62081d597364998e5cb7aa3ae6b9e6dcb715a"
+    },
+    {
+      "path": "training-19783/plan.sha256",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-19783/execution/plan.sha256",
+      "bytes": 65,
+      "sha256": "c545e752480a6b3a0bf5a9e4fb23b96c05317782f75c6eaf3f1336565e44119f"
+    },
+    {
+      "path": "training-gate-decision.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-gate-decision.json",
+      "bytes": 1938,
+      "sha256": "9698d727d8801569506588fba1b8c3a40fc0bd2f7d1d802601ddec614b482fce"
+    },
+    {
+      "path": "training-task-descriptors.json",
+      "source": "/home/trimem-runner/skhynix-codex-005/training-task-descriptors.json",
+      "bytes": 719,
+      "sha256": "5488024d4203b59d449d1b28d231f9b088c771063d495fc09cf793b52a6f9788"
+    },
+    {
+      "path": "training_solver_prompt_template.txt",
+      "source": "/home/trimem-runner/skhynix-codex-005/training_solver_prompt_template.txt",
+      "bytes": 3876,
+      "sha256": "c3df9d16f7219fb3d302a0f583df25ac45a7f312bc237f39c3e6398e24dd36cc"
+    },
+    {
+      "path": "validation/codex_005_dataset_validation.xml",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/codex_005_dataset_validation.xml",
+      "bytes": 27740,
+      "sha256": "4fe8201eeb2155977090c7dfaa8c3fdb8c2b429e2fc4c466815e045088ec0f9a"
+    },
+    {
+      "path": "validation/codex_005_integration_validation.xml",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/codex_005_integration_validation.xml",
+      "bytes": 25249,
+      "sha256": "063b3892557b14941950158f2b70bdc9622d872a8aff894773f22e6c16a346bf"
+    }
+  ],
+  "manifest_excludes_itself": true,
+  "copy_policy": "Explicit public evidence and public runtime screening JSON; no raw submitted patches, full solver tool journals, private episode DB/attestations or hidden grader text."
+}

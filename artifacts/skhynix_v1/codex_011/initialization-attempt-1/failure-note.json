@@ -1,0 +1,21 @@
+{
+  "config_created": false,
+  "failure": "Controlled public runtime import or help evidence differs",
+  "grader_calls": 0,
+  "initialization_helper_sha256": "88697ca89f327f9e0f15438a1bd71048b2851f1947cfde2cbb8f42519e009b2a",
+  "manifest_created": false,
+  "preserved_files_sha256": {
+    "controlled-validation.json": "4e823ec83905e7c9eb58013afbd7663a1b96a45cb6f71fb449234304ada2e15a",
+    "controlled-validation.xml": "81cd535c407f3bf22a28a89c0a6502a6be4dc67302d9cd4e1c84211ea519f520",
+    "dataset-validation.json": "07cc5c7c82e1b8441756dd11a6cc368555e55c5b191c95610d6caaaf479af4a3",
+    "dataset-validation.xml": "fe26347aea2252ea4fbb9a5795c6f19e8325b49d4497928266a994330d3c0223",
+    "lesson-derivation.md": "4bab681a000eafb90906ce359e7cdb05307e9be18f321192658378a6c96e538e",
+    "previous-evidence-seal.json": "312893f8977dc5bd65c2ed8ffd8d08010a9eddb1194e28cf94a77d94266c339c",
+    "public-candidate-selection.json": "351974c275075ea689d272abb2ca3f9faba358bd9ae80e3880402a678f7f409b",
+    "source-lessons.json": "f4c1e9a529732e268d759f9d62cdc5337b2edb1ff679c4ad84bc78a27729f764"
+  },
+  "solver_calls": 0,
+  "source_freeze_created": false,
+  "stage": "PUBLIC_RUNTIME_RECEIPT_VALIDATION",
+  "status": "PRESERVED_PRE_ENROLLMENT_INITIALIZATION_FAILURE"
+}

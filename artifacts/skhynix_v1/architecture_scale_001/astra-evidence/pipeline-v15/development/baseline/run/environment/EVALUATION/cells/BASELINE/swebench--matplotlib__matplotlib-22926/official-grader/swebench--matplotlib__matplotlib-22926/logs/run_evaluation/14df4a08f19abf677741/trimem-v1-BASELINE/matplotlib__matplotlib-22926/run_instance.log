@@ -1,0 +1,120 @@
+2026-09-20 21:53:11,632 - INFO - Creating container for matplotlib__matplotlib-22926...
+2026-09-20 21:53:11,698 - INFO - Container for matplotlib__matplotlib-22926 created: 185306dbc82df2f32cbbac52a10ab034e6c2c8e71ada4cd61c1f334a43497872
+2026-09-20 21:53:11,807 - INFO - Container for matplotlib__matplotlib-22926 started: 185306dbc82df2f32cbbac52a10ab034e6c2c8e71ada4cd61c1f334a43497872
+2026-09-20 21:53:11,807 - INFO - Intermediate patch for matplotlib__matplotlib-22926 written to logs/run_evaluation/14df4a08f19abf677741/trimem-v1-BASELINE/matplotlib__matplotlib-22926/patch.diff, now applying to container...
+2026-09-20 21:53:11,907 - INFO - >>>>> Applied Patch:
+Checking patch lib/matplotlib/tests/test_widgets.py...
+Checking patch lib/matplotlib/widgets.py...
+Applied patch lib/matplotlib/tests/test_widgets.py cleanly.
+Applied patch lib/matplotlib/widgets.py cleanly.
+
+2026-09-20 21:53:12,592 - INFO - Git diff before:
+diff --git a/lib/matplotlib/tests/test_widgets.py b/lib/matplotlib/tests/test_widgets.py
+index 11db0493a7..eefa28b46f 100644
+--- a/lib/matplotlib/tests/test_widgets.py
++++ b/lib/matplotlib/tests/test_widgets.py
+@@ -1161,6 +1161,30 @@ def test_range_slider(orientation):
+     assert_allclose(handle_positions(slider), (0.1, 0.34))
+ 
+ 
++@pytest.mark.parametrize("orientation", ["horizontal", "vertical"])
++@pytest.mark.parametrize("valinit", [(0, 0), (0.5, 0.5), (1, 1)])
++def test_range_slider_equal_endpoints(orientation, valinit):
++    fig, ax = plt.subplots()
++    slider = widgets.RangeSlider(
++        ax, "", 0, 1, valinit=valinit, orientation=orientation)
++
++    # Expand, collapse, and expand again after a zero-width initialization.
++    for val in [valinit, (0, 1), (0.5, 0.5), (0.25, 0.75)]:
++        slider.set_val(val)
++        assert_allclose(slider.val, val)
++        assert slider.poly.get_closed()
++        assert_allclose(slider.poly.xy[0], slider.poly.xy[-1])
++
++        box = slider.poly.get_extents().transformed(ax.transAxes.inverted())
++        if orientation == "horizontal":
++            assert_allclose(box.bounds, [val[0], .25, val[1] - val[0], .5])
++            handles = [handle.get_xdata()[0] for handle in slider._handles]
++        else:
++            assert_allclose(box.bounds, [.25, val[0], .5, val[1] - val[0]])
++            handles = [handle.get_ydata()[0] for handle in slider._handles]
++        assert_allclose(handles, val)
++
++
+ def check_polygon_selector(event_sequence, expected_result, selections_count,
+                            **kwargs):
+     """
+diff --git a/lib/matplotlib/widgets.py b/lib/matplotlib/widgets.py
+index cd79e9523a..20ac7f7af3 100644
+--- a/lib/matplotlib/widgets.py
++++ b/lib/matplotlib/widgets.py
+@@ -905,22 +905,15 @@ class RangeSlider(SliderBase):
+         _api.check_shape((2,), val=val)
+         val[0] = self._min_in_bounds(val[0])
+         val[1] = self._max_in_bounds(val[1])
+-        xy = self.poly.xy
+         if self.orientation == "vertical":
+-            xy[0] = .25, val[0]
+-            xy[1] = .25, val[1]
+-            xy[2] = .75, val[1]
+-            xy[3] = .75, val[0]
+-            xy[4] = .25, val[0]
++            xy = [[.25, val[0]], [.25, val[1]], [.75, val[1]],
++                  [.75, val[0]], [.25, val[0]]]
+ 
+             self._handles[0].set_ydata([val[0]])
+             self._handles[1].set_ydata([val[1]])
+         else:
+-            xy[0] = val[0], .25
+-            xy[1] = val[0], .75
+-            xy[2] = val[1], .75
+-            xy[3] = val[1], .25
+-            xy[4] = val[0], .25
++            xy = [[val[0], .25], [val[0], .75], [val[1], .75],
++                  [val[1], .25], [val[0], .25]]
+ 
+             self._handles[0].set_xdata([val[0]])
+             self._handles[1].set_xdata([val[1]])
+2026-09-20 21:53:12,592 - INFO - Eval script for matplotlib__matplotlib-22926 written to logs/run_evaluation/14df4a08f19abf677741/trimem-v1-BASELINE/matplotlib__matplotlib-22926/eval.sh; copying to container...
+2026-09-20 21:53:24,356 - INFO - Test runtime: 11.71 seconds
+2026-09-20 21:53:24,356 - INFO - Test output for matplotlib__matplotlib-22926 written to logs/run_evaluation/14df4a08f19abf677741/trimem-v1-BASELINE/matplotlib__matplotlib-22926/test_output.txt
+2026-09-20 21:53:24,411 - INFO - Git diff after:
+diff --git a/lib/matplotlib/widgets.py b/lib/matplotlib/widgets.py
+index cd79e9523a..20ac7f7af3 100644
+--- a/lib/matplotlib/widgets.py
++++ b/lib/matplotlib/widgets.py
+@@ -905,22 +905,15 @@ class RangeSlider(SliderBase):
+         _api.check_shape((2,), val=val)
+         val[0] = self._min_in_bounds(val[0])
+         val[1] = self._max_in_bounds(val[1])
+-        xy = self.poly.xy
+         if self.orientation == "vertical":
+-            xy[0] = .25, val[0]
+-            xy[1] = .25, val[1]
+-            xy[2] = .75, val[1]
+-            xy[3] = .75, val[0]
+-            xy[4] = .25, val[0]
++            xy = [[.25, val[0]], [.25, val[1]], [.75, val[1]],
++                  [.75, val[0]], [.25, val[0]]]
+ 
+             self._handles[0].set_ydata([val[0]])
+             self._handles[1].set_ydata([val[1]])
+         else:
+-            xy[0] = val[0], .25
+-            xy[1] = val[0], .75
+-            xy[2] = val[1], .75
+-            xy[3] = val[1], .25
+-            xy[4] = val[0], .25
++            xy = [[val[0], .25], [val[0], .75], [val[1], .75],
++                  [val[1], .25], [val[0], .25]]
+ 
+             self._handles[0].set_xdata([val[0]])
+             self._handles[1].set_xdata([val[1]])
+2026-09-20 21:53:24,412 - INFO - Git diff changed after running eval script
+2026-09-20 21:53:24,412 - INFO - Grading answer for matplotlib__matplotlib-22926...
+2026-09-20 21:53:24,412 - INFO - report: {'matplotlib__matplotlib-22926': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['lib/matplotlib/tests/test_widgets.py::test_range_slider_same_init_values[horizontal]'], 'failure': []}, 'PASS_TO_PASS': {'success': ['lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[0-10-0-10-data]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[0-10-0-10-pixels]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[0-10-1-10.5-data]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[0-10-1-10.5-pixels]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[0-10-1-11-data]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[0-10-1-11-pixels]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-10.5-0-10-data]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-10.5-0-10-pixels]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-10.5-1-10.5-data]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-10.5-1-10.5-pixels]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-10.5-1-11-data]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-10.5-1-11-pixels]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-11-0-10-data]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-11-0-10-pixels]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-11-1-10.5-data]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-11-1-10.5-pixels]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-11-1-11-data]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_minspan[1-11-1-11-pixels]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_drag[True-new_center0]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_drag[False-new_center1]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_selector_set_props_handle_props', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_resize', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_add_state', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_resize_center[True]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_resize_center[False]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_resize_square[True]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_resize_square[False]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_resize_square_center', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_rotate[RectangleSelector]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_rotate[EllipseSelector]', 'lib/matplotlib/tests/test_widgets.py::test_rectange_add_remove_set', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_resize_square_center_aspect[False]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_resize_square_center_aspect[True]', 'lib/matplotlib/tests/test_widgets.py::test_ellipse', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_handles', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_selector_onselect[True]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_selector_onselect[False]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_selector_ignore_outside[True]', 'lib/matplotlib/tests/test_widgets.py::test_rectangle_selector_ignore_outside[False]', 'lib/matplotlib/tests/test_widgets.py::test_span_selector', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_onselect[True]', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_onselect[False]', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_ignore_outside[True]', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_ignore_outside[False]', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_drag[True]', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_drag[False]', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_direction', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_set_props_handle_props', 'lib/matplotlib/tests/test_widgets.py::test_selector_clear[span]', 'lib/matplotlib/tests/test_widgets.py::test_selector_clear[rectangle]', 'lib/matplotlib/tests/test_widgets.py::test_selector_clear_method[span]', 'lib/matplotlib/tests/test_widgets.py::test_selector_clear_method[rectangle]', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_add_state', 'lib/matplotlib/tests/test_widgets.py::test_tool_line_handle', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_bound[horizontal]', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_bound[vertical]', 'lib/matplotlib/tests/test_widgets.py::test_snapping_values_span_selector', 'lib/matplotlib/tests/test_widgets.py::test_span_selector_snap', 'lib/matplotlib/tests/test_widgets.py::test_lasso_selector', 'lib/matplotlib/tests/test_widgets.py::test_CheckButtons', 'lib/matplotlib/tests/test_widgets.py::test_TextBox[none]', 'lib/matplotlib/tests/test_widgets.py::test_TextBox[toolbar2]', 'lib/matplotlib/tests/test_widgets.py::test_TextBox[toolmanager]', 'lib/matplotlib/tests/test_widgets.py::test_check_radio_buttons_image[png]', 'lib/matplotlib/tests/test_widgets.py::test_check_bunch_of_radio_buttons[png]', 'lib/matplotlib/tests/test_widgets.py::test_slider_slidermin_slidermax_invalid', 'lib/matplotlib/tests/test_widgets.py::test_slider_slidermin_slidermax', 'lib/matplotlib/tests/test_widgets.py::test_slider_valmin_valmax', 'lib/matplotlib/tests/test_widgets.py::test_slider_valstep_snapping', 'lib/matplotlib/tests/test_widgets.py::test_slider_horizontal_vertical', 'lib/matplotlib/tests/test_widgets.py::test_slider_reset', 'lib/matplotlib/tests/test_widgets.py::test_range_slider[horizontal]', 'lib/matplotlib/tests/test_widgets.py::test_range_slider[vertical]', 'lib/matplotlib/tests/test_widgets.py::test_range_slider_same_init_values[vertical]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector[False]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector[True]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_set_props_handle_props[False]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_set_props_handle_props[True]', 'lib/matplotlib/tests/test_widgets.py::test_rect_visibility[png]', 'lib/matplotlib/tests/test_widgets.py::test_rect_visibility[pdf]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_remove[False-1]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_remove[False-2]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_remove[False-3]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_remove[True-1]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_remove[True-2]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_remove[True-3]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_remove_first_point[False]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_remove_first_point[True]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_redraw[False]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_redraw[True]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_verts_setter[png-False]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_verts_setter[png-True]', 'lib/matplotlib/tests/test_widgets.py::test_polygon_selector_box', 'lib/matplotlib/tests/test_widgets.py::test_MultiCursor[True-True]', 'lib/matplotlib/tests/test_widgets.py::test_MultiCursor[True-False]', 'lib/matplotlib/tests/test_widgets.py::test_MultiCursor[False-True]'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for matplotlib__matplotlib-22926: resolved: True
+2026-09-20 21:53:24,412 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-22926.14df4a08f19abf677741...
+2026-09-20 21:53:41,083 - INFO - Container sweb.eval.matplotlib__matplotlib-22926.14df4a08f19abf677741 stopped successfully.
+2026-09-20 21:53:41,083 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-22926.14df4a08f19abf677741...
+2026-09-20 21:53:41,176 - INFO - Container sweb.eval.matplotlib__matplotlib-22926.14df4a08f19abf677741 removed successfully.

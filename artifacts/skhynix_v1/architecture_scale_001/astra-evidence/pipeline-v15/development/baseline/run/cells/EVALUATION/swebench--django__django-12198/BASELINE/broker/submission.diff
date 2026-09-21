@@ -1,0 +1,75 @@
+diff --git a/django/contrib/auth/__init__.py b/django/contrib/auth/__init__.py
+index 6d99aa0..09db690 100644
+--- a/django/contrib/auth/__init__.py
++++ b/django/contrib/auth/__init__.py
+@@ -63,8 +63,9 @@ def authenticate(request=None, **credentials):
+     If the given credentials are valid, return a User object.
+     """
+     for backend, backend_path in _get_backends(return_tuples=True):
++        backend_signature = inspect.signature(backend.authenticate)
+         try:
+-            inspect.getcallargs(backend.authenticate, request, **credentials)
++            backend_signature.bind(request, **credentials)
+         except TypeError:
+             # This backend doesn't accept these credentials as arguments. Try the next one.
+             continue
+diff --git a/tests/auth_tests/test_auth_backends.py b/tests/auth_tests/test_auth_backends.py
+index 92c60af..142bab4 100644
+--- a/tests/auth_tests/test_auth_backends.py
++++ b/tests/auth_tests/test_auth_backends.py
+@@ -13,6 +13,7 @@ from django.http import HttpRequest
+ from django.test import (
+     SimpleTestCase, TestCase, modify_settings, override_settings,
+ )
++from django.views.decorators.debug import sensitive_variables
+ 
+ from .models import (
+     CustomPermissionsUser, CustomUser, CustomUserWithoutIsActiveField,
+@@ -642,6 +643,12 @@ class SkippedBackend:
+         pass
+ 
+ 
++class SensitiveBackend:
++    @sensitive_variables('token')
++    def authenticate(self, request, token):
++        return User.objects.get(username=token)
++
++
+ class AuthenticateTests(TestCase):
+     @classmethod
+     def setUpTestData(cls):
+@@ -664,6 +671,34 @@ class AuthenticateTests(TestCase):
+         """
+         self.assertEqual(authenticate(username='test', password='test'), self.user1)
+ 
++    @override_settings(AUTHENTICATION_BACKENDS=(
++        'auth_tests.test_auth_backends.SensitiveBackend',
++        'django.contrib.auth.backends.ModelBackend',
++    ))
++    def test_skips_incompatible_sensitive_backend(self):
++        for credentials in (
++            {'username': 'test', 'password': 'test'},
++            {'token': 'test', 'username': 'test', 'password': 'test'},
++        ):
++            with self.subTest(credentials=credentials):
++                user = authenticate(**credentials)
++                self.assertEqual(user, self.user1)
++                self.assertEqual(user.backend, 'django.contrib.auth.backends.ModelBackend')
++
++    @override_settings(AUTHENTICATION_BACKENDS=['auth_tests.test_auth_backends.SensitiveBackend'])
++    def test_sensitive_backend(self):
++        user = authenticate(token='test')
++        self.assertEqual(user, self.user1)
++        self.assertEqual(user.backend, 'auth_tests.test_auth_backends.SensitiveBackend')
++
++    @override_settings(AUTHENTICATION_BACKENDS=['auth_tests.test_auth_backends.TypeErrorBackend'])
++    def test_sensitive_backend_type_error_raised(self):
++        with mock.patch.object(
++            TypeErrorBackend, 'authenticate', sensitive_variables()(TypeErrorBackend.authenticate),
++        ):
++            with self.assertRaises(TypeError):
++                authenticate(username='test', password='test')
++
+ 
+ class ImproperlyConfiguredUserModelTest(TestCase):
+     """

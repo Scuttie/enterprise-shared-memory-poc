@@ -1,0 +1,113 @@
+2026-09-20 21:13:21,273 - INFO - Creating container for django__django-12198...
+2026-09-20 21:13:21,306 - INFO - Container for django__django-12198 created: aa5b5d65a8efdd170f36f41ef160de8da51f5e9dde1ed7b0db218919f378f504
+2026-09-20 21:13:21,408 - INFO - Container for django__django-12198 started: aa5b5d65a8efdd170f36f41ef160de8da51f5e9dde1ed7b0db218919f378f504
+2026-09-20 21:13:21,409 - INFO - Intermediate patch for django__django-12198 written to logs/run_evaluation/86d0c801f7d477b23e1a/trimem-v1-BASELINE/django__django-12198/patch.diff, now applying to container...
+2026-09-20 21:13:21,521 - INFO - >>>>> Applied Patch:
+Checking patch django/contrib/auth/__init__.py...
+Checking patch tests/auth_tests/test_auth_backends.py...
+Applied patch django/contrib/auth/__init__.py cleanly.
+Applied patch tests/auth_tests/test_auth_backends.py cleanly.
+
+2026-09-20 21:13:22,637 - INFO - Git diff before:
+diff --git a/django/contrib/auth/__init__.py b/django/contrib/auth/__init__.py
+index 6d99aa0c9b..09db690b5c 100644
+--- a/django/contrib/auth/__init__.py
++++ b/django/contrib/auth/__init__.py
+@@ -63,8 +63,9 @@ def authenticate(request=None, **credentials):
+     If the given credentials are valid, return a User object.
+     """
+     for backend, backend_path in _get_backends(return_tuples=True):
++        backend_signature = inspect.signature(backend.authenticate)
+         try:
+-            inspect.getcallargs(backend.authenticate, request, **credentials)
++            backend_signature.bind(request, **credentials)
+         except TypeError:
+             # This backend doesn't accept these credentials as arguments. Try the next one.
+             continue
+diff --git a/tests/auth_tests/test_auth_backends.py b/tests/auth_tests/test_auth_backends.py
+index 92c60af7d6..142bab424f 100644
+--- a/tests/auth_tests/test_auth_backends.py
++++ b/tests/auth_tests/test_auth_backends.py
+@@ -13,6 +13,7 @@ from django.http import HttpRequest
+ from django.test import (
+     SimpleTestCase, TestCase, modify_settings, override_settings,
+ )
++from django.views.decorators.debug import sensitive_variables
+ 
+ from .models import (
+     CustomPermissionsUser, CustomUser, CustomUserWithoutIsActiveField,
+@@ -642,6 +643,12 @@ class SkippedBackend:
+         pass
+ 
+ 
++class SensitiveBackend:
++    @sensitive_variables('token')
++    def authenticate(self, request, token):
++        return User.objects.get(username=token)
++
++
+ class AuthenticateTests(TestCase):
+     @classmethod
+     def setUpTestData(cls):
+@@ -664,6 +671,34 @@ class AuthenticateTests(TestCase):
+         """
+         self.assertEqual(authenticate(username='test', password='test'), self.user1)
+ 
++    @override_settings(AUTHENTICATION_BACKENDS=(
++        'auth_tests.test_auth_backends.SensitiveBackend',
++        'django.contrib.auth.backends.ModelBackend',
++    ))
++    def test_skips_incompatible_sensitive_backend(self):
++        for credentials in (
++            {'username': 'test', 'password': 'test'},
++            {'token': 'test', 'username': 'test', 'password': 'test'},
++        ):
++            with self.subTest(credentials=credentials):
++                user = authenticate(**credentials)
++                self.assertEqual(user, self.user1)
++                self.assertEqual(user.backend, 'django.contrib.auth.backends.ModelBackend')
++
++    @override_settings(AUTHENTICATION_BACKENDS=['auth_tests.test_auth_backends.SensitiveBackend'])
++    def test_sensitive_backend(self):
++        user = authenticate(token='test')
++        self.assertEqual(user, self.user1)
++        self.assertEqual(user.backend, 'auth_tests.test_auth_backends.SensitiveBackend')
++
++    @override_settings(AUTHENTICATION_BACKENDS=['auth_tests.test_auth_backends.TypeErrorBackend'])
++    def test_sensitive_backend_type_error_raised(self):
++        with mock.patch.object(
++            TypeErrorBackend, 'authenticate', sensitive_variables()(TypeErrorBackend.authenticate),
++        ):
++            with self.assertRaises(TypeError):
++                authenticate(username='test', password='test')
++
+ 
+ class ImproperlyConfiguredUserModelTest(TestCase):
+     """
+2026-09-20 21:13:22,637 - INFO - Eval script for django__django-12198 written to logs/run_evaluation/86d0c801f7d477b23e1a/trimem-v1-BASELINE/django__django-12198/eval.sh; copying to container...
+2026-09-20 21:13:26,248 - INFO - Test runtime: 3.55 seconds
+2026-09-20 21:13:26,249 - INFO - Test output for django__django-12198 written to logs/run_evaluation/86d0c801f7d477b23e1a/trimem-v1-BASELINE/django__django-12198/test_output.txt
+2026-09-20 21:13:26,292 - INFO - Git diff after:
+diff --git a/django/contrib/auth/__init__.py b/django/contrib/auth/__init__.py
+index 6d99aa0c9b..09db690b5c 100644
+--- a/django/contrib/auth/__init__.py
++++ b/django/contrib/auth/__init__.py
+@@ -63,8 +63,9 @@ def authenticate(request=None, **credentials):
+     If the given credentials are valid, return a User object.
+     """
+     for backend, backend_path in _get_backends(return_tuples=True):
++        backend_signature = inspect.signature(backend.authenticate)
+         try:
+-            inspect.getcallargs(backend.authenticate, request, **credentials)
++            backend_signature.bind(request, **credentials)
+         except TypeError:
+             # This backend doesn't accept these credentials as arguments. Try the next one.
+             continue
+2026-09-20 21:13:26,292 - INFO - Git diff changed after running eval script
+2026-09-20 21:13:26,292 - INFO - Grading answer for django__django-12198...
+2026-09-20 21:13:26,293 - INFO - report: {'django__django-12198': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_skips_backends_with_decorated_method (auth_tests.test_auth_backends.AuthenticateTests)'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_get_all_permissions (auth_tests.test_auth_backends.AnonymousUserBackendTest)', 'test_has_module_perms (auth_tests.test_auth_backends.AnonymousUserBackendTest)', 'test_has_perm (auth_tests.test_auth_backends.AnonymousUserBackendTest)', 'test_has_perms (auth_tests.test_auth_backends.AnonymousUserBackendTest)', 'test_raises_exception (auth_tests.test_auth_backends.NoBackendsTest)', 'test_get_all_permissions (auth_tests.test_auth_backends.BaseBackendTest)', 'test_get_group_permissions (auth_tests.test_auth_backends.BaseBackendTest)', 'test_get_user_permissions (auth_tests.test_auth_backends.BaseBackendTest)', 'test_has_perm (auth_tests.test_auth_backends.BaseBackendTest)', 'test_has_module_perms (auth_tests.test_auth_backends.InActiveUserBackendTest)', 'test_has_perm (auth_tests.test_auth_backends.InActiveUserBackendTest)', 'test_skips_backends_without_arguments (auth_tests.test_auth_backends.AuthenticateTests)', 'A TypeError within a backend is propagated properly (#18171).', 'test_get_all_permissions (auth_tests.test_auth_backends.RowlevelBackendTest)', 'test_get_group_permissions (auth_tests.test_auth_backends.RowlevelBackendTest)', 'test_has_perm (auth_tests.test_auth_backends.RowlevelBackendTest)', 'test_changed_backend_settings (auth_tests.test_auth_backends.ChangedBackendSettingsTest)', 'test_authenticates (auth_tests.test_auth_backends.PermissionDeniedBackendTest)', 'test_has_perm (auth_tests.test_auth_backends.PermissionDeniedBackendTest)', 'test_has_perm_denied (auth_tests.test_auth_backends.PermissionDeniedBackendTest)', 'user is not authenticated after a backend raises permission denied #2550', 'test_authenticate (auth_tests.test_auth_backends.AllowAllUsersModelBackendTest)', 'test_get_user (auth_tests.test_auth_backends.AllowAllUsersModelBackendTest)', 'test_backend_path (auth_tests.test_auth_backends.ImportedBackendTests)', 'test_backend_path_login_with_explicit_backends (auth_tests.test_auth_backends.SelectingBackendTests)', 'test_backend_path_login_without_authenticate_multiple_backends (auth_tests.test_auth_backends.SelectingBackendTests)', 'test_backend_path_login_without_authenticate_single_backend (auth_tests.test_auth_backends.SelectingBackendTests)', 'test_non_string_backend (auth_tests.test_auth_backends.SelectingBackendTests)', 'test_does_not_shadow_exception (auth_tests.test_auth_backends.ImproperlyConfiguredUserModelTest)', 'test_authenticate (auth_tests.test_auth_backends.CustomUserModelBackendAuthenticateTest)', 'test_login (auth_tests.test_auth_backends.UUIDUserTests)', 'test_anonymous_has_no_permissions (auth_tests.test_auth_backends.ModelBackendTest)', 'test_authenticate_inactive (auth_tests.test_auth_backends.ModelBackendTest)', 'test_authenticate_user_without_is_active_field (auth_tests.test_auth_backends.ModelBackendTest)', 'Hasher is run once regardless of whether the user exists. Refs #20760.', 'test_authentication_without_credentials (auth_tests.test_auth_backends.ModelBackendTest)', 'test_custom_perms (auth_tests.test_auth_backends.ModelBackendTest)', 'A superuser has all permissions. Refs #14795.', 'Regressiontest for #12462', 'test_has_perm (auth_tests.test_auth_backends.ModelBackendTest)', 'test_inactive_has_no_permissions (auth_tests.test_auth_backends.ModelBackendTest)', 'test_anonymous_has_no_permissions (auth_tests.test_auth_backends.CustomPermissionsUserModelBackendTest)', 'test_authentication_without_credentials (auth_tests.test_auth_backends.CustomPermissionsUserModelBackendTest)', 'test_custom_perms (auth_tests.test_auth_backends.CustomPermissionsUserModelBackendTest)', 'test_has_perm (auth_tests.test_auth_backends.CustomPermissionsUserModelBackendTest)', 'test_inactive_has_no_permissions (auth_tests.test_auth_backends.CustomPermissionsUserModelBackendTest)', 'test_anonymous_has_no_permissions (auth_tests.test_auth_backends.ExtensionUserModelBackendTest)', 'test_authentication_without_credentials (auth_tests.test_auth_backends.ExtensionUserModelBackendTest)', 'test_custom_perms (auth_tests.test_auth_backends.ExtensionUserModelBackendTest)', 'test_has_perm (auth_tests.test_auth_backends.ExtensionUserModelBackendTest)', 'test_inactive_has_no_permissions (auth_tests.test_auth_backends.ExtensionUserModelBackendTest)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-12198: resolved: True
+2026-09-20 21:13:26,293 - INFO - Attempting to stop container sweb.eval.django__django-12198.86d0c801f7d477b23e1a...
+2026-09-20 21:13:41,499 - INFO - Container sweb.eval.django__django-12198.86d0c801f7d477b23e1a stopped successfully.
+2026-09-20 21:13:41,499 - INFO - Attempting to remove container sweb.eval.django__django-12198.86d0c801f7d477b23e1a...
+2026-09-20 21:13:41,570 - INFO - Container sweb.eval.django__django-12198.86d0c801f7d477b23e1a removed successfully.

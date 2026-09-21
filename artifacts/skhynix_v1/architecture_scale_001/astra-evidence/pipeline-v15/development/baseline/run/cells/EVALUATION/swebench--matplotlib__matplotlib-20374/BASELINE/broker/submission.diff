@@ -1,0 +1,108 @@
+diff --git a/lib/matplotlib/sphinxext/plot_directive.py b/lib/matplotlib/sphinxext/plot_directive.py
+index 890eca2..54bfa20 100644
+--- a/lib/matplotlib/sphinxext/plot_directive.py
++++ b/lib/matplotlib/sphinxext/plot_directive.py
+@@ -541,7 +541,8 @@ def render_figures(code, code_path, output_dir, output_base, context,
+     """
+     formats = get_plot_formats(config)
+ 
+-    # Try to determine if all images already exist
++    # Try to determine if all images already exist.  Context-dependent plots
++    # must always run to update the shared namespace, even if images exist.
+ 
+     is_doctest, code_pieces = _split_code_at_show(code)
+ 
+@@ -549,7 +550,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
+     all_exists = True
+     img = ImageFile(output_base, output_dir)
+     for format, dpi in formats:
+-        if out_of_date(code_path, img.filename(format)):
++        if context or out_of_date(code_path, img.filename(format)):
+             all_exists = False
+             break
+         img.formats.append(format)
+@@ -569,7 +570,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
+             else:
+                 img = ImageFile('%s_%02d' % (output_base, j), output_dir)
+             for fmt, dpi in formats:
+-                if out_of_date(code_path, img.filename(fmt)):
++                if context or out_of_date(code_path, img.filename(fmt)):
+                     all_exists = False
+                     break
+                 img.formats.append(fmt)
+diff --git a/lib/matplotlib/tests/test_sphinxext.py b/lib/matplotlib/tests/test_sphinxext.py
+index 5d48a98..6ab7620 100644
+--- a/lib/matplotlib/tests/test_sphinxext.py
++++ b/lib/matplotlib/tests/test_sphinxext.py
+@@ -62,3 +62,71 @@ def test_tinypages(tmpdir):
+     assert b'plot-directive my-class my-other-class' in html_contents
+     # check that the multi-image caption is applied twice
+     assert html_contents.count(b'This caption applies to both plots.') == 2
++
++
++@pytest.mark.parametrize('figure_count', [1, 2])
++def test_plot_context_include(tmp_path, figure_count):
++    source_dir = tmp_path / 'source'
++    source_dir.mkdir()
++    (source_dir / 'conf.py').write_text(
++        "extensions = ['matplotlib.sphinxext.plot_directive']\n"
++        "master_doc = 'index'\n"
++        "plot_formats = ['png']\n", encoding='utf-8')
++    (source_dir / 'index.rst').write_text(f'''\
++Context plots
++=============
++
++.. plot::
++   :context:
++
++   from pathlib import Path
++   with Path('context_runs').open('a') as log:
++       log.write('x')
++   a = 1
++   for _ in range({figure_count}):
++       plt.figure()
++       plt.plot(range(2))
++
++.. plot::
++
++   from pathlib import Path
++   with Path('cached_runs').open('a') as log:
++       log.write('x')
++   plt.plot(range(3))
++
++.. plot::
++   :context: close-figs
++
++   assert a == 1
++
++.. include:: included.txt
++''', encoding='utf-8')
++    included = source_dir / 'included.txt'
++    included.write_text('Original text.\n', encoding='utf-8')
++    html_dir = tmp_path / 'html'
++    cmd = [sys.executable, '-msphinx', '-W', '-b', 'html',
++           '-d', str(tmp_path / 'doctrees'), str(source_dir), str(html_dir)]
++
++    def build():
++        proc = Popen(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True,
++                     env={**os.environ, "MPLBACKEND": ""})
++        out, err = proc.communicate()
++        assert proc.returncode == 0, \
++            f"sphinx build failed with stdout:\n{out}\nstderr:\n{err}\n"
++        assert not err
++
++    build()
++    assert (source_dir / 'context_runs').read_text() == 'x'
++    assert (source_dir / 'cached_runs').read_text() == 'x'
++
++    # Only the included file changes; the plot source and images stay current.
++    included.write_text('Updated text.\n', encoding='utf-8')
++    build()
++    assert 'Updated text.' in (html_dir / 'index.html').read_text()
++    assert (source_dir / 'context_runs').read_text() == 'xx'
++    assert (source_dir / 'cached_runs').read_text() == 'x'
++
++    # With no further changes, Sphinx does not run any plot directives.
++    build()
++    assert (source_dir / 'context_runs').read_text() == 'xx'
++    assert (source_dir / 'cached_runs').read_text() == 'x'

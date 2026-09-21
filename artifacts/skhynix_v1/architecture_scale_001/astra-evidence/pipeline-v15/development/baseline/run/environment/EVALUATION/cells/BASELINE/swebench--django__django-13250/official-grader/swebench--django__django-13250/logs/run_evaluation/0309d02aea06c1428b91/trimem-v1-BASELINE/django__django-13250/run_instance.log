@@ -1,0 +1,457 @@
+2026-09-20 21:02:30,363 - INFO - Creating container for django__django-13250...
+2026-09-20 21:02:30,395 - INFO - Container for django__django-13250 created: 8e724b2c894b64b3a189d393a89b0d8c5ea7feabf3665f77946ae1b01e488490
+2026-09-20 21:02:30,496 - INFO - Container for django__django-13250 started: 8e724b2c894b64b3a189d393a89b0d8c5ea7feabf3665f77946ae1b01e488490
+2026-09-20 21:02:30,497 - INFO - Intermediate patch for django__django-13250 written to logs/run_evaluation/0309d02aea06c1428b91/trimem-v1-BASELINE/django__django-13250/patch.diff, now applying to container...
+2026-09-20 21:02:30,584 - INFO - >>>>> Applied Patch:
+Checking patch django/db/backends/base/features.py...
+Checking patch django/db/backends/oracle/features.py...
+Checking patch django/db/backends/sqlite3/base.py...
+Checking patch django/db/backends/sqlite3/features.py...
+Checking patch django/db/models/fields/json.py...
+Checking patch docs/releases/3.1.txt...
+Checking patch docs/topics/db/queries.txt...
+Checking patch tests/model_fields/test_jsonfield.py...
+Applied patch django/db/backends/base/features.py cleanly.
+Applied patch django/db/backends/oracle/features.py cleanly.
+Applied patch django/db/backends/sqlite3/base.py cleanly.
+Applied patch django/db/backends/sqlite3/features.py cleanly.
+Applied patch django/db/models/fields/json.py cleanly.
+Applied patch docs/releases/3.1.txt cleanly.
+Applied patch docs/topics/db/queries.txt cleanly.
+Applied patch tests/model_fields/test_jsonfield.py cleanly.
+
+2026-09-20 21:02:31,822 - INFO - Git diff before:
+diff --git a/django/db/backends/base/features.py b/django/db/backends/base/features.py
+index 877dd0ed88..3869506125 100644
+--- a/django/db/backends/base/features.py
++++ b/django/db/backends/base/features.py
+@@ -295,6 +295,8 @@ class BaseDatabaseFeatures:
+     has_native_json_field = False
+     # Does the backend use PostgreSQL-style JSON operators like '->'?
+     has_json_operators = False
++    # Does the backend support __contains and __contained_by on JSONField?
++    supports_json_field_contains = True
+ 
+     def __init__(self, connection):
+         self.connection = connection
+diff --git a/django/db/backends/oracle/features.py b/django/db/backends/oracle/features.py
+index c497a7c0b6..e78431cc56 100644
+--- a/django/db/backends/oracle/features.py
++++ b/django/db/backends/oracle/features.py
+@@ -60,6 +60,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
+     allows_multiple_constraints_on_same_fields = False
+     supports_boolean_expr_in_select_clause = False
+     supports_primitives_in_json_field = False
++    supports_json_field_contains = False
+ 
+     @cached_property
+     def introspected_field_types(self):
+diff --git a/django/db/backends/sqlite3/base.py b/django/db/backends/sqlite3/base.py
+index 26863d282f..8a105d4f35 100644
+--- a/django/db/backends/sqlite3/base.py
++++ b/django/db/backends/sqlite3/base.py
+@@ -5,7 +5,6 @@ import datetime
+ import decimal
+ import functools
+ import hashlib
+-import json
+ import math
+ import operator
+ import re
+@@ -235,7 +234,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
+         create_deterministic_function('DEGREES', 1, none_guard(math.degrees))
+         create_deterministic_function('EXP', 1, none_guard(math.exp))
+         create_deterministic_function('FLOOR', 1, none_guard(math.floor))
+-        create_deterministic_function('JSON_CONTAINS', 2, _sqlite_json_contains)
+         create_deterministic_function('LN', 1, none_guard(math.log))
+         create_deterministic_function('LOG', 2, none_guard(lambda x, y: math.log(y, x)))
+         create_deterministic_function('LPAD', 3, _sqlite_lpad)
+@@ -601,11 +599,3 @@ def _sqlite_lpad(text, length, fill_text):
+ @none_guard
+ def _sqlite_rpad(text, length, fill_text):
+     return (text + fill_text * length)[:length]
+-
+-
+-@none_guard
+-def _sqlite_json_contains(haystack, needle):
+-    target, candidate = json.loads(haystack), json.loads(needle)
+-    if isinstance(target, dict) and isinstance(candidate, dict):
+-        return target.items() >= candidate.items()
+-    return target == candidate
+diff --git a/django/db/backends/sqlite3/features.py b/django/db/backends/sqlite3/features.py
+index 9e5ce4c4ae..555d1f6a84 100644
+--- a/django/db/backends/sqlite3/features.py
++++ b/django/db/backends/sqlite3/features.py
+@@ -43,6 +43,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
+     supports_aggregate_filter_clause = Database.sqlite_version_info >= (3, 30, 1)
+     supports_order_by_nulls_modifier = Database.sqlite_version_info >= (3, 30, 0)
+     order_by_nulls_first = True
++    supports_json_field_contains = False
+ 
+     @cached_property
+     def supports_atomic_references_rename(self):
+diff --git a/django/db/models/fields/json.py b/django/db/models/fields/json.py
+index b82c6a82e2..7199d86e04 100644
+--- a/django/db/models/fields/json.py
++++ b/django/db/models/fields/json.py
+@@ -140,28 +140,30 @@ class DataContains(PostgresOperatorLookup):
+     postgres_operator = '@>'
+ 
+     def as_sql(self, compiler, connection):
++        if not connection.features.supports_json_field_contains:
++            raise NotSupportedError(
++                'contains lookup is not supported on this database backend.'
++            )
+         lhs, lhs_params = self.process_lhs(compiler, connection)
+         rhs, rhs_params = self.process_rhs(compiler, connection)
+         params = tuple(lhs_params) + tuple(rhs_params)
+         return 'JSON_CONTAINS(%s, %s)' % (lhs, rhs), params
+ 
+-    def as_oracle(self, compiler, connection):
+-        raise NotSupportedError('contains lookup is not supported on Oracle.')
+-
+ 
+ class ContainedBy(PostgresOperatorLookup):
+     lookup_name = 'contained_by'
+     postgres_operator = '<@'
+ 
+     def as_sql(self, compiler, connection):
++        if not connection.features.supports_json_field_contains:
++            raise NotSupportedError(
++                'contained_by lookup is not supported on this database backend.'
++            )
+         lhs, lhs_params = self.process_lhs(compiler, connection)
+         rhs, rhs_params = self.process_rhs(compiler, connection)
+         params = tuple(rhs_params) + tuple(lhs_params)
+         return 'JSON_CONTAINS(%s, %s)' % (rhs, lhs), params
+ 
+-    def as_oracle(self, compiler, connection):
+-        raise NotSupportedError('contained_by lookup is not supported on Oracle.')
+-
+ 
+ class HasKeyLookup(PostgresOperatorLookup):
+     logical_operator = None
+diff --git a/docs/releases/3.1.txt b/docs/releases/3.1.txt
+index cd74eb81cb..fa06a5cdc2 100644
+--- a/docs/releases/3.1.txt
++++ b/docs/releases/3.1.txt
+@@ -533,7 +533,9 @@ backends.
+   ``DatabaseFeatures.supports_json_field`` to ``False``. If storing primitives
+   is not supported, set ``DatabaseFeatures.supports_primitives_in_json_field``
+   to ``False``. If there is a true datatype for JSON, set
+-  ``DatabaseFeatures.has_native_json_field`` to ``True``.
++  ``DatabaseFeatures.has_native_json_field`` to ``True``. If ``jsonfield.contains``
++  and ``jsonfield.contained_by`` are not supported, set
++  ``DatabaseFeatures.supports_json_field_contains`` to ``False``.
+ 
+ * Third party database backends must implement introspection for ``JSONField``
+   or set ``can_introspect_json_field`` to ``False``.
+diff --git a/docs/topics/db/queries.txt b/docs/topics/db/queries.txt
+index 793c0b48ad..a56f9bf078 100644
+--- a/docs/topics/db/queries.txt
++++ b/docs/topics/db/queries.txt
+@@ -960,9 +960,9 @@ contained in the top-level of the field. For example::
+     >>> Dog.objects.filter(data__contains={'breed': 'collie'})
+     <QuerySet [<Dog: Meg>]>
+ 
+-.. admonition:: Oracle
++.. admonition:: Oracle and SQLite
+ 
+-    ``contains`` is not supported on Oracle.
++    ``contains`` is not supported on Oracle and SQLite.
+ 
+ .. fieldlookup:: jsonfield.contained_by
+ 
+@@ -984,9 +984,9 @@ subset of those in the value passed. For example::
+     >>> Dog.objects.filter(data__contained_by={'breed': 'collie'})
+     <QuerySet [<Dog: Fred>]>
+ 
+-.. admonition:: Oracle
++.. admonition:: Oracle and SQLite
+ 
+-    ``contained_by`` is not supported on Oracle.
++    ``contained_by`` is not supported on Oracle and SQLite.
+ 
+ .. fieldlookup:: jsonfield.has_key
+ 
+diff --git a/tests/model_fields/test_jsonfield.py b/tests/model_fields/test_jsonfield.py
+index 9a9e1a1286..b64da010fd 100644
+--- a/tests/model_fields/test_jsonfield.py
++++ b/tests/model_fields/test_jsonfield.py
+@@ -1,6 +1,6 @@
+ import operator
+ import uuid
+-from unittest import mock, skipIf, skipUnless
++from unittest import mock, skipIf
+ 
+ from django import forms
+ from django.core import serializers
+@@ -441,17 +441,19 @@ class TestQuerying(TestCase):
+             [self.objs[3], self.objs[4], self.objs[6]],
+         )
+ 
+-    @skipIf(
+-        connection.vendor == 'oracle',
+-        "Oracle doesn't support contains lookup.",
+-    )
++    @skipUnlessDBFeature('supports_json_field_contains')
+     def test_contains(self):
+         tests = [
+             ({}, self.objs[2:5] + self.objs[6:8]),
+             ({'baz': {'a': 'b', 'c': 'd'}}, [self.objs[7]]),
++            ({'baz': {'a': 'b'}}, [self.objs[7]]),
++            ({'baz': {'c': 'd'}}, [self.objs[7]]),
+             ({'k': True, 'l': False}, [self.objs[6]]),
+             ({'d': ['e', {'f': 'g'}]}, [self.objs[4]]),
++            ({'d': ['e']}, [self.objs[4]]),
+             ([1, [2]], [self.objs[5]]),
++            ([1], [self.objs[5]]),
++            ([[2]], [self.objs[5]]),
+             ({'n': [None]}, [self.objs[4]]),
+             ({'j': None}, [self.objs[4]]),
+         ]
+@@ -460,40 +462,49 @@ class TestQuerying(TestCase):
+                 qs = NullableJSONModel.objects.filter(value__contains=value)
+                 self.assertSequenceEqual(qs, expected)
+ 
+-    @skipUnless(
+-        connection.vendor == 'oracle',
+-        "Oracle doesn't support contains lookup.",
+-    )
++    @skipIfDBFeature('supports_json_field_contains')
+     def test_contains_unsupported(self):
+-        msg = 'contains lookup is not supported on Oracle.'
+-        with self.assertRaisesMessage(NotSupportedError, msg):
+-            NullableJSONModel.objects.filter(
+-                value__contains={'baz': {'a': 'b', 'c': 'd'}},
+-            ).get()
++        msg = 'contains lookup is not supported on this database backend.'
++        for value in ({}, {'baz': {'a': 'b'}}, [1], KeyTransform('bax', 'value')):
++            with self.subTest(value=value):
++                with self.assertRaisesMessage(NotSupportedError, msg):
++                    NullableJSONModel.objects.filter(value__contains=value).get()
+ 
+-    @skipUnlessDBFeature('supports_primitives_in_json_field')
++    @skipUnlessDBFeature('supports_primitives_in_json_field', 'supports_json_field_contains')
+     def test_contains_primitives(self):
+         for value in self.primitives:
+             with self.subTest(value=value):
+                 qs = NullableJSONModel.objects.filter(value__contains=value)
+                 self.assertIs(qs.exists(), True)
+ 
+-    @skipIf(
+-        connection.vendor == 'oracle',
+-        "Oracle doesn't support contained_by lookup.",
+-    )
++    @skipUnlessDBFeature('supports_json_field_contains')
+     def test_contained_by(self):
+         qs = NullableJSONModel.objects.filter(value__contained_by={'a': 'b', 'c': 14, 'h': True})
+         self.assertSequenceEqual(qs, self.objs[2:4])
+ 
+-    @skipUnless(
+-        connection.vendor == 'oracle',
+-        "Oracle doesn't support contained_by lookup.",
+-    )
++    @skipUnlessDBFeature('supports_json_field_contains')
++    def test_contained_by_nested(self):
++        tests = [
++            ({'baz': {'a': 'b'}}, {'baz': {'a': 'b', 'c': 'd'}}),
++            ({'d': ['e']}, {'d': ['e', {'f': 'g'}]}),
++            ([1], [1, [2]]),
++            ([[2]], [1, [2]]),
++        ]
++        for value, containing in tests:
++            with self.subTest(value=value, containing=containing):
++                obj = NullableJSONModel.objects.create(value=value)
++                self.assertSequenceEqual(
++                    NullableJSONModel.objects.filter(pk=obj.pk, value__contained_by=containing),
++                    [obj],
++                )
++
++    @skipIfDBFeature('supports_json_field_contains')
+     def test_contained_by_unsupported(self):
+-        msg = 'contained_by lookup is not supported on Oracle.'
+-        with self.assertRaisesMessage(NotSupportedError, msg):
+-            NullableJSONModel.objects.filter(value__contained_by={'a': 'b'}).get()
++        msg = 'contained_by lookup is not supported on this database backend.'
++        for value in ({}, {'baz': {'a': 'b'}}, [1], KeyTransform('bax', 'value')):
++            with self.subTest(value=value):
++                with self.assertRaisesMessage(NotSupportedError, msg):
++                    NullableJSONModel.objects.filter(value__contained_by=value).get()
+ 
+     def test_deep_values(self):
+         qs = NullableJSONModel.objects.values_list('value__k__l')
+@@ -679,8 +690,7 @@ class TestQuerying(TestCase):
+             ('value__baz__has_any_keys', ['a', 'x']),
+             ('value__has_key', KeyTextTransform('foo', 'value')),
+         )
+-        # contained_by and contains lookups are not supported on Oracle.
+-        if connection.vendor != 'oracle':
++        if connection.features.supports_json_field_contains:
+             tests += (
+                 ('value__contains', KeyTransform('bax', 'value')),
+                 ('value__baz__contained_by', {'a': 'b', 'c': 'd', 'e': 'f'}),
+2026-09-20 21:02:31,822 - INFO - Eval script for django__django-13250 written to logs/run_evaluation/0309d02aea06c1428b91/trimem-v1-BASELINE/django__django-13250/eval.sh; copying to container...
+2026-09-20 21:02:35,420 - INFO - Test runtime: 3.54 seconds
+2026-09-20 21:02:35,420 - INFO - Test output for django__django-13250 written to logs/run_evaluation/0309d02aea06c1428b91/trimem-v1-BASELINE/django__django-13250/test_output.txt
+2026-09-20 21:02:35,488 - INFO - Git diff after:
+diff --git a/django/db/backends/base/features.py b/django/db/backends/base/features.py
+index 877dd0ed88..3869506125 100644
+--- a/django/db/backends/base/features.py
++++ b/django/db/backends/base/features.py
+@@ -295,6 +295,8 @@ class BaseDatabaseFeatures:
+     has_native_json_field = False
+     # Does the backend use PostgreSQL-style JSON operators like '->'?
+     has_json_operators = False
++    # Does the backend support __contains and __contained_by on JSONField?
++    supports_json_field_contains = True
+ 
+     def __init__(self, connection):
+         self.connection = connection
+diff --git a/django/db/backends/oracle/features.py b/django/db/backends/oracle/features.py
+index c497a7c0b6..e78431cc56 100644
+--- a/django/db/backends/oracle/features.py
++++ b/django/db/backends/oracle/features.py
+@@ -60,6 +60,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
+     allows_multiple_constraints_on_same_fields = False
+     supports_boolean_expr_in_select_clause = False
+     supports_primitives_in_json_field = False
++    supports_json_field_contains = False
+ 
+     @cached_property
+     def introspected_field_types(self):
+diff --git a/django/db/backends/sqlite3/base.py b/django/db/backends/sqlite3/base.py
+index 26863d282f..8a105d4f35 100644
+--- a/django/db/backends/sqlite3/base.py
++++ b/django/db/backends/sqlite3/base.py
+@@ -5,7 +5,6 @@ import datetime
+ import decimal
+ import functools
+ import hashlib
+-import json
+ import math
+ import operator
+ import re
+@@ -235,7 +234,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
+         create_deterministic_function('DEGREES', 1, none_guard(math.degrees))
+         create_deterministic_function('EXP', 1, none_guard(math.exp))
+         create_deterministic_function('FLOOR', 1, none_guard(math.floor))
+-        create_deterministic_function('JSON_CONTAINS', 2, _sqlite_json_contains)
+         create_deterministic_function('LN', 1, none_guard(math.log))
+         create_deterministic_function('LOG', 2, none_guard(lambda x, y: math.log(y, x)))
+         create_deterministic_function('LPAD', 3, _sqlite_lpad)
+@@ -601,11 +599,3 @@ def _sqlite_lpad(text, length, fill_text):
+ @none_guard
+ def _sqlite_rpad(text, length, fill_text):
+     return (text + fill_text * length)[:length]
+-
+-
+-@none_guard
+-def _sqlite_json_contains(haystack, needle):
+-    target, candidate = json.loads(haystack), json.loads(needle)
+-    if isinstance(target, dict) and isinstance(candidate, dict):
+-        return target.items() >= candidate.items()
+-    return target == candidate
+diff --git a/django/db/backends/sqlite3/features.py b/django/db/backends/sqlite3/features.py
+index 9e5ce4c4ae..555d1f6a84 100644
+--- a/django/db/backends/sqlite3/features.py
++++ b/django/db/backends/sqlite3/features.py
+@@ -43,6 +43,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
+     supports_aggregate_filter_clause = Database.sqlite_version_info >= (3, 30, 1)
+     supports_order_by_nulls_modifier = Database.sqlite_version_info >= (3, 30, 0)
+     order_by_nulls_first = True
++    supports_json_field_contains = False
+ 
+     @cached_property
+     def supports_atomic_references_rename(self):
+diff --git a/django/db/models/fields/json.py b/django/db/models/fields/json.py
+index b82c6a82e2..7199d86e04 100644
+--- a/django/db/models/fields/json.py
++++ b/django/db/models/fields/json.py
+@@ -140,28 +140,30 @@ class DataContains(PostgresOperatorLookup):
+     postgres_operator = '@>'
+ 
+     def as_sql(self, compiler, connection):
++        if not connection.features.supports_json_field_contains:
++            raise NotSupportedError(
++                'contains lookup is not supported on this database backend.'
++            )
+         lhs, lhs_params = self.process_lhs(compiler, connection)
+         rhs, rhs_params = self.process_rhs(compiler, connection)
+         params = tuple(lhs_params) + tuple(rhs_params)
+         return 'JSON_CONTAINS(%s, %s)' % (lhs, rhs), params
+ 
+-    def as_oracle(self, compiler, connection):
+-        raise NotSupportedError('contains lookup is not supported on Oracle.')
+-
+ 
+ class ContainedBy(PostgresOperatorLookup):
+     lookup_name = 'contained_by'
+     postgres_operator = '<@'
+ 
+     def as_sql(self, compiler, connection):
++        if not connection.features.supports_json_field_contains:
++            raise NotSupportedError(
++                'contained_by lookup is not supported on this database backend.'
++            )
+         lhs, lhs_params = self.process_lhs(compiler, connection)
+         rhs, rhs_params = self.process_rhs(compiler, connection)
+         params = tuple(rhs_params) + tuple(lhs_params)
+         return 'JSON_CONTAINS(%s, %s)' % (rhs, lhs), params
+ 
+-    def as_oracle(self, compiler, connection):
+-        raise NotSupportedError('contained_by lookup is not supported on Oracle.')
+-
+ 
+ class HasKeyLookup(PostgresOperatorLookup):
+     logical_operator = None
+diff --git a/docs/releases/3.1.txt b/docs/releases/3.1.txt
+index cd74eb81cb..fa06a5cdc2 100644
+--- a/docs/releases/3.1.txt
++++ b/docs/releases/3.1.txt
+@@ -533,7 +533,9 @@ backends.
+   ``DatabaseFeatures.supports_json_field`` to ``False``. If storing primitives
+   is not supported, set ``DatabaseFeatures.supports_primitives_in_json_field``
+   to ``False``. If there is a true datatype for JSON, set
+-  ``DatabaseFeatures.has_native_json_field`` to ``True``.
++  ``DatabaseFeatures.has_native_json_field`` to ``True``. If ``jsonfield.contains``
++  and ``jsonfield.contained_by`` are not supported, set
++  ``DatabaseFeatures.supports_json_field_contains`` to ``False``.
+ 
+ * Third party database backends must implement introspection for ``JSONField``
+   or set ``can_introspect_json_field`` to ``False``.
+diff --git a/docs/topics/db/queries.txt b/docs/topics/db/queries.txt
+index 793c0b48ad..a56f9bf078 100644
+--- a/docs/topics/db/queries.txt
++++ b/docs/topics/db/queries.txt
+@@ -960,9 +960,9 @@ contained in the top-level of the field. For example::
+     >>> Dog.objects.filter(data__contains={'breed': 'collie'})
+     <QuerySet [<Dog: Meg>]>
+ 
+-.. admonition:: Oracle
++.. admonition:: Oracle and SQLite
+ 
+-    ``contains`` is not supported on Oracle.
++    ``contains`` is not supported on Oracle and SQLite.
+ 
+ .. fieldlookup:: jsonfield.contained_by
+ 
+@@ -984,9 +984,9 @@ subset of those in the value passed. For example::
+     >>> Dog.objects.filter(data__contained_by={'breed': 'collie'})
+     <QuerySet [<Dog: Fred>]>
+ 
+-.. admonition:: Oracle
++.. admonition:: Oracle and SQLite
+ 
+-    ``contained_by`` is not supported on Oracle.
++    ``contained_by`` is not supported on Oracle and SQLite.
+ 
+ .. fieldlookup:: jsonfield.has_key
+2026-09-20 21:02:35,488 - INFO - Git diff changed after running eval script
+2026-09-20 21:02:35,488 - INFO - Grading answer for django__django-13250...
+2026-09-20 21:02:35,489 - INFO - report: {'django__django-13250': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_contained_by_unsupported (model_fields.test_jsonfield.TestQuerying)', 'test_contains_unsupported (model_fields.test_jsonfield.TestQuerying)'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_deconstruct (model_fields.test_jsonfield.TestMethods)', 'test_deconstruct_custom_encoder_decoder (model_fields.test_jsonfield.TestMethods)', 'test_get_transforms (model_fields.test_jsonfield.TestMethods)', 'test_key_transform_text_lookup_mixin_non_key_transform (model_fields.test_jsonfield.TestMethods)', 'test_custom_encoder (model_fields.test_jsonfield.TestValidation)', 'test_invalid_decoder (model_fields.test_jsonfield.TestValidation)', 'test_invalid_encoder (model_fields.test_jsonfield.TestValidation)', 'test_validation_error (model_fields.test_jsonfield.TestValidation)', 'test_formfield (model_fields.test_jsonfield.TestFormField)', 'test_formfield_custom_encoder_decoder (model_fields.test_jsonfield.TestFormField)', 'test_custom_encoder_decoder (model_fields.test_jsonfield.JSONFieldTests)', 'test_db_check_constraints (model_fields.test_jsonfield.JSONFieldTests)', 'test_invalid_value (model_fields.test_jsonfield.JSONFieldTests)', 'test_dumping (model_fields.test_jsonfield.TestSerialization)', 'test_loading (model_fields.test_jsonfield.TestSerialization)', 'test_xml_serialization (model_fields.test_jsonfield.TestSerialization)', 'test_dict (model_fields.test_jsonfield.TestSaveLoad)', 'test_json_null_different_from_sql_null (model_fields.test_jsonfield.TestSaveLoad)', 'test_list (model_fields.test_jsonfield.TestSaveLoad)', 'test_null (model_fields.test_jsonfield.TestSaveLoad)', 'test_primitives (model_fields.test_jsonfield.TestSaveLoad)', 'test_realistic_object (model_fields.test_jsonfield.TestSaveLoad)', 'test_deep_lookup_array (model_fields.test_jsonfield.TestQuerying)', 'test_deep_lookup_mixed (model_fields.test_jsonfield.TestQuerying)', 'test_deep_lookup_objs (model_fields.test_jsonfield.TestQuerying)', 'test_deep_lookup_transform (model_fields.test_jsonfield.TestQuerying)', 'test_deep_values (model_fields.test_jsonfield.TestQuerying)', 'test_exact (model_fields.test_jsonfield.TestQuerying)', 'test_exact_complex (model_fields.test_jsonfield.TestQuerying)', 'test_has_any_keys (model_fields.test_jsonfield.TestQuerying)', 'test_has_key (model_fields.test_jsonfield.TestQuerying)', 'test_has_key_deep (model_fields.test_jsonfield.TestQuerying)', 'test_has_key_list (model_fields.test_jsonfield.TestQuerying)', 'test_has_key_null_value (model_fields.test_jsonfield.TestQuerying)', 'test_has_keys (model_fields.test_jsonfield.TestQuerying)', 'test_isnull (model_fields.test_jsonfield.TestQuerying)', 'test_isnull_key (model_fields.test_jsonfield.TestQuerying)', 'test_isnull_key_or_none (model_fields.test_jsonfield.TestQuerying)', 'test_key_contains (model_fields.test_jsonfield.TestQuerying)', 'test_key_endswith (model_fields.test_jsonfield.TestQuerying)', 'test_key_escape (model_fields.test_jsonfield.TestQuerying)', 'test_key_icontains (model_fields.test_jsonfield.TestQuerying)', 'test_key_iendswith (model_fields.test_jsonfield.TestQuerying)', 'test_key_iexact (model_fields.test_jsonfield.TestQuerying)', 'test_key_iregex (model_fields.test_jsonfield.TestQuerying)', 'test_key_istartswith (model_fields.test_jsonfield.TestQuerying)', 'test_key_regex (model_fields.test_jsonfield.TestQuerying)', 'test_key_sql_injection_escape (model_fields.test_jsonfield.TestQuerying)', 'test_key_startswith (model_fields.test_jsonfield.TestQuerying)', 'test_key_transform_expression (model_fields.test_jsonfield.TestQuerying)', 'test_key_transform_raw_expression (model_fields.test_jsonfield.TestQuerying)', 'test_lookups_with_key_transform (model_fields.test_jsonfield.TestQuerying)', 'test_nested_key_transform_expression (model_fields.test_jsonfield.TestQuerying)', 'test_nested_key_transform_raw_expression (model_fields.test_jsonfield.TestQuerying)', 'test_none_key (model_fields.test_jsonfield.TestQuerying)', 'test_none_key_and_exact_lookup (model_fields.test_jsonfield.TestQuerying)', 'test_none_key_exclude (model_fields.test_jsonfield.TestQuerying)', 'test_obj_subquery_lookup (model_fields.test_jsonfield.TestQuerying)', 'test_ordering_by_transform (model_fields.test_jsonfield.TestQuerying)', 'test_ordering_grouping_by_count (model_fields.test_jsonfield.TestQuerying)', 'test_ordering_grouping_by_key_transform (model_fields.test_jsonfield.TestQuerying)', 'test_shallow_list_lookup (model_fields.test_jsonfield.TestQuerying)', 'test_shallow_lookup_obj_target (model_fields.test_jsonfield.TestQuerying)', 'test_shallow_obj_lookup (model_fields.test_jsonfield.TestQuerying)', 'test_usage_in_subquery (model_fields.test_jsonfield.TestQuerying)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-13250: resolved: True
+2026-09-20 21:02:35,489 - INFO - Attempting to stop container sweb.eval.django__django-13250.0309d02aea06c1428b91...
+2026-09-20 21:02:51,967 - INFO - Container sweb.eval.django__django-13250.0309d02aea06c1428b91 stopped successfully.
+2026-09-20 21:02:51,967 - INFO - Attempting to remove container sweb.eval.django__django-13250.0309d02aea06c1428b91...
+2026-09-20 21:02:52,041 - INFO - Container sweb.eval.django__django-13250.0309d02aea06c1428b91 removed successfully.

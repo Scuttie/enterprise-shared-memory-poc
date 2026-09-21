@@ -1,0 +1,6 @@
+{
+  "dataset": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/environment/EVALUATION/cells/BASELINE/swebench--django__django-14374/official-grader/swebench--django__django-14374/dataset.json",
+  "split": "test",
+  "task_repo": null,
+  "created_at": "2026-09-20T11:10:37+00:00"
+}

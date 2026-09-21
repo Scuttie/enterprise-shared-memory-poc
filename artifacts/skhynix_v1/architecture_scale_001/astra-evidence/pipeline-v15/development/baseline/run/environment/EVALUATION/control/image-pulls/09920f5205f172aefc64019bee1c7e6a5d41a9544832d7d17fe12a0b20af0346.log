@@ -1,0 +1,25 @@
+docker.io/swebench/sweb.eval.x86_64.django_1776_django-11727@sha256:525b7e4310a64b5ad83d10d7536d65aa2e7fb11d7f7ea88bed8d6d45370b51bc: Pulling from swebench/sweb.eval.x86_64.django_1776_django-11727
+3a2a96145f0d: Pulling fs layer
+52ddd30e6078: Pulling fs layer
+d83d1825e1c7: Pulling fs layer
+14050b38e5d6: Pulling fs layer
+c1fbaff9ec87: Pulling fs layer
+3a58af4f7e9d: Pulling fs layer
+580b2c775a62: Pulling fs layer
+52ddd30e6078: Download complete
+3a58af4f7e9d: Download complete
+d83d1825e1c7: Download complete
+580b2c775a62: Download complete
+3a58af4f7e9d: Pull complete
+580b2c775a62: Pull complete
+14050b38e5d6: Download complete
+c1fbaff9ec87: Download complete
+3a2a96145f0d: Download complete
+52ddd30e6078: Pull complete
+d83d1825e1c7: Pull complete
+14050b38e5d6: Pull complete
+c1fbaff9ec87: Pull complete
+3a2a96145f0d: Pull complete
+Digest: sha256:525b7e4310a64b5ad83d10d7536d65aa2e7fb11d7f7ea88bed8d6d45370b51bc
+Status: Downloaded newer image for swebench/sweb.eval.x86_64.django_1776_django-11727@sha256:525b7e4310a64b5ad83d10d7536d65aa2e7fb11d7f7ea88bed8d6d45370b51bc
+docker.io/swebench/sweb.eval.x86_64.django_1776_django-11727@sha256:525b7e4310a64b5ad83d10d7536d65aa2e7fb11d7f7ea88bed8d6d45370b51bc

@@ -1,0 +1,216 @@
+2026-09-20 19:16:45,514 - INFO - Creating container for astropy__astropy-11693...
+2026-09-20 19:16:45,548 - INFO - Container for astropy__astropy-11693 created: 3fdf4aae860e267b5b53525cf252c58511b0a33752baa512bd3dd18cf49926fe
+2026-09-20 19:16:45,639 - INFO - Container for astropy__astropy-11693 started: 3fdf4aae860e267b5b53525cf252c58511b0a33752baa512bd3dd18cf49926fe
+2026-09-20 19:16:45,640 - INFO - Intermediate patch for astropy__astropy-11693 written to logs/run_evaluation/5ab7b3e23ed0688cd1e5/trimem-v1-BASELINE/astropy__astropy-11693/patch.diff, now applying to container...
+2026-09-20 19:16:45,779 - INFO - >>>>> Applied Patch:
+Checking patch astropy/visualization/wcsaxes/tests/test_misc.py...
+Checking patch astropy/wcs/wcsapi/fitswcs.py...
+Checking patch astropy/wcs/wcsapi/tests/test_fitswcs.py...
+Applied patch astropy/visualization/wcsaxes/tests/test_misc.py cleanly.
+Applied patch astropy/wcs/wcsapi/fitswcs.py cleanly.
+Applied patch astropy/wcs/wcsapi/tests/test_fitswcs.py cleanly.
+
+2026-09-20 19:16:46,330 - INFO - Git diff before:
+diff --git a/astropy/visualization/wcsaxes/tests/test_misc.py b/astropy/visualization/wcsaxes/tests/test_misc.py
+index f48a7a454e..fb4210134a 100644
+--- a/astropy/visualization/wcsaxes/tests/test_misc.py
++++ b/astropy/visualization/wcsaxes/tests/test_misc.py
+@@ -41,6 +41,36 @@ def test_grid_regression(ignore_matplotlibrc):
+     WCSAxes(fig, [0.1, 0.1, 0.8, 0.8])
+ 
+ 
++def test_grid_with_distortion(ignore_matplotlibrc):
++    # Regression test for #11693: sampling a grid can include world
++    # coordinates where the iterative inverse of a SIP distortion diverges.
++    from astropy.wcs import Sip
++    from astropy.utils.exceptions import AstropyUserWarning
++
++    wcs = WCS(naxis=2)
++    a = np.array([
++        [0, 0, 6.77532513e-7, -1.76632141e-10],
++        [0, 9.49130161e-6, -1.50614321e-7, 0],
++        [7.37260409e-6, 2.07020239e-9, 0, 0],
++        [-1.20116753e-7, 0, 0, 0],
++    ])
++    b = np.array([
++        [0, 0, 1.34606617e-5, -1.41919055e-7],
++        [0, 5.85158316e-6, -1.10382462e-9, 0],
++        [1.06306407e-5, -1.36469008e-7, 0, 0],
++        [3.27391123e-9, 0, 0, 0],
++    ])
++    wcs.sip = Sip(a, b, np.zeros((4, 4)), np.zeros((4, 4)),
++                  [1221.87375165, 994.90917378])
++
++    fig = plt.figure()
++    ax = fig.add_subplot(1, 1, 1, projection=wcs)
++    ax.imshow(np.zeros((1944, 2592)))
++    ax.coords.grid(color='white', ls='solid')
++    with pytest.warns(AstropyUserWarning, match='failed to converge'):
++        fig.canvas.draw()
++
++
+ def test_format_coord_regression(ignore_matplotlibrc, tmpdir):
+     # Regression test for a bug that meant that if format_coord was called by
+     # Matplotlib before the axes were drawn, an error occurred.
+diff --git a/astropy/wcs/wcsapi/fitswcs.py b/astropy/wcs/wcsapi/fitswcs.py
+index a7539db6c1..3908a5306e 100644
+--- a/astropy/wcs/wcsapi/fitswcs.py
++++ b/astropy/wcs/wcsapi/fitswcs.py
+@@ -323,7 +323,17 @@ class FITSWCSAPIMixin(BaseLowLevelWCS, HighLevelWCSMixin):
+         return world[0] if self.world_n_dim == 1 else tuple(world)
+ 
+     def world_to_pixel_values(self, *world_arrays):
+-        pixel = self.all_world2pix(*world_arrays, 0)
++        from astropy.wcs.wcs import NoConvergence
++
++        try:
++            pixel = self.all_world2pix(*world_arrays, 0)
++        except NoConvergence as e:
++            warnings.warn(str(e), AstropyUserWarning)
++            # The exception contains flattened coordinates. Restore the shape
++            # that all_world2pix would have returned after broadcasting.
++            shape = np.broadcast(*world_arrays).shape
++            pixel = [e.best_solution[:, i].reshape(shape)
++                     for i in range(self.pixel_n_dim)]
+         return pixel[0] if self.pixel_n_dim == 1 else tuple(pixel)
+ 
+     @property
+diff --git a/astropy/wcs/wcsapi/tests/test_fitswcs.py b/astropy/wcs/wcsapi/tests/test_fitswcs.py
+index 9876f0aec3..d0d7d5fae4 100644
+--- a/astropy/wcs/wcsapi/tests/test_fitswcs.py
++++ b/astropy/wcs/wcsapi/tests/test_fitswcs.py
+@@ -771,6 +771,36 @@ def test_unrecognized_unit():
+         assert wcs.world_axis_units == ['bananas // sekonds']
+ 
+ 
++@pytest.mark.parametrize('x, y', [
++    (1000, 0),
++    ([1, 1000], [2, 0]),
++    ([[1, 1000], [1000, 1]], [[2, 0], [0, 2]]),
++    ([[1], [1000]], [2, 0]),
++    ([1, 1000], 0),
++])
++def test_world_to_pixel_values_no_convergence(x, y):
++    from astropy.wcs import NoConvergence, Sip
++
++    wcs = WCS(naxis=2)
++    a = np.zeros((3, 3))
++    a[2, 0] = 0.01
++    wcs.sip = Sip(a, np.zeros((3, 3)), None, None, [0, 0])
++
++    # The direct API should still report failure, while the WCS API should
++    # return the same best solution as quiet=True, with the usual shapes.
++    with pytest.raises(NoConvergence):
++        wcs.all_world2pix(x, y, 0)
++    expected = wcs.all_world2pix(x, y, 0, quiet=True)
++    with pytest.warns(AstropyUserWarning, match='failed to converge'):
++        actual = wcs.world_to_pixel_values(x, y)
++
++    assert isinstance(actual, tuple)
++    assert len(actual) == 2
++    for actual_axis, expected_axis in zip(actual, expected):
++        assert actual_axis.shape == expected_axis.shape
++        assert_equal(actual_axis, expected_axis)
++
++
+ def test_distortion_correlations():
+ 
+     filename = get_pkg_data_filename('../../tests/data/sip.fits')
+diff --git a/pyproject.toml b/pyproject.toml
+index c6a073875a..e7812db7a3 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,5 +1,5 @@
+ [build-system]
+-requires = ["setuptools",
++requires = ["setuptools==68.0.0",
+             "setuptools_scm>=6.2",
+             "wheel",
+             "cython==0.29.22",
+2026-09-20 19:16:46,330 - INFO - Eval script for astropy__astropy-11693 written to logs/run_evaluation/5ab7b3e23ed0688cd1e5/trimem-v1-BASELINE/astropy__astropy-11693/eval.sh; copying to container...
+2026-09-20 19:17:25,207 - INFO - Test runtime: 38.81 seconds
+2026-09-20 19:17:25,208 - INFO - Test output for astropy__astropy-11693 written to logs/run_evaluation/5ab7b3e23ed0688cd1e5/trimem-v1-BASELINE/astropy__astropy-11693/test_output.txt
+2026-09-20 19:17:25,264 - INFO - Git diff after:
+diff --git a/astropy/visualization/wcsaxes/tests/test_misc.py b/astropy/visualization/wcsaxes/tests/test_misc.py
+index f48a7a454e..fb4210134a 100644
+--- a/astropy/visualization/wcsaxes/tests/test_misc.py
++++ b/astropy/visualization/wcsaxes/tests/test_misc.py
+@@ -41,6 +41,36 @@ def test_grid_regression(ignore_matplotlibrc):
+     WCSAxes(fig, [0.1, 0.1, 0.8, 0.8])
+ 
+ 
++def test_grid_with_distortion(ignore_matplotlibrc):
++    # Regression test for #11693: sampling a grid can include world
++    # coordinates where the iterative inverse of a SIP distortion diverges.
++    from astropy.wcs import Sip
++    from astropy.utils.exceptions import AstropyUserWarning
++
++    wcs = WCS(naxis=2)
++    a = np.array([
++        [0, 0, 6.77532513e-7, -1.76632141e-10],
++        [0, 9.49130161e-6, -1.50614321e-7, 0],
++        [7.37260409e-6, 2.07020239e-9, 0, 0],
++        [-1.20116753e-7, 0, 0, 0],
++    ])
++    b = np.array([
++        [0, 0, 1.34606617e-5, -1.41919055e-7],
++        [0, 5.85158316e-6, -1.10382462e-9, 0],
++        [1.06306407e-5, -1.36469008e-7, 0, 0],
++        [3.27391123e-9, 0, 0, 0],
++    ])
++    wcs.sip = Sip(a, b, np.zeros((4, 4)), np.zeros((4, 4)),
++                  [1221.87375165, 994.90917378])
++
++    fig = plt.figure()
++    ax = fig.add_subplot(1, 1, 1, projection=wcs)
++    ax.imshow(np.zeros((1944, 2592)))
++    ax.coords.grid(color='white', ls='solid')
++    with pytest.warns(AstropyUserWarning, match='failed to converge'):
++        fig.canvas.draw()
++
++
+ def test_format_coord_regression(ignore_matplotlibrc, tmpdir):
+     # Regression test for a bug that meant that if format_coord was called by
+     # Matplotlib before the axes were drawn, an error occurred.
+diff --git a/astropy/wcs/wcsapi/fitswcs.py b/astropy/wcs/wcsapi/fitswcs.py
+index a7539db6c1..3908a5306e 100644
+--- a/astropy/wcs/wcsapi/fitswcs.py
++++ b/astropy/wcs/wcsapi/fitswcs.py
+@@ -323,7 +323,17 @@ class FITSWCSAPIMixin(BaseLowLevelWCS, HighLevelWCSMixin):
+         return world[0] if self.world_n_dim == 1 else tuple(world)
+ 
+     def world_to_pixel_values(self, *world_arrays):
+-        pixel = self.all_world2pix(*world_arrays, 0)
++        from astropy.wcs.wcs import NoConvergence
++
++        try:
++            pixel = self.all_world2pix(*world_arrays, 0)
++        except NoConvergence as e:
++            warnings.warn(str(e), AstropyUserWarning)
++            # The exception contains flattened coordinates. Restore the shape
++            # that all_world2pix would have returned after broadcasting.
++            shape = np.broadcast(*world_arrays).shape
++            pixel = [e.best_solution[:, i].reshape(shape)
++                     for i in range(self.pixel_n_dim)]
+         return pixel[0] if self.pixel_n_dim == 1 else tuple(pixel)
+ 
+     @property
+diff --git a/pyproject.toml b/pyproject.toml
+index c6a073875a..e7812db7a3 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,5 +1,5 @@
+ [build-system]
+-requires = ["setuptools",
++requires = ["setuptools==68.0.0",
+             "setuptools_scm>=6.2",
+             "wheel",
+             "cython==0.29.22",
+2026-09-20 19:17:25,264 - INFO - Git diff changed after running eval script
+2026-09-20 19:17:25,264 - INFO - Grading answer for astropy__astropy-11693...
+2026-09-20 19:17:25,287 - INFO - report: {'astropy__astropy-11693': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['astropy/wcs/wcsapi/tests/test_fitswcs.py::test_non_convergence_warning'], 'failure': []}, 'PASS_TO_PASS': {'success': ['astropy/wcs/wcsapi/tests/test_fitswcs.py::test_empty', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_simple_celestial', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values[tai]', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values[tcb]', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values[tcg]', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values[tdb]', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values[tt]', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values[ut1]', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values[utc]', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values[local]', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values_gps', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values_deprecated', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_values_time', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_high_precision', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_location_geodetic', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_location_geocentric', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_location_geocenter', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_location_missing', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_location_incomplete', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_location_unsupported', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_time_1d_unsupported_ctype', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_unrecognized_unit', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_distortion_correlations', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_custom_ctype_to_ucd_mappings', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_caching_components_and_classes', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_sub_wcsapi_attributes', 'astropy/wcs/wcsapi/tests/test_fitswcs.py::test_phys_type_polarization'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for astropy__astropy-11693: resolved: True
+2026-09-20 19:17:25,287 - INFO - Attempting to stop container sweb.eval.astropy__astropy-11693.5ab7b3e23ed0688cd1e5...
+2026-09-20 19:17:40,541 - INFO - Container sweb.eval.astropy__astropy-11693.5ab7b3e23ed0688cd1e5 stopped successfully.
+2026-09-20 19:17:40,541 - INFO - Attempting to remove container sweb.eval.astropy__astropy-11693.5ab7b3e23ed0688cd1e5...
+2026-09-20 19:17:40,616 - INFO - Container sweb.eval.astropy__astropy-11693.5ab7b3e23ed0688cd1e5 removed successfully.

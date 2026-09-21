@@ -1,3 +1,10 @@
+> ### 🖥️ SK hynix 메모리 실험을 서버에서 돌리러 왔다면
+>
+> **[`SERVER_START_HERE.md`](SERVER_START_HERE.md) 부터 읽어라.** 단계별 순서와 성공 판정이 있다.
+> 포팅 작업은 [`docs/port/AGENT_BRIEF.md`](docs/port/AGENT_BRIEF.md) 를 코딩 에이전트에 붙여넣으면 된다.
+>
+> 바로 확인: `python3.11 scripts/server_preflight.py`
+
 # Enterprise Shared Memory
 
 A governed **shared-memory service for coding agents**: it stores verified coding experience, retrieves candidates

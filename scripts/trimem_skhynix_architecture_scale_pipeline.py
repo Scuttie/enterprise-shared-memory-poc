@@ -19,6 +19,7 @@ import time
 import trimem_skhynix_architecture_pipeline as core
 from trimem_skhynix_architecture_broker import locked
 from enterprise_memory.trimem.accounting import canonical_bytes
+import trimem_skhynix_host_profile as host_profile
 
 SCHEMA = "skhynix/architecture-scale-pipeline/1.0"
 SELECTION_POLICY = "MAX_DEVELOPMENT_RESOLVED_THEN_SMALLEST_SOURCE_COUNT"
@@ -351,10 +352,10 @@ def _validate_aborted_native_launch(config, receipt, new):
             or worker_config.get("codex_binary") != execution.get("codex_binary")
             or worker_config.get("packet_sha256") != packet_sha or launch.get("packet_sha256") != packet_sha
             or worker_config.get("prompt_sha256") != refs["worker_prompt"]["sha256"] or launch.get("prompt_sha256") != refs["worker_prompt"]["sha256"]
-            or worker_config.get("model") != "gpt-6-astra" or worker_config.get("reasoning_effort") != "high"
-            or worker_config.get("authentication") != "CHATGPT"
-            or launch.get("worker_id") != worker_id or launch.get("requested_model") != "gpt-6-astra" or launch.get("reasoning_effort") != "high"
-            or launch.get("authentication") != "CHATGPT_FORCED" or launch.get("fresh_session") is not True or launch.get("resume_or_fork_used") is not False
+            or worker_config.get("model") != host_profile.solver()["model"] or worker_config.get("reasoning_effort") != host_profile.solver()["reasoning_effort"]
+            or worker_config.get("authentication") != host_profile.solver()["authentication"]
+            or launch.get("worker_id") != worker_id or launch.get("requested_model") != host_profile.solver()["model"] or launch.get("reasoning_effort") != host_profile.solver()["reasoning_effort"]
+            or launch.get("authentication") != host_profile.launch_authentication() or launch.get("fresh_session") is not True or launch.get("resume_or_fork_used") is not False
             or paths["events"].stat().st_size != 0 or paths["stderr"].stat().st_size != 0
             or any(text not in stderr for text in ("WinError 2", "CreateProcess", "Popen"))
             or any((native / name).exists() for name in ("admission.json", "output/completion.json"))
@@ -825,9 +826,9 @@ def validate_config(config, *, executing_source=None):
         if len(ids) != stage["size"] or not previous_ids <= ids:
             raise core.PipelineError("source collections must be nested exact24/120/240")
         previous_ids = ids
-        if execution.get("model") != "gpt-6-astra" or execution.get("reasoning_effort") != "high":
+        if execution.get("model") != host_profile.solver()["model"] or execution.get("reasoning_effort") != host_profile.solver()["reasoning_effort"]:
             raise core.PipelineError("all new workers must retain the requested model/high effort")
-        if (execution.get("authentication") != "CHATGPT" or execution.get("phase") != "TRAINING_RUNTIME"
+        if (execution.get("authentication") != host_profile.solver()["authentication"] or execution.get("phase") != "TRAINING_RUNTIME"
                 or execution.get("limits", {}).get("task_requests") != 120
                 or execution.get("limits", {}).get("task_seconds") != 1200):
             raise core.PipelineError("new training execution differs from common frozen budget/authentication")

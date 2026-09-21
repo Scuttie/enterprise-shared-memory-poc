@@ -18,6 +18,7 @@ import trimem_skhynix_architecture_memory as memory
 import trimem_skhynix_architecture_broker as broker_module
 from trimem_skhynix_architecture_dataset import load_architecture_rows
 from trimem_skhynix_architecture_run import load_experiment, EMPTY_BANK_SHA
+import trimem_skhynix_host_profile as host_profile
 
 SCHEMA = "skhynix/native-architecture-learning/1.0"
 REFLECTION_SCHEMA = "skhynix/native-architecture-public-reflection/2.0"
@@ -574,7 +575,7 @@ def _reflection_documents(root, enrollment, available, selected):
     public = {"schema": REFLECTION_SCHEMA, "publisher_map_sha256": memory._hash(mapping),
         "learning_version": LEARNING_VERSION, "claim_scope": CLAIM_SCOPE,
         "purpose": "Propose a common parameterized edit procedure only when actual independent public RED/edit/GREEN traces support the then-observed workflow; otherwise return proposals: []. Checkpoints from one task are not independent sources. No subgoal or final repair is certified by a test observation.",
-        "worker_launch_requirement": {"fresh_native_worker": True, "fork_turns": "none", "model": "gpt-6-astra", "tools": []},
+        "worker_launch_requirement": {"fresh_native_worker": True, "fork_turns": "none", "model": host_profile.solver()["model"], "tools": []},
         "origin_attestation": "The manager must bind actual fresh-worker launch evidence separately; these requirements are not proof of execution.",
         "proposal_schema": PROPOSALS_SCHEMA, "required_preconditions": [memory.PRECONDITION],
         "proposal_fields": {"template": ["subgoal_signature", "parameters", "preconditions", "steps", "verification_command", "language"],

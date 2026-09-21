@@ -27,6 +27,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'src'),str(ROOT/'scripts')]
 import trimem_skhynix_architecture_broker as broker_module
 from trimem_skhynix_architecture_native import canonical, digest, read as _native_read, write_new
+import trimem_skhynix_host_profile as host_profile
 
 SCHEMA='skhynix/pdf-architecture-execution/1.0'
 WORKSPACE_FIELDS=('checkout_root','image','masked_image_files','masked_image_directories','command_runner_sha256')
@@ -436,8 +437,8 @@ def execution_enrollment(config, dataset=None):
     if value!=expected or (dataset is not None and dataset!=checked_reference(config['dataset_manifest'])):
         raise ValueError('Scale execution scope differs from its immutable authority')
     phase='TRAINING_RUNTIME' if value['purpose'].startswith('TRAINING_') else 'EVALUATION_RUNTIME'
-    if (config.get('phase')!=phase or config.get('model')!='gpt-6-astra' or config.get('reasoning_effort')!='high'
-            or config.get('authentication')!='CHATGPT' or config.get('limits',{}).get('task_requests')!=120
+    if (config.get('phase')!=phase or config.get('model')!=host_profile.solver()['model'] or config.get('reasoning_effort')!=host_profile.solver()['reasoning_effort']
+            or config.get('authentication')!=host_profile.solver()['authentication'] or config.get('limits',{}).get('task_requests')!=120
             or config.get('limits',{}).get('task_seconds')!=1200):
         raise ValueError('Scale execution requires the fixed Astra/high model and120-request1200-second budget')
     if value['bank_reference'] is not None and checked_reference(value['bank_reference'])['scope'].get('org_id')!=config.get('org_id'):
@@ -789,7 +790,7 @@ def _validate_training_submission(cell_path, config, *, _broker_lock=None):
             raise ValueError('Native packet differs from the issued broker handoff')
         expected_config={'schema':SCHEMA,'linux_source_root':config['source_root'],
             'linux_cell_config':str(path),'model':config['model'],'reasoning_effort':config['reasoning_effort'],
-            'authentication':'CHATGPT','codex_binary':config['codex_binary'],'windows_python':config['windows_python'],
+            'authentication':host_profile.solver()['authentication'],'codex_binary':config['codex_binary'],'windows_python':config['windows_python'],
             'packet_sha256':issued['packet_sha256'],'prompt_sha256':local_refs['prompt.txt']['sha256'],
             'worker_timeout_seconds':max(1,handoffs[0]['response']['budget']['seconds_remaining'])}
         if (any(native_config.get(key)!=value for key,value in expected_config.items())
@@ -798,7 +799,7 @@ def _validate_training_submission(cell_path, config, *, _broker_lock=None):
         if (launch.get('schema')!='skhynix/architecture-native-worker/1.0'
                 or launch.get('worker_id')!=worker_id or launch.get('requested_model')!=config['model']
                 or launch.get('reasoning_effort')!=config['reasoning_effort']
-                or launch.get('authentication')!='CHATGPT_FORCED' or launch.get('fresh_session') is not True
+                or launch.get('authentication')!=host_profile.launch_authentication() or launch.get('fresh_session') is not True
                 or launch.get('resume_or_fork_used') is not False or launch.get('separate_model_api_client_calls')!=0
                 or launch.get('packet_sha256')!=issued['packet_sha256']
                 or launch.get('prompt_sha256')!=local_refs['prompt.txt']['sha256']
@@ -972,7 +973,7 @@ def run_workers(cell_path):
             'admission_path':windows_path(folder/'admission.json'),'prompt_path':windows_path(folder/'prompt.txt'),
             'prompt_sha256':digest(prompt),'packet_sha256':handoff['packet_sha256'],
             'codex_binary':config['codex_binary'],'windows_python':config['windows_python'],
-            'model':config['model'],'reasoning_effort':config['reasoning_effort'],'authentication':'CHATGPT',
+            'model':config['model'],'reasoning_effort':config['reasoning_effort'],'authentication':host_profile.solver()['authentication'],
             'worker_timeout_seconds':max(1,handoff['budget']['seconds_remaining'])}
         write_new(folder/'config.json',worker_config)
         argv=[config['wsl_windows_python'],windows_path(Path(config['source_root'])/'scripts/trimem_skhynix_architecture_native.py'),

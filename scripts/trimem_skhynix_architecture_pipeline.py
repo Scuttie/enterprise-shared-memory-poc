@@ -21,6 +21,7 @@ from typing import Protocol
 
 from enterprise_memory.trimem.accounting import canonical_bytes, strict_json_loads
 from trimem_skhynix_architecture_broker import locked
+import trimem_skhynix_host_profile as host_profile
 import hashlib
 
 SCHEMA = "skhynix/architecture-pipeline/1.0"
@@ -45,7 +46,12 @@ def read(path):
 
 
 def absolute(value):
-    path = Path(value)
+    """Where a recorded path lives on this host.
+
+    Evidence captured on another host names that host, so the declared remap is
+    applied before touching the filesystem. Nothing on disk is rewritten.
+    """
+    path = Path(host_profile.remap(value))
     if not path.is_absolute() or path.resolve() != path or ".." in path.parts:
         raise PipelineError("pipeline paths must be explicit canonical absolute paths")
     return path
@@ -53,13 +59,13 @@ def absolute(value):
 
 def ref(path):
     path = absolute(path)
-    return {"path": str(path), "sha256": digest(path.read_bytes())}
+    return {"path": host_profile.unmap(str(path)), "sha256": digest(path.read_bytes())}
 
 
 def check(value, *, decode=True):
     if not isinstance(value, dict) or set(value) != {"path", "sha256"} or ref(value["path"]) != value:
         raise PipelineError("immutable pipeline reference changed")
-    return read(value["path"]) if decode else Path(value["path"])
+    return read(absolute(value["path"])) if decode else absolute(value["path"])
 
 
 def retain(path, value):
@@ -79,6 +85,8 @@ def retain(path, value):
 
 def windows_path(path):
     path = absolute(path)
+    if host_profile.native_posix():
+        return str(path)
     try:
         relative = path.relative_to("/mnt/c")
     except ValueError as exc:
@@ -87,6 +95,8 @@ def windows_path(path):
 
 
 def linux_path(value):
+    if host_profile.native_posix():
+        return absolute(value)
     path = PureWindowsPath(value)
     if path.drive.lower() != "c:" or not path.is_absolute() or ".." in path.parts:
         raise PipelineError("native evidence must name an absolute C-drive path")
@@ -141,8 +151,8 @@ def _validate_config(value):
     cohort_learning = transition["previous_learning_enrollment_reference"] if transition else value["learning_enrollment_reference"]
     learning_executions = ([transition["previous_experiment_reference"], value["training_experiment_reference"]]
                            if transition else [value["training_experiment_reference"]])
-    if (training.get("phase") != "TRAINING_RUNTIME" or training.get("model") != "gpt-6-astra"
-            or training.get("reasoning_effort") not in {"ultra", "high"} or training.get("authentication") != "CHATGPT"
+    if (training.get("phase") != "TRAINING_RUNTIME" or training.get("model") != host_profile.solver()["model"]
+            or training.get("reasoning_effort") not in {"ultra", "high", host_profile.solver()["reasoning_effort"]} or training.get("authentication") != host_profile.solver()["authentication"]
             or cohort.get("phase") != "TRAINING" or cohort.get("scope") != "FULL_FIXED_COHORT"
             or cohort.get("selected_task_count") != 24 or len(cohort.get("schedule", [])) != 24
             or cohort.get("experiment_reference") != cohort_experiment
@@ -348,7 +358,7 @@ def validate_native_publication(configuration_reference, completion_reference, l
             or launch.get("reflection_sha256") != reflection_reference["sha256"]
             or launch.get("prompt_sha256") != digest(prompt) or launch.get("prompt_bytes") != len(prompt)
             or launch.get("command_sha256") != digest(canonical_bytes(command))
-            or launch.get("fresh_session") is not True or launch.get("requested_model") != "gpt-6-astra"
+            or launch.get("fresh_session") is not True or launch.get("requested_model") != host_profile.solver()["model"]
             or config.get("reasoning_effort") not in {"ultra", "high"}
             or launch.get("reasoning_effort") != config["reasoning_effort"] or launch.get("separate_model_api_client_calls") != 0
             or completion.get("schema") != "skhynix/native-reflection-completion/1.0"

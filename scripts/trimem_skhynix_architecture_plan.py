@@ -14,6 +14,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import trimem_skhynix_host_profile as host_profile
 
 SCHEMA = "skhynix/pdf-architecture-preparation/1.0"
 INVENTORY_SCHEMA = "skhynix/architecture-public-task-inventory/1.0"
@@ -246,7 +247,7 @@ def _derive(evaluation_inventory, training_inventory, context_bytes):
     return {"schema": SCHEMA, "phase": "PREPARATION", "status": STATUS, "frozen": True,
         "scientific_role": "FULL_PDF_CORE_ARCHITECTURE_ON_OFF",
         "implementation_sha256": file_sha(Path(__file__)),
-        "model": {"requested": "gpt-6-astra", "actual_snapshot_attested": False,
+        "model": {"requested": host_profile.solver()["model"], "actual_snapshot_attested": False,
             "actual_tokens": None, "actual_cost": None},
         "common_limits": limits, "arms": arms,
         "evaluation": {"inventory": evaluation_ref, "dataset": evaluation["dataset"],

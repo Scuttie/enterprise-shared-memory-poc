@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import trimem_skhynix_host_profile as host_profile
 
 
 def canonical(value):
@@ -48,7 +49,7 @@ def main():
     old_path = config_root / "architecture_001_training_execution_v6.json"
     old = read(old_path)
     original_source = Path(old["source_root"])
-    temp = Path("/mnt/c/Users/jewon/AppData/Local/Temp")
+    temp = host_profile.staging_root()
     source = temp / ("skhynix-architecture-scale-001-source-v" + str(args.version))
     source.mkdir(exist_ok=False)
     hashes = dict(old["source_sha256"])
@@ -75,7 +76,7 @@ def main():
     from trimem_harness_lock import prepare_harnesses
     from trimem_official_harness_loader_preflight import run_official_harness_loader_preflight
     import trimem_benchmark_run as benchmark
-    run_root = Path("/home/trimem-runner/skhynix-architecture-scale-001")
+    run_root = host_profile.run_root()
     registry = read(args.image_index)
     protocol = read(args.protocol)
     targets = protocol["targets"]

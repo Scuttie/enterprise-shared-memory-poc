@@ -13,6 +13,7 @@ import time
 
 import trimem_skhynix_architecture_pipeline as core
 import trimem_skhynix_architecture_scale_pipeline as scale
+import trimem_skhynix_host_profile as host_profile
 
 SCHEMA = "skhynix/architecture-reflection-recovery-pipeline/1.0"
 RECOVERY_SCHEMA = "skhynix/architecture-reflection-recovery/1.0"
@@ -116,7 +117,7 @@ def _group_jobs(manifest, original_catalog, publisher_module):
             public.get("all_representative_candidates_included") is not True or public.get("official_outcomes_used") is not False):
         _fail("Semantic grouping must bind the complete public training candidate input")
     launch = core.check(_normalized(completion["launch_reference"]))
-    if (launch.get("fresh_session") is not True or launch.get("requested_model") != "gpt-6-astra" or
+    if (launch.get("fresh_session") is not True or launch.get("requested_model") != host_profile.solver()["model"] or
             launch.get("reasoning_effort") != "high" or _normalized(launch["input_reference"]) != input_ref):
         _fail("Semantic grouping changed the requested fresh model/high session")
     response_ref = _normalized(completion["response_reference"])

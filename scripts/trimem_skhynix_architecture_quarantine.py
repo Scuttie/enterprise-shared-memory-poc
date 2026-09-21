@@ -20,6 +20,7 @@ from trimem_skhynix_architecture_broker import ArchitectureBroker, TOOLS
 from trimem_skhynix_architecture_dataset import load_architecture_rows
 from trimem_skhynix_architecture_native import outside_broker_item
 from trimem_skhynix_architecture_run import load_experiment, native_completion_status, prompt_prefix, execution_enrollment, EMPTY_BANK_SHA
+import trimem_skhynix_host_profile as host_profile
 
 SCHEMA = "skhynix/architecture-evaluation-capture/1.0"
 EVALUATION_COUNT = 500
@@ -162,7 +163,7 @@ def _native_evidence(cell, config, broker, state, audit, refs):
         packet = broker._packet(worker["packet_file"])
         native_packet = memory._read(paths["packet.json"])
         prompt = paths["prompt.txt"].read_bytes()
-        if (launch.get("requested_model") != "gpt-6-astra" or launch.get("fresh_session") is not True or
+        if (launch.get("requested_model") != host_profile.solver()["model"] or launch.get("fresh_session") is not True or
                 launch.get("resume_or_fork_used") is not False or launch.get("packet_sha256") != worker["packet_sha256"] or
                 launch.get("prompt_sha256") != local_refs["prompt.txt"]["sha256"] or launch.get("prompt_bytes") != len(prompt) or
                 native_packet != packet.public_dict() or packet.sha256 != worker["packet_sha256"] or
@@ -210,7 +211,7 @@ def _source(binding, config, bank, cell_path, public_result):
         _fail("Official public result has missing, forbidden, changed or unbound fields")
     if (result["schema"] != cell["schema"] or result["phase"] != "EVALUATION" or result["task_id"] != task_id or result["arm"] != arm or
             result["official"] is not True or result["grader_status"] != "success" or type(result["resolved"]) is not bool or
-            result["requested_model"] != "gpt-6-astra" or result["experiment_sha256"] != memory._hash(config) or
+            result["requested_model"] != host_profile.solver()["model"] or result["experiment_sha256"] != memory._hash(config) or
             result["bank_sha256"] != cell["bank_sha256"] or type(result["separate_model_api_client_calls"]) is not int or
             result["separate_model_api_client_calls"] != 0 or type(result["patch_bytes"]) is not int or result["patch_bytes"] < 0):
         _fail("Public result is not the official completed grade for this evaluation cell")

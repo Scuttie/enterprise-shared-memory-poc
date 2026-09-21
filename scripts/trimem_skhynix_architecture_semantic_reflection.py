@@ -14,6 +14,7 @@ from enterprise_memory.trimem.native_architecture_context import _public_copy
 import trimem_skhynix_architecture_publisher as publisher
 import trimem_skhynix_architecture_memory as memory
 from trimem_skhynix_architecture_native import canonical, digest, read, write_new
+import trimem_skhynix_host_profile as host_profile
 
 SCHEMA = 'skhynix/semantic-repair-grouping/1.0'
 INPUT_SCHEMA = 'skhynix/public-repair-grouping-input/1.0'
@@ -183,7 +184,7 @@ def output_schema():
 
 def run(config_path):
     config = read(config_path)
-    if config.get('model') != 'gpt-6-astra' or config.get('reasoning_effort') != 'high' or config.get('authentication') != 'CHATGPT':
+    if config.get('model') != host_profile.solver()['model'] or config.get('reasoning_effort') != host_profile.solver()['reasoning_effort'] or config.get('authentication') != host_profile.solver()['authentication']:
         raise ValueError('Semantic recovery retains ChatGPT-authenticated Astra/high')
     ref = config['input_reference']
     raw = Path(ref['path']).read_bytes()

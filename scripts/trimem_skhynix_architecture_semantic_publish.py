@@ -10,6 +10,7 @@ import importlib.util
 from pathlib import Path
 import sys
 import time
+import trimem_skhynix_host_profile as host_profile
 
 
 REQUEST_SCHEMA = "skhynix/architecture-semantic-publish-request/1.0"
@@ -69,7 +70,7 @@ def validate_inputs(core, request):
     core.check(mapping["index_reference"])
     launch = core.check(_normalized(core, completion["launch_reference"]))
     if (launch.get("schema") != "skhynix/semantic-grouping-launch/1.0" or launch.get("fresh_session") is not True
-            or launch.get("requested_model") != "gpt-6-astra" or launch.get("reasoning_effort") != "high"
+            or launch.get("requested_model") != host_profile.solver()["model"] or launch.get("reasoning_effort") != host_profile.solver()["reasoning_effort"]
             or _normalized(core, launch["input_reference"]) != request["grouping_input_reference"]):
         _fail(core, "Semantic discovery must retain its actual fresh Astra/high launch")
     # Hash-only binding of the discovery journal; never expose its transcript.
@@ -226,7 +227,7 @@ def _execute_jobs(core, request, request_reference, operations, producer, clone,
         reflection_ref = job["reflection_reference"]
         config = {key: operations.training[key] for key in
                   ("model", "authentication", "reasoning_effort", "codex_binary", "windows_python")}
-        if config["model"] != "gpt-6-astra" or config["reasoning_effort"] != "high" or config["authentication"] != "CHATGPT":
+        if config["model"] != host_profile.solver()["model"] or config["reasoning_effort"] != host_profile.solver()["reasoning_effort"] or config["authentication"] != host_profile.solver()["authentication"]:
             _fail(core, "Reflection recovery must retain the original Astra/high/ChatGPT configuration")
         config.update(reflection_reference={"path": core.windows_path(reflection_ref["path"]), "sha256": reflection_ref["sha256"]},
             worker_output=core.windows_path(folder / "output"), worker_cwd=core.windows_path(folder / "cwd"))

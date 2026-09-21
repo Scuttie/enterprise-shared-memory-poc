@@ -70,18 +70,22 @@ Python 3.11 / Docker / GPU / 메모리 뱅크 / 필수 파일을 한 번에 확�
 - **GPU** — 아래 3번 참고
 - **vLLM** — GLM 서빙용
 
-### STEP 3. 포팅 (사내 코딩 에이전트에게 시킬 작업)
+### STEP 3. 설정 (포팅 코드는 이미 들어 있다)
 
 이 코드는 원래 **Windows + WSL + Codex CLI + ChatGPT 로그인**에서 돌던 것이다.
-서버(Linux + vLLM + GLM)에서 돌리려면 **두 가지**를 고쳐야 한다.
+Linux + vLLM + GLM에서 돌리기 위한 **포팅은 이미 되어 있다.** 남은 건 설정이다.
 
-| 작업 | 범위 | 내용 |
-| --- | --- | --- |
-| **T1 경로 이식** | 코드 4개 모듈 | WSL 경유 제거, 경로 루트 리매핑 |
-| **T2 provider 교체** | 26곳 / 13개 모듈 | `gpt-6-astra`·`CHATGPT` 고정을 설정값으로 |
+`scripts/trimem_skhynix_host_profile.py` 가 호스트 토폴로지와 solver 신원을 한 곳에서 선언하고,
+런타임 코드가 전부 그 선언을 참조하도록 배선되어 있다. 프로파일 JSON 하나로:
+
+- WSL 경유 호출이 직접 호출로 바뀐다
+- 기록된 경로가 이 서버 위치로 매핑된다 (파일은 다시 쓰지 않는다, 해시는 그대로 유효)
+- 모델이 `gpt-6-astra`/ChatGPT 로그인에서 GLM/API 키로 바뀐다
+
+예시: `configs/skhynix_v1/host/glm_server_example.json`
 
 **→ [`docs/port/AGENT_BRIEF.md`](docs/port/AGENT_BRIEF.md) 를 사내 코딩 에이전트에 통째로 붙여넣어라.**
-파일·라인·수용 기준이 다 적혀 있다.
+프로파일 작성부터 스모크까지 STEP A~E로 적혀 있다.
 
 ### STEP 4. 스모크 테스트 (1문제) — **여기가 최대 관문**
 
@@ -111,7 +115,7 @@ A(OFF) → B(ON) 순서. 같은 문제·같은 예산·같은 채점 기준이�
 | 가중치만 | **~306 GiB** | **~860 GiB+** |
 | 최소 구성 | 4×H200 / 8×H100 / 2×B200 | 8×H200 |
 
-**H200 2대(282GB)로는 Flash FP8도 안 올라간다.** B200을 쓰거나 GPU 수를 늘려야 한다.
+`scripts/server_preflight.py` 가 이 호스트의 총 VRAM을 위 수치와 비교해 알려준다.
 
 ```bash
 vllm serve zai-org/GLM-5.3-Flash \

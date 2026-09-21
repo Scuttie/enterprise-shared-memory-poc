@@ -19,6 +19,7 @@ from enterprise_memory.trimem.agent_runtime import CodingTask
 from enterprise_memory.trimem.native_architecture_context import HandoffError, HandoffMemory, _public_copy
 from enterprise_memory.trimem.skill_memory import EpisodeEvidence, MemorySnapshot, ProcedureTemplate, SkillMemoryStore, canonical_hash
 from enterprise_memory.trimem.skill_runtime import SkillFirstMemoryController
+import trimem_skhynix_host_profile as host_profile
 
 SCHEMA = "skhynix/native-architecture-memory/1.0"
 TRACE_SCHEMA = "skhynix/native-architecture-training-trace/1.0"
@@ -49,7 +50,14 @@ def _file_hash(path):
 
 
 def _path(path):
-    path = Path(path).absolute()
+    """Where a pinned memory record lives on this host.
+
+    The frozen bank pins every record by absolute path plus sha256. On a host
+    other than the one that captured it, the declared remap supplies the local
+    location; the hash is content-based, so it still has to match. Links stay
+    refused - resolving one would break that guarantee.
+    """
+    path = Path(host_profile.remap(path)).absolute()
     if path.resolve() != path or any(p.is_symlink() for p in (path, *path.parents)):
         _fail("Memory paths must not be linked")
     return path

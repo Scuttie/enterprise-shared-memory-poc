@@ -1,0 +1,39 @@
+{
+  "schema": "skhynix/host-profile/1.0",
+  "topology": "NATIVE_POSIX",
+  "path_remap": [
+    {
+      "from": "/home/trimem-runner/skhynix-architecture-scale-001",
+      "to": "/srv/skhynix/run"
+    },
+    {
+      "from": "/mnt/c/Users/jewon/esm-r23-d115-writer",
+      "to": "/srv/skhynix/repo"
+    },
+    {
+      "from": "/mnt/c/Users/jewon/AppData/Local/Temp",
+      "to": "/srv/skhynix/staging"
+    }
+  ],
+  "run_root": "/srv/skhynix/run",
+  "staging_root": "/srv/skhynix/staging",
+  "wsl_distribution": null,
+  "wsl_user": null,
+  "controller_python": "/usr/bin/python3.11",
+  "controller_environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "solver": {
+    "model": "glm",
+    "reasoning_effort": "high",
+    "authentication": "API_KEY",
+    "provider": {
+      "name": "glm",
+      "base_url": "http://localhost:8000/v1",
+      "env_key": "GLM_API_KEY",
+      "wire_api": "chat"
+    }
+  }
+}

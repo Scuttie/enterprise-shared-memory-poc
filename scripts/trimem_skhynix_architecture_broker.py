@@ -29,6 +29,7 @@ from enterprise_memory.trimem.native_architecture_context import (
     TaskHandoffContext, validate_handoff,
 )
 from enterprise_memory.trimem.working_graph import Evidence, ShortTermWorkingGraph, SubtaskSpec
+import trimem_skhynix_host_profile as host_profile
 
 
 SCHEMA = "skhynix/native-architecture-broker/1.0"
@@ -335,7 +336,7 @@ class ArchitectureBroker:
             raise BrokerError("actual native launch receipt fields differ")
         identity(launch_receipt["thread_id"], "actual thread ID")
         digest(launch_receipt["launch_evidence_sha256"], "launch evidence SHA")
-        if launch_receipt["requested_model"] != "gpt-6-astra":
+        if launch_receipt["requested_model"] != host_profile.solver()["model"]:
             raise BrokerError("native requested model differs")
         with locked(self.root / "broker.lock"):
             state, events = self._load()

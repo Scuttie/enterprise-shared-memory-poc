@@ -19,6 +19,12 @@ import threading
 import time
 import uuid
 
+# The agent CLI spawns this file directly as its MCP server, so it has to be
+# importable as a bare script rather than as part of a package.
+if str(Path(__file__).resolve().parent) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+import trimem_skhynix_host_profile as host_profile
+
 SCHEMA = "skhynix/architecture-native-worker/1.0"
 MAX_REQUEST_BYTES = 262_144
 DISABLED_FEATURES = (
@@ -26,6 +32,7 @@ DISABLED_FEATURES = (
     "browser_use", "browser_use_external", "computer_use", "image_generation",
     "view_image", "hooks", "memories", "goals", "shell_snapshot",
 )
+CREDENTIAL_VARIABLES = ("OPENAI_API_KEY", "CODEX_API_KEY")
 PASSIVE_ITEM_TYPES = frozenset({'agent_message', 'reasoning', 'error', 'todo_list', 'plan_update'})
 
 
@@ -58,17 +65,30 @@ def write_new(path, value):
         stream.write(canonical(value) + b"\n")
 
 
-def wsl_python(config, script, arguments):
-    return ["wsl.exe", "-d", "TriMemRunner2404", "--user", "trimem-runner", "--exec",
-            "env", "PYTHONDONTWRITEBYTECODE=1", "HF_HUB_OFFLINE=1", "TRANSFORMERS_OFFLINE=1",
-            "LD_LIBRARY_PATH=/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib",
-            "/opt/trimem-rehearsals/e932-preflight/venv/bin/python",
-            config["linux_source_root"] + "/scripts/" + script, *arguments]
+def controller_python(config, script, arguments):
+    """Command that runs a trusted controller script.
+
+    On the capture host the launcher sat on Windows and the controller inside
+    WSL, so every manager call crossed that boundary. A native POSIX host runs
+    both in one place and the hop disappears; the script, its arguments and the
+    environment it is given stay the same either way.
+    """
+    active = host_profile.profile()
+    environment = ["%s=%s" % item for item in active["controller_environment"].items()]
+    target = [active["controller_python"], config["linux_source_root"] + "/scripts/" + script, *arguments]
+    if host_profile.native_posix():
+        return ["env", *environment, *target]
+    return ["wsl.exe", "-d", active["wsl_distribution"], "--user", active["wsl_user"], "--exec",
+            "env", *environment, *target]
+
+
+# Retained under its original name: callers and tests still refer to it.
+wsl_python = controller_python
 
 
 def manager_command(config, operation, payload):
     raw = canonical(payload)
-    argv = wsl_python(config, "trimem_skhynix_architecture_run.py", [
+    argv = controller_python(config, "trimem_skhynix_architecture_run.py", [
         operation, "--cell-config", config["linux_cell_config"],
         "--request-stdin"])
     # stdin avoids Windows' ~32K command-line limit for large bounded edits.
@@ -161,11 +181,24 @@ def serve_mcp(config):
 
 
 def worker_command(config, config_path):
-    if config.get("model") != "gpt-6-astra" or config.get("authentication") != "CHATGPT":
-        raise ValueError("This experiment requires the declared Astra model and ChatGPT login")
+    """Argv for one fresh worker session.
+
+    The solver identity is declared once in the host profile; this still
+    refuses to launch anything the cell config does not agree with, so a cell
+    cannot quietly run a different model or authentication than the one the
+    controller will later audit the receipt against.
+
+    Reasoning effort is deliberately not checked here. This builds the argv for
+    the reflection publisher too, and that role runs at a different effort than
+    the solver; each caller already validates its own.
+    """
+    declared = host_profile.solver()
+    if (config.get("model") != declared["model"]
+            or config.get("authentication") != declared["authentication"]):
+        raise ValueError("Worker cell differs from the declared solver identity")
     command = [config["codex_binary"], "exec", "--ignore-user-config", "--ephemeral", "--json",
         "--skip-git-repo-check", "--sandbox", "read-only", "-C", config["worker_cwd"],
-        "-m", config["model"], "-c", 'forced_login_method="chatgpt"',
+        "-m", config["model"], *authentication_arguments(declared),
         "-c", "model_reasoning_effort=" + json.dumps(config["reasoning_effort"]),
         "-c", 'web_search="disabled"', "--enable", "skip_host_skill_discovery"]
     for feature in DISABLED_FEATURES:
@@ -186,6 +219,49 @@ def worker_command(config, config_path):
     return command + ["-"]
 
 
+def authentication_arguments(declared):
+    """How this worker authenticates: a forced login, or a declared provider.
+
+    An OpenAI-compatible provider is addressed by base URL and an environment
+    key. Nothing about the provider selects tools or budget; it only decides
+    which endpoint the same bounded session talks to.
+    """
+    if declared["authentication"] == host_profile.CHATGPT:
+        return ["-c", 'forced_login_method="chatgpt"']
+    provider = declared["provider"]
+    name = provider["name"]
+    settings = {
+        "model_provider": name,
+        "model_providers." + name + ".name": name,
+        "model_providers." + name + ".base_url": provider["base_url"],
+        "model_providers." + name + ".env_key": provider["env_key"],
+        "model_providers." + name + ".wire_api": provider.get("wire_api", "chat"),
+    }
+    arguments = []
+    for key, value in settings.items():
+        arguments += ["-c", key + "=" + json.dumps(value, ensure_ascii=False)]
+    return arguments
+
+
+def worker_environment(declared):
+    """Environment for the worker process.
+
+    A ChatGPT-authenticated worker must not find a key lying in the
+    environment, or it could silently bill and run against a different account
+    than the one the receipt claims. A provider-authenticated worker needs
+    exactly one key: its own. Every other model credential is still removed, so
+    the declared endpoint stays the only one reachable.
+    """
+    env = dict(os.environ)
+    keep = declared["provider"]["env_key"] if declared["authentication"] == host_profile.API_KEY else None
+    for key in sorted({*CREDENTIAL_VARIABLES, *([keep] if keep else [])}):
+        if key != keep:
+            env.pop(key, None)
+    if keep and not env.get(keep):
+        raise ValueError("Declared provider credential " + keep + " is not set in the environment")
+    return env
+
+
 def launch(config_path):
     config_path = Path(config_path).resolve(strict=True)
     config = read(config_path)
@@ -196,12 +272,11 @@ def launch(config_path):
     if digest(prompt) != config["prompt_sha256"]:
         raise ValueError("Frozen worker prompt changed")
     command = worker_command(config, config_path)
-    env = dict(os.environ)
-    for key in ("OPENAI_API_KEY", "CODEX_API_KEY"):
-        env.pop(key, None)
+    env = worker_environment(host_profile.solver())
     start = time.time()
     receipt = {"schema": SCHEMA, "worker_id": config["worker_id"], "requested_model": config["model"],
-        "reasoning_effort": config["reasoning_effort"], "authentication": "CHATGPT_FORCED",
+        "reasoning_effort": config["reasoning_effort"],
+        "authentication": host_profile.launch_authentication(),
         "prompt_sha256": digest(prompt), "prompt_bytes": len(prompt),
         "packet_sha256": config["packet_sha256"], "fresh_session": True,
         "resume_or_fork_used": False, "separate_model_api_client_calls": 0,

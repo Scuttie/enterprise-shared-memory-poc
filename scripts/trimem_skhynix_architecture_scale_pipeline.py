@@ -804,7 +804,16 @@ def write_execution(path, value):
     return reference
 
 
+def evaluation_max_workers(config):
+    """One declared limit applies to both evaluation arms; training stays serial."""
+    value = config.get("evaluation_max_workers", 1)
+    if type(value) is not int or not 1 <= value <= 4:
+        raise core.PipelineError("evaluation_max_workers must be an integer from 1 to 4")
+    return value
+
+
 def validate_config(config, *, executing_source=None):
+    evaluation_max_workers(config)
     if (config.get("schema") != SCHEMA or config.get("selection_policy") != SELECTION_POLICY
             or config.get("outcome_retries") is not False
             or [stage.get("size") for stage in config.get("training_stages", [])] != list(SIZES)):
@@ -995,23 +1004,39 @@ class ScalePipeline(core.Pipeline):
         self.operations.cohorts[str(root)] = runner
         return runner
 
-    def _advance_runner(self, runner, job):
+    def _advance_runner(self, runner, job, *, max_workers=1):
+        max_workers = evaluation_max_workers({"evaluation_max_workers": max_workers})
+
+        def verify_parallel_policy(status):
+            if (status.get("max_workers", 1) != max_workers or (max_workers > 1 and (
+                    not isinstance(status.get("parallel_policy_reference"), dict)
+                    or set(status["parallel_policy_reference"]) != {"path", "sha256"}))):
+                raise core.PipelineError("cohort lacks the matching retained parallel execution policy")
+
         status = runner.status()
         while status["status"] != "COMPLETE":
             self.record("COHORT_ADVANCE_STARTED", {"completed_before": status["completed_cells"],
-                "planned_cells": status["planned_cells"], "cohort_root": str(runner.root)}, job=job)
+                "planned_cells": status["planned_cells"], "cohort_root": str(runner.root),
+                "max_workers": max_workers}, job=job)
             previous = status["completed_cells"]
-            status = runner.run(cell_limit=1)
+            # Keep the old call shape for frozen sequential helpers. New parallel
+            # helpers retain their own policy and one parent-owned journal.
+            status = (runner.run(cell_limit=1) if max_workers == 1 else
+                      runner.run(cell_limit=max_workers, max_workers=max_workers))
+            verify_parallel_policy(status)
             self.record("COHORT_PROGRESS", {"status": {k: v for k, v in status.items() if k != "cells"}}, job=job)
             self.progress()
             if status["status"] == "BLOCKED":
                 raise core.PipelineError("cohort blocked; immutable attempt preserved, no native outcome retry: " + job)
-            if status["completed_cells"] - previous not in (0, 1):
-                raise core.PipelineError("one-cell advance has an invalid completion count")
+            if not 0 <= status["completed_cells"] - previous <= max_workers:
+                raise core.PipelineError("bounded cohort advance has an invalid completion count")
             if status["completed_cells"] == previous and status["status"] != "COMPLETE":
                 raise core.PipelineError("cohort failed to advance")
         if not status.get("terminal_full_audit_complete"):
             raise core.PipelineError("completed cohort lacks its full retained-evidence audit")
+        # A previously completed serial cohort must not be relabeled parallel
+        # merely because this invocation has no remaining cells to dispatch.
+        verify_parallel_policy(status)
         return status
 
     def _bank(self, stage):
@@ -1101,6 +1126,7 @@ class ScalePipeline(core.Pipeline):
         return result
 
     def _evaluation(self, purpose, stage, bank_reference, name):
+        max_workers = evaluation_max_workers(self.config)
         modules = self.operations.modules
         template = core.check(stage["execution_reference"])
         if self.config.get("grading_continuation_reference"):
@@ -1136,8 +1162,9 @@ class ScalePipeline(core.Pipeline):
         if not self.latest("EVALUATION_CONFIGURED", name):
             self.record("EVALUATION_CONFIGURED", {"experiment_reference": experiment,
                 "cohort_reference": core.ref(cohort_root / "cohort.json"), "quarantine_reference": quarantine,
-                "purpose": purpose}, job=name)
-        self._advance_runner(runner, name)
+                "purpose": purpose, "max_workers": max_workers}, job=name)
+        execution_status = (self._advance_runner(runner, name) if max_workers == 1 else
+                            self._advance_runner(runner, name, max_workers=max_workers))
         results = []
         for row in runner.schedule:
             public, reference = runner._validate_result(row)
@@ -1150,6 +1177,11 @@ class ScalePipeline(core.Pipeline):
             "resolved": sum(row["resolved"] for row in results), "task_ids": sorted({row["task_id"] for row in results}),
             "rows": results, "bank_reference": bank_reference, "size": stage["size"],
             "status": "COMPLETE", "experiment_reference": experiment}
+        # Preserve legacy serial report bytes when the optional policy was never
+        # declared; old immutable reports remain replayable.
+        if "evaluation_max_workers" in self.config:
+            report.update(max_workers=max_workers,
+                          parallel_policy_reference=execution_status.get("parallel_policy_reference"))
         if scope == "FINAL":
             report["by_arm"] = {arm: {"planned": 500, "completed": len(selected),
                 "resolved": sum(row["resolved"] for row in selected),
@@ -1264,7 +1296,8 @@ class ScalePipeline(core.Pipeline):
             if event["stage"] == "COHORT_PROGRESS":
                 raw = event["details"]["status"]
                 cohorts[event["job"]] = {key: raw.get(key) for key in
-                    ("status", "planned_cells", "completed_cells", "phase", "by_arm")}
+                    ("status", "planned_cells", "completed_cells", "phase", "by_arm",
+                     "max_workers", "parallel_policy_reference")}
         banks = {event["job"]: core.check(event["details"]["reference"]) for event in events
                  if event["stage"] in {"BANK_READY", "BANK_NOT_READY"}}
         return {"schema": SCHEMA, "status": state, "configuration_reference": self.reference,
@@ -1272,6 +1305,7 @@ class ScalePipeline(core.Pipeline):
             "adopted_official_complete": self.adoption["official_complete"],
             "adopted_official_undetermined": self.adoption["source_count"] - self.adoption["official_complete"],
             "development_tasks": 60, "final_tasks": 500, "final_cells": 1000,
+            "evaluation_max_workers": evaluation_max_workers(self.config),
             "cohorts": cohorts, "banks": banks, "last_event": last,
             "selection_policy": SELECTION_POLICY, "native_outcome_retries": False,
             "infrastructure_replacement_reference": self.config.get("infrastructure_replacement_reference"),

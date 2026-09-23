@@ -1,4 +1,4 @@
-"""Sequential, resumable fixed-cohort execution without outcome-based retries.
+"""Resumable fixed-cohort execution without outcome-based retries.
 
 This trusted manager delegates to the existing preparation, native-worker and
 official-grading APIs. Evidence is retained; an optional separately frozen
@@ -9,10 +9,14 @@ Started operations are resumed only from specific durable completion evidence.
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from contextlib import contextmanager
 from copy import deepcopy
 import hashlib
 import json
+import math
+import multiprocessing
+import os
 from pathlib import Path
 import re
 import shutil
@@ -30,6 +34,9 @@ from enterprise_memory.trimem.grader import GraderInvocationFailure
 SCHEMA = "skhynix/native-architecture-cohort/1.0"
 REVISION_SCHEMA = "skhynix/native-architecture-controller-revision/1.0"
 EFFORT_SCHEMA = "skhynix/architecture-reasoning-effort-transition/1.0"
+PARALLEL_SCHEMA = "skhynix/architecture-cohort-parallel-policy/1.0"
+NATIVE_PROCESS_SCHEMA = "skhynix/architecture-cohort-native-process/1.0"
+MAX_NATIVE_WORKERS = 4
 ZERO = "0" * 64
 PHASE_ARMS = {"TRAINING": ("PDF_MEMORY",), "EVALUATION": ("BASELINE", "PDF_MEMORY")}
 TRAINING_GRADE_HOLD_POLICY = "CAPTURE_KNOWN_TERMINAL_AMBIGUITY_AND_CONTINUE"
@@ -70,6 +77,64 @@ def verify_reference(reference_value):
 def checked(reference_value):
     verify_reference(reference_value)
     return read(reference_value["path"])
+
+
+def _native_process(request):
+    """Only native execution runs in a child; its durable receipt prevents replay."""
+    path = verify_reference(request["cell_reference"])
+    receipt_path = path.parent / "native-process-completion.json"
+    if receipt_path.exists():
+        raise CohortError("refusing to rerun a previously dispatched native process")
+    started_at, start_clock = time.time(), time.perf_counter()
+    try:
+        for key in ("controller_reference", "execution_reference", "experiment_reference", "policy_reference"):
+            verify_reference(request[key])
+        if (reference(__file__) != request["controller_reference"]
+                or reference(execution.__file__) != request["execution_reference"]):
+            raise CohortError("spawned controller or execution module differs from its frozen parent")
+        config = execution.load_experiment(request["experiment_reference"]["path"])
+        if config != checked(request["experiment_reference"]):
+            raise CohortError("spawned execution configuration differs from enrollment")
+        for item in request["source_references"]:
+            verify_reference(item)
+        if read(path)["experiment_config"] != request["experiment_reference"]["path"]:
+            raise CohortError("spawned cell differs from its frozen experiment")
+        result = execution.run_workers(path)
+        receipt = {"schema": NATIVE_PROCESS_SCHEMA, "request": request, "pid": os.getpid(),
+            "status": "COMPLETE", "broker_status": result}
+    except BaseException as exc:
+        receipt = {"schema": NATIVE_PROCESS_SCHEMA, "request": request, "pid": os.getpid(),
+            "status": "ERROR", "error_type": type(exc).__name__, "error": str(exc)[:2000]}
+    receipt.update(started_at=started_at, ended_at=time.time(), wall_seconds=time.perf_counter() - start_clock)
+    _retain_json(receipt_path, receipt)
+    return reference(receipt_path)
+
+
+def _native_bootstrap(controller_reference, execution_reference, source_references, source_root):
+    """Spawn imports the exact frozen helper even when it was loaded dynamically."""
+    # The initializer itself is a builtin, so unpickling it never resolves a
+    # mutable checkout's copy of this module. Worker functions unpickle only
+    # after these canonical module entries have been installed.
+    return f"""
+import hashlib, importlib.util, pathlib, sys
+for item in {([controller_reference, execution_reference] + source_references)!r}:
+    if hashlib.sha256(pathlib.Path(item['path']).read_bytes()).hexdigest() != item['sha256']:
+        raise RuntimeError('Frozen native process source changed')
+for name in tuple(sys.modules):
+    if name.startswith('trimem_') or name == 'enterprise_memory' or name.startswith('enterprise_memory.'):
+        sys.modules.pop(name, None)
+runtime_paths = [str(pathlib.Path({source_root!r}) / 'src'), str(pathlib.Path({source_root!r}) / 'scripts')] + sys.path
+sys.path[:] = runtime_paths
+for name, filename in [('trimem_skhynix_architecture_run', {execution_reference['path']!r}), ('trimem_skhynix_architecture_cohort', {controller_reference['path']!r})]:
+    spec = importlib.util.spec_from_file_location(name, filename)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    sys.path[:] = runtime_paths
+main_module = sys.modules.get('__mp_main__')
+if getattr(main_module, '__file__', None) == {controller_reference['path']!r}:
+    main_module.execution = sys.modules['trimem_skhynix_architecture_run']
+"""
 
 
 def _manifest(root):
@@ -437,11 +502,12 @@ def _scale_scope(config, dataset):
 class CohortRunner:
     def __init__(self, root, *, operations=execution, learning_hook: Callable | None = None,
                  quarantine_hook: Callable | None = None, cleanup_operations=None,
-                 disk_free: Callable | None = None, clock=time.time):
+                 disk_free: Callable | None = None, clock=time.time, executor_factory=ProcessPoolExecutor):
         self.root = Path(root).resolve()
         self.operations, self.clock = operations, clock
         self.learning_hook, self.quarantine_hook = learning_hook, quarantine_hook
         self.cleanup_operations = cleanup_operations
+        self.executor_factory = executor_factory
         self.disk_free = disk_free or available_storage_bytes
         self._journal_cache, self._journal_depth = {}, 0
         self._journal_events, self._events_by_ordinal = None, {}
@@ -540,7 +606,8 @@ class CohortRunner:
                learning_root=None, quarantine_root=None, adopt_existing=(), outside_cohort=(),
                cleanup_policy_reference=None, cleanup_operations=None,
                min_free_bytes=10 * 1024**3, operations=execution, bank_validator=validate_evaluation_bank,
-               learning_hook=None, quarantine_hook=None, disk_free=None, clock=time.time):
+               learning_hook=None, quarantine_hook=None, disk_free=None, clock=time.time,
+               executor_factory=ProcessPoolExecutor):
         root = Path(root).resolve()
         if root.exists():
             raise CohortError("refusing to overwrite an existing cohort")
@@ -656,7 +723,8 @@ class CohortRunner:
         (root / "cohort.sha256").write_text(sha(canonical(manifest)) + "\n", encoding="ascii")
         (root / "events").mkdir()
         runner = cls(root, operations=operations, learning_hook=learning_hook, quarantine_hook=quarantine_hook,
-            cleanup_operations=cleanup_operations, disk_free=disk_free, clock=clock)
+            cleanup_operations=cleanup_operations, disk_free=disk_free, clock=clock,
+            executor_factory=executor_factory)
         for item in adoption:
             row = next(row for row in schedule if row["cell_config"] == item["path"])
             runner._validate_cell(row)
@@ -720,6 +788,7 @@ class CohortRunner:
 
     def _authority_stamps(self):
         paths = {self.root / "cohort.json", self.root / "cohort.sha256", Path(__file__)}
+        paths.update(self.root / name for name in ("parallel-policy.json", "parallel-policy.ref.json"))
         paths.update(self.root / name for name in ("reasoning-effort-transition.json", "reasoning-effort-transition.ref.json"))
         if self._transition is not None:
             for key, value in self._transition.items():
@@ -1062,11 +1131,23 @@ class CohortRunner:
             "capture_reference": capture_reference, "capture_status": capture_status})
 
     def _advance(self, row):
+        if not self._prepare_solve(row):
+            return
+        path = Path(row["cell_config"])
+        if "SOLVE_COMPLETE" not in {event["stage"] for event in self._cell_events(row)}:
+            status = self._solve_status(row)
+            if status["status"] != "SUBMITTED":
+                self._start_solve(row, status)
+                status = self.operations.run_workers(path)
+            self._complete_solve(row, status)
+        self._finish_cell(row)
+
+    def _prepare_solve(self, row):
         events = self._cell_events(row)
         stages = {event["stage"] for event in events}
         if "CELL_COMPLETE" in stages:
             self._validate_result(row)
-            return
+            return False
         path = Path(row["cell_config"])
         if "PREPARED" not in stages:
             if "PREPARE_STARTED" in stages:
@@ -1085,22 +1166,30 @@ class CohortRunner:
                 self._validate_cell(row)
                 self._record("PREPARED", row, {"cell_reference": reference(path)})
         self._validate_cell(row)
-        events = self._cell_events(row)
-        stages = {event["stage"] for event in events}
-        if "SOLVE_COMPLETE" not in stages:
-            status = self._broker_status(path)
-            if not self._resume_native_safe(row, status):
-                raise CohortError("native worker is active, unaudited, or terminated; no automatic fresh retry")
-            if status["status"] != "SUBMITTED":
-                self._record("SOLVE_STARTED" if "SOLVE_STARTED" not in stages else "SOLVE_CONTINUED", row,
-                    {"workers_issued_before": status["workers_issued"], "same_cell_only": True})
-                status = self.operations.run_workers(path)
-                if status["status"] != "SUBMITTED":
-                    raise CohortError("native execution returned without a sealed submission")
-            self.operations.execution_audit(path)
-            self._record("SOLVE_COMPLETE", row, {"broker_event_tail_sha256": status["event_tail_sha256"],
-                "patch_sha256": status["submission"]["patch_sha256"],
-                "execution_audit_reference": reference(path.parent / "execution-audit.json")})
+        return True
+
+    def _solve_status(self, row):
+        status = self._broker_status(Path(row["cell_config"]))
+        if not self._resume_native_safe(row, status):
+            raise CohortError("native worker is active, unaudited, or terminated; no automatic fresh retry")
+        return status
+
+    def _start_solve(self, row, status, **details):
+        stages = {event["stage"] for event in self._cell_events(row)}
+        self._record("SOLVE_STARTED" if "SOLVE_STARTED" not in stages else "SOLVE_CONTINUED", row,
+            {"workers_issued_before": status["workers_issued"], "same_cell_only": True, **details})
+
+    def _complete_solve(self, row, status, **details):
+        if status["status"] != "SUBMITTED":
+            raise CohortError("native execution returned without a sealed submission")
+        path = Path(row["cell_config"])
+        self.operations.execution_audit(path)
+        self._record("SOLVE_COMPLETE", row, {"broker_event_tail_sha256": status["event_tail_sha256"],
+            "patch_sha256": status["submission"]["patch_sha256"],
+            "execution_audit_reference": reference(path.parent / "execution-audit.json"), **details})
+
+    def _finish_cell(self, row):
+        path = Path(row["cell_config"])
         stages = {event["stage"] for event in self._cell_events(row)}
         result_path = path.parent / "public-result.json"
         if not {"GRADED", "GRADE_UNDETERMINED"} & stages:
@@ -1243,9 +1332,278 @@ class CohortRunner:
             _validate_reconciliation(self.cleanup_operations.validate_completed_cleanup(Path(row["cell_config"]), result_reference, capture_reference))
             return {"status": "COMPLETE", "cleanup_reference": completed}
 
-    def run(self, *, cell_limit=None):
+    def _parallel_policy(self):
+        path, ref_path = self.root / "parallel-policy.json", self.root / "parallel-policy.ref.json"
+        if not path.exists() and not ref_path.exists():
+            if any(event["stage"] in {"PARALLEL_POLICY_BOUND", "NATIVE_PROCESS_DISPATCHED"} for event in self._events()):
+                raise CohortError("parallel policy is missing from a previously bound cohort")
+            return None, None
+        if not path.is_file() or not ref_path.is_file():
+            raise CohortError("parallel policy is incomplete; explicit recovery is required")
+        ref = read(ref_path)
+        policy = checked(ref)
+        if (ref != reference(path) or policy.get("schema") != PARALLEL_SCHEMA
+                or policy.get("cohort_reference") != reference(self.root / "cohort.json")
+                or policy.get("experiment_reference") != self.manifest["experiment_reference"]
+                or self.manifest["phase"] != "EVALUATION"
+                or type(policy.get("max_workers")) is not int or not 2 <= policy["max_workers"] <= MAX_NATIVE_WORKERS
+                or policy.get("worker_scope") != "NATIVE_SOLVE_ONLY"
+                or policy.get("same_task_concurrency") is not False
+                or policy.get("outcome_retries") is not False):
+            raise CohortError("immutable parallel policy differs from this evaluation cohort")
+        verify_reference(policy["controller_reference"])
+        bindings = [event for event in self._events() if event["stage"] == "PARALLEL_POLICY_BOUND"]
+        if len(bindings) != 1 or bindings[0]["details"] != {"policy_reference": ref}:
+            raise CohortError("parallel policy differs from its immutable journal binding")
+        for event in self._events():
+            if (event["stage"] == "NATIVE_PROCESS_DISPATCHED"
+                    and event["details"]["request"]["policy_reference"] != ref):
+                raise CohortError("parallel policy differs from an immutable native dispatch")
+        return policy, ref
+
+    def _bind_parallel_policy(self, max_workers):
+        policy, ref = self._parallel_policy()
+        if policy is not None:
+            if policy["max_workers"] != max_workers:
+                raise CohortError("max_workers differs from the immutable cohort parallel policy")
+            return ref
+        if max_workers == 1:
+            return None
+        if self.manifest["phase"] != "EVALUATION":
+            raise CohortError("parallel native execution is evaluation-only; training capture remains serial")
+        if any(event["stage"] not in {"DISK_BLOCK", "INFRA_ERROR"} for event in self._events()):
+            raise CohortError("cannot enable parallel execution on a previously started serial cohort")
+        instances = {row["task_id"]: row["target"]["instance_id"] for row in self.schedule}
+        if (len(set(instances.values())) != len(instances)
+                or len({row["cell_config"] for row in self.schedule}) != len(self.schedule)):
+            raise CohortError("parallel cells require unique task leases and cell paths")
+        # Check import/source enrollment before retaining the scheduling policy.
+        self._native_context()
+        controller, _ = self._check_controller_source()
+        policy = {"schema": PARALLEL_SCHEMA, "cohort_reference": reference(self.root / "cohort.json"),
+            "experiment_reference": self.manifest["experiment_reference"], "controller_reference": controller,
+            "max_workers": max_workers, "worker_scope": "NATIVE_SOLVE_ONLY",
+            "same_task_concurrency": False, "outcome_retries": False}
+        ref = _retain_json(self.root / "parallel-policy.json", policy)
+        _retain_json(self.root / "parallel-policy.ref.json", ref)
+        self._record("PARALLEL_POLICY_BOUND", None, {"policy_reference": ref})
+        self._authority_token = self._authority_stamps()
+        return ref
+
+    def _native_context(self):
+        module_path = getattr(self.operations, "__file__", None)
+        source_root = Path(self.config.get("source_root", "")).resolve()
+        expected_path = source_root / "scripts" / "trimem_skhynix_architecture_run.py"
+        if module_path is None or Path(module_path).resolve() != expected_path.resolve():
+            raise CohortError("parallel execution requires the parent API at its frozen runtime source path")
+        self._check_execution_api()
+        references = [{"path": str((source_root / name).resolve()), "sha256": digest}
+            for name, digest in sorted(self.config["source_sha256"].items())]
+        for item in references:
+            if source_root not in Path(item["path"]).parents:
+                raise CohortError("frozen runtime source escaped its root")
+            verify_reference(item)
+        return reference(module_path), references, str(source_root)
+
+    def _native_request(self, row, policy_reference):
+        module, sources, _ = self._native_context()
+        return {"cell_reference": reference(row["cell_config"]),
+            "experiment_reference": self._row_experiment_reference(row),
+            "controller_reference": reference(__file__), "execution_reference": module,
+            "source_references": sources, "policy_reference": policy_reference}
+
+    def _native_evidence(self, row, request, receipt_reference=None):
+        path = Path(row["cell_config"]).parent / "native-process-completion.json"
+        if not path.is_file():
+            raise CohortError("dispatched native process has no durable completion; no automatic retry")
+        ref = reference(path)
+        if receipt_reference is not None and ref != receipt_reference:
+            raise CohortError("native process completion differs from returned receipt")
+        receipt = checked(ref)
+        if (receipt.get("schema") != NATIVE_PROCESS_SCHEMA or receipt.get("request") != request
+                or type(receipt.get("pid")) is not int or receipt["pid"] <= 0
+                or any(type(receipt.get(key)) not in (int, float) or not math.isfinite(receipt[key])
+                    or receipt[key] < 0 for key in ("started_at", "ended_at", "wall_seconds"))):
+            raise CohortError("native process completion differs from its immutable dispatch")
+        for key in ("controller_reference", "execution_reference", "experiment_reference", "policy_reference", "cell_reference"):
+            verify_reference(request[key])
+        for item in request["source_references"]:
+            verify_reference(item)
+        if receipt.get("status") != "COMPLETE":
+            raise CohortError("native process failed; no automatic retry: " + str(receipt.get("error", "unknown error"))[:2000])
+        return receipt
+
+    def _native_receipt(self, row, request, receipt_reference=None):
+        receipt = self._native_evidence(row, request, receipt_reference)
+        status = receipt["broker_status"]
+        observed = self._solve_status(row)
+        if (observed["status"] != status["status"] or observed["submission"] != status["submission"]
+                or observed["event_tail_sha256"] != status["event_tail_sha256"]):
+            raise CohortError("native process receipt differs from retained broker evidence")
+        return status
+
+    def _audit_native_events(self, row, events):
+        dispatches = [event for event in events if event["stage"] == "NATIVE_PROCESS_DISPATCHED"]
+        if not dispatches:
+            return
+        if len(dispatches) != 1:
+            raise CohortError("a native cell has more than one process dispatch")
+        completed = [event for event in events if event["stage"] == "SOLVE_COMPLETE"]
+        if not completed:
+            return
+        details = completed[0]["details"]
+        ref = details.get("native_process_completion_reference")
+        if ref is None:
+            raise CohortError("completed parallel solve lacks its retained process receipt")
+        receipt = self._native_evidence(row, dispatches[0]["details"]["request"], ref)
+        status = receipt["broker_status"]
+        if (status["status"] != "SUBMITTED" or status["event_tail_sha256"] != details["broker_event_tail_sha256"]
+                or status["submission"]["patch_sha256"] != details["patch_sha256"]):
+            raise CohortError("native process completion differs from its audited solve")
+
+    def _run_parallel(self, *, cell_limit, max_workers, policy_reference):
+        active, advanced, attempted, blocked = {}, 0, 0, None
+        pool = None
+
+        def error(row, exc, operation="NATIVE_PARALLEL"):
+            nonlocal blocked
+            details = {"operation": operation, "error_type": type(exc).__name__, "error": str(exc)[:2000],
+                "automatic_retry": False, "result_is_not_a_solver_failure": True}
+            receipt_path = Path(row["cell_config"]).parent / "native-process-completion.json"
+            if receipt_path.is_file():
+                details["native_process_completion_reference"] = reference(receipt_path)
+            self._record("INFRA_ERROR", row, details)
+            if blocked is None:
+                blocked = ("INFRA_ERROR", row, details)
+
+        def finish(row):
+            nonlocal advanced
+            self._finish_cell(row)
+            self._cleanup(row)
+            # Target cleanup covers both arms; retain each completed arm's proof.
+            for sibling in self.schedule:
+                if sibling != row and sibling["task_id"] == row["task_id"] and any(
+                        event["stage"] == "CELL_COMPLETE" for event in self._cell_events(sibling)):
+                    self._cleanup(sibling)
+            advanced += 1
+
+        def drain(done):
+            for future in sorted(done, key=lambda item: active[item][0]["ordinal"]):
+                row, request = active.pop(future)
+                try:
+                    receipt = future.result()
+                    status = self._native_receipt(row, request, receipt)
+                    self._record("NATIVE_PROCESS_COMPLETE", row, {"completion_reference": receipt})
+                    self._complete_solve(row, status, native_process_completion_reference=receipt)
+                    finish(row)
+                except Exception as exc:
+                    error(row, exc)
+
+        # Resolve all previous dispatches before admitting any new native work.
+        # A parent crash may leave a child alive before its first broker admission.
+        for row in self.schedule:
+            events = self._cell_events(row)
+            dispatch = next((event for event in events if event["stage"] == "NATIVE_PROCESS_DISPATCHED"), None)
+            if dispatch is not None and not any(event["stage"] == "SOLVE_COMPLETE" for event in events):
+                try:
+                    self._native_receipt(row, dispatch["details"]["request"])
+                except Exception as exc:
+                    error(row, exc)
+        pending = []
+        if blocked is None:
+            for row in self.schedule:
+                if any(event["stage"] == "CELL_COMPLETE" for event in self._cell_events(row)):
+                    try:
+                        self._cleanup(row)
+                    except Exception as exc:
+                        error(row, exc, "CLEANUP")
+                        break
+                else:
+                    pending.append(row)
+        try:
+            while (pending and blocked is None and (cell_limit is None or attempted < cell_limit)) or active:
+                ready = {future for future in active if future.done()}
+                if ready:
+                    drain(ready)
+                    continue
+                inflight_tasks = {row["task_id"] for row, _ in active.values()}
+                row = next((item for item in pending if item["task_id"] not in inflight_tasks), None)
+                can_start = (blocked is None and row is not None and len(active) < max_workers
+                    and (cell_limit is None or attempted < cell_limit))
+                if not can_start:
+                    if active:
+                        done, _ = wait(active, return_when=FIRST_COMPLETED)
+                        drain(done)
+                        continue
+                    break
+                storage_root = Path(self.config["run_root"])
+                while not storage_root.exists():
+                    storage_root = storage_root.parent
+                free = self.disk_free(storage_root)
+                if free < self.manifest["min_free_bytes"]:
+                    details = {"free_bytes": free, "minimum_bytes": self.manifest["min_free_bytes"], "operation_started": False}
+                    self._record("DISK_BLOCK", row, details)
+                    blocked = ("DISK_BLOCK", row, details)
+                    continue
+                pending.remove(row)
+                attempted += 1
+                try:
+                    self._prepare_solve(row)
+                    stages = {event["stage"] for event in self._cell_events(row)}
+                    if "SOLVE_COMPLETE" in stages:
+                        finish(row)
+                        continue
+                    dispatch = next((event for event in self._cell_events(row)
+                        if event["stage"] == "NATIVE_PROCESS_DISPATCHED"), None)
+                    status = (self._native_receipt(row, dispatch["details"]["request"])
+                        if dispatch else self._solve_status(row))
+                    if status["status"] == "SUBMITTED":
+                        completion = (reference(Path(row["cell_config"]).parent / "native-process-completion.json")
+                            if dispatch else None)
+                        if dispatch and "NATIVE_PROCESS_COMPLETE" not in stages:
+                            self._record("NATIVE_PROCESS_COMPLETE", row, {
+                                "completion_reference": completion,
+                                "recovered_durable_completion": True})
+                        self._complete_solve(row, status, **({"native_process_completion_reference": completion}
+                            if completion is not None else {}))
+                        finish(row)
+                        continue
+                    # Preparation can take time. Observe any completed failure
+                    # before admitting another native process.
+                    drain({future for future in active if future.done()})
+                    if blocked is not None:
+                        continue
+                    request = self._native_request(row, policy_reference)
+                    if pool is None:
+                        module, sources, source_root = self._native_context()
+                        pool = self.executor_factory(max_workers=max_workers,
+                            mp_context=multiprocessing.get_context("spawn"), initializer=exec,
+                            initargs=(_native_bootstrap(reference(__file__), module, sources, source_root),))
+                    self._start_solve(row, status)
+                    self._record("NATIVE_PROCESS_DISPATCHED", row, {"request": request})
+                    active[pool.submit(_native_process, request)] = (row, request)
+                except Exception as exc:
+                    error(row, exc)
+        except BaseException:
+            # Keep the parent lock and journal until every admitted process has
+            # produced a result or an auditable error, including on interruption.
+            while active:
+                done, _ = wait(active, return_when=FIRST_COMPLETED)
+                drain(done)
+            raise
+        finally:
+            if pool is not None:
+                pool.shutdown(wait=True)
+            if blocked is not None:
+                stage, row, details = blocked
+                self._record(stage, row, {**details, "parallel_workers_drained": True})
+        return advanced
+
+    def run(self, *, cell_limit=None, max_workers=1):
         if cell_limit is not None and (type(cell_limit) is not int or cell_limit < 1):
             raise CohortError("cell limit must be a positive integer")
+        if type(max_workers) is not int or not 1 <= max_workers <= MAX_NATIVE_WORKERS:
+            raise CohortError(f"max_workers must be an integer from 1 to {MAX_NATIVE_WORKERS}")
         with locked(self.root / "run.lock"), self._journal_snapshot():
             self.operations.load_experiment(self.manifest["experiment_reference"]["path"])
             self._check_execution_api()
@@ -1253,6 +1611,13 @@ class CohortRunner:
             self._check_controller_source()
             if self.manifest["bank_reference"] is not None:
                 checked(self.manifest["bank_reference"])
+            policy_reference = self._bind_parallel_policy(max_workers)
+            if max_workers > 1:
+                advanced = self._run_parallel(cell_limit=cell_limit, max_workers=max_workers,
+                    policy_reference=policy_reference)
+                result = self.status()
+                result["cells_advanced_this_invocation"] = advanced
+                return result
             advanced = 0
             for row in self.schedule:
                 events = self._cell_events(row)
@@ -1298,6 +1663,7 @@ class CohortRunner:
         return self.status(full_audit=True)
 
     def _status(self, *, full_audit):
+        parallel_policy, parallel_reference = self._parallel_policy()
         events = self._events()
         tail = events[-1]["sha256"] if events else ZERO
         required = {"CELL_COMPLETE"} if self.manifest["cleanup_policy_reference"] is None else {"CELL_COMPLETE", "CLEANED"}
@@ -1315,6 +1681,8 @@ class CohortRunner:
                           "official_complete": 0, "resolved": 0, "infra_errors": 0, "missing": 0, "undetermined": 0}
         for row in self.schedule:
             history = self._cell_events(row)
+            if full_audit:
+                self._audit_native_events(row, history)
             stages = {event["stage"] for event in history}
             state = "COMPLETE" if "CELL_COMPLETE" in stages else "INFRA_ERROR" if history and history[-1]["stage"] == "INFRA_ERROR" else "PENDING"
             resolved = None
@@ -1390,6 +1758,8 @@ class CohortRunner:
             "adopted_training_source_count": self.manifest.get("adopted_training_source_count", 0),
             "validation_mode": "FULL_AUDIT" if full_audit else "COHERENT_IN_PROCESS_CACHE",
             "terminal_full_audit_complete": complete and self._terminal_audit_tail == tail,
+            "max_workers": parallel_policy["max_workers"] if parallel_policy is not None else 1,
+            "parallel_policy_reference": parallel_reference,
             "frozen_evaluation_bank_updates": False, "outcome_retries": False}
 
 
@@ -1421,6 +1791,8 @@ def main():
     parser.add_argument("--outside-cohort-receipt", action="append", type=Path, default=[])
     parser.add_argument("--min-free-bytes", type=int, default=10 * 1024**3)
     parser.add_argument("--cell-limit", type=int)
+    parser.add_argument("--max-workers", type=int, default=1, choices=range(1, MAX_NATIVE_WORKERS + 1),
+        help="bounded evaluation native processes; policy is immutable after first parallel run")
     args = parser.parse_args()
     if args.command == "create":
         if args.experiment_config is None or args.phase is None:
@@ -1434,7 +1806,7 @@ def main():
         result = runner.status()
     else:
         runner = _open(args.root)
-        result = runner.run(cell_limit=args.cell_limit) if args.command == "run" else runner.status()
+        result = runner.run(cell_limit=args.cell_limit, max_workers=args.max_workers) if args.command == "run" else runner.status()
     print(json.dumps(result, ensure_ascii=False))
 
 

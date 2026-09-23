@@ -1,0 +1,76 @@
+{
+  "schema": "trimem/model-catalog-observation/1.0",
+  "observed_at": "2026-09-23T15:49:27.232110+00:00",
+  "catalog_sha256": "0372c9142ecf83c737256c14a22193949c79c16019e177f72ebff0a87bf2dbdb",
+  "catalog_fetched_at": "2026-09-23T15:49:01.452743200Z",
+  "models": [
+    {
+      "id": "gpt-6-astra",
+      "display_name": "GPT-6-Astra",
+      "description": "Frontier intelligence for the most demanding work.",
+      "supported_reasoning_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "ultra"
+      ]
+    },
+    {
+      "id": "gpt-5.6-sol",
+      "display_name": "GPT-5.6-Sol",
+      "description": "Older coding model for complex work.",
+      "supported_reasoning_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "ultra"
+      ]
+    },
+    {
+      "id": "gpt-5.6-terra",
+      "display_name": "GPT-5.6-Terra",
+      "description": "Older balanced model for straightforward work.",
+      "supported_reasoning_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "ultra"
+      ]
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "display_name": "GPT-5.6-Luna",
+      "description": "Older fast and efficient model.",
+      "supported_reasoning_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ]
+    },
+    {
+      "id": "gpt-5.5",
+      "display_name": "GPT-5.5",
+      "description": "Legacy coding model.",
+      "supported_reasoning_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ]
+    }
+  ],
+  "selected_model": "gpt-5.6-luna",
+  "selected_reasoning_effort": "low",
+  "model_calls": 0,
+  "selection_basis": "Lightweight general-purpose model exposed in the current account catalog, with its lowest supported reasoning effort; not an empirically established total capability ranking. Hidden service/review entries excluded.",
+  "official_docs": "https://learn.chatgpt.com/docs/models",
+  "separate_api_key_used": false
+}

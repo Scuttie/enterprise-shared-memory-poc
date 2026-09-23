@@ -1,0 +1,1079 @@
+{
+  "aggregate": {
+    "finish_attempts": 16,
+    "missing_lesson_rejections": 2,
+    "native_nonzero_exit_sessions": 0,
+    "native_sessions": 3,
+    "successful_public_test_runs": 3,
+    "task_count": 2,
+    "trace_steps_shape_distribution": {
+      "empty_list": 2,
+      "list_of_dict": 4,
+      "list_of_str": 8
+    },
+    "trace_steps_validation_rejections": 14,
+    "unexpected_tool_calls": 0
+  },
+  "findings": [
+    "Both tasks repeatedly invoked finish; MissingSubmission followed rejection of every finish request.",
+    "All 14 reflection validation errors concern trace_steps element types or emptiness: eight singleton lists of strings, four singleton lists of objects, and two empty lists. No integer ID list was supplied. Applicability strings match the validator, and summary/procedure shape and length rules are satisfied.",
+    "The retained prompt uses a symbolic trace-step placeholder without explicitly stating integer, nonempty, sorted, or unique requirements; the generic MCP schema does not supply nested typing.",
+    "This is evidence of protocol underspecification and model format errors, not proof of an executor crash. Public-test success is not an official hidden-test score."
+  ],
+  "frozen_inputs_reference": {
+    "bytes": 19592,
+    "path": "data/skhynix_lcb_002/pilot-001/frozen-inputs.json",
+    "sha256": "972061d70b0c4744ba07c951bbed267313271c30b5f8a42794c79d2e3aeaad59"
+  },
+  "inspection": {
+    "candidate_code_emitted": false,
+    "grader_calls": 0,
+    "lesson_text_emitted": false,
+    "method": "Inline Python structural projection over the listed public cell/session files and source references; no retained validator script.",
+    "model_calls": 0,
+    "original_artifact_changes": 0,
+    "private_tests_opened": false,
+    "problem_text_emitted": false,
+    "process_signals": 0,
+    "source_or_config_changes": 0
+  },
+  "interface": {
+    "finish_validation_line": 245,
+    "mcp_request_schema": "Generic object; no nested source_lesson or trace_steps item type.",
+    "mcp_schema_line": 423,
+    "missing_submission_line": 397,
+    "prompt_example_line": 288,
+    "prompt_function": "prompt_for",
+    "prompt_path": "scripts/trimem_lcb_native.py"
+  },
+  "limitations": [
+    "Only two initial failed cells are diagnosed. This receipt does not classify the full run or successful later cells.",
+    "No original results are repaired, retried, or reclassified by this diagnostic."
+  ],
+  "model": "gpt-5.6-luna",
+  "observed_at": "2026-09-23T16:02:42.132913+00:00",
+  "reasoning_effort": "low",
+  "schema": "skhynix/lcb-early-submission-diagnostic/1.0",
+  "scope": "Only the first two completed TRAIN cells; metadata-only inspection, no additional cells inspected.",
+  "source_references": [
+    {
+      "bytes": 26766,
+      "matches_frozen_input_reference": true,
+      "path": "scripts/trimem_lcb_native.py",
+      "sha256": "79f50384bb56d0d3326c59fe1e41894555edab61c6ca373820f4c99bda8d39d1"
+    },
+    {
+      "bytes": 42118,
+      "matches_frozen_input_reference": true,
+      "path": "scripts/trimem_lcb_memory.py",
+      "sha256": "65648afb5f2d938e058c33631f83779a32d40e0b8caba4bd5893429149367dd0"
+    }
+  ],
+  "tasks": [
+    {
+      "candidate_bytes": 230,
+      "candidate_present": true,
+      "error_type": "MissingSubmission",
+      "finish_attempt_count": 9,
+      "finish_error_counts": {
+        "LCBMemoryError": 8,
+        "ValueError": 1
+      },
+      "finished": false,
+      "handoff_required": false,
+      "public_test_runs": 2,
+      "public_test_statuses": [
+        "PASS",
+        "PASS"
+      ],
+      "reflection_other_field_rules_all_satisfied": true,
+      "rejected_finish_metadata": [
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 3,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 5,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "str"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_str",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 2,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 6,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "str"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_str",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 2,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 7,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "dict"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_dict",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 2,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 8,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": true,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [],
+          "trace_steps_integer_list": true,
+          "trace_steps_length": 0,
+          "trace_steps_nonempty": false,
+          "trace_steps_shape": "empty_list",
+          "trace_steps_sorted_unique": true,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 2,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 9,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "str"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_str",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 2,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 10,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "str"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_str",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 2,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 11,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "str"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_str",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "argument_field_names": [
+            "code"
+          ],
+          "error_type": "ValueError",
+          "source_lesson_present": false,
+          "step_no": 12,
+          "tool": "finish",
+          "validation_message": "Finish requires code and source_lesson"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 2,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 13,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "dict"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_dict",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        }
+      ],
+      "session_count": 2,
+      "sessions": [
+        {
+          "actions": [
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "success",
+              "step_no": 1,
+              "tool": "revise_subtask_dag"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "success",
+              "step_no": 2,
+              "tool": "run_public_tests"
+            },
+            {
+              "finished": false,
+              "handoff_required": true,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "success",
+              "step_no": 3,
+              "tool": "complete_subtask"
+            }
+          ],
+          "agent_message_count": 1,
+          "benchmark_action_calls": 3,
+          "events_reference": {
+            "bytes": 23909,
+            "path": "data/skhynix_lcb_002/pilot-001/cells/train-5bb844a8a792a21e998b/session-01/events.jsonl",
+            "sha256": "1953f9a44bf2d3514323f7cd0a6a4849fc0c528c451816378d2d8a660fffd5c1"
+          },
+          "last_agent_message_characters": 80,
+          "last_agent_message_has_fenced_code": false,
+          "last_agent_message_present": true,
+          "native_receipt_reference": {
+            "bytes": 539,
+            "path": "data/skhynix_lcb_002/pilot-001/cells/train-5bb844a8a792a21e998b/session-01/receipt.json",
+            "sha256": "8d94d3f2e8d731ba35a01adbbc3f0e602d604cc05298db88196d71a5898a6999"
+          },
+          "native_returncode": 0,
+          "prompt_applicability_string_example": true,
+          "prompt_explicit_integer_instruction": false,
+          "prompt_explicit_nonempty_instruction": false,
+          "prompt_explicit_sorted_instruction": false,
+          "prompt_explicit_unique_instruction": false,
+          "prompt_reference": {
+            "bytes": 4604,
+            "path": "data/skhynix_lcb_002/pilot-001/cells/train-5bb844a8a792a21e998b/session-01/prompt.txt",
+            "sha256": "7bc09b5a6e4bcc59604cc91a6a63e822d98dcb804addfc1c90629357f5e07530"
+          },
+          "prompt_static_prefix_sha256": "6ace4a5dd81af2aee00bdc4c2e9f7de64ab9ad548f061eba13e546ddb5f8f60f",
+          "prompt_symbolic_trace_placeholder": true,
+          "session": 1,
+          "unexpected_tool_count": 0,
+          "wall_seconds": 26.60899999999674
+        },
+        {
+          "actions": [
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "success",
+              "step_no": 4,
+              "tool": "run_public_tests"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 5,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 6,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 7,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 8,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 9,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 10,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 11,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 12,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 13,
+              "tool": "finish"
+            }
+          ],
+          "agent_message_count": 1,
+          "benchmark_action_calls": 10,
+          "events_reference": {
+            "bytes": 108259,
+            "path": "data/skhynix_lcb_002/pilot-001/cells/train-5bb844a8a792a21e998b/session-02/events.jsonl",
+            "sha256": "87499a76b82d21e8f3ca7510b4888dac90789f1280c2f75483ac0d00edddfdfe"
+          },
+          "last_agent_message_characters": 116,
+          "last_agent_message_has_fenced_code": false,
+          "last_agent_message_present": true,
+          "native_receipt_reference": {
+            "bytes": 543,
+            "path": "data/skhynix_lcb_002/pilot-001/cells/train-5bb844a8a792a21e998b/session-02/receipt.json",
+            "sha256": "b3a93ca751b594950253692be54bf3602a37b4e586a255a3287b9f04fdae327a"
+          },
+          "native_returncode": 0,
+          "prompt_applicability_string_example": true,
+          "prompt_explicit_integer_instruction": false,
+          "prompt_explicit_nonempty_instruction": false,
+          "prompt_explicit_sorted_instruction": false,
+          "prompt_explicit_unique_instruction": false,
+          "prompt_reference": {
+            "bytes": 9408,
+            "path": "data/skhynix_lcb_002/pilot-001/cells/train-5bb844a8a792a21e998b/session-02/prompt.txt",
+            "sha256": "f8a2838adcef4047acd9f55110b2ac4e13165457b6c92a913d38ee56a128f9fc"
+          },
+          "prompt_static_prefix_sha256": "6ace4a5dd81af2aee00bdc4c2e9f7de64ab9ad548f061eba13e546ddb5f8f60f",
+          "prompt_symbolic_trace_placeholder": true,
+          "session": 2,
+          "unexpected_tool_count": 0,
+          "wall_seconds": 68.42199999999139
+        }
+      ],
+      "solve_receipt_reference": {
+        "bytes": 1529,
+        "path": "data/skhynix_lcb_002/pilot-001/cells/train-5bb844a8a792a21e998b/solve-receipt.json",
+        "sha256": "11b898d1339597c50aeb598a2b99ac34a3047c380fff2621684145b058087135"
+      },
+      "source_lesson_present": false,
+      "split": "train",
+      "state_reference": {
+        "bytes": 19030,
+        "path": "data/skhynix_lcb_002/pilot-001/cells/train-5bb844a8a792a21e998b/state.json",
+        "sha256": "e31e8d28399cd6f77e272a27013752ccbffa76bf41d34e121c6d1123b12e69da"
+      },
+      "status": "GENERATION_ERROR",
+      "step_count": 13,
+      "successful_history": [
+        {
+          "status": "success",
+          "step_no": 1,
+          "tool": "revise_subtask_dag"
+        },
+        {
+          "status": "success",
+          "step_no": 2,
+          "tool": "run_public_tests"
+        },
+        {
+          "status": "success",
+          "step_no": 3,
+          "tool": "complete_subtask"
+        },
+        {
+          "status": "success",
+          "step_no": 4,
+          "tool": "run_public_tests"
+        }
+      ],
+      "task_id": "3337",
+      "trace_steps_element_type_counts": {
+        "dict": 2,
+        "str": 5
+      },
+      "trace_steps_shape_distribution": {
+        "empty_list": 1,
+        "list_of_dict": 2,
+        "list_of_str": 5
+      }
+    },
+    {
+      "candidate_bytes": 831,
+      "candidate_present": true,
+      "error_type": "MissingSubmission",
+      "finish_attempt_count": 7,
+      "finish_error_counts": {
+        "LCBMemoryError": 6,
+        "ValueError": 1
+      },
+      "finished": false,
+      "handoff_required": false,
+      "public_test_runs": 1,
+      "public_test_statuses": [
+        "PASS"
+      ],
+      "reflection_other_field_rules_all_satisfied": true,
+      "rejected_finish_metadata": [
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 4,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 3,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "str"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_str",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 3,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 4,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "dict"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_dict",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 3,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 5,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "str"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_str",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 3,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 6,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": true,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [],
+          "trace_steps_integer_list": true,
+          "trace_steps_length": 0,
+          "trace_steps_nonempty": false,
+          "trace_steps_shape": "empty_list",
+          "trace_steps_sorted_unique": true,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "argument_field_names": [
+            "code"
+          ],
+          "error_type": "ValueError",
+          "source_lesson_present": false,
+          "step_no": 7,
+          "tool": "finish",
+          "validation_message": "Finish requires code and source_lesson"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 3,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 8,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "str"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_str",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        },
+        {
+          "applicability_rule_satisfied": true,
+          "applicability_type": "str",
+          "argument_field_names": [
+            "code",
+            "source_lesson"
+          ],
+          "available_public_trace_step_ids": [
+            1,
+            2
+          ],
+          "error_type": "LCBMemoryError",
+          "lesson_field_names": [
+            "applicability",
+            "procedure",
+            "summary",
+            "trace_steps"
+          ],
+          "procedure_length": 3,
+          "procedure_rule_satisfied": true,
+          "procedure_type": "list",
+          "source_lesson_present": true,
+          "step_no": 9,
+          "summary_rule_satisfied": true,
+          "summary_type": "str",
+          "tool": "finish",
+          "trace_steps_all_available": false,
+          "trace_steps_container_type": "list",
+          "trace_steps_element_types": [
+            "dict"
+          ],
+          "trace_steps_integer_list": false,
+          "trace_steps_length": 1,
+          "trace_steps_nonempty": true,
+          "trace_steps_shape": "list_of_dict",
+          "trace_steps_sorted_unique": false,
+          "validation_message": "Model reflection cites unavailable public trace steps"
+        }
+      ],
+      "session_count": 1,
+      "sessions": [
+        {
+          "actions": [
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "success",
+              "step_no": 1,
+              "tool": "revise_subtask_dag"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "success",
+              "step_no": 2,
+              "tool": "run_public_tests"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 3,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 4,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 5,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 6,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 7,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 8,
+              "tool": "finish"
+            },
+            {
+              "finished": false,
+              "handoff_required": false,
+              "mcp_status": "completed",
+              "request_wrapper_valid": true,
+              "response_status": "error",
+              "step_no": 9,
+              "tool": "finish"
+            }
+          ],
+          "agent_message_count": 1,
+          "benchmark_action_calls": 9,
+          "events_reference": {
+            "bytes": 102336,
+            "path": "data/skhynix_lcb_002/pilot-001/cells/train-dbb8fe96264a53f4f31f/session-01/events.jsonl",
+            "sha256": "e88ea85269776455c56ba510dfd3fb317a9518119ba671555dad343aeae82bac"
+          },
+          "last_agent_message_characters": 166,
+          "last_agent_message_has_fenced_code": false,
+          "last_agent_message_present": true,
+          "native_receipt_reference": {
+            "bytes": 542,
+            "path": "data/skhynix_lcb_002/pilot-001/cells/train-dbb8fe96264a53f4f31f/session-01/receipt.json",
+            "sha256": "b6e713cde20eb7653fb2a1c9c6f852157a7fa790e1890b5d4b4677b4f831f80b"
+          },
+          "native_returncode": 0,
+          "prompt_applicability_string_example": true,
+          "prompt_explicit_integer_instruction": false,
+          "prompt_explicit_nonempty_instruction": false,
+          "prompt_explicit_sorted_instruction": false,
+          "prompt_explicit_unique_instruction": false,
+          "prompt_reference": {
+            "bytes": 8955,
+            "path": "data/skhynix_lcb_002/pilot-001/cells/train-dbb8fe96264a53f4f31f/session-01/prompt.txt",
+            "sha256": "d88fa8defd5f5c11c88a8a5246626f2e66c6ce5b201bed88779a96cd7c56eea6"
+          },
+          "prompt_static_prefix_sha256": "6ace4a5dd81af2aee00bdc4c2e9f7de64ab9ad548f061eba13e546ddb5f8f60f",
+          "prompt_symbolic_trace_placeholder": true,
+          "session": 1,
+          "unexpected_tool_count": 0,
+          "wall_seconds": 82.90599999998813
+        }
+      ],
+      "solve_receipt_reference": {
+        "bytes": 993,
+        "path": "data/skhynix_lcb_002/pilot-001/cells/train-dbb8fe96264a53f4f31f/solve-receipt.json",
+        "sha256": "c5cc41b2b0ebd4b5eadc1fb40a5a2ea882e20a238645e13152821f158c83b9a7"
+      },
+      "source_lesson_present": false,
+      "split": "train",
+      "state_reference": {
+        "bytes": 22111,
+        "path": "data/skhynix_lcb_002/pilot-001/cells/train-dbb8fe96264a53f4f31f/state.json",
+        "sha256": "4b5981d10e6992800663d6f10e51d9557b3de73e7f64bbd7ce74768acc7838b0"
+      },
+      "status": "GENERATION_ERROR",
+      "step_count": 9,
+      "successful_history": [
+        {
+          "status": "success",
+          "step_no": 1,
+          "tool": "revise_subtask_dag"
+        },
+        {
+          "status": "success",
+          "step_no": 2,
+          "tool": "run_public_tests"
+        }
+      ],
+      "task_id": "abc305_d",
+      "trace_steps_element_type_counts": {
+        "dict": 2,
+        "str": 3
+      },
+      "trace_steps_shape_distribution": {
+        "empty_list": 1,
+        "list_of_dict": 2,
+        "list_of_str": 3
+      }
+    }
+  ],
+  "validator": {
+    "allowed_static_validation_messages": [
+      "Finish requires code and source_lesson",
+      "Model reflection cites unavailable public trace steps"
+    ],
+    "applicability_rule": "Nonempty string, UTF-8 length at most 3000 bytes.",
+    "function": "_lesson",
+    "line": 347,
+    "path": "scripts/trimem_lcb_memory.py",
+    "trace_steps_rule": "Nonempty list of exact integers, sorted and unique, each matching an available history step_no."
+  }
+}

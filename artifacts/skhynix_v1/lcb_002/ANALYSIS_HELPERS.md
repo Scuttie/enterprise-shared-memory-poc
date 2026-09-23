@@ -13,6 +13,8 @@ The new exposure audit accepts `--config` explicitly. Its sources must exactly m
 
 Both helpers inspect metadata and hash bindings; reports contain no problem, candidate, test, or injected-memory text. New helpers and outputs remain under this directory. The original Astra helpers, outputs, configs, runtime and frozen implementation are unchanged.
 
+After publication, the optional [timing supplement](TIMING_SUPPLEMENT.md) groups the metadata by difficulty/outcome and compares times on the same tasks solved by both arms. The [submission diagnostic](POSTHOC_SUBMISSION_DIAGNOSTIC.md) grades preregistered unsubmitted candidates separately; it never replaces primary scores or writes memory.
+
 Synthetic failure/denominator tests:
 
 ```powershell
@@ -20,3 +22,18 @@ python -B artifacts/skhynix_v1/lcb_002/test_analysis_helpers.py
 ```
 
 The earlier Astra exposure helper's `--pilot`/`--output` arguments can select another run, but it hardcodes the Astra config and requires all 24 TRAIN captures. Use this new config-bound helper for Luna, especially if some TRAIN attempts fail.
+
+Exposure records retain the active node at the time of recall. The native runner
+may recall on its initial `solution` node before the first successful
+`revise_subtask_dag` replaces that node with `subgoal-*`. The audit accepts that
+retired initial node only with the frozen implementation, terminal state/solve
+hashes, matching checkpoint ledger/source hashes, recalled-node membership,
+first successful replacement trace and request/result hashes, expected new
+node set, and initial-injection ledger order. It separately counts these
+historical initial-node records (nine injections in nine targets in this run).
+Arbitrary missing nodes remain errors.
+There is no per-injection timestamp; ordering follows the frozen runner's
+active-node-only recall and append-only ledger semantics plus the retained
+trace. All protected terminal and implementation files are rehashed before
+publication. This corrects a final-graph-only audit assumption without changing
+retrieval, primary outcomes, or any run artifact.

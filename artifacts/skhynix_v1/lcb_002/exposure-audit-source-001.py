@@ -71,6 +71,58 @@ def captured_training_rows(summary, planned_ids):
     return captured
 
 
+def injection_node_bindings(state):
+    """Bind the retained ledger to terminal nodes or the one retired initial node.
+
+    The frozen native runner creates `solution`, recalls only the active node,
+    and permits one successful DAG replacement before any successful history.
+    Its ledger is append-only. No per-injection timestamp is recorded, so the
+    initial-node ordering is established by these semantics and retained trace,
+    never invented from a terminal graph or a checkpoint node name alone.
+    """
+    items = state['memory_injections']
+    nodes = {node['node_id'] for node in state['graph']['nodes']}
+    bindings = {node: {'scope': 'TERMINAL_GRAPH_NODE'} for node in nodes}
+    if not items:
+        return bindings
+    controller = state['memory_checkpoint']['controller']
+    require(controller['ledger'] == items, 'LEDGER_CHECKPOINT_CHANGED')
+    require(controller['source_hashes'] == {item['memory_id']: item['canonical_node_hash'] for item in items},
+            'CHECKPOINT_SOURCE_HASHES_CHANGED')
+    require(all(item['active_node_id'] in controller['recalled_nodes'] for item in items), 'INJECTION_NODE_NOT_RECALLED')
+    missing = {item['active_node_id'] for item in items} - nodes
+    if not missing:
+        return bindings
+    require(missing == {'solution'}, 'UNBOUND_ACTIVE_NODE')
+    require(items[0]['active_node_id'] == 'solution' and
+            sum(item['active_node_id'] == 'solution' for item in items) == 1, 'INITIAL_INJECTION_ORDER_CHANGED')
+    history = state['history']
+    require(bool(history), 'INITIAL_NODE_REPLACEMENT_TRACE_MISSING')
+    event = history[0]
+    require(event['tool'] == 'revise_subtask_dag' and event['status'] == 'success' and
+            event['task_id'] == state['task']['task_id'] and event['arm'] == 'PDF_MEMORY' and
+            type(event['step_no']) is int and event['step_no'] >= 1 and
+            sum(row['tool'] == 'revise_subtask_dag' for row in history) == 1,
+            'INITIAL_NODE_REPLACEMENT_TRACE_CHANGED')
+    request, result = event['request_payload'], event['result_payload']
+    require(set(request) == {'tool', 'arguments'} and request['tool'] == 'revise_subtask_dag' and
+            set(request['arguments']) == {'subtasks'}, 'INITIAL_NODE_REPLACEMENT_REQUEST_CHANGED')
+    subtasks = request['arguments']['subtasks']
+    require(isinstance(subtasks, list) and 1 <= len(subtasks) <= state['limits']['subtasks'],
+            'INITIAL_NODE_REPLACEMENT_REQUEST_CHANGED')
+    expected_nodes = {'subgoal-%d' % (index + 1) for index in range(len(subtasks))}
+    require(nodes == expected_nodes and event['active_node_id'] == 'subgoal-1' and
+            result == {'dag_revised': True, 'active_node_id': 'subgoal-1'}, 'INITIAL_NODE_REPLACEMENT_GRAPH_CHANGED')
+    for field, payload in (('request', request), ('result', result)):
+        raw = canonical(payload)
+        require(event[field] == {'sha256': digest(raw), 'bytes': len(raw)}, 'INITIAL_NODE_REPLACEMENT_HASH_CHANGED')
+    bindings['solution'] = {'scope': 'RETIRED_INITIAL_NODE_BEFORE_FIRST_DAG_REPLACEMENT',
+        'replacement_step_no': event['step_no'], 'replacement_event_sha256': digest(canonical(event)),
+        'binding_basis': 'HASH_BOUND_TERMINAL_TRACE_AND_CHECKPOINT_WITH_FROZEN_NATIVE_ACTIVE_NODE_RECALL',
+        'per_injection_timestamp_available': False}
+    return bindings
+
+
 def run(args):
     started = time.monotonic()
     repo, pilot = args.repo.resolve(), args.pilot.resolve()
@@ -89,6 +141,13 @@ def run(args):
     require(frozen['model'] == config['requested_model'] and frozen['reasoning_effort'] == config['reasoning_effort'], 'MODEL_ID_CHANGED')
     require(any(Path(ref['path']).resolve() == config_path and ref['sha256'] == reference(config_path)['sha256']
         for ref in frozen['references']), 'FROZEN_CONFIG_CHANGED')
+    implementation_refs = []
+    for ref in frozen['implementation']:
+        current = reference(ref['path'])
+        require(current['sha256'] == ref['sha256'] and current['bytes'] == ref['bytes'], 'FROZEN_IMPLEMENTATION_CHANGED')
+        implementation_refs.append(current)
+    require((repo / 'scripts/trimem_lcb_native.py').resolve() in
+            {Path(ref['path']) for ref in implementation_refs}, 'FROZEN_NATIVE_IMPLEMENTATION_MISSING')
     require(summary['test_partition_model_calls'] == 0 and summary['hidden_feedback_to_model'] is False, 'EVALUATION_SCOPE_CHANGED')
     bank_receipt = read(pilot / 'bank-receipt.json')
     bank_path = pilot / 'frozen-bank.json'
@@ -102,7 +161,7 @@ def run(args):
     require(bank_root.resolve().parent == pilot, 'BAD_BANK_DIRECTORY')
     authority = bound(bank_root, bank['authority'])
     protected = [bank_reference, reference(pilot / 'bank-receipt.json'), reference(authority), summary_ref,
-        reference(config_path), reference(split_path), reference(pilot / 'frozen-inputs.json')]
+        reference(config_path), reference(split_path), reference(pilot / 'frozen-inputs.json'), *implementation_refs]
     for suffix in ('-wal', '-journal'):
         journal = Path(str(authority) + suffix)
         require(not journal.exists() or journal.stat().st_size == 0, 'BANK_ACTIVE_WRITE_JOURNAL')
@@ -188,7 +247,6 @@ def run(args):
             require(checkpoint['controller']['ledger'] == items, 'LEDGER_CHECKPOINT_CHANGED')
         else:
             require(not items, 'MISSING_CHECKPOINT')
-        nodes = {node['node_id'] for node in state['graph']['nodes']}
         receipt_path = cell / 'solve-receipt.json'
         row.update(state='IN_PROGRESS', state_reference=state_ref,
             finished=state['finished'], injection_count=len(items),
@@ -199,10 +257,16 @@ def run(args):
             require(receipt['state_sha256'] == state_ref['sha256'] and receipt['task_id'] == identity and receipt['arm'] == 'ON', 'TERMINAL_RECEIPT_CHANGED')
             require(receipt['memory_injection_count'] == len(items), 'TERMINAL_INJECTION_COUNT_CHANGED')
             row.update(state=receipt['status'], solve_receipt_reference=reference(receipt_path))
+        require('solve_receipt_reference' in row, 'COMPLETE_TARGET_RECEIPT_MISSING')
+        protected.extend([state_ref, row['solve_receipt_reference']])
+        node_bindings = injection_node_bindings(state)
+        row['retired_initial_node_injection_count'] = sum(
+            node_bindings[item['active_node_id']]['scope'] == 'RETIRED_INITIAL_NODE_BEFORE_FIRST_DAG_REPLACEMENT'
+            for item in items)
         for ordinal, item in enumerate(items):
             source = sources.get(item['memory_id'])
             require(source is not None and source['kind'] == item['kind'], 'UNBOUND_INJECTION')
-            require(item['active_node_id'] in nodes, 'UNBOUND_ACTIVE_NODE')
+            require(item['active_node_id'] in node_bindings, 'UNBOUND_ACTIVE_NODE')
             require(source['source_task_id'] != identity and source['source_family_id'] != task['family_id'], 'TARGET_SOURCE_ID_OR_FAMILY_OVERLAP')
             encoded = item['exact_text'].encode()
             require(digest(encoded) == item['sha256'] == source['view_sha256'] and len(encoded) == item['byte_count'], 'INJECTION_VIEW_CHANGED')
@@ -211,6 +275,7 @@ def run(args):
             exposures.append({'target_task_id': identity, 'target_family_id': task['family_id'],
                 'source_task_id': source['source_task_id'], 'source_family_id': source['source_family_id'],
                 'kind': item['kind'], 'memory_id': item['memory_id'], 'active_node_id': item['active_node_id'],
+                'active_node_binding': node_bindings[item['active_node_id']],
                 'injection_ordinal': ordinal, 'score': item['confidence'], 'score_field': 'confidence',
                 'score_semantics': 'lexical relevance' if item['kind'] == 'EPISODIC' else 'repository PPR rank score',
                 'injection_sha256': item['sha256'], 'canonical_memory_hash': source['content_hash'],
@@ -242,11 +307,15 @@ def run(args):
         'target_terminal_count': complete, 'target_with_injections_count': sum(row['injection_count'] > 0 for row in targets),
         'terminal_targets_without_injections_count': sum(row['state'] in ('SUBMITTED', 'GENERATION_ERROR') and row['injection_count'] == 0 for row in targets),
         'injection_count': len(exposures), 'injections_by_kind': dict(Counter(row['kind'] for row in exposures)),
+        'targets_with_retired_initial_node_injections': sum(row['retired_initial_node_injection_count'] > 0 for row in targets),
+        'retired_initial_node_injection_count': sum(row['retired_initial_node_injection_count'] for row in targets),
+        'active_node_binding_policy': 'TERMINAL_NODE_OR_VERIFIED_INITIAL_NODE_BEFORE_FIRST_DAG_REPLACEMENT',
         'source_bank_membership_verified': True, 'target_valid_membership_verified': True,
         'different_source_target_ids_and_families_verified': True, 'bank_unchanged_before_after': True,
         'targets': targets, 'exposures': exposures,
         'limitations': ['Recorded injection ledger, not proof of causal model use or accuracy improvement.',
-            'Per-cell stable snapshots; active experiment continues between cell reads.',
+            'COMPLETE terminal state/receipt bytes and frozen implementation hashes are checked before and after audit.',
+            'Retired initial-node timing follows the frozen runner and hash-bound trace/ledger; no injection timestamp exists.',
             'No injection can reflect ordinary abstention; no retrieval threshold was changed.'],
         'memory_text_or_candidate_or_task_or_test_content_in_report': False,
         'model_calls': 0, 'grader_calls': 0, 'retrieval_calls': 0,

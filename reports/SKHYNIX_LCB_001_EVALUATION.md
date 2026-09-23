@@ -1,8 +1,18 @@
 # LiveCodeBench Astra 실험
 
-2026-09-23. 기존 작업 저장소 `esm-r23-d115-writer`, 브랜치 `codex/trimem-coder-v1`에서 진행한다.
+2026-09-23 준비, 2026-09-24 실행 시작. 기존 작업 저장소 `esm-r23-d115-writer`, 브랜치 `codex/trimem-coder-v1`에서 진행한다.
 첫 준비 코드 커밋 `02768d8b8262de0737f8f6165b46d4285343d7a9`는 현재 추적 중인 비공개
 GitHub 저장소 `Scuttie/skhynix-memory-experiment`에 push했다. 기존 SWE-bench v20 실행과는 별도다.
+
+추가 실행 코드·문제 분할 커밋 **`3c6c0f4f808e3c7b086d20bd454b7ea6cd6c5555`**도 push했다.
+**2026-09-24 00:03:24 KST**에 Astra pilot을 시작했다. 실행 중인 구현 47개 파일은 이 커밋과
+바이트 단위로 일치한다. [실행 시작 영수증](../artifacts/skhynix_v1/lcb_001/execution-start-001.json).
+관련 회귀 검사 156개 통과, POSIX 전용 1개는 Windows에서 건너뛰었다.
+
+00:07 KST 확인 시 train 6개가 제출·경험 저장까지 완료됐고 다음 배치를 처리 중이었다.
+생성 오류·캡처 오류·공개 테스트 인프라 오류는 0건이다. **공식 해결률은 아직 없다.**
+고정한 실행 순서는 train 수집 → 은행 동결 → valid OFF/ON 풀이 → 숨은 테스트 일괄 채점이다.
+후속 문제 선택이나 회고에 중간 숨은 테스트 성적을 사용하지 않는다.
 
 ## 고정한 문제와 실험 조건
 
@@ -25,7 +35,11 @@ train은 2024-11-01 이전, valid는 2024년 11–12월, test는 2025년 1월 �
 `a960fee4bd549dcec2bda5828b657b4b2cd6af76198485030c33a4a55e5a75c9`다.
 각 ID, 가족, 분할, 공개 입력 해시와 원본 파일 해시를 저장했다. 숨은 테스트는 모델 입력과
 분리된 파일에 있으며, 별도 채점 프로세스만 읽는다. 최종 비공개 채점 manifest는 전체 추출이
-끝난 뒤 연결하고 동일한 ID·공개 입력·원본 해시인지 확인한다.
+끝난 뒤 연결하고 동일한 ID·공개 입력·원본 해시인지 확인한다. 전체 추출과 모든 비공개 파일의
+불투명 해시 검증도 완료했다. [최종 분할](../configs/skhynix_v1/lcb_001_split.json)과
+[동일성 검증 영수증](../artifacts/skhynix_v1/lcb_001/dataset-final-validation-001.json)을 보존한다.
+공개 입력은 변하지 않았으며 최종 채점 manifest SHA256은
+`baaee09dc3f8bb92e6712b70a5fca75828d3e9968fdab2fd8550f1148cf4daae`다.
 
 공식 채점 연결 검증에 사용한 두 train 문제와 같은 가족 9개는 경험 수집에서 제외한다.
 이 9개는 이번 train pilot 24개와 겹치지 않는다. 전체 train으로 확장할 때도 같은 제외 목록을
@@ -82,6 +96,19 @@ ON에는 train 경험을 동결한 은행을 연결한다. 기존 controller의 
 
 실제 실행 상태와 성적은 실행기에서 생성하는 `summary.json`을 기준으로 추가한다.
 준비·합성 검증을 실제 LiveCodeBench 문제 해결률로 보고하지 않는다.
+
+로컬 실행·재개 명령은 아래와 같다. 새 출력 디렉터리는 새 실험이고, 기존 출력 디렉터리는
+입력·코드·증거 해시가 같을 때만 재개한다. 완료한 답안을 다시 생성하지 않으며, 중단된 모델
+호출은 자동으로 재시도하지 않는다. 두 관리자가 같은 출력에 접근하면 잠금으로 거절한다.
+
+```sh
+python scripts/trimem_lcb_experiment.py run \
+  --config configs/skhynix_v1/lcb_001_pilot.json \
+  --runtime /path/to/runtime.local.json \
+  --dataset-root /path/to/lcb-data \
+  --output /path/to/pilot-output
+python scripts/trimem_lcb_status.py --output /path/to/pilot-output
+```
 
 ## GLM에서 재현
 

@@ -1,0 +1,33 @@
+{
+  "schema": "trimem/lcb-pilot-config/1.0",
+  "experiment_id": "skhynix-lcb-001-pilot",
+  "split_path": "configs/skhynix_v1/lcb_001_public_split.json",
+  "split_sha256": "a960fee4bd549dcec2bda5828b657b4b2cd6af76198485030c33a4a55e5a75c9",
+  "org_id": "skhynix-lcb-001",
+  "owner_user_id": "experiment-owner",
+  "workers": 2,
+  "official_control_receipt": "artifacts/skhynix_v1/lcb_001/official-controls-001/control-receipt.json",
+  "official_control_receipt_sha256": "c9bb884119710625f825e7a7ae6cda74683d451e1ac852e7b12ebc6931468fe4",
+  "infrastructure_control_excluded_train_ids": ["3593", "3608", "3629", "abc372_a", "abc372_c", "abc372_d", "abc372_e", "abc372_f", "abc372_g"],
+  "requested_model": "gpt-6-astra",
+  "reasoning_effort": "low",
+  "transport": "codex_native_chatgpt_login",
+  "train_selection": "train_pilot_ids",
+  "evaluation_selection": "pilot_ids",
+  "evaluation_partition": "valid",
+  "arms": ["OFF", "ON"],
+  "limits": {
+    "tool_actions": 24, "public_tests": 4, "task_seconds": 600, "sessions": 4,
+    "code_bytes": 65536, "prompt_bytes": 196608, "context_bytes": 48000,
+    "memory_bytes": 12000, "subtasks": 3
+  },
+  "private_grading": {"timeout_seconds_per_case": 6, "workers_per_cell": 1},
+  "training": "Public solve trace and source reflection; no model weight update or hidden-test feedback",
+  "memory_off": "Common task graph and L0 context with no persistent-memory bank",
+  "memory_on": "Same L0 plus frozen train-only bank queried through the existing L3 then L2 then L1 controller",
+  "bank_updates_during_validation": false,
+  "test_access": "No test problem solver calls in this pilot",
+  "l3_policy": "Existing multi-owner promotion gate unchanged; one real owner cannot produce promoted L3 skills",
+  "glm_reproduction": "Use identical split IDs and budgets, collect a separate GLM training bank; Astra-bank transfer is a separate experiment",
+  "report_label": "Development pilot on official LiveCodeBench tasks with bounded repair; not final test or leaderboard single-generation score"
+}

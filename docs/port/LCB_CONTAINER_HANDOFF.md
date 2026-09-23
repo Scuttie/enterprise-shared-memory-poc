@@ -6,7 +6,8 @@
 
 ## 같은 저장소에서 관리한다
 
-개발 저장소는 `enterprise-shared-memory-poc`, 브랜치는 `codex/trimem-coder-v1`이다.
+개발 저장소는 기존 `enterprise-shared-memory-poc`의 작업 사본이며, 브랜치는 `codex/trimem-coder-v1`이다.
+현재 push 대상은 추적 remote `private`의 비공개 `Scuttie/skhynix-memory-experiment`다.
 개발 PC의 경로는 `C:\Users\jewon\esm-r23-d115-writer`이지만 아래 프로그램의 실행
 입력에는 그 경로를 고정하지 않는다. 서버에서는 원하는 디렉터리에 checkout한다.
 
@@ -20,16 +21,22 @@ commit SHA를 기록하고, 두 실행 장소에서 같은 버전을 사용한�
 | `scripts/trimem_lcb_smoke.py` | Git 저장소 | 호스트 경로를 받는 합성 정답/오답 검사 |
 | `tests/unit/test_trimem_lcb_*.py` | Git 저장소 | 제출 누락·채점 오류·검증 실패 처리 회귀 검사 |
 | `configs/skhynix_v1/lcb_eval_py310.lock` | Git 저장소 | 검증 환경의 패키지 버전·배포 파일 해시 고정 |
-| `configs/skhynix_v1/lcb_001_plan.json` | Git 저장소 | 준비 계획. 실행 가능한 전체 실험 설정은 아직 아님 |
+| `scripts/trimem_lcb_dataset.py` | Git 저장소 | 고정 원본의 공개 입력·비공개 채점 분리와 가족 단위 시간 분할 |
+| `scripts/trimem_lcb_memory.py` | Git 저장소 | 기존 메모리 저장·검색·승격 조건 재사용, train만 쓰기 |
+| `scripts/trimem_lcb_native.py` | Git 저장소 | 제한된 도구를 사용하는 Astra native 세션 |
+| `configs/skhynix_v1/lcb_001_pilot.json` | Git 저장소 | train 24개·valid 24쌍 pilot 설정 |
+| `configs/skhynix_v1/lcb_001_public_split.json` | Git 저장소 | 전체 train 767·valid 106·test 182의 고정 ID·해시 |
+| `configs/skhynix_v1/lcb_runtime_py310.lock` | Git 저장소 | 메모리용 SQLAlchemy 포함 43개 패키지 버전·배포 해시 |
 | 공식 LiveCodeBench 코드 | 고정 commit의 별도 Git bundle 또는 checkout | `28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24` |
-| 벤치마크 데이터·채점용 배치 | 별도 승인된 반입 저장소/파일 | 데이터 다운로드·선별 exporter·분할 동결 미완료 |
+| 벤치마크 데이터·채점용 배치 | 별도 승인된 반입 저장소/파일 | 원본 6개 해시 검증, 공개 입력과 분할 동결 완료; 비공개 추출 상태는 실행 보고서 참고 |
 | Python 패키지 wheel 묶음 | 대상 환경에 맞춰 별도 반입 | wheelhouse 조립 및 오프라인 재설치 검증 미완료 |
 | API 주소·인증 | 서버의 로컬 설정·환경변수 | Git에 실제 키·사내 주소를 넣지 않음 |
 
-**현재 전달해서 실행할 수 있는 것은 저장된 답안의 채점과 합성 연결 검사다.**
-실제 GLM 문제풀이 → 경험 수집 → 동결 메모리 검색 → OFF/ON 비교를 한 명령으로
-돌리는 실행기는 아직 연결 전이다. Astra의 모델 연결 확인도 벤치마크 풀이 완료와
-구분한다. 이 안내의 설치 통과를 전체 실험 준비 완료로 보고하지 않는다.
+**Astra native 실행, 경험 저장·동결·검색과 공식 채점 경로를 구현했다.**
+실제 GLM 모델 호출에는 사내 vLLM HTTP 어댑터와 서버별 연결 검증이 추가로 필요하다.
+같은 ID로 GLM 자체 train 경험을 모으고 같은 valid/test를 평가한다. Astra의 경험을
+GLM에 주는 전이 실험과 구분한다. 현재 진행 상태와 프로토콜은
+[실험 보고서](../../reports/SKHYNIX_LCB_001_EVALUATION.md)를 기준으로 한다.
 
 ## 1. 외부 네트워크가 있는 준비 환경
 
@@ -46,7 +53,7 @@ export LCB_ASSETS=/path/to/lcb-handoff-assets
 mkdir -p "$LCB_ASSETS/wheelhouse"
 
 python3.10 -m pip download --require-hashes --only-binary=:all: \
-  -r configs/skhynix_v1/lcb_eval_py310.lock \
+  -r configs/skhynix_v1/lcb_runtime_py310.lock \
   --dest "$LCB_ASSETS/wheelhouse"
 
 git clone https://github.com/LiveCodeBench/LiveCodeBench.git "$LCB_ASSETS/LiveCodeBench"
@@ -82,7 +89,7 @@ mkdir -p "$LCB_RUN"
 python3.10 -m venv "$LCB_RUN/venv"
 "$LCB_RUN/venv/bin/python" -m pip install --no-index --require-hashes \
   --only-binary=:all: --find-links "$LCB_ASSETS/wheelhouse" \
-  -r configs/skhynix_v1/lcb_eval_py310.lock
+  -r configs/skhynix_v1/lcb_runtime_py310.lock
 "$LCB_RUN/venv/bin/python" -m pip check
 
 git clone "$LCB_ASSETS/LiveCodeBench.bundle" "$LCB_RUN/LiveCodeBench"

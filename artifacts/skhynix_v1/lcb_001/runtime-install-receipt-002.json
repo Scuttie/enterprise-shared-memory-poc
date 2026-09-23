@@ -1,0 +1,83 @@
+{
+  "added_packages": {
+    "SQLAlchemy": "2.0.54",
+    "greenlet": "3.5.6"
+  },
+  "dependency_check": "uv pip check passed",
+  "grader_runs": 0,
+  "imports_checked": [
+    "trimem_lcb_memory"
+  ],
+  "live_swebench_environment_modified": false,
+  "memory_adapter_reference": {
+    "bytes": 36656,
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/scripts/trimem_lcb_memory.py",
+    "sha256": "5695af912ca6c75070af21d0d87e1c4a3749b74239ec45775a349327e33fc3b0"
+  },
+  "model_calls": 0,
+  "observed_at": "2026-09-23T14:38:58.997608+00:00",
+  "packages": {
+    "Pebble": "5.2.2",
+    "PyYAML": "6.0.3",
+    "SQLAlchemy": "2.0.54",
+    "aiohappyeyeballs": "2.7.1",
+    "aiohttp": "3.14.3",
+    "aiosignal": "1.4.0",
+    "anyio": "4.15.1",
+    "async-timeout": "5.0.1",
+    "attrs": "26.1.0",
+    "certifi": "2026.7.22",
+    "charset-normalizer": "3.5.1",
+    "click": "8.5.0",
+    "datasets": "2.21.0",
+    "dill": "0.3.8",
+    "exceptiongroup": "1.3.1",
+    "filelock": "4.0.1",
+    "frozenlist": "1.8.0",
+    "fsspec": "2024.6.1",
+    "greenlet": "3.5.6",
+    "h11": "0.16.0",
+    "hf-xet": "1.6.0",
+    "httpcore": "1.0.9",
+    "httpx": "0.28.1",
+    "huggingface_hub": "1.32.0",
+    "idna": "3.20",
+    "multidict": "6.9.1",
+    "multiprocess": "0.70.16",
+    "numpy": "2.2.6",
+    "packaging": "26.3",
+    "pandas": "2.3.3",
+    "propcache": "0.5.4",
+    "pyarrow": "25.0.1",
+    "python-dateutil": "2.9.0.post0",
+    "pytz": "2026.3.post1",
+    "requests": "2.34.2",
+    "six": "1.17.0",
+    "tomli": "2.4.1",
+    "tqdm": "4.70.1",
+    "typing_extensions": "4.16.0",
+    "tzdata": "2026.4",
+    "urllib3": "2.8.0",
+    "xxhash": "4.0.1",
+    "yarl": "1.25.1"
+  },
+  "prior_installation_reference": {
+    "bytes": 6037,
+    "path": "/home/trimem-runner/skhynix-lcb-001/runtime-install-receipt-001.json",
+    "sha256": "481356f08a5164168aa80dece8730fa4e494f527c4a57d1819673718b0d90e30"
+  },
+  "python_path": "/home/trimem-runner/skhynix-lcb-001/venv/bin/python",
+  "requirements_frozen": {
+    "bytes": 721,
+    "path": "/home/trimem-runner/skhynix-lcb-001/requirements-runtime-v2.frozen.txt",
+    "sha256": "e55884a9251e5ad3a6677fdcc8da08f951516de963d7133e5d50b36c326534ca"
+  },
+  "requirements_hash_lock": {
+    "bytes": 139925,
+    "path": "/home/trimem-runner/skhynix-lcb-001/requirements-runtime-v2.lock",
+    "sha256": "3393999c3b23936f44f31bcf5e6d0627abad840e6bc17782acb87bc047e15d5e"
+  },
+  "schema": "skhynix/lcb-runtime-install/1.0",
+  "sql_database_service_required": false,
+  "status": "MEMORY_IMPORT_PASSED"
+}

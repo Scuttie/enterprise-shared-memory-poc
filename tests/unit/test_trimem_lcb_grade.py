@@ -190,6 +190,19 @@ def test_duplicate_json_keys_rejected():
         grader.parse_json('{"question_id":"one","question_id":"two"}')
 
 
+def test_compressed_sample_hash_binds_stored_bytes(tmp_path):
+    import gzip
+    value = dataset()
+    raw = json.dumps(value).encode()
+    compressed = gzip.compress(raw, mtime=0)
+    path = tmp_path / 'one-task.json.gz'
+    path.write_bytes(compressed)
+    loaded, reference = grader.read_dataset(path, grader.sha256(compressed))
+    assert loaded == value and reference['sha256'] == grader.sha256(compressed)
+    with pytest.raises(grader.GradeInputError):
+        grader.read_dataset(path, grader.sha256(raw))
+
+
 def test_imported_module_origin_cannot_escape_checkout(tmp_path, monkeypatch):
     import sys
     outside = tmp_path / 'foreign.py'

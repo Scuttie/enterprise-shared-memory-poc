@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import contextmanager, redirect_stderr, redirect_stdout
+import gzip
 import hashlib
 import importlib
 import json
@@ -71,10 +72,11 @@ def read_dataset(path, expected_sha256):
     raw = Path(path).read_bytes()
     if not re.fullmatch(r'[0-9a-f]{64}', expected_sha256) or sha256(raw) != expected_sha256:
         raise GradeInputError('Local dataset checksum differs')
-    if Path(path).suffix.lower() == '.jsonl':
-        value = [parse_json(line) for line in raw.splitlines() if line.strip()]
+    decoded = gzip.decompress(raw) if str(path).lower().endswith('.gz') else raw
+    if str(path).lower().endswith(('.jsonl', '.jsonl.gz')):
+        value = [parse_json(line) for line in decoded.splitlines() if line.strip()]
     else:
-        value = parse_json(raw)
+        value = parse_json(decoded)
     return value, {'path': str(Path(path).resolve()), 'sha256': sha256(raw)}
 
 

@@ -1,7 +1,7 @@
 {
   "schema": "trimem/lcb-experiment-plan/1.0",
   "experiment_id": "skhynix-lcb-001",
-  "status": "PREPARING_NOT_MAIN_EVALUATION_FROZEN",
+  "status": "PILOT_PROTOCOL_FROZEN_FINAL_TEST_NOT_STARTED",
   "benchmark": {
     "name": "LiveCodeBench",
     "official_repo": "https://github.com/LiveCodeBench/LiveCodeBench",
@@ -38,18 +38,32 @@
     "tool_protocol_verified": false
   },
   "calibration": {
-    "stage": "OFF_ONLY_MODEL_CALIBRATION",
-    "target_size": 24,
-    "difficulty_counts": {"easy": 8, "medium": 8, "hard": 8},
-    "task_ids_manifest": null,
+    "stage": "TRAIN_COLLECTION_AND_PAIRED_VALIDATION_PILOT",
+    "train_size": 24,
+    "validation_size": 24,
+    "validation_arms": [
+      "OFF",
+      "ON"
+    ],
+    "difficulty_counts_per_pilot": {
+      "easy": 8,
+      "medium": 8,
+      "hard": 8
+    },
+    "task_ids_manifest": "configs/skhynix_v1/lcb_001_public_split.json",
+    "task_ids_sha256": "a960fee4bd549dcec2bda5828b657b4b2cd6af76198485030c33a4a55e5a75c9",
+    "execution_config": "configs/skhynix_v1/lcb_001_pilot.json",
     "freeze_before_generation": true,
     "source_and_main_disjoint": true,
     "family_overlap_audit_required": true,
-    "purpose": "Check baseline headroom, completion reliability and runtime before choosing the main model/protocol.",
+    "purpose": "Evaluate the fixed Astra/low protocol and actual memory exposure on validation; leave final test untouched.",
     "selection_must_not_use_on_minus_off": true
   },
   "memory_evaluation": {
-    "arms": ["OFF", "ON"],
+    "arms": [
+      "OFF",
+      "ON"
+    ],
     "off": "Common L0 only",
     "on": "Same L0 plus frozen L1/L2/L3 retrieved from disjoint source experiences",
     "primary_bank_provenance": "Each model collects its own source experiences on the same source tasks",
@@ -67,10 +81,31 @@
     "Official-task reference/wrong reproduction completed before scoring model accuracy"
   ],
   "reporting": {
-    "metrics": ["paired_solve_rate_delta", "fail_to_pass", "pass_to_fail", "confidence_interval", "wall_time", "model_time", "grading_time", "model_calls", "tokens_when_observable", "tool_actions", "memory_exposure"],
+    "metrics": [
+      "paired_solve_rate_delta",
+      "fail_to_pass",
+      "pass_to_fail",
+      "confidence_interval",
+      "wall_time",
+      "model_time",
+      "grading_time",
+      "model_calls",
+      "tokens_when_observable",
+      "tool_actions",
+      "memory_exposure"
+    ],
     "infra_failures_separate_from_model_failures": true,
     "retain_enrollment_denominator": true,
     "label": "Official benchmark tasks/tests under our declared solve protocol; not automatically comparable to a published single-generation leaderboard"
   },
-  "existing_swebench_run": "Unchanged: gpt-6-astra/high; this file does not control the v20 pipeline"
+  "existing_swebench_run": "Unchanged: gpt-6-astra/high; this file does not control the v20 pipeline",
+  "partitions": {
+    "train": 767,
+    "valid": 106,
+    "test": 182,
+    "families": 267,
+    "infrastructure_control_family_train_exclusions": 9,
+    "eligible_train_after_controls": 758,
+    "test_model_calls": 0
+  }
 }

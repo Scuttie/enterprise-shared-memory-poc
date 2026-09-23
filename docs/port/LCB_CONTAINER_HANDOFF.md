@@ -29,7 +29,7 @@ commit SHA를 기록하고, 두 실행 장소에서 같은 버전을 사용한�
 | `configs/skhynix_v1/lcb_runtime_py310.lock` | Git 저장소 | 메모리용 SQLAlchemy 포함 43개 패키지 버전·배포 해시 |
 | 공식 LiveCodeBench 코드 | 고정 commit의 별도 Git bundle 또는 checkout | `28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24` |
 | 벤치마크 데이터·채점용 배치 | 별도 승인된 반입 저장소/파일 | 원본 6개 해시 검증, 공개 입력과 분할 동결 완료; 비공개 추출 상태는 실행 보고서 참고 |
-| Python 패키지 wheel 묶음 | 대상 환경에 맞춰 별도 반입 | wheelhouse 조립 및 오프라인 재설치 검증 미완료 |
+| Python 패키지 wheel 묶음 | 대상 환경에 맞춰 별도 반입 | 43개 wheel, 새 환경 오프라인 설치·import·합성 채점 PASS |
 | API 주소·인증 | 서버의 로컬 설정·환경변수 | Git에 실제 키·사내 주소를 넣지 않음 |
 
 **Astra native 실행, 경험 저장·동결·검색과 공식 채점 경로를 구현했다.**
@@ -40,7 +40,8 @@ GLM에 주는 전이 실험과 구분한다. 현재 진행 상태와 프로토�
 
 ## 1. 외부 네트워크가 있는 준비 환경
 
-검증한 환경은 Linux x86_64 / CPython 3.10.21이다. 대상의 CPU 아키텍처,
+검증한 환경은 Linux x86_64 / CPython 3.10.21이다. 준비한 wheel의 요구 조건은
+**CPython 3.10, x86_64, glibc 2.28 이상**이며 검증 호스트의 glibc는 2.39다. 대상의 CPU 아키텍처,
 Python 버전, glibc와 wheel 호환성을 확인하고 같은 플랫폼에서 묶음을 준비한다.
 다른 Python 버전을 사용할 때에는 해당 버전으로 새 설치 검증과 잠금을 남긴다.
 기존 가상환경은 절대경로가 포함되므로 그대로 복사하지 않는다.
@@ -70,11 +71,28 @@ git -C "$LCB_ASSETS/LiveCodeBench" bundle create "$LCB_ASSETS/LiveCodeBench.bund
 `0fe84c3912ea0c4d4a78037083943e8f0c4dd505`를 사용한다. 원본 6개 JSONL 합계는
 약 4.18 GiB이며, 캐시·추출본·결과 저장 공간은 별도다. 이 데이터와 비공개 테스트·
 참조 답안은 프로젝트 Git에 추가하지 않는다. 데이터 출처·원본 해시·선별 ID·변환
-코드 해시·배치 해시를 반입 manifest에 기록하는 exporter는 후속 구현 대상이다.
+코드 해시·배치 해시를 반입 manifest에 기록하는 exporter를 구현하고 전체 추출을 검증했다.
 
 현재 채점기는 입력 파일 전체를 메모리에 읽으므로 **예정 ID만 담은 작은 로컬
 채점 배치**를 사용한다. 전체 4.18 GiB를 하나의 채점 입력으로 합치지 않는다.
 비공개 채점 자료와 모델에 제공하는 문제·공개 예제는 별도 경로로 관리한다.
+
+### 검증한 반입 자산
+
+개발 환경의 `/home/trimem-runner/skhynix-lcb-001/handoff-001`에 43개 wheel과
+`LiveCodeBench-28fef95.bundle`을 준비했다. bundle을 별도 디렉터리에 복원하여 commit·clean 상태·
+`git fsck` 및 공식 합성 채점까지 확인했다. 파일 목록과 각 해시는 아래 영수증에 있다.
+
+- [오프라인 설치 검증](../../artifacts/skhynix_v1/lcb_001/offline-handoff-validation-001.json)
+- [raw 없는 데이터 입수·연결 검증](../../artifacts/skhynix_v1/lcb_001/offline-handoff-assets-001.json)
+- [공식 Git bundle 검증](../../artifacts/skhynix_v1/lcb_001/offline-official-bundle-001.json)
+
+서버 실행에는 `public/tasks.jsonl`, 공개·최종 manifest, `dataset-ready.json`, 문제별
+`private/*.json.gz`, 고정 split/config와 공식 checkout이 필요하다. 원본 `raw/*.jsonl` 4.49GB는
+재추출·출처 감사용으로 준비 호스트에 보관할 수 있으며 매번 서버에 복사할 필요가 없다.
+필수 추출 데이터+wheels+공식 bundle은 **3,474,114,145 bytes, 약 3.47GB(3.24GiB)**다.
+프로젝트 코드, Python, 모델 접속 환경 및 실행 결과 저장 공간은 별도다.
+실제 사내 서버의 설치와 GLM endpoint 통신은 아직 검증하지 않았다.
 
 ## 2. 사내 컨테이너에서 오프라인 설치
 

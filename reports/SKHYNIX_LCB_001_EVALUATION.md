@@ -30,6 +30,8 @@ train은 2024-11-01 이전, valid는 2024년 11–12월, test는 2025년 1월 �
 동일 대회와 정규화된 문제·starter 중복을 가족으로 묶고 가족 전체를 같은 분할에 배정한다.
 267개 가족, 분할 경계를 넘는 가족 없음. 두 pilot은 각각 easy/medium/hard 8개씩이며,
 고정 seed와 문제 ID의 SHA256 순서로 선택했다. 정답률이나 ON 상승폭을 보고 문제를 고르지 않았다.
+이 분할은 실험의 경험 수집과 평가를 분리한다. 기반 모델의 사전학습에 문제들이 노출됐는지를
+검증했다는 뜻은 아니다.
 
 [고정 분할](../configs/skhynix_v1/lcb_001_public_split.json)의 SHA256은
 `a960fee4bd549dcec2bda5828b657b4b2cd6af76198485030c33a4a55e5a75c9`다.
@@ -115,6 +117,9 @@ python scripts/trimem_lcb_status.py --output /path/to/pilot-output
 같은 Git commit, [pilot 설정](../configs/skhynix_v1/lcb_001_pilot.json), 분할 파일, 원본 revision과
 공식 채점 버전을 가져간다. GLM도 **같은 train ID로 자기 경험을 수집**하고 같은 valid/test
 ID에서 OFF/ON을 비교한다. Astra 은행을 GLM에 주는 것은 별도의 전이 실험이다.
+같은 문제·도구·예산을 사용해도 Codex native와 GLM HTTP의 내부 시스템 문맥이나 토큰 계산이
+동일하다는 뜻은 아니다. 우선 각 모델 안에서의 OFF/ON 차이를 비교하고, 모델 간 절대 점수는
+전송 경로와 관측 가능한 사용량 차이도 함께 제시한다.
 
 기존 Linux 컨테이너 안에서 Python과 SQLite를 사용한다. 추가 Docker·데몬·GPU·모델 서버 설치는
 필요 없다. 코드·설정·분할·해시만 Git에 올리고 약 4.18 GiB의 원본, 채점 자료, wheelhouse는 별도
@@ -125,3 +130,8 @@ ID에서 OFF/ON을 비교한다. Astra 은행을 GLM에 주는 것은 별도의 
 [Linux 전달 안내](../docs/port/LCB_CONTAINER_HANDOFF.md),
 [모델·채점 경로 설정 예시](../configs/skhynix_v1/lcb_runtime.example.json),
 [메모리 포함 Python 3.10 의존성](../configs/skhynix_v1/lcb_runtime_py310.lock).
+
+Linux x86_64 / Python 3.10용 wheel 43개(96,226,986 bytes)를 준비해 새 환경에
+`--no-index --require-hashes`로 설치하고 의존성 검사·메모리/실행기 import·공식 합성 채점을
+통과했다. 실행 중인 환경과 소스는 바꾸지 않았다.
+[오프라인 설치 검증](../artifacts/skhynix_v1/lcb_001/offline-handoff-validation-001.json).

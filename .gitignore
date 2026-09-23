@@ -32,7 +32,8 @@ reports/oss_release/
 
 # frozen SK hynix memory bank (required to run ON-arm evaluation on another host)
 !artifacts/skhynix_v1/architecture_scale_001/frozen-bank-240/
-!artifacts/skhynix_v1/architecture_scale_001/frozen-bank-240/*.sqlite3
+!artifacts/skhynix_v1/architecture_scale_001/frozen-bank-240/**/*.sqlite3
+!artifacts/skhynix_v1/architecture_scale_001/frozen-bank-240/**/*.jsonl
 
 # frozen Astra run evidence (traces and grading kept as captured)
 !artifacts/skhynix_v1/architecture_scale_001/astra-evidence/**/*.jsonl

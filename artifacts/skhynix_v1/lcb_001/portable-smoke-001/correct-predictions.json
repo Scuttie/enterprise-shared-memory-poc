@@ -1,0 +1,17 @@
+{
+  "expected_question_ids": [
+    "synthetic-stdio-add",
+    "synthetic-functional-double"
+  ],
+  "predictions": [
+    {
+      "output": "```python\nprint(sum(map(int, input().split())))\n```",
+      "question_id": "synthetic-stdio-add"
+    },
+    {
+      "output": "```python\nclass Solution:\n    def double(self, value):\n        return 2 * value\n```",
+      "question_id": "synthetic-functional-double"
+    }
+  ],
+  "schema": "trimem/lcb-predictions/1.0"
+}

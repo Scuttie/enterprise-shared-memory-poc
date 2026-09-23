@@ -1,0 +1,76 @@
+{
+  "schema": "trimem/lcb-experiment-plan/1.0",
+  "experiment_id": "skhynix-lcb-001",
+  "status": "PREPARING_NOT_MAIN_EVALUATION_FROZEN",
+  "benchmark": {
+    "name": "LiveCodeBench",
+    "official_repo": "https://github.com/LiveCodeBench/LiveCodeBench",
+    "official_commit": "28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24",
+    "dataset": "livecodebench/code_generation_lite",
+    "dataset_revision": "0fe84c3912ea0c4d4a78037083943e8f0c4dd505",
+    "release": "release_v6",
+    "expected_universe_size": 1055,
+    "docker_required": false,
+    "offline_runtime_required": true
+  },
+  "starter_model": {
+    "requested_model": "gpt-6-astra",
+    "reasoning_effort": "low",
+    "transport": "codex_native_chatgpt_login",
+    "separate_openai_api_key": false,
+    "catalog_verified": true,
+    "synthetic_session_completed": true,
+    "returned_model_independently_attested": false,
+    "runtime_probe_receipt": "artifacts/skhynix_v1/lcb_001/native-availability/review.json"
+  },
+  "optional_comparison_model": {
+    "requested_model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "catalog_verified": true,
+    "enabled": false,
+    "reason": "Development-only baseline comparison if needed; not selected from observed memory lift."
+  },
+  "internal_model": {
+    "family": "GLM",
+    "requested_model": null,
+    "transport": "existing_internal_vllm_http",
+    "context_and_output_limits_verified": false,
+    "tool_protocol_verified": false
+  },
+  "calibration": {
+    "stage": "OFF_ONLY_MODEL_CALIBRATION",
+    "target_size": 24,
+    "difficulty_counts": {"easy": 8, "medium": 8, "hard": 8},
+    "task_ids_manifest": null,
+    "freeze_before_generation": true,
+    "source_and_main_disjoint": true,
+    "family_overlap_audit_required": true,
+    "purpose": "Check baseline headroom, completion reliability and runtime before choosing the main model/protocol.",
+    "selection_must_not_use_on_minus_off": true
+  },
+  "memory_evaluation": {
+    "arms": ["OFF", "ON"],
+    "off": "Common L0 only",
+    "on": "Same L0 plus frozen L1/L2/L3 retrieved from disjoint source experiences",
+    "primary_bank_provenance": "Each model collects its own source experiences on the same source tasks",
+    "evaluation_bank_updates": false,
+    "astra_to_glm_bank_transfer_is_separate": true,
+    "repository_l2_effect_claim_supported_by_this_benchmark": false
+  },
+  "execution_gates": [
+    "Pinned official grader imports in a separate user-owned Linux runtime",
+    "Synthetic correct/wrong discrimination passes without model calls",
+    "Dataset export provenance and test variant verified; private tests remain evaluator-only",
+    "Source/dev/main manifests and duplicate-family audit frozen before generation",
+    "Requested native solver model and reasoning captured; returned identity recorded when exposed; no silent fallback",
+    "Tool, timeout, output and context budget behavior documented and tested",
+    "Official-task reference/wrong reproduction completed before scoring model accuracy"
+  ],
+  "reporting": {
+    "metrics": ["paired_solve_rate_delta", "fail_to_pass", "pass_to_fail", "confidence_interval", "wall_time", "model_time", "grading_time", "model_calls", "tokens_when_observable", "tool_actions", "memory_exposure"],
+    "infra_failures_separate_from_model_failures": true,
+    "retain_enrollment_denominator": true,
+    "label": "Official benchmark tasks/tests under our declared solve protocol; not automatically comparable to a published single-generation leaderboard"
+  },
+  "existing_swebench_run": "Unchanged: gpt-6-astra/high; this file does not control the v20 pipeline"
+}

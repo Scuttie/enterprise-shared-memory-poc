@@ -1,0 +1,15 @@
+{
+    "schema":  "trimem/native-availability-review/1.0",
+    "reviewed_at":  "2026-09-23T14:02:09.1421740Z",
+    "original_receipt_sha256":  "c3706c6b788c7757cbb5e5167ccb43c1736c1432198532a47064edb59ca1c6f6",
+    "response_completed":  true,
+    "native_tool_actions":  0,
+    "client_warning_count":  1,
+    "warning":  "skip_host_skill_discovery is under development; original probe classified the warning event as an unexpected item. Raw receipt retained.",
+    "requested_model":  "gpt-6-astra",
+    "requested_reasoning_effort":  "low",
+    "returned_model_independently_attested":  false,
+    "wall_seconds":  10.409,
+    "benchmark_tasks":  0,
+    "additional_model_calls":  0
+}

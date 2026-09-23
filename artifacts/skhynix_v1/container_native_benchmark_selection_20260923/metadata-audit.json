@@ -1,0 +1,151 @@
+{
+  "at": "2026-09-23T13:46:11.656667+00:00",
+  "candidate_code_executed": false,
+  "errors": [],
+  "grader_calls": 0,
+  "model_calls": 0,
+  "raw_task_data_saved": false,
+  "repositories": [
+    {
+      "archived": false,
+      "commit": "6ec785c7068e0e7d36374e2890ebf473f88dd306",
+      "declared_repository_license": "MIT",
+      "default_branch": "main",
+      "files": [
+        {
+          "bytes": 10027,
+          "path": "README.md",
+          "sha256": "6c3fcc879388962b126d9941e6c931fd671fcc2cc0f3b926353a588bfba4c9cd",
+          "url": "https://raw.githubusercontent.com/ian-Kappa/ClassEval-Pro/6ec785c7068e0e7d36374e2890ebf473f88dd306/README.md"
+        },
+        {
+          "bytes": 75,
+          "path": "requirements.txt",
+          "sha256": "31aafbdaed4eed91860288c1326125f630d1461ac8f27f33b03c81332926f4f9",
+          "url": "https://raw.githubusercontent.com/ian-Kappa/ClassEval-Pro/6ec785c7068e0e7d36374e2890ebf473f88dd306/requirements.txt"
+        },
+        {
+          "bytes": 32999,
+          "path": "common/evaluate.py",
+          "sha256": "80fb9e2ba3d922a251980b4fe7a559ea7df13b8e40d8ff6e7f010e51debb79c2",
+          "url": "https://raw.githubusercontent.com/ian-Kappa/ClassEval-Pro/6ec785c7068e0e7d36374e2890ebf473f88dd306/common/evaluate.py"
+        },
+        {
+          "bytes": 5769916,
+          "dependency_scan_limit": "Static import names only; not execution, dependency resolution, test correctness, or offline readiness.",
+          "empty_test_lists": 0,
+          "field_names": [
+            "class_name",
+            "skeleton",
+            "solution_code",
+            "task_id",
+            "test",
+            "test_classes"
+          ],
+          "parse_error_counts": {
+            "skeleton": 300
+          },
+          "path": "data.json",
+          "sha256": "f6bcb748819f6f2e39f3d6635c76a8310f5cbee55f08154f9dd726522decb2e3",
+          "static_import_roots": {
+            "ast": 13,
+            "cmath": 2,
+            "collections": 15,
+            "copy": 20,
+            "dataclasses": 1,
+            "datetime": 59,
+            "decimal": 16,
+            "difflib": 1,
+            "enum": 1,
+            "fnmatch": 1,
+            "functools": 6,
+            "gzip": 2,
+            "hashlib": 11,
+            "http": 1,
+            "importlib": 3,
+            "io": 14,
+            "ipaddress": 1,
+            "itertools": 2,
+            "json": 27,
+            "logging": 2,
+            "math": 48,
+            "mmap": 7,
+            "numpy": 7,
+            "operator": 2,
+            "os": 72,
+            "pathlib": 14,
+            "provisioning_cart_installer": 1,
+            "py_compile": 1,
+            "random": 24,
+            "re": 42,
+            "session_metric_analyzer": 1,
+            "shutil": 9,
+            "socket": 4,
+            "solution": 2,
+            "sqlite3": 10,
+            "statistics": 1,
+            "subprocess": 3,
+            "sys": 33,
+            "tempfile": 14,
+            "threading": 9,
+            "time": 45,
+            "types": 3,
+            "typing": 85,
+            "unittest": 371,
+            "uuid": 4,
+            "warnings": 4,
+            "xml": 2
+          },
+          "task_count": 300,
+          "unique_task_ids": 300,
+          "url": "https://raw.githubusercontent.com/ian-Kappa/ClassEval-Pro/6ec785c7068e0e7d36374e2890ebf473f88dd306/data.json"
+        }
+      ],
+      "repository": "ian-Kappa/ClassEval-Pro"
+    },
+    {
+      "archived": false,
+      "commit": "28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24",
+      "declared_repository_license": "MIT",
+      "default_branch": "main",
+      "files": [
+        {
+          "bytes": 12825,
+          "path": "README.md",
+          "sha256": "ee0029cddc1d9051f35818f3348a4327819a3e35a9e597732519245605195cf6",
+          "url": "https://raw.githubusercontent.com/LiveCodeBench/LiveCodeBench/28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24/README.md"
+        },
+        {
+          "bytes": 456,
+          "path": "pyproject.toml",
+          "sha256": "907d51622ad2e6b97f277f7f0c67a8e7a8bf27bedeaf0f2a5a1b9ba432a06bd2",
+          "url": "https://raw.githubusercontent.com/LiveCodeBench/LiveCodeBench/28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24/pyproject.toml"
+        }
+      ],
+      "repository": "LiveCodeBench/LiveCodeBench"
+    },
+    {
+      "archived": true,
+      "commit": "09dd993f46c3fbf3a799465bb96d524edcb0b199",
+      "declared_repository_license": "Apache-2.0",
+      "default_branch": "main",
+      "files": [
+        {
+          "bytes": 11351,
+          "path": "README.md",
+          "sha256": "4aa8cbfa3111e92db886583d554a3c9e8f14561d47261d6441c069835e3bdc28",
+          "url": "https://raw.githubusercontent.com/bigcode-project/bigcodebench/09dd993f46c3fbf3a799465bb96d524edcb0b199/README.md"
+        },
+        {
+          "bytes": 1242,
+          "path": "Requirements/requirements-eval.txt",
+          "sha256": "a4d01fb12cbce5223b51f982265cb7975bea770b758cd85cc91b803d3293e39f",
+          "url": "https://raw.githubusercontent.com/bigcode-project/bigcodebench/09dd993f46c3fbf3a799465bb96d524edcb0b199/Requirements/requirements-eval.txt"
+        }
+      ],
+      "repository": "bigcode-project/bigcodebench"
+    }
+  ],
+  "schema": "skhynix/public-benchmark-metadata-audit/1.0",
+  "task_content_printed": false
+}

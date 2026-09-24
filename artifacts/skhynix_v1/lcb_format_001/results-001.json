@@ -1,0 +1,2423 @@
+{
+  "arm_totals": {
+    "DROP": {
+      "anchor_valid": {
+        "null": 0,
+        "observed": 72,
+        "rate": 0.0,
+        "scheduled": 72,
+        "successes": 0
+      },
+      "candidate_same": {
+        "null": 0,
+        "observed": 72,
+        "rate": 0.9583333333333334,
+        "scheduled": 72,
+        "successes": 69
+      },
+      "fixed_candidate_success": {
+        "null": 0,
+        "observed": 72,
+        "rate": 0.0,
+        "scheduled": 72,
+        "successes": 0
+      },
+      "submission_valid": {
+        "null": 0,
+        "observed": 72,
+        "rate": 0.0,
+        "scheduled": 72,
+        "successes": 0
+      }
+    },
+    "KEEP": {
+      "anchor_valid": {
+        "null": 2,
+        "observed": 70,
+        "rate": 0.9142857142857143,
+        "scheduled": 72,
+        "successes": 64
+      },
+      "candidate_same": {
+        "null": 2,
+        "observed": 70,
+        "rate": 0.9714285714285714,
+        "scheduled": 72,
+        "successes": 68
+      },
+      "fixed_candidate_success": {
+        "null": 2,
+        "observed": 70,
+        "rate": 0.9,
+        "scheduled": 72,
+        "successes": 63
+      },
+      "submission_valid": {
+        "null": 2,
+        "observed": 70,
+        "rate": 0.9142857142857143,
+        "scheduled": 72,
+        "successes": 64
+      }
+    }
+  },
+  "classifications": {
+    "FIRST_ACTION_OBSERVED": 141,
+    "INFRASTRUCTURE_NO_ACTION": 2,
+    "NO_ACTION": 1
+  },
+  "contrasts": {
+    "all24": {
+      "anchor_valid": {
+        "mean_task_difference": 0.9166666666666666,
+        "paired_observations": 70,
+        "task_cluster_bootstrap_95_percentile": [
+          0.8194444444444443,
+          0.9861111111111112
+        ],
+        "tasks_scheduled": 24,
+        "tasks_with_paired_observations": 24
+      },
+      "candidate_same": {
+        "mean_task_difference": 0.013888888888888888,
+        "paired_observations": 70,
+        "task_cluster_bootstrap_95_percentile": [
+          -0.027777777777777776,
+          0.05555555555555555
+        ],
+        "tasks_scheduled": 24,
+        "tasks_with_paired_observations": 24
+      },
+      "fixed_candidate_success": {
+        "mean_task_difference": 0.9027777777777778,
+        "paired_observations": 70,
+        "task_cluster_bootstrap_95_percentile": [
+          0.7916666666666666,
+          0.9861111111111112
+        ],
+        "tasks_scheduled": 24,
+        "tasks_with_paired_observations": 24
+      },
+      "submission_valid": {
+        "mean_task_difference": 0.9166666666666666,
+        "paired_observations": 70,
+        "task_cluster_bootstrap_95_percentile": [
+          0.8194444444444443,
+          0.9861111111111112
+        ],
+        "tasks_scheduled": 24,
+        "tasks_with_paired_observations": 24
+      }
+    },
+    "memory_exposed23": {
+      "anchor_valid": {
+        "mean_task_difference": 0.9565217391304348,
+        "paired_observations": 67,
+        "task_cluster_bootstrap_95_percentile": [
+          0.9130434782608694,
+          1.0
+        ],
+        "tasks_scheduled": 23,
+        "tasks_with_paired_observations": 23
+      },
+      "candidate_same": {
+        "mean_task_difference": 0.014492753623188404,
+        "paired_observations": 67,
+        "task_cluster_bootstrap_95_percentile": [
+          -0.02898550724637681,
+          0.05797101449275362
+        ],
+        "tasks_scheduled": 23,
+        "tasks_with_paired_observations": 23
+      },
+      "fixed_candidate_success": {
+        "mean_task_difference": 0.9420289855072465,
+        "paired_observations": 67,
+        "task_cluster_bootstrap_95_percentile": [
+          0.8695652173913043,
+          1.0
+        ],
+        "tasks_scheduled": 23,
+        "tasks_with_paired_observations": 23
+      },
+      "submission_valid": {
+        "mean_task_difference": 0.9565217391304348,
+        "paired_observations": 67,
+        "task_cluster_bootstrap_95_percentile": [
+          0.9130434782608694,
+          1.0
+        ],
+        "tasks_scheduled": 23,
+        "tasks_with_paired_observations": 23
+      }
+    },
+    "no_memory_control": {
+      "anchor_valid": {
+        "mean_task_difference": 0.0,
+        "paired_observations": 3,
+        "task_cluster_bootstrap_95_percentile": null,
+        "tasks_scheduled": 1,
+        "tasks_with_paired_observations": 1
+      },
+      "candidate_same": {
+        "mean_task_difference": 0.0,
+        "paired_observations": 3,
+        "task_cluster_bootstrap_95_percentile": null,
+        "tasks_scheduled": 1,
+        "tasks_with_paired_observations": 1
+      },
+      "fixed_candidate_success": {
+        "mean_task_difference": 0.0,
+        "paired_observations": 3,
+        "task_cluster_bootstrap_95_percentile": null,
+        "tasks_scheduled": 1,
+        "tasks_with_paired_observations": 1
+      },
+      "submission_valid": {
+        "mean_task_difference": 0.0,
+        "paired_observations": 3,
+        "task_cluster_bootstrap_95_percentile": null,
+        "tasks_scheduled": 1,
+        "tasks_with_paired_observations": 1
+      }
+    }
+  },
+  "interpretation": "fresh-session submission-stage cue effect, not whole-memory solve-rate effect",
+  "new_grader_calls": 0,
+  "protocol_reference": {
+    "bytes": 225921,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\protocol.json",
+    "sha256": "6e7c52625d6043eedfcecf787859d7ad091a23528352253823825fd9ed742e65"
+  },
+  "reasoning_effort": "low",
+  "receipt_references": [
+    {
+      "bytes": 3492,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-6df48d2ed8772f279fc695da\\receipt.json",
+      "sha256": "9beee96620bcaf8514073777b02dee72a22ca68b6b157d032b444f682986e0fc"
+    },
+    {
+      "bytes": 3482,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-7606a1448d5ac98ca62319e9\\receipt.json",
+      "sha256": "b3acf1e9833c6b6fd105b740c8caf30b911a3efba492b99935605003860888e5"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-fd0e5921f3654c33bada49d3\\receipt.json",
+      "sha256": "0e0523fe7c1f1e7f0ed97be6fcff60ac4b395ad3f418666dc838d7252072c502"
+    },
+    {
+      "bytes": 3507,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-34edddbe5804861d3fae6abc\\receipt.json",
+      "sha256": "bae8cb5277fcf5fb849ceb660c55df07e960e3a9bd5cf9647841721844859b9d"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-178ca7b1e0549ddf891c638d\\receipt.json",
+      "sha256": "023ed387bb775d104ce2aafb9745ad3360482a1edaa071940a2262cb734fa95d"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-d6949e177399835fcbcfcc8f\\receipt.json",
+      "sha256": "c2461d0c45b2239193c013836ffef955eb822697a0ffb7767290072733ed3912"
+    },
+    {
+      "bytes": 3495,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-922c4250ff9133e72ba00bc4\\receipt.json",
+      "sha256": "b8daa1bb5c6e2546026868de9a7414b12f6a17be660bfda45e48f3459e1d9b13"
+    },
+    {
+      "bytes": 3491,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-1d9ff1397c72352962d9dc7a\\receipt.json",
+      "sha256": "7e65c4ffa2b2445fba9ab38f2311e04dfa3f927aaf485e8b55d0114a88367df2"
+    },
+    {
+      "bytes": 3498,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-da93ff2366040ccc6bc918a1\\receipt.json",
+      "sha256": "7763c881297276fc4b31a998e53a349437cf14b07908635c1815f4125411f086"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-7be6b883c9e5288b5825bfda\\receipt.json",
+      "sha256": "829fe73437ba3087403d5e65de0de7830f33c5d5dab541fdde42829b46d02a26"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-d844782405ed1233fa813ede\\receipt.json",
+      "sha256": "99c845ceed310bab2b9921b52218b03af1b99b9f0aa1a4442ed92bd44576db93"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-7275e405f70714dcea6ec2f1\\receipt.json",
+      "sha256": "540ec136c8c6f7717383a2db24ce566093b4cbd9b83a9f3847b092c21108cfb2"
+    },
+    {
+      "bytes": 3508,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-52e04819d82048220c009ffe\\receipt.json",
+      "sha256": "6093077a592ed1d1564cbb89578455e17889a5806168c12ffe4cb740f7b366d1"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-598d521592163db267405e67\\receipt.json",
+      "sha256": "ffc75007f643d84123bcde7b13dd4a60ca572a9791ce41d2357d8710576d4d4a"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-262f5be7467c18dce6344cae\\receipt.json",
+      "sha256": "745655d5f3a1ec4586bd50439113580bc8335e0af68c547480a2775255609dfe"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-42602ae7565068d790b43dee\\receipt.json",
+      "sha256": "b333eb841646efeba72bd885a9329e55a4c5841bc7594ce940596bbaf28df31e"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-b19e9b6516adeb29d6e0e6d0\\receipt.json",
+      "sha256": "12d63aa0019bf7c2a3a05a0ec57ac6fc7efaa04ddc8d4c564423d2d1437a10e6"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a7a41a106de21c102367161b\\receipt.json",
+      "sha256": "efa366fac8d914c596f5393640051312862bed0e8281cfa7e6d60b0128bef33b"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-318d63c828ad72bd31f18e02\\receipt.json",
+      "sha256": "ff3348032cc691279ec85abfe3d547c7f9580ee7b489c690860681897d10bd93"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-5bc460f18f80c341be9f3444\\receipt.json",
+      "sha256": "b8c82177b1dec98d1fd98b50a99bc9c8eb9829f67a8d81cfc82c0eb89647dc98"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-06466e13ccdf2fafbf04d245\\receipt.json",
+      "sha256": "a09dd26bae428150ed31cf80e6db24427296ebbf92f391d44d518038a2c40f31"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-6502e26355b41a1f12708926\\receipt.json",
+      "sha256": "d47ae425e099a6219823ede81e773e125cd3ae3b8590f52c8ccbc242ab6097fe"
+    },
+    {
+      "bytes": 3482,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-bd7a527fbc3a97b9d36c4331\\receipt.json",
+      "sha256": "88cd3b2ce121f8cfcff0f29d1a15d3fc0bfc72c032da3411dfcbaaf843104d41"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-feda5ec10659dd874518e2af\\receipt.json",
+      "sha256": "feef312ba8f0ca64ae5c6f8f3fee4ee2801dff678de36cc0e306e4d1ef96dc5e"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-15db24856acbc411af12db53\\receipt.json",
+      "sha256": "2d87c314d9559bdc1359f283dbd1f28fa231fc2a5624ba754de1364519dccc5a"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-0ff490bbb36b6586011bf3e6\\receipt.json",
+      "sha256": "a39f8660c54981f47d3b3ac0d5a3afedefd9367498f0064d6b615a219cfca1f7"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-258ecfdd82fff97913142ccc\\receipt.json",
+      "sha256": "0e5874f09b225bd4ff3995387a5e8c8c1a2fb1831bb02fb902b880c5afa0a0dd"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-3cb0aa0e3a7d717c82c89e75\\receipt.json",
+      "sha256": "90b47face45fed5886ab48140bbb57ae67fa633238b62e9f5109bd7a798c7a2d"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ffd8f84105b9111d3e75b141\\receipt.json",
+      "sha256": "52ff63d0710ee512cf371c9435b8d81202d021b82649170249a8d64e93c9c663"
+    },
+    {
+      "bytes": 3495,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-38d7e39af1c03e3c905a87e7\\receipt.json",
+      "sha256": "478ce329f226cb22e9a27275a981eb21598a94cd4a460fe22804ebe71b430f7f"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-901c2345ad3cf7ad66d95d7e\\receipt.json",
+      "sha256": "dfabfe9f2d984ae6aefc3cf647b8053d48f7277a928cf4616b7be5435c498753"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-9a8e1824fe3009f745ed2440\\receipt.json",
+      "sha256": "f8e9603de5353f03f2af60ab06a55a66b91eaa294df1150afcc4f3d35a18e4b2"
+    },
+    {
+      "bytes": 3481,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-cc32039085b857b486450220\\receipt.json",
+      "sha256": "b2c66f90ce759e6a8bcdec51c03a7d829545a5b0b90361ca72f512ff319c5539"
+    },
+    {
+      "bytes": 3495,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a4e2eff79ecde32275f6f074\\receipt.json",
+      "sha256": "68aa4238c36bae80d443126e95b9c32ef3c639f99c1460bbcd9ac35ec127200d"
+    },
+    {
+      "bytes": 3500,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-89f927399d09a9c05c965b51\\receipt.json",
+      "sha256": "72afca7756e3e27cc319a32805739a5c57dc4fe20eb325548c19abea14e17f71"
+    },
+    {
+      "bytes": 3497,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-1a4429acaae8b3effe046a3d\\receipt.json",
+      "sha256": "fb6cab31778a2ef1a8d97258271947ff495a0dc9fbbf2c384bdde4b28966b14c"
+    },
+    {
+      "bytes": 3492,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-48fc84989ffc225785609c1e\\receipt.json",
+      "sha256": "9c1590a5b5218b65b6a54cc53fcc1c1b5d1ce86f72072c4202c34fad7f07469b"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-bc617b0bf3ae91169dac5e56\\receipt.json",
+      "sha256": "529d67f56164b4897c865f1c274c4fb9b2c1a9c76828841e6df180535f2baeee"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-7009ced488dd24a0e7e9348d\\receipt.json",
+      "sha256": "906bef209265e2bb44094728e3a6e0b125c3a10d6399c9b52565a16335303205"
+    },
+    {
+      "bytes": 3508,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-51ab216e692e4cc3ff733a66\\receipt.json",
+      "sha256": "83a9130fe554a0ef4427417883eaec70f6c91fa05461abd0f9546d592acb866f"
+    },
+    {
+      "bytes": 2691,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-068dea1c8c727580f0992907\\receipt.json",
+      "sha256": "265dbb3b5fa3f3a4eee3b642df332a4ed106585df5b59606b218d175df60341b"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-8e5cb73bc2052e4b2603b469\\receipt.json",
+      "sha256": "99969b5963a105fd79ff6fcd5047a5fa310ae0d5f7fa07cf03f01d8aaad61cc7"
+    },
+    {
+      "bytes": 3495,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-93e213271bff0f773a2d4579\\receipt.json",
+      "sha256": "591e16e6473364ee075ea0d003fd4fc2bd3d1d7ff586f260de65f6897cafb5d5"
+    },
+    {
+      "bytes": 3492,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-4eb9ded23e4ca00a49d0582e\\receipt.json",
+      "sha256": "127c7000b31114872f0f410583b329d3696a62eb50d2da4a3010080ec40a2984"
+    },
+    {
+      "bytes": 3492,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-754ba5ba57bd2e4790e61a8d\\receipt.json",
+      "sha256": "0f63200d4bafabdb1938a4d6152a2e175aebc14c64d8ccd2e82d171281e6a7d9"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-37d1d31b007ec32e3179df0c\\receipt.json",
+      "sha256": "5af25de42d5ce1cb0987e38a2c3f86f87ac83cbc4f4784de40ec984c2dd61bbc"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-1200488bd1c788fcfc9d3b26\\receipt.json",
+      "sha256": "c35d4730d16a7c0f94f6935d3eb0d28f5f7bf9d3fac7ba1ba6a8aa8d92fb8e03"
+    },
+    {
+      "bytes": 3508,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-35f1880d9a5ca850eb8a6fbf\\receipt.json",
+      "sha256": "cdad7d8c95abbc6594d84fa47ad1714670d6869d20ef791205e16a96298d5e05"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ecb7ec5966dcfaed53220d56\\receipt.json",
+      "sha256": "ad9eaf05f5610914c5ada9bb2e8074d8da3c676114bb88e2fa81a8b5e13596c7"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-f3717b66114896611a319618\\receipt.json",
+      "sha256": "f00dfa788058f75c8a9914cde99aad14bb92fa2e83360dda1d7751a4e596d390"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-49f6302108c39ff4b90e5b73\\receipt.json",
+      "sha256": "8ed67f820544d8eed8cccb9295532d1edde1e2901d13767088aed7a55e3e9ba1"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-27067e137281c4bfc81ccc93\\receipt.json",
+      "sha256": "3cffec30e807b5d9a80543562931c0c4fe4566fac7da74e20411e93ae9372361"
+    },
+    {
+      "bytes": 3497,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-b88f0a8d7c7a6a89f10b9e9f\\receipt.json",
+      "sha256": "192159c8de9c06648036e0aef8b2809dbd30d3b21a9b85c73e1fe375904c5f48"
+    },
+    {
+      "bytes": 3500,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-c1fe4d1299639f8b3a60ec91\\receipt.json",
+      "sha256": "95788a2f8035a41ce9e9389a2f1ec5e4666826430887559fa2e597193d74d545"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-871f8653f04e35165ed05a0a\\receipt.json",
+      "sha256": "09e406bebc64869082e5f4edb22314b4aaf552aa2f08c18b594cd2cbf3cb417b"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ea1f67e1692c50ae4614ee7f\\receipt.json",
+      "sha256": "921eeea8a785ffd9b0148ce895febed2a3fc2a2864ead554b564554c77551810"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-eeee5701f7cdccb9856a3e74\\receipt.json",
+      "sha256": "aec699b18e79fcfcece570e175986628d0eeb0a4040c76856251b149acdbce21"
+    },
+    {
+      "bytes": 3498,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-242ccb35b0f9de2bd3da3511\\receipt.json",
+      "sha256": "1dbc225e354abf552bfed662d370716be08ebb7975d8f15f6350fb55781da633"
+    },
+    {
+      "bytes": 3500,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a405fa316647b9931cbf5ce2\\receipt.json",
+      "sha256": "33315db0ac72acb820bf7632705a5d62da5c89ff9eba41321ad1e0815baf5238"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-88d19e4198af6a759a2860c8\\receipt.json",
+      "sha256": "08ae6d8bb875e49caec7dabaa317cb6dc0710d9d1fbc095091e531fa94049634"
+    },
+    {
+      "bytes": 3492,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-6cf03587d4adaf3f4680a243\\receipt.json",
+      "sha256": "a71fdc857bbbf2be415788e20cf6976a6b17f55bad1124fea1c04968282e5262"
+    },
+    {
+      "bytes": 3495,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-5b1d82af69e41812ef88687f\\receipt.json",
+      "sha256": "6ebbbb6c312aca288d948eb2355f8e24c4ea5ed6d3d4810241a59219a6176f63"
+    },
+    {
+      "bytes": 3495,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-f5ea7dc566f246a7ae055f5e\\receipt.json",
+      "sha256": "47b426aa5b3f268d48baff07787b59c6bd7390bc96aa03340d842ef8531a5b9b"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-dd43ad1eebd0e1d155b933e7\\receipt.json",
+      "sha256": "31a6e7c08492b4b32243086bbe04a4b016b3a0fa91197912f7444c742db02b51"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-876e507790fe204e5608a04a\\receipt.json",
+      "sha256": "aa6ce61da66550fe60b7b49a944c681025b8d58ba2f890751999304bffeda139"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-401cdea3df51a18898bb35b6\\receipt.json",
+      "sha256": "9320b25c02b94eff593a262f6cd9aeac72d9186cd7129f75ccc87d048d8a7802"
+    },
+    {
+      "bytes": 3495,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-edee2680f0a29913ca7c2820\\receipt.json",
+      "sha256": "25d5c444a286e0de502bf7a2750bc074dc5a8f0f99520b6ebab045980fb97fd0"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-27fd6ac82f69d15132190f0b\\receipt.json",
+      "sha256": "1f4abaa0782db521e100bbfaf1b7e26e71997891741b198d70dbd104fb283024"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-2b8547df49a364be3f4d40bc\\receipt.json",
+      "sha256": "8085c69decb9a3f1b582f0bfdad64bccbb0f3725787efe7d68a69f58e5f88005"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-32fdd01978247a014d654979\\receipt.json",
+      "sha256": "9d7aba70209b73d9c5cd38bca416ac6712cb237cb53c1347e3cd0797206f8412"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a299d39e094ee42c9962150c\\receipt.json",
+      "sha256": "888fac6acaf96ed0c453ffe96d6f17601b86564aca2acc6831a07bcd0b72b96e"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-e91e2d97e6e1bf9c1908e31a\\receipt.json",
+      "sha256": "cd8bde72abafa19d585588ac9f7e7b7f1cca3a786b59b053197107332e5f8b0c"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-33470bfb9df790e2580cd75a\\receipt.json",
+      "sha256": "ee922d5c64be29002b9aecb6692ace2825e775a3167a77333e6e63596c8c985a"
+    },
+    {
+      "bytes": 3495,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-c83e930cd9e5c3d8a526cf9e\\receipt.json",
+      "sha256": "22d23963ca354b246fb2a96717f2c2b1ae64f761c1a986f9d5f61d4b2f5d4da3"
+    },
+    {
+      "bytes": 3484,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-2ee4b261621c6d2215535f69\\receipt.json",
+      "sha256": "7246094d040901ec337124f48f5c7e712c18cd4cc165af9f6559d692180755ed"
+    },
+    {
+      "bytes": 3492,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-710782de1b6ce83d3e29038f\\receipt.json",
+      "sha256": "8d58cda4c92625749f9ef397c2e13ec5f3ba9b17876fbad82e9ebc526dc87233"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-5ce6db0c95c4b0e954510ba2\\receipt.json",
+      "sha256": "9814b30b3d207a3f9e4c0bfae822f85f46f1e61570fd2c3d85aa5b0f08d11756"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a691e0587fab95d01711a710\\receipt.json",
+      "sha256": "1cb81edfd9214fc3b07df370bc30f0f795979083bccde998f13ae2009e28c645"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-c31b3a614858d973f9c08f56\\receipt.json",
+      "sha256": "68eecee68dc9465feedc01d6244fda60b8ba674c60ba6fb7f322964129c393f1"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-6054da3a864fbb0eef61fa1d\\receipt.json",
+      "sha256": "c1da0d73e0900ea4c1d3bdbcd542cb2883f3ffb3a22bfb85673c04746fb7b6ae"
+    },
+    {
+      "bytes": 3065,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a50ed3adc3e045426007b37b\\receipt.json",
+      "sha256": "23514767319dc392ec85eca6ea8510f535f593d58d6c4e8623a1f443bf0655ed"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-999c3be96c69338486cd0de0\\receipt.json",
+      "sha256": "4f05d2f0df251b05e705462ea32e79b48d59a6a8305f41ac71545c42f43942a6"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-409dffba29c2ba840ad435db\\receipt.json",
+      "sha256": "483f8f299bef0a5ef306c37089c298e7836e1cbceda649a2228d24ef5ee554e6"
+    },
+    {
+      "bytes": 3508,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ca1171c77ad37e3be4071907\\receipt.json",
+      "sha256": "1ccd3b97f66c6798fc947bedb09768a49f479cde046e2462c851f66fce2ad25d"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-5f41645e36a45e79ab575401\\receipt.json",
+      "sha256": "04de704caa8cfe66dd201b2b83c64f7a6aee1fde4af10ba6f69562f18e0e1af5"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-bf2bcad850ad102def74e018\\receipt.json",
+      "sha256": "d9bbf19277fe759d0cc2b411f74039200c83b68cb42928aaf2289d329aab8e48"
+    },
+    {
+      "bytes": 3511,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-2674b78f9275d5bf1df0ca0d\\receipt.json",
+      "sha256": "11a88146d2ab3d9dd7e8616b4ee8ee4a72a58e3477235cfc6bd7c8a53e097010"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-8272440800e3f8f8407596f5\\receipt.json",
+      "sha256": "148fee9b2b472728bca57386f0230aa2488df6f44e04f659ff1fca6d3b5b78f3"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-13f50fc1f3e3cf85117e612c\\receipt.json",
+      "sha256": "b9219b1002b34e362590febb1a4df5f847f1204e3cc1f1fa5553dfd75d48e12b"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-361352db3a67d2191934b82a\\receipt.json",
+      "sha256": "887918c913c2dcaf57c4dea38ca48955a1e68942807b60417b0f7b89d6c42089"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-6a69178ec1dadbe3b8511ee7\\receipt.json",
+      "sha256": "cdfe95c7bf501900e68cbb8c58d600172d0c167f94247d3052e0bef6161cb3c8"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a75d80100365987b3cd1f294\\receipt.json",
+      "sha256": "5896be85ddc11075547b19e646ca28aa6bb5322cd8a41a4782ae543a4a153c8a"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-b7940de67576104b4b02e836\\receipt.json",
+      "sha256": "3fe043d044bed0039f1f6e44c986db29bdac4f188cfdf54f72eabd197389b460"
+    },
+    {
+      "bytes": 3482,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-88dfb307bdfb3b352d8fab69\\receipt.json",
+      "sha256": "e9b3f47c7746afcd322bcf991741ea1ca75cf450f35be5b4cc29ae0cf3e9e186"
+    },
+    {
+      "bytes": 3495,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-bfb5dcd59b4ce633cf914bac\\receipt.json",
+      "sha256": "b5272c88c0062c0a9fde91ab88a289eca2acfb56b776befb4302715ef10db2d1"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-4617c67aaeed2229ab78634c\\receipt.json",
+      "sha256": "05cbecbbf158c59008dc0a5b3b9138b14d87bb449edbe537da58889fb27eb370"
+    },
+    {
+      "bytes": 3492,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-b5613a1e27d0e7ed1fd0bdb3\\receipt.json",
+      "sha256": "c8a5d8131baa21a1d0fe90cdfdfc40fff959aa86008a1dd6d9cf6350a0f14ed3"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-1e2f2cc78d9e69b1c54aef90\\receipt.json",
+      "sha256": "3c540c29d5670e283dda8d581eb3613673e3f92935e1f678ffd437a9b522ba0a"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-1f35d10bd96a3584afca7fd5\\receipt.json",
+      "sha256": "c6887b42ad6172b527a0781d6328ad3cf651bfb046b5b1a94f95186592c08dee"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-980132ef044f4e96f03b9c3a\\receipt.json",
+      "sha256": "8237ee23deef6c46c5308f800b2acdccb6f18fe377e3d40c04d73fafb602777a"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-3c379a735b8157003adf3271\\receipt.json",
+      "sha256": "3e3d77d75fee801600ac39a614eb5f1aa23e46f4356de8e9041c7a6c0a1bf778"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-4c9eebcbd7d886f8ab077a25\\receipt.json",
+      "sha256": "5f650282105175e2f1479f64b5191d59c6594374d314497008264a345a31cc2e"
+    },
+    {
+      "bytes": 3513,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-da448ad0276d1ad95df461a6\\receipt.json",
+      "sha256": "5dae5102c453dea80bb7366807d7e862441aa2caab5ba9103b04fab6401af44e"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-fd06d43959780156132b8a7d\\receipt.json",
+      "sha256": "71bc19b1f2c9200cd1d158488452e40c206f21fd6bb8eb71b200dcb1aa315e1d"
+    },
+    {
+      "bytes": 3513,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-d56f9f1d2802b9817cc5971e\\receipt.json",
+      "sha256": "89bce33b48496f7b33b791eeafecb0887478204da502ee456fb35b29ea1c3eae"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a7a064033918aeebcd45c463\\receipt.json",
+      "sha256": "85c632ec8b86c7f4c95f94e4a41720724f0b59a3bc6e3d8f5c290d3b0e11b7b4"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-200c94c611d6966f554fc911\\receipt.json",
+      "sha256": "0792cd96bec5528b1f8f9cb21007d5a4f1a367b264ce9420ffee08e441ab5aeb"
+    },
+    {
+      "bytes": 3510,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-b0e27bd52abc5bc12b122c88\\receipt.json",
+      "sha256": "af075b5ccf52a19c8776fca06f6da2ba096289671c261a4a3a07e2f447499dff"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-cce34da982956a619f590bde\\receipt.json",
+      "sha256": "5f6e5a6698226a32b788179cb50fd240840085d31e3338a42e13ae014dd9efb1"
+    },
+    {
+      "bytes": 3485,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-1cecfeff3d5f168160692d0d\\receipt.json",
+      "sha256": "4edb8f5698bbe24126cb03f708332bd80ca6932354790f4171d7563564efd99b"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-2bf54c8d39e06f8eaa09854c\\receipt.json",
+      "sha256": "708cc5b482f4a03f7a4b9eb302309bbf50657ef13e330c50f156123b9edd441d"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-00facd274704326616a15308\\receipt.json",
+      "sha256": "c4fa52bca7d4a1e6d7b6a16a6dc95b48db74e5a69e487998e45a137b8648dcd8"
+    },
+    {
+      "bytes": 3494,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-12920f9b8e349a39eaa781a4\\receipt.json",
+      "sha256": "742d7353feecde906191f2deb0455b01f1d14b5e5a87c21db32804789284d716"
+    },
+    {
+      "bytes": 3497,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-d790427e877dbca80ad29fa0\\receipt.json",
+      "sha256": "73574651317e92768632ee44e4fdf6ef2d858c617c306ef3d170d382a126a5bb"
+    },
+    {
+      "bytes": 3513,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-4bc18b793dafeae45a97bbb7\\receipt.json",
+      "sha256": "e59a9cbe30a2c6397df1fca12834635ef0a347d8ba0081c9365f03d36fcb18c3"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a57d11c4bd4cc68fa2ec4514\\receipt.json",
+      "sha256": "06825b6b65c2a4f8580bc61a4857495cf71c6d55528936f7a9cfd8bd8435c1b2"
+    },
+    {
+      "bytes": 3510,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a8519d2e110722de7cb40f99\\receipt.json",
+      "sha256": "7410b41919538daec5febca0fcb8d42b87de69e405efadf8fc9e0a998565ed4a"
+    },
+    {
+      "bytes": 3513,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-322e08b57c26efccc6ec3bc5\\receipt.json",
+      "sha256": "4e9c0e7067e515956c6fd760688310fca893590fa0052f29cf0e21b1c00b10d6"
+    },
+    {
+      "bytes": 3497,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-1619a29bf0138ac5381630ef\\receipt.json",
+      "sha256": "3e6e2c5ebafb5f1a035925a07bf0bedc109f8a6b1e9235dafc393796dc316604"
+    },
+    {
+      "bytes": 3482,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-1ba46c911f7e6965906e383d\\receipt.json",
+      "sha256": "b9026966b82dbdb1d119122c8edfb48b9730af5a897dae824b07dcadf63722f2"
+    },
+    {
+      "bytes": 3066,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ca23b89d890992de9fa0e7a8\\receipt.json",
+      "sha256": "ea8dab15a33675fb804015e08a43e33fab862d2fabf02e1f67cef3fb98bc3805"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-fdefcae5351462b688e0ef1f\\receipt.json",
+      "sha256": "39229f07d8372eaba94415bf7e84db04eec010afcbc7817dcc821a373ef092e6"
+    },
+    {
+      "bytes": 3513,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-3d35ce72f89a8f4192817150\\receipt.json",
+      "sha256": "bde88ffae932d2ae537c057cb2627e0a520bb726acc6064fedfa4ccb9a80f21e"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ec60ccec5a317d72461af24c\\receipt.json",
+      "sha256": "6b7c364c3b6c37386a6a41a12f60e7bd373b391810c9c0d0f8d75df6b7175134"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-fe68fc4c1ddefa675e23dcd0\\receipt.json",
+      "sha256": "09c05279933f9ccd53482d01ac59da17121021ea6f397de4f753846d2eca3469"
+    },
+    {
+      "bytes": 3499,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ec75b827e2d1b01abd1878a1\\receipt.json",
+      "sha256": "ec409291510b35c35179d1a6aadbe84da9657d00a55e917b185b1668cd233882"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-d41649558b392748ad2b3481\\receipt.json",
+      "sha256": "46586d28d71c7c496c05a87ca709727ff7307986e69e1ad0a9c3272a878011fd"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-64469b5ffc857c9a057ecb1f\\receipt.json",
+      "sha256": "6ebee7b62d35110cfe085616c9a7edd38269726a77cf7b745c35521857f98811"
+    },
+    {
+      "bytes": 3513,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-fc7f252cedcabfc1340f7d2f\\receipt.json",
+      "sha256": "1be83677e9e1b5051e7b7a586f274e887d2d1a2b2682c9ce8bd25eba1e9fccb0"
+    },
+    {
+      "bytes": 3512,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-953ea8c5d04fd70b1a9942fd\\receipt.json",
+      "sha256": "7bced5ef132f0ec0d86ef2ae526e06369649ec7a482c9c45b73651c3da107370"
+    },
+    {
+      "bytes": 3497,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-c690a72b3cd2fd08051f34ba\\receipt.json",
+      "sha256": "80a7d89e9f71d96ab36b01197a279f300e92a8eef297d7596b80fc0d88ab3dd3"
+    },
+    {
+      "bytes": 3494,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-89c3b5da9e5578d537ad5fb4\\receipt.json",
+      "sha256": "e42c5d9fb6339a030f05f6237bac5a0d93a5cf3e14ac2d3ea5b62b0ccd0752d3"
+    },
+    {
+      "bytes": 3510,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-0bb377646d3a9674e26312e0\\receipt.json",
+      "sha256": "965769813fcb415222e1fa73a695de1b1985e0b659c313e5d60e388532572ef3"
+    },
+    {
+      "bytes": 3513,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-2fd827eeb134569502bb2571\\receipt.json",
+      "sha256": "6309f792a53a98935310960006762e71e0a47432497eb6d8b1496407c8256019"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a1228c0f2cf39f4a115cb6ca\\receipt.json",
+      "sha256": "1496e62332186df56ae03aa23fa3f0686cefa89e5fdb5f7536ca724e526d51fe"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-da379bbf5218abd2c027e66d\\receipt.json",
+      "sha256": "d699cc26cddea8a9eb2ceec312f21d0428b79bbe4aa580f669858be9df869e74"
+    },
+    {
+      "bytes": 3510,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-e521b8cda4c4e77379b4f84a\\receipt.json",
+      "sha256": "28828845d66e3e9ee9834f034ecdcab35dc1cd7dd6c9e7b74b1dc5b105a711e6"
+    },
+    {
+      "bytes": 3513,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-b11bf918c37bfa6db2e5baa8\\receipt.json",
+      "sha256": "63bf294fc71007664411db8c0006c75c2ce0931c66829b2355512b8519a3ea3d"
+    },
+    {
+      "bytes": 3485,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ddad65e4db566b4d3a203d55\\receipt.json",
+      "sha256": "39e54cd36df305dbaa910d8c6def5caea74d041d7e0f741795fa8380555fb9f0"
+    },
+    {
+      "bytes": 3493,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-f8f5c4f13c8d06e8e739da11\\receipt.json",
+      "sha256": "8c670b3005bd56a1b9f1052275bc46a563e26242d1d3855f96c71ec82455c13d"
+    },
+    {
+      "bytes": 3509,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-2ae575ae1d934157cfb67cc7\\receipt.json",
+      "sha256": "54947c3edf58282baa58e77e19c7acb983117cbc8b7533535642f1cb38672b9f"
+    },
+    {
+      "bytes": 3514,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-f816443dfa66477634dd0291\\receipt.json",
+      "sha256": "915f018d9ec6c587ca5931a72092985cfaa4c2bae2cd227a5734a43ad1b7894d"
+    },
+    {
+      "bytes": 3496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-d5b65e376360becab7278269\\receipt.json",
+      "sha256": "7ad4fd047e9755b9eeb93e9dd687c6a77c1677b8009124d02a76d0b784eb30e9"
+    },
+    {
+      "bytes": 3494,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-c00dda411142d21d0e3b752f\\receipt.json",
+      "sha256": "3795bb9b0799185c07b2289d2a26272d0493ee6f98fb696536bdb4a3a6453af1"
+    }
+  ],
+  "requested_model": "gpt-5.6-luna",
+  "results_reference": {
+    "bytes": 77440,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\results.json",
+    "sha256": "024e1f8d326a873069566913dfbff67a5e2a8557b3e25f5e84fa5ef61809d918"
+  },
+  "schema": "lcb-format-ablation-analysis/1",
+  "source_and_input_hashes_unchanged": true,
+  "task_results": [
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc380_d"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            false,
+            false,
+            false
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            false,
+            false,
+            false
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            false,
+            false,
+            false
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": true,
+      "task_id": "abc386_c"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3653"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3627"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            null
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 2
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            null
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 2
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            null
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 2
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            null
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 2
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc382_f"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3637"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            false
+          ],
+          "paired_mean_difference": 0.6666666666666666,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            false,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.3333333333333333,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            false
+          ],
+          "paired_mean_difference": 0.6666666666666666,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            false
+          ],
+          "paired_mean_difference": 0.6666666666666666,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc378_e"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc384_d"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3648"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc379_b"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            false,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.3333333333333333,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc381_d"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3636"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            null,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 2
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            null,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 2
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            null,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 2
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            null,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 2
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc384_f"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3620"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3631"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            false,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.6666666666666666,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            false,
+            true,
+            true
+          ],
+          "paired_mean_difference": -0.3333333333333333,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            false,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.6666666666666666,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            false,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.6666666666666666,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc380_e"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc381_c"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            false,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.6666666666666666,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            false
+          ],
+          "KEEP": [
+            true,
+            false,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            false,
+            false,
+            true
+          ],
+          "paired_mean_difference": 0.3333333333333333,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            false,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.6666666666666666,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc378_b"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc380_a"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3659"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc379_a"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3651"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "3626"
+    },
+    {
+      "metrics": {
+        "anchor_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "candidate_same": {
+          "DROP": [
+            true,
+            true,
+            true
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 0.0,
+          "paired_observations": 3
+        },
+        "fixed_candidate_success": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        },
+        "submission_valid": {
+          "DROP": [
+            false,
+            false,
+            false
+          ],
+          "KEEP": [
+            true,
+            true,
+            true
+          ],
+          "paired_mean_difference": 1.0,
+          "paired_observations": 3
+        }
+      },
+      "no_memory_control": false,
+      "task_id": "abc378_a"
+    }
+  ],
+  "trace_container_types": {
+    "DROP": {
+      "NoneType": 11,
+      "list": 61
+    },
+    "KEEP": {
+      "NoneType": 3,
+      "list": 66
+    }
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "arm": "KEEP",
+  "diagnostic_status": "BROKER_ARCHIVE_STAGE_FAILURE_WITH_REPRODUCIBLE_STDIO_ENCODING_DEFECT",
+  "drive_free_gib_observed_now": 35.631,
+  "drive_observation_is_not_failure_time_evidence": true,
+  "event_derived_encoding_simulation": {
+    "actual_mcp_wire_bytes_retained": false,
+    "canonical_exception_class": "UnicodeEncodeError",
+    "scope": "Event-derived UTF-8 wire simulation under cp949/surrogateescape; not the missing original broker exception.",
+    "surrogate_codepoint_count": 2
+  },
+  "event_request_evidence": {
+    "completed_event_sha256": "36a852a100e7f8b0db93ebc58c5074d5f87a25a430948525a64cda84bbfdd5e5",
+    "completed_line": 5,
+    "envelope_sha256": "17f3cca35031f99ba550bb4d674d9946cc22fbff0122483442624703c4771f41",
+    "raw_archive_canonical_bytes": 4968,
+    "raw_archive_canonical_sha256": "f3538117dbf79a32e51c3d15fe8a9c45a16828e503ac39865ddabb8d82a05bbc",
+    "request_sha256": "b2deffcd49c763aa1ace58a7eaba71782060639b32325ee10324d391d7728dc7",
+    "started_completed_envelopes_equal": true,
+    "started_event_sha256": "ae591d6d6bd6543c6a142c233131a23b2a1f00844c67c1acfee94f23b7640ade",
+    "started_line": 4
+  },
+  "experiment_writes": 0,
+  "failure_boundary": {
+    "action_receipt_present": false,
+    "empty_raw_archive_temporary_file_present": true,
+    "first_action_claim_present": true,
+    "phase": "RAW_REQUEST_ATOMIC_PERSISTENCE_BEFORE_PROJECT_VALIDATION",
+    "raw_archive_present": false
+  },
+  "inspection_provenance": {
+    "method": "Manager-only inline Python metadata projection plus retained synthetic stdio reproducer",
+    "runner_implementation_reference": {
+      "bytes": 28503,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_format_ablation_runner.py",
+      "sha256": "50a1e11536710ba14d400f3f1b647a00a35087f2b2963d5e1a24472befb9322c"
+    },
+    "standalone_actual_request_validator_script_reference": null,
+    "validator_implementation_reference": {
+      "bytes": 42118,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_memory.py",
+      "sha256": "65648afb5f2d938e058c33631f83779a32d40e0b8caba4bd5893429149367dd0"
+    }
+  },
+  "interpretation": "A Windows locale-dependent text-stdin defect is reproduced with synthetic UTF-8 input: cp949/surrogateescape can introduce lone surrogates that fail strict UTF-8 canonicalization before any raw archive bytes are written. ASCII-escaped or binary-stdin controls pass. This mechanism also reproduces when simulating UTF-8 wire serialization of the retained native event request. The actual original MCP bytes, stdin settings and exception were not retained, so attribution to this mechanism is strongly consistent rather than independently recorded. Primary null remains unchanged.",
+  "native_returncode": 0,
+  "native_timed_out": false,
+  "new_benchmark_test_runs": 0,
+  "new_grader_calls": 0,
+  "new_model_calls": 0,
+  "new_native_invocations": 0,
+  "observed_at": "2026-09-24T03:15:06.343646+00:00",
+  "original_exception_class": null,
+  "original_exception_message_retained": false,
+  "original_execution_infrastructure_error": true,
+  "original_primary_metrics": {
+    "anchor_valid": null,
+    "candidate_same": null,
+    "classification": "INFRASTRUCTURE_NO_ACTION",
+    "fixed_candidate_success": null,
+    "submission_valid": null
+  },
+  "original_result_rewrites": 0,
+  "payload_text_emitted": false,
+  "private_tests_or_grader_artifacts_opened": false,
+  "read_only_event_request_revalidation": {
+    "canonical_serialization_exception_type": null,
+    "eligible_to_replace_primary_result": false,
+    "observed_projection": {
+      "anchor_valid": true,
+      "available_history_ids": [
+        1,
+        2
+      ],
+      "candidate_same": true,
+      "fixed_candidate_success": true,
+      "reason": "VALID_FINISH",
+      "submission_valid": true,
+      "trace_steps_integer_values": [
+        2
+      ]
+    },
+    "original_primary_remains_null": true,
+    "pure_project_exception_type": null,
+    "request_source": "HASH_BOUND_NATIVE_EVENT_ARGUMENTS_NOT_A_SEALED_BROKER_RAW_ARCHIVE"
+  },
+  "repeat": 3,
+  "request_shape": {
+    "arguments_type": "dict",
+    "code_type": "str",
+    "lesson_field_types": {
+      "applicability": "str",
+      "procedure": "list",
+      "summary": "str",
+      "trace_steps": "list"
+    },
+    "nonascii_codepoint_counts": {
+      "code": 0,
+      "source_lesson.applicability": 0,
+      "source_lesson.procedure": 1,
+      "source_lesson.summary": 0,
+      "source_lesson.trace_steps": 0
+    },
+    "procedure_element_types": [
+      "str"
+    ],
+    "request_type": "dict",
+    "source_lesson_type": "dict",
+    "trace_element_types": [
+      "int"
+    ]
+  },
+  "schema": "lcb-format-broker-infrastructure-diagnostic/1",
+  "source_hashes_unchanged_before_after": true,
+  "source_references": [
+    {
+      "bytes": 225921,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\protocol.json",
+      "sha256": "6e7c52625d6043eedfcecf787859d7ad091a23528352253823825fd9ed742e65"
+    },
+    {
+      "bytes": 28503,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_format_ablation_runner.py",
+      "sha256": "50a1e11536710ba14d400f3f1b647a00a35087f2b2963d5e1a24472befb9322c"
+    },
+    {
+      "bytes": 42118,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_memory.py",
+      "sha256": "65648afb5f2d938e058c33631f83779a32d40e0b8caba4bd5893429149367dd0"
+    },
+    {
+      "bytes": 4054,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\inputs\\abc382_f\\history.json",
+      "sha256": "fa22fcc5bef3578f33d89cc0520e57e57c8c7788273062bdf67afbf4543c76bf"
+    },
+    {
+      "bytes": 22204,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\inputs\\abc382_f\\KEEP.json",
+      "sha256": "6f7067a6bff8472f5bb9d8c237f2d643c224973db70a7bf6303e430e6298e2b7"
+    },
+    {
+      "bytes": 23257,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\inputs\\abc382_f\\KEEP.txt",
+      "sha256": "a56d915269a6709b3ca5a1c401067cbeb034f34585994d0bdc8824e22fa5dcd1"
+    },
+    {
+      "bytes": 3066,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ca23b89d890992de9fa0e7a8\\receipt.json",
+      "sha256": "ea8dab15a33675fb804015e08a43e33fab862d2fabf02e1f67cef3fb98bc3805"
+    },
+    {
+      "bytes": 1545,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ca23b89d890992de9fa0e7a8\\launch.json",
+      "sha256": "7dfcec533f204d471b96cc9c251fe6989e961c04de1b68b3fbed2a876e13b269"
+    },
+    {
+      "bytes": 6030,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ca23b89d890992de9fa0e7a8\\events.jsonl",
+      "sha256": "93f8714e1c022c107109084dca9dad89b56da5ee00b9bb1131fde76c828b40cb"
+    },
+    {
+      "bytes": 0,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ca23b89d890992de9fa0e7a8\\stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 22,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ca23b89d890992de9fa0e7a8\\first-action.claim",
+      "sha256": "60d830821ddfe95765d3a12694d46bd2acdfaafc7d9a844b3b630b9be8560974"
+    },
+    {
+      "bytes": 0,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-ca23b89d890992de9fa0e7a8\\private\\first-request.json.tmp-9412",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2438,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_format_001\\stdio-serialization-diagnostic-source-001.py",
+      "sha256": "4b59f9b637a96d3c701e26ded8e638015c2398f62201bfa7d3c1f96f3d150774"
+    }
+  ],
+  "synthetic_python_child_processes_this_receipt": 3,
+  "synthetic_reproducer_reference": {
+    "bytes": 2438,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_format_001\\stdio-serialization-diagnostic-source-001.py",
+    "sha256": "4b59f9b637a96d3c701e26ded8e638015c2398f62201bfa7d3c1f96f3d150774"
+  },
+  "synthetic_stdio_reproduction": {
+    "actual_trial_payloads_read": false,
+    "cases": [
+      {
+        "bytes_written": 0,
+        "case": "UTF8_TEXT_STDIN",
+        "json_parse_succeeded": true,
+        "mode": "text",
+        "serialization_exception_class": "UnicodeEncodeError",
+        "stdin_encoding": "cp949",
+        "stdin_errors": "surrogateescape",
+        "surrogate_codepoint_count": 1,
+        "wire_bytes": 31,
+        "wire_sha256": "1c1186e20037ba8e5725b5aa09902159c3850708ae7cc3b78d80a26f342a01d9"
+      },
+      {
+        "bytes_written": 30,
+        "case": "ASCII_ESCAPED_TEXT_STDIN",
+        "json_parse_succeeded": true,
+        "mode": "text",
+        "serialization_exception_class": null,
+        "stdin_encoding": "cp949",
+        "stdin_errors": "surrogateescape",
+        "surrogate_codepoint_count": 0,
+        "wire_bytes": 34,
+        "wire_sha256": "726ef60712423d92a9179f1a63b5617bdcce8fdb2706a16fd6bfe64d1e2540b9"
+      },
+      {
+        "bytes_written": 30,
+        "case": "UTF8_BUFFER_STDIN",
+        "json_parse_succeeded": true,
+        "mode": "buffer",
+        "serialization_exception_class": null,
+        "stdin_encoding": "cp949",
+        "stdin_errors": "surrogateescape",
+        "surrogate_codepoint_count": 0,
+        "wire_bytes": 31,
+        "wire_sha256": "1c1186e20037ba8e5725b5aa09902159c3850708ae7cc3b78d80a26f342a01d9"
+      }
+    ],
+    "disk_archive_writes": 0,
+    "grader_calls": 0,
+    "model_calls": 0,
+    "native_cli_calls": 0,
+    "schema": "lcb-format-synthetic-stdio-diagnostic/1",
+    "scope": "Current interpreter/environment reproduction; original broker exception and environment were not recorded.",
+    "synthetic_child_processes": 3
+  },
+  "task_id": "abc382_f",
+  "trial_id": "t-ca23b89d890992de9fa0e7a8"
+}

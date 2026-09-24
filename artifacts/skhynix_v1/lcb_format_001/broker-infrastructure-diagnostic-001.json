@@ -1,0 +1,176 @@
+{
+  "arm": "KEEP",
+  "diagnostic_status": "BROKER_ARCHIVE_STAGE_FAILURE_ORIGINAL_EXCEPTION_UNRECORDED",
+  "drive_free_gib_observed_now": 36.225,
+  "drive_observation_is_not_failure_time_evidence": true,
+  "event_request_evidence": {
+    "completed_event_sha256": "28710071496e7d857badad163a52b098d9e853b9c2eda5aa54cd6364f5b2a4fa",
+    "completed_line": 4,
+    "envelope_sha256": "d7e644ab62c27228aed7436434ba5785163c42c9d987eaf3ed24b139f18eb548",
+    "raw_archive_canonical_bytes": 3796,
+    "raw_archive_canonical_sha256": "0b3b27492e455d7360d526f8ccc8271c19bb4f5f0be1d6f25e07f2e16570d663",
+    "request_sha256": "1c71e45a032e6892a15dcbd022b7845e0542f28fd506a5149d73374e1bf3525c",
+    "started_completed_envelopes_equal": true,
+    "started_event_sha256": "1b3c1cb0eaef8244d194c9e2192988042b7f822cddcfa3f7a139fab9f2bca5cf",
+    "started_line": 3
+  },
+  "experiment_writes": 0,
+  "failure_boundary": {
+    "action_receipt_present": false,
+    "empty_raw_archive_temporary_file_present": true,
+    "first_action_claim_present": true,
+    "phase": "RAW_REQUEST_ATOMIC_PERSISTENCE_BEFORE_PROJECT_VALIDATION",
+    "raw_archive_present": false
+  },
+  "inspection_provenance": {
+    "method": "Manager-only inline Python commands with allowlisted metadata projection; no retained standalone validator script",
+    "runner_implementation_reference": {
+      "bytes": 28503,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_format_ablation_runner.py",
+      "sha256": "50a1e11536710ba14d400f3f1b647a00a35087f2b2963d5e1a24472befb9322c"
+    },
+    "standalone_validator_script_reference": null,
+    "validator_implementation_reference": {
+      "bytes": 42118,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_memory.py",
+      "sha256": "65648afb5f2d938e058c33631f83779a32d40e0b8caba4bd5893429149367dd0"
+    }
+  },
+  "interpretation": "The request reached the local broker and a first-action claim plus empty archive temporary file were created. This local persistence-stage failure occurred before the original format validator. The original catch block retained no exception class; serialization of the retained event request now succeeds, so no specific OS, disk, or transient serializer cause is established. Event-based posthoc format revalidation does not replace the frozen null primary result.",
+  "native_returncode": 0,
+  "native_timed_out": false,
+  "new_benchmark_test_runs": 0,
+  "new_grader_calls": 0,
+  "new_model_calls": 0,
+  "new_native_invocations": 0,
+  "observed_at": "2026-09-24T03:05:56.045782+00:00",
+  "original_exception_class": null,
+  "original_exception_message_retained": false,
+  "original_execution_infrastructure_error": true,
+  "original_primary_metrics": {
+    "anchor_valid": null,
+    "candidate_same": null,
+    "classification": "INFRASTRUCTURE_NO_ACTION",
+    "fixed_candidate_success": null,
+    "submission_valid": null
+  },
+  "original_result_rewrites": 0,
+  "payload_text_emitted": false,
+  "private_tests_or_grader_artifacts_opened": false,
+  "read_only_event_request_revalidation": {
+    "canonical_serialization_exception_type": null,
+    "eligible_to_replace_primary_result": false,
+    "observed_projection": {
+      "anchor_valid": true,
+      "available_history_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "candidate_same": true,
+      "fixed_candidate_success": true,
+      "reason": "VALID_FINISH",
+      "submission_valid": true,
+      "trace_steps_integer_values": [
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "original_primary_remains_null": true,
+    "pure_project_exception_type": null,
+    "request_source": "HASH_BOUND_NATIVE_EVENT_ARGUMENTS_NOT_A_SEALED_BROKER_RAW_ARCHIVE"
+  },
+  "repeat": 2,
+  "request_shape": {
+    "arguments_type": "dict",
+    "code_type": "str",
+    "lesson_field_types": {
+      "applicability": "str",
+      "procedure": "list",
+      "summary": "str",
+      "trace_steps": "list"
+    },
+    "procedure_element_types": [
+      "str",
+      "str"
+    ],
+    "request_type": "dict",
+    "source_lesson_type": "dict",
+    "trace_element_types": [
+      "int",
+      "int",
+      "int",
+      "int"
+    ]
+  },
+  "schema": "lcb-format-broker-infrastructure-diagnostic/1",
+  "source_hashes_unchanged_before_after": true,
+  "source_references": [
+    {
+      "bytes": 225921,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\protocol.json",
+      "sha256": "6e7c52625d6043eedfcecf787859d7ad091a23528352253823825fd9ed742e65"
+    },
+    {
+      "bytes": 28503,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_format_ablation_runner.py",
+      "sha256": "50a1e11536710ba14d400f3f1b647a00a35087f2b2963d5e1a24472befb9322c"
+    },
+    {
+      "bytes": 42118,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_memory.py",
+      "sha256": "65648afb5f2d938e058c33631f83779a32d40e0b8caba4bd5893429149367dd0"
+    },
+    {
+      "bytes": 8093,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\inputs\\abc384_f\\history.json",
+      "sha256": "6d9f5cad0a0eaba97a3bff19360792af796182d26cc9de3f976e7f132c46c1af"
+    },
+    {
+      "bytes": 26309,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\inputs\\abc384_f\\KEEP.txt",
+      "sha256": "8e8da6236fa2b17f8a6dde4579793e9aff5bd892fc06d459fb16aca4448a27da"
+    },
+    {
+      "bytes": 25256,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\inputs\\abc384_f\\KEEP.json",
+      "sha256": "51e1efd9d7c16fac12349d6cc530d2a419ad6144a2c3e549cd2b9f16325d44ab"
+    },
+    {
+      "bytes": 3065,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a50ed3adc3e045426007b37b\\receipt.json",
+      "sha256": "23514767319dc392ec85eca6ea8510f535f593d58d6c4e8623a1f443bf0655ed"
+    },
+    {
+      "bytes": 1544,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a50ed3adc3e045426007b37b\\launch.json",
+      "sha256": "74d8949b5d07d666372a6271bfae337f5e523c9b890e3c035e813f02a95d1cf0"
+    },
+    {
+      "bytes": 4656,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a50ed3adc3e045426007b37b\\events.jsonl",
+      "sha256": "227574e366a7746f1c961bd86871ba96f35bef05864d47787fc360a3a3346970"
+    },
+    {
+      "bytes": 0,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a50ed3adc3e045426007b37b\\stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 22,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a50ed3adc3e045426007b37b\\first-action.claim",
+      "sha256": "60d830821ddfe95765d3a12694d46bd2acdfaafc7d9a844b3b630b9be8560974"
+    },
+    {
+      "bytes": 0,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001\\trials\\t-a50ed3adc3e045426007b37b\\private\\first-request.json.tmp-52844",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "task_id": "abc384_f",
+  "trial_id": "t-a50ed3adc3e045426007b37b"
+}

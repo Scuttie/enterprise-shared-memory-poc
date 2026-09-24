@@ -1,0 +1,22 @@
+{
+  "schema": "lcb004-execution-start/1",
+  "started_at": "2026-09-24T04:54:57.501385+00:00",
+  "execution_head": "3830a7eccd45589b0d40c29a7547b907f7238334",
+  "plan_reference": {
+    "path": "configs/skhynix_v1/lcb_004_transfer_plan.json",
+    "sha256": "fe00428d819100ee2f0616e343f59e30cc983558d1ac3325222e385aedf88e78"
+  },
+  "frozen_inputs_sha256": "b91145154bbc7d51135fe807285263ca27c51d85d15a346e5aeef443680f7da1",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "low",
+  "workers": 2,
+  "maximum_cells": 664,
+  "output": "data/skhynix_lcb_004/run-001",
+  "command": [
+    "python",
+    "scripts/lcb_transfer_experiment.py",
+    "run",
+    "--dataset-root",
+    "\\\\wsl.localhost\\TriMemRunner2404\\home\\trimem-runner\\skhynix-lcb-001\\data"
+  ]
+}

@@ -45,6 +45,10 @@ def verify_pristine(request):
 
 def child(request_path):
     request = read(request_path)
+    if request.get('setup_support_reference') is not None:
+        import deveval_setup_offline as offline
+        offline.validate_support(request['setup_support_reference'])
+        offline.activate_network_guard(os.environ['DEVEVAL_OFFLINE_GUARD_ROOT'])
     evaluator = Path(request['evaluator'])
     if assets.file_sha(evaluator) != assets.UPSTREAM_FILES['pass_k.py']:
         raise ValueError('OFFICIAL_EVALUATOR_CHANGED')
@@ -92,6 +96,10 @@ def run(request_path):
     folder = request_path.parent
     if 'source_manifest_path' in request:
         verify_pristine(request)
+        if request.get('generated_dependency_allowlist_reference') is not None:
+            import deveval_repository_grade_integrity as integrity
+            integrity.load_dependency_allowlist(request['generated_dependency_allowlist_reference'],
+                project=request['project'], pristine_manifest_reference=integrity.reference(request['source_manifest_path']))
     pristine = Path(request['pristine_source_root']).resolve()
     source_root = Path(request.get('working_source_root', str(folder / 'Source_Code')))
     if not source_root.is_absolute() or '..' in source_root.parts:
@@ -113,6 +121,10 @@ def run(request_path):
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONHASHSEED='0',
         PYTEST_ADDOPTS='--junitxml=' + str(folder / 'junit.xml'))
     env['PATH'] = str(Path(sys.executable).parent) + os.pathsep + env.get('PATH', '')
+    if request.get('setup_support_reference') is not None:
+        import deveval_setup_offline as offline
+        env = offline.offline_environment(request['setup_support_reference'], folder / 'pip-cache',
+            folder / 'network-guard', inherited=env)
     started, timed_out = time.monotonic(), False
     with (folder / 'stdout.log').open('xb') as stdout, (folder / 'stderr.log').open('xb') as stderr:
         process = subprocess.Popen([sys.executable, '-B', str(Path(__file__).resolve()), 'child', str(folder / 'child-request.json')],
@@ -141,14 +153,40 @@ def run(request_path):
     unexpected_files = [p.relative_to(destination).as_posix() for p in destination.rglob('*') if p.is_file()
         and p.relative_to(destination).as_posix() not in source_manifest
         and not assets.is_generated_build_metadata(p.relative_to(destination).as_posix())]
+    working_integrity = None
+    if 'source_manifest_path' in request:
+        import deveval_repository_grade_integrity as integrity
+        try:
+            working_integrity = integrity.audit_working_tree(pristine_root=pristine, working_root=source_root,
+                project=request['project'], pristine_manifest_reference=integrity.reference(request['source_manifest_path']),
+                dependency_allowlist_reference=request.get('generated_dependency_allowlist_reference'))
+            unchanged, unexpected_files = True, []
+        except integrity.IntegrityError as error:
+            unchanged = False
+            working_integrity = {'status': 'FAIL', 'error_code': str(error)}
     official = result['official_result']
+    setup_offline = None
+    if request.get('setup_support_reference') is not None:
+        import deveval_setup_offline as offline
+        offline.validate_support(request['setup_support_reference'])
+        setup_offline = {'support_reference': request['setup_support_reference'], 'pip_no_index': True,
+            'pip_find_links_local_only': True, 'pip_cache_empty_at_start': True,
+            **offline.guard_report(folder / 'network-guard')}
     known = (process.returncode == 0 and not timed_out and official in ('Pass', 'Error', 'TimeOut', 'OOM')
-             and result.get('source_restored') and unchanged and not unexpected_files)
+             and result.get('source_restored') and unchanged and not unexpected_files
+             and (setup_offline is None or (setup_offline['guarded_python_processes'] > 0
+                  and setup_offline['blocked_network_operations'] == 0)))
     # Eligibility of the unchanged reference for this exact task is checked by the manager.
     result.update(status='GRADED' if known else 'INFRA_ERROR', passed=(official == 'Pass') if known else None,
         timed_out=timed_out, process_exit_code=process.returncode, pristine_source_unchanged=unchanged,
         unexpected_file_count=len(unexpected_files), elapsed_total_seconds=time.monotonic() - started,
         request_reference=assets.reference(request_path), request_candidate_sha256=request['candidate_sha256'])
+    if working_integrity is not None:
+        result.update(working_tree_integrity=working_integrity,
+            pristine_source_unchanged_definition='ALL_PINNED_PRISTINE_BYTES_AND_ALL_PROTECTED_WORKING_SOURCE_TEST_BYTES',
+            generated_dependencies_require_exact_independent_control_hashes=True)
+    if setup_offline is not None:
+        result['setup_offline'] = setup_offline
     assets.write_new(folder / 'receipt.json', result)
     return result
 

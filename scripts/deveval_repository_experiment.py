@@ -54,6 +54,60 @@ def checked_foreign(ref, runtime):
     return actual
 
 
+def grade_dependency_references(runtime, projects, eligibility_reference, inputs_reference):
+    """Freeze control-derived setup artifacts before any new model collection."""
+    settings = runtime['deveval']
+    controls = physical_path(inputs_reference['path'], runtime).parent / 'Source_Code'
+    mappings = settings.get('generated_dependency_allowlists', {})
+    memory.require(isinstance(mappings, dict) and (not mappings or set(mappings) == set(projects)),
+                   'GRADE_DEPENDENCY_PROJECTS_CHANGED')
+    refs = []
+    for project in sorted(projects):
+        eggs = controls / project / '.eggs'
+        memory.require(not eggs.is_symlink(), 'GRADE_DEPENDENCY_LINK_FORBIDDEN')
+        egg_entries = list(eggs.rglob('*')) if eggs.exists() else []
+        memory.require(all(not entry.is_symlink() for entry in egg_entries), 'GRADE_DEPENDENCY_LINK_FORBIDDEN')
+        actual_names = {entry.relative_to(controls / project).as_posix()
+                        for entry in egg_entries if entry.is_file()}
+        if project not in mappings:
+            memory.require(not actual_names,
+                           'CONTROL_SETUP_DEPENDENCIES_NOT_BOUND')
+            continue
+        actual = checked_foreign(mappings[project], runtime)
+        value = memory.read(actual['path'])
+        memory.require(value.get('schema') == 'deveval/grade-generated-dependencies/1'
+                       and value.get('project') == project, 'GRADE_DEPENDENCY_SCOPE_CHANGED')
+        control_ref = checked_foreign(value['control_receipt_reference'], runtime)
+        input_ref = checked_foreign(value['control_inputs_reference'], runtime)
+        memory.require(control_ref == eligibility_reference
+                       and input_ref == checked_foreign(inputs_reference, runtime),
+                       'GRADE_DEPENDENCY_CONTROL_CHANGED')
+        memory.require(value['control_plan_reference'] == memory.read(control_ref['path'])['plan_reference'],
+                       'GRADE_DEPENDENCY_PLAN_CHANGED')
+        refs.extend((actual, control_ref, input_ref))
+        seen = set()
+        for row in value['files']:
+            name = repository.relative(row['path']).as_posix()
+            memory.require(name.startswith('.eggs/') and name not in seen, 'GRADE_DEPENDENCY_PATH_CHANGED')
+            seen.add(name)
+            dependency = checked_foreign(row['control_file_reference'], runtime)
+            memory.require(Path(dependency['path']).resolve() == (controls / project / name).resolve()
+                           and all(dependency[key] == row[key] for key in ('sha256', 'bytes')),
+                           'GRADE_DEPENDENCY_FILE_CHANGED')
+            refs.append(dependency)
+        memory.require(seen == actual_names, 'GRADE_DEPENDENCY_SET_CHANGED')
+        expected_digest = hashlib.sha256(memory.canonical([
+            {key: row[key] for key in ('path', 'bytes', 'sha256')} for row in value['files']])).hexdigest()
+        memory.require(value.get('files_sha256') == expected_digest, 'GRADE_DEPENDENCY_MANIFEST_CHANGED')
+    if settings.get('setup_support_reference'):
+        import deveval_setup_offline as offline
+        actual = checked_foreign(settings['setup_support_reference'], runtime)
+        support = offline.validate_support(actual)
+        refs.append(actual)
+        refs.extend(memory.reference(Path(actual['path']).parent / row['path']) for row in support['files'])
+    return refs
+
+
 def plan_schedule(plan):
     rows = []
     for row in plan['source_schedule'] + plan['target_schedule']:
@@ -116,6 +170,8 @@ def load(plan_path, runtime_path, snapshots_path, eligibility_path, output):
         refs.append(memory.reference(runtime['deveval']['eligibility_bridge']))
     for key in ('runtime_lock_reference', 'inputs_reference'):
         refs.append(checked_foreign(eligibility[key], runtime))
+    refs += grade_dependency_references(runtime, projects, memory.reference(eligibility_path),
+                                        eligibility['inputs_reference'])
     if runtime['deveval'].get('source_manifest_path'):
         memory.require(runtime['deveval']['source_manifest_path'] == eligibility['inputs_reference']['path']
             and runtime['deveval']['source_manifest_sha256'] == eligibility['inputs_reference']['sha256'], 'PRISTINE_RUNTIME_AUTHORITY_CHANGED')
@@ -146,7 +202,8 @@ def load(plan_path, runtime_path, snapshots_path, eligibility_path, output):
         refs.append(ref)
     execution_modules = ('deveval_prepare.py', 'deveval_model_gateway.py', 'deveval_generated_tests.py',
         'deveval_repository_plan.py', 'deveval_repository_context.py', 'deveval_repository_memory.py',
-        'deveval_repository_native.py', 'deveval_repository_grade.py', 'deveval_repository_experiment.py')
+        'deveval_repository_native.py', 'deveval_repository_grade.py', 'deveval_repository_experiment.py',
+        'deveval_repository_grade_integrity.py', 'deveval_setup_offline.py')
     source_paths = sorted(set([*[ROOT / 'scripts' / name for name in execution_modules], ROOT / 'scripts/trimem_lcb_native.py',
         ROOT / 'scripts/trimem_lcb_memory.py', ROOT / 'scripts/trimem_lcb_experiment.py',
         *ROOT.glob('src/enterprise_memory/trimem/*.py')]))
@@ -317,6 +374,10 @@ def expected_grade_request(context, job, row, collection_ref):
     if settings.get('grade_work_root'):
         identity = hashlib.sha256(str(folder.resolve()).encode()).hexdigest()[:24]
         request['working_source_root'] = settings['grade_work_root'].rstrip('/') + '/' + identity + '/Source_Code'
+    if settings.get('generated_dependency_allowlists'):
+        request['generated_dependency_allowlist_reference'] = settings['generated_dependency_allowlists'][job['project']]
+    if settings.get('setup_support_reference'):
+        request['setup_support_reference'] = settings['setup_support_reference']
     return request
 
 

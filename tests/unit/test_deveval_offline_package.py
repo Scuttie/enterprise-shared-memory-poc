@@ -11,6 +11,7 @@ import zipfile
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'scripts'))
 spec = importlib.util.spec_from_file_location('deveval_offline_package', ROOT / 'scripts/deveval_offline_package.py')
 package = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(package)
@@ -32,9 +33,16 @@ def bundle_fixture(tmp_path):
         make_wheel(assets / 'wheelhouse/example-1.0-py3-none-any.whl')
         (assets / 'requirements.lock').write_text(package.wheel_lock(assets / 'wheelhouse'))
         runtimes[role] = {'version': version}
+    support = root / 'assets/setup-support'; support.mkdir(parents=True)
+    for name, version in package.setup.EXPECTED.items():
+        make_wheel(support / (name + '.whl'), name, version)
+    package.setup.create_manifest(support, support / 'manifest.json')
+    (root / 'repo' / package.SUPPORT_LOCK).write_text(package.wheel_lock(support))
     files = [package.reference(p, root) for p in sorted(root.rglob('*')) if p.is_file()]
     package.write(root / 'manifest.json', {'schema': package.SCHEMA, 'learned_banks_included': False,
-        'files': files, 'runtimes': runtimes, 'plan_reference': package.reference(root / 'repo' / package.PLAN, root)})
+        'files': files, 'runtimes': runtimes, 'plan_reference': package.reference(root / 'repo' / package.PLAN, root),
+        'setup_support_separate_from_native_79': True,
+        'setup_support_reference': package.reference(support / 'manifest.json', root)})
     return root
 
 
@@ -127,8 +135,9 @@ def test_runtime_install_commands_are_hash_locked_and_offline(tmp_path, monkeypa
     assert not any('run' in args or 'prepare-company' in args for args, env in calls)
 
 
-@pytest.mark.parametrize('eligible', [True, False])
-def test_company_preparation_final_plan_controls_then_prepare_only(tmp_path, monkeypatch, eligible):
+@pytest.mark.parametrize('eligible,offline_error', [(True, None), (False, None),
+    (True, 'missing'), (True, 'blocked'), (True, 'nonlocal')])
+def test_company_preparation_final_plan_controls_then_prepare_only(tmp_path, monkeypatch, eligible, offline_error):
     bundle = bundle_fixture(tmp_path)
     repo = bundle / 'repo'
     plan = {'projects': [{'project': 'kind/example'}], 'source_archive_reference': {}, 'metadata_reference': {}}
@@ -139,29 +148,49 @@ def test_company_preparation_final_plan_controls_then_prepare_only(tmp_path, mon
         'python': {'driver': sys.executable, 'native': '/fake/native/python'}})
     gateway = tmp_path / 'gateway.json'
     package.write(gateway, {'gateway': {'provider': 'vllm', 'model': 'synthetic-model'}})
-    monkeypatch.setattr(package, 'verify', lambda path: {})
+    manifest = package.read(bundle / 'manifest.json')
+    monkeypatch.setattr(package, 'verify', lambda path: manifest)
     monkeypatch.setattr(package, 'reserve', lambda *args: None)
     monkeypatch.setattr(package, 'ROOT', repo)
     context = SimpleNamespace(reference=lambda path: {'path': str(path)},
         materialize_repository=lambda *args, **kw: {'path': 'synthetic-snapshot', 'sha256': '0'*64})
     gateway_module = SimpleNamespace(_config=lambda runtime: None)
-    monkeypatch.setattr(package.importlib, 'import_module', lambda name: context if name.endswith('context') else gateway_module)
+    allowlists = []
+    def build_allowlist(**kwargs):
+        allowlists.append(kwargs)
+        return {'path': str(kwargs['output']), 'sha256': '1'*64, 'bytes': 123}
+    integrity = SimpleNamespace(build_dependency_allowlist=build_allowlist)
+    monkeypatch.setattr(package.importlib, 'import_module', lambda name: context if name.endswith('context')
+        else integrity if name.endswith('integrity') else gateway_module)
     output = tmp_path / 'prepared'
     calls = []
 
     def command(args, log, **kwargs):
         calls.append(list(map(str, args)))
         if '--private-root' in args:
+            evidence = {'support_reference': package.setup.reference(bundle / manifest['setup_support_reference']['path']),
+                'pip_no_index': True, 'pip_find_links_local_only': True, 'pip_cache_disabled': True,
+                'pip_cache_empty_at_start': True, 'initial_eggs_files': 0,
+                'worker_and_setup_guard_process_count_sufficient': True, 'blocked_network_operations': 0}
+            if offline_error == 'missing':
+                evidence = {}
+            elif offline_error == 'blocked':
+                evidence['blocked_network_operations'] = 1
+            elif offline_error == 'nonlocal':
+                evidence['pip_find_links_local_only'] = False
             package.write(output / 'eligibility.json', {'status': 'PASS' if eligible else 'BLOCKED',
                 'reference_pass': 30 if eligible else 29, 'negative_confirmed': 30,
-                'inputs_reference': {'path': str(output / 'eligibility/inputs.json'), 'sha256': '0'*64}})
+                'inputs_reference': {'path': str(output / 'eligibility/inputs.json'), 'sha256': '0'*64},
+                'setup_offline': evidence})
 
     monkeypatch.setattr(package, 'command', command)
-    if not eligible:
-        with pytest.raises(ValueError, match='ELIGIBILITY_FAILED_NO_TASK_SUBSTITUTION'):
+    if not eligible or offline_error:
+        code = 'ELIGIBILITY_FAILED_NO_TASK_SUBSTITUTION' if not eligible else 'FRESH_OFFLINE_CONTROLS_REQUIRED'
+        with pytest.raises(ValueError, match=code):
             package.prepare_company(bundle, installed, output, gateway)
         assert len(calls) == 1
         assert not (output / 'runtime.local.json').exists()
+        assert not allowlists
     else:
         result = package.prepare_company(bundle, installed, output, gateway)
         assert result['model_calls'] == 0
@@ -173,6 +202,9 @@ def test_company_preparation_final_plan_controls_then_prepare_only(tmp_path, mon
         assert 'eligibility_bridge' not in runtime['deveval']
         assert runtime['deveval']['source_manifest_sha256'] == '0'*64
         assert runtime['deveval']['grade_work_root'] == str(output / 'grade-work')
+        assert len(allowlists) == 1 and allowlists[0]['project'] == 'kind/example'
+        assert set(runtime['deveval']['generated_dependency_allowlists']) == {'kind/example'}
+        assert '--setup-support-sha256' in calls[0]
         assert 'bank' not in runtime
 
 

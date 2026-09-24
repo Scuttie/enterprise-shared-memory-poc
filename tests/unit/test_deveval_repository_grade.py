@@ -182,3 +182,53 @@ def test_external_grade_working_copy_is_fresh_and_bound_to_pinned_pristine(tmp_p
     with pytest.raises(ValueError, match='GRADE_WORKSPACE_MUST_BE_FRESH'):
         grade.run(path)
     assert len(launched) == 1
+
+
+def test_first_attempt_tolerates_existing_generated_metadata_changes_with_explicit_scope(tmp_path, monkeypatch):
+    path, target, _, _ = setup_run(tmp_path, monkeypatch, extra='demo.egg-info/SOURCES.txt')
+    metadata = target.parents[1] / 'demo.egg-info/SOURCES.txt'
+    metadata.parent.mkdir(); metadata.write_bytes(b'original package metadata\n')
+    pinned_pristine_request(path)
+    result = grade.run(path)
+    assert result['status'] == 'GRADED' and result['passed'] is True
+    assert result['pristine_source_unchanged'] is True
+    assert result['working_tree_integrity']['protected_files_verified'] == 1
+    assert len(result['working_tree_integrity']['generated_metadata_changes']) == 1
+    assert result['pristine_source_unchanged_definition'] == 'ALL_PINNED_PRISTINE_BYTES_AND_ALL_PROTECTED_WORKING_SOURCE_TEST_BYTES'
+
+
+def test_first_attempt_added_dependency_without_control_authority_stays_null(tmp_path, monkeypatch):
+    path, _, _, _ = setup_run(tmp_path, monkeypatch, extra='.eggs/dependency.egg/library.py')
+    pinned_pristine_request(path)
+    result = grade.run(path)
+    assert result['status'] == 'INFRA_ERROR' and result['passed'] is None
+    assert result['working_tree_integrity']['error_code'] == 'DEPENDENCY_ALLOWLIST_REQUIRED'
+
+
+def test_new_integrity_policy_never_excuses_protected_source_mutation(tmp_path, monkeypatch):
+    path, _, _, _ = setup_run(tmp_path, monkeypatch, mutate=True)
+    pinned_pristine_request(path)
+    result = grade.run(path)
+    assert result['status'] == 'INFRA_ERROR' and result['passed'] is None
+    assert result['working_tree_integrity']['error_code'] == 'PROTECTED_SOURCE_CHANGED_OR_MISSING'
+
+
+@pytest.mark.parametrize('blocked,expected', [(0, 'GRADED'), (1, 'INFRA_ERROR')])
+def test_setup_network_guard_is_scoped_to_child_and_denials_remain_infrastructure(tmp_path, monkeypatch, blocked, expected):
+    import deveval_setup_offline as offline
+    path, _, launched, _ = setup_run(tmp_path, monkeypatch)
+    request = grade.read(path); request['setup_support_reference'] = {'path': 'synthetic-support', 'sha256': 'b'*64, 'bytes': 1}
+    path.write_bytes(grade.assets.canonical(request))
+    validations = []
+    monkeypatch.setattr(offline, 'validate_support', lambda ref: validations.append(ref))
+    monkeypatch.setattr(offline, 'offline_environment', lambda ref, cache, guard, inherited: {
+        **inherited, 'DEVEVAL_OFFLINE_GUARD_ROOT': str(guard), 'PIP_NO_INDEX': '1'})
+    monkeypatch.setattr(offline, 'guard_report', lambda root: {'guarded_python_processes': 1,
+        'blocked_network_operations': blocked, 'blocked_event_types': ['socket.connect'] if blocked else []})
+    original_environment = dict(os.environ)
+    result = grade.run(path)
+    assert result['status'] == expected
+    assert result['passed'] is (True if expected == 'GRADED' else None)
+    assert launched[0]['env']['PIP_NO_INDEX'] == '1' and dict(os.environ) == original_environment
+    assert validations == [request['setup_support_reference']]
+    assert result['setup_offline']['blocked_network_operations'] == blocked

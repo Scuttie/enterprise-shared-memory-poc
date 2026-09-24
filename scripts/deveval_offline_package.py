@@ -19,9 +19,10 @@ import subprocess
 import sys
 import tarfile
 import zipfile
+import deveval_setup_offline as setup
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA = 'deveval/offline-package/1'
+SCHEMA = 'deveval/offline-package/2'
 CORE = ('deveval_prepare', 'deveval_model_gateway', 'deveval_generated_tests',
         'deveval_repository_plan', 'deveval_repository_context',
         'deveval_repository_memory', 'deveval_repository_native',
@@ -31,6 +32,7 @@ ELIGIBILITY = 'scripts/deveval_repository_eligibility.py'
 VERSIONS = {'native': '3.9.18', 'driver': '3.10.21'}
 ENVIRONMENT_LOCKS = {'native': 'artifacts/skhynix_v1/deveval_002/runtime-pip-freeze-002.txt',
                      'driver': 'configs/skhynix_v1/lcb_runtime_py310.lock'}
+SUPPORT_LOCK = 'configs/skhynix_v1/deveval_002_setup_support.lock'
 
 
 def require(value, code):
@@ -208,7 +210,7 @@ def import_sources(root):
     return paths
 
 
-def build(root, output, *, native_python, driver_python, native_wheels, driver_wheels, draft=False):
+def build(root, output, *, native_python, driver_python, native_wheels, driver_wheels, setup_wheels, draft=False):
     root, output = Path(root).resolve(), Path(output).resolve()
     require(root == ROOT, 'RUN_BUILDER_FROM_SOURCE_REPOSITORY')
     require(not output.exists(), 'PACKAGE_OUTPUT_MUST_BE_FRESH')
@@ -216,6 +218,7 @@ def build(root, output, *, native_python, driver_python, native_wheels, driver_w
     paths = import_sources(root)
     required = [root / p for p in (PLAN, ELIGIBILITY, 'scripts/deveval_offline_package.py',
         'scripts/deveval_repository_results.py',
+        'scripts/deveval_repository_grade_integrity.py', 'scripts/deveval_setup_offline.py', SUPPORT_LOCK,
         'docs/SKHYNIX_DEVEVAL_GLM_REPRODUCTION.md', 'configs/skhynix_v1/deveval_002_glm_runtime.example.json')]
     require(all(path.is_file() for path in required), 'REQUIRED_PACKAGE_SOURCE_MISSING')
     paths.update(required)
@@ -273,6 +276,13 @@ def build(root, output, *, native_python, driver_python, native_wheels, driver_w
                           'python_archive': 'assets/%s/python.tar.gz' % role,
                           'requirements': 'assets/%s/requirements.lock' % role,
                           'source_environment_lock': 'repo/' + ENVIRONMENT_LOCKS[role]}
+    support_folder = output / 'assets/setup-support'
+    support_folder.mkdir()
+    for path in sorted(Path(setup_wheels).glob('*.whl')):
+        copy_bytes(path, support_folder / path.name)
+    require(wheel_lock(support_folder) == (root / SUPPORT_LOCK).read_text(encoding='utf-8'), 'SETUP_SUPPORT_LOCK_CHANGED')
+    setup.create_manifest(support_folder, support_folder / 'manifest.json')
+    support_ref = reference(support_folder / 'manifest.json', output)
     files = [reference(p, output) for p in sorted(output.rglob('*')) if p.is_file()]
     for name, ref in source_authority.items():
         checked(root, ref)
@@ -280,6 +290,7 @@ def build(root, output, *, native_python, driver_python, native_wheels, driver_w
     manifest = {'schema': SCHEMA, 'status': 'DRAFT_UNCOMMITTED_SOURCE' if uncommitted else 'COMMITTED_SOURCE',
         'git_commit': head, 'uncommitted_curated_paths': uncommitted, 'files': files,
         'runtimes': runtimes, 'platform': 'linux-x86_64', 'minimum_glibc': '2.28',
+        'setup_support_reference': support_ref, 'setup_support_separate_from_native_79': True,
         'logical_bytes': sum(ref['bytes'] for ref in files),
         'plan_reference': reference(output / 'repo' / PLAN, output),
         'model_calls': 0, 'grading_calls': 0, 'learned_banks_included': False,
@@ -303,6 +314,12 @@ def verify(bundle):
     actual = {p.relative_to(bundle).as_posix() for p in bundle.rglob('*') if p.is_file()}
     require(actual == set(names) | {'manifest.json'}, 'UNMANIFESTED_PACKAGE_FILE')
     require(value['plan_reference'] in value['files'], 'PLAN_NOT_MANIFESTED')
+    require(value.get('setup_support_separate_from_native_79') is True
+            and value.get('setup_support_reference') in value['files'], 'OFFLINE_SETUP_SUPPORT_REQUIRED')
+    support_path = checked(bundle, value['setup_support_reference'])
+    setup.validate_support(setup.reference(support_path))
+    require('repo/' + SUPPORT_LOCK in names and wheel_lock(support_path.parent) == (bundle / 'repo' / SUPPORT_LOCK).read_text(),
+            'SETUP_SUPPORT_LOCK_CHANGED')
     for role in VERSIONS:
         require(value['runtimes'][role]['version'] == VERSIONS[role], 'RUNTIME_VERSION_CHANGED')
         assets = bundle / 'assets' / role
@@ -360,6 +377,7 @@ def install_offline(bundle, output):
         'network_install': False, 'pip_require_hashes': True, 'pip_check_pass': True,
         'relocated_interpreters': True, 'driver_imports_pass': True, 'native_imports_pass': True,
         'model_calls': 0, 'official_grading_calls': 0, 'platform': platform.platform(),
+        'setup_support_wheels': 4, 'setup_support_installed_into_native': False,
         'logs': [reference(p, output) for p in sorted(output.glob('*.log'))]}
     write(output / 'installation.json', receipt)
     return receipt
@@ -368,7 +386,7 @@ def install_offline(bundle, output):
 def prepare_company(bundle, installed, output, gateway_path):
     """Fresh fixed-reference eligibility + manager prepare; never manager run."""
     bundle, installed, output = (Path(p).resolve() for p in (bundle, installed, output))
-    verify(bundle)
+    manifest = verify(bundle)
     receipt = read(installed / 'installation.json')
     require(receipt['status'] == 'PASS' and receipt['package_manifest_sha256'] == file_sha(bundle / 'manifest.json'),
             'INSTALLATION_NOT_BOUND_TO_PACKAGE')
@@ -381,12 +399,15 @@ def prepare_company(bundle, installed, output, gateway_path):
     sys.path[:0] = [str(repo / 'scripts'), str(repo / 'src')]
     context = importlib.import_module('deveval_repository_context')
     gateway = importlib.import_module('deveval_model_gateway')
+    integrity = importlib.import_module('deveval_repository_grade_integrity')
+    support_ref = setup.reference(checked(bundle, manifest['setup_support_reference']))
     gateway_settings = read(gateway_path)['gateway']
     runtime = {'execution': {'python': receipt['python']['native'], 'scripts_root': str(repo / 'scripts'), 'prefix': []},
         'execution_path_remap': [], 'native': {'model': gateway_settings['model']}, 'gateway': gateway_settings,
         'deveval': {'metadata': str(repo / 'data/deveval_001/upstream/data.jsonl'),
                     'evaluator': str(repo / 'data/deveval_001/upstream/pass_k.py'),
-                    'pristine_source_root': str(output / 'eligibility/pristine/Source_Code')}}
+                    'pristine_source_root': str(output / 'eligibility/pristine/Source_Code'),
+                    'setup_support_reference': support_ref}}
     gateway._config(runtime)  # Validate endpoint/model/bounds without opening a connection.
     plan_path = repo / PLAN
     plan = read(plan_path)
@@ -399,14 +420,29 @@ def prepare_company(bundle, installed, output, gateway_path):
         mapping[project] = ref
     write(output / 'snapshots.local.json', mapping)
     command([receipt['python']['native'], '-B', repo / ELIGIBILITY, '--plan', plan_path,
-             '--private-root', output / 'eligibility', '--report', output / 'eligibility.json'],
+             '--private-root', output / 'eligibility', '--report', output / 'eligibility.json',
+             '--setup-support', support_ref['path'], '--setup-support-sha256', support_ref['sha256']],
             output / 'eligibility.log', cwd=repo)
     eligibility = read(output / 'eligibility.json')
     require(eligibility['status'] == 'PASS' and eligibility['reference_pass'] == eligibility['negative_confirmed'] == 30,
             'ELIGIBILITY_FAILED_NO_TASK_SUBSTITUTION')
+    evidence = eligibility.get('setup_offline', {})
+    require(evidence.get('support_reference') == support_ref and evidence.get('pip_no_index') is True
+            and evidence.get('pip_find_links_local_only') is True and evidence.get('pip_cache_disabled') is True
+            and evidence.get('pip_cache_empty_at_start') is True and evidence.get('initial_eggs_files') == 0
+            and evidence.get('worker_and_setup_guard_process_count_sufficient') is True
+            and evidence.get('blocked_network_operations') == 0,
+            'FRESH_OFFLINE_CONTROLS_REQUIRED')
+    allowlists = {}
+    for row in plan['projects']:
+        project = row['project']
+        allowlists[project] = integrity.build_dependency_allowlist(
+            control_receipt_reference=setup.reference(output / 'eligibility.json'),
+            control_workspace=output / 'eligibility/Source_Code', project=project,
+            output=output / 'dependency-allowlists' / (project.replace('/', '--') + '.json'))
     runtime['deveval'].update(grade_work_root=str(output / 'grade-work'),
         source_manifest_path=eligibility['inputs_reference']['path'],
-        source_manifest_sha256=eligibility['inputs_reference']['sha256'])
+        source_manifest_sha256=eligibility['inputs_reference']['sha256'], generated_dependency_allowlists=allowlists)
     write(output / 'runtime.local.json', runtime)
     base = [receipt['python']['driver'], '-B', str(repo / 'scripts/deveval_repository_experiment.py')]
     arguments = ['--plan', str(plan_path), '--runtime', str(output / 'runtime.local.json'),
@@ -433,11 +469,13 @@ def main():
     parser.add_argument('--driver-python', type=Path)
     parser.add_argument('--native-wheels', type=Path)
     parser.add_argument('--driver-wheels', type=Path)
+    parser.add_argument('--setup-wheels', type=Path)
     parser.add_argument('--draft', action='store_true')
     args = parser.parse_args()
     if args.mode == 'build':
         result = build(ROOT, args.bundle, native_python=args.native_python, driver_python=args.driver_python,
-                       native_wheels=args.native_wheels, driver_wheels=args.driver_wheels, draft=args.draft)
+                       native_wheels=args.native_wheels, driver_wheels=args.driver_wheels,
+                       setup_wheels=args.setup_wheels, draft=args.draft)
     elif args.mode == 'verify':
         result = verify(args.bundle)
     elif args.mode == 'install-offline':

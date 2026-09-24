@@ -20,6 +20,7 @@ import time
 REPOSITORY = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY/"scripts"))
 import deveval_prepare as assets
+import deveval_setup_offline as offline
 
 
 def checked(reference):
@@ -97,6 +98,8 @@ def main():
     parser.add_argument("--report",type=Path,required=True)
     parser.add_argument("--prepare-only",action="store_true")
     parser.add_argument("--execute-prepared",action="store_true")
+    parser.add_argument("--setup-support",type=Path,required=True)
+    parser.add_argument("--setup-support-sha256",required=True)
     args=parser.parse_args()
     if sys.version_info[:3]!=(3,9,18) or os.name!="posix": raise ValueError("PYTHON_OR_PLATFORM_CHANGED")
     plan_path,output=args.plan.resolve(),args.private_root.resolve()
@@ -113,14 +116,21 @@ def main():
     else:
         plan,tasks,files=prepare(plan_path,output)
     if args.prepare_only:return
-    assets.write_new(output/"execution-started.json",{"plan_reference":assets.reference(plan_path),"helper_reference":assets.reference(__file__),"model_calls":0})
-    env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+    support_reference=offline.reference(args.setup_support)
+    if support_reference['sha256']!=args.setup_support_sha256:raise ValueError('SETUP_SUPPORT_MANIFEST_CHANGED')
+    initial_eggs=[p for p in (output/'Source_Code').rglob('*') if p.is_file() and '.eggs' in p.parts]
+    if initial_eggs:raise ValueError('FRESH_CONTROL_MUST_NOT_HAVE_EGGS')
+    env=offline.offline_environment(support_reference,output/'pip-cache',output/'network-guard')
+    assets.write_new(output/"execution-started.json",{"plan_reference":assets.reference(plan_path),"helper_reference":assets.reference(__file__),"model_calls":0,
+        'setup_support_reference':support_reference,'pip_cache_empty_at_start':True,'initial_eggs_files':0,
+        'offline_helper_reference':offline.reference(offline.__file__)})
     env["PATH"]=str(Path(sys.executable).parent)+os.pathsep+env.get("PATH","")
     env["NLTK_DATA"]=str(output/"nltk_data")
     receipts=[]
     evaluator=REPOSITORY/"data/deveval_001/upstream/pass_k.py"
     for index,(task,row) in enumerate(tasks,1):
         for arm in ("reference","assertion_negative"):
+            offline.validate_support(support_reference)
             cell=output/("%02d-%s"%(index,arm));cell.mkdir()
             request={"evaluator":str(evaluator),"task":row,"arm":arm,"source_root":str(output/"Source_Code"),"junit":str(cell/"junit.xml"),"receipt":str(cell/"receipt.json")}
             assets.write_new(cell/"request.json",request)
@@ -150,12 +160,20 @@ def main():
     detected=sum(r["official_result"]=="Error" and r.get("junit",{}).get("negative_marker_seen") is True and r["junit"]["unconfirmed_error_nodes"]==0 for r in negative)
     packages=subprocess.run([sys.executable,"-m","pip","freeze","--all"],capture_output=True,check=True).stdout
     (output/"runtime-pip-freeze.txt").write_bytes(packages)
-    report={"schema":"deveval/native-eligibility/1","status":"PASS" if passed==detected==len(tasks) and not original_changes and not working_changes else "BLOCKED_NO_TASK_SUBSTITUTION",
+    network_guard=offline.guard_report(output/'network-guard')
+    guard_complete=(network_guard['guarded_python_processes']>=2*len(receipts)
+                    and network_guard['blocked_network_operations']==0)
+    report={"schema":"deveval/native-eligibility/1","status":"PASS" if passed==detected==len(tasks) and not original_changes and not working_changes and guard_complete else "BLOCKED_NO_TASK_SUBSTITUTION",
         "plan_reference":assets.reference(plan_path),"helper_reference":assets.reference(__file__),"asset_helper_reference":assets.reference(assets.__file__),
         "inputs_reference":assets.reference(output/"inputs.json"),"execution_started_reference":assets.reference(output/"execution-started.json"),
         "runtime_lock_reference":assets.reference(output/"runtime-pip-freeze.txt"),"selected_tasks":len(tasks),"reference_pass":passed,"negative_confirmed":detected,
         "pristine_unchanged":not original_changes,"working_source_tests_unchanged":not working_changes,"working_generated_metadata_changes":generated_changes,
         "model_calls":0,"docker_calls":0,"private_grades_of_model_outputs":0,"cells":receipts,
+        'setup_offline':{'support_reference':support_reference,'pip_no_index':True,'pip_find_links_local_only':True,
+            'pip_cache_empty_at_start':True,'pip_cache_disabled':True,'initial_eggs_files':0,
+            'worker_and_setup_guard_process_count_sufficient':guard_complete,
+            'guard_reference':offline.reference(output/'network-guard/sitecustomize.py'),
+            **network_guard},
         "excluded_archive_artifacts":json.loads((output/"inputs.json").read_bytes()).get("excluded_archive_artifacts",[]),
         "limitations":["Environment eligibility only; no model accuracy or dependency utilization claim.","Official Error requires exact deliberate assertion corroboration to count as a negative control.","Frozen tasks are never replaced after environment outcomes.","The archive's stale file:/tmp/... test artifact subtree is omitted; its absolute external symlink is never followed or recreated."]}
     assets.write_new(output/"eligibility.json",report);assets.write_new(args.report,report)

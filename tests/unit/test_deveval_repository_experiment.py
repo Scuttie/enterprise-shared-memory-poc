@@ -319,7 +319,8 @@ def authority_inputs(tmp_path, monkeypatch):
                  'deveval_prepare.py', 'deveval_model_gateway.py', 'deveval_generated_tests.py',
                  'deveval_repository_plan.py', 'deveval_repository_context.py',
                  'deveval_repository_memory.py', 'deveval_repository_native.py',
-                 'deveval_repository_grade.py', 'deveval_repository_experiment.py'):
+                 'deveval_repository_grade.py', 'deveval_repository_experiment.py',
+                 'deveval_repository_grade_integrity.py', 'deveval_setup_offline.py'):
         path = root / 'scripts' / name
         path.parent.mkdir(exist_ok=True)
         path.write_text('# synthetic implementation\n', encoding='utf-8')
@@ -508,3 +509,88 @@ def test_grade_request_binds_manifest_and_uses_distinct_native_workspaces_per_co
         assert request['source_manifest_path'] == settings['source_manifest_path']
         assert request['source_manifest_sha256'] == settings['source_manifest_sha256']
     assert driver.expected_grade_request(context, jobs[0], {'candidate_sha256': 'c' * 64}, {'sha256': 'd' * 64}) == requests[0]
+
+
+def dependency_authority(tmp_path):
+    inputs = tmp_path / 'controls/inputs.json'
+    control = tmp_path / 'eligibility.json'
+    write(inputs, {'synthetic': True})
+    plan_reference = {'path': 'synthetic-plan.json', 'sha256': 'a' * 64, 'bytes': 1}
+    write(control, {'synthetic': True, 'plan_reference': plan_reference})
+    package = inputs.parent / 'Source_Code/alpha/.eggs/dependency/module.py'
+    package.parent.mkdir(parents=True)
+    package.write_text('VALUE = 1\n', encoding='utf-8')
+    file = memory.reference(package)
+    row = {'path': '.eggs/dependency/module.py', 'sha256': file['sha256'], 'bytes': file['bytes'],
+           'control_file_reference': file}
+    value = {'schema': 'deveval/grade-generated-dependencies/1', 'project': 'alpha',
+             'control_plan_reference': plan_reference,
+             'control_receipt_reference': memory.reference(control), 'control_inputs_reference': memory.reference(inputs),
+             'files': [row], 'files_sha256': hashlib.sha256(memory.canonical([
+                 {key: row[key] for key in ('path', 'bytes', 'sha256')}])).hexdigest()}
+    allowlist = tmp_path / 'allowlist.json'
+    write(allowlist, value)
+    runtime = {'deveval': {'generated_dependency_allowlists': {'alpha': memory.reference(allowlist)}}}
+    return runtime, memory.reference(control), memory.reference(inputs), allowlist, package
+
+
+def test_control_setup_dependencies_cannot_be_omitted_before_model_collection(tmp_path):
+    runtime, control, inputs, _, _ = dependency_authority(tmp_path)
+    runtime['deveval'].clear()
+    with pytest.raises(ValueError, match='CONTROL_SETUP_DEPENDENCIES_NOT_BOUND'):
+        driver.grade_dependency_references(runtime, {'alpha'}, control, inputs)
+
+
+def test_dependency_control_scope_and_bytes_are_frozen(tmp_path):
+    runtime, control, inputs, _, package = dependency_authority(tmp_path)
+    refs = driver.grade_dependency_references(runtime, {'alpha'}, control, inputs)
+    assert memory.reference(package) in refs
+    driver.verify({'frozen': {'references': refs}})
+    package.write_text('VALUE = 2\n', encoding='utf-8')
+    with pytest.raises(ValueError, match='REFERENCED_BYTES_CHANGED'):
+        driver.verify({'frozen': {'references': refs}})
+
+
+def test_dependency_allowlist_must_bind_the_admitted_control_cohort(tmp_path):
+    runtime, control, inputs, allowlist, _ = dependency_authority(tmp_path)
+    alternate = tmp_path / 'alternate-controls.json'
+    write(alternate, {'synthetic': 'other cohort'})
+    value = memory.read(allowlist)
+    value['control_receipt_reference'] = memory.reference(alternate)
+    write(allowlist, value)
+    runtime['deveval']['generated_dependency_allowlists']['alpha'] = memory.reference(allowlist)
+    with pytest.raises(ValueError, match='GRADE_DEPENDENCY_CONTROL_CHANGED'):
+        driver.grade_dependency_references(runtime, {'alpha'}, control, inputs)
+
+
+def test_rehashed_allowlist_cannot_omit_existing_control_dependency(tmp_path):
+    runtime, control, inputs, allowlist, _ = dependency_authority(tmp_path)
+    value = memory.read(allowlist)
+    value['files'] = []
+    value['files_sha256'] = hashlib.sha256(memory.canonical([])).hexdigest()
+    write(allowlist, value)
+    runtime['deveval']['generated_dependency_allowlists']['alpha'] = memory.reference(allowlist)
+    with pytest.raises(ValueError, match='GRADE_DEPENDENCY_SET_CHANGED'):
+        driver.grade_dependency_references(runtime, {'alpha'}, control, inputs)
+
+
+def test_allowlist_historical_plan_must_match_control_authority(tmp_path):
+    runtime, control, inputs, allowlist, _ = dependency_authority(tmp_path)
+    value = memory.read(allowlist)
+    value['control_plan_reference']['sha256'] = 'b' * 64
+    write(allowlist, value)
+    runtime['deveval']['generated_dependency_allowlists']['alpha'] = memory.reference(allowlist)
+    with pytest.raises(ValueError, match='GRADE_DEPENDENCY_PLAN_CHANGED'):
+        driver.grade_dependency_references(runtime, {'alpha'}, control, inputs)
+
+
+def test_grade_request_binds_project_allowlist_and_offline_support(setup):
+    context = setup.context
+    context['plan']['metadata_reference'] = {'sha256': 'a' * 64}
+    allow = {'path': '/native/alpha-allowlist.json', 'sha256': 'b' * 64, 'bytes': 10}
+    support = {'path': '/native/support/manifest.json', 'sha256': 'c' * 64, 'bytes': 20}
+    context['runtime']['deveval'].update(generated_dependency_allowlists={'alpha': allow},
+                                        setup_support_reference=support)
+    request = driver.expected_grade_request(context, setup.jobs[0], {'candidate_sha256': 'd' * 64}, {'sha256': 'e' * 64})
+    assert request['generated_dependency_allowlist_reference'] == allow
+    assert request['setup_support_reference'] == support

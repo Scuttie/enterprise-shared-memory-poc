@@ -98,4 +98,12 @@ python scripts/deveval_repository_plan.py
 
 실행 설정은 `data/deveval_002/runtime.local.json`, 정답을 가린 문맥은 `data/deveval_002/snapshots-002.local.json`, 원본 실행 기록은 `data/deveval_002/run-001/`이다. 각 비교 조건의 도구·제한·제출 안내는 동일하다. 경험과 절차는 TRAIN 18문제에서만 수집하고, VALID 6문제 및 TEST 6문제 각각에 OFF / L1_ONLY / NO_L2 / NO_L3 / FULL을 적용한다. 최대 78회 대화이며 같은 문제의 비교 조건은 동시에 실행하지 않는다.
 
-모든 78개 대화가 봉인된 뒤 공식 채점을 시작한다. 최종 성적과 실제 L1/L2/L3 노출은 별도 실행 결과로 기록하며, 이 계획 문서의 구현·환경 검증 수치를 모델 해결률로 해석하지 않는다.
+모든 78개 풀이가 봉인된 뒤 공식 채점을 시작한다. 최종 성적과 실제 L1/L2/L3 노출은 별도 실행 결과로 기록하며, 이 계획 문서의 구현·환경 검증 수치를 모델 해결률로 해석하지 않는다. 한 풀이는 최대 4개의 새 세션을 사용할 수 있으므로 풀이 수와 실제 세션 수는 다르다.
+
+## 생성 테스트 import 수정 및 새 실행
+
+첫 실행 `run-001`은 30개 풀이 완료 후 명시적으로 중단했다. 생성 테스트 실행기가 저장소 루트만 Python 경로에 추가해 `src/` 배치에서는 설치된 패키지가 선택될 수 있었다. 실제 후보 실행 검사는 대상이 실행되지 않은 테스트를 PASS로 인정하지 않았지만, 수정 코드에 대한 테스트를 방해하는 환경 결함이었다. 모델이 작성한 테스트의 누락 import 등과는 구분한다. [진단 및 합성 재현 근거](../artifacts/skhynix_v1/deveval_002/generated-import-diagnostic-001.json).
+
+수정본은 저장소의 `src/`와 루트를 우선하며, 해당 저장소의 모듈이 외부에서 로드되면 실패 처리한다. 기존 후보 실행·파일 해시 검사를 유지한다. 합성 실행기·브로커 테스트 21개와 실제 Python 3.9.18에서 세 저장소의 가려진 패키지 import 3/3이 통과했다. 이는 모델 정답률이나 L3 준비도 검증은 아니다.
+
+첫 실행의 공식 채점은 0회다. 기존 30개 풀이·TRAIN 은행을 새 성적에 섞거나 재사용하지 않는다. 문제 ID, 분할, 5개 비교 조건, 모델·예산·기억 승격 규칙은 그대로 유지하고 `data/deveval_002/run-002/`에서 모든 78개 풀이를 새로 수집한다. 설정은 `data/deveval_002/runtime-run-002.local.json`이다. [중단 기록](../artifacts/skhynix_v1/deveval_002/interruption-001.json), [새 모델 호출 전 수정 등록](../artifacts/skhynix_v1/deveval_002/import-protocol-amendment-001.json).

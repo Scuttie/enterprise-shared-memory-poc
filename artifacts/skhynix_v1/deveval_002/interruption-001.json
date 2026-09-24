@@ -1,0 +1,77 @@
+{
+  "controller_pid": 50096,
+  "execution_head": "c82e7240424e92c9eb31bf8f29b2d26236d39a5f",
+  "frozen_inputs_sha256": "35338f6ed81149e0602f4587df93a0c25958e527a1842a64ea1d3645ffec13a9",
+  "last_phase": "VALID",
+  "planned_cells": 78,
+  "private_grade_receipts": 0,
+  "private_grade_requests": 0,
+  "reason": "Generated test executor added repository root but omitted src layout; synthetic collision resolved installed package rather than sanitized candidate. Candidate execution guard rejected the result, but the test environment was incorrect.",
+  "recorded_at": "2026-09-24T05:54:12.749923+00:00",
+  "recorded_cells": 30,
+  "resume_this_run": false,
+  "run_root": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001",
+  "same_cohort_fresh_run_required": true,
+  "schema": "deveval/explicit-interruption/1",
+  "score_selected_tasks": false,
+  "source_archive": [
+    {
+      "archived_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\stopped-run-001-source\\deveval_prepare.py",
+      "bytes": 21186,
+      "original_path": "scripts/deveval_prepare.py",
+      "sha256": "7572aa709e3ae3e1cf0a8b4db3fc1c4c820f0e68c60719579a5c9cbf0179fda7"
+    },
+    {
+      "archived_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\stopped-run-001-source\\deveval_model_gateway.py",
+      "bytes": 18163,
+      "original_path": "scripts/deveval_model_gateway.py",
+      "sha256": "f84eb8b38252b3d4bd0e2a1e9bd72630ec187c47aada64fde2ab79b9a491d64d"
+    },
+    {
+      "archived_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\stopped-run-001-source\\deveval_generated_tests.py",
+      "bytes": 7650,
+      "original_path": "scripts/deveval_generated_tests.py",
+      "sha256": "ce5258fef2d19b843a182d3b33caf45065b8384b7c848ffee73880e3d68ca46b"
+    },
+    {
+      "archived_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\stopped-run-001-source\\deveval_repository_plan.py",
+      "bytes": 16446,
+      "original_path": "scripts/deveval_repository_plan.py",
+      "sha256": "a038d8d061bf06f55c2dcaab872cf5eea3568d07559d5ca3d9df4308e7dd889f"
+    },
+    {
+      "archived_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\stopped-run-001-source\\deveval_repository_context.py",
+      "bytes": 27594,
+      "original_path": "scripts/deveval_repository_context.py",
+      "sha256": "492c61e251d817ccc8f3663fe12d61b42e98f412195886d60513e2f0b29c87e7"
+    },
+    {
+      "archived_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\stopped-run-001-source\\deveval_repository_memory.py",
+      "bytes": 20051,
+      "original_path": "scripts/deveval_repository_memory.py",
+      "sha256": "dbd8bf028035277850cade19aa41eb24c196a7dabf231da880ff93ed3ea9e1de"
+    },
+    {
+      "archived_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\stopped-run-001-source\\deveval_repository_native.py",
+      "bytes": 20758,
+      "original_path": "scripts/deveval_repository_native.py",
+      "sha256": "08bffbb73bc895ab68a350318dbd3c98d5b0767e2ac098bfade8e1db038a6a3d"
+    },
+    {
+      "archived_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\stopped-run-001-source\\deveval_repository_grade.py",
+      "bytes": 8603,
+      "original_path": "scripts/deveval_repository_grade.py",
+      "sha256": "a24ba97eae8cbb2e5b2f0c57b09ae7b84a08f64dea1430f6e57bf4f8e01f1baf"
+    },
+    {
+      "archived_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\stopped-run-001-source\\deveval_repository_experiment.py",
+      "bytes": 29182,
+      "original_path": "scripts/deveval_repository_experiment.py",
+      "sha256": "a739c48742c651d5d9d774ab397324142c2fe5ff32f98ea0fc6011fe658a1beb"
+    }
+  ],
+  "status": "STOPPED_HARNESS_IMPORT_LAYOUT_DEFECT",
+  "stop_exit_code": 0,
+  "stop_method": "taskkill /PID 50096 /T /F",
+  "summary_sha256": "a00879158b7968023a62fd08ed09da6d42c56000987070a29d1ee6d65ad29709"
+}

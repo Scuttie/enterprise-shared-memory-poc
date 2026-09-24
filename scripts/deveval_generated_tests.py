@@ -7,7 +7,10 @@ from __future__ import annotations
 
 import argparse
 import ast
+from contextlib import contextmanager
 import hashlib
+import importlib.abc
+import importlib.machinery
 import json
 import os
 from pathlib import Path
@@ -25,6 +28,67 @@ def write(path, value):
     with Path(path).open('x', encoding='utf-8', newline='\n') as stream:
         json.dump(value, stream, sort_keys=True, ensure_ascii=False)
         stream.write('\n')
+
+
+class ProjectImportError(ImportError):
+    """An owned repository import cannot use an installed implementation."""
+
+
+def _within_workspace(path, workspace):
+    return Path(path).is_absolute() and Path(path).resolve().is_relative_to(workspace)
+
+
+@contextmanager
+def repository_imports(workspace):
+    """Prefer src/ and flat layouts; deny fallback for visible project names.
+
+    Dependencies retain normal import resolution. This protects ordinary Python
+    imports, not arbitrary adversarial execution or direct source-file loading.
+    """
+    workspace = Path(workspace).resolve()
+    roots = ([workspace / 'src'] if (workspace / 'src').is_dir() else []) + [workspace]
+    owned = set()
+    for root in roots:
+        for entry in root.iterdir():
+            if entry.is_file() and entry.suffix == '.py' and entry.stem.isidentifier():
+                owned.add(entry.stem)
+            elif entry.is_dir() and entry.name.isidentifier() and any(entry.rglob('*.py')):
+                owned.add(entry.name)
+
+    def check_spec(spec):
+        if spec is None:
+            raise ProjectImportError('PROJECT_IMPORT_NOT_FOUND')
+        locations = list(spec.submodule_search_locations or ())
+        origin = spec.origin
+        if origin not in (None, 'namespace'):
+            locations.append(origin)
+        if not locations or not all(_within_workspace(path, workspace) for path in locations):
+            raise ProjectImportError('PROJECT_IMPORT_OUTSIDE_SANITIZED_SNAPSHOT')
+
+    def check_loaded():
+        for name, module in tuple(sys.modules.items()):
+            if name.split('.', 1)[0] in owned and module is not None:
+                check_spec(getattr(module, '__spec__', None))
+
+    class Finder(importlib.abc.MetaPathFinder):
+        def find_spec(self, fullname, path=None, target=None):
+            if fullname.split('.', 1)[0] not in owned:
+                return None
+            spec = importlib.machinery.PathFinder.find_spec(fullname, path)
+            check_spec(spec)
+            return spec
+
+    previous_path = list(sys.path)
+    finder = Finder()
+    sys.path[:0] = [str(root) for root in roots]
+    sys.meta_path.insert(0, finder)
+    try:
+        check_loaded()
+        yield
+        check_loaded()
+    finally:
+        sys.path[:] = previous_path
+        sys.meta_path.remove(finder)
 
 
 def child(request_path):
@@ -52,14 +116,15 @@ def child(request_path):
             candidate_lines.add(frame.f_lineno)
         return trace
 
-    sys.path.insert(0, str(workspace))
     os.chdir(workspace)
     outcome = {'status': 'PASS', 'failure_kind': None, 'exception_type': None, 'message': None}
     sys.settrace(trace)
     try:
-        exec(compile(module, str(test_path), 'exec'), {'__name__': '__main__', '__file__': str(test_path)})
+        with repository_imports(workspace):
+            exec(compile(module, str(test_path), 'exec'), {'__name__': '__main__', '__file__': str(test_path)})
     except BaseException as error:
-        outcome.update(status='FAIL', failure_kind='ASSERTION' if isinstance(error, AssertionError) else 'RUNTIME',
+        outcome.update(status='FAIL', failure_kind='PROJECT_IMPORT_ISOLATION' if isinstance(error, ProjectImportError)
+                       else 'ASSERTION' if isinstance(error, AssertionError) else 'RUNTIME',
                        exception_type=type(error).__name__, message=str(error)[:512])
     finally:
         sys.settrace(None)
@@ -69,7 +134,7 @@ def child(request_path):
     counts['candidate_file_unchanged'] = unchanged
     if not unchanged:
         outcome.update(status='FAIL', failure_kind='CANDIDATE_FILE_MUTATED')
-    elif not candidate_lines:
+    elif not candidate_lines and outcome['failure_kind'] != 'PROJECT_IMPORT_ISOLATION':
         outcome.update(status='FAIL', failure_kind='CANDIDATE_NOT_EXECUTED')
     elif counts['assertions_executed'] < 2 and outcome['status'] == 'PASS':
         outcome.update(status='FAIL', failure_kind='INSUFFICIENT_ASSERTIONS')

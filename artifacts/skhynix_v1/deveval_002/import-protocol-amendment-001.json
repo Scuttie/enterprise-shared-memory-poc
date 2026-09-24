@@ -1,0 +1,63 @@
+{
+  "changes": [
+    "Generated tests prepend sanitized repository src/ and root paths.",
+    "Visible project imports resolving outside the sanitized snapshot fail closed, including preloaded modules.",
+    "A fresh model collection and bank are required; the interrupted run is never resumed or combined."
+  ],
+  "fixed_inputs": [
+    {
+      "bytes": 34885,
+      "path": "configs/skhynix_v1/deveval_002_plan.json",
+      "sha256": "909aa8369fbec37a217bbbff2f7c29dafd4a627dd6be34596b25266e2794ed26"
+    },
+    {
+      "bytes": 10215,
+      "path": "scripts/deveval_generated_tests.py",
+      "sha256": "44eb549cf6da687fcbb37db2d6c038f91461d0f33d00c2ecf7aaf8b84c30558f"
+    },
+    {
+      "bytes": 8387,
+      "path": "tests/unit/test_deveval_generated_tests.py",
+      "sha256": "da6d1fbf579f6527722db92594238a4fec8d109a159819f9c2c38f3cac2cbd6c"
+    },
+    {
+      "bytes": 1462,
+      "path": "data/deveval_002/runtime-run-002.local.json",
+      "sha256": "8755a6987d6549d88f202a1189c2d54428380029ddf8f45e3ccd0e3df2a8f211"
+    },
+    {
+      "bytes": 679252,
+      "path": "data/deveval_002/run-002/frozen-inputs.json",
+      "sha256": "06cac77629412cf8e4f35e9bc2b526d9400c66cc6d17dbaf3a483fbc251e93a0"
+    },
+    {
+      "bytes": 3313,
+      "path": "artifacts/skhynix_v1/deveval_002/import-fix-broker-validation-001.xml",
+      "sha256": "15ac967e215faafb066a39efff55415450cfb6ca738e81436e0cac9b1e3621ec"
+    },
+    {
+      "bytes": 3927,
+      "path": "artifacts/skhynix_v1/deveval_002/interruption-001.json",
+      "sha256": "d2e7a20e1350abfc36f407b94162e320de30f4c673ba02cedd757d03ac2f2f72"
+    }
+  ],
+  "new_model_calls_before_registration": 0,
+  "new_run": "run-002",
+  "no_candidate_selection_by_private_outcome": true,
+  "old_run_results_used_for_new_bank": false,
+  "prior_official_grade_calls": 0,
+  "recorded_at": "2026-09-24T05:58:25.685856+00:00",
+  "schema": "deveval/import-protocol-amendment/1",
+  "status": "PRE_MODEL_REGISTERED",
+  "supersedes": "run-001",
+  "unchanged": [
+    "all30taskIDs",
+    "DISCOVERY12_VERIFICATION6_VALID6_TEST6",
+    "OFF_L1_ONLY_NO_L2_NO_L3_FULL",
+    "gpt-5.6-luna_low",
+    "600seconds_24actions_4sessions_4generatedtests_2workers",
+    "maskedtargetbodies_docstrings_and_visiblefiles",
+    "L1capture_L3promotion_and_freeze_rules",
+    "privategrader_and_eligibility30plus30"
+  ]
+}

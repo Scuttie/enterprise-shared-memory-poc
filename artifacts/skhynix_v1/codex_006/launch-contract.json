@@ -1,0 +1,96 @@
+{
+  "actual_injection_policy": "Count actual broker selections separately from synthetic preflight. A live abstention remains in the denominator without retry or extra guidance.",
+  "before_evaluation_gate": "Two distinct tasks/sessions with actual v2 RED/GREEN and official resolution, actual Gate B promotion, schema2 frozen bank, all six valid named runtime projections, predeclared synthetic delivery check, immutable 18-cell batch.",
+  "before_training_gate": "Frozen source, named-v2 procedure, templates, retry/acceptance policy and cohort; actual all-eight exact image/Python 3.9.20/runner da4284cc compatibility, clean whole-basic and named test_structure checks must pass.",
+  "codex_tokens_and_cost": null,
+  "cohort_scope": "BYTE_IDENTICAL_NATIVE005_PUBLIC_RUNTIME_SCREENED_MANIFEST; KNOWN_TRAINING_REUSED; ALL_SIX_EVALUATION_TASKS_UNEXECUTED_BEFORE_NATIVE006; NOT_RANDOM_NOT_DIFFICULTY_PROVEN",
+  "concurrency": "At most two fresh independent solver cells. Evaluation advances one target at a time. No cross-cell messages; root may grade completed cells while another solver runs.",
+  "design_origin": "NEW_V2_PROCEDURE_INFORMED_BY_NATIVE005_TRAINING_FAILURES; NATIVE005_RETAINED_GATED_UNCHANGED",
+  "evaluation_instances": [
+    "swebench_verified--sympy__sympy-19954",
+    "swebench_verified--sympy__sympy-20154",
+    "swebench_verified--sympy__sympy-20428",
+    "swebench_verified--sympy__sympy-20438",
+    "swebench_verified--sympy__sympy-20801",
+    "swebench_verified--sympy__sympy-21379"
+  ],
+  "evaluation_template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05",
+  "fork_turns": "none",
+  "frozen_at_unix_seconds": 1789233700.0988255,
+  "grader_calls_so_far": 0,
+  "launch_order_by_target": {
+    "19954": [
+      "A",
+      "B",
+      "C"
+    ],
+    "20154": [
+      "B",
+      "C",
+      "A"
+    ],
+    "20428": [
+      "C",
+      "A",
+      "B"
+    ],
+    "20438": [
+      "A",
+      "C",
+      "B"
+    ],
+    "20801": [
+      "B",
+      "A",
+      "C"
+    ],
+    "21379": [
+      "C",
+      "B",
+      "A"
+    ]
+  },
+  "limits": {
+    "actions": 120,
+    "memory_bytes": 12000,
+    "memory_injections": 3,
+    "wall_seconds": 1200
+  },
+  "manifest_sha256": "57f369ee641b923ec551698fb52f043e7cf8569e4872f0f691883f47d399f6b9",
+  "outcome_policy": "One solver attempt and one completed official grade per evaluation cell. No outcome-based evaluation substitutions, patch retries, threshold changes, memory updates or discarded failures.",
+  "planned_evaluation_cells": 18,
+  "planner_llm_involved": true,
+  "prior_memory_reused": false,
+  "procedure_declaration": {
+    "path": "/home/trimem-runner/skhynix-codex-006/procedure-declaration.json",
+    "procedure_id": "python-public-named-regression-red-green-v2",
+    "sha256": "70437a961574d980293c8cbce99fdc871d788606da590513a5c71cae76868c94",
+    "template_hash": "sha256:000c8c3d3b8d19d23cd1dfa7eccc328aa4d3929bf10254141225dc2b7b07fab2"
+  },
+  "query_contract": "Exact native003/native004/native005 common evaluation prompt and initial short issue subgoal plus public regression verification operation retained across all arms; no post-result tuning.",
+  "reasoning_effort": "INHERITED_PARENT_UNCHANGED",
+  "requested_model": "gpt-6-astra",
+  "schema": "skhynix/native006-launch-contract/1.0",
+  "separate_model_api_calls": 0,
+  "solver_model_calls_so_far": 0,
+  "source_freeze_sha256": "45f27c1ba03d193ea84a6cbcdef5c1afc3eb7f453e471ae0322a4595ec8588a0",
+  "training_acceptance": {
+    "accept": "FIRST_ATTEMPT_PER_DISTINCT_TASK_WITH_ACTUAL_V2_ATTESTATION_AND_OFFICIAL_RESOLVED_TRUE",
+    "attempt_order": [
+      1,
+      2,
+      3
+    ],
+    "if_either_task_has_no_qualifier": "STOP_BEFORE_EVALUATION; NO_FALLBACK_OR_THRESHOLD_CHANGE",
+    "max_fresh_attempts_per_task": 3,
+    "retain_all_failed_attempts": true,
+    "retry_feedback": "NONE; SAME_FROZEN_TEMPLATE_AND_EMPTY_MEMORY_EACH_ATTEMPT",
+    "stop_retries_after_first_qualifier": true
+  },
+  "training_instances": [
+    "swebench_verified--sympy__sympy-19637",
+    "swebench_verified--sympy__sympy-19783"
+  ],
+  "training_template_sha256": "d7698a1246b583a2ea9fba63a1cbb8acdbcb5603ec475d16e84e9adbe92e5ab2",
+  "validation_evidence_sha256": "c194009f838044b5f2a8028555792f7ea8ff924b56ae0d6a3f03f23d7bd8ab82"
+}

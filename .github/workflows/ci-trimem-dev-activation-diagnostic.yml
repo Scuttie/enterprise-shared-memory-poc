@@ -1,0 +1,666 @@
+name: TriMem DEV activation diagnostic contract
+
+on:
+  pull_request:
+    paths:
+      - .gitattributes
+      - .github/workflows/ci-trimem-dev-activation-diagnostic.yml
+      - artifacts/trimem_v1/**
+      - artifacts/trimem_v1/dev_activation_diagnostic/**
+      - configs/trimem_v1/**
+      - configs/trimem_v1/dev_activation_*.json
+      - configs/trimem_v1/dev_activation_source_bank_payloads/**
+      - configs/trimem_v1/benchmark_environment.lock
+      - configs/trimem_v1/cost_plan.json
+      - configs/trimem_v1/development_manifest.json
+      - configs/trimem_v1/grader_lock.json
+      - configs/trimem_v1/gh_cli_lock.json
+      - configs/trimem_v1/m2_candidate_bundles.json
+      - configs/trimem_v1/m2_candidates/recall.json
+      - configs/trimem_v1/m2_policy.json
+      - configs/trimem_v1/model_lock.json
+      - artifacts/trimem_v1/grader_image_lock.json
+      - reports/TRIMEM_DEV_ACTIVATION_DIAGNOSTIC*.md
+      - scripts/trimem_*.py
+      - scripts/trimem_dev_activation_*.py
+      - scripts/trimem_atomic_evidence.py
+      - scripts/trimem_benchmark_run.py
+      - scripts/trimem_compiled_prefix_alias.py
+      - scripts/trimem_d117_checkout_rehearsal.py
+      - scripts/trimem_d118_grader_factory_rehearsal.py
+      - scripts/trimem_evidence_inventory.py
+      - scripts/trimem_freeze.py
+      - scripts/trimem_harness_lock.py
+      - scripts/trimem_m2_candidates.py
+      - scripts/trimem_official_grader.py
+      - scripts/trimem_official_harness_loader*.py
+      - scripts/trimem_pull_locked_images.py
+      - scripts/trimem_validate_openai_credential.py
+      - scripts/trimem_verify_gh_lock.py
+      - scripts/trimem_verify_openai_key_binding.py
+      - scripts/trimem_verify_ready.py
+      - scripts/trimem_verify_remote_custody.py
+      - src/enterprise_memory/indexing/embeddings.py
+      - src/enterprise_memory/providers/**
+      - src/enterprise_memory/trimem/**
+      - src/enterprise_memory/trimem/adaptive_horizon.py
+      - src/enterprise_memory/trimem/agent_runtime.py
+      - src/enterprise_memory/trimem/checkpoint.py
+      - src/enterprise_memory/trimem/postgres_retrieval.py
+      - src/enterprise_memory/trimem/retrieval.py
+      - src/enterprise_memory/trimem/retrieval_store.py
+      - src/enterprise_memory/trimem/runtime_lock.py
+      - tests/unit/test_trimem_adaptive_horizon.py
+      - tests/unit/test_trimem_dev_activation_*.py
+      - tests/unit/test_trimem_postgres_retrieval.py
+      - tests/unit/test_trimem_working_retrieval.py
+      - tests/trimem/e2e/**
+  push:
+    branches:
+      - codex/trimem-coder-v1
+    paths:
+      - .gitattributes
+      - .github/workflows/ci-trimem-dev-activation-diagnostic.yml
+      - artifacts/trimem_v1/**
+      - artifacts/trimem_v1/dev_activation_diagnostic/**
+      - configs/trimem_v1/**
+      - configs/trimem_v1/dev_activation_*.json
+      - configs/trimem_v1/dev_activation_source_bank_payloads/**
+      - configs/trimem_v1/benchmark_environment.lock
+      - configs/trimem_v1/cost_plan.json
+      - configs/trimem_v1/development_manifest.json
+      - configs/trimem_v1/grader_lock.json
+      - configs/trimem_v1/gh_cli_lock.json
+      - configs/trimem_v1/m2_candidate_bundles.json
+      - configs/trimem_v1/m2_candidates/recall.json
+      - configs/trimem_v1/m2_policy.json
+      - configs/trimem_v1/model_lock.json
+      - artifacts/trimem_v1/grader_image_lock.json
+      - reports/TRIMEM_DEV_ACTIVATION_DIAGNOSTIC*.md
+      - scripts/trimem_*.py
+      - scripts/trimem_dev_activation_*.py
+      - scripts/trimem_atomic_evidence.py
+      - scripts/trimem_benchmark_run.py
+      - scripts/trimem_compiled_prefix_alias.py
+      - scripts/trimem_d117_checkout_rehearsal.py
+      - scripts/trimem_d118_grader_factory_rehearsal.py
+      - scripts/trimem_evidence_inventory.py
+      - scripts/trimem_freeze.py
+      - scripts/trimem_harness_lock.py
+      - scripts/trimem_m2_candidates.py
+      - scripts/trimem_official_grader.py
+      - scripts/trimem_official_harness_loader*.py
+      - scripts/trimem_pull_locked_images.py
+      - scripts/trimem_validate_openai_credential.py
+      - scripts/trimem_verify_gh_lock.py
+      - scripts/trimem_verify_openai_key_binding.py
+      - scripts/trimem_verify_ready.py
+      - scripts/trimem_verify_remote_custody.py
+      - src/enterprise_memory/indexing/embeddings.py
+      - src/enterprise_memory/providers/**
+      - src/enterprise_memory/trimem/**
+      - src/enterprise_memory/trimem/adaptive_horizon.py
+      - src/enterprise_memory/trimem/agent_runtime.py
+      - src/enterprise_memory/trimem/checkpoint.py
+      - src/enterprise_memory/trimem/postgres_retrieval.py
+      - src/enterprise_memory/trimem/retrieval.py
+      - src/enterprise_memory/trimem/retrieval_store.py
+      - src/enterprise_memory/trimem/runtime_lock.py
+      - tests/unit/test_trimem_adaptive_horizon.py
+      - tests/unit/test_trimem_dev_activation_*.py
+      - tests/unit/test_trimem_postgres_retrieval.py
+      - tests/unit/test_trimem_working_retrieval.py
+      - tests/trimem/e2e/**
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: trimem-dev-activation-diagnostic-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  credential-free-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.11.10
+          cache: ""
+      - name: Install hash-locked test environment
+        run: |
+          python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Verify credential-free diagnostic contracts
+        run: |
+          python scripts/trimem_pytest_no_skip.py \
+            tests/unit/test_trimem_dev_activation_diagnostic.py \
+            tests/unit/test_trimem_dev_activation_executor.py \
+            tests/unit/test_trimem_dev_activation_github_capture.py \
+            tests/unit/test_trimem_dev_activation_readiness.py \
+            tests/unit/test_trimem_dev_activation_source_bank.py \
+            tests/unit/test_trimem_adaptive_horizon.py \
+            tests/unit/test_trimem_working_retrieval.py \
+            tests/unit/test_trimem_postgres_retrieval.py
+          python scripts/trimem_dev_activation_diagnostic.py contract
+
+  diagnostic-approval-handshake:
+    if: github.event_name == 'push' && github.run_attempt == 1
+    needs: credential-free-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Publish clean approval coordinates
+        run: |
+          echo "credential-free approval handshake only"
+          echo "workflow_run_id=${{ github.run_id }}"
+          echo "workflow_run_attempt=2"
+          echo "git_head=${{ github.sha }}"
+          echo "model_calls=0 grader_runs=0 paid_model_calls=0 total_usd=0"
+
+  diagnostic-execution:
+    if: github.event_name == 'push' && github.run_attempt == 2
+    needs: credential-free-contract
+    runs-on: [self-hosted, linux, x64, trimem-dev-activation-diagnostic]
+    timeout-minutes: 7200
+    environment: trimem-benchmark-exec
+    env:
+      CUBLAS_WORKSPACE_CONFIG: ":4096:8"
+      CUDA_VISIBLE_DEVICES: ""
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      MKL_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          clean: true
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Initialize fresh restricted workflow evidence namespace
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence
+          install -d -m 700 artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence
+      - name: Verify cached protected runner toolchain before setup-python
+        env:
+          LD_LIBRARY_PATH: /opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib
+          RUNNER_TOOL_CACHE: ${{ runner.tool_cache }}
+        run: |
+          set -euo pipefail
+          umask 077
+          cached_python="/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python"
+          test -x "$cached_python"
+          test "$($cached_python -I -S -c 'import platform; print(platform.python_version())')" = "3.11.10"
+          test "$(id -u)" = "1000"
+          test "$(id -g)" = "1000"
+          test "$(id -G)" = "1000 108"
+          test -z "${DOCKER_HOST+x}"
+          test -z "${DOCKER_CONTEXT+x}"
+          test "$(docker context show)" = "default"
+          test -S /var/run/docker.sock
+          test "$(stat -Lc '%u:%g' /var/run/docker.sock)" = "0:108"
+          test "$(docker context inspect default --format '{{.Endpoints.docker.Host}}')" = "unix:///var/run/docker.sock"
+          "$cached_python" -I -S -c 'import json,os,platform; print(json.dumps({"python": platform.python_version(), "runner_arch": os.environ["RUNNER_ARCH"], "runner_os": os.environ["RUNNER_OS"]}, sort_keys=True))' \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stderr.log >&2)
+          docker version --format '{{json .}}' \
+            > >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stdout.log) \
+            2> >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stderr.log >&2)
+          docker info --format '{{json .DockerRootDir}}' \
+            > >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stdout.log) \
+            2> >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stderr.log >&2)
+          docker_security_options="$(docker info --format '{{json .SecurityOptions}}')"
+          test "$(docker info --format '{{.DockerRootDir}}')" = "/var/lib/docker"
+          "$cached_python" -I -S -c 'import json,sys; value=json.loads(sys.argv[1]); assert isinstance(value,list) and value; assert all(isinstance(item,str) for item in value); assert not any("rootless" in item.lower() or "userns" in item.lower() for item in value)' "$docker_security_options"
+          printf '%s\n' "$docker_security_options" \
+            >> artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/protected-runner-preflight.stdout.log
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.11.10
+          cache: ""
+      - name: Verify frozen source before any installation
+        run: |
+          set -euo pipefail
+          umask 077
+          python -I -S scripts/trimem_freeze.py --check --require-git-tracked \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stderr.log >&2)
+      - name: Install exact pinned GitHub CLI for evidence custody
+        id: pinned_gh_install
+        run: |
+          set -euo pipefail
+          umask 077
+          expected_bin="$RUNNER_TEMP/trimem-devdiag-gh/bin"
+          observed_bin="$(
+            python scripts/trimem_install_pinned_gh.py \
+              --lock configs/trimem_v1/gh_cli_lock.json \
+              --prefix "$RUNNER_TEMP/trimem-devdiag-gh"
+          )"
+          test "$observed_bin" = "$expected_bin"
+          printf '%s\n' "$observed_bin" >> "$GITHUB_PATH"
+      - name: Verify exact pinned GitHub CLI before credentials
+        id: pinned_gh_verification
+        run: |
+          set -euo pipefail
+          umask 077
+          resolved_gh="$(command -v gh)"
+          test "$resolved_gh" = "$RUNNER_TEMP/trimem-devdiag-gh/bin/gh"
+          python scripts/trimem_verify_gh_lock.py \
+            --lock configs/trimem_v1/gh_cli_lock.json \
+            --prefix "$RUNNER_TEMP/trimem-devdiag-gh" \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/github-cli-verification.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/github-cli-verification.stderr.log >&2)
+      - name: Install hash-locked production dependencies
+        run: |
+          set -euo pipefail
+          umask 077
+          python -m pip install --require-hashes -r configs/trimem_v1/benchmark_environment.lock \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stderr.log >&2)
+      - name: Verify frozen diagnostic before editable code installation
+        run: |
+          set -euo pipefail
+          umask 077
+          python -I -c "import runpy,sys; sys.path[:0]=['scripts','src','.']; sys.argv=['trimem_dev_activation_diagnostic.py','preflight']; runpy.run_path('scripts/trimem_dev_activation_diagnostic.py',run_name='__main__')" \
+            > >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stdout.log) \
+            2> >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/frozen-contract-preflight.stderr.log >&2)
+      - name: Install editable project after diagnostic preflight
+        run: |
+          set -euo pipefail
+          umask 077
+          python -m pip install --no-deps --no-build-isolation -e . \
+            > >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stdout.log) \
+            2> >(tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/environment-install.stderr.log >&2)
+      - name: Rehearse exact DEV dataset and checkout materialization before credentials
+        run: |
+          set -euo pipefail
+          umask 077
+          python scripts/trimem_d117_checkout_rehearsal.py \
+            --checkout-root "$RUNNER_TEMP/trimem-devdiag-task-checkouts" \
+            --cache-root .trimem-exec/datasets \
+            --output artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/dataset-checkout-rehearsal.json \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/dataset-checkout-rehearsal.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/dataset-checkout-rehearsal.stderr.log >&2)
+      - name: Materialize exact pinned harness sources before credentials
+        run: |
+          set -euo pipefail
+          umask 077
+          python - \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/harness-materialization.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/harness-materialization.stderr.log >&2) <<'PY'
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from trimem_harness_lock import prepare_harnesses
+
+          observed = prepare_harnesses(Path(".trimem-exec/harnesses"))
+          if set(observed) != {
+              "swebench_verified",
+              "multi_swe_bench_mini",
+              "multi_swe_bench_flash",
+          }:
+              raise SystemExit("pinned harness set differs")
+          PY
+      - name: Verify exact official harness loader before credentials
+        run: |
+          set -euo pipefail
+          umask 077
+          exact_python="$pythonLocation/bin/python3.11"
+          preflight_output="artifacts/trimem_v1/benchmark_exec/control/official-harness-loader-preflight.json"
+          test -x "$exact_python"
+          test "$(readlink -f "$exact_python")" = "$(readlink -f "$(command -v python)")"
+          install -d -m 700 artifacts/trimem_v1/benchmark_exec/control
+          "$exact_python" -I -S scripts/trimem_compiled_prefix_alias.py --check
+          "$exact_python" scripts/trimem_official_harness_loader_preflight.py \
+            --python-binary "$exact_python" \
+            --swe-harness-root .trimem-exec/harnesses/swebench_verified \
+            --multi-harness-root .trimem-exec/harnesses/multi \
+            --output "$preflight_output" \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/harness-loader-preflight.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/harness-loader-preflight.stderr.log >&2)
+          "$exact_python" - "$preflight_output" "$exact_python" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from trimem_benchmark_run import (
+              validate_official_harness_loader_preflight_evidence,
+          )
+
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          validate_official_harness_loader_preflight_evidence(
+              report,
+              python_binary=sys.argv[2],
+          )
+          PY
+          install -m 600 "$preflight_output" \
+            artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/official-harness-loader-preflight.json
+      - name: Rehearse official grader factory before credentials
+        run: |
+          set -euo pipefail
+          umask 077
+          python scripts/trimem_d118_grader_factory_rehearsal.py \
+            --preflight artifacts/trimem_v1/benchmark_exec/control/official-harness-loader-preflight.json \
+            --harness-root .trimem-exec/harnesses \
+            --dataset-cache-root .trimem-exec/datasets \
+            --output-root "$RUNNER_TEMP/trimem-devdiag-grader-factory" \
+            --report artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/grader-factory-rehearsal.json \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/grader-factory-rehearsal.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/grader-factory-rehearsal.stderr.log >&2)
+      - name: Fail closed unless source bank and fresh exact-attempt-2 approval validate
+        id: approval_gate
+        env:
+          TRIMEM_DEV_ACTIVATION_APPROVAL_B64: ${{ secrets.TRIMEM_DEV_ACTIVATION_APPROVAL_B64 }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python -I scripts/trimem_dev_activation_gate.py \
+            --repository "${{ github.repository }}" \
+            --workflow-run-id "${{ github.run_id }}" \
+            --workflow-run-attempt "${{ github.run_attempt }}" \
+            --workflow-event "${{ github.event_name }}" \
+            --output-approval "$RUNNER_TEMP/trimem-dev-activation-approval.json" \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/approval-gate.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/approval-gate.stderr.log >&2)
+          install -m 600 "$RUNNER_TEMP/trimem-dev-activation-approval.json" \
+            artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/restricted-external-approval.json
+          cmp --silent \
+            "$RUNNER_TEMP/trimem-dev-activation-approval.json" \
+            artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/restricted-external-approval.json
+      - name: Verify evidence passphrase before image or scientific work
+        env:
+          TRIMEM_EVIDENCE_PASSPHRASE: ${{ secrets.TRIMEM_EVIDENCE_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test -n "$TRIMEM_EVIDENCE_PASSPHRASE"
+      - name: Pull exact frozen images and verify observed digests
+        id: image_materialization
+        run: |
+          set -euo pipefail
+          umask 077
+          python scripts/trimem_dev_activation_executor.py prepare-images \
+            --approval-file "$RUNNER_TEMP/trimem-dev-activation-approval.json" \
+            --repository "${{ github.repository }}" \
+            --workflow-run-id "${{ github.run_id }}" \
+            --workflow-run-attempt "${{ github.run_attempt }}" \
+            --workflow-event "${{ github.event_name }}" \
+            --evidence-root artifacts/trimem_v1/dev_activation_diagnostic/image-materialization \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/image-materialization.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/image-materialization.stderr.log >&2)
+      - name: Rehearse exact 12 solver sandboxes before billing credential
+        run: |
+          set -euo pipefail
+          umask 077
+          test -z "${OPENAI_API_KEY+x}"
+          test -z "${TRIMEM_DEV_ACTIVATION_APPROVAL_B64+x}"
+          test -z "${TRIMEM_EVIDENCE_PASSPHRASE+x}"
+          python scripts/trimem_dev_activation_executor.py rehearse-solver-sandboxes \
+            --checkout-root "$RUNNER_TEMP/trimem-devdiag-task-checkouts" \
+            --dataset-cache-root .trimem-exec/datasets \
+            --evidence-root artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/pre-billing-solver-sandbox \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/pre-billing-solver-sandbox.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/pre-billing-solver-sandbox.stderr.log >&2)
+      - name: Validate exact OpenAI credential format after approval and image locks
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python scripts/trimem_validate_openai_credential.py \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/openai-credential-validation.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/openai-credential-validation.stderr.log >&2)
+      - name: Verify run-bound OpenAI billing credential commitment
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python scripts/trimem_verify_openai_key_binding.py \
+            --approval-file "$RUNNER_TEMP/trimem-dev-activation-approval.json" \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/openai-key-binding.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/openai-key-binding.stderr.log >&2)
+      - name: Execute frozen serial 36-cell diagnostic
+        id: diagnostic_executor
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          run_diagnostic_executor() {
+            python scripts/trimem_dev_activation_executor.py execute \
+              --approval-file "$RUNNER_TEMP/trimem-dev-activation-approval.json" \
+              --repository "${{ github.repository }}" \
+              --workflow-run-id "${{ github.run_id }}" \
+              --workflow-run-attempt "${{ github.run_attempt }}" \
+              --workflow-event "${{ github.event_name }}" \
+              --output-root artifacts/trimem_v1/dev_activation_diagnostic/execution \
+              --workspace-root .trimem-exec/devdiag-workspaces \
+              "$@"
+          }
+          set +e
+          run_diagnostic_executor \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/executor-invocation-1.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/executor-invocation-1.stderr.log >&2)
+          first_status=$?
+          set -e
+          printf 'first_executor_status=%s\n' "$first_status" \
+            | tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/executor-retry-decision.log
+          if [ "$first_status" -ne 0 ]; then
+            retry_arguments=()
+            if [ -f artifacts/trimem_v1/dev_activation_diagnostic/execution/execution-binding.json ]; then
+              retry_arguments+=(--resume)
+            fi
+            printf 'same_attempt_retry_resume=%s\n' "${retry_arguments[*]:-false}" \
+              | tee -a artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/executor-retry-decision.log
+            run_diagnostic_executor "${retry_arguments[@]}" \
+              > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/executor-invocation-2.stdout.log) \
+              2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/executor-invocation-2.stderr.log >&2)
+          fi
+      - name: Recompute and byte-verify fail-closed aggregate
+        id: aggregate_verification
+        run: |
+          set -euo pipefail
+          umask 077
+          python scripts/trimem_dev_activation_diagnostic.py aggregate \
+            --results artifacts/trimem_v1/dev_activation_diagnostic/execution/results.json \
+            --output "$RUNNER_TEMP/trimem-dev-activation-aggregate.json" \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/aggregate.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/aggregate.stderr.log >&2)
+          cmp --silent \
+            "$RUNNER_TEMP/trimem-dev-activation-aggregate.json" \
+            artifacts/trimem_v1/dev_activation_diagnostic/execution/aggregate.json
+      - name: Remove only exact diagnostic image aliases
+        id: image_cleanup
+        if: >-
+          always() &&
+          (steps.image_materialization.outcome == 'success' ||
+           steps.image_materialization.outcome == 'failure')
+        run: |
+          set -euo pipefail
+          umask 077
+          python scripts/trimem_dev_activation_executor.py cleanup-images \
+            --image-materialization-report artifacts/trimem_v1/dev_activation_diagnostic/image-materialization/report.json \
+            --evidence-root artifacts/trimem_v1/dev_activation_diagnostic/image-cleanup \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/image-cleanup.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/image-cleanup.stderr.log >&2)
+      - name: Ensure exact pinned GitHub CLI for every custody path
+        id: custody_gh_recovery
+        if: always()
+        run: |
+          set -euo pipefail
+          umask 077
+          expected_bin="$RUNNER_TEMP/trimem-devdiag-gh/bin"
+          observed_bin="$(
+            python scripts/trimem_install_pinned_gh.py \
+              --lock configs/trimem_v1/gh_cli_lock.json \
+              --prefix "$RUNNER_TEMP/trimem-devdiag-gh"
+          )"
+          test "$observed_bin" = "$expected_bin"
+          printf '%s\n' "$observed_bin" >> "$GITHUB_PATH"
+          python scripts/trimem_verify_gh_lock.py \
+            --lock configs/trimem_v1/gh_cli_lock.json \
+            --prefix "$RUNNER_TEMP/trimem-devdiag-gh" \
+            > >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/custody-github-cli-verification.stdout.log) \
+            2> >(tee artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence/custody-github-cli-verification.stderr.log >&2)
+      - name: Inventory complete restricted diagnostic evidence
+        id: diagnostic_evidence_inventory
+        if: always()
+        run: |
+          set -euo pipefail
+          umask 077
+          python scripts/trimem_evidence_inventory.py \
+            --root artifacts/trimem_v1/dev_activation_diagnostic \
+            --root-label dev_activation_diagnostic \
+            --output "$RUNNER_TEMP/trimem-dev-activation-diagnostic-inventory.json"
+      - name: Encrypt complete restricted diagnostic evidence
+        id: encrypt_evidence
+        if: always() && steps.diagnostic_evidence_inventory.outcome == 'success'
+        env:
+          TRIMEM_EVIDENCE_PASSPHRASE: ${{ secrets.TRIMEM_EVIDENCE_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test -n "$TRIMEM_EVIDENCE_PASSPHRASE"
+          tar -C artifacts/trimem_v1 -cf - dev_activation_diagnostic \
+            | openssl enc -aes-256-cbc -salt -pbkdf2 \
+                -pass env:TRIMEM_EVIDENCE_PASSPHRASE \
+                -out "$RUNNER_TEMP/trimem-dev-activation-diagnostic-restricted.tar.enc"
+      - name: Upload public diagnostic aggregate
+        id: public_upload
+        if: always() && !cancelled() && steps.aggregate_verification.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-dev-activation-diagnostic-public
+          path: artifacts/trimem_v1/dev_activation_diagnostic/execution/aggregate.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload encrypted restricted diagnostic evidence
+        id: restricted_upload
+        if: always() && !cancelled() && steps.encrypt_evidence.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-dev-activation-diagnostic-restricted-encrypted
+          path: ${{ runner.temp }}/trimem-dev-activation-diagnostic-restricted.tar.enc
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload non-sensitive diagnostic evidence inventory
+        id: inventory_upload
+        if: always() && !cancelled() && steps.diagnostic_evidence_inventory.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-dev-activation-diagnostic-evidence-inventory
+          path: ${{ runner.temp }}/trimem-dev-activation-diagnostic-inventory.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Verify durable external artifact custody before plaintext cleanup
+        id: external_custody_verification
+        if: >-
+          always() &&
+          !cancelled() &&
+          steps.custody_gh_recovery.outcome == 'success' &&
+          steps.restricted_upload.outcome == 'success' &&
+          steps.inventory_upload.outcome == 'success' &&
+          (steps.public_upload.outcome == 'success' ||
+           steps.public_upload.outcome == 'skipped')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLIC_UPLOAD_OUTCOME: ${{ steps.public_upload.outcome }}
+          PUBLIC_ARTIFACT_ID: ${{ steps.public_upload.outputs.artifact-id }}
+          PUBLIC_ARTIFACT_DIGEST: ${{ steps.public_upload.outputs.artifact-digest }}
+          RESTRICTED_ARTIFACT_ID: ${{ steps.restricted_upload.outputs.artifact-id }}
+          RESTRICTED_ARTIFACT_DIGEST: ${{ steps.restricted_upload.outputs.artifact-digest }}
+          INVENTORY_ARTIFACT_ID: ${{ steps.inventory_upload.outputs.artifact-id }}
+          INVENTORY_ARTIFACT_DIGEST: ${{ steps.inventory_upload.outputs.artifact-digest }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python scripts/trimem_verify_remote_custody.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --public-upload-outcome "$PUBLIC_UPLOAD_OUTCOME" \
+            --public-artifact-name trimem-dev-activation-diagnostic-public \
+            --public-artifact-id "$PUBLIC_ARTIFACT_ID" \
+            --public-artifact-digest "$PUBLIC_ARTIFACT_DIGEST" \
+            --restricted-artifact-name trimem-dev-activation-diagnostic-restricted-encrypted \
+            --restricted-artifact-id "$RESTRICTED_ARTIFACT_ID" \
+            --restricted-artifact-digest "$RESTRICTED_ARTIFACT_DIGEST" \
+            --inventory-artifact-name trimem-dev-activation-diagnostic-evidence-inventory \
+            --inventory-artifact-id "$INVENTORY_ARTIFACT_ID" \
+            --inventory-artifact-digest "$INVENTORY_ARTIFACT_DIGEST" \
+            --output "$RUNNER_TEMP/trimem-dev-activation-diagnostic-remote-custody.json"
+      - name: Upload sanitized diagnostic custody result
+        id: custody_result_upload
+        if: >-
+          always() &&
+          !cancelled() &&
+          steps.external_custody_verification.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trimem-dev-activation-diagnostic-remote-custody
+          path: ${{ runner.temp }}/trimem-dev-activation-diagnostic-remote-custody.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove plaintext and temporary diagnostic execution material
+        if: always()
+        env:
+          IMAGE_CLEANUP_OUTCOME: ${{ steps.image_cleanup.outcome }}
+          CUSTODY_GH_RECOVERY_OUTCOME: ${{ steps.custody_gh_recovery.outcome }}
+          RESTRICTED_UPLOAD_OUTCOME: ${{ steps.restricted_upload.outcome }}
+          INVENTORY_UPLOAD_OUTCOME: ${{ steps.inventory_upload.outcome }}
+          EXTERNAL_CUSTODY_OUTCOME: ${{ steps.external_custody_verification.outcome }}
+          CUSTODY_RESULT_UPLOAD_OUTCOME: ${{ steps.custody_result_upload.outcome }}
+        run: |
+          set -euo pipefail
+          umask 077
+          if { [ "$IMAGE_CLEANUP_OUTCOME" != "success" ] && \
+               [ "$IMAGE_CLEANUP_OUTCOME" != "skipped" ]; } || \
+             [ "$CUSTODY_GH_RECOVERY_OUTCOME" != "success" ] || \
+             [ "$RESTRICTED_UPLOAD_OUTCOME" != "success" ] || \
+             [ "$INVENTORY_UPLOAD_OUTCOME" != "success" ] || \
+             [ "$EXTERNAL_CUSTODY_OUTCOME" != "success" ] || \
+             [ "$CUSTODY_RESULT_UPLOAD_OUTCOME" != "success" ]; then
+            echo "image cleanup or external artifact custody failed; preserving plaintext and ciphertext" >&2
+            exit 1
+          fi
+          trimem_exec_root="$(realpath -m "$GITHUB_WORKSPACE/.trimem-exec")"
+          test "$trimem_exec_root" = "$GITHUB_WORKSPACE/.trimem-exec"
+          rm -rf -- \
+            "$GITHUB_WORKSPACE/.trimem-exec" \
+            "$GITHUB_WORKSPACE/artifacts/trimem_v1/dev_activation_diagnostic/execution" \
+            "$GITHUB_WORKSPACE/artifacts/trimem_v1/dev_activation_diagnostic/image-materialization" \
+            "$GITHUB_WORKSPACE/artifacts/trimem_v1/dev_activation_diagnostic/image-cleanup" \
+            "$GITHUB_WORKSPACE/artifacts/trimem_v1/dev_activation_diagnostic/workflow-evidence" \
+            "$RUNNER_TEMP/trimem-devdiag-task-checkouts" \
+            "$RUNNER_TEMP/trimem-devdiag-grader-factory" \
+            "$RUNNER_TEMP/trimem-devdiag-gh"
+          rm -f -- \
+            "$RUNNER_TEMP/trimem-dev-activation-approval.json" \
+            "$RUNNER_TEMP/trimem-dev-activation-aggregate.json" \
+            "$RUNNER_TEMP/trimem-dev-activation-diagnostic-inventory.json" \
+            "$RUNNER_TEMP/trimem-dev-activation-diagnostic-restricted.tar.enc" \
+            "$RUNNER_TEMP/trimem-dev-activation-diagnostic-remote-custody.json" \
+            "$GITHUB_WORKSPACE/artifacts/trimem_v1/benchmark_exec/control/official-harness-loader-preflight.json"
+          rmdir "$GITHUB_WORKSPACE/artifacts/trimem_v1/benchmark_exec/control" 2>/dev/null || test ! -d "$GITHUB_WORKSPACE/artifacts/trimem_v1/benchmark_exec/control"
+          rmdir "$GITHUB_WORKSPACE/artifacts/trimem_v1/benchmark_exec" 2>/dev/null || test ! -d "$GITHUB_WORKSPACE/artifacts/trimem_v1/benchmark_exec"
+          test ! -e "$RUNNER_TEMP/trimem-dev-activation-approval.json"
+          test ! -e "$GITHUB_WORKSPACE/artifacts/trimem_v1/dev_activation_diagnostic/execution"

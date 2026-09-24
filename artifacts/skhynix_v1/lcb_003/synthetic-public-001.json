@@ -1,0 +1,11 @@
+{
+  "explicit_history_ids": [
+    1
+  ],
+  "model_calls": 0,
+  "private_grader_calls": 0,
+  "scope": "synthetic public runner integration only",
+  "state_sha256": "d627954e7a767c3d164e1a1510c96179c1326b43a93f5a5768b7a9c628a741b6",
+  "status": "PASS",
+  "synthetic_public_tests": 1
+}

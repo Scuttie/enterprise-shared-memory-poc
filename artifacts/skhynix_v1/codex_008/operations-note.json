@@ -1,0 +1,16 @@
+{
+  "evaluation_attempts_or_order_changed": false,
+  "initial_spawn_rejection_preserved": true,
+  "preflight_assertion_correction": "See preflight-helper-correction.json; no frozen source/bank/prompt change and zero actual actions before successful preflight.",
+  "schema": "skhynix/native008-operations-note/1.0",
+  "solver_scheduling": "First matched pair sequential because of thread capacity; from recovery-20428-r2 onward up to two fresh independent solvers within one matched pair, as allowed by the frozen contract.",
+  "unlaunched_spawn_rejections": [
+    {
+      "broker_actions_consumed": 0,
+      "graded": false,
+      "model_session_created": false,
+      "reason": "agent thread limit reached",
+      "requested_task": "native008_20428_r1_c"
+    }
+  ]
+}

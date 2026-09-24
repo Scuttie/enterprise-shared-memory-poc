@@ -1,0 +1,15 @@
+{
+  "schema": "lcb-explicit-format-execution/1",
+  "recorded_at": "2026-09-24T03:43:37.399730+00:00",
+  "head": "24a277d04609ae1be3c5747ff85b96629c6f9583",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "low",
+  "cells": 48,
+  "workers": 2,
+  "frozen_inputs_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\frozen-inputs.json",
+    "sha256": "0607f6f4101d085bb546c61e32241c4dc6c0c748195682da2a4bcab0f0a3f96e",
+    "bytes": 32591
+  },
+  "private_grading_after_all_solves": true
+}

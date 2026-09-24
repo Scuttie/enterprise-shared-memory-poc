@@ -1,0 +1,14 @@
+{
+  "native": {
+    "codex_executable": "/path/to/codex",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "low"
+  },
+  "execution": {
+    "prefix": [],
+    "python": "/path/to/lcb-run/venv/bin/python",
+    "scripts_root": "/path/to/repository/scripts",
+    "official_repo": "/path/to/lcb-run/LiveCodeBench"
+  },
+  "execution_path_remap": []
+}

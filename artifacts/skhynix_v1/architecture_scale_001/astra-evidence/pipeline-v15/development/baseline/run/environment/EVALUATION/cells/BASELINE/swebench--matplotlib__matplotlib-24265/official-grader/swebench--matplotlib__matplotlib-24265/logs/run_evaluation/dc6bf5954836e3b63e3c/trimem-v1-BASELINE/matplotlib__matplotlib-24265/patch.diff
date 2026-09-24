@@ -1,0 +1,137 @@
+diff --git a/lib/matplotlib/style/core.py b/lib/matplotlib/style/core.py
+index fb0a542..03d91ea 100644
+--- a/lib/matplotlib/style/core.py
++++ b/lib/matplotlib/style/core.py
+@@ -45,6 +45,31 @@ STYLE_BLACKLIST = {
+     'docstring.hardcopy', 'date.epoch'}
+ 
+ 
++_DEPRECATED_SEABORN_STYLES = {
++    f"seaborn{suffix}": f"seaborn-v0_8{suffix}"
++    for suffix in [
++        "", "-bright", "-colorblind", "-dark", "-darkgrid", "-dark-palette",
++        "-deep", "-muted", "-notebook", "-paper", "-pastel", "-poster",
++        "-talk", "-ticks", "-white", "-whitegrid",
++    ]
++}
++_DEPRECATED_SEABORN_MSG = (
++    "The seaborn styles shipped by Matplotlib "
++    "are deprecated since %(since)s, as they no longer "
++    "correspond to the styles shipped by seaborn. However, "
++    "they will remain available as 'seaborn-v0_8-<style>'. "
++    "Alternatively, directly use the seaborn API instead."
++)
++
++
++class _StyleLibrary(dict):
++    def __getitem__(self, key):
++        if key in _DEPRECATED_SEABORN_STYLES:
++            _api.warn_deprecated("3.6", message=_DEPRECATED_SEABORN_MSG)
++            key = _DEPRECATED_SEABORN_STYLES[key]
++        return super().__getitem__(key)
++
++
+ def _remove_blacklisted_style_params(d, warn=True):
+     o = {}
+     for key in d:  # prevent triggering RcParams.__getitem__('backend')
+@@ -113,31 +138,9 @@ def use(style):
+     def fix_style(s):
+         if isinstance(s, str):
+             s = style_alias.get(s, s)
+-            if s in [
+-                "seaborn",
+-                "seaborn-bright",
+-                "seaborn-colorblind",
+-                "seaborn-dark",
+-                "seaborn-darkgrid",
+-                "seaborn-dark-palette",
+-                "seaborn-deep",
+-                "seaborn-muted",
+-                "seaborn-notebook",
+-                "seaborn-paper",
+-                "seaborn-pastel",
+-                "seaborn-poster",
+-                "seaborn-talk",
+-                "seaborn-ticks",
+-                "seaborn-white",
+-                "seaborn-whitegrid",
+-            ]:
+-                _api.warn_deprecated(
+-                    "3.6", message="The seaborn styles shipped by Matplotlib "
+-                    "are deprecated since %(since)s, as they no longer "
+-                    "correspond to the styles shipped by seaborn. However, "
+-                    "they will remain available as 'seaborn-v0_8-<style>'. "
+-                    "Alternatively, directly use the seaborn API instead.")
+-                s = s.replace("seaborn", "seaborn-v0_8")
++            if s in _DEPRECATED_SEABORN_STYLES:
++                _api.warn_deprecated("3.6", message=_DEPRECATED_SEABORN_MSG)
++                s = _DEPRECATED_SEABORN_STYLES[s]
+         return s
+ 
+     for style in map(fix_style, styles):
+@@ -247,14 +250,14 @@ def update_nested_dict(main_dict, new_dict):
+ # Load style library
+ # ==================
+ _base_library = read_style_directory(BASE_LIBRARY_PATH)
+-library = None
++library = _StyleLibrary()
+ available = []
+ 
+ 
+ def reload_library():
+     """Reload the style library."""
+-    global library
+-    library = update_user_library(_base_library)
++    library.clear()
++    library.update(update_user_library(_base_library))
+     available[:] = sorted(library.keys())
+ 
+ 
+diff --git a/lib/matplotlib/tests/test_style.py b/lib/matplotlib/tests/test_style.py
+index e138881..a33837a 100644
+--- a/lib/matplotlib/tests/test_style.py
++++ b/lib/matplotlib/tests/test_style.py
+@@ -186,5 +186,43 @@ def test_deprecated_seaborn_styles():
+     assert mpl.rcParams == seaborn_bright
+ 
+ 
++@pytest.mark.parametrize('name', [
++    name for name in style.available if name.startswith('seaborn-v0_8')])
++@pytest.mark.filterwarnings('error')
++def test_deprecated_seaborn_library(name):
++    legacy_name = name.replace('seaborn-v0_8', 'seaborn')
++    with pytest.warns(mpl.MatplotlibDeprecationWarning,
++                      match='The seaborn styles shipped by Matplotlib') as record:
++        rc = plt.style.library[legacy_name]
++    assert len(record) == 1
++    assert rc is style.library[name]
++    assert name in style.available
++    assert legacy_name not in style.available
++    assert legacy_name not in style.library.keys()
++    with style.context(rc):
++        assert all(mpl.rcParams[key] == value for key, value in rc.items())
++    with style.context(name):
++        assert all(mpl.rcParams[key] == value for key, value in rc.items())
++
++
++def test_deprecated_seaborn_library_reload():
++    library = style.library
++    available = style.available.copy()
++    style.reload_library()
++    assert style.library is library
++    assert style.available == available
++    with pytest.warns(mpl.MatplotlibDeprecationWarning):
++        rc = library['seaborn-colorblind']
++    assert rc is library['seaborn-v0_8-colorblind']
++
++
++@pytest.mark.parametrize('name', ['nonexistent-style', 'seaborn-nonexistent'])
++@pytest.mark.filterwarnings('error')
++def test_style_library_unknown_name(name):
++    with pytest.raises(KeyError) as exc:
++        style.library[name]
++    assert exc.value.args == (name,)
++
++
+ def test_up_to_date_blacklist():
+     assert mpl.style.core.STYLE_BLACKLIST <= {*mpl.rcsetup._validators}

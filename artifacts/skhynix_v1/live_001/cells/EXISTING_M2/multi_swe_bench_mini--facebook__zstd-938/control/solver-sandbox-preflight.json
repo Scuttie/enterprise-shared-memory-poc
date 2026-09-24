@@ -1,0 +1,1 @@
+{"command_sandbox_content_hash":"44442bcdb558ab6886b534c32fe085c9c3553a7d04576a96e53e38283fde31f5","masked_image_directories":["/home/zstd/.git"],"masked_image_files":["/home/fix.patch","/home/test.patch","/home/check_git_changes.sh","/home/prepare.sh","/home/run.sh","/home/test-run.sh","/home/fix-run.sh"],"official_grader_runs":0,"probe_containers":2,"status":"PASS"}

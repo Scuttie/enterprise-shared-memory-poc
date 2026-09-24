@@ -1,0 +1,162 @@
+{
+  "actuals": {
+    "benchmark_image_pulls": 13,
+    "cached_input_tokens": 0,
+    "completed_task_arm_runs": 0,
+    "decomposition_calls": 1,
+    "exact_model_metadata_requests": 1,
+    "extraction_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 197498,
+    "model_generation_calls": 18,
+    "official_grader_runs": 0,
+    "output_tokens": 5068,
+    "paid_model_calls": 18,
+    "protocol_canary_generation_calls": 1,
+    "provider_control_plane_requests": 1,
+    "reasoning_tokens": 3157,
+    "scientific_model_calls": 17,
+    "solve_calls": 16,
+    "task_arm_reservations": 1,
+    "task_arm_runs": 0,
+    "terminal_cells": 0,
+    "total_tokens": 202566,
+    "total_usd": "0.170929500000"
+  },
+  "approval_boundary": {
+    "approval_artifact_sha256": "be9028a6ca9eacb87c526c2287c5473e5fad5ed8dd2f523bb7570bb2f4eb5bc7",
+    "approval_materialization": "PASS",
+    "approved_request_sha256": "bf736089da26a11f5289257e92c11a02e407a53813d6d2fb5d3844864a0b8919",
+    "approved_workflow_run_attempt": 1,
+    "approved_workflow_run_id": 34200331390,
+    "environment_secret_count_after_cleanup": 0,
+    "exec_gate": "PASS",
+    "protected_environment_entered": true
+  },
+  "boundary": {
+    "aggregate_entered": false,
+    "bounded_context_preflight": "PASS",
+    "branch_trigger_preflight": "PASS",
+    "campaign_result_available": false,
+    "failed_stream": "M2-baseline",
+    "failed_target_id": "swebench_verified--django__django-16100",
+    "failed_target_order_index": 0,
+    "failure_stage": "FIRST_CELL_POST_SOLVE_POST_FACTORY_PRE_GRADER_PROCESS",
+    "image_materialization": "PASS",
+    "model_metadata": "PASS",
+    "protocol_canary": "PASS",
+    "task_arm_reservation_started": true
+  },
+  "branch": "codex/trimem-coder-v1",
+  "evidence_custody": {
+    "decrypted_restricted_tar": {
+      "bytes": 11069440,
+      "sha256": "28759246c60f94863e8d5d84464adad0c3864b1734b65cb75fba548a501b3f5a"
+    },
+    "github_artifacts": [
+      {
+        "digest": "sha256:d38fdf2db581b08321635b0a619f5053c985ddcf4788257f4a8e91ada1777b8f",
+        "id": 10046287381,
+        "name": "trimem-benchmark-restricted-encrypted",
+        "size_in_bytes": 11073036
+      },
+      {
+        "digest": "sha256:771f8491ee3e190698c8ca6890e45a7a55bb8ae4c9c91fbea09d5e7f40db5a30",
+        "id": 10046288749,
+        "name": "trimem-benchmark-evidence-inventories",
+        "size_in_bytes": 10555
+      },
+      {
+        "digest": "sha256:965695db81d42cc837d3718948f929dfd5e0c3a180ca2e0afb1726b878baf960",
+        "id": 10046290933,
+        "name": "trimem-benchmark-remote-custody",
+        "size_in_bytes": 647
+      }
+    ],
+    "public_result": "ABSENT_EXPECTED",
+    "recomputed_inventory": {
+      "inventory_sha256": "e6b0d12a520b6b6cb2fe593ab021f732fa84900da79895a5f0221a603d97a137",
+      "matches_uploaded_inventory": true,
+      "total_bytes": 10729599,
+      "total_files": 223
+    },
+    "remote_custody_status": "TRIMEM_FAILURE_EVIDENCE_CUSTODY_PASS"
+  },
+  "execution_head": "63ed76143267b25d9086ed3b33d338bf368aa3fa",
+  "failure": {
+    "grader_capacity_disposition": "NOT_CONSUMED",
+    "message": "official harness loader preflight current exact loader/environment identity differs",
+    "process_disposition": "GLOBAL_ENVIRONMENT_FAILURE",
+    "process_exit_code": 1,
+    "resume_eligible": false,
+    "resume_started": false,
+    "stderr_bytes": 445,
+    "stderr_sha256": "fbaeea14fef79cc7890be6f86bf6fe7f1beb24a26aaab9d7c879687d4f227720",
+    "stdout_bytes": 168,
+    "stdout_sha256": "7a43b2baf10c3e8aa34beff1eaa30a75acdaed7d542381be3691bb0e71800582"
+  },
+  "jobs": [
+    {
+      "completed_at": "2026-09-08T07:38:41Z",
+      "conclusion": "success",
+      "id": 101977411113,
+      "name": "branch-trigger-preflight",
+      "started_at": "2026-09-08T07:38:19Z"
+    },
+    {
+      "completed_at": "2026-09-08T07:43:02Z",
+      "conclusion": "success",
+      "id": 101977514792,
+      "name": "bounded-context-preflight",
+      "started_at": "2026-09-08T07:38:43Z"
+    },
+    {
+      "completed_at": "2026-09-08T08:01:47Z",
+      "conclusion": "failure",
+      "id": 101978660362,
+      "name": "frozen-serial-phase",
+      "started_at": "2026-09-08T07:55:50Z"
+    }
+  ],
+  "pass_at_1": null,
+  "performance_measured": false,
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "root_cause": {
+    "classification": "OFFICIAL_GRADER_FULL_LOADER_IDENTITY_ALIAS_BINDING_FAILURE",
+    "failure_subtype": "CROSS_RUNNER_PYTHON_LEXICAL_LAUNCHER_ALIAS_MISMATCH",
+    "identity": {
+      "environment_identity_sha256": "ae63fb668ba67a2bcd3728e2a7d29ad0607068020389dcc55bc876f4485beadf",
+      "expected_preflight_python_binary": "/opt/trimem-d112-runners/preflight/_work/_tool/Python/3.11.10/x64/bin/python3.11",
+      "inferred_runtime_python_binary": "/opt/trimem-d112-runners/preflight/_work/_tool/Python/3.11.10/x64/bin/python",
+      "launcher_inference_basis": "WORKFLOW_PYTHON_TOKEN_PLUS_COMMITTED_READINESS_AND_WSL_ALIAS_REPRODUCTION",
+      "loader_probe_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "loader_probe_stdout_sha256": "35d4102121c5ea5a18783de8bbef84f505863c4279499dfa088dde78147f2f52",
+      "python_binary_bytes": 17736,
+      "python_binary_realpath": "/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/bin/python3.11",
+      "python_binary_sha256": "930be806841bf98ef6898a7d8c69b0083b68c803c5fcd7a77becefaf84bc25c9",
+      "runtime_launcher_directly_observed": false
+    },
+    "recovery_contract": {
+      "factory_reuses_preflight_lexical_launcher": true,
+      "full_loader_and_environment_comparison_before_model": true,
+      "journal_reuses_preflight_lexical_launcher": true,
+      "protected_precredential_synthetic_rehearsal": true,
+      "twelve_target_credential_free_factory_rehearsal": true
+    },
+    "scientific_result": false
+  },
+  "schema": "trimem/development-exec-017-python-launcher-alias-failure/1.0",
+  "source_head": "f1cfcbcbeff9a75bb118c3ee53ad1c3c36f7ff5f",
+  "workflow_run": {
+    "conclusion": "failure",
+    "created_at": "2026-09-08T07:38:16Z",
+    "event": "push",
+    "head_sha": "63ed76143267b25d9086ed3b33d338bf368aa3fa",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34200331390",
+    "id": 34200331390,
+    "path": ".github/workflows/trimem-benchmark.yml",
+    "run_attempt": 1,
+    "status": "completed",
+    "updated_at": "2026-09-08T08:01:48Z"
+  }
+}

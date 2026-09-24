@@ -1,0 +1,71 @@
+diff --git a/sympy/sets/sets.py b/sympy/sets/sets.py
+index 917717b..c1eb80e 100644
+--- a/sympy/sets/sets.py
++++ b/sympy/sets/sets.py
+@@ -217,7 +217,19 @@ def _complement(self, other):
+             return S.EmptySet
+ 
+         elif isinstance(other, FiniteSet):
+-            return FiniteSet(*[el for el in other if self.contains(el) != True])
++            outside = []
++            unknown = []
++            for el in other:
++                contains = self.contains(el)
++                if contains is S.false:
++                    outside.append(el)
++                elif contains is not S.true:
++                    unknown.append(el)
++            if unknown:
++                # Undecidable membership must remain in the complement.
++                return Union(FiniteSet(*outside),
++                    Complement(FiniteSet(*unknown), self, evaluate=False))
++            return FiniteSet(*outside)
+ 
+     def symmetric_difference(self, other):
+         """
+@@ -998,11 +1010,6 @@ def _complement(self, other):
+             b = Interval(self.end, S.Infinity, not self.right_open, True)
+             return Union(a, b)
+ 
+-        if isinstance(other, FiniteSet):
+-            nums = [m for m in other.args if m.is_number]
+-            if nums == []:
+-                return None
+-
+         return Set._complement(self, other)
+ 
+ 
+diff --git a/sympy/sets/tests/test_sets.py b/sympy/sets/tests/test_sets.py
+index 8c59d85..03efdd4 100644
+--- a/sympy/sets/tests/test_sets.py
++++ b/sympy/sets/tests/test_sets.py
+@@ -236,6 +236,29 @@ def test_complement():
+     assert all(pt in notsquare for pt in [(-1, 0), (1.5, .5), (10, 10)])
+ 
+ 
++def test_complement_finite_set_unknown_membership():
++    interval = Interval(-10, 10)
++    unknown = Complement(FiniteSet(x, y), interval, evaluate=False)
++    result = Complement(FiniteSet(x, y, 2), interval)
++    assert result == unknown
++    assert result.subs({x: 0, y: 20}) == FiniteSet(20)
++    assert result.subs({x: 0, y: 1}) == S.EmptySet
++    assert Complement(FiniteSet(x, y, 2, 20), interval) == \
++        Union(FiniteSet(20), unknown)
++    assert Complement(FiniteSet(x, y), interval) == unknown
++    assert Complement(FiniteSet(-10, 2, 10, 20), interval) == FiniteSet(20)
++    assert Complement(FiniteSet(x + 1, 2), interval) == \
++        Complement(FiniteSet(x + 1), interval, evaluate=False)
++
++    positive = Symbol('positive', positive=True)
++    negative = Symbol('negative', negative=True)
++    assert Complement(FiniteSet(positive, negative), Interval(0, oo)) == \
++        FiniteSet(negative)
++    assert Complement(FiniteSet(x, 2, S.Half), S.Integers) == \
++        Union(FiniteSet(S.Half),
++              Complement(FiniteSet(x), S.Integers, evaluate=False))
++
++
+ def test_intersect():
+     x = Symbol('x')
+     assert Interval(0, 2).intersect(Interval(1, 2)) == Interval(1, 2)

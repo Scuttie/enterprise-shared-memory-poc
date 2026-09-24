@@ -1,0 +1,304 @@
+{
+  "adaptive_horizon": {
+    "base_steps_per_subtask": 8,
+    "extension_budget_scope": "PER_SUBTASK_ACTIVE_NODE",
+    "extension_steps": 4,
+    "max_extensions_per_subtask": 2,
+    "max_solve_calls_per_task_arm": 24,
+    "max_steps_per_subtask": 16,
+    "no_progress_events": [
+      "MEMORY_RETRIEVAL_OR_INJECTION",
+      "MODEL_TEXT_WITHOUT_WORKSPACE_CHANGE",
+      "READ_ONLY_TOOL_CALL",
+      "REPEATED_DIFF_FINGERPRINT",
+      "REPEATED_TEST_FINGERPRINT"
+    ],
+    "progress_events": {
+      "PATCH_PROGRESS": "the UTF-8 byte length of the canonical non-empty git diff strictly exceeds the prior task-workspace high-water value and the event is credited only to the active subtask",
+      "TEST_PROGRESS": "the first successful invocation of a frozen shell-free recognized public-test command"
+    },
+    "progress_high_water_scope": "TASK_WORKSPACE_WITH_EVENT_CREDIT_TO_ACTIVE_SUBTASK",
+    "rule": "At an 8- or 12-step subtask boundary, grant exactly four more steps only when a not-yet-credited progress event occurred since the preceding boundary; never grant for repetition. The global 24-solve-call task-arm cap remains binding."
+  },
+  "arms": {
+    "C0": {
+      "memory": "DISABLED",
+      "protocol": "NO_MEMORY"
+    },
+    "C1": {
+      "bypass": [],
+      "dqn_semantics": "The frozen DoubleDQN controls retention actions only (FORGET, MOVE_TO_EPISODIC, MOVE_TO_SEMANTIC_CANDIDATE); it has no recall USE/ABSTAIN actions, so Q_USE and Q_ABSTAIN are recorded as null.",
+      "memory": "READ_ONLY_FROZEN_SOURCE_BANK",
+      "protocol": "M2_RECALL_CURRENT_GATE"
+    },
+    "C2": {
+      "bypass": [
+        "RETRIEVAL_SCORE_ADMISSION_MIN_CONFIDENCE",
+        "RETRIEVAL_SCORE_ADMISSION_MIN_MARGIN"
+      ],
+      "injection_rule": "deterministic highest-ranked safe candidate, at most one per subtask and three per task; no candidate yields NO_SAFE_CANDIDATE",
+      "memory": "SAME_READ_ONLY_FROZEN_SOURCE_BANK_AS_C1",
+      "preserved_gates": [
+        "LEAKAGE",
+        "PERMISSION",
+        "TENANT",
+        "REPOSITORY",
+        "PATH",
+        "VERSION",
+        "PROVENANCE",
+        "QUARANTINE",
+        "SELF_TASK_EXCLUSION",
+        "CONTEXT_BUDGET",
+        "TASK_INJECTION_BUDGET"
+      ],
+      "protocol": "M2_RECALL_FORCED_SAFE_TOP1",
+      "tie_break": "confidence descending, embedding score descending, PPR score descending, canonical memory_id ascending"
+    }
+  },
+  "authority_boundary": {
+    "dev_or_heldout_execution_authorized": false,
+    "fresh_diagnostic_execution_authorized": false,
+    "grader_execution_authorized": false,
+    "model_execution_authorized": false,
+    "required_next_authority": "SEPARATE_EXTERNAL_DEV_ACTIVATION_DIAGNOSTIC_EXEC_APPROVAL",
+    "runner_selector": [
+      "self-hosted",
+      "linux",
+      "x64",
+      "trimem-dev-activation-diagnostic"
+    ],
+    "runner_selector_isolated_from_historical_benchmark_workflows": true
+  },
+  "canary_policy": {
+    "authorized": false,
+    "included_in_scientific_model_calls": false,
+    "model_call_cap": 0,
+    "required_authority_if_proposed_later": "SEPARATE_EXTERNAL_CANARY_APPROVAL"
+  },
+  "comparability": {
+    "actual_compute_fields_per_cell": [
+      "decomposition_calls",
+      "solve_calls",
+      "extraction_calls",
+      "input_tokens",
+      "cached_input_tokens",
+      "output_tokens",
+      "model_wall_time_ms",
+      "tool_wall_time_ms",
+      "grader_wall_time_ms",
+      "total_usd"
+    ],
+    "maximum_budget_is_not_actual_compute": true,
+    "same_adaptive_horizon_all_arms": true,
+    "same_model_prompt_tools_parsers_and_runtime_limits_except_registered_memory_treatment": true
+  },
+  "coverage_sufficiency": {
+    "measurement": "a target is covered when at least one C2 recall attempt has candidate_count_after_filter greater than zero before score/router bypass",
+    "precedence": "coverage insufficiency is the primary verdict regardless of observed resolved-count direction",
+    "required_target_count": 12
+  },
+  "development_protocol_binding": {
+    "adaptive_runtime_lock_sha256": "c31840b1413fe045e94bef1949419f72c856eda9abbcc69c52bffc700bbf4652",
+    "historical_runtime_lock_sha256": "f38dbb148e7c7e0573bfab87400ebb9c0c4a786f888d4315d214fdca289fb581",
+    "only_registered_runtime_change": "ENABLE_IDENTICAL_FROZEN_ADAPTIVE_HORIZON_FOR_C0_C1_C2",
+    "public_results_raw_sha256": "a983bcd807d80520349942d296d8b4910bf7c5eb4f1079185aca1937adacd9a1",
+    "selected_candidate_id": "recall",
+    "selection_execution_head": "889f4fc0d461d812b531f9413aeaceb2ec3b9fff",
+    "selection_rule_outcome_reoptimized": false,
+    "selection_workflow_run_attempt": 1,
+    "selection_workflow_run_id": 34292287112,
+    "status": "FROZEN_EXEC_022_SELECTED_RECALL_WITH_DIAGNOSTIC_ADAPTIVE_HORIZON"
+  },
+  "diagnostic_id": "TRIMEM_V1_DEV_ACTIVATION_DIAGNOSTIC_001",
+  "execution_authorized": false,
+  "frozen_inputs": {
+    "arm_manifest": {
+      "path": "configs/trimem_v1/arms.json",
+      "raw_sha256": "7ecc15277cc9a9041befd4ae32f99b65da63009383b22701e0aecb407fe3906c"
+    },
+    "current_m2_policy": {
+      "path": "configs/trimem_v1/m2_policy.json",
+      "raw_sha256": "ca7c1be00addd47ec7781d3e89d9af08575c548034c1f8b4f27be8d0fda60ed9"
+    },
+    "m2_candidate_bundle": {
+      "path": "configs/trimem_v1/m2_candidate_bundles.json",
+      "raw_sha256": "d321c33edf233dafc643f92ad44796a6adfb4fb65bf5fd14efc75c0519a7a5ae"
+    },
+    "development_manifest": {
+      "path": "configs/trimem_v1/development_manifest.json",
+      "raw_sha256": "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
+      "target_set_sha256": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2"
+    },
+    "model_lock": {
+      "model_id": "gpt-5.4-mini-2026-03-17",
+      "path": "configs/trimem_v1/model_lock.json",
+      "raw_sha256": "a0a4811590d396c2bea4f0454c18c912d11579858947540a355407009a975922"
+    },
+    "selected_recall_policy": {
+      "path": "configs/trimem_v1/m2_candidates/recall.json",
+      "raw_sha256": "1985ca2cceaa6ebdc02d4bd320b318a47a8144f64bde5ad0da8367c777d3d85c"
+    }
+  },
+  "hard_caps": {
+    "cached_input_tokens": 18000000,
+    "decomposition_calls": 36,
+    "extraction_calls": 36,
+    "grader_containers": 36,
+    "input_tokens": 18000000,
+    "max_input_tokens_per_task_arm": 500000,
+    "max_output_tokens_per_task_arm": 65536,
+    "model_calls": 936,
+    "model_calls_per_task_arm": 26,
+    "official_grader_runs": 36,
+    "output_tokens": 2359296,
+    "paid_model_calls": 936,
+    "protocol_canary_calls": 0,
+    "scientific_model_calls": 936,
+    "solve_calls": 864,
+    "task_arm_runs": 36,
+    "total_usd": "25.000000000000",
+    "uncached_token_cost_ceiling_usd": "24.116832000000"
+  },
+  "historical_abstention_projection": {
+    "allowed_source": "EXISTING_EXEC_EVIDENCE_ONLY",
+    "artifact_path": "artifacts/trimem_v1/dev_activation_diagnostic/exec_022_abstention_projection.json",
+    "dqn_recall_action_claim_allowed": false,
+    "expected_projection_rows": 179,
+    "missing_field_value": "UNKNOWN_NOT_RECORDED_EXEC_022",
+    "m0_control_rows": 14,
+    "no_imputation": true,
+    "note": "M0_NO_MEMORY decisions are intentional controls and must not be classified as failed recall attempts.",
+    "required_fields": [
+      "recall_attempt_id",
+      "target_id",
+      "subtask_id",
+      "bank_type",
+      "candidate_count_before_filter",
+      "candidate_count_after_filter",
+      "top_candidate_id",
+      "top_embedding_score",
+      "top_ppr_score",
+      "threshold",
+      "Q_USE",
+      "Q_ABSTAIN",
+      "router_policy",
+      "final_reason_code"
+    ]
+  },
+  "outcome_contract": {
+    "all_cells_must_have_official_boolean_grader_result": true,
+    "contained_model_failure": "record a known unresolved cell, submit the resulting partial patch or canonical no-op to the official grader, then continue",
+    "current_router_positive_attribution": "requires positive net C1-C0 diagnostic lift and at least one positive target flip with an actual C1 injection on that same target",
+    "diagnostic_resolved": "official grader resolved and no solve/runtime/extraction model failure",
+    "duplicate_missing_or_unknown_cells": "FAIL_CLOSED",
+    "fresh_namespaces_per_cell": true,
+    "grader_precontainer_retry": "exactly one durable inline retry is authorized only after an explicit container_started=false result; unknown or container-started states are never retried",
+    "intermediate_evidence_permissions": "every protected-job shell applies umask 077 before creating evidence",
+    "official_grader_resolved": "reported separately and never overwritten by diagnostic failure classification",
+    "official_cells_required": 36
+  },
+  "namespace_initialization": {
+    "C0": "fresh empty writable namespace with memory controller disabled",
+    "C1": "fresh empty writable overlay plus deterministic read-only preload of the frozen source-bank snapshot",
+    "C2": "fresh empty writable overlay plus the byte-identical deterministic read-only preload used by C1",
+    "cross_cell_carryover": false,
+    "source_bank_mutation": false
+  },
+  "reason_taxonomy": {
+    "below_semantic_or_ppr_threshold": [
+      "BELOW_CONFIDENCE_THRESHOLD",
+      "BELOW_MARGIN_THRESHOLD"
+    ],
+    "context_or_injection_budget_rejection": [
+      "FORCED_SAFE_TOP1_LIMIT_REJECTION",
+      "PER_NODE_INJECTION_LIMIT_REJECTION",
+      "SUBTASK_INJECTION_LIMIT_REJECTION",
+      "ALREADY_INJECTED_REJECTION",
+      "TASK_INJECTION_LIMIT_REJECTION",
+      "CONTEXT_INJECTION_BUDGET_REJECTION"
+    ],
+    "no_candidate_generated": [
+      "NO_CANDIDATE_GENERATED",
+      "NO_COMPLEMENTARY_CANDIDATE",
+      "NO_SEED_MATCH"
+    ],
+    "other_explicit_reason": [],
+    "router_selected_abstain_with_valid_candidate": [],
+    "safe_gate_rejected": [
+      "PERMISSION_GATE_REJECTED",
+      "TENANT_GATE_REJECTED",
+      "REPOSITORY_GATE_REJECTED",
+      "PATH_GATE_REJECTED",
+      "VERSION_GATE_REJECTED",
+      "PROVENANCE_GATE_REJECTED",
+      "LEAKAGE_GATE_REJECTED",
+      "QUARANTINE_GATE_REJECTED",
+      "CANONICAL_GATE_REJECTED",
+      "EMPTY_EXECUTION_VIEW_REJECTION",
+      "NO_SAFE_CANDIDATE"
+    ]
+  },
+  "schema": "trimem/dev-activation-policy/1.0",
+  "scientific_role": "POST_DEV_ACTIVATION_DIAGNOSTIC_NOT_SELECTION_OR_HELDOUT_EVIDENCE",
+  "source_bank": {
+    "manifest_path": "configs/trimem_v1/dev_activation_source_bank_manifest.json",
+    "manifest_raw_sha256": "8a0600e8d18f5234bd35d675f8e5cb8eb827aac4e4498547db02fc689a83d309",
+    "payload_root": "dev_activation_source_bank_payloads",
+    "required_schema": "trimem/dev-activation-source-bank/1.0",
+    "required_status": "FROZEN_VERIFIED_TARGET_DISJOINT",
+    "runtime_safe_pool_metadata": {
+      "changed_paths_role": "SEPARATE_CANONICAL_SOURCE_FEATURE_NOT_PATH_SCOPE",
+      "path_scope": "**",
+      "permission_scope": "PUBLIC_READ",
+      "tenant_scope": "BENCHMARK_ISOLATED",
+      "version_scope": "EXACT_SOURCE_COMMIT"
+    },
+    "required_record_fields": [
+      "memory_id",
+      "source_task_id",
+      "source_dataset_id",
+      "source_dataset_revision",
+      "source_row_sha256",
+      "source_repository",
+      "source_base_commit",
+      "source_commit",
+      "source_timestamp",
+      "bank_type",
+      "changed_paths",
+      "symbols",
+      "apis",
+      "errors",
+      "verified",
+      "reviewed",
+      "source_outcome",
+      "source_fix_verification_signal",
+      "verification_evidence_sha256",
+      "chronology_and_version_evidence_sha256",
+      "provenance_sha256",
+      "payload_sha256",
+      "payload_path",
+      "permission_scope",
+      "tenant_scope",
+      "repository_scope",
+      "version_scope",
+      "path_scope",
+      "quarantined",
+      "target_derived"
+    ],
+    "same_logical_snapshot_for_C1_and_C2": true,
+    "target_gold_patch_or_tests_allowed": false,
+    "target_derived_memory_allowed": false,
+    "write_during_diagnostic": false
+  },
+  "status": "FROZEN_PRE_EXEC_DIAGNOSTIC_POLICY",
+  "verdict_precedence": [
+    "RETRIEVAL_BANK_COVERAGE_INSUFFICIENT",
+    "CURRENT_ROUTER_ACTIVATED_POSITIVE",
+    "MEMORY_CONTENT_UPPER_BOUND_POSITIVE_ROUTER_BLOCKED",
+    "FORCED_MEMORY_NEGATIVE_TRANSFER",
+    "FORCED_MEMORY_NO_DEV_LIFT_READER_OR_CONTENT_LIMITED"
+  ],
+  "secondary_verdict_labels": [
+    "FORCED_MEMORY_MIXED_ZERO_NET"
+  ]
+}

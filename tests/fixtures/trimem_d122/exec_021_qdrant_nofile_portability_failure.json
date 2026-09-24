@@ -1,0 +1,247 @@
+{
+  "actuals": {
+    "benchmark_image_pulls": 13,
+    "cached_input_tokens": 31616,
+    "completed_task_arm_runs": 24,
+    "decomposition_calls": 24,
+    "exact_model_metadata_requests": 1,
+    "extraction_calls": 24,
+    "grader_attempts": 24,
+    "grader_containers": 24,
+    "input_tokens": 1534467,
+    "model_generation_calls": 248,
+    "official_grader_runs": 24,
+    "output_tokens": 93037,
+    "paid_model_calls": 248,
+    "protocol_canary_generation_calls": 1,
+    "provider_control_plane_requests": 1,
+    "reasoning_tokens": 66113,
+    "resolved_cells": 2,
+    "scientific_model_calls": 247,
+    "solve_calls": 199,
+    "task_arm_reservations": 24,
+    "task_arm_runs": 24,
+    "terminal_cells": 24,
+    "total_tokens": 1627504,
+    "total_usd": "1.548175950000",
+    "unresolved_cells": 22
+  },
+  "canary_actuals": {
+    "cached_input_tokens": 0,
+    "input_tokens": 950,
+    "model_generation_calls": 1,
+    "output_tokens": 187,
+    "paid_model_calls": 1,
+    "reasoning_tokens": 157,
+    "total_tokens": 1137,
+    "total_usd": "0.001554000000"
+  },
+  "classification": "POST_EXEC_021_PARTIAL_SCIENTIFIC_QDRANT_RLIMIT_NOFILE_PORTABILITY_RECOVERY",
+  "custody": {
+    "campaign_result_available": false,
+    "custody_artifact": {
+      "api_digest": "51b059a1d90b408b429ee0e88941866fa2aa6ae5c6ecce226916d9d7cc75b9bd",
+      "artifact_id": 10071144170,
+      "compressed_bytes": 648,
+      "raw_json_bytes": 842,
+      "raw_json_sha256": "a0c88e41e01c0c338d9399ec558e891aef58ffa1307e2e8fd715a613b041bcd4"
+    },
+    "evidence_inventory_artifact": {
+      "api_digest": "cdf33cee76a96c52ee782d76f5527d0e70204446b3efed10a5207fcb34e252b7",
+      "artifact_id": 10071141433,
+      "compressed_bytes": 115419,
+      "file_count": 2534,
+      "inventory_sha256": "310769c0dd2afac899150981bd1c680ab1d18e5df15facc82ab8690ee0e0a545",
+      "raw_json_bytes": 631925,
+      "raw_json_sha256": "54b43ec242d23aeeafa0098b020a9fce6a2813262f1f4733f8fd547952c46489",
+      "root": "benchmark_exec",
+      "total_bytes": 343433844
+    },
+    "public_result": "ABSENT_EXPECTED",
+    "remote_custody_status": "TRIMEM_FAILURE_EVIDENCE_CUSTODY_PASS",
+    "restricted_encrypted_artifact": {
+      "api_digest": "ea9eea6474133eb59a038f65afd951ee059de4924ed2dc478cffb772f578ac83",
+      "artifact_id": 10071139505,
+      "compressed_bytes": 348553281
+    }
+  },
+  "endpoint": "QDRANT_RLIMIT_NOFILE_PORTABILITY_FAILURE",
+  "evidence_bindings": {
+    "attempt_one_stderr": {
+      "bytes": 890,
+      "sha256": "f2968cac7bbd03b301013b8bc56e08b797534a557b113df0138cc3a40c1da024"
+    },
+    "attempt_one_stdout": {
+      "bytes": 356,
+      "sha256": "e1fd96a960cbca37a29719e55a393057ddb250c6dbcb5c4988bc0df99f908b84"
+    },
+    "attempts_json": {
+      "bytes": 1071,
+      "sha256": "d3550d371df85ca83fd3a0afc7d383879914f6d7dfc9bc19629c151a10dd48cd"
+    },
+    "budget_ledger": {
+      "bytes": 159682,
+      "sha256": "d8d9969d936f055588082ebbe32bd7b0f0addeaef6b6a321978406a1eeaaac02"
+    },
+    "m2_baseline": {
+      "finalization_binding_bytes": 721,
+      "finalization_binding_sha256": "ae191cc97212b7851c7bd353ee04d28f4ad69f188d6962f5e052a2ba3392a273",
+      "post_dev_checkpoint_bytes": 4781768,
+      "post_dev_checkpoint_sha256": "051a222b40c23dca102621c6c98844de105f6c7bdfb6f96dcd0b1f9c3ced027f",
+      "stream_checkpoint_bytes": 6968511,
+      "stream_checkpoint_sha256": "d7476be2dc202697d1a7414a4e1cac55c934bd47145c0171b65748555f09a7fc",
+      "summary_bytes": 5084672,
+      "summary_sha256": "6bd94236386493443e88bb65daf8c2868d04906be9e4004db927a75ec25faef9"
+    },
+    "m2_precision": {
+      "finalization_binding_bytes": 722,
+      "finalization_binding_sha256": "f8ce2dc853e33f76096624824ce88ec60d0af644d5b6c8e943fb5fb9bc518c5f",
+      "post_dev_checkpoint_bytes": 4781415,
+      "post_dev_checkpoint_sha256": "0a22dda9114c7a4a6389bba43de1b87ed2b305a72a3f76b27887f21feaaf904b",
+      "stream_checkpoint_bytes": 6956095,
+      "stream_checkpoint_sha256": "959847258211c6bd90b4970a0f1c9ba4e66d483e6d7c11c57e7785892c999edd",
+      "summary_bytes": 5084323,
+      "summary_sha256": "3fc3015868cab6cf7fc74892965db6d16970a28747bfa981bcc44f49f874be62"
+    },
+    "m2_recall_session_identity": {
+      "bytes": 435,
+      "sha256": "e0db1519b7393bbea2c8fd27e07d731a0a39595abcc50e68d9b4bc5cbcf0ecd5"
+    }
+  },
+  "execution_attempt": {
+    "attempt_count": 1,
+    "first_disposition": "UNKNOWN_FAILURE",
+    "first_exit_code": 1,
+    "maximum_internal_resume_attempts": 1,
+    "resume_eligible": false,
+    "resume_reason": "FIRST_DISPOSITION_NOT_RESUME_SAFE",
+    "resume_started": false,
+    "workflow_attempt_two_allowed": false,
+    "workflow_rerun_allowed": false
+  },
+  "frozen_partial_outcome": {
+    "aggregate_available": false,
+    "candidate_selection_available": false,
+    "streams": {
+      "M0": {
+        "state": "NOT_STARTED",
+        "terminal_cells": 0
+      },
+      "M1": {
+        "state": "NOT_STARTED",
+        "terminal_cells": 0
+      },
+      "M2-balanced": {
+        "state": "NOT_STARTED",
+        "terminal_cells": 0
+      },
+      "M2-baseline": {
+        "finalized": true,
+        "resolved_cells": 1,
+        "terminal_cells": 12,
+        "unresolved_cells": 11
+      },
+      "M2-precision": {
+        "finalized": true,
+        "resolved_cells": 1,
+        "terminal_cells": 12,
+        "unresolved_cells": 11
+      },
+      "M2-recall": {
+        "session_identity_only": true,
+        "state": "NOT_ENTERED_FIRST_CELL",
+        "task_arm_reservations": 0,
+        "terminal_cells": 0
+      }
+    },
+    "terminal_cell_journals": 24,
+    "terminal_result_documents": 24
+  },
+  "outstanding_reservations": {
+    "decomposition_calls": 0,
+    "extraction_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "solve_calls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0.0
+  },
+  "pass_at_1": null,
+  "performance_measured": false,
+  "recovery_boundary": {
+    "cross_run_resume_allowed": false,
+    "historical_partial_results_reusable_for_new_campaign": false,
+    "maximum_internal_resume_attempts": 1,
+    "new_campaign_starts_at_sequence_zero": true,
+    "partial_candidate_checkpoint_selection_allowed": false,
+    "request_021_attempt_one_consumed": true,
+    "request_021_attempt_two_allowed": false,
+    "request_021_rerun_allowed": false,
+    "request_022_creation_authorized": false,
+    "request_022_execution_authorized": false,
+    "resume_eligible": false,
+    "resume_reason": "FIRST_DISPOSITION_NOT_RESUME_SAFE",
+    "resume_started": false
+  },
+  "request": {
+    "approval_b64_bytes": 1400,
+    "approval_b64_sha256": "e8499c2d0ca00b4450bcfdda91e75b436462881a095c40a758b7e87203ec1",
+    "approval_json_bytes": 1048,
+    "approval_json_sha256": "cc5f380f9fa9f8583410409563867f9c024df854b35d6efb0581bba24f2703c1",
+    "execution_head": "f83eab1e777f803c08e1ed86baac17c97111c546",
+    "git_blob_oid": "994bd4058c45a9988d55c5cabc92b823474ddcf9",
+    "id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_021",
+    "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_021.json",
+    "payload_sha256": "1c8104c4f535b1f2a0e0e32d452663301c8d6903bf62828be5be4decc9bfc1e9",
+    "raw_bytes": 51376,
+    "raw_sha256": "986cfe25514a8bf5594a8047f0bc11edd0419813739dbec02da702ab5da71e75",
+    "source_freeze_sha256": "ac0d781deb1d01c4b34d5fd61b0e07f3527b42c2bddcb8f0f4a2575e75dc1cae",
+    "source_head": "a171bce0b883d4cc93b893a6d47944a84a947897"
+  },
+  "root_cause": {
+    "causal_scope": "GLOBAL_MEMORY_BACKEND_INFRASTRUCTURE",
+    "failure_subtype": "QDRANT_RLIMIT_NOFILE_PORTABILITY_FAILURE",
+    "not_caused_by": [
+      "scientific method",
+      "model response",
+      "official grader",
+      "target image",
+      "frozen task-arm configuration"
+    ],
+    "observed_chain": [
+      "the Qdrant container was created without an explicit nofile ulimit",
+      "the hosted runner containerd service exposed a 1024 soft nofile limit",
+      "two completed M2 streams retained four collections and twenty-four payload indexes",
+      "the first private collection in M2-recall failed while opening its sixth payload index",
+      "Qdrant returned HTTP 500 with a RocksDB append/open failure"
+    ],
+    "required_correction": "Qdrant-only docker nofile soft/hard 65535 with exact inspect and PID1 validation"
+  },
+  "schema": "trimem/development-exec-021-qdrant-nofile-portability-failure/1.0",
+  "scientific_actuals": {
+    "cached_input_tokens": 31616,
+    "decomposition_calls": 24,
+    "extraction_calls": 24,
+    "input_tokens": 1533517,
+    "model_generation_calls": 247,
+    "output_tokens": 92850,
+    "paid_model_calls": 247,
+    "reasoning_tokens": 65956,
+    "solve_calls": 199,
+    "total_tokens": 1626367,
+    "total_usd": "1.546621950000"
+  },
+  "scientific_status": "PARTIAL_TWENTY_FOUR_OF_SEVENTY_TWO_NO_CAMPAIGN_SCORE",
+  "status": "IMMUTABLE_PUBLIC_AND_RESTRICTED_RUN_EVIDENCE_VERIFIED",
+  "workflow_run": {
+    "attempt": 1,
+    "conclusion": "failure",
+    "created_at_utc": "2026-09-08T17:30:17Z",
+    "id": 34257490991,
+    "protected_scientific_finished_at_utc": "2026-09-08T18:38:40Z",
+    "protected_scientific_started_at_utc": "2026-09-08T17:38:55Z",
+    "updated_at_utc": "2026-09-08T18:39:11Z"
+  }
+}

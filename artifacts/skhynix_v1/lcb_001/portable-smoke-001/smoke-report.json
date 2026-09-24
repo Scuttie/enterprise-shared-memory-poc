@@ -1,0 +1,123 @@
+{
+  "actual_benchmark_score": false,
+  "child_timeout_seconds": 180,
+  "dataset_downloads": 0,
+  "dataset_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/synthetic-samples.json",
+    "sha256": "cde169bb62eaceff98584f039ebb47d5466d9b7f5cf2ad3a4d7efe3d5daf0557"
+  },
+  "docker_calls": 0,
+  "expected": {
+    "correct_passed": 2,
+    "questions_per_run": 2,
+    "wrong_passed": 0
+  },
+  "model_calls": 0,
+  "observed_at": "2026-09-23T14:18:34.443423+00:00",
+  "official_repo": "/home/trimem-runner/skhynix-lcb-001/LiveCodeBench",
+  "purpose": "PUBLIC_SYNTHETIC_INSTALLATION_CHECK",
+  "python_executable": "/home/trimem-runner/skhynix-lcb-001/venv/bin/python",
+  "python_version": "3.10.21",
+  "runs": {
+    "correct": {
+      "command": [
+        "/home/trimem-runner/skhynix-lcb-001/venv/bin/python",
+        "/mnt/c/Users/jewon/esm-r23-d115-writer/scripts/trimem_lcb_grade.py",
+        "--official-repo",
+        "/home/trimem-runner/skhynix-lcb-001/LiveCodeBench",
+        "--dataset-json",
+        "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/synthetic-samples.json",
+        "--dataset-sha256",
+        "cde169bb62eaceff98584f039ebb47d5466d9b7f5cf2ad3a4d7efe3d5daf0557",
+        "--predictions",
+        "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/correct-predictions.json",
+        "--output",
+        "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/correct-grade.json",
+        "--workers",
+        "1",
+        "--timeout",
+        "6"
+      ],
+      "error_type": "SmokeValidationError",
+      "grade_reference": {
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/correct-grade.json",
+        "sha256": "dc9e7654ec8285415489d6a5dcd93a4fa038e210e2ab97cf723ebafdea1e74a5"
+      },
+      "predictions_reference": {
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/correct-predictions.json",
+        "sha256": "9ba6be6147aebfd21ab0d3bceee0cbd09b5685e5fd8b9f554642ca5e8b189f82"
+      },
+      "returncode": 0,
+      "status": "FAIL",
+      "stderr_reference": {
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/correct-stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_reference": {
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/correct-stdout.txt",
+        "sha256": "329d27c0711244b3148e0b61e74675915936d3bd3c74c8ab46ca3ed3b81114c2"
+      }
+    },
+    "wrong": {
+      "command": [
+        "/home/trimem-runner/skhynix-lcb-001/venv/bin/python",
+        "/mnt/c/Users/jewon/esm-r23-d115-writer/scripts/trimem_lcb_grade.py",
+        "--official-repo",
+        "/home/trimem-runner/skhynix-lcb-001/LiveCodeBench",
+        "--dataset-json",
+        "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/synthetic-samples.json",
+        "--dataset-sha256",
+        "cde169bb62eaceff98584f039ebb47d5466d9b7f5cf2ad3a4d7efe3d5daf0557",
+        "--predictions",
+        "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/wrong-predictions.json",
+        "--output",
+        "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/wrong-grade.json",
+        "--workers",
+        "1",
+        "--timeout",
+        "6"
+      ],
+      "counts": {
+        "failed": 2,
+        "graded": 2,
+        "infra_errors": 0,
+        "not_graded": 0,
+        "passed": 0,
+        "planned": 2,
+        "predictions": 2
+      },
+      "grade_reference": {
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/wrong-grade.json",
+        "sha256": "fccedd77d7532b39aba1d41b5cbe6e3a9cde4588b19d529ad82d50a4626032e9"
+      },
+      "predictions_reference": {
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/wrong-predictions.json",
+        "sha256": "6a57fbb67357c5d11f64ec073e47302a54fb20cabb0b19626e0aa8f6c48f44d6"
+      },
+      "returncode": 0,
+      "status": "PASS",
+      "stderr_reference": {
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/wrong-stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_reference": {
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/lcb_001/portable-smoke-001/wrong-stdout.txt",
+        "sha256": "a76fcc99712ca23e1ad7f2596541159ad47a13b25fb36ae642fe06a95435941f"
+      }
+    }
+  },
+  "schema": "trimem/lcb-synthetic-smoke/1.0",
+  "sources": {
+    "adapter": {
+      "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/scripts/trimem_lcb_grade.py",
+      "sha256": "64461c7489f667a24b37d58d27c302c35d281185d9dfe5facd7d8f3733e9f0f4"
+    },
+    "smoke": {
+      "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/scripts/trimem_lcb_smoke.py",
+      "sha256": "c362e7bce2516c6ae41bab4c2aa587c86abecb6dbf20e83a3862f44d537f2534"
+    }
+  },
+  "sources_unchanged": true,
+  "status": "FAIL",
+  "upstream_commit": "28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24"
+}

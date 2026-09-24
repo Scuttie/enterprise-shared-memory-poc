@@ -1,0 +1,37 @@
+{
+    "schema":  "trimem/model-catalog-observation/1.0",
+    "observed_at":  "2026-09-23T13:59:35.0177876Z",
+    "catalog_sha256":  "978082def33f291a1a52aac58b287697d68d67ddf6d8c9563c48792ff6162a1d",
+    "models":  [
+                   {
+                       "id":  "gpt-6-astra",
+                       "display_name":  "GPT-6-Astra",
+                       "default_reasoning_effort":  "medium",
+                       "supported_reasoning_efforts":  [
+                                                           "low",
+                                                           "medium",
+                                                           "high",
+                                                           "xhigh",
+                                                           "max",
+                                                           "ultra"
+                                                       ]
+                   },
+                   {
+                       "id":  "gpt-5.6-luna",
+                       "display_name":  "GPT-5.6-Luna",
+                       "default_reasoning_effort":  "medium",
+                       "supported_reasoning_efforts":  [
+                                                           "low",
+                                                           "medium",
+                                                           "high",
+                                                           "xhigh",
+                                                           "max"
+                                                       ]
+                   }
+               ],
+    "requested_unverified_alias":  "gpt-5-luna",
+    "selected_starter_model":  "gpt-6-astra",
+    "selected_reasoning_effort":  "low",
+    "model_calls":  0,
+    "notes":  "Catalog observation only; no authentication material recorded. Model response identity and effective effort still require runtime verification."
+}

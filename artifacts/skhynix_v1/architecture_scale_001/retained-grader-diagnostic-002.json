@@ -1,0 +1,65 @@
+{
+  "actions": 81,
+  "actual_missing_module_or_classifier_false_positive": "NOT_DETERMINED_FROM_AGGREGATE",
+  "agent_completed": true,
+  "aggregate_counts": {
+    "ambiguous_failure_instances": 1,
+    "completed_instances": 1,
+    "empty_patch_instances": 0,
+    "error_instances": 0,
+    "infra_failure_instances": 0,
+    "resolved_instances": 0,
+    "submitted_instances": 1,
+    "total_instances": 1,
+    "unresolved_instances": 1,
+    "unstopped_instances": 0
+  },
+  "classification": "missing_module",
+  "execution_restarted": false,
+  "grader_runs": 0,
+  "model_calls": 0,
+  "monitor_first_stopped_at_kst": "2026-09-15T22:41:36+09:00",
+  "native_audit_passed": true,
+  "observed_at": "2026-09-16T03:42:51.370928+00:00",
+  "official_outcome": "UNDETERMINED",
+  "pipeline_blocked_at_kst": "2026-09-15T22:38:28+09:00",
+  "private_grader_logs_or_gold_read": false,
+  "references": {
+    "cohort_error": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cohort/events/00000146.json",
+      "sha256": "fa56750aaa909f6f82ada9bdc7726d44c838c894267daa874b06805e5ea0c6ce"
+    },
+    "execution_audit": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--mwaskom__seaborn-2766/PDF_MEMORY/execution-audit.json",
+      "sha256": "ee730610626b03026ae5f47e4995f4fc0c4040d368f24c9c7e8494883734c8ee"
+    },
+    "patch": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--mwaskom__seaborn-2766/PDF_MEMORY/broker/submission.diff",
+      "sha256": "84cc76ff297aa34cd85366e2dfdc733e794ab39c77ef7d76a2e09f34e3523055"
+    },
+    "pipeline_progress": {
+      "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/architecture_scale_001/progress.json",
+      "sha256": "0b1c8863746cffea16f04e81aa5b100ddde4286c433b681ab67a1044cc61ca23"
+    },
+    "submission": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--mwaskom__seaborn-2766/PDF_MEMORY/broker/submission.json",
+      "sha256": "035e3c60a93a41404556a67021b6629ed7e5ea0a7a8a3524782e2da32843d313"
+    },
+    "summary": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/environment/TRAINING/cells/PDF_MEMORY/swebench--mwaskom__seaborn-2766/official-grader/swebench--mwaskom__seaborn-2766/report/trimem-v1-PDF_MEMORY.4661a42944472ef3aad1.json",
+      "sha256": "41ccef3c6f609e5f3c00e867f1a76ae1d81683436331e1747f62a5b4277708fc"
+    }
+  },
+  "resolved": null,
+  "retained_learning": {
+    "L1_episodes": 200,
+    "L2_nodes": 1153,
+    "L2_relations": 1052,
+    "L3_skills": 0,
+    "cells": 59
+  },
+  "schema": "skhynix/retained-grader-stop-diagnostic/1.0",
+  "sealed_patch_bytes": 13142,
+  "status": "BLOCKED",
+  "task_id": "swebench--mwaskom__seaborn-2766"
+}

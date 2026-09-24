@@ -1,0 +1,1 @@
+{"arm":"BASELINE","at":1789897489.4670756,"details":{"same_cell_only":true,"workers_issued_before":0},"ordinal":1,"previous_sha256":"52859d8d825d6a6f07f3e3d3958c794180de5cba86773ca7ccacaaa26e7c6105","sequence":3,"sha256":"56cf37f39a1cf59f0fc1366c00dbd6b682224b92f1b8697a9521c8f68dc7b93c","stage":"SOLVE_STARTED","task_id":"swebench--astropy__astropy-14484"}

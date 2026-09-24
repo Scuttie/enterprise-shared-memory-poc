@@ -1,0 +1,8 @@
+{
+  "archive_sha256": "f6e55368dd83f7115b1055e6ed0e58ba59c609fb0359cacb10800a7f1585efb8",
+  "base_commit": "b506169ad727ee39cb3d60c8b3ff5e315d443d8e",
+  "checkout_path": "/home/trimem-runner/native011-dataset-preparation/runtime-v2/sympy__sympy-15875/source/sympy-b506169ad727ee39cb3d60c8b3ff5e315d443d8e",
+  "instance_id": "sympy__sympy-15875",
+  "public_instruction_sha256": "d6cf558633a61bef03779249363d420d9337eb7a7e757ab8a2dd7bd945e4d159",
+  "runner_sha256": "973e3cf784388b8e7821e4962da8eeb4b615447cd652af920452b322bd63588c"
+}

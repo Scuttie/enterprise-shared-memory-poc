@@ -1,0 +1,1 @@
+{"arm":"BASELINE","at":1789898689.5941365,"details":{"capture_mode":"SEPARATE_EVALUATION_QUARANTINE","official_resolved":true},"ordinal":2,"previous_sha256":"017336a3dca03b9afaea3a78a84862afd8b9afb41ce2a952b930e480496ffe89","sequence":19,"sha256":"d9ca0d8b0ea2662f7c940bedfdd2cd8fb7b24d9728bb7852b79769f4ec425a13","stage":"CELL_COMPLETE","task_id":"swebench--astropy__astropy-7858"}

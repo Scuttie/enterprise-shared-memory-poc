@@ -1,0 +1,107 @@
+{
+  "arms": {
+    "A": "NO_MEMORY",
+    "B": "DOMAIN_MISMATCHED_LENGTH_MATCHED_LESSON",
+    "C": "PREDECLARED_RELEVANT_LESSON"
+  },
+  "chronology_claim": "RETROSPECTIVE_DISJOINT_TASKS_NO_CHRONOLOGICAL_DEPLOYMENT_CLAIM",
+  "codex_tokens_and_cost": null,
+  "concurrency": "At most three fresh solvers; one matched task triple at a time.",
+  "control_limitation": "Opposite-domain lesson shares generic verification and symbolic caution; it is not proven to have zero relevance.",
+  "controlled_lessons_sha256": "05be0725684cc7ab03e852c4b288fee3a6ccf38359d28e5f471d46dd4daadba4",
+  "delivery": "One initial recall required in every arm. A empty, B/C one assigned lesson independently of lexical score. No repeated delivery.",
+  "evaluation_instances": [
+    "swebench_verified--sympy__sympy-13615",
+    "swebench_verified--sympy__sympy-15875",
+    "swebench_verified--sympy__sympy-18698",
+    "swebench_verified--sympy__sympy-19495"
+  ],
+  "evaluation_template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05",
+  "fork_turns": "none",
+  "frozen_at_unix_seconds": 1789307187.4746506,
+  "grader_calls_so_far": 0,
+  "initialization_failure_note_sha256": "37e01a90b6989906b598e0ed7804e4927ffc0c1404750f76e6cb2d4c4cb26153",
+  "launch_order": {
+    "transfer-13615-r1": [
+      "A",
+      "B",
+      "C"
+    ],
+    "transfer-15875-r1": [
+      "B",
+      "C",
+      "A"
+    ],
+    "transfer-18698-r1": [
+      "C",
+      "A",
+      "B"
+    ],
+    "transfer-19495-r1": [
+      "A",
+      "C",
+      "B"
+    ]
+  },
+  "length_matching_scope": "Exact lesson-text UTF8 bytes; words approximately matched, model tokens not measured.",
+  "lesson_derivation_sha256": "4bab681a000eafb90906ce359e7cdb05307e9be18f321192658378a6c96e538e",
+  "lesson_utf8_bytes_each": 1670,
+  "lesson_word_counts": [
+    231,
+    240
+  ],
+  "limits": {
+    "actions": 120,
+    "memory_bytes": 12000,
+    "memory_injections": 3,
+    "wall_seconds": 1200
+  },
+  "manifest_sha256": "3c738cf938b0130702fc01f67b02c593e848835f7784565c0fbfa1e489e76f35",
+  "memory_type": "Source-only analyst generalization from public failed episodes, GateB0. Not an automated verified skill or end-to-end retrieval evaluation.",
+  "names": [
+    "transfer-13615-r1",
+    "transfer-15875-r1",
+    "transfer-18698-r1",
+    "transfer-19495-r1"
+  ],
+  "outcome_policy": "All12 cells retained; one fresh solver, submission and official grade each. No outcome-based retries, exclusions, replacements, memory edits or extra hints.",
+  "planned_evaluation_cells": 12,
+  "previous_evidence_seal_sha256": "312893f8977dc5bd65c2ed8ffd8d08010a9eddb1194e28cf94a77d94266c339c",
+  "primary_metric": "Official issue resolution C minus A over all four fixed tasks.",
+  "public_candidates_sha256": "351974c275075ea689d272abb2ca3f9faba358bd9ae80e3880402a678f7f409b",
+  "reasoning_effort": "INHERITED_PARENT_UNCHANGED",
+  "replicates_per_task_arm": 1,
+  "requested_model": "gpt-6-astra",
+  "runtime_preparation_manifest_sha256": "cc49b99401c00a4c43d0acda4e32ba3bcdcdd36a8a70e20a1f64c8393f620928",
+  "runtime_summary_sha256": "ba43fc9c9261d7551954f09e8efee2345946942a9fbcafc8b5a9811ee60dea0b",
+  "scenario": "RETROSPECTIVE_DISJOINT_TRANSFER",
+  "schema": "skhynix/native011-launch-contract/1.0",
+  "scientific_role": "CONTROLLED_CONTENT_TRANSFER",
+  "secondary_metrics": [
+    "broker actions",
+    "wall seconds",
+    "actual delivered bytes"
+  ],
+  "selection_policy": "Public issue/mechanism selection and runtime feasibility only, no target solve/test outcomes. Scope and match strength declared before solvers.",
+  "separate_model_api_calls": 0,
+  "solver_model_calls_so_far": 0,
+  "source_freeze_sha256": "ff459097faeda8fd0f700693a119f5506ef0f266f518412f17f874d728dc8cfc",
+  "source_instances": [
+    "swebench_verified--sympy__sympy-20428",
+    "swebench_verified--sympy__sympy-20438"
+  ],
+  "source_lessons_sha256": "f4c1e9a529732e268d759f9d62cdc5337b2edb1ff679c4ad84bc78a27729f764",
+  "specificity_control": "Official issue resolution C minus B, reported separately from C minus A.",
+  "validation": {
+    "controlled": {
+      "receipt_sha256": "4e823ec83905e7c9eb58013afbd7663a1b96a45cb6f71fb449234304ada2e15a",
+      "tests": 188,
+      "xml_sha256": "81cd535c407f3bf22a28a89c0a6502a6be4dc67302d9cd4e1c84211ea519f520"
+    },
+    "dataset": {
+      "receipt_sha256": "a2e77a7d8b672d963adb1eba6cc9a4efd228238eb815a7fc556a79e011ad8a3c",
+      "tests": 218,
+      "xml_sha256": "cf73d160119d2c4a59e8e7f1ca15dd8d9a0116c9756aa1ecb58278fbfdb4a76d"
+    }
+  }
+}

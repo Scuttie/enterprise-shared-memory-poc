@@ -1,0 +1,90 @@
+[
+  {
+    "agent": "/root/native008_20428_r1_a",
+    "cell": "A",
+    "limitations": "Full suite and hidden tests were not run; self-attested assigned broker only, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "edf3554d55d3ccbffeea3ed47cc4836fab6248cf0ac6154cc8ab3810673cb1f9",
+    "public_test_summary": "Regression failed before fix; 241 relevant public tests passed after fix.",
+    "run": "recovery-20428-r1"
+  },
+  {
+    "agent": "/root/native008_20428_r1_c",
+    "cell": "C",
+    "limitations": "Hidden tests were not accessed; self-attested assigned Cell C broker only, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "2ae530e72c5e700cf51fa4cee3baa10e7916c2e20eae79b88311e3f30e5d1bb9",
+    "public_test_summary": "Regression failed before fix; 241 relevant public tests passed afterward.",
+    "run": "recovery-20428-r1"
+  },
+  {
+    "agent": "/root/native008_20428_r2_c",
+    "cell": "C",
+    "limitations": "Official grading pending; self-attested assigned Cell C broker only, no external access, hidden tests or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "8fc4e3e5abf138bf6b739f692c5d0fc71ff715bac716bab315a6ed2d3899c21c",
+    "public_test_summary": "242 public tests passed across densearith, densetools and polytools; regression covers six scalar arithmetic helpers and canonical zero.",
+    "run": "recovery-20428-r2"
+  },
+  {
+    "agent": "/root/native008_20428_r2_a",
+    "cell": "A",
+    "limitations": "Full suite and hidden tests were not run; self-attested assigned broker only, no external resources or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "1126b392a41548766953d1b3feb7087d47bd260088f3d4f150696cf2599f3b87",
+    "public_test_summary": "Regression failed before fix; 241 relevant public tests passed afterward.",
+    "run": "recovery-20428-r2"
+  },
+  {
+    "agent": "/root/native008_20438_r1_a",
+    "cell": "A",
+    "limitations": "Full repository suite not run; self-attested assigned broker only, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "be36d9eb0d88a1e94be77c3bb64e36361eae5b52e6ae62f142646d5a1f77dbd0",
+    "public_test_summary": "252 public tests passed, 8 expected failures; finite ProductSet rewrite, subset and FiniteSet equality coverage.",
+    "run": "recovery-20438-r1"
+  },
+  {
+    "agent": "/root/native008_20438_r1_c",
+    "cell": "C",
+    "limitations": "Official grading pending; self-attested assigned broker only, no external sources, other cells or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "5f5d1c096a12af7fbd24dde9dfd4e6bcb177b7c8f75c8e359b3ea0bbade1550d",
+    "public_test_summary": "304 public tests passed, 1 skipped, 9 expected failures; finite ProductSet subset/rewrite/equality/proper inclusion coverage.",
+    "run": "recovery-20438-r1"
+  },
+  {
+    "agent": "/root/native008_20438_r2_a",
+    "cell": "A",
+    "limitations": "Symbolically undecidable comparisons remain unevaluated; self-attested assigned broker only, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "5356d632862bb8585853bbd7ee2c54e09061bbc0323981a68afd556c2ea131a0",
+    "public_test_summary": "253 public set and relational tests passed, 8 expected failures; finite ProductSet subset/equality/rewrite.",
+    "run": "recovery-20438-r2"
+  },
+  {
+    "agent": "/root/native008_20438_r2_c",
+    "cell": "C",
+    "limitations": "Hidden tests were not accessed; self-attested assigned broker only, no external access or subagents.",
+    "no_external_access": true,
+    "no_subagents": true,
+    "only_assigned_broker": true,
+    "patch_sha256": "f407b5d9a4835a6f7a92ebde444dbc97628b41e2e99df5f239cb1f885ce1d125",
+    "public_test_summary": "253 public set and relational tests passed, 8 expected failures; finite ProductSet subset/equality/rewrite.",
+    "run": "recovery-20438-r2"
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "classification": "POST_EXEC_017_PARTIAL_MODEL_PRE_GRADER_PYTHON_LAUNCHER_ALIAS_RECOVERY",
+  "historical_boundary": {
+    "evidence_inventory_sha256": "e6b0d12a520b6b6cb2fe593ab021f732fa84900da79895a5f0221a603d97a137",
+    "execution_head": "63ed76143267b25d9086ed3b33d338bf368aa3fa",
+    "request_path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_017.json",
+    "request_payload_sha256": "b1b0e0e2a39d60785947e3d5c2aae3189564547ce3b984bd2aeccb3bc2b6fabb",
+    "request_raw_sha256": "bf736089da26a11f5289257e92c11a02e407a53813d6d2fb5d3844864a0b8919",
+    "run_attempt": 1,
+    "run_id": 34200331390,
+    "source_head": "f1cfcbcbeff9a75bb118c3ee53ad1c3c36f7ff5f"
+  },
+  "implementation_sha256": {
+    ".github/workflows/trimem-benchmark.yml": "20115c0b9639918a678538ed6abb7c4d88e03a9021e3eac5d778191ffc028f87",
+    "scripts/trimem_benchmark_matrix.py": "03b4f3ae692f902349acbdfe9b9da331b781bf2338ace1066f22c9543f782a86",
+    "scripts/trimem_benchmark_run.py": "0370d144e74bd4ce2672141fae49acd9a3d18ccac42e11564c9fc27902e2f63c",
+    "scripts/trimem_d118_grader_factory_rehearsal.py": "918ad4a10cfdf8344d74f342bbf939e2db541a8a3e8966e57b0dea6e9e6e79c9",
+    "scripts/trimem_d118_loader_rehearsal.py": "a4c60da27f5c8e6e355c0a71281b14236923cf28a7057eaa8fa3b988a802f337",
+    "scripts/trimem_development_trigger_d118.py": "7ac7d4dfa249d9f0596a6bdc8862ab18a83316f5fdba46c07e2bf103986a008b"
+  },
+  "schema": "trimem/development-exec-018-launcher-binding-inventory/1.0",
+  "source_changed_paths": [
+    ".github/workflows/ci-trimem-dev-toolchain.yml",
+    ".github/workflows/ci-trimem.yml",
+    ".github/workflows/trimem-benchmark.yml",
+    "artifacts/trimem_v1/development_exec_018_recovery_amendment.json",
+    "artifacts/trimem_v1/development_exec_018_recovery_inventory.json",
+    "artifacts/trimem_v1/freeze.json",
+    "artifacts/trimem_v1/readiness_requirements.json",
+    "reports/TRIMEM_D118_EXEC_018_RECOVERY.md",
+    "scripts/trimem_benchmark_matrix.py",
+    "scripts/trimem_benchmark_run.py",
+    "scripts/trimem_d118_grader_factory_rehearsal.py",
+    "scripts/trimem_d118_loader_rehearsal.py",
+    "scripts/trimem_development_trigger_d118.py",
+    "scripts/trimem_freeze.py",
+    "scripts/trimem_multi_swe_contract.py",
+    "scripts/trimem_verify_ready.py",
+    "tests/fixtures/trimem_d118/exec_017_python_launcher_alias_failure.json",
+    "tests/unit/test_trimem_benchmark_readiness.py",
+    "tests/unit/test_trimem_d110_atomic_resume.py",
+    "tests/unit/test_trimem_d110_status_and_reseal.py",
+    "tests/unit/test_trimem_d114_post_setup_environment.py",
+    "tests/unit/test_trimem_d118_grader_factory_rehearsal.py",
+    "tests/unit/test_trimem_d118_trigger.py",
+    "tests/unit/test_trimem_d16_native_action.py",
+    "tests/unit/test_trimem_dev_toolchain_workflows.py",
+    "tests/unit/test_trimem_development_trigger.py",
+    "tests/unit/test_trimem_multi_swe_evaluation_contract_lock.py"
+  ],
+  "status": "FROZEN_CREDENTIAL_FREE_EXEC_017_PARTIAL_MODEL_PRE_GRADER_FAILURE_READY_FOR_EXEC_018_REQUEST"
+}

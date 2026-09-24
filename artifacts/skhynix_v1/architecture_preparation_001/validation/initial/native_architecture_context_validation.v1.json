@@ -1,0 +1,29 @@
+{
+  "by_class": {
+    "tests.unit.test_trimem_d19_bounded_short_term_context": 19,
+    "tests.unit.test_trimem_native_architecture_context": 54,
+    "tests.unit.test_trimem_subgoal_context": 21
+  },
+  "errors": 0,
+  "failures": 0,
+  "live_worker_delivery_attested": false,
+  "native_solver_runs": 0,
+  "official_grades": 0,
+  "runtime_wired": false,
+  "schema": "skhynix/native-architecture-context-unit-validation/1.0",
+  "scope": "PACKET_ASSEMBLY_FOUNDATION_ONLY",
+  "separate_model_api_calls": 0,
+  "skipped": 0,
+  "source_sha256": {
+    "src/enterprise_memory/trimem/context_projection.py": "e7f249fab48bbcb6f0262b2a1a81cdcf141d66ae3feba287ca703ba8721dcb5a",
+    "src/enterprise_memory/trimem/native_architecture_context.py": "174c317bd0769bc3154eed12e632e6a02f1f151e997008bdea387fca6ddc7746",
+    "src/enterprise_memory/trimem/subgoal_context.py": "06e0a9efb15c256437e318e5c4957b009deb2712585a2363a4482128309deea5",
+    "tests/unit/test_trimem_d19_bounded_short_term_context.py": "98212c51e812fe94471b97207b84485e73eca7a03f77f25b94c5ecd00a55ba8b",
+    "tests/unit/test_trimem_native_architecture_context.py": "27a9256654d42f017a0042104b7619b8f76aa263d7e909386e85960b41372595",
+    "tests/unit/test_trimem_subgoal_context.py": "c279add718a61de81f9ccb6cea35f1ec539089387c50fc49f19793ba7eda1d5b"
+  },
+  "status": "PASS",
+  "tests": 94,
+  "xml_path": "C:\\Users\\jewon\\AppData\\Local\\Temp\\native_architecture_context_validation.xml",
+  "xml_sha256": "1ae5d5d434bc25325a94ee78f1427f43db562c2e023fd303e5065bce135eec2b"
+}

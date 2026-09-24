@@ -1,0 +1,1 @@
+{"arm":"BASELINE","at":1789906456.622866,"details":{"capture_mode":"SEPARATE_EVALUATION_QUARANTINE","official_resolved":true},"ordinal":12,"previous_sha256":"fdaaef69f1c58dc29147f77feabc329d3302d0be9b1f9f0334c0260cf2b17195","sequence":119,"sha256":"127d602662c828aa970a4efacaaf273b16666844aba4530b54aed2a6fffbb51c","stage":"CELL_COMPLETE","task_id":"swebench--django__django-12198"}

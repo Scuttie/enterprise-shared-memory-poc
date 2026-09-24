@@ -1,0 +1,50 @@
+{
+  "actual_transition_adopted": false,
+  "by_class": {
+    "tests.unit.test_trimem_skhynix_architecture_cleanup": 24,
+    "tests.unit.test_trimem_skhynix_architecture_cohort": 105,
+    "tests.unit.test_trimem_skhynix_architecture_pipeline": 64
+  },
+  "containers_started": 0,
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 193
+  },
+  "evidence_kind": "PYTEST_JUNIT_XML",
+  "frozen_cohort_reference": {
+    "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-001-cohort-source-v4/trimem_skhynix_architecture_cohort.py",
+    "sha256": "9be258b260db5809ce2f981f09236eeaa69b72e51b9034909db9ffc226eaaa4f"
+  },
+  "full_cohort_execution_attested": false,
+  "junit_reference": {
+    "path": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_cohort_high_validation_final2.xml",
+    "sha256": "21fba8df9b61ad4f15e46dc9ce113ec1372efb1da59ca303138f1fd5ca522af3"
+  },
+  "native_solver_runs": 0,
+  "official_grades": 0,
+  "preliminary_junit_references": [
+    {
+      "path": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_cohort_high_validation.xml",
+      "sha256": "3150e006447213abeef5b671b46a0195313ded0dfc9625b291c598db8ce2b5e5"
+    },
+    {
+      "path": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_cohort_high_validation_final.xml",
+      "sha256": "59299b3f4e80d946c1c7190ab71dd5c24c6eac1b15ba75393d84fc02eff93deb"
+    }
+  ],
+  "real_cleanup_operations": 0,
+  "schema": "skhynix/native-architecture-cohort-unit-validation/4.0",
+  "scope": "FORWARD_ONLY_ULTRA_TO_HIGH_BOUNDARY_AND_RETAINED_COHORT_CLEANUP_PIPELINE_INTEGRITY",
+  "separate_model_api_calls": 0,
+  "source_sha256": {
+    "scripts/trimem_skhynix_architecture_cleanup.py": "b23b9dfece2e7e813c8645547bc7abf077b4aece015f23d141c285076f7d52bb",
+    "scripts/trimem_skhynix_architecture_cohort.py": "9be258b260db5809ce2f981f09236eeaa69b72e51b9034909db9ffc226eaaa4f",
+    "scripts/trimem_skhynix_architecture_pipeline.py": "ce262038deb495fd9e5149315e5641950f40e2dcec9b7f073fcc26952a704b8e",
+    "tests/unit/test_trimem_skhynix_architecture_cleanup.py": "dba14fc2a5450de7daad4b42ccb5e7bc50fb89d40859818034243f6062439cda",
+    "tests/unit/test_trimem_skhynix_architecture_cohort.py": "aae318d6c20a0288dda76c84d1069b203e0e3bb4d92bad975bbf28a6a2a36a37",
+    "tests/unit/test_trimem_skhynix_architecture_pipeline.py": "70764448a99d4b980a7d27c247c0a20ce95d488e88b2ae32b5f5826110d7421d"
+  },
+  "status": "PASS"
+}

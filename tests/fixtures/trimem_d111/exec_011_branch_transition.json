@@ -1,0 +1,329 @@
+{
+  "branch": "codex/trimem-coder-v1",
+  "current_pull_request": {
+    "base_ref": "main",
+    "base_sha": "ce10ab49586db7a859fbe5cca93051b93f9f5b55",
+    "draft": true,
+    "head_ref": "codex/trimem-coder-v1",
+    "head_repository": "Scuttie/enterprise-shared-memory-poc",
+    "head_sha": "e54d04b0af9e738d311c389dc89cfd510fd7065b",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/pull/18",
+    "number": 18,
+    "state": "open"
+  },
+  "expected_source_gates": [
+    {
+      "event": "push",
+      "run_id": 34046493129,
+      "workflow_path": ".github/workflows/ci-trimem.yml"
+    },
+    {
+      "event": "push",
+      "run_id": 34046493102,
+      "workflow_path": ".github/workflows/ci-trimem-grader-loader.yml"
+    },
+    {
+      "event": "push",
+      "run_id": 34046493066,
+      "workflow_path": ".github/workflows/ci-trimem-harness-lock.yml"
+    },
+    {
+      "event": "push",
+      "run_id": 34046493075,
+      "workflow_path": ".github/workflows/ci-trimem-multi-swe-contract.yml"
+    },
+    {
+      "event": "push",
+      "run_id": 34046493064,
+      "workflow_path": ".github/workflows/ci-trimem-e2e.yml"
+    },
+    {
+      "event": "push",
+      "run_id": 34046493119,
+      "workflow_path": ".github/workflows/ci-trimem-dev-toolchain.yml"
+    },
+    {
+      "event": "pull_request",
+      "run_id": 34046495419,
+      "workflow_path": ".github/workflows/ci.yml"
+    },
+    {
+      "event": "pull_request",
+      "run_id": 34046495420,
+      "workflow_path": ".github/workflows/codeql.yml"
+    },
+    {
+      "event": "pull_request",
+      "run_id": 34046495429,
+      "workflow_path": ".github/workflows/ci-docs.yml"
+    },
+    {
+      "event": "pull_request",
+      "run_id": 34046495417,
+      "workflow_path": ".github/workflows/ci-company-package.yml"
+    },
+    {
+      "event": "pull_request",
+      "run_id": 34046495426,
+      "workflow_path": ".github/workflows/ci-company-harness.yml"
+    },
+    {
+      "event": "pull_request",
+      "run_id": 34046495396,
+      "workflow_path": ".github/workflows/ci-company-demo.yml"
+    }
+  ],
+  "failed_execution": {
+    "actuals": {
+      "benchmark_image_pulls": 0,
+      "grader_containers": 0,
+      "input_tokens": 0,
+      "model_api_calls": 0,
+      "model_generation_calls": 0,
+      "model_metadata_requests": 0,
+      "official_grader_runs": 0,
+      "output_tokens": 0,
+      "paid_model_calls": 0,
+      "task_arm_runs": 0,
+      "terminal_cells": 0,
+      "total_usd": 0.0
+    },
+    "conclusion": "failure",
+    "event": "push",
+    "failure_message": "exactly one exact-head event run is required: .github/workflows/ci.yml:pull_request",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "e54d04b0af9e738d311c389dc89cfd510fd7065b",
+    "jobs": {
+      "bounded-context-preflight": "skipped",
+      "branch-trigger-preflight": "failure",
+      "frozen-serial-phase": "skipped"
+    },
+    "protected_environment_entered": false,
+    "run_attempt": 1,
+    "run_id": 34047573548,
+    "status": "completed",
+    "workflow_path": ".github/workflows/trimem-benchmark.yml"
+  },
+  "historical_source_runs": [
+    {
+      "conclusion": "success",
+      "event": "push",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046493129",
+      "id": 34046493129,
+      "path": ".github/workflows/ci-trimem.yml",
+      "pull_requests": [],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "push",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046493102",
+      "id": 34046493102,
+      "path": ".github/workflows/ci-trimem-grader-loader.yml",
+      "pull_requests": [],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "push",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046493066",
+      "id": 34046493066,
+      "path": ".github/workflows/ci-trimem-harness-lock.yml",
+      "pull_requests": [],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "push",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046493075",
+      "id": 34046493075,
+      "path": ".github/workflows/ci-trimem-multi-swe-contract.yml",
+      "pull_requests": [],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "push",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046493064",
+      "id": 34046493064,
+      "path": ".github/workflows/ci-trimem-e2e.yml",
+      "pull_requests": [],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "push",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046493119",
+      "id": 34046493119,
+      "path": ".github/workflows/ci-trimem-dev-toolchain.yml",
+      "pull_requests": [],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046495419",
+      "id": 34046495419,
+      "path": ".github/workflows/ci.yml",
+      "pull_requests": [
+        {
+          "base": {
+            "sha": "ce10ab49586db7a859fbe5cca93051b93f9f5b55"
+          },
+          "head": {
+            "sha": "e54d04b0af9e738d311c389dc89cfd510fd7065b"
+          },
+          "number": 18
+        }
+      ],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046495420",
+      "id": 34046495420,
+      "path": ".github/workflows/codeql.yml",
+      "pull_requests": [
+        {
+          "base": {
+            "sha": "ce10ab49586db7a859fbe5cca93051b93f9f5b55"
+          },
+          "head": {
+            "sha": "e54d04b0af9e738d311c389dc89cfd510fd7065b"
+          },
+          "number": 18
+        }
+      ],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046495429",
+      "id": 34046495429,
+      "path": ".github/workflows/ci-docs.yml",
+      "pull_requests": [
+        {
+          "base": {
+            "sha": "ce10ab49586db7a859fbe5cca93051b93f9f5b55"
+          },
+          "head": {
+            "sha": "e54d04b0af9e738d311c389dc89cfd510fd7065b"
+          },
+          "number": 18
+        }
+      ],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046495417",
+      "id": 34046495417,
+      "path": ".github/workflows/ci-company-package.yml",
+      "pull_requests": [
+        {
+          "base": {
+            "sha": "ce10ab49586db7a859fbe5cca93051b93f9f5b55"
+          },
+          "head": {
+            "sha": "e54d04b0af9e738d311c389dc89cfd510fd7065b"
+          },
+          "number": 18
+        }
+      ],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046495426",
+      "id": 34046495426,
+      "path": ".github/workflows/ci-company-harness.yml",
+      "pull_requests": [
+        {
+          "base": {
+            "sha": "ce10ab49586db7a859fbe5cca93051b93f9f5b55"
+          },
+          "head": {
+            "sha": "e54d04b0af9e738d311c389dc89cfd510fd7065b"
+          },
+          "number": 18
+        }
+      ],
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "pull_request",
+      "head_branch": "codex/trimem-coder-v1",
+      "head_sha": "155fe314631ef74828ea98b562036bdb0adca495",
+      "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34046495396",
+      "id": 34046495396,
+      "path": ".github/workflows/ci-company-demo.yml",
+      "pull_requests": [
+        {
+          "base": {
+            "sha": "ce10ab49586db7a859fbe5cca93051b93f9f5b55"
+          },
+          "head": {
+            "sha": "e54d04b0af9e738d311c389dc89cfd510fd7065b"
+          },
+          "number": 18
+        }
+      ],
+      "run_attempt": 1,
+      "status": "completed"
+    }
+  ],
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "schema": "trimem/d111-exec-011-branch-transition-replay/1.0",
+  "transition": {
+    "changed_files": [
+      {
+        "mode": "100644",
+        "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_011.json",
+        "status": "A"
+      }
+    ],
+    "execution_head": "e54d04b0af9e738d311c389dc89cfd510fd7065b",
+    "execution_parents": [
+      "155fe314631ef74828ea98b562036bdb0adca495"
+    ],
+    "source_head": "155fe314631ef74828ea98b562036bdb0adca495"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "skhynix/native-architecture-reflection-proposals/1.0",
+  "reflection_sha256": "54ce203aa8c246ba4f97c22fffc54a9af7b827fc849a157d7161213c5a111938",
+  "proposals": [
+    {
+      "template": {
+        "subgoal_signature": "Validate a resolved numeric input against the inclusive interval [0, 1] immediately after normalization or extraction, raising ValueError before downstream processing. Require every quantile element to satisfy the bounds; preserve the alpha None sentinel and explicit-alpha precedence. Evidence supports only the observed historical checkpoints, not final repairs or isolated sufficiency for every selected regression.",
+        "parameters": [
+          "source_path",
+          "resolution_context",
+          "invalid_condition",
+          "error_message",
+          "following_context",
+          "test_argv"
+        ],
+        "preconditions": [
+          "Inspect the current public checkout and validate the bound public test command; this workflow does not certify a target repair.",
+          "The exact replacement anchor must identify the effective value after normalization or extraction, before downstream processing.",
+          "The invalid condition must reject values outside [0, 1], including NaN, while preserving supported sentinels and requiring all elements of array inputs to satisfy the bounds.",
+          "Keep the regression command and tests unchanged between RED and GREEN.",
+          "The source-2 passing checkpoint includes the additional edit at step 56 and documentation edits at steps 58–60. Its full-command success does not establish that the range-validation edit at step 57 alone was sufficient. Neither observation certifies mutations after its checkpoint."
+        ],
+        "steps": [
+          "run_command {test_argv}",
+          "replace_text {source_path}\nold_text: {resolution_context}\n{following_context}\nnew_text: {resolution_context}\n        if {invalid_condition}:\n            raise ValueError(\"{error_message}\")\n{following_context}",
+          "run_command {test_argv}"
+        ],
+        "verification_command": "{test_argv}",
+        "language": "python"
+      },
+      "observations": [
+        {
+          "source_alias": "source-1",
+          "bindings": {
+            "source_path": "xarray/core/variable.py",
+            "resolution_context": "        scalar = utils.is_scalar(q)\n        q = np.atleast_1d(np.asarray(q, dtype=np.float64))",
+            "invalid_condition": "not np.all((q >= 0) & (q <= 1))",
+            "error_message": "Quantiles must be in the range [0, 1]",
+            "following_context": "\n        if dim is None:",
+            "test_argv": "[\"/opt/miniconda3/envs/testbed/bin/python\",\"-m\",\"pytest\",\"xarray/tests/test_variable.py\",\"-q\",\"-k\",\"quantile_invalid_q\",\"--tb=short\"]"
+          },
+          "step_numbers": [11, 12, 13],
+          "red_step": 11
+        },
+        {
+          "source_alias": "source-2",
+          "bindings": {
+            "source_path": "lib/matplotlib/colors.py",
+            "resolution_context": "        if alpha is None:\n            alpha = c[1]\n        c = c[0]",
+            "invalid_condition": "alpha is not None and not 0 <= alpha <= 1",
+            "error_message": "alpha must be between 0 and 1, inclusive",
+            "following_context": "    # Special-case nth color syntax",
+            "test_argv": "[\"/opt/miniconda3/envs/testbed/bin/python\",\"-m\",\"pytest\",\"lib/matplotlib/tests/test_colors.py\",\"lib/matplotlib/tests/test_patches.py\",\"-q\",\"-k\",\"color_alpha_tuple\",\"--tb=short\"]"
+          },
+          "step_numbers": [55, 57, 61],
+          "red_step": 55
+        }
+      ]
+    }
+  ]
+}

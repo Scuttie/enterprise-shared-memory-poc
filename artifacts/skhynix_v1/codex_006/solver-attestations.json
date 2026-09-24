@@ -1,0 +1,53 @@
+{
+  "attestations": [
+    {
+      "agent": "native006_train_19637_a1",
+      "cell": "A",
+      "limitations": "Full module exceptions reported in evaluate=False parsing; no whole-module PASS claim. No edits after finalGREEN.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "9edb0fa5884d4386c1e72b162535a0393547267a12ba898199455867bbdde187",
+      "public_test_summary": "Named direct assertion RED then identical test and command GREEN. Existing test_kernS passed. Full module42passed5skipped2expectedfailures2exceptions.",
+      "run": "training-19637-a1"
+    },
+    {
+      "agent": "native006_train_19783_a1",
+      "cell": "A",
+      "limitations": "Optionaldependencytests skipped. NoeditsafterGREEN.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "1557cb2fd1e4255a0c4cf8a71e5ae4bcded8c57e7ba1f89904a488dc9c5d90ef",
+      "public_test_summary": "Named assertion RED then1passed with unchanged testbytes andargv. Broaderpublic12passed2optionaldependency skips.",
+      "run": "training-19783-a1"
+    },
+    {
+      "agent": "native006_train_19637_a2",
+      "cell": "A",
+      "limitations": "Fullmoduleexceptionsinunchangedevaluate=Falseparsing; nowhole-modulePASSclaim.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "9ef9d0aede3a10348559f8daae7f01e88da25dcb9a2c0c5554c76dd99b56791c",
+      "public_test_summary": "Named direct assertionRED then sole-testGREEN with identicaltestbytesandargv. ExistingandnewkernS2passed. Fullmodule42passed5skipped2expectedfailures2exceptions.",
+      "run": "training-19637-a2"
+    },
+    {
+      "agent": "native006_train_19783_a2",
+      "cell": "A",
+      "limitations": "Optional dependencies unavailable. Official outcome recorded separately from solver self-report.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "319fe0425845fbdd1649a5a0994f66203ec6bd3513042d6c789f87653bee257f",
+      "public_test_summary": "Prebound regression reported direct assertion RED then unchanged GREEN. Related public modules:17 passed,2 skipped.",
+      "run": "training-19783-a2"
+    }
+  ],
+  "fork_turns": "none",
+  "limitations": "Solver self-attestation plus broker journals is protocol evidence, not independent OS-level absence proof of all host activity. Exact native model snapshot/tokens/cost unmeasured.",
+  "requested_model": "gpt-6-astra",
+  "schema": "skhynix/native-solver-attestations/1.0",
+  "source": "ROOT_TRANSCRIPTION_OF_ACTUAL_AGENT_FINAL_MESSAGES"
+}

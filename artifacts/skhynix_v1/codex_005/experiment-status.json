@@ -1,0 +1,61 @@
+{
+  "codex_tokens_and_cost": null,
+  "comparison": {
+    "EXISTING_M2": {
+      "completed_targets": 0,
+      "difference_percentage_points": null,
+      "planned_targets": 6,
+      "resolved": null,
+      "solve_rate": null,
+      "status": "NOT_RUN"
+    },
+    "NO_MEMORY": {
+      "completed_targets": 0,
+      "difference_percentage_points": null,
+      "planned_targets": 6,
+      "resolved": null,
+      "solve_rate": null,
+      "status": "NOT_RUN"
+    },
+    "SKHYNIX": {
+      "completed_targets": 0,
+      "difference_percentage_points": null,
+      "planned_targets": 6,
+      "resolved": null,
+      "solve_rate": null,
+      "status": "NOT_RUN"
+    }
+  },
+  "comparison_goal_completed": false,
+  "completed_evaluation_cells": 0,
+  "gate_decision_sha256": "9698d727d8801569506588fba1b8c3a40fc0bd2f7d1d802601ddec614b482fce",
+  "native_solver_sessions": 2,
+  "next_experiment_policy": "Future separately versioned named-regression workflow may use these explicitly known training problems with fresh sessions. Six evaluation targets remain unexecuted; no solve-rate result exists for them.",
+  "planned_evaluation_cells": 18,
+  "promoted_skills": 0,
+  "schema": "skhynix/native005-gated-result/1.0",
+  "separate_model_api_calls": 0,
+  "status": "STOPPED_BEFORE_EVALUATION",
+  "training": [
+    {
+      "cell": "A",
+      "error_type": "ProcedureEvidenceError",
+      "official_resolved": true,
+      "patch_sha256": "ec08b8f33897e3958202a47985813d6dc4b567e9666e1f5e3fe268371d8d1322",
+      "procedure_attested": false,
+      "public_result_sha256": "3e3215d036265f9e1d609da82b2ac8503d56a14f30a78ab8991a8c92d46a7ec3",
+      "reason": "no identical public regression command passed after implementation repair",
+      "run_root": "/home/trimem-runner/skhynix-codex-005/training-19637/execution"
+    },
+    {
+      "cell": "A",
+      "error_type": "ProcedureEvidenceError",
+      "official_resolved": false,
+      "patch_sha256": "7a2738d9217d62b0e401e7c35bb478d3db7834ccb483cdd02427fc68367b4dd4",
+      "procedure_attested": false,
+      "public_result_sha256": "28e58e93fbe787969168c8dec6d268482eb3f7ddabd7b1a0dbac8c9d13876bea",
+      "reason": "training plan, authority, predeclaration or official resolution differs",
+      "run_root": "/home/trimem-runner/skhynix-codex-005/training-19783/execution"
+    }
+  ]
+}

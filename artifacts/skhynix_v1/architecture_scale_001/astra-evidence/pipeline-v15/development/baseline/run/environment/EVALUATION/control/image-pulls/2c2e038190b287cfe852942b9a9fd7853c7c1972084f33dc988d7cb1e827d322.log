@@ -1,0 +1,31 @@
+docker.io/swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-25565@sha256:9b71196e8bd4df0f678a049fa44e4b6604f534ac1e6a637751eb183aa051dc6e: Pulling from swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-25565
+6d701bbbb502: Pulling fs layer
+3a83432c31b4: Pulling fs layer
+83ab73e1180f: Pulling fs layer
+989b366cb66b: Pulling fs layer
+607b016d8b0f: Pulling fs layer
+afa8c1cd32d8: Pulling fs layer
+677a356d5ba9: Pulling fs layer
+0ba796e1c47c: Pulling fs layer
+f476d1ebb525: Pulling fs layer
+83ab73e1180f: Download complete
+989b366cb66b: Download complete
+6d701bbbb502: Download complete
+607b016d8b0f: Download complete
+3a83432c31b4: Download complete
+f476d1ebb525: Download complete
+83ab73e1180f: Pull complete
+6d701bbbb502: Pull complete
+3a83432c31b4: Pull complete
+afa8c1cd32d8: Download complete
+0ba796e1c47c: Download complete
+677a356d5ba9: Download complete
+677a356d5ba9: Pull complete
+989b366cb66b: Pull complete
+607b016d8b0f: Pull complete
+f476d1ebb525: Pull complete
+afa8c1cd32d8: Pull complete
+0ba796e1c47c: Pull complete
+Digest: sha256:9b71196e8bd4df0f678a049fa44e4b6604f534ac1e6a637751eb183aa051dc6e
+Status: Downloaded newer image for swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-25565@sha256:9b71196e8bd4df0f678a049fa44e4b6604f534ac1e6a637751eb183aa051dc6e
+docker.io/swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-25565@sha256:9b71196e8bd4df0f678a049fa44e4b6604f534ac1e6a637751eb183aa051dc6e

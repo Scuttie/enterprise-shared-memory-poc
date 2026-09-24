@@ -1,0 +1,1 @@
+{"command_sandbox_content_hash":"079c7ec554fb775d40f01b5cb70047b57b0699a8ac1b49c4971d7c0dc9bea9a0","masked_image_directories":["/home/clap/.git"],"masked_image_files":["/home/fix.patch","/home/test.patch","/home/check_git_changes.sh","/home/prepare.sh","/home/run.sh","/home/test-run.sh","/home/fix-run.sh"],"official_grader_runs":0,"probe_containers":2,"status":"PASS"}

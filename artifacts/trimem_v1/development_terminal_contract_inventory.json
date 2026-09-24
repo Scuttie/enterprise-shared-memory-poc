@@ -1,0 +1,534 @@
+{
+  "schema": "trimem/development-terminal-contract-inventory/1.0",
+  "status": "FROZEN_PRE_RESULT_PENDING_FRESH_EXECUTION",
+  "recorded_at_utc": "2026-09-05T13:43:37.872Z",
+  "baseline_head": "8002847d0db8975dfd957a1322d31a7768fc098f",
+  "classification": "NON_SEMANTIC_SCIENTIFIC_TERMINAL_CONTRACT_FIX",
+  "shared_contract": {
+    "path": "src/enterprise_memory/trimem/scientific_terminal.py",
+    "working_tree_sha256": "09f4c7066b843151a8a8a4a2ebce0bd608e9596d13332a81cf795268c7fb2120",
+    "execution_status": "CELL_TERMINAL",
+    "ledger_terminal_status": "CELL_TERMINAL",
+    "pure": true,
+    "final_resealed_sha256": "09f4c7066b843151a8a8a4a2ebce0bd608e9596d13332a81cf795268c7fb2120"
+  },
+  "contract_table": [
+    {
+      "field": "execution_status",
+      "producer": [
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        "CELL_TERMINAL"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_result",
+        "scripts/trimem_benchmark_matrix.py:aggregate",
+        "scripts/trimem_public_artifact.py:validate_public_scientific_terminal_contract"
+      ],
+      "accepted_values": [
+        "CELL_TERMINAL"
+      ],
+      "notes": "Current DEVELOPMENT/HELDOUT scientific contract. SUCCESS is rejected here and remains isolated to grader smoke."
+    },
+    {
+      "field": "cell_status",
+      "producer": [
+        "src/enterprise_memory/trimem/agent_runtime.py:TriMemAgentRuntime.run",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        "AGENT_COMPLETED",
+        "CELL_SCIENTIFIC_FAILURE",
+        "MEMORY_EXTRACTION_FAILED"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_result",
+        "scripts/trimem_benchmark_matrix.py:aggregate",
+        "scripts/trimem_public_artifact.py:validate_public_scientific_terminal_summary"
+      ],
+      "accepted_values": [
+        "AGENT_COMPLETED",
+        "CELL_SCIENTIFIC_FAILURE",
+        "MEMORY_EXTRACTION_FAILED"
+      ],
+      "notes": "Classifies the terminal runtime outcome; it is not the Pass@1 score."
+    },
+    {
+      "field": "task-arm ledger status",
+      "producer": [
+        "scripts/trimem_benchmark_run.py:AtomicBudgetLedger.reserve_task_arm",
+        "scripts/trimem_benchmark_run.py:AtomicBudgetLedger.complete_task_arm"
+      ],
+      "produced_values": [
+        "RESERVED",
+        "CELL_TERMINAL",
+        "OFFICIAL_GRADER_FAILURE"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_ledger_row",
+        "scripts/trimem_benchmark_run.py:validate_phase_completion",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        "CELL_TERMINAL"
+      ],
+      "notes": "RESERVED is in flight and OFFICIAL_GRADER_FAILURE is a global integrity stop; neither may enter current scientific aggregation."
+    },
+    {
+      "field": "model-request ledger status",
+      "producer": [
+        "scripts/trimem_benchmark_run.py:AtomicBudgetLedger.reserve",
+        "scripts/trimem_benchmark_run.py:AtomicBudgetLedger.reconcile"
+      ],
+      "produced_values": [
+        "RESERVED",
+        "SUCCESS",
+        "SUCCESS_CONSERVATIVE_USAGE",
+        "PROVIDER_FAILURE",
+        "PROVIDER_FAILURE_CONSERVATIVE",
+        "UNKNOWN_FAILURE_CONSERVATIVE",
+        "INVALID_UNPAID_RESPONSE_CONSERVATIVE"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_result_request_statuses",
+        "scripts/trimem_benchmark_run.py:validate_phase_completion",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        "SUCCESS",
+        "SUCCESS_CONSERVATIVE_USAGE",
+        "PROVIDER_FAILURE",
+        "PROVIDER_FAILURE_CONSERVATIVE"
+      ],
+      "notes": "Contained provider failures are terminal request-accounting states. RESERVED, UNKNOWN_FAILURE_CONSERVATIVE, INVALID_UNPAID_RESPONSE_CONSERVATIVE, and nonzero outstanding counters fail closed globally."
+    },
+    {
+      "field": "grader_status",
+      "producer": [
+        "scripts/trimem_official_grader.py:OfficialHarnessGraderGateway (protected benchmark producer)",
+        "src/enterprise_memory/trimem/grader.py:ReplayGraderGateway and DockerOfficialGraderGateway (generic/replay producers)",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        "adapter_contract_failed",
+        "adapter_evidence_capture_failed",
+        "adapter_evidence_finalization_failed",
+        "container_exit_nonzero",
+        "container_launch_failed",
+        "container_timeout",
+        "harness_exit_nonzero",
+        "harness_launch_failed",
+        "harness_timeout",
+        "image_digest_mismatch",
+        "image_inspect_failed",
+        "image_inspect_invalid",
+        "image_inspect_launch_failed",
+        "image_inspect_timeout",
+        "image_stream_capture_failed",
+        "image_tag_failed",
+        "image_tag_launch_failed",
+        "image_tag_timeout",
+        "input_materialization_failed",
+        "invalid_report",
+        "materialized_patch_invalid",
+        "missing_report",
+        "private_input_purge_failed",
+        "report_exit_nonzero",
+        "report_launch_failed",
+        "report_schema_mismatch",
+        "report_timeout",
+        "stale_test_evidence",
+        "success",
+        "test_evidence_invalid"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_result",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        "success"
+      ],
+      "notes": "The protected OfficialHarnessGraderGateway has the exact 27-value frozen status set in protected_produced_values. Generic/replay gateways add three container_* statuses. Only success can enter a current scientific terminal record; every other status is a global integrity failure.",
+      "protected_produced_values": [
+        "adapter_contract_failed",
+        "adapter_evidence_capture_failed",
+        "adapter_evidence_finalization_failed",
+        "harness_exit_nonzero",
+        "harness_launch_failed",
+        "harness_timeout",
+        "image_digest_mismatch",
+        "image_inspect_failed",
+        "image_inspect_invalid",
+        "image_inspect_launch_failed",
+        "image_inspect_timeout",
+        "image_stream_capture_failed",
+        "image_tag_failed",
+        "image_tag_launch_failed",
+        "image_tag_timeout",
+        "input_materialization_failed",
+        "invalid_report",
+        "materialized_patch_invalid",
+        "missing_report",
+        "private_input_purge_failed",
+        "report_exit_nonzero",
+        "report_launch_failed",
+        "report_schema_mismatch",
+        "report_timeout",
+        "stale_test_evidence",
+        "success",
+        "test_evidence_invalid"
+      ]
+    },
+    {
+      "field": "grader_exit_code",
+      "producer": [
+        "scripts/trimem_official_grader.py:OfficialHarnessGraderGateway",
+        "src/enterprise_memory/trimem/grader.py:ReplayGraderGateway and DockerOfficialGraderGateway",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        0,
+        "nonzero integer including -1"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_result",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        0
+      ],
+      "notes": "The grader boundary records zero and failure exit codes; current scientific aggregation accepts only integer zero."
+    },
+    {
+      "field": "official_grader",
+      "producer": [
+        "scripts/trimem_official_grader.py:OfficialHarnessGraderGateway",
+        "src/enterprise_memory/trimem/grader.py:ReplayGraderGateway and DockerOfficialGraderGateway",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        true,
+        false
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_result",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        true
+      ],
+      "notes": "Replay produces false and the protected official gateway produces true; only true can enter a scientific terminal record."
+    },
+    {
+      "field": "resolved",
+      "producer": [
+        "src/enterprise_memory/trimem/agent_runtime.py:GradeResult.resolved",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        true,
+        false
+      ],
+      "consumer": [
+        "scripts/trimem_benchmark_matrix.py:aggregate and stream summaries",
+        "scripts/trimem_m2_candidates.py:select_development_candidate via resolved_count",
+        "scripts/trimem_public_artifact.py:package"
+      ],
+      "accepted_values": [
+        true,
+        false
+      ],
+      "notes": "The official grader boolean alone determines the Pass@1 numerator. Contained failures stay in the denominator."
+    },
+    {
+      "field": "container_started",
+      "producer": [
+        "scripts/trimem_official_grader.py:OfficialHarnessGraderGateway",
+        "src/enterprise_memory/trimem/grader.py:ReplayGraderGateway and DockerOfficialGraderGateway",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record",
+        "scripts/trimem_benchmark_run.py:AtomicBudgetLedger.complete_task_arm"
+      ],
+      "produced_values": [
+        true,
+        false
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_result",
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_ledger_row",
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_result_ledger_pair"
+      ],
+      "accepted_values": [
+        true
+      ],
+      "notes": "Pre-container grader failures produce false and executed graders produce true; only true can enter a scientific terminal record, and result/ledger must agree."
+    },
+    {
+      "field": "grader_patch_source",
+      "producer": [
+        "src/enterprise_memory/trimem/agent_runtime.py:TriMemAgentRuntime.run",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        "MODEL_PATCH",
+        "MODEL_PARTIAL_PATCH",
+        "CANONICAL_FAILED_CELL_NOOP"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_result",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        "MODEL_PATCH",
+        "MODEL_PARTIAL_PATCH",
+        "CANONICAL_FAILED_CELL_NOOP"
+      ],
+      "notes": "Accepted values are further restricted by cell_status and agent_completed combination rules."
+    },
+    {
+      "field": "extraction_status",
+      "producer": [
+        "src/enterprise_memory/trimem/agent_runtime.py:TriMemAgentRuntime.run",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        "SUCCESS",
+        "MEMORY_EXTRACTION_FAILED"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_result",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        "SUCCESS",
+        "MEMORY_EXTRACTION_FAILED"
+      ],
+      "notes": "An extraction failure after a valid official grade preserves resolved and skips the memory update."
+    },
+    {
+      "field": "model_failure_class",
+      "producer": [
+        "src/enterprise_memory/trimem/agent_runtime.py:TriMemAgentRuntime.run",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        "null for AGENT_COMPLETED",
+        "recognized RESPONSE_/SOLVE_/STRUCTURED_OUTPUT_ gateway class",
+        "HTTP_200_INVALID_JSON",
+        "MEMORY_EXTRACTION_SCHEMA_FAILURE",
+        "recognized finite runtime failure class"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:is_scientific_failure_class",
+        "src/enterprise_memory/trimem/scientific_terminal.py:canonical_scientific_failure_class",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        "null only for AGENT_COMPLETED",
+        "recognized fail-closed gateway/runtime/extraction failure class for contained failures"
+      ],
+      "notes": "Arbitrary nonempty strings are rejected. Public output uses a finite canonical projection where needed."
+    },
+    {
+      "field": "agent_completed",
+      "producer": [
+        "src/enterprise_memory/trimem/agent_runtime.py:AgentRunResult",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        true,
+        false
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_scientific_terminal_result"
+      ],
+      "accepted_values": [
+        true,
+        false
+      ],
+      "notes": "The validator uses this boolean with cell_status, patch source, extraction status, and failure class to reject impossible combinations."
+    },
+    {
+      "field": "task-arm identity",
+      "producer": [
+        "scripts/trimem_benchmark_run.py:run_arm_stream",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        "arm:runtime_arm:target_id"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:scientific_task_arm_key",
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_result_ledger_pair",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        "one exact unique matching result/ledger identity for every frozen task-arm"
+      ],
+      "notes": "Duplicates, orphans, omissions, and result/ledger identity mismatches fail closed."
+    },
+    {
+      "field": "actual_accounting projection",
+      "producer": [
+        "scripts/trimem_benchmark_run.py:AtomicBudgetLedger",
+        "scripts/trimem_benchmark_run.py:build_terminal_result_record"
+      ],
+      "produced_values": [
+        "nonnegative exact input/model/output and role-output integers"
+      ],
+      "consumer": [
+        "src/enterprise_memory/trimem/scientific_terminal.py:validate_result_ledger_pair",
+        "scripts/trimem_benchmark_run.py:validate_phase_completion",
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "accepted_values": [
+        "exact result-to-ledger equality with all outstanding counters zero and each role pool reconciled"
+      ],
+      "notes": "Contained failures do not relax budget reconciliation."
+    },
+    {
+      "field": "scientific_terminal_contract projection",
+      "producer": [
+        "scripts/trimem_benchmark_matrix.py:aggregate"
+      ],
+      "produced_values": [
+        "schema trimem/scientific-terminal-contract/1.0",
+        "execution_status CELL_TERMINAL",
+        "ledger_terminal_status CELL_TERMINAL",
+        "shared contract SHA-256"
+      ],
+      "consumer": [
+        "scripts/trimem_public_artifact.py:validate_public_scientific_terminal_contract"
+      ],
+      "accepted_values": [
+        "exact four-field binding with both statuses CELL_TERMINAL and a valid SHA-256"
+      ],
+      "notes": "This is the name-free public binding to the shared scientific contract."
+    },
+    {
+      "field": "grader-smoke execution_status",
+      "producer": [
+        "scripts/trimem_benchmark_matrix.py:independent grader-smoke aggregate path"
+      ],
+      "produced_values": [
+        "SUCCESS"
+      ],
+      "consumer": [
+        "scripts/trimem_benchmark_matrix.py:grader-smoke validation",
+        "scripts/trimem_public_artifact.py:grader-smoke public validation"
+      ],
+      "accepted_values": [
+        "SUCCESS"
+      ],
+      "notes": "Independent zero-model GOLD/NOOP smoke semantics are intentionally not rewritten to CELL_TERMINAL."
+    }
+  ],
+  "components": {
+    "runner": {
+      "path": "scripts/trimem_benchmark_run.py",
+      "role": "Own terminal serialization, atomic budget ledger production, phase completion, and canonical-cursor recovery.",
+      "shared_contract_calls": [
+        "validate_scientific_terminal_result",
+        "validate_result_ledger_pair",
+        "validate_result_request_statuses"
+      ]
+    },
+    "matrix": {
+      "path": "scripts/trimem_benchmark_matrix.py",
+      "role": "Validate all current scientific records, both ledger layers, exact frozen task-arm set, six streams, and aggregate projections.",
+      "shared_contract_calls": [
+        "validate_scientific_terminal_result",
+        "validate_result_ledger_pair",
+        "validate_result_request_statuses"
+      ]
+    },
+    "resume": {
+      "path": "scripts/trimem_run_with_resume.py",
+      "role": "Process wrapper only; invokes the same runner once with --resume and does not reinterpret terminal statuses.",
+      "semantic_resume_owner": "scripts/trimem_benchmark_run.py: canonical cursor validation and ledger completion from the validated record"
+    },
+    "public": {
+      "path": "scripts/trimem_public_artifact.py",
+      "role": "Validate the aggregate's terminal-contract binding, terminal summary arithmetic, and allowlisted outcomes before packaging.",
+      "shared_contract_calls": [
+        "is_scientific_gateway_failure"
+      ]
+    },
+    "m2": {
+      "path": "scripts/trimem_m2_candidates.py",
+      "role": "Rank four complete candidate summaries by resolved_count, tokens, USD, and candidate_id; it does not infer resolution from cell_status."
+    },
+    "runtime": {
+      "path": "src/enterprise_memory/trimem/agent_runtime.py",
+      "role": "Produce AgentRunResult, official grade fields, contained-failure classification, patch source, and extraction status."
+    },
+    "ledger": {
+      "path": "scripts/trimem_benchmark_run.py:AtomicBudgetLedger",
+      "role": "Reserve and reconcile request/accounting capacity and terminalize exactly one row per task-arm."
+    },
+    "smoke_isolation": {
+      "paths": [
+        "scripts/trimem_benchmark_matrix.py",
+        "scripts/trimem_public_artifact.py"
+      ],
+      "role": "Keep independent GRADER_SMOKE SUCCESS semantics separate from DEVELOPMENT/HELDOUT CELL_TERMINAL semantics."
+    }
+  },
+  "current_scientific_legacy_policy": {
+    "execution_status_SUCCESS": "REJECT",
+    "task_arm_status_SUCCESS": "REJECT",
+    "task_arm_status_SUCCESS_RECOVERED_FROM_CANONICAL_CURSOR": "REJECT",
+    "legacy_reader_live_in_new_009_aggregate": false
+  },
+  "production_shaped_regression": {
+    "path": "tests/unit/test_trimem_d18_terminal_contract_integration.py",
+    "targets": 12,
+    "streams": [
+      "M2-baseline",
+      "M2-precision",
+      "M2-recall",
+      "M2-balanced",
+      "M0",
+      "M1"
+    ],
+    "terminal_records": 72,
+    "terminal_ledger_rows": 72,
+    "observed_result": "26 passed",
+    "negative_matrix": [
+      "scientific record SUCCESS rejected",
+      "ledger SUCCESS rejected",
+      "RESERVED or outstanding ledger rejected",
+      "identity mismatch rejected",
+      "missing or non-boolean resolved rejected",
+      "official_grader false rejected",
+      "bad grader status/exit rejected",
+      "unknown cell_status rejected",
+      "canonical no-op failure accepted and counted unresolved",
+      "post-grade extraction failure accepted with official verdict preserved",
+      "grader-smoke SUCCESS remains valid",
+      "aggregate-to-public round trip passes",
+      "request-ledger/provider-outcome disagreement rejected",
+      "solve failure role/class impossibilities rejected",
+      "arbitrary uppercase public provider status rejected by shared finite contract",
+      "real D1.8 sentinel validator and approval binding pass in disposable full-history clone"
+    ],
+    "real_provider_requests": 0,
+    "real_image_pulls": 0,
+    "real_grader_processes": 0,
+    "usd": 0,
+    "status": "PASS",
+    "side_effect_boundaries_faked": [
+      "provider network",
+      "benchmark repository command execution",
+      "official grader process"
+    ]
+  },
+  "finalization_placeholders": {
+    "final_source_head": "BOUND_EXTERNALLY_AS_009_SOURCE_HEAD",
+    "final_shared_contract_sha256": "09f4c7066b843151a8a8a4a2ebce0bd608e9596d13332a81cf795268c7fb2120",
+    "final_inventory_sha256_binding": "RECORD_EXTERNALLY_IN_RESEARCH_FREEZE_TO_AVOID_SELF_HASH_RECURSION",
+    "remote_exact_head_gate_evidence": "BOUND_EXTERNALLY_IN_009_REMOTE_GATE_EVIDENCE",
+    "research_freeze_sha256": "BOUND_EXTERNALLY_BY_009_FREEZE_SHA256"
+  },
+  "frozen_at_utc": "2026-09-05T15:06:10.892Z"
+}

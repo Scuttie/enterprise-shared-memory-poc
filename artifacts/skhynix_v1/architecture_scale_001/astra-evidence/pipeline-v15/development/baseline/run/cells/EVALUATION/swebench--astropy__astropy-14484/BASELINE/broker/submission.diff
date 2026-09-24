@@ -1,0 +1,41 @@
+diff --git a/astropy/units/quantity_helper/function_helpers.py b/astropy/units/quantity_helper/function_helpers.py
+index 5d36b47..8e45f62 100644
+--- a/astropy/units/quantity_helper/function_helpers.py
++++ b/astropy/units/quantity_helper/function_helpers.py
+@@ -75,7 +75,7 @@ SUBCLASS_SAFE_FUNCTIONS |= {
+     np.put, np.fill_diagonal, np.tile, np.repeat,
+     np.split, np.array_split, np.hsplit, np.vsplit, np.dsplit,
+     np.stack, np.column_stack, np.hstack, np.vstack, np.dstack,
+-    np.amax, np.amin, np.ptp, np.sum, np.cumsum,
++    np.max, np.min, np.amax, np.amin, np.ptp, np.sum, np.cumsum,
+     np.prod, np.product, np.cumprod, np.cumproduct,
+     np.round, np.around,
+     np.fix, np.angle, np.i0, np.clip,
+diff --git a/astropy/units/tests/test_quantity_non_ufuncs.py b/astropy/units/tests/test_quantity_non_ufuncs.py
+index f252b98..9897b25 100644
+--- a/astropy/units/tests/test_quantity_non_ufuncs.py
++++ b/astropy/units/tests/test_quantity_non_ufuncs.py
+@@ -608,6 +608,23 @@ class TestSplit(metaclass=CoverageMeta):
+ 
+ 
+ class TestUfuncReductions(InvariantUnitTestSetup):
++    @pytest.mark.parametrize("axis", [None, 0, 1])
++    @pytest.mark.parametrize("keepdims", [False, True])
++    def test_max(self, axis, keepdims):
++        self.check(np.max, axis=axis, keepdims=keepdims)
++
++    @pytest.mark.parametrize("axis", [None, 0, 1])
++    @pytest.mark.parametrize("keepdims", [False, True])
++    def test_min(self, axis, keepdims):
++        self.check(np.min, axis=axis, keepdims=keepdims)
++
++    def test_assert_equal(self):
++        # NumPy uses max when reporting the difference between unequal arrays.
++        a = [78, 78, 81] * u.pix**2
++        b = [78.5, 78.5, 78.625] * u.pix**2
++        with pytest.raises(AssertionError):
++            np.testing.assert_equal(a, b)
++
+     def test_amax(self):
+         self.check(np.amax)
+ 

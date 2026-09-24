@@ -1,0 +1,110 @@
+{
+  "actuals": {
+    "benchmark_image_pulls": 0,
+    "dependency_installations": 0,
+    "grader_containers": 0,
+    "harness_materializations": 0,
+    "input_tokens": 0,
+    "model_api_calls": 0,
+    "model_generation_calls": 0,
+    "model_metadata_requests": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "task_arm_runs": 0,
+    "terminal_cells": 0,
+    "total_usd": 0.0
+  },
+  "boundary": {
+    "bounded_context_preflight_entered": true,
+    "branch_trigger_preflight_entered": true,
+    "dependency_install_started": false,
+    "failure_stage": "BOUNDED_SELF_HOSTED_POST_SETUP_REOBSERVATION_BEFORE_INSTALL_OR_MATERIALIZATION",
+    "frozen_serial_phase_entered": false,
+    "harness_materialization_started": false,
+    "post_setup_runner_reobservation_entered": true,
+    "pre_setup_cache_host_passed": true,
+    "protected_environment_approval_requested": false,
+    "protected_environment_entered": false,
+    "self_hosted_job_assignments": 1,
+    "setup_python_passed": true
+  },
+  "branch": "codex/trimem-coder-v1",
+  "digests": {
+    "d113_amendment_sha256": "961539205cc4670ce11cf983ec89200498a3ebd31d47c6e7cf3e0d4403200d99",
+    "d113_inventory_sha256": "162649ed15af5a19c45bea1f3233f6280cae964e55e0c7fb63b8c4c09fe2ae74",
+    "evidence_bundle_sha256": "a03af8f037ec5725c5e71e3264966c7169319bc8fdea3ca0888b2bd89f59b87b",
+    "failed_log_summary_sha256": "6c6b50de5c8a7037b7207f6ef2f3df421e3036f0e65e41d9ff5c16ce5f77d2c6",
+    "jobs_projection_sha256": "3deb85f023ffbc0801095bb09f41d7e4272e50404db3625b3e3d72b26a77db96",
+    "request_raw_sha256": "a500568cedfa800bd85e20263b604fa2c1d24f634644d5ef14f517a8330b6417",
+    "request_self_hash_sha256": "132c7fc8a7ca166076882a53d3a69db56b4ccc5ab9e41ec1071a196f0618fe26",
+    "source_freeze_sha256": "ea74940aad297761c62c9f2555eb9aba3819e584082bf68951247e9a39d1f0c6",
+    "trigger_reader_sha256": "4e4de8fb39ae7ee67c890fa3db1573a5278aefd17f5e64bf61cadd0aea6b5fac",
+    "workflow_file_sha256": "7d7f26d015a378eb516cf2977f763ae867d7a53532ac78a79001033bb3ebabcc",
+    "workflow_run_projection_sha256": "7d89a1b360dbeeea16aefed77beb96058444a11a2a6a422f209c5aead3aca41e"
+  },
+  "execution_head": "35bfa338915d731dab499f2dfee08b38741bfe8d",
+  "failed_log_summary": {
+    "expected_ld_library_path": "/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib",
+    "failed_job": "bounded-context-preflight",
+    "failed_step": "Re-observe exact self-hosted runner before any install or materialization",
+    "failure_classification": "POST_SETUP_PYTHON_DUAL_LD_LIBRARY_PATH_FAIL_CLOSED",
+    "failure_message": "runner LD_LIBRARY_PATH binding differs: bounded-context preflight process environment",
+    "failure_subtype": "SETUP_PYTHON_POST_SETUP_LD_LIBRARY_PATH_SHAPE",
+    "observed_ld_library_path": "/opt/trimem-d112-runners/exec/_work/_tool/Python/3.11.10/x64/lib:/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib",
+    "process_exit_code": 1,
+    "raw_log_embedded": false,
+    "sanitization": "ALLOWLISTED_NORMALIZED_SUMMARY_ONLY"
+  },
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 101796222373,
+      "name": "branch-trigger-preflight",
+      "runner_boundary": "GITHUB_HOSTED",
+      "steps": {
+        "one_time_zero_authority_trigger": "success"
+      }
+    },
+    {
+      "conclusion": "failure",
+      "id": 101796314944,
+      "name": "bounded-context-preflight",
+      "runner_boundary": "SELF_HOSTED_UNPROTECTED",
+      "steps": {
+        "checkout": "success",
+        "post_setup_runner_reobservation": "failure",
+        "pre_setup_cached_python": "success",
+        "setup_python": "success"
+      }
+    },
+    {
+      "conclusion": "skipped",
+      "id": 101796404674,
+      "name": "frozen-serial-phase",
+      "runner_boundary": "SELF_HOSTED_PROTECTED",
+      "steps": {}
+    }
+  ],
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "sanitization": {
+    "environment_projection": "TWO_ALLOWLISTED_LD_LIBRARY_PATH_VALUES_ONLY",
+    "jobs_api": "ALLOWLISTED_FIELDS_ONLY",
+    "raw_log_embedded": false,
+    "run_api": "ALLOWLISTED_FIELDS_ONLY",
+    "step_log": "NORMALIZED_SUMMARY_ONLY"
+  },
+  "schema": "trimem/d114-exec-013-post-setup-failure/1.0",
+  "source_head": "cb17ceae0fbc951dff34213de977a73b5405fefc",
+  "workflow_run": {
+    "conclusion": "failure",
+    "event": "push",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "35bfa338915d731dab499f2dfee08b38741bfe8d",
+    "id": 34138918074,
+    "path": ".github/workflows/trimem-benchmark.yml",
+    "run_attempt": 1,
+    "source_head_sha": "cb17ceae0fbc951dff34213de977a73b5405fefc",
+    "status": "completed"
+  }
+}

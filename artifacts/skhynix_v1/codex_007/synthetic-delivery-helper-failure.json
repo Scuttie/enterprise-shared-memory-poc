@@ -1,0 +1,42 @@
+{
+  "actual_evaluation_actions": 0,
+  "actual_evaluation_state_sha256": {
+    "/home/trimem-runner/skhynix-codex-007/eval-19954/execution/cells/A/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-19954/execution/cells/B/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-19954/execution/cells/C/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20154/execution/cells/A/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20154/execution/cells/B/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20154/execution/cells/C/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20428/execution/cells/A/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20428/execution/cells/B/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20428/execution/cells/C/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20438/execution/cells/A/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20438/execution/cells/B/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20438/execution/cells/C/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20801/execution/cells/A/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20801/execution/cells/B/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-20801/execution/cells/C/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-21379/execution/cells/A/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-21379/execution/cells/B/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+    "/home/trimem-runner/skhynix-codex-007/eval-21379/execution/cells/C/state.json": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+  },
+  "error_message": "'MemoryRecord' object has no attribute 'content'",
+  "error_type": "AttributeError",
+  "failed_before_first_synthetic_initialization": true,
+  "frozen_inputs_sha256": {
+    "launch-contract.json": "82ac82eadffdd08dc2cc38ccf3d4c4699ea5fb1a13e7f2cd68344ad730107cb8",
+    "learned-bank.json": "26a3adafcae03b455468acc81c40995ce661e29c9a6de848c3a658af275f4b49",
+    "procedure-declaration.json": "20d970211fe179bd8c373d643897b66e5fdff2577a8e21d3d2d150063a164c5d",
+    "source-freeze.json": "666890dec412a3162d8ee92d6814d1f84303d7ada476ed3d7c4659984f445029",
+    "synthetic-query-contract.json": "b60133dc323f5a157eebae902d362ba0323006c4ead630f3fa4da0dd360fd307"
+  },
+  "grader_calls": 0,
+  "new_helper_sha256": "86c17b46d457180fb641477293be460e35fcb528e94e4997dc79ab6f307c47a3",
+  "old_helper_sha256": "e7d3cd02287594a7fcf896b237557e86a1f5626583a7b3ed424a718b581bec6c",
+  "only_edit": "semantic.records[skill.skill_id].content -> semantic.records[skill.skill_id].execution_view",
+  "original_error_preserved": true,
+  "recorded_at_unix_seconds": 1789237619.4236152,
+  "schema": "skhynix/native007-operational-helper-repair/1.0",
+  "solver_model_calls": 0,
+  "synthetic_directory_absent": true
+}

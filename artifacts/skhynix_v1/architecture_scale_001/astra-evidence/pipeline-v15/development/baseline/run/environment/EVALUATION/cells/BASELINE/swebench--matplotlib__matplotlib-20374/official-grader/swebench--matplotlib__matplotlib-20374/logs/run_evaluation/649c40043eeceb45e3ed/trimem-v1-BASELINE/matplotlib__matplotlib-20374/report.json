@@ -1,0 +1,10 @@
+{
+    "matplotlib__matplotlib-20374": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": false,
+        "resolved": false,
+        "infra_failure": false,
+        "infra_failure_reason": "no_tests_collected"
+    }
+}

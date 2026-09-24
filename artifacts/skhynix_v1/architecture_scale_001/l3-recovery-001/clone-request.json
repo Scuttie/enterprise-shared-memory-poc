@@ -1,0 +1,12 @@
+{
+  "source_root": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240",
+  "destination_root": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v14/learning-240",
+  "predecessor_pipeline_reference": {
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_002_pipeline_v13.json",
+    "sha256": "506a621b99d4e33ca54720dde52b9b3c593e8a30f553c3e12833993d6ec6e654"
+  },
+  "predecessor_pipeline_event_tail_reference": {
+    "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/events/00000427.json",
+    "sha256": "165d899c176788542c8d2ce37a0676835764d8e0558f9f78946426bd9adb9991"
+  }
+}

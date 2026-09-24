@@ -1,0 +1,145 @@
+# TriMem V1 D1.10 — grader launch and stream-commit correction
+
+## Classification and endpoint
+
+`PRE_RESULT_GRADER_LAUNCH_AND_STREAM_COMMIT_CORRECTION`
+
+Credential-free endpoint:
+
+`TRIMEM_V1_GRADER_LAUNCH_AND_STREAM_COMMIT_READY_FOR_DEV_APPROVAL`
+
+Request `_010` and run 34008674563 attempt 1 are final and immutable; they may
+not be rerun. D1.10-E1 has now received the exact one-time authority
+`TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_011_APPROVED_ONCE`. That authority permits
+creation of `_011` only after the exact activation-source workflows and runner
+readiness pass. At the activation source, `_011` is not yet created, no
+run-bound protected approval exists, and DEV execution remains disabled.
+
+The new request uses schema
+`trimem/development-tuning-branch-trigger/1.10` and a distinct D1.10 trigger.
+It does not rewrite the historical D1.9 `_010` validator. The activation freeze
+includes the new reader and all required gate-workflow bytes but excludes the
+future `_011` sentinel; the sentinel's raw bytes are bound separately by the
+external approval.
+
+## Correct status boundary
+
+- `OFFICIAL_GRADER_SEMANTICS_AND_DISCRIMINATION = ESTABLISHED_BY_P0_1_5`
+- `OFFICIAL_GRADER_IMAGE_INTEGRITY = ESTABLISHED`
+- `OFFICIAL_GRADER_DEV_RUNNER_PYTHON_LAUNCH = FAILED_ON_D1_9_EXEC_010`
+- `OFFICIAL_GRADER_DEV_RUNNER_CONTAINER_START = NOT_YET_ESTABLISHED`
+- `PERFORMANCE = NOT_MEASURED`
+
+The broad `OFFICIAL_GRADER_VIABILITY` label is not a current-state field. The
+P0.1.5 result established official grader semantics and discrimination, but the
+first DEV runner never launched its exact child Python and never started a
+grader container.
+
+## Immutable `_010` observation
+
+Run 34008674563 attempt 1 reached one M2-baseline cell. Eight bounded context
+projections, one decomposition, and eight solve calls produced a non-empty
+partial patch. The exact grader child Python exited 127 because
+`libpython3.11.so.1.0` was unavailable in the sanitized loader environment.
+The grader adapter was invoked, but no container started, no official grader
+run occurred, no `CELL_TERMINAL` result existed, and the canonical cursor stayed
+at zero. The correct process disposition is `GLOBAL_GRADER_INFRA_FAILURE`, so a
+same-attempt resume is prohibited.
+
+Encrypted restricted evidence and the inventory were verified in external
+custody. A public performance artifact is correctly absent because no
+scientific terminal cell exists.
+
+## Credential-free correction
+
+D1.10 binds the exact setup-python interpreter to one verified lib directory,
+runs the exact harness loader preflight before credentials or images, separates
+grader infrastructure state from scientific results, and commits validated cell
+result, ledger terminal, and stream cursor through the hash-bound
+`trimem/cell-commit-journal/1.0` protocol. Same-attempt resume is permitted only
+for explicit durable-suffix or cell-journal recovery dispositions.
+
+The `_011` request also binds a source-head-specific observation of exactly two
+fresh idle repository runners. Its timestamp is accepted at activation only
+within a one-hour age limit and five-minute future-clock tolerance. Before any
+dependency install or harness materialization, the assigned self-hosted
+bounded-context job re-observes exact Ubuntu 24.04 from `/etc/os-release`, the
+exact Python, Docker daemon, disk floor,
+zero-container state, all 13 cached digest images, absent stale roots, local
+runner registrations, and two distinct listener PIDs. All stable host facts
+must equal the committed readiness evidence; the live disk value must still
+meet the frozen 500 GiB floor. This probe has no protected secrets and performs
+no image pull, model call, grader run, or task-arm run.
+
+The hosted setup-python 3.11.10 executable has an embedded loader RPATH, so a
+stripped live child can start without `LD_LIBRARY_PATH`; that hosted behavior is
+not misreported as a reproduction of the historical self-hosted exit 127. The
+historical failure remains proven by the sealed sanitized `_010`
+production-shaped regression. The live rehearsal proves the corrected hermetic
+launch and binds sysconfig's `libpython3.11.so` link name to the required,
+in-prefix `libpython3.11.so.1.0` bytes and digest. Writable library directories
+or files remain fail-closed.
+
+Harness portability rehearsal now passes `core.autocrlf` as a validated,
+explicit CLI value and stores it in each fresh checkout; ambient hostile Git
+configuration remains excluded. Generic product CI is pinned to the same exact
+Python 3.11.10 and exact PR head so its live loader tests exercise the D1.10
+toolchain rather than a floating Python build or GitHub merge checkout.
+Fresh production clones default to `core.autocrlf=input`; an existing resumed
+checkout is first subjected to the complete pristine-tree/config audit, so an
+explicit rehearsal setting cannot mask index-hidden, ignored, or redirected
+worktree tampering.
+
+The first hosted D1.10 follow-up preflight established both exact harness
+imports and the hermetic Python launch, then exposed a post-preflight evidence
+validator mismatch: the pinned Multi-SWE parser has the 21 production-config
+destinations plus its parser-only `config` destination. The producer and
+validator now share one exact 22-destination constant and reject both missing
+and unexpected parser arguments. The generic product-CI assertion likewise
+binds the already pinned checkout action SHA while retaining `fetch-depth: 0`;
+neither correction relaxes the marker-history audit.
+
+The production-runtime checkpoint validator now also requires and verifies the
+hash-bound `inventory_sha256` proof field. This is checkpoint-proof schema
+hardening only: scientific runtime behavior, model behavior, and every memory
+policy remain unchanged.
+
+The correction does not alter model, reasoning effort, targets, target order,
+arms, M2 candidates, memory policies, PPR/DQN parameters, output-token pools,
+phase caps, grader revisions, or image digests. The amendment and inventory hold
+the exact raw-file contract hashes; `artifacts/trimem_v1/freeze.json` remains the
+research-state authority. `COMPANY_HANDOFF_MANIFEST.json` remains a separate
+product-only inventory and is not used as research status.
+
+Adding the dedicated loader workflow mechanically changes the product
+`docs/STATUS.yaml` workflow inventory count from 73 to 74. D1.10 validates that
+single-field compatibility change exactly but excludes product STATUS from the
+research implementation hash and authority. The company handoff manifest is
+not regenerated on this research branch.
+
+The tool-environment lock changes only the raw source identities for
+`git_workspace.py` and `production_runtime.py`, reflecting checkout-inventory
+and checkpoint-proof hardening. Its prompt, parser, tool, step/token limits,
+container policy, runtime-lock manifest, and authority boundary remain
+byte-for-byte equal to the immutable `_010` lock.
+
+The credential-free source-to-target E2E bundle is rehashed as byte-stable
+preserved evidence; it is not represented as a D1.10 loader or cell-commit
+rehearsal. A separately sealed, provenance-bound sanitized `_010` fixture keeps
+the external artifact IDs/digests and public failure boundary while replacing
+restricted historical patch content with exact safe bytes. Dedicated loader,
+that fixture's production-shaped pre-container/wrapper regression, atomic crash-matrix,
+resume-disposition, 72-cell fake-campaign, custody, and CI checks gate D1.10;
+their observed result is reported only after the final committed remote HEAD
+passes those checks.
+
+## Execution counters for this correction
+
+- model/API calls: 0
+- paid model calls: 0
+- benchmark image pulls: 0
+- official grader executions: 0
+- USD: 0
+
+No HELDOUT, ablation, merge, tag, or release action is authorized by this
+correction.

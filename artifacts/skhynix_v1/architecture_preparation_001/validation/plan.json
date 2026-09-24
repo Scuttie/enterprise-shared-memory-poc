@@ -1,0 +1,40 @@
+{
+  "command": "python -m pytest tests/unit/test_trimem_skhynix_architecture_plan.py -q --junitxml=/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_plan_validation.xml",
+  "created_utc": "2026-09-14T01:30:27.616368+00:00",
+  "design_status": "NOT_EVALUATION_READY",
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64/lib",
+    "PYTHONPATH": "src:scripts",
+    "python": "/opt/trimem-rehearsals/e932-preflight/venv/bin/python",
+    "repository": "/mnt/c/Users/jewon/esm-r23-d115-writer",
+    "user": "trimem-runner",
+    "wsl_distribution": "TriMemRunner2404"
+  },
+  "errors": 0,
+  "evaluation_runs": 0,
+  "failures": 0,
+  "fixtures": "Synthetic public descriptors and test-only pin substitution; no dataset row decoding.",
+  "initial_validation": {
+    "errors": 0,
+    "failures": 0,
+    "rerun_reason": "Added root-requested canonical public 500-task projection pin and four valid same-count substitution rejection tests.",
+    "tests": 53,
+    "xml_path": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_plan_validation.initial.xml",
+    "xml_sha256": "09d9c654ce2ee709da065b81e3203ab9ad085e37159b0e93b17a70105876de59"
+  },
+  "live_integration_verified": false,
+  "model_calls": 0,
+  "official_grader_calls": 0,
+  "passed": 57,
+  "schema": "skhynix/native-architecture-plan-unit-validation/1.0",
+  "skipped": 0,
+  "source_sha256": {
+    "scripts/trimem_skhynix_architecture_plan.py": "ede8dbd09fa2bd5716ea6f6b3a93dabbc3a387b69e70d9a472081b4a6988ae3e",
+    "tests/unit/test_trimem_skhynix_architecture_plan.py": "15a082c87ab36a962d35a4589f4a28fdfafe24b12ddff2dbf1d6adb829c59c99"
+  },
+  "status": "PASS",
+  "tests": 57,
+  "training_runs": 0,
+  "validation_scope": "PREPARATION_CONTRACT_ONLY",
+  "xml_sha256": "9e89e49cc9ce5e2c7a555e2114c1508d2219b3741e37350c6a1bd90cc45574dc"
+}

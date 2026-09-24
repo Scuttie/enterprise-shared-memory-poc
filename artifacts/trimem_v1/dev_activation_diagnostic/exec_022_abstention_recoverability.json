@@ -1,0 +1,99 @@
+{
+  "accessible_evidence": {
+    "inventory_sha256": "9c78eb980ff99916cecc6e1ce3369c3b792fd9319d3ddd9e55255025fc3945df",
+    "public_results_sha256": "a983bcd807d80520349942d296d8b4910bf7c5eb4f1079185aca1937adacd9a1",
+    "restricted_archive_bytes": 815629541,
+    "restricted_archive_member": "trimem-benchmark-restricted.tar.enc",
+    "restricted_archive_sha256": "7d00702e5f3b423eb21cddc5d959f794217f8e67bb0d25173ddad5b0d1d9577f",
+    "restricted_evidence_decryptable_with_current_custody": false
+  },
+  "aggregate_counts": {
+    "abstention_decisions": 179,
+    "injected_records": 0,
+    "recall_attempts": 78,
+    "streams": [
+      {
+        "abstention_decisions": 14,
+        "arm": "M0",
+        "injected_records": 0,
+        "recall_attempts": 14,
+        "semantic_note": "INTENTIONAL_M0_NO_MEMORY_CONTROL"
+      },
+      {
+        "abstention_decisions": 12,
+        "arm": "M1",
+        "injected_records": 0,
+        "recall_attempts": 13,
+        "semantic_note": "ONE_NON_ABSTAIN_SELECTION_DID_NOT_BECOME_AN_INJECTION"
+      },
+      {
+        "abstention_decisions": 39,
+        "arm": "M2-baseline",
+        "injected_records": 0,
+        "recall_attempts": 13,
+        "semantic_note": "BANK_LEVEL_ABSTENTIONS"
+      },
+      {
+        "abstention_decisions": 39,
+        "arm": "M2-precision",
+        "injected_records": 0,
+        "recall_attempts": 13,
+        "semantic_note": "BANK_LEVEL_ABSTENTIONS"
+      },
+      {
+        "abstention_decisions": 36,
+        "arm": "M2-recall",
+        "injected_records": 0,
+        "recall_attempts": 12,
+        "semantic_note": "BANK_LEVEL_ABSTENTIONS"
+      },
+      {
+        "abstention_decisions": 39,
+        "arm": "M2-balanced",
+        "injected_records": 0,
+        "recall_attempts": 13,
+        "semantic_note": "BANK_LEVEL_ABSTENTIONS"
+      }
+    ]
+  },
+  "approval_binding": {
+    "git_head": "889f4fc0d461d812b531f9413aeaceb2ec3b9fff",
+    "phase": "DEVELOPMENT_TUNING",
+    "workflow_run_attempt": 1,
+    "workflow_run_id": 34292287112
+  },
+  "classification": {
+    "endpoint": "HISTORICAL_ROOT_CAUSE_UNIDENTIFIABLE_FROM_RETAINED_EVIDENCE",
+    "missing_field_value": "UNKNOWN_NOT_RECORDED_EXEC_022",
+    "row_level_imputation_allowed": false
+  },
+  "field_recoverability": {
+    "Q_ABSTAIN": "NOT_APPLICABLE_RETRIEVAL_DQN_ABSENT",
+    "Q_USE": "NOT_APPLICABLE_RETRIEVAL_DQN_ABSENT",
+    "bank_type": "ENCRYPTED_NOT_ACCESSIBLE_WITH_CURRENT_CUSTODY",
+    "candidate_count_after_filter": "NOT_RECORDED_EXEC_022",
+    "candidate_count_before_filter": "NOT_RECORDED_EXEC_022",
+    "final_reason_code": "PARTIALLY_RECORDED_IN_ENCRYPTED_BANK_TRACE_ONLY",
+    "recall_attempt_id": "NOT_RECORDED_EXEC_022",
+    "subtask_id": "ACTIVE_NODE_ID_RECORDED_IN_ENCRYPTED_EVENT_ONLY",
+    "target_id": "TASK_ID_RECORDED_IN_ENCRYPTED_EVENT_ONLY",
+    "threshold": "NOT_RECORDED_AS_A_DECISION_SNAPSHOT_EXEC_022",
+    "top_candidate_id": "NOT_RECORDED_FOR_ABSTENTION_EXEC_022",
+    "top_embedding_score": "NOT_RECORDED_EXEC_022",
+    "top_ppr_score": "NOT_RECORDED_EXEC_022"
+  },
+  "interpretation": {
+    "dqn_actions": [
+      "FORGET",
+      "MOVE_TO_EPISODIC",
+      "MOVE_TO_SEMANTIC_CANDIDATE"
+    ],
+    "dqn_role": "POST_GRADE_STORAGE_RETENTION_ONLY",
+    "recall_router": "DETERMINISTIC_EMBEDDING_PPR_AND_THRESHOLD_POLICY"
+  },
+  "model_api_calls_for_this_recovery": 0,
+  "paid_model_calls_for_this_recovery": 0,
+  "schema": "trimem/dev-activation-exec-022-abstention-recoverability/1.0",
+  "status": "PARTIAL_AGGREGATE_ONLY_FAIL_CLOSED",
+  "total_usd_for_this_recovery": "0.000000000000"
+}

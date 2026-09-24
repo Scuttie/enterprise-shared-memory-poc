@@ -1,0 +1,391 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 57dbf3d..df9ea6c 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -5,6 +5,10 @@ Version 2.0.1
+ 
+ Unreleased
+ 
++-   Blueprints can be registered multiple times with unique ``name``
++    options so relative ``url_for`` calls use the current registration.
++    Nested blueprints are registered with their full dotted names.
++    :issue:`4074`
+ -   Re-add the ``filename`` parameter in ``send_from_directory``. The
+     ``filename`` parameter has been renamed to ``path``, the old name
+     is deprecated. :pr:`4019`
+diff --git a/docs/blueprints.rst b/docs/blueprints.rst
+index af368ba..9f1146f 100644
+--- a/docs/blueprints.rst
++++ b/docs/blueprints.rst
+@@ -116,9 +116,20 @@ And sure enough, these are the generated rules::
+      <Rule '/pages/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>,
+      <Rule '/pages/' (HEAD, OPTIONS, GET) -> simple_page.show>])
+ 
+-On top of that you can register blueprints multiple times though not every
+-blueprint might respond properly to that.  In fact it depends on how the
+-blueprint is implemented if it can be mounted more than once.
++You can register a blueprint multiple times by giving each registration a
++unique ``name``. This name prefixes the endpoints for that registration::
++
++    app.register_blueprint(simple_page, url_prefix='/pages', name='pages')
++    app.register_blueprint(simple_page, url_prefix='/other', name='other_pages')
++
++The endpoints are ``pages.show`` and ``other_pages.show``. Within a view,
++``url_for('.show')`` uses the name of the current registration, so it builds
++a URL with the matching prefix. The blueprint's own ``name`` is unchanged.
++If multiple registrations use the same name, their endpoints are shared,
++so URL building cannot distinguish between the registrations.
++
++Whether a blueprint can be mounted more than once also depends on how it
++is implemented.
+ 
+ Nesting Blueprints
+ ------------------
+diff --git a/src/flask/app.py b/src/flask/app.py
+index cd1c42a..7c81dec 100644
+--- a/src/flask/app.py
++++ b/src/flask/app.py
+@@ -1018,6 +1018,12 @@ class Flask(Scaffold):
+             :class:`~flask.blueprints.BlueprintSetupState`. They can be
+             accessed in :meth:`~flask.Blueprint.record` callbacks.
+ 
++        .. versionchanged:: 2.0.1
++            The ``name`` option can be used to change the (pre-dotted)
++            name the blueprint is registered with. This allows the same
++            blueprint to be registered multiple times with unique names
++            for ``url_for``.
++
+         .. versionadded:: 0.7
+         """
+         blueprint.register(self, options)
+@@ -2076,7 +2082,8 @@ class Flask(Scaffold):
+         return self.wsgi_app(environ, start_response)
+ 
+     def _request_blueprints(self) -> t.Iterable[str]:
+-        if _request_ctx_stack.top.request.blueprint is None:
+-            return []
+-        else:
+-            return reversed(_request_ctx_stack.top.request.blueprint.split("."))
++        name = _request_ctx_stack.top.request.blueprint
++
++        while name:
++            yield name
++            name = name.rpartition(".")[0]
+diff --git a/src/flask/blueprints.py b/src/flask/blueprints.py
+index 88883ba..6b16d91 100644
+--- a/src/flask/blueprints.py
++++ b/src/flask/blueprints.py
+@@ -67,6 +67,8 @@ class BlueprintSetupState:
+         #: blueprint.
+         self.url_prefix = url_prefix
+ 
++        #: The name used to register the blueprint with the application.
++        self.name = self.options.get("name", blueprint.name)
+         self.name_prefix = self.options.get("name_prefix", "")
+ 
+         #: A dictionary with URL defaults that is added to each and every
+@@ -98,7 +100,7 @@ class BlueprintSetupState:
+             defaults = dict(defaults, **options.pop("defaults"))
+         self.app.add_url_rule(
+             rule,
+-            f"{self.name_prefix}{self.blueprint.name}.{endpoint}",
++            f"{self.name_prefix}{self.name}.{endpoint}",
+             view_func,
+             defaults=defaults,
+             **options,
+@@ -252,6 +254,12 @@ class Blueprint(Scaffold):
+         arguments passed to this method will override the defaults set
+         on the blueprint.
+ 
++        .. versionchanged:: 2.0.1
++            The ``name`` option can be used to change the (pre-dotted)
++            name the blueprint is registered with. This allows the same
++            blueprint to be registered multiple times with unique names
++            for ``url_for``.
++
+         .. versionadded:: 2.0
+         """
+         self._blueprints.append((blueprint, options))
+@@ -269,22 +277,22 @@ class Blueprint(Scaffold):
+         :param first_registration: Whether this is the first time this
+             blueprint has been registered on the application.
+         """
+-        first_registration = False
++        name = options.get("name_prefix", "") + options.get("name", self.name)
+ 
+-        if self.name in app.blueprints:
+-            assert app.blueprints[self.name] is self, (
++        if name in app.blueprints:
++            assert app.blueprints[name] is self, (
+                 "A name collision occurred between blueprints"
+-                f" {self!r} and {app.blueprints[self.name]!r}."
+-                f" Both share the same name {self.name!r}."
++                f" {self!r} and {app.blueprints[name]!r}."
++                f" Both share the same name {name!r}."
+                 f" Blueprints that are created on the fly need unique"
+                 f" names."
+             )
+-        else:
+-            app.blueprints[self.name] = self
+-            first_registration = True
++        first_bp_registration = not any(bp is self for bp in app.blueprints.values())
++        first_name_registration = name not in app.blueprints
+ 
++        app.blueprints[name] = self
+         self._got_registered_once = True
+-        state = self.make_setup_state(app, options, first_registration)
++        state = self.make_setup_state(app, options, first_bp_registration)
+ 
+         if self.has_static_folder:
+             state.add_url_rule(
+@@ -294,16 +302,16 @@ class Blueprint(Scaffold):
+             )
+ 
+         # Merge blueprint data into parent.
+-        if first_registration:
++        if first_bp_registration or first_name_registration:
+ 
+             def extend(bp_dict, parent_dict):
+                 for key, values in bp_dict.items():
+-                    key = self.name if key is None else f"{self.name}.{key}"
++                    key = name if key is None else f"{name}.{key}"
+ 
+                     parent_dict[key].extend(values)
+ 
+             for key, value in self.error_handler_spec.items():
+-                key = self.name if key is None else f"{self.name}.{key}"
++                key = name if key is None else f"{name}.{key}"
+                 value = defaultdict(
+                     dict,
+                     {
+@@ -337,7 +345,7 @@ class Blueprint(Scaffold):
+             if cli_resolved_group is None:
+                 app.cli.commands.update(self.cli.commands)
+             elif cli_resolved_group is _sentinel:
+-                self.cli.name = self.name
++                self.cli.name = name
+                 app.cli.add_command(self.cli)
+             else:
+                 self.cli.name = cli_resolved_group
+@@ -357,7 +365,7 @@ class Blueprint(Scaffold):
+             else:
+                 bp_options["url_prefix"] = state.url_prefix
+ 
+-            bp_options["name_prefix"] = options.get("name_prefix", "") + self.name + "."
++            bp_options["name_prefix"] = name + "."
+             blueprint.register(app, bp_options)
+ 
+     def add_url_rule(
+diff --git a/tests/test_blueprints.py b/tests/test_blueprints.py
+index 0bae533..08395e1 100644
+--- a/tests/test_blueprints.py
++++ b/tests/test_blueprints.py
+@@ -148,6 +148,79 @@ def test_blueprint_url_defaults(app, client):
+     assert client.get("/2/bar").data == b"19"
+ 
+ 
++def test_blueprint_registration_name(app):
++    from werkzeug.test import Client
++
++    client = Client(app, app.response_class)
++    bp = flask.Blueprint("foo", __name__, static_folder="static")
++    registrations = []
++    app_requests = []
++
++    @bp.record_once
++    def record_once(state):
++        registrations.append(state.first_registration)
++
++    @bp.before_app_request
++    def before_app():
++        app_requests.append(flask.request.path)
++
++    @bp.before_request
++    def before():
++        flask.g.calls = getattr(flask.g, "calls", 0) + 1
++
++    @bp.after_request
++    def after(response):
++        response.headers["X-Blueprint"] = flask.request.blueprint
++        return response
++
++    @bp.route("/")
++    def index():
++        assert flask.g.calls == 1
++        return flask.url_for(".index")
++
++    @bp.route("/no")
++    def no():
++        flask.abort(403)
++
++    @bp.errorhandler(403)
++    def forbidden(error):
++        return flask.url_for(".index"), 403
++
++    app.register_blueprint(bp, url_prefix="/foo")
++    app.register_blueprint(bp, url_prefix="/bar", name="bar")
++    # Repeating the same registration must not duplicate local callbacks.
++    app.register_blueprint(bp, url_prefix="/bar", name="bar")
++
++    for name in ("foo", "bar"):
++        response = client.get(f"/{name}/")
++        assert response.get_data(as_text=True) == f"/{name}/"
++        assert response.headers["X-Blueprint"] == name
++        response = client.get(f"/{name}/no")
++        assert response.status_code == 403
++        assert response.get_data(as_text=True) == f"/{name}/"
++
++    assert bp.name == "foo"
++    assert app.blueprints == {"foo": bp, "bar": bp}
++    assert registrations == [True]
++    assert app_requests == ["/foo/", "/foo/no", "/bar/", "/bar/no"]
++
++    with app.test_request_context():
++        assert flask.url_for("foo.static", filename="test.txt") == "/foo/static/test.txt"
++        assert flask.url_for("bar.static", filename="test.txt") == "/bar/static/test.txt"
++
++
++def test_blueprint_registration_name_collision(app):
++    first = flask.Blueprint("same", __name__)
++    second = flask.Blueprint("same", __name__)
++    app.register_blueprint(first)
++    app.register_blueprint(second, name="other")
++
++    assert app.blueprints == {"same": first, "other": second}
++
++    with pytest.raises(AssertionError):
++        app.register_blueprint(first, name="other")
++
++
+ def test_blueprint_url_processors(app, client):
+     bp = flask.Blueprint("frontend", __name__, url_prefix="/<lang_code>")
+ 
+@@ -788,6 +861,93 @@ def test_app_url_processors(app, client):
+     assert client.get("/de/about").data == b"/de/"
+ 
+ 
++def test_nested_blueprint_registration_names(app):
++    from werkzeug.test import Client
++
++    client = Client(app, app.response_class)
++    parent = flask.Blueprint("parent", __name__)
++    child = flask.Blueprint("child", __name__)
++    grandchild = flask.Blueprint("grandchild", __name__)
++    calls = []
++
++    @child.before_request
++    def before():
++        calls.append(("before", flask.request.blueprint))
++
++    @child.after_request
++    def after(response):
++        response.headers["X-Child"] = flask.request.blueprint
++        return response
++
++    @child.teardown_request
++    def teardown(error):
++        calls.append(("teardown", flask.request.blueprint))
++
++    @child.context_processor
++    def context():
++        return {"mount": flask.request.blueprint}
++
++    @child.url_value_preprocessor
++    def values(endpoint, values):
++        flask.g.value = values.pop("value")
++
++    @grandchild.url_defaults
++    def defaults(endpoint, values):
++        values.setdefault("value", flask.g.value)
++
++    @grandchild.route("/")
++    def index():
++        return flask.render_template_string("{{ mount }} {{ url_for('.index') }}")
++
++    @grandchild.route("/no")
++    def no():
++        flask.abort(403)
++
++    @child.errorhandler(403)
++    def forbidden(error):
++        return flask.url_for(".index"), 403
++
++    child.register_blueprint(grandchild, name="leaf", url_prefix="/leaf")
++    parent.register_blueprint(child, name="branch", url_prefix="/<value>")
++    app.register_blueprint(parent, name="one", url_prefix="/one")
++    app.register_blueprint(parent, name="two", url_prefix="/two")
++
++    assert app.blueprints == {
++        "one": parent,
++        "one.branch": child,
++        "one.branch.leaf": grandchild,
++        "two": parent,
++        "two.branch": child,
++        "two.branch.leaf": grandchild,
++    }
++
++    for mount in ("one", "two"):
++        name = f"{mount}.branch.leaf"
++        path = f"/{mount}/example/leaf/"
++        response = client.get(path)
++        assert response.get_data(as_text=True) == f"{name} {path}"
++        assert response.headers["X-Child"] == name
++        response = client.get(path + "no")
++        assert response.status_code == 403
++        assert response.get_data(as_text=True) == path
++        assert calls == [("before", name), ("teardown", name)] * 2
++        calls.clear()
++
++
++def test_nested_blueprint_same_child_names(app):
++    first = flask.Blueprint("first", __name__)
++    second = flask.Blueprint("second", __name__)
++    first_child = flask.Blueprint("child", __name__)
++    second_child = flask.Blueprint("child", __name__)
++    first.register_blueprint(first_child)
++    second.register_blueprint(second_child)
++    app.register_blueprint(first)
++    app.register_blueprint(second)
++
++    assert app.blueprints["first.child"] is first_child
++    assert app.blueprints["second.child"] is second_child
++
++
+ def test_nested_blueprint(app, client):
+     parent = flask.Blueprint("parent", __name__)
+     child = flask.Blueprint("child", __name__)
+diff --git a/tests/test_cli.py b/tests/test_cli.py
+index ebf8d1f..8d5eac5 100644
+--- a/tests/test_cli.py
++++ b/tests/test_cli.py
+@@ -644,6 +644,30 @@ def test_cli_blueprints(app):
+     assert "late_result" in result.output
+ 
+ 
++@pytest.mark.parametrize("nested", (False, True))
++def test_cli_blueprint_registration_names(app, nested):
++    bp = Blueprint("original", __name__)
++
++    @bp.cli.command("hello")
++    def hello():
++        click.echo("hello")
++
++    parent = Blueprint("parent", __name__) if nested else app
++    parent.register_blueprint(bp, name="first")
++    parent.register_blueprint(bp, name="second")
++
++    if nested:
++        app.register_blueprint(parent, name="root")
++
++    runner = app.test_cli_runner()
++
++    for name in ("first", "second"):
++        group = f"root.{name}" if nested else name
++        result = runner.invoke(args=[group, "hello"])
++        assert result.exit_code == 0
++        assert result.output == "hello\n"
++
++
+ def test_cli_empty(app):
+     """If a Blueprint's CLI group is empty, do not register it."""
+     bp = Blueprint("blue", __name__, cli_group="blue")

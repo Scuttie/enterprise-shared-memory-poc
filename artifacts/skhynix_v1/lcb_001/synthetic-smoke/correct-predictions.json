@@ -1,0 +1,17 @@
+{
+  "schema": "trimem/lcb-predictions/1.0",
+  "expected_question_ids": [
+    "synthetic-stdin-add-one",
+    "synthetic-functional-add"
+  ],
+  "predictions": [
+    {
+      "question_id": "synthetic-stdin-add-one",
+      "output": "```python\nprint(int(input()) + 1)\n```"
+    },
+    {
+      "question_id": "synthetic-functional-add",
+      "output": "```python\nclass Solution:\n    def add(self, a, b):\n        return a + b\n```"
+    }
+  ]
+}

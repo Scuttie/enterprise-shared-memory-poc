@@ -1,0 +1,172 @@
+﻿task_id,repository,group,official_outcome,capture_status,episodes,public_green_verified_episodes,public_test_red,public_test_green,completed_subgoal,terminal_partial_attempt,checkpoint_counts,l2_unique_nodes_referenced,capture_failures,empty_checkpoints,memory_injections,l2_nodes_by_catalog_source_episode,l2_edges_by_source_episode
+swebench--astropy__astropy-12318,astropy/astropy,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",12,0,0,0,12,11
+swebench--astropy__astropy-13390,astropy/astropy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",2,0,0,0,2,1
+swebench--astropy__astropy-13404,astropy/astropy,new_240,RESOLVED,CAPTURED,5,2,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",15,0,0,0,15,12
+swebench--astropy__astropy-13477,astropy/astropy,inherited_120,UNRESOLVED,CAPTURED,1,0,0,0,0,1,"{""TERMINAL_ACTIVE"": 1}",4,0,0,0,4,3
+swebench--astropy__astropy-13734,astropy/astropy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,1,1,"{""COMPLETED_SUBGOAL"": 1, ""TERMINAL_ACTIVE"": 1}",26,0,0,0,26,25
+swebench--astropy__astropy-13803,astropy/astropy,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",10,0,0,0,10,9
+swebench--astropy__astropy-13838,astropy/astropy,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--astropy__astropy-13933,astropy/astropy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",6,0,0,0,6,5
+swebench--astropy__astropy-14253,astropy/astropy,new_240,UNRESOLVED,CAPTURED,5,2,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",21,0,0,0,21,20
+swebench--astropy__astropy-14295,astropy/astropy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",1,0,0,0,1,0
+swebench--astropy__astropy-14590,astropy/astropy,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",11,0,0,0,11,10
+swebench--astropy__astropy-6938,astropy/astropy,inherited_120,RESOLVED,CAPTURED,6,2,2,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",18,0,0,0,18,15
+swebench--astropy__astropy-7008,astropy/astropy,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",19,0,0,0,19,18
+swebench--astropy__astropy-7746,astropy/astropy,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-10287,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-10643,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",13,0,0,0,13,12
+swebench--django__django-11085,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-11417,django/django,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--django__django-11618,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",10,0,0,0,10,9
+swebench--django__django-11680,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",13,0,0,0,13,12
+swebench--django__django-11742,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--django__django-11903,django/django,new_240,RESOLVED,CAPTURED,1,0,0,0,1,0,"{""COMPLETED_SUBGOAL"": 1}",17,0,0,0,17,16
+swebench--django__django-12009,django/django,new_240,UNDETERMINED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",2,0,0,,2,1
+swebench--django__django-12281,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",10,0,0,0,10,9
+swebench--django__django-12343,django/django,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",13,0,0,0,13,12
+swebench--django__django-12407,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",11,0,0,0,11,10
+swebench--django__django-12497,django/django,new_240,RESOLVED,CAPTURED,1,0,0,0,1,0,"{""COMPLETED_SUBGOAL"": 1}",7,0,0,0,7,6
+swebench--django__django-12532,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--django__django-12830,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",12,0,0,0,12,11
+swebench--django__django-12851,django/django,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",0,0,0,0,0,0
+swebench--django__django-12855,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",2,0,0,0,2,1
+swebench--django__django-13170,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",31,0,0,0,31,30
+swebench--django__django-13251,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--django__django-13347,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",6,0,0,0,6,5
+swebench--django__django-13355,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-13490,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--django__django-13585,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",5,0,0,0,5,4
+swebench--django__django-13615,django/django,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",18,0,0,0,18,17
+swebench--django__django-13671,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",10,0,0,0,10,9
+swebench--django__django-13684,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",4,0,0,0,4,3
+swebench--django__django-13841,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",4,0,0,0,4,3
+swebench--django__django-13884,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-13886,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",13,0,0,0,13,12
+swebench--django__django-14031,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--django__django-14059,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--django__django-14169,django/django,inherited_120,RESOLVED,CAPTURED,1,0,0,0,1,0,"{""COMPLETED_SUBGOAL"": 1}",3,0,0,0,3,2
+swebench--django__django-14334,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-14645,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-14722,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",9,0,0,0,9,8
+swebench--django__django-14751,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",15,0,0,0,15,14
+swebench--django__django-15204,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-15248,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",19,0,0,0,19,18
+swebench--django__django-15491,django/django,new_240,RESOLVED,CAPTURED,1,0,0,0,1,0,"{""COMPLETED_SUBGOAL"": 1}",7,0,0,0,7,6
+swebench--django__django-15526,django/django,new_240,RESOLVED,CAPTURED,1,0,0,0,1,0,"{""COMPLETED_SUBGOAL"": 1}",3,0,0,0,3,2
+swebench--django__django-15742,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",11,0,0,0,11,10
+swebench--django__django-15799,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-15902,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",18,0,0,0,18,17
+swebench--django__django-15969,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",20,0,0,0,20,19
+swebench--django__django-16111,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",3,0,0,0,3,2
+swebench--django__django-16143,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",11,0,0,0,11,10
+swebench--django__django-16379,django/django,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--django__django-16649,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",13,0,0,0,13,12
+swebench--django__django-16686,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",13,0,0,0,13,12
+swebench--django__django-16810,django/django,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",18,0,0,0,18,17
+swebench--django__django-16858,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",9,0,0,0,9,8
+swebench--django__django-16920,django/django,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",12,0,0,0,12,11
+swebench--django__django-5158,django/django,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",17,0,0,0,17,16
+swebench--django__django-5470,django/django,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",20,0,0,0,20,19
+swebench--django__django-8961,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",22,0,0,0,22,21
+swebench--django__django-9003,django/django,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",18,0,0,0,18,17
+swebench--matplotlib__matplotlib-13859,matplotlib/matplotlib,inherited_120,UNRESOLVED,CAPTURED,4,2,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",24,0,0,0,24,22
+swebench--matplotlib__matplotlib-13908,matplotlib/matplotlib,inherited_120,UNRESOLVED,CAPTURED,5,2,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",39,0,0,0,39,36
+swebench--matplotlib__matplotlib-13959,matplotlib/matplotlib,inherited_120,UNRESOLVED,CAPTURED,2,1,0,1,0,1,"{""PUBLIC_TEST_OBSERVATION"": 1, ""TERMINAL_ACTIVE"": 1}",12,0,0,0,12,10
+swebench--matplotlib__matplotlib-21238,matplotlib/matplotlib,inherited_120,UNRESOLVED,CAPTURED,3,2,0,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 1}",0,0,0,0,0,0
+swebench--matplotlib__matplotlib-22835,matplotlib/matplotlib,new_240,UNRESOLVED,CAPTURED,5,3,0,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",20,0,0,0,20,18
+swebench--matplotlib__matplotlib-22883,matplotlib/matplotlib,new_240,UNRESOLVED,CAPTURED,1,0,0,0,1,0,"{""COMPLETED_SUBGOAL"": 1}",7,0,0,0,7,6
+swebench--matplotlib__matplotlib-23047,matplotlib/matplotlib,inherited_120,RESOLVED,CAPTURED,8,3,3,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 6}",12,0,0,0,12,9
+swebench--matplotlib__matplotlib-23266,matplotlib/matplotlib,new_240,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",9,0,0,0,9,8
+swebench--matplotlib__matplotlib-23332,matplotlib/matplotlib,new_240,RESOLVED,CAPTURED,5,2,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",30,0,0,0,30,27
+swebench--matplotlib__matplotlib-24224,matplotlib/matplotlib,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",9,0,0,0,9,8
+swebench--matplotlib__matplotlib-24250,matplotlib/matplotlib,new_240,RESOLVED,CAPTURED,6,3,1,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",45,0,0,0,45,42
+swebench--matplotlib__matplotlib-24619,matplotlib/matplotlib,new_240,UNRESOLVED,CAPTURED,6,4,0,4,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",30,0,0,0,30,27
+swebench--matplotlib__matplotlib-25027,matplotlib/matplotlib,new_240,UNRESOLVED,CAPTURED,5,2,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",0,0,0,0,0,0
+swebench--matplotlib__matplotlib-25334,matplotlib/matplotlib,new_240,UNRESOLVED,CAPTURED,4,2,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",14,0,0,0,14,12
+swebench--matplotlib__matplotlib-25651,matplotlib/matplotlib,inherited_120,UNRESOLVED,CAPTURED,4,3,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",8,0,0,0,8,6
+swebench--matplotlib__matplotlib-25667,matplotlib/matplotlib,inherited_120,RESOLVED,CAPTURED,4,2,1,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",15,0,0,0,15,12
+swebench--matplotlib__matplotlib-25772,matplotlib/matplotlib,inherited_120,RESOLVED,CAPTURED,4,2,1,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",27,0,0,0,27,24
+swebench--matplotlib__matplotlib-25785,matplotlib/matplotlib,new_240,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--matplotlib__matplotlib-26223,matplotlib/matplotlib,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",5,0,0,0,5,4
+swebench--mwaskom__seaborn-2389,mwaskom/seaborn,inherited_120,RESOLVED,CAPTURED,4,1,1,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",22,0,0,0,22,20
+swebench--mwaskom__seaborn-2457,mwaskom/seaborn,inherited_120,RESOLVED,CAPTURED,3,0,1,0,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 1}",9,0,0,0,9,8
+swebench--mwaskom__seaborn-2576,mwaskom/seaborn,inherited_120,UNRESOLVED,CAPTURED,5,2,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",24,0,0,0,24,21
+swebench--mwaskom__seaborn-2766,mwaskom/seaborn,inherited_120,UNDETERMINED,CAPTURED,8,1,5,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 6}",14,0,0,,14,12
+swebench--mwaskom__seaborn-3190,mwaskom/seaborn,inherited_120,RESOLVED,CAPTURED,3,1,0,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 1}",54,0,0,0,54,52
+swebench--mwaskom__seaborn-3217,mwaskom/seaborn,inherited_120,RESOLVED,CAPTURED,5,3,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",100,0,0,0,100,96
+swebench--mwaskom__seaborn-3276,mwaskom/seaborn,inherited_120,RESOLVED,CAPTURED,4,2,1,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",18,0,0,0,18,15
+swebench--pallets__flask-4045,pallets/flask,inherited_120,UNRESOLVED,CAPTURED,6,3,2,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",18,0,0,0,18,16
+swebench--pallets__flask-4074,pallets/flask,inherited_120,UNRESOLVED,CAPTURED,10,3,5,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 8}",80,0,0,0,80,75
+swebench--pallets__flask-4160,pallets/flask,inherited_120,RESOLVED,CAPTURED,4,2,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",14,0,0,0,14,12
+swebench--pallets__flask-4544,pallets/flask,inherited_120,RESOLVED,CAPTURED,4,2,1,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",10,0,0,0,10,8
+swebench--pallets__flask-4575,pallets/flask,inherited_120,RESOLVED,CAPTURED,9,2,5,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 7}",28,0,0,0,28,24
+swebench--pallets__flask-4935,pallets/flask,inherited_120,RESOLVED,CAPTURED,8,4,3,3,1,1,"{""COMPLETED_SUBGOAL"": 1, ""PUBLIC_TEST_OBSERVATION"": 6, ""TERMINAL_ACTIVE"": 1}",48,0,0,0,48,44
+swebench--psf__requests-1376,psf/requests,inherited_120,UNRESOLVED,CAPTURED,4,3,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",24,0,0,0,24,21
+swebench--psf__requests-1635,psf/requests,inherited_120,RESOLVED,CAPTURED,7,5,2,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 5}",60,0,0,0,60,57
+swebench--psf__requests-1689,psf/requests,inherited_120,RESOLVED,CAPTURED,5,3,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",42,0,0,0,42,39
+swebench--psf__requests-2413,psf/requests,inherited_120,UNRESOLVED,CAPTURED,5,3,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",33,0,0,0,33,30
+swebench--psf__requests-2617,psf/requests,inherited_120,RESOLVED,CAPTURED,5,3,1,2,1,1,"{""COMPLETED_SUBGOAL"": 1, ""PUBLIC_TEST_OBSERVATION"": 3, ""TERMINAL_ACTIVE"": 1}",33,0,0,0,33,30
+swebench--psf__requests-5087,psf/requests,inherited_120,RESOLVED,CAPTURED,5,4,0,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",30,0,0,0,30,28
+swebench--psf__requests-774,psf/requests,inherited_120,RESOLVED,CAPTURED,4,3,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",16,0,0,0,16,14
+swebench--psf__requests-863,psf/requests,inherited_120,RESOLVED,CAPTURED,4,3,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",8,0,0,0,8,6
+swebench--pydata__xarray-2922,pydata/xarray,inherited_120,UNRESOLVED,CAPTURED,10,5,3,5,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 8}",10,0,0,0,10,8
+swebench--pydata__xarray-3114,pydata/xarray,inherited_120,RESOLVED,CAPTURED,4,1,1,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",36,0,0,0,36,33
+swebench--pydata__xarray-3156,pydata/xarray,inherited_120,RESOLVED,CAPTURED,5,4,0,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",14,0,0,0,14,12
+swebench--pydata__xarray-3635,pydata/xarray,inherited_120,RESOLVED,CAPTURED,6,5,1,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",15,0,0,0,15,12
+swebench--pydata__xarray-4767,pydata/xarray,inherited_120,UNRESOLVED,CAPTURED,7,4,3,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 5}",0,0,0,0,0,0
+swebench--pydata__xarray-4819,pydata/xarray,inherited_120,UNRESOLVED,CAPTURED,5,4,0,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",0,0,0,0,0,0
+swebench--pydata__xarray-7052,pydata/xarray,inherited_120,UNDETERMINED,CAPTURED,4,0,2,0,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",4,0,0,,4,2
+swebench--pydata__xarray-7120,pydata/xarray,inherited_120,UNRESOLVED,CAPTURED,5,3,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",0,0,0,0,0,0
+swebench--pydata__xarray-7203,pydata/xarray,inherited_120,RESOLVED,CAPTURED,8,6,2,4,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 6}",33,0,0,0,33,30
+swebench--pylint-dev__pylint-4175,pylint-dev/pylint,inherited_120,UNRESOLVED,CAPTURED,7,3,2,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 5}",115,0,0,0,115,110
+swebench--pylint-dev__pylint-4330,pylint-dev/pylint,inherited_120,UNRESOLVED,CAPTURED,5,2,2,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",21,0,0,0,21,18
+swebench--pylint-dev__pylint-4492,pylint-dev/pylint,inherited_120,UNRESOLVED,CAPTURED,4,3,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",6,0,0,0,6,4
+swebench--pylint-dev__pylint-5201,pylint-dev/pylint,inherited_120,UNRESOLVED,CAPTURED,5,4,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",21,0,0,0,21,18
+swebench--pylint-dev__pylint-5743,pylint-dev/pylint,inherited_120,UNRESOLVED,CAPTURED,6,5,0,4,1,1,"{""COMPLETED_SUBGOAL"": 1, ""PUBLIC_TEST_OBSERVATION"": 4, ""TERMINAL_ACTIVE"": 1}",15,0,0,0,15,12
+swebench--pylint-dev__pylint-6412,pylint-dev/pylint,inherited_120,UNRESOLVED,CAPTURED,7,3,3,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 5}",6,0,0,0,6,3
+swebench--pylint-dev__pylint-8124,pylint-dev/pylint,inherited_120,UNRESOLVED,CAPTURED,6,3,2,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",12,0,0,0,12,9
+swebench--pylint-dev__pylint-8281,pylint-dev/pylint,inherited_120,RESOLVED,CAPTURED,6,2,3,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",12,0,0,0,12,9
+swebench--pytest-dev__pytest-11041,pytest-dev/pytest,inherited_120,RESOLVED,CAPTURED,5,3,1,2,1,1,"{""COMPLETED_SUBGOAL"": 1, ""PUBLIC_TEST_OBSERVATION"": 3, ""TERMINAL_ACTIVE"": 1}",36,0,0,0,36,33
+swebench--pytest-dev__pytest-5103,pytest-dev/pytest,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",12,0,0,0,12,11
+swebench--pytest-dev__pytest-5205,pytest-dev/pytest,inherited_120,UNDETERMINED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",13,0,0,,13,12
+swebench--pytest-dev__pytest-5692,pytest-dev/pytest,inherited_120,RESOLVED,CAPTURED,4,1,1,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",24,0,0,0,24,21
+swebench--pytest-dev__pytest-6116,pytest-dev/pytest,inherited_120,UNDETERMINED,CAPTURED,5,1,2,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",15,0,0,,15,12
+swebench--pytest-dev__pytest-7481,pytest-dev/pytest,inherited_120,RESOLVED,CAPTURED,4,1,1,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",14,0,0,0,14,12
+swebench--pytest-dev__pytest-8447,pytest-dev/pytest,inherited_120,UNDETERMINED,CAPTURED,6,3,2,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",39,0,0,,39,36
+swebench--pytest-dev__pytest-8950,pytest-dev/pytest,inherited_120,UNDETERMINED,CAPTURED,2,0,0,0,1,1,"{""COMPLETED_SUBGOAL"": 1, ""TERMINAL_ACTIVE"": 1}",6,0,0,,6,5
+swebench--pytest-dev__pytest-9911,pytest-dev/pytest,inherited_120,UNRESOLVED,CAPTURED,7,4,2,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 5}",25,0,0,0,25,20
+swebench--scikit-learn__scikit-learn-12258,scikit-learn/scikit-learn,inherited_120,RESOLVED,CAPTURED,5,2,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",30,0,0,0,30,27
+swebench--scikit-learn__scikit-learn-12733,scikit-learn/scikit-learn,inherited_120,UNRESOLVED,CAPTURED,5,2,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",20,0,0,0,20,18
+swebench--scikit-learn__scikit-learn-13165,scikit-learn/scikit-learn,inherited_120,UNRESOLVED,CAPTURED,4,3,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",18,0,0,0,18,16
+swebench--scikit-learn__scikit-learn-13549,scikit-learn/scikit-learn,inherited_120,RESOLVED,CAPTURED,5,4,0,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",39,0,0,0,39,36
+swebench--scikit-learn__scikit-learn-14309,scikit-learn/scikit-learn,inherited_120,RESOLVED,CAPTURED,3,2,0,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 1}",14,0,0,0,14,12
+swebench--scikit-learn__scikit-learn-15138,scikit-learn/scikit-learn,inherited_120,RESOLVED,CAPTURED,5,4,0,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",45,0,0,0,45,42
+swebench--scikit-learn__scikit-learn-25370,scikit-learn/scikit-learn,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",5,0,0,0,5,4
+swebench--scikit-learn__scikit-learn-25570,scikit-learn/scikit-learn,inherited_120,RESOLVED,CAPTURED,3,1,0,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 1}",13,0,0,0,13,12
+swebench--scikit-learn__scikit-learn-3840,scikit-learn/scikit-learn,inherited_120,RESOLVED,CAPTURED,3,1,0,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 1}",14,0,0,0,14,12
+swebench--scikit-learn__scikit-learn-7760,scikit-learn/scikit-learn,inherited_120,UNRESOLVED,CAPTURED,6,4,1,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",63,0,0,0,63,60
+swebench--scikit-learn__scikit-learn-9274,scikit-learn/scikit-learn,inherited_120,UNRESOLVED,CAPTURED,5,3,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",18,0,0,0,18,15
+swebench--sphinx-doc__sphinx-10097,sphinx-doc/sphinx,inherited_120,UNRESOLVED,CAPTURED,8,1,5,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 6}",20,0,0,0,20,15
+swebench--sphinx-doc__sphinx-10360,sphinx-doc/sphinx,inherited_120,UNRESOLVED,CAPTURED,6,5,0,4,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",27,0,0,0,27,24
+swebench--sphinx-doc__sphinx-7234,sphinx-doc/sphinx,inherited_120,UNDETERMINED,CAPTURED,10,4,4,4,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 8}",72,0,0,,72,69
+swebench--sphinx-doc__sphinx-7268,sphinx-doc/sphinx,inherited_120,RESOLVED,CAPTURED,6,5,1,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 4}",30,0,0,0,30,27
+swebench--sphinx-doc__sphinx-7854,sphinx-doc/sphinx,inherited_120,RESOLVED,CAPTURED,4,3,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",24,0,0,0,24,22
+swebench--sphinx-doc__sphinx-8506,sphinx-doc/sphinx,inherited_120,UNRESOLVED,CAPTURED,9,3,5,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 7}",44,0,0,0,44,40
+swebench--sphinx-doc__sphinx-8579,sphinx-doc/sphinx,inherited_120,UNRESOLVED,CAPTURED,5,4,0,3,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",26,0,0,0,26,24
+swebench--sphinx-doc__sphinx-9171,sphinx-doc/sphinx,inherited_120,UNRESOLVED,CAPTURED,7,3,3,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 5}",52,0,0,0,52,48
+swebench--sphinx-doc__sphinx-9309,sphinx-doc/sphinx,inherited_120,RESOLVED,CAPTURED,5,3,1,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 3}",48,0,0,0,48,45
+swebench--sphinx-doc__sphinx-9829,sphinx-doc/sphinx,inherited_120,UNRESOLVED,CAPTURED,4,2,1,1,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",30,0,0,0,30,27
+swebench--sympy__sympy-11232,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",11,0,0,0,11,10
+swebench--sympy__sympy-11384,sympy/sympy,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",11,0,0,0,11,10
+swebench--sympy__sympy-11831,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--sympy__sympy-12454,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",2,0,0,0,2,1
+swebench--sympy__sympy-13018,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",9,0,0,0,9,8
+swebench--sympy__sympy-13198,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--sympy__sympy-13437,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",5,0,0,0,5,4
+swebench--sympy__sympy-16085,sympy/sympy,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",11,0,0,0,11,10
+swebench--sympy__sympy-16437,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",8,0,0,0,8,7
+swebench--sympy__sympy-16527,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",7,0,0,0,7,6
+swebench--sympy__sympy-18087,sympy/sympy,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",0,0,0,0,0,0
+swebench--sympy__sympy-18765,sympy/sympy,inherited_120,RESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",6,0,0,0,6,5
+swebench--sympy__sympy-21259,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,2,0,0,0,2,0,"{""COMPLETED_SUBGOAL"": 2}",12,0,0,0,12,11
+swebench--sympy__sympy-23021,sympy/sympy,inherited_120,UNRESOLVED,CAPTURED,4,4,0,2,2,0,"{""COMPLETED_SUBGOAL"": 2, ""PUBLIC_TEST_OBSERVATION"": 2}",8,0,0,0,8,6

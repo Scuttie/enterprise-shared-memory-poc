@@ -1,0 +1,63 @@
+{
+  "dataset_files": [
+    {
+      "benchmark_id": "swebench_verified",
+      "bytes": 6304616,
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "path": "data/test-00000-of-00001.parquet",
+      "sha256": "030cfd7f2a704c4c0226e7f104c725a3b41230b1d3517f9c915ad7ea5be3fa25"
+    },
+    {
+      "benchmark_id": "multi_swe_bench_mini",
+      "bytes": 315067581,
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "path": "multi_swe_bench_mini.jsonl",
+      "sha256": "6644b9c9ebaf5e5b37cb9d81c4dce688c101f07436aed9d50fc55c85b164c3b2"
+    },
+    {
+      "benchmark_id": "multi_swe_bench_flash",
+      "bytes": 87915113,
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "path": "multi_swe_bench_flash.jsonl",
+      "sha256": "48d6d02cc976a71a06b494cc60581d92e82c06c2793c0d412c52c63e6956bebe"
+    }
+  ],
+  "execution_contract": {
+    "aggregate_rejects_duplicate_missing_or_unknown_targets": true,
+    "image_pull_by_digest_only": true,
+    "observed_digest_must_equal_expected_digest": true,
+    "preserve_full_report_stdout_stderr": true,
+    "task_or_aggregate_failure_is_fatal": true
+  },
+  "harnesses": [
+    {
+      "benchmark_ids": [
+        "swebench_verified"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/SWE-bench/SWE-bench",
+      "revision": "7a21e05772954cc81471ae19d56f436cecf43c54",
+      "status": "PINNED_CANDIDATE_NOT_EXECUTED"
+    },
+    {
+      "benchmark_ids": [
+        "multi_swe_bench_mini",
+        "multi_swe_bench_flash"
+      ],
+      "license": "Apache-2.0",
+      "repository": "https://github.com/multi-swe-bench/multi-swe-bench",
+      "revision": "24f493f8a103e72312ded4f6b9c89f081d69cb09",
+      "status": "PINNED_CANDIDATE_NOT_EXECUTED"
+    }
+  ],
+  "image_lock_file": "artifacts/trimem_v1/grader_image_lock.json",
+  "dataset_terms_boundary": {
+    "multi_swe_bench": "Pinned cards describe CC0 for ByteDance-owned rights subject to each adapted source project's license.",
+    "no_dataset_redistribution": true,
+    "swebench_verified": "PUBLIC_BENCHMARK_EVALUATION_SCOPE_DOCUMENTED; DATASET_LICENSE_NOT_DECLARED by the pinned dataset card.",
+    "execution_approval_requirement": "The external EXEC approval actor accepts the applicable benchmark, dataset, image, and source-project terms; this technical manifest is not legal clearance."
+  },
+  "official_grader_execution": "PENDING_EXEC_APPROVAL",
+  "schema": "trimem/grader-lock/1.0",
+  "status": "FROZEN_PRE_EXEC_EXECUTION_PENDING_APPROVAL"
+}

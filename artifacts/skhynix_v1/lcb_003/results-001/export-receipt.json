@@ -1,0 +1,39 @@
+{
+  "evaluation_cells": 48,
+  "exporter_reference": {
+    "bytes": 18289,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_explicit_format_results.py",
+    "sha256": "ab0ba6d8f4885489e84ea3f6067e42a142c06c645b8ce67dfda7a5ab9c9ecc3d"
+  },
+  "grader_calls": 0,
+  "invocation": [
+    "python",
+    "scripts/lcb_explicit_format_results.py",
+    "--run-root",
+    "data/skhynix_lcb_003/run-001",
+    "--config",
+    "configs/skhynix_v1/lcb_003_explicit_format.json",
+    "--output",
+    "artifacts/skhynix_v1/lcb_003/results-001"
+  ],
+  "model_calls": 0,
+  "observed_at": "2026-09-24T04:02:31.928247+00:00",
+  "original_source_writes": 0,
+  "paired_csv_reference": {
+    "bytes": 5211,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_003\\results-001\\paired-results.csv",
+    "sha256": "483e2267802658b44a94567a62fbb2fb942177ab4b729e6a5982a83c6846403a"
+  },
+  "private_grader_payloads_decoded": false,
+  "results_reference": {
+    "bytes": 184152,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_003\\results-001\\results.json",
+    "sha256": "7fea3479868dc006d04c51880ba7979c129745e05cce7059d148ffce93779743"
+  },
+  "schema": "lcb-explicit-format-results-export-receipt/1",
+  "solver_state_or_prompt_decoded": false,
+  "source_bytes_verified_before_and_after": true,
+  "source_references_verified": 637,
+  "status": "COMPLETE",
+  "valid_tasks": 24
+}

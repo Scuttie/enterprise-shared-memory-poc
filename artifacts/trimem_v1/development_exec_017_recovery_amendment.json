@@ -1,0 +1,94 @@
+{
+  "authority_boundary": {
+    "development_execution_authorized": false,
+    "external_execution_approval_received": false,
+    "request_016_attempt_one_consumed": true,
+    "request_016_rerun_allowed": false,
+    "request_017_created_in_source": false,
+    "request_017_execution_authorized": false,
+    "request_017_request_creation_authorized": true,
+    "required_external_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_017_APPROVED_ONCE"
+  },
+  "classification": "POST_EXEC_016_PRE_TASK_GIT_BLOB_WORKTREE_PORTABILITY_RECOVERY",
+  "consumed_execution_actuals": {
+    "benchmark_image_pulls": 13,
+    "cached_input_tokens": 0,
+    "completed_task_arm_runs": 0,
+    "exact_model_metadata_requests": 1,
+    "grader_containers": 0,
+    "input_tokens": 950,
+    "model_generation_calls": 1,
+    "official_grader_runs": 0,
+    "output_tokens": 28,
+    "paid_model_calls": 1,
+    "protocol_canary_generation_calls": 1,
+    "provider_control_plane_requests": 1,
+    "reasoning_tokens": 0,
+    "scientific_model_calls": 0,
+    "task_arm_reservations": 0,
+    "task_arm_runs": 0,
+    "terminal_cells": 0,
+    "total_tokens": 978,
+    "total_usd": "0.000838500000"
+  },
+  "endpoint": "TRIMEM_V1_READY_FOR_EXEC_017_REQUEST",
+  "frozen_scientific_identity": {
+    "arms": [
+      "M2-baseline",
+      "M2-precision",
+      "M2-recall",
+      "M2-balanced",
+      "M0",
+      "M1"
+    ],
+    "expected_usd": 10.8,
+    "grader_containers": 72,
+    "hard_cap_usd": 50.0,
+    "model_id": "gpt-5.4-mini-2026-03-17",
+    "paid_model_call_cap": 1873,
+    "reasoning_effort": "medium",
+    "scientific_generation_call_cap": 1872,
+    "task_arm_runs": 72,
+    "targets": 12,
+    "unchanged": [
+      "model",
+      "pricing",
+      "prompts",
+      "tools",
+      "parsers",
+      "targets",
+      "arms",
+      "budgets",
+      "grader locks",
+      "image locks"
+    ]
+  },
+  "implementation_sha256": {
+    "scripts/trimem_benchmark_matrix.py": "2fc1a753cc52ba90236f3e967bebd7a09110c8791e9d854caef963d9698e0da8",
+    "scripts/trimem_benchmark_run.py": "f34aef14773cb2031b7ab07cf4fb8159a11fdbac9af40c9e539996302bdc7269",
+    "scripts/trimem_d117_checkout_rehearsal.py": "2cb95b75c978a14dbe31d8aa27232267d710281f271b6a8ec6c5e94dc45ef25f",
+    "scripts/trimem_d117_loader_rehearsal.py": "cc53be21bbbbe6ae4a40036568a244c25d82f1ad44c292906e9009e4a1e05044",
+    "scripts/trimem_development_trigger_d117.py": "526ddfa2118abd5265472328523bc6c49665557badf12273ed4649522deec173"
+  },
+  "recovery_contract": {
+    "all_frozen_dev_targets_rehearsed_before_provider_access": true,
+    "checkout_evidence": [
+      "exact commit tree object",
+      "regular blob count",
+      "sorted normalized paths",
+      "normalized path count",
+      "canonical path-set SHA-256",
+      "strict raw-blob validation"
+    ],
+    "existing_or_resumed_checkout_repair_allowed": false,
+    "fresh_checkout_source_identity": "PINNED_GIT_BLOB_BYTES_AT_REVISION",
+    "permitted_transform": "COMMITTED_TEXT_SET_EOL_CRLF_ONLY",
+    "strict_raw_blob_validator_weakened": false,
+    "target_count": 12,
+    "total_regular_blobs": 54544,
+    "transformed_path_count": 31,
+    "writer_source_transport": "EXACT_HOST_HEAD_GIT_BUNDLE_TO_WSL_OWNED_CLONE"
+  },
+  "schema": "trimem/development-exec-017-checkout-portability-amendment/1.0",
+  "status": "FROZEN_CREDENTIAL_FREE_EXEC_016_PRE_TASK_CHECKOUT_FAILURE_READY_FOR_EXEC_017_REQUEST"
+}

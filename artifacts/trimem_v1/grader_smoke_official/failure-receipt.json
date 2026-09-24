@@ -1,0 +1,262 @@
+{
+  "approval_binding": {
+    "approval_artifact_sha256": "26d65d462b09d2db6988bbe6842244278f49c58b559750a4b6455ceb1559c392",
+    "approved_request_sha256": "1cd2d983f9f140392c6c989a9a395c48d5ddc2176cb009b30a98a167c95218ef",
+    "approved_workflow_run_attempt": "1",
+    "approved_workflow_run_id": "33630256522",
+    "freeze_sha256": "583b8cf815ef78a1c29eb1f4c6cf25c01b0014cb511bd440e131e982e341eca1",
+    "git_head": "0e9ed55196da922dcebf1fb33b73940873007180",
+    "phase": "GRADER_SMOKE"
+  },
+  "artifacts": {
+    "encrypted_restricted_evidence": {
+      "archive_bytes": 8819557,
+      "archive_raw_sha256": "sha256:c37878ac3076cb7abf2a5b746476e7f0664922e927a72f92b4ba30e72814219a",
+      "artifact_id": 9847128643,
+      "artifact_name": "trimem-grader-smoke-restricted-encrypted",
+      "created_at": "2026-09-02T12:47:21Z",
+      "encrypted_member_bytes": 8816672,
+      "encrypted_member_name": "trimem-grader-smoke-restricted.tar.enc",
+      "encrypted_member_raw_sha256": "sha256:6bcf9b094edb93246d915ac99a283474dc64e6e8288e4d2abaf5ab5d32ea501e",
+      "expired_when_observed": false,
+      "expires_at": "2026-09-16T12:47:19Z",
+      "plaintext_or_secret_committed": false
+    },
+    "evidence_inventory": {
+      "archive_bytes": 9231,
+      "archive_raw_sha256": "sha256:0b9379644d3a1e6dc15156bbb6e2e8a54ea7ec9fa94128c01bb50949e128aa75",
+      "artifact_id": 9847127657,
+      "artifact_name": "trimem-grader-smoke-evidence-inventory",
+      "created_at": "2026-09-02T12:47:19Z",
+      "expired_when_observed": false,
+      "expires_at": "2026-10-02T12:47:19Z",
+      "inventory_sha256": "sha256:493bf56cd4919cb3924cc4e9e5ca21d7571818de0b36ec6682676df55be5dd76",
+      "member_bytes": 50977,
+      "member_name": "trimem-grader-smoke-evidence-inventory.json",
+      "member_raw_sha256": "sha256:c61ffdff2ab8857e8ebd212df9d8190b9424ebafd0c3a092b91de3a311108004",
+      "restricted_file_count": 234,
+      "restricted_total_bytes": 8416230
+    }
+  },
+  "authoritative_campaign": {
+    "aggregate_created": false,
+    "attestation_created": false,
+    "authoritative_result_rows": 0,
+    "expected_cells": 12,
+    "forensic_executed_outcomes": 6,
+    "formal_result_rows": 5,
+    "public_result_created": false,
+    "scientific_result": "NOT_AGGREGATED",
+    "status": "FAILED_BEFORE_FAIL_CLOSED_AGGREGATION"
+  },
+  "development_approval_allowed": false,
+  "diagnostic_progress": {
+    "completed_rows": [
+      {
+        "benchmark_id": "swebench_verified",
+        "container_started": true,
+        "execution_status": "SUCCESS",
+        "official_grader": true,
+        "order_index": 0,
+        "probe": "GOLD",
+        "resolved": true,
+        "target_id": "swebench_verified--astropy__astropy-13579--gold"
+      },
+      {
+        "benchmark_id": "swebench_verified",
+        "container_started": true,
+        "execution_status": "SUCCESS",
+        "official_grader": true,
+        "order_index": 1,
+        "probe": "NOOP_BASELINE",
+        "resolved": false,
+        "target_id": "swebench_verified--astropy__astropy-13579--noop-baseline"
+      },
+      {
+        "benchmark_id": "swebench_verified",
+        "container_started": true,
+        "execution_status": "SUCCESS",
+        "official_grader": true,
+        "order_index": 2,
+        "probe": "GOLD",
+        "resolved": true,
+        "target_id": "swebench_verified--pydata__xarray-6721--gold"
+      },
+      {
+        "benchmark_id": "swebench_verified",
+        "container_started": true,
+        "execution_status": "SUCCESS",
+        "official_grader": true,
+        "order_index": 3,
+        "probe": "NOOP_BASELINE",
+        "resolved": false,
+        "target_id": "swebench_verified--pydata__xarray-6721--noop-baseline"
+      },
+      {
+        "benchmark_id": "multi_swe_bench_mini",
+        "container_started": true,
+        "execution_status": "SUCCESS",
+        "official_grader": true,
+        "order_index": 4,
+        "probe": "GOLD",
+        "resolved": true,
+        "target_id": "multi_swe_bench_mini--vuejs__core-8911--gold"
+      }
+    ],
+    "evidence_counts": {
+      "forensic_executed_outcomes": {
+        "digest_match": 6,
+        "host_prepare_sh_access_count": 0,
+        "patch_applied": 6,
+        "source_image_build_count": 0,
+        "submitted_patch_identity": 6,
+        "tests_executed": 6
+      },
+      "formal_result_rows": {
+        "digest_match": 5,
+        "host_prepare_sh_access_count": 0,
+        "patch_applied": 5,
+        "source_image_build_count": 0,
+        "submitted_patch_identity": 5,
+        "tests_executed": 5
+      }
+    },
+    "partial_outcome": {
+      "formal_result_written": false,
+      "official_final_report_resolved": false,
+      "official_per_instance_valid": true,
+      "order_index": 5,
+      "probe": "NOOP_BASELINE",
+      "target_id": "multi_swe_bench_mini--vuejs__core-8911--noop-baseline"
+    }
+  },
+  "endpoint": "TRIMEM_GRADER_SMOKE_ADAPTER_CONTRACT_NOT_READY",
+  "execution_accounting": {
+    "api_calls": 0,
+    "cached_input_tokens": 0,
+    "decomposition_calls": 0,
+    "docker_pulls": 4,
+    "extraction_calls": 0,
+    "grader_calls": 6,
+    "grader_containers": 6,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "model_gateway_calls": 0,
+    "official_grader_runs": 6,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "reasoning_tokens": 0,
+    "solve_calls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0
+  },
+  "failure_analysis": {
+    "classification": "ADAPTER_EVIDENCE_CONTRACT_FAILURE",
+    "primary": {
+      "code": "MULTI_SWE_VALID_RESOLVED_CONFLATION",
+      "failure_stage": "official_test_evidence",
+      "interpretation": "upstream valid denotes evaluation validity and is not the final resolved outcome",
+      "official_final_report_resolved": false,
+      "official_per_instance_valid": true,
+      "original_error": "Multi-SWE official per-instance status identity/result mismatch"
+    },
+    "secondary": {
+      "code": "FAILURE_REPORT_IDENTITY_LOCATION_MASKING",
+      "consumer_lookup_location": "_trimem",
+      "failure_identity_location": "TOP_LEVEL_FAILURE_REPORT",
+      "masked_primary_error": true,
+      "surfaced_error": "official grader private-input identity set differs"
+    }
+  },
+  "image_lifecycle": {
+    "exact_image_removals": 4,
+    "max_resident_support_images": 1,
+    "max_resident_target_images": 1,
+    "resident_support_images": 0,
+    "resident_target_images": 0,
+    "status": "FAILED",
+    "support_image_pulls": 1,
+    "target_image_pulls": 3,
+    "workflow_cleanup_status": "PASS"
+  },
+  "receipt_payload_sha256": "sha256:8e87fc1a06b702d6b2860772086c7518f95ec231ec9ae63d430197260279b847",
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "restricted_evidence_audit": {
+    "contents_published": false,
+    "inventory_exact_file_set_verified": true,
+    "local_audit_tar_bytes": 8816640,
+    "local_audit_tar_raw_sha256": "sha256:e6e9fc79a95ea88e7f66afa9eaa49a93b10e99aed17306c547f6ca64cff302d9",
+    "local_audit_tar_retained_in_repository": false
+  },
+  "schema": "trimem/grader-smoke-failure-receipt/1.0",
+  "source_documents": {
+    "artifacts_api": {
+      "bytes": 1530,
+      "raw_sha256": "sha256:5c2378e89376151979fc70cd613b32378a0c4937f8634da2a54aca535bb0c2e4",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33630256522/artifacts?per_page=100"
+    },
+    "inventory_artifact_api": {
+      "bytes": 746,
+      "raw_sha256": "sha256:0b660e36f04a24112645fa531025d8be2e4adb28d1ae515d85ae6519bc6e79bb",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9847127657"
+    },
+    "inventory_artifact_archive": {
+      "bytes": 9231,
+      "raw_sha256": "sha256:0b9379644d3a1e6dc15156bbb6e2e8a54ea7ec9fa94128c01bb50949e128aa75",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9847127657/zip"
+    },
+    "jobs_api": {
+      "bytes": 7468,
+      "raw_sha256": "sha256:3fee715f9a6e4be315d86ac8d54f3c190d83e81cbe7d238327955e49ae222cd8",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33630256522/attempts/1/jobs?filter=all&per_page=100"
+    },
+    "restricted_artifact_api": {
+      "bytes": 751,
+      "raw_sha256": "sha256:c7840624459765d1baa6e132c7e5c3d2722dcb226edb22d814f998caf2e0f2a3",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9847128643"
+    },
+    "restricted_artifact_archive": {
+      "bytes": 8819557,
+      "raw_sha256": "sha256:c37878ac3076cb7abf2a5b746476e7f0664922e927a72f92b4ba30e72814219a",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/artifacts/9847128643/zip"
+    },
+    "workflow_run_attempt_api": {
+      "bytes": 14529,
+      "raw_sha256": "sha256:05b19bdd4a9555f9a844cd357a485a225ba481e239d00ed6bc375d3974f88b4b",
+      "url": "https://api.github.com/repos/Scuttie/enterprise-shared-memory-poc/actions/runs/33630256522/attempts/1"
+    }
+  },
+  "status": "FAIL",
+  "workflow_job": {
+    "completed_at": "2026-09-02T12:47:23Z",
+    "conclusion": "failure",
+    "failed_step": "Run bounded-disk exact GOLD and NOOP_BASELINE pairs serially",
+    "id": 100247757174,
+    "name": "frozen-gold-noop-smoke",
+    "post_failure_encryption": "success",
+    "post_failure_evidence_inventory": "success",
+    "post_failure_evidence_upload": "success",
+    "post_failure_plaintext_cleanup": "success",
+    "preflight_job_id": 100247658511,
+    "preflight_result": "success",
+    "started_at": "2026-09-02T12:34:37Z",
+    "status": "completed"
+  },
+  "workflow_run": {
+    "actor": "Scuttie",
+    "conclusion": "failure",
+    "event": "push",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "0e9ed55196da922dcebf1fb33b73940873007180",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/33630256522",
+    "id": 33630256522,
+    "name": "TriMem V1 official grader smoke",
+    "path": ".github/workflows/trimem-grader-smoke.yml",
+    "run_attempt": 1,
+    "run_started_at": "2026-09-02T12:30:03Z",
+    "status": "completed",
+    "triggering_actor": "Scuttie",
+    "updated_at": "2026-09-02T12:47:24Z",
+    "workflow_id": 347182465
+  }
+}

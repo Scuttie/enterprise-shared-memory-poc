@@ -1,0 +1,227 @@
+{
+  "boundaries": {
+    "actual_generated_test_scripts_rerun": 0,
+    "candidate_bodies_supplied_to_actual_import_smoke": 0,
+    "model_calls": 0,
+    "no_retroactive_outcome_correction": true,
+    "official_grader_calls": 0,
+    "original_run_files_modified": 0,
+    "private_test_or_gold_payloads_opened": false,
+    "task_solution_test_lesson_or_reasoning_prose_published": false
+  },
+  "correction": {
+    "candidate_execution_and_hash_guards_retained": true,
+    "import_roots_order": [
+      "sanitized/src when present",
+      "sanitized repository root"
+    ],
+    "owned_project_names_cannot_resolve_outside_snapshot": true,
+    "preloaded_owned_module_check": true,
+    "scope": "Ordinary Python imports; not adversarial sandboxing or arbitrary direct source-file loading."
+  },
+  "discovery_failure_metadata": [
+    {
+      "count": 8,
+      "exception_type": "NameError",
+      "failure_kind": "CANDIDATE_NOT_EXECUTED",
+      "status": "FAIL"
+    },
+    {
+      "count": 5,
+      "exception_type": "TypeError",
+      "failure_kind": "CANDIDATE_NOT_EXECUTED",
+      "status": "FAIL"
+    },
+    {
+      "count": 3,
+      "exception_type": null,
+      "failure_kind": "CANDIDATE_NOT_EXECUTED",
+      "status": "FAIL"
+    }
+  ],
+  "discovery_observed_receipts": 16,
+  "findings": {
+    "actual_native_python": "3.9.18",
+    "actual_script_fallback_claim": "Possible and consistent with retained metadata; original scripts were not rerun.",
+    "installed_pyramid_origin": "/home/trimem-runner/skhynix-deveval-002/venv/lib/python3.9/site-packages/pyramid/__init__.py",
+    "installed_pyramid_package_present": true,
+    "nameerrors_target_name_without_test_import": 6,
+    "no_exception_rows_with_imports_only_found_under_src": 2,
+    "old_import_policy": "WORKSPACE_ONLY_MISSING_SRC_IMPORT_ROOT",
+    "original_generated_script_import_origins_recorded": false,
+    "original_nameerror_count": 8,
+    "other_nameerrors_with_unbound_test_identifier": 2
+  },
+  "new_executor_reference": {
+    "bytes": 10215,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\deveval_generated_tests.py",
+    "sha256": "44eb549cf6da687fcbb37db2d6c038f91461d0f33d00c2ecf7aaf8b84c30558f"
+  },
+  "observed_at": "2026-09-24T05:58:39.552916+00:00",
+  "old_executor_reference": {
+    "bytes": 7650,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\deveval_generated_tests.py",
+    "sha256": "ce5258fef2d19b843a182d3b33caf45065b8384b7c848ffee73880e3d68ca46b"
+  },
+  "original_discovery_receipt_references": [
+    {
+      "bytes": 901,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\04c7d8f6ce3690a8cb09\\generated-tests\\step-007\\receipt.json",
+      "sha256": "96389323afb2e32911fced45ddbe473468b02b6b5bd55e32ee36805d3e19ab03"
+    },
+    {
+      "bytes": 870,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\09fdb00a9fe245f5768c\\generated-tests\\step-006\\receipt.json",
+      "sha256": "4c899aa53f8966b57e38bdecd51c6c958f73e12611108e171495a75910a788de"
+    },
+    {
+      "bytes": 877,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\0bd5ee99fc999548f555\\generated-tests\\step-006\\receipt.json",
+      "sha256": "cb18a70e7ce46adc717344999e1395df786f89771a2610ab7c3e53d77b36dc5a"
+    },
+    {
+      "bytes": 944,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\2fe399211d0e946b4814\\generated-tests\\step-006\\receipt.json",
+      "sha256": "7fb8be8e6288cd2f0c1c79931ae37c53628102cb1468c3bdfc8e8cd0dea610d2"
+    },
+    {
+      "bytes": 945,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\2fe399211d0e946b4814\\generated-tests\\step-007\\receipt.json",
+      "sha256": "9c2a0933dcd5ae79f6ffbd37e3dd0c95931dde7bbdf706996525c43b8bcf9608"
+    },
+    {
+      "bytes": 874,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\54e427728bcef5ecebe8\\generated-tests\\step-006\\receipt.json",
+      "sha256": "19b8e747c88f5198516b5b35c98632a8234fea84948a65a667e5937ea3d8a50f"
+    },
+    {
+      "bytes": 874,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\54e427728bcef5ecebe8\\generated-tests\\step-007\\receipt.json",
+      "sha256": "10096b04c2390af37765b8578e4a54b69dcc92f4957b7ba062f25340dbf2b038"
+    },
+    {
+      "bytes": 928,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\559628f0828cb57172e7\\generated-tests\\step-003\\receipt.json",
+      "sha256": "003c5d00ef175071991f56b2732f15f5f69e46c7f368c0e8f37fd7130c29076c"
+    },
+    {
+      "bytes": 886,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\74c99688cb0c097d18f4\\generated-tests\\step-007\\receipt.json",
+      "sha256": "f138baf37516c6e3ab6dd942e3049679a02f6e2792d0720a0f474d765bca6b68"
+    },
+    {
+      "bytes": 945,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\74c99688cb0c097d18f4\\generated-tests\\step-008\\receipt.json",
+      "sha256": "5c9b3ce3357e909a9e13c265817a9cff2d80609808f2e6cd810feef9d35ddd4a"
+    },
+    {
+      "bytes": 883,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\773ce8266045bf6628ca\\generated-tests\\step-003\\receipt.json",
+      "sha256": "9e206061dc73bffe547eeba685aa94326b4712101c788b5d9c04d66469befa91"
+    },
+    {
+      "bytes": 880,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\8da5cae20ff719bee5aa\\generated-tests\\step-009\\receipt.json",
+      "sha256": "b1beb4cee8be36869c00115883c273456b0b5dab9f3985eafa94a599bdf5f153"
+    },
+    {
+      "bytes": 948,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\91ad0dfd68d1d3f2b40d\\generated-tests\\step-005\\receipt.json",
+      "sha256": "bcdc873119cf78f4ba6d24fcbb4b85e41ade8e0d0caf9d5acc77b08c33662195"
+    },
+    {
+      "bytes": 889,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\b15bcce6ec3a2f9f1a07\\generated-tests\\step-003\\receipt.json",
+      "sha256": "d52a7ecbcc8f6b195419592af3f290920e3c248a2303d2bbf9f82fa138740146"
+    },
+    {
+      "bytes": 899,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\ca4593770c17bf9174c7\\generated-tests\\step-003\\receipt.json",
+      "sha256": "06eb5637e61ce886726e00eef393162b2f6102a2223916bb1ac7b32f6963351f"
+    },
+    {
+      "bytes": 899,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\DISCOVERY\\TRAIN\\ca4593770c17bf9174c7\\generated-tests\\step-004\\receipt.json",
+      "sha256": "6d534f7f6815980efdfacf5bebc4739de5d4764d323f033b96b9d66244283708"
+    }
+  ],
+  "original_run_reference": {
+    "bytes": 679243,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\run-001\\frozen-inputs.json",
+    "sha256": "35338f6ed81149e0602f4587df93a0c25958e527a1842a64ea1d3645ffec13a9"
+  },
+  "schema": "deveval/generated-import-diagnostic/1",
+  "status": "CONFIRMED_HARNESS_SRC_LAYOUT_DEFECT_CORRECTED_FOR_NEW_RUN_ONLY",
+  "synthetic_original_executor_proof": [
+    {
+      "assertions_executed": 2,
+      "candidate_executed": true,
+      "case": "flat_layout_explicit_import",
+      "status": "PASS"
+    },
+    {
+      "case": "unbound_target_name",
+      "exception_type": "NameError",
+      "failure_kind": "CANDIDATE_NOT_EXECUTED",
+      "status": "FAIL"
+    },
+    {
+      "case": "test_local_reimplementation",
+      "exception_type": null,
+      "failure_kind": "CANDIDATE_NOT_EXECUTED",
+      "status": "FAIL"
+    },
+    {
+      "assertions_executed": 2,
+      "case": "src_layout_plus_installed_collision",
+      "failure_kind": "CANDIDATE_NOT_EXECUTED",
+      "imported_fallback_package": true,
+      "imported_sanitized_candidate": false,
+      "status": "FAIL"
+    },
+    {
+      "assertions_executed": 2,
+      "case": "same_fixture_explicit_src_control",
+      "imported_fallback_package": false,
+      "imported_sanitized_candidate": true,
+      "status": "PASS"
+    }
+  ],
+  "synthetic_tests_reference": {
+    "bytes": 8387,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\tests\\unit\\test_deveval_generated_tests.py",
+    "sha256": "da6d1fbf579f6527722db92594238a4fec8d109a159819f9c2c38f3cac2cbd6c"
+  },
+  "validation": {
+    "inline_diagnostic_script_retained": false,
+    "pytest_receipt_kind": "Observed console validation; no standalone XML from this agent. Parent separately ran broker plus executor integration.",
+    "real_sanitized_import_smoke": [
+      {
+        "origin_within_snapshot": true,
+        "project": "Internet/pyramid",
+        "relative_origin": "src/pyramid/__init__.py",
+        "status": "PASS"
+      },
+      {
+        "origin_within_snapshot": true,
+        "project": "Multimedia/mingus",
+        "relative_origin": "mingus/__init__.py",
+        "status": "PASS"
+      },
+      {
+        "origin_within_snapshot": true,
+        "project": "System/mrjob",
+        "relative_origin": "mrjob/__init__.py",
+        "status": "PASS"
+      }
+    ],
+    "smoke_captured_output_bytes": 0,
+    "smoke_python_version": "3.9.18",
+    "snapshot_mapping_reference": {
+      "bytes": 674,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\deveval_002\\snapshots-002.local.json",
+      "sha256": "5ce4b32b7450a2ec142dabd339699821eb6c9bd89129b475e70a1dd3ee143e4b"
+    },
+    "synthetic_pytest_passed": 13
+  }
+}

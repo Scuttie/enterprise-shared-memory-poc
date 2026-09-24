@@ -1,0 +1,67 @@
+{
+  "candidates": [
+    {
+      "direct_use_allowed": false,
+      "path": "artifacts/p6/source_bank_manifest.json",
+      "raw_sha256": "77662911e07801de291923d6e02db3eb25ece70c2a8688abc4bec692b830ec87",
+      "record_count": null,
+      "strength": "SWE-bench historical same-repository construction rule with chronology and self-task exclusion claims",
+      "target_identity_overlap_count": null,
+      "why_rejected": [
+        "summary only: no committed per-record inventory",
+        "payloads are rebuilt from an external parquet not sealed by this manifest",
+        "per-record permission, tenant, path, version, provenance, quarantine, and payload hashes are absent",
+        "no Multi-SWE language/repository coverage is established"
+      ]
+    },
+    {
+      "direct_use_allowed": false,
+      "path": "artifacts/actionable_memory_r3/source_bank_manifest.json",
+      "raw_sha256": "05f120226232e842b1aca589ec63b241a68128087fa288f244856a4d579b36ca",
+      "record_count": 183,
+      "strength": "verified DS-1000 user-success facts with canonical hashes and provenance fields",
+      "target_identity_overlap_count": 0,
+      "why_rejected": [
+        "DS-1000 Python-only domain does not cover the frozen TypeScript, C, Rust, C++, and Go targets",
+        "source repository, exact Git commit, public timestamp, permission, tenant, path, version, and quarantine fields are absent",
+        "not bound to the frozen DEV target-set digest",
+        "not serialized as deterministic TriMem read-only preload payloads"
+      ]
+    },
+    {
+      "direct_use_allowed": false,
+      "path": "artifacts/bigcode_r2/source_bank.json",
+      "raw_sha256": "7f4f38cd205d073c3ed812e191f745dd3b0088882f5dda17623429450eee6e91",
+      "record_count": 134,
+      "strength": "existing USER_SUCCESS_BANK research facts",
+      "target_identity_overlap_count": 0,
+      "why_rejected": [
+        "facts expose verified code but do not carry the required per-record verification/provenance hashes",
+        "source repository, exact Git commit, timestamp, permission, tenant, path, version, and quarantine fields are absent",
+        "not bound to the frozen DEV target-set digest",
+        "not serialized as deterministic TriMem read-only preload payloads"
+      ]
+    }
+  ],
+  "development_target_set_sha256": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
+  "directly_admissible_candidate_count": 12,
+  "execution_effect": "FROZEN_12_OF_12_SAFE_CANDIDATE_COVERAGE_PRE_EXECUTION",
+  "materialized_source_bank": {
+    "candidate_assignment_count": 12,
+    "github_target_issue_count": 11,
+    "github_target_issue_with_pull_request_count": 0,
+    "manifest_raw_sha256": "8a0600e8d18f5234bd35d675f8e5cb8eb827aac4e4498547db02fc689a83d309",
+    "problem_provenance_hash_coverage": 12,
+    "snapshot_sha256": "55fe3c03ef545181986605166247f78896c5fcd2db37535d19f574781c16be1e",
+    "target_public_instruction_hash_coverage": 12,
+    "trac_target_ticket_count": 1,
+    "zero_candidate_target_count": 0
+  },
+  "model_calls": 0,
+  "official_grader_runs": 0,
+  "paid_model_calls": 0,
+  "recommended_construction_rule": "Before any C0/C1/C2 result exists, deterministically compile target-disjoint verified public source evidence to the dedicated schema, cover the frozen target repositories/languages where evidence exists, seal every payload and provenance record, and preload the identical read-only snapshot into fresh C1 and C2 namespaces.",
+  "schema": "trimem/dev-activation-source-bank-candidate-audit/1.0",
+  "status": "DEDICATED_SOURCE_BANK_PROVENANCE_REPAIRED",
+  "total_usd": "0.000000000000"
+}

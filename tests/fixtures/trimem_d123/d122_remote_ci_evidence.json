@@ -1,0 +1,72 @@
+{
+  "benchmark_execution_runs": 0,
+  "credential_access": false,
+  "exact_head": "cfa79b2406f174bd152eb873e98018725947d349",
+  "model_api_calls": 0,
+  "paid_model_calls": 0,
+  "required_workflows": {
+    ".github/workflows/ci-trimem-dev-toolchain.yml": {
+      "attempt": 1,
+      "conclusion": "success",
+      "ended_at_utc": "2026-09-08T20:56:17Z",
+      "run_id": 34277199448,
+      "started_at_utc": "2026-09-08T20:51:14Z"
+    },
+    ".github/workflows/ci-trimem-e2e.yml": {
+      "attempt": 1,
+      "conclusion": "success",
+      "run_id": 34277199438
+    },
+    ".github/workflows/ci-trimem-grader-loader.yml": {
+      "attempt": 1,
+      "conclusion": "success",
+      "run_id": 34277199392
+    },
+    ".github/workflows/ci-trimem-harness-lock.yml": {
+      "attempt": 1,
+      "conclusion": "success",
+      "run_id": 34277199404
+    },
+    ".github/workflows/ci-trimem-multi-swe-contract.yml": {
+      "attempt": 1,
+      "conclusion": "success",
+      "run_id": 34277199345
+    },
+    ".github/workflows/ci-trimem.yml": {
+      "attempt": 1,
+      "conclusion": "success",
+      "ended_at_utc": "2026-09-08T20:58:46Z",
+      "full_no_skip_step": "success",
+      "run_id": 34277199507,
+      "started_at_utc": "2026-09-08T20:51:12Z"
+    }
+  },
+  "schema": "trimem/d122-exact-head-remote-ci-evidence/1.0",
+  "status": "PASS",
+  "topology_rehearsal": {
+    "benchmark_image_pulls": 0,
+    "cleanup_absent": true,
+    "collections": 12,
+    "grader_containers": 0,
+    "hostconfig_nofile": {
+      "hard": 65535,
+      "soft": 65535
+    },
+    "image_id": "sha256:63343dd5a0745ba818ad3abc35f3d4aadce5b3bcdd32178e6ec6a8cf1a5f8f19",
+    "model_calls": 0,
+    "namespaces": 6,
+    "observed_repo_digest": "qdrant/qdrant@sha256:241edb9d7778327516ef218f8c74e1bd61b5ea42cd4f193cb8d0896199705636",
+    "official_grader_runs": 0,
+    "paid_model_calls": 0,
+    "payload_indexes": 72,
+    "pid1_nofile": {
+      "hard": 65535,
+      "soft": 65535
+    },
+    "qdrant_version": "1.12.4",
+    "status": "PASS",
+    "support_service_image_pulls": 1,
+    "tokens": 0,
+    "total_usd": 0.0
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-09-24T04:01:46.316594+00:00",
+  "phase": "COMPLETE",
+  "status": "COMPLETE",
+  "elapsed_minutes": 18.15,
+  "completed": 48,
+  "arms": {
+    "OFF": {
+      "SUBMITTED": 24
+    },
+    "ON": {
+      "SUBMITTED": 24
+    }
+  },
+  "errors": [],
+  "graded": 48,
+  "passed": {
+    "OFF": 24,
+    "ON": 22
+  },
+  "active": []
+}

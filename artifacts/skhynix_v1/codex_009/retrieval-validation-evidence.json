@@ -1,0 +1,65 @@
+{
+  "checkpoint_policy_change_rejected": true,
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 155
+  },
+  "default_controller_hash_contract_preserved": true,
+  "default_manifest_policy_field_omitted": true,
+  "development_query": {
+    "default_injections": 0,
+    "event_sha256": "92f2a8b3a0400153ecc910ef12d92514f82faf3aab841ecc00aebcfdc57d78d0",
+    "full_score": 0.0410958904109589,
+    "lesson_score": 0.05521472392638037,
+    "opt_in_injections": 1,
+    "scientific_role": "KNOWN_DEVELOPMENT_QUERY_REGRESSION_NOT_UNSEEN_EVALUATION",
+    "unchanged_threshold": 0.05
+  },
+  "distinct_test_cases": 155,
+  "execution_environment": "WSL TriMemRunner2404, Python3.11.10, local pytest, offline embeddings only",
+  "execution_wire_unchanged": true,
+  "experimental_solver_calls": 0,
+  "frozen_experiment_mutations": 0,
+  "hidden_fixture_or_gold_patch_access": false,
+  "malformed_policy_and_non_diagnostic_modes_rejected": true,
+  "native008_frozen_bank_sha256": "080850cbadbf27afc617e478adc2e75b0fc334460768b9c8f3ffda285ff6961c",
+  "native008_source_snapshot_files_verified": {
+    "recovery-20428-r1": 335,
+    "recovery-20428-r2": 335,
+    "recovery-20438-r1": 335,
+    "recovery-20438-r2": 335
+  },
+  "official_grader_calls": 0,
+  "opt_in_policy": "DIAGNOSTIC_LESSON_CONTENT",
+  "reports": [
+    {
+      "name": "native009_diagnostic_matching_focused.xml",
+      "sha256": "4319476c9d11da5007b2f2768014ee94d59d7c3540053bd35ac09d4bf99178d0"
+    },
+    {
+      "name": "native009_diagnostic_matching_compatibility.xml",
+      "sha256": "a648e6464e40e948162e3d114d26d37a60a8a7b064ecfe5e78b0e90eff27c6cd"
+    }
+  ],
+  "schema": "skhynix/native009-diagnostic-matching-validation/1.0",
+  "scope_and_existing_budgets_preserved": true,
+  "seed_and_ranking_use_same_explicit_lesson_text": true,
+  "source_sha256": {
+    "scripts/trimem_skhynix_codex_diagnostic_bank.py": "65433d2ed3ddfcd67fed91ce990bd4210388038e480750e97709efe1b66494cc",
+    "scripts/trimem_skhynix_codex_memory.py": "7b274c2cf51c896063fef97087adedbcd2ef67d16019f7acfb9686d18c31ba27",
+    "src/enterprise_memory/trimem/skill_runtime.py": "52feee1a78560c76d29773ab6cb974f58bd703bb4d0556898a9b31eb3f518db5"
+  },
+  "status": "PASS",
+  "test_sha256": {
+    "tests/fixtures/trimem_native008_c1_public_retrieval.json": "3e4afab76f94b6ab5e73d12741af9a7861ec64d3cebfcf108821d12a24c5ee9c",
+    "tests/unit/test_trimem_skhynix_codex_diagnostic_bank.py": "592c605df86a3b1d3b4bd956bbe94c8c155756db5eb91aaca46acb25e6ffa497",
+    "tests/unit/test_trimem_skhynix_codex_learning.py": "2a741df8392e18376c847bcdc1a31f028646ae564b408acc38c168624a585b19",
+    "tests/unit/test_trimem_skhynix_codex_memory.py": "0468634db4b6fdad6bd25fd0603b28cefe9128ba293bba2fe0a5d9e37a970b49",
+    "tests/unit/test_trimem_skhynix_codex_skill_bank.py": "fa4445b2c288e5d377af6b8993ec17bf42f6398ac33bbc78ff37cd6d8bb9adb0",
+    "tests/unit/test_trimem_skill_runtime.py": "2ef9677cfaed38ce61390b1cc53587ee17705e942051cf35032da955d14a01b7"
+  },
+  "unrelated_query_abstains": true,
+  "xml_sha256": "51b0d355ba7d604e1c4ac6487573c0d623dbce1952c121875146927c4c4acb29"
+}

@@ -1,0 +1,69 @@
+diff --git a/seaborn/relational.py b/seaborn/relational.py
+index 1cba66f..c9fc15a 100644
+--- a/seaborn/relational.py
++++ b/seaborn/relational.py
+@@ -607,7 +607,7 @@ def lineplot(
+     palette=None, hue_order=None, hue_norm=None,
+     sizes=None, size_order=None, size_norm=None,
+     dashes=True, markers=None, style_order=None,
+-    units=None, estimator="mean", ci=None, n_boot=1000, seed=None,
++    units=None, estimator="mean", ci="deprecated", n_boot=1000, seed=None,
+     sort=True, err_style="band", err_kws=None,
+     legend="auto",
+     errorbar=("ci", 95),
+diff --git a/seaborn/tests/test_relational.py b/seaborn/tests/test_relational.py
+index 5fb0829..40fa6bf 100644
+--- a/seaborn/tests/test_relational.py
++++ b/seaborn/tests/test_relational.py
+@@ -1219,6 +1219,33 @@ class TestLinePlotter(SharedAxesLevelTests, Helpers):
+         lineplot(x="x", y="y", hue="f", size="s", data=object_df)
+         ax.clear()
+ 
++    @pytest.mark.filterwarnings("error:The `ci` parameter is deprecated:UserWarning")
++    def test_ci_default(self, long_df):
++
++        axs = plt.figure().subplots(2)
++        lineplot(data=long_df, x="x", y="y", seed=0, ax=axs[0])
++        lineplot(data=long_df, x="x", y="y", errorbar=("ci", 95), seed=0, ax=axs[1])
++
++        assert len(axs[0].collections) == 1
++        assert_plots_equal(*axs)
++
++    @pytest.mark.parametrize("err_style", ["band", "bars"])
++    def test_ci_none_deprecation(self, err_style):
++
++        ax = plt.figure().subplots()
++        msg = "The `ci` parameter is deprecated; use `errorbar=None`"
++        with pytest.warns(UserWarning, match=msg):
++            lineplot(
++                x=[1, 1, 2, 2], y=[1, 2, 3, 4],
++                ci=None, err_style=err_style, ax=ax,
++            )
++
++        assert len(ax.collections) == 0
++        assert len(ax.containers) == 0
++        assert len(ax.lines) == 1
++        assert_array_equal(ax.lines[0].get_xdata(), [1, 2])
++        assert_array_equal(ax.lines[0].get_ydata(), [1.5, 3.5])
++
+     def test_ci_deprecation(self, long_df):
+ 
+         axs = plt.figure().subplots(2)
+diff --git a/seaborn/utils.py b/seaborn/utils.py
+index 68091b7..dcdd1e0 100644
+--- a/seaborn/utils.py
++++ b/seaborn/utils.py
+@@ -715,8 +715,11 @@ def _deprecate_ci(errorbar, ci):
+     (and extracted from kwargs) after one cycle.
+ 
+     """
+-    if ci is not None:
+-        if ci == "sd":
++    if ci != "deprecated":
++        if ci is None:
++            errorbar = None
++            msg = "use `errorbar=None` for same effect."
++        elif ci == "sd":
+             errorbar = "sd"
+             msg = "use `errorbar='sd'` for same effect."
+         else:

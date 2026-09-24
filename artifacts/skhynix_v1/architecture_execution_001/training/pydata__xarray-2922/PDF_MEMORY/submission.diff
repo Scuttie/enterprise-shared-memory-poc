@@ -1,0 +1,656 @@
+diff --git a/doc/api.rst b/doc/api.rst
+index 4492d88..42b851c 100644
+--- a/doc/api.rst
++++ b/doc/api.rst
+@@ -563,6 +563,27 @@ GroupBy objects
+    core.groupby.DatasetGroupBy.map
+    core.groupby.DatasetGroupBy.reduce
+ 
++Weighted objects
++================
++
++See :ref:`comput.weighted` for examples.
++
++.. autosummary::
++   :toctree: generated/
++
++   DataArray.average
++   Dataset.average
++   DataArray.weighted
++   Dataset.weighted
++   core.weighted.DataArrayWeighted
++   core.weighted.DataArrayWeighted.mean
++   core.weighted.DataArrayWeighted.sum
++   core.weighted.DataArrayWeighted.sum_of_weights
++   core.weighted.DatasetWeighted
++   core.weighted.DatasetWeighted.mean
++   core.weighted.DatasetWeighted.sum
++   core.weighted.DatasetWeighted.sum_of_weights
++
+ Rolling objects
+ ===============
+ 
+diff --git a/doc/computation.rst b/doc/computation.rst
+index 1ac30f5..bc63944 100644
+--- a/doc/computation.rst
++++ b/doc/computation.rst
+@@ -130,6 +130,55 @@ These operations automatically skip missing values, like in pandas:
+ If desired, you can disable this behavior by invoking the aggregation method
+ with ``skipna=False``.
+ 
++.. _comput.weighted:
++
++Weighted averages
++=================
++
++Use :py:meth:`~xarray.DataArray.average` or :py:meth:`~xarray.Dataset.average`
++to compute an average with weights supplied as a ``DataArray``. Weights are
++broadcast by dimension name and aligned by coordinate label, so the order of
++the data's axes does not matter. Only matching coordinate labels contribute.
++
++For example, on a regular latitude-longitude grid, the cosine of latitude
++provides weights proportional to grid-cell area:
++
++.. ipython:: python
++
++    temperature = xr.DataArray([[1., 3., 5.], [7., 9., 11.]],
++                               dims=('lat', 'lon'),
++                               coords={'lat': [0, 60], 'lon': [10, 20, 30]})
++    weights = np.cos(np.deg2rad(temperature.lat))
++    temperature.average('lat', weights=weights)
++    temperature.average(('lat', 'lon'), weights=weights)
++
++Omitting ``dim`` reduces all dimensions. Omitting ``weights`` computes the
++ordinary arithmetic mean. Weights for several dimensions can be combined by
++multiplying their ``DataArray`` objects before passing them to ``average``.
++
++The :py:meth:`~xarray.DataArray.weighted` and
++:py:meth:`~xarray.Dataset.weighted` methods create an object that also supports
++weighted sums and sums of valid weights:
++
++.. ipython:: python
++
++    weighted = temperature.weighted(weights)
++    weighted.mean(('lat', 'lon'))
++    weighted.sum(('lat', 'lon'))
++    weighted.sum_of_weights(('lat', 'lon'))
++
++For floating-point data, missing observations are skipped by default, and their
++weights are excluded from the mean's denominator. Use ``skipna=False`` to
++propagate missing observations. A weighted mean returns ``NaN`` when the sum of
++valid weights is zero, including slices containing only missing data.
++``sum_of_weights`` also returns ``NaN`` for a zero sum; ``sum(skipna=True)``
++returns zero for an all-missing slice.
++
++Weights themselves must not contain missing values. If a missing weight should
++exclude an observation, replace it explicitly with ``weights.fillna(0)``.
++These operations support lazy Dask arrays; missing Dask weights raise an error
++when the result is computed.
++
+ .. _comput.rolling:
+ 
+ Rolling window operations
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index aad0e08..7174260 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -25,6 +25,10 @@ Breaking changes
+ New Features
+ ~~~~~~~~~~~~
+ 
++- Added :py:meth:`DataArray.average` and :py:meth:`Dataset.average` for
++  weighted averages over named dimensions, and :py:meth:`DataArray.weighted`
++  and :py:meth:`Dataset.weighted` for weighted reductions. See
++  :ref:`comput.weighted` (:issue:`2922`).
+ - Added support for :py:class:`pandas.DatetimeIndex`-style rounding of
+   ``cftime.datetime`` objects directly via a :py:class:`CFTimeIndex` or via the
+   :py:class:`~core.accessor_dt.DatetimeAccessor`.
+diff --git a/xarray/core/common.py b/xarray/core/common.py
+index 39aa798..6c2ca5f 100644
+--- a/xarray/core/common.py
++++ b/xarray/core/common.py
+@@ -745,6 +745,68 @@ class DataWithCoords(SupportsArithmetic, AttrAccessMixin):
+             },
+         )
+ 
++    def weighted(self, weights):
++        """Create an object for weighted reductions.
++
++        Parameters
++        ----------
++        weights : DataArray
++            Weights aligned and broadcast by dimension names and coordinate
++            labels. Weights must not contain missing values; replace missing
++            weights with zero using ``weights.fillna(0)``.
++
++        Returns
++        -------
++        DataArrayWeighted or DatasetWeighted
++            Object supporting ``mean``, ``sum`` and ``sum_of_weights``.
++
++        See Also
++        --------
++        DataArray.average
++        Dataset.average
++        """
++        return self._weighted_cls(self, weights)
++
++    def average(self, dim=None, weights=None, skipna=None, keep_attrs=None):
++        """Compute an average over one or more named dimensions.
++
++        Parameters
++        ----------
++        dim : str or sequence of str, optional
++            Dimensions to reduce. By default, reduce all dimensions.
++        weights : DataArray, optional
++            Weights aligned and broadcast by dimension names and coordinate
++            labels. Must not contain missing values. If omitted, compute the
++            ordinary arithmetic mean.
++        skipna : bool, optional
++            Skip missing values, following the default behavior of ``mean``.
++        keep_attrs : bool, optional
++            Copy attributes from the original object if True.
++
++        Returns
++        -------
++        DataArray or Dataset
++            Average of the data. Weighted slices with zero valid weight
++            return NaN.
++
++        Examples
++        --------
++        Area-weighted mean using latitude-dependent weights::
++
++            weights = np.cos(np.deg2rad(ds.lat))
++            result = ds.average(("lat", "lon"), weights=weights)
++
++        See Also
++        --------
++        DataArray.weighted
++        Dataset.weighted
++        """
++        if weights is None:
++            return self.mean(dim=dim, skipna=skipna, keep_attrs=keep_attrs)
++        return self.weighted(weights).mean(
++            dim=dim, skipna=skipna, keep_attrs=keep_attrs
++        )
++
+     def rolling(
+         self,
+         dim: Mapping[Hashable, int] = None,
+diff --git a/xarray/core/dataarray.py b/xarray/core/dataarray.py
+index b335eeb..1d7e692 100644
+--- a/xarray/core/dataarray.py
++++ b/xarray/core/dataarray.py
+@@ -33,6 +33,7 @@ from . import (
+     resample,
+     rolling,
+     utils,
++    weighted,
+ )
+ from .accessor_dt import CombinedDatetimelikeAccessor
+ from .accessor_str import StringAccessor
+@@ -256,6 +257,7 @@ class DataArray(AbstractArray, DataWithCoords):
+ 
+     _groupby_cls = groupby.DataArrayGroupBy
+     _rolling_cls = rolling.DataArrayRolling
++    _weighted_cls = weighted.DataArrayWeighted
+     _coarsen_cls = rolling.DataArrayCoarsen
+     _resample_cls = resample.DataArrayResample
+ 
+diff --git a/xarray/core/dataset.py b/xarray/core/dataset.py
+index d5ad112..11a220c 100644
+--- a/xarray/core/dataset.py
++++ b/xarray/core/dataset.py
+@@ -46,6 +46,7 @@ from . import (
+     resample,
+     rolling,
+     utils,
++    weighted,
+ )
+ from .alignment import _broadcast_helper, _get_broadcast_dims_map_common_coords, align
+ from .common import (
+@@ -455,6 +456,7 @@ class Dataset(Mapping, ImplementsDatasetReduce, DataWithCoords):
+ 
+     _groupby_cls = groupby.DatasetGroupBy
+     _rolling_cls = rolling.DatasetRolling
++    _weighted_cls = weighted.DatasetWeighted
+     _coarsen_cls = rolling.DatasetCoarsen
+     _resample_cls = resample.DatasetResample
+ 
+diff --git a/xarray/core/weighted.py b/xarray/core/weighted.py
+new file mode 100644
+index 0000000..2acea0e
+--- /dev/null
++++ b/xarray/core/weighted.py
+@@ -0,0 +1,178 @@
++"""Weighted reductions for labeled arrays and datasets."""
++
++from .computation import dot
++from .duck_array_ops import isnull
++from .options import _get_keep_attrs
++from .pycompat import dask_array_type
++
++
++class Weighted:
++    """An object for weighted reductions of a DataArray or Dataset.
++
++    Construct these objects with ``DataArray.weighted`` or ``Dataset.weighted``.
++    Weights are aligned and broadcast by dimension name and coordinate label.
++    """
++
++    __slots__ = ("obj", "weights")
++
++    def __init__(self, obj, weights):
++        from .dataarray import DataArray
++
++        if not isinstance(weights, DataArray):
++            raise ValueError("`weights` must be a DataArray")
++
++        def check_weights(data):
++            if isnull(data).any():
++                raise ValueError(
++                    "`weights` cannot contain missing values. "
++                    "Missing values can be replaced by `weights.fillna(0)`."
++                )
++            return data
++
++        if isinstance(weights.data, dask_array_type):
++            # Validate each block when evaluated, without computing eagerly.
++            weights = weights.copy(
++                data=weights.data.map_blocks(check_weights, dtype=weights.dtype)
++            )
++        else:
++            check_weights(weights.data)
++
++        self.obj = obj
++        self.weights = weights
++
++    def __repr__(self):
++        return "{} with weights along dimensions: {}".format(
++            type(self).__name__, ", ".join(map(str, self.weights.dims))
++        )
++
++    def _check_dim(self, dim):
++        if dim is None or dim is ...:
++            return dim
++        if isinstance(dim, str):
++            dim = (dim,)
++        else:
++            dim = tuple(dim)
++        missing = set(dim) - set(self.obj.dims) - set(self.weights.dims)
++        if missing:
++            raise ValueError(
++                "Dimensions {} not found in data or weights".format(missing)
++            )
++        return dim
++
++    @staticmethod
++    def _reduce(da, weights, dim=None, skipna=None):
++        if skipna or (skipna is None and da.dtype.kind in "cfO"):
++            da = da.fillna(0.0)
++        if da.dtype.kind == "b":
++            # Boolean einsum uses logical operations instead of counting values.
++            da = da.astype(int)
++        # A dot product avoids materializing the broadcast data * weights array.
++        return dot(da, weights, dims=... if dim is None else dim)
++
++    def _sum_of_weights(self, da, dim=None):
++        # Missing data must not contribute to the normalization. Cast the mask
++        # to count observations correctly even when weights are boolean.
++        sum_of_weights = self._reduce(da.notnull().astype(int), self.weights, dim)
++        return sum_of_weights.where(sum_of_weights != 0)
++
++    def _weighted_sum(self, da, dim=None, skipna=None):
++        return self._reduce(da, self.weights, dim, skipna)
++
++    def _weighted_mean(self, da, dim=None, skipna=None):
++        if da.dtype.kind in "biu":
++            # Like numpy.average, use floating point arithmetic for integer data.
++            da = da.astype("float64")
++        return self._weighted_sum(da, dim, skipna) / self._sum_of_weights(da, dim)
++
++    def _implementation(self, func, dim, keep_attrs, **kwargs):
++        raise NotImplementedError
++
++    def sum_of_weights(self, dim=None, keep_attrs=None):
++        """Sum weights over dimensions, excluding weights at missing data.
++
++        Parameters
++        ----------
++        dim : str or sequence of str, optional
++            Dimensions to reduce. By default, reduce all dimensions.
++        keep_attrs : bool, optional
++            Copy attributes from the original object if True.
++
++        Returns
++        -------
++        DataArray or Dataset
++            Sum of valid weights. Zero sums are replaced by NaN.
++        """
++        return self._implementation(self._sum_of_weights, dim, keep_attrs)
++
++    def sum(self, dim=None, skipna=None, keep_attrs=None):
++        """Compute the weighted sum over one or more dimensions.
++
++        Parameters
++        ----------
++        dim : str or sequence of str, optional
++            Dimensions to reduce. By default, reduce all dimensions.
++        skipna : bool, optional
++            Skip missing values. By default, missing values are skipped for
++            floating point, complex and object data.
++        keep_attrs : bool, optional
++            Copy attributes from the original object if True.
++
++        Returns
++        -------
++        DataArray or Dataset
++            Weighted sum. An all-missing slice has sum zero when skipping NaN.
++        """
++        return self._implementation(self._weighted_sum, dim, keep_attrs, skipna=skipna)
++
++    def mean(self, dim=None, skipna=None, keep_attrs=None):
++        """Compute the weighted mean over one or more dimensions.
++
++        Parameters
++        ----------
++        dim : str or sequence of str, optional
++            Dimensions to reduce. By default, reduce all dimensions.
++        skipna : bool, optional
++            Skip missing values. By default, missing values are skipped for
++            floating point, complex and object data.
++        keep_attrs : bool, optional
++            Copy attributes from the original object if True.
++
++        Returns
++        -------
++        DataArray or Dataset
++            Weighted mean. Slices with zero valid weight return NaN.
++        """
++        return self._implementation(self._weighted_mean, dim, keep_attrs, skipna=skipna)
++
++
++class DataArrayWeighted(Weighted):
++    """Weighted reductions for a DataArray."""
++
++    __slots__ = ()
++
++    def _implementation(self, func, dim, keep_attrs, **kwargs):
++        dim = self._check_dim(dim)
++        result = func(self.obj, dim=dim, **kwargs)
++        result.name = self.obj.name
++        if keep_attrs is None:
++            keep_attrs = _get_keep_attrs(default=False)
++        result.attrs = self.obj.attrs if keep_attrs else {}
++        return result
++
++
++class DatasetWeighted(Weighted):
++    """Weighted reductions for each data variable in a Dataset."""
++
++    __slots__ = ()
++
++    def _implementation(self, func, dim, keep_attrs, **kwargs):
++        dim = self._check_dim(dim)
++        if keep_attrs is None:
++            keep_attrs = _get_keep_attrs(default=False)
++
++        def reduce_variable(da):
++            result = func(da, dim=dim, **kwargs)
++            result.attrs = da.attrs if keep_attrs else {}
++            return result
++
++        return self.obj.map(reduce_variable, keep_attrs=keep_attrs)
+diff --git a/xarray/tests/test_weighted.py b/xarray/tests/test_weighted.py
+new file mode 100644
+index 0000000..d971cd6
+--- /dev/null
++++ b/xarray/tests/test_weighted.py
+@@ -0,0 +1,70 @@
++import numpy as np
++import pytest
++
++import xarray as xr
++from xarray.testing import assert_allclose, assert_identical
++
++
++@pytest.mark.parametrize("as_dataset", [False, True])
++@pytest.mark.parametrize("transpose", [False, True])
++def test_weighted_average_dimension_order(as_dataset, transpose):
++    data = xr.DataArray(
++        [[1.0, 3.0, 5.0], [7.0, 9.0, 11.0]],
++        dims=("lat", "lon"),
++        coords={"lat": [0, 60], "lon": [10, 20, 30]},
++        name="temperature",
++    )
++    weights = xr.DataArray([1.0, 0.5], dims="lat", coords={"lat": [0, 60]})
++    expected = xr.DataArray(
++        np.average(data.values, axis=0, weights=weights.values),
++        dims="lon",
++        coords={"lon": data.lon},
++        name=data.name,
++    )
++    if transpose:
++        data = data.transpose()
++    if as_dataset:
++        data = data.to_dataset()
++        expected = expected.to_dataset()
++    assert_allclose(data.weighted(weights).mean("lat"), expected)
++    assert_allclose(data.average("lat", weights=weights), expected)
++
++
++@pytest.mark.parametrize("as_dataset", [False, True])
++def test_weighted_reductions_all_dimensions(as_dataset):
++    data = xr.DataArray([[1.0, 3.0], [5.0, 7.0]], dims=("x", "y"), name="a")
++    weights = xr.DataArray([1.0, 3.0], dims="x")
++    if as_dataset:
++        data = data.to_dataset()
++    weighted = data.weighted(weights)
++    expected_sum = xr.DataArray(40.0, name="a")
++    expected_mean = xr.DataArray(5.0, name="a")
++    expected_weights = xr.DataArray(8.0, name="a")
++    if as_dataset:
++        expected_sum = expected_sum.to_dataset()
++        expected_mean = expected_mean.to_dataset()
++        expected_weights = expected_weights.to_dataset()
++    assert_allclose(weighted.sum(), expected_sum)
++    assert_allclose(weighted.mean(), expected_mean)
++    assert_allclose(weighted.sum_of_weights(), expected_weights)
++
++
++@pytest.mark.parametrize("as_dataset", [False, True])
++def test_average_without_weights(as_dataset):
++    data = xr.DataArray([[1.0, 3.0], [5.0, 7.0]], dims=("x", "y"), name="a")
++    if as_dataset:
++        data = data.to_dataset()
++    assert_identical(data.average(), data.mean())
++    assert_identical(data.average("x"), data.mean("x"))
++
++
++def test_weighted_dataset_variable_dimensions():
++    data = xr.Dataset(
++        {
++            "a": (("x", "y"), [[1.0, 3.0], [5.0, 7.0]]),
++            "b": ("x", [2.0, 6.0]),
++        }
++    )
++    weights = xr.DataArray([1.0, 3.0], dims="x")
++    expected = xr.Dataset({"a": ("y", [4.0, 6.0]), "b": 5.0})
++    assert_allclose(data.weighted(weights).mean("x"), expected)
+diff --git a/xarray/tests/test_weighted_edges.py b/xarray/tests/test_weighted_edges.py
+new file mode 100644
+index 0000000..0cbe9ab
+--- /dev/null
++++ b/xarray/tests/test_weighted_edges.py
+@@ -0,0 +1,170 @@
++import numpy as np
++import pytest
++
++import xarray as xr
++from xarray.testing import assert_allclose, assert_identical
++
++from . import requires_dask
++
++
++@pytest.fixture(params=[False, True], ids=["array", "dataset"])
++def container(request):
++    def convert(data):
++        return data.to_dataset(name="a") if request.param else data
++
++    return convert
++
++
++@pytest.mark.parametrize("skipna", [None, True, False])
++def test_missing_data_normalization(container, skipna):
++    data = container(xr.DataArray([[1.0, np.nan], [3.0, np.nan]], dims=("x", "y")))
++    weights = xr.DataArray([1.0, 3.0], dims="x")
++    weighted = data.weighted(weights)
++    expected = container(xr.DataArray([2.5, np.nan], dims="y"))
++    assert_allclose(weighted.mean("x", skipna=skipna), expected)
++    assert_allclose(data.average("x", weights=weights, skipna=skipna), expected)
++    expected_sum = container(
++        xr.DataArray([10.0, np.nan if skipna is False else 0.0], dims="y")
++    )
++    assert_allclose(weighted.sum("x", skipna=skipna), expected_sum)
++    assert_allclose(
++        weighted.sum_of_weights("x"), container(xr.DataArray([4.0, np.nan], dims="y"))
++    )
++
++
++@pytest.mark.parametrize(
++    "skipna, expected", [(None, 3.0), (True, 3.0), (False, np.nan)]
++)
++def test_partial_missing_data(container, skipna, expected):
++    data = container(xr.DataArray([np.nan, 3.0], dims="x"))
++    weights = xr.DataArray([1.0, 3.0], dims="x")
++    assert_allclose(
++        data.weighted(weights).mean(skipna=skipna), container(xr.DataArray(expected))
++    )
++
++
++@pytest.mark.parametrize(
++    "weights, expected_sum, expected_mean, expected_weights",
++    [
++        ([0, 0], 0, np.nan, np.nan),
++        ([-1, 1], 2, np.nan, np.nan),
++        ([-1, 2], 5, 5, 1),
++        ([True, True], 4, 2, 2),
++        ([True, False], 1, 1, 1),
++    ],
++)
++def test_weight_values(
++    container, weights, expected_sum, expected_mean, expected_weights
++):
++    data = container(xr.DataArray([1, 3], dims="x"))
++    weighted = data.weighted(xr.DataArray(weights, dims="x"))
++    assert_allclose(weighted.sum(), container(xr.DataArray(expected_sum)))
++    assert_allclose(weighted.mean(), container(xr.DataArray(expected_mean)))
++    assert_allclose(
++        weighted.sum_of_weights(), container(xr.DataArray(expected_weights))
++    )
++
++
++@pytest.mark.parametrize("dtype", ["int8", "uint8", "int64"])
++def test_integer_average_matches_numpy(container, dtype):
++    values = np.array([100, 100], dtype=dtype)
++    weights = xr.DataArray(np.array([2, 2], dtype=dtype), dims="x")
++    data = container(xr.DataArray(values, dims="x"))
++    expected = container(xr.DataArray(np.average(values, weights=weights.values)))
++    assert_allclose(data.average(weights=weights), expected)
++
++
++def test_boolean_data_and_weights(container):
++    data = container(xr.DataArray([True, True], dims="x"))
++    weighted = data.weighted(xr.DataArray([True, True], dims="x"))
++    assert_allclose(weighted.sum(), container(xr.DataArray(2)))
++    assert_allclose(weighted.mean(), container(xr.DataArray(1.0)))
++
++
++@pytest.mark.parametrize("weights", [[1, 2], np.array([1, 2]), 1, None])
++def test_invalid_weight_type(container, weights):
++    data = container(xr.DataArray([1, 2], dims="x"))
++    with pytest.raises(ValueError, match="must be a DataArray"):
++        data.weighted(weights)
++
++
++def test_missing_weights(container):
++    data = container(xr.DataArray([1, 2], dims="x"))
++    weights = xr.DataArray([np.nan, 1], dims="x")
++    with pytest.raises(ValueError, match="cannot contain missing values"):
++        data.weighted(weights)
++    assert_allclose(
++        data.average(weights=weights.fillna(0)), container(xr.DataArray(2.0))
++    )
++
++
++@pytest.mark.parametrize("method", ["sum", "mean", "sum_of_weights"])
++def test_invalid_dimensions(container, method):
++    data = container(xr.DataArray([1, 2], dims="x"))
++    weighted = data.weighted(xr.DataArray([1, 2], dims="x"))
++    with pytest.raises(ValueError, match="not found"):
++        getattr(weighted, method)("missing")
++
++
++@pytest.mark.parametrize(
++    "coords, expected",
++    [([2, 1, 0], 11 / 6), ([3, 2, 1], 14 / 5), ([3, 4, 5], np.nan)],
++)
++def test_coordinate_alignment(container, coords, expected):
++    data = container(xr.DataArray([1.0, 2.0, 4.0], dims="x", coords={"x": [0, 1, 2]}))
++    weights = xr.DataArray([1.0, 2.0, 3.0], dims="x", coords={"x": coords})
++    assert_allclose(data.average(weights=weights), container(xr.DataArray(expected)))
++
++
++def test_weights_with_additional_dimension(container):
++    data = container(xr.DataArray([1, 3], dims="x"))
++    weights = xr.DataArray([[1, 3], [3, 1]], dims=("y", "x"))
++    assert_allclose(
++        data.weighted(weights).mean("x"),
++        container(xr.DataArray([2.5, 1.5], dims="y")),
++    )
++
++
++@pytest.mark.parametrize("keep_attrs", [False, True])
++@pytest.mark.parametrize("method", ["sum", "mean", "sum_of_weights"])
++def test_attributes(container, keep_attrs, method):
++    data = container(xr.DataArray([1, 3], dims="x", attrs={"units": "K"}, name="a"))
++    data.attrs["description"] = "example"
++    weighted = data.weighted(xr.DataArray([1, 2], dims="x", name="weights"))
++    result = getattr(weighted, method)(keep_attrs=keep_attrs)
++    assert result.attrs == (data.attrs if keep_attrs else {})
++    if isinstance(result, xr.Dataset):
++        assert result.a.attrs == (data.a.attrs if keep_attrs else {})
++    else:
++        assert result.name == "a"
++    with xr.set_options(keep_attrs=keep_attrs):
++        assert_identical(getattr(weighted, method)(), result)
++
++
++@requires_dask
++@pytest.mark.parametrize("missing", [False, True])
++def test_dask_weights_are_lazy(container, missing):
++    import dask
++    import dask.array as da
++
++    calls = []
++
++    @dask.delayed
++    def make_weights():
++        calls.append(True)
++        return np.array([np.nan if missing else 1.0, 3.0])
++
++    data = container(xr.DataArray([1.0, 3.0], dims="x").chunk({"x": 1}))
++    weights = xr.DataArray(
++        da.from_delayed(make_weights(), shape=(2,), dtype=float), dims="x"
++    )
++    result = data.weighted(weights).mean()
++    assert not calls
++    if missing:
++        with pytest.raises(ValueError, match="cannot contain missing values"):
++            result.compute(scheduler="synchronous")
++    else:
++        assert_allclose(
++            result.compute(scheduler="synchronous"), container(xr.DataArray(2.5))
++        )
++    assert calls

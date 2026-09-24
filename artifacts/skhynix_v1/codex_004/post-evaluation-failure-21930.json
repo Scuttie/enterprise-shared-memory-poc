@@ -1,0 +1,53 @@
+{
+  "analysis_scope": "AFTER_ALL_THREE_SUBMISSIONS_AND_OFFICIAL_GRADES_FOR_THIS_TASK",
+  "cells": [
+    {
+      "cell": "A",
+      "fail_to_pass_failure_count": 1,
+      "fail_to_pass_success_count": 5,
+      "infra_failure": false,
+      "pass_to_pass_failure_count": 0,
+      "patch_applied": true,
+      "private_receipt_sha256": "02d981578c816eda59687b6d1fc1f9accf0f4e99f33a0faa0fda6ae623b4c928",
+      "resolved": false,
+      "same_tensor_grouping_failure_observed": true,
+      "test_output_sha256": "7f967c6ba24c6a10395a34b9c86aa42748cd813d796ce68726109b4c9bcd5fc4",
+      "test_status_sha256": "78526e63cb8f3873cc97dc8ce471aa41bca79675021a574ce6117af78fa187dc"
+    },
+    {
+      "cell": "B",
+      "fail_to_pass_failure_count": 1,
+      "fail_to_pass_success_count": 5,
+      "infra_failure": false,
+      "pass_to_pass_failure_count": 0,
+      "patch_applied": true,
+      "private_receipt_sha256": "08e8db3ec1809f7e66003cd3dc34574e4997fb67dfb749d2a2171b16eea12bae",
+      "resolved": false,
+      "same_tensor_grouping_failure_observed": true,
+      "test_output_sha256": "d2a4c33d623afe2a637869615cedd50046a574753a75b5a8c3a40cc721ad8d69",
+      "test_status_sha256": "78526e63cb8f3873cc97dc8ce471aa41bca79675021a574ce6117af78fa187dc"
+    },
+    {
+      "cell": "C",
+      "fail_to_pass_failure_count": 1,
+      "fail_to_pass_success_count": 5,
+      "infra_failure": false,
+      "pass_to_pass_failure_count": 0,
+      "patch_applied": true,
+      "private_receipt_sha256": "d6b1b7c5a686519f8ef67cc9b48f3c2f2255f5047493465c50e4de5798c6f5cf",
+      "resolved": false,
+      "same_tensor_grouping_failure_observed": true,
+      "test_output_sha256": "d7bce2e7d2a2367cf7257078bf0abc332597025db03fd3b2b3328e8664702f6a",
+      "test_status_sha256": "78526e63cb8f3873cc97dc8ce471aa41bca79675021a574ce6117af78fa187dc"
+    }
+  ],
+  "diagnosis": "All three fixed creation-operator superscript grouping and passed five of six fail-to-pass checks, but left tensor LaTeX output ungrouped. Official coverage also required grouping the tensor expression.",
+  "evaluation_bank_updated": false,
+  "interpretation": "The agent-generated regressions reproduced the public example but did not cover the broader same-module output contract exercised by the official tests.",
+  "patches_changed_or_regraded": false,
+  "public_issue_scope": "The public minimal example showed creation-operator powers; it did not explicitly name the tensor case.",
+  "raw_private_output_exported": false,
+  "schema": "skhynix/native-post-evaluation-diagnosis/1.0",
+  "solver_feedback_sent": false,
+  "target_id": "swebench_verified--sympy__sympy-21930"
+}

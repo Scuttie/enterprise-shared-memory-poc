@@ -1,0 +1,998 @@
+{
+  "copy_policy": "Finite known-failure recovery public evidence including authorized broker journals and submitted patches; no private graders, private authority/checkpoints, hidden fixtures or raw grader logs.",
+  "file_count": 165,
+  "files": [
+    {
+      "bytes": 4358,
+      "path": "attestations.json",
+      "sha256": "e91f66b8fb9e9b096885bbbb4997497d1b7503ccd5e969b6dd839dcaab89f44a",
+      "source": "/home/trimem-runner/skhynix-codex-008/attestations.json"
+    },
+    {
+      "bytes": 337004,
+      "path": "audit.json",
+      "sha256": "cafa557d97d88f90054697200b70347705830c756482b0212adebe1b973c30e7",
+      "source": "/home/trimem-runner/skhynix-codex-008/audit.json"
+    },
+    {
+      "bytes": 1386,
+      "path": "batch-plan.json",
+      "sha256": "ad814497b7124fe93cdc76857aaa691a20ca20a35a0b2d46feb396defe2a7957",
+      "source": "/home/trimem-runner/skhynix-codex-008/batch-plan.json"
+    },
+    {
+      "bytes": 9395,
+      "path": "batch-report.json",
+      "sha256": "62a0ea7dcc6f7c1dec82b8109e485be051bcb822217569fe9748517678fe9590",
+      "source": "/home/trimem-runner/skhynix-codex-008/batch-report.json"
+    },
+    {
+      "bytes": 21151,
+      "path": "diagnostic-bank.json",
+      "sha256": "080850cbadbf27afc617e478adc2e75b0fc334460768b9c8f3ffda285ff6961c",
+      "source": "/home/trimem-runner/skhynix-codex-008/diagnostic-bank.json"
+    },
+    {
+      "bytes": 5253,
+      "path": "diagnostic-source-spec.json",
+      "sha256": "beaf66834191831735752a0586e2c5b540da918825423d5f8136173cdc674dfe",
+      "source": "/home/trimem-runner/skhynix-codex-008/diagnostic-source-spec.json"
+    },
+    {
+      "bytes": 719,
+      "path": "evaluation-task-descriptors.json",
+      "sha256": "5adef80ee5d4f3fcbfb4266d61a8138dd239d43e821e1b196b27e5125f06b631",
+      "source": "/home/trimem-runner/skhynix-codex-008/evaluation-task-descriptors.json"
+    },
+    {
+      "bytes": 3222,
+      "path": "launch-contract.json",
+      "sha256": "33a2141d123f952308429504b4326ed454e5ec4efaf46560b9db5cb31c6d61d1",
+      "source": "/home/trimem-runner/skhynix-codex-008/launch-contract.json"
+    },
+    {
+      "bytes": 19940,
+      "path": "native008_grader_integrity_diagnostic.interim-six-cells.json",
+      "sha256": "d0f01e7515419b0f8452efb3bf429c46ce54100157457238e8a1853ac49a5d77",
+      "source": "/home/trimem-runner/skhynix-codex-008/native008_grader_integrity_diagnostic.interim-six-cells.json"
+    },
+    {
+      "bytes": 28880,
+      "path": "native008_grader_integrity_diagnostic.json",
+      "sha256": "9d7fe2845f4a76ad965b52399a06d51709c2a3fc850cc2bb25b8cf948a3a3a1d",
+      "source": "/home/trimem-runner/skhynix-codex-008/native008_grader_integrity_diagnostic.json"
+    },
+    {
+      "bytes": 768,
+      "path": "operations-note.json",
+      "sha256": "e06e4af16b1d713acb8421e9b85b71adceff6a947a7e38f0956409e203f9e645",
+      "source": "/home/trimem-runner/skhynix-codex-008/operations-note.json"
+    },
+    {
+      "bytes": 34018,
+      "path": "operations/skhynix_codex_008_finalize.py",
+      "sha256": "87fe43d59898b3776c5ad143ed7e1a268346ea9f19ef29ac87d71bc4bf9f7ac2",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix_codex_008_finalize.py"
+    },
+    {
+      "bytes": 9276,
+      "path": "operations/skhynix_codex_008_init.py",
+      "sha256": "f0b92fb48ca25a0f8084105bc0af9c0038ccc59bf0fdb4aa74395875a58c2e67",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix_codex_008_init.py"
+    },
+    {
+      "bytes": 10641,
+      "path": "operations/skhynix_codex_008_manage.py",
+      "sha256": "244e968648a52d115b0aa4604ee15399e3d574c445a1e5227021223e2239fd44",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix_codex_008_manage.py"
+    },
+    {
+      "bytes": 4799,
+      "path": "operations/skhynix_codex_008_preflight.py",
+      "sha256": "e920a70db58cce861bae3e308dabedf2bc3975894dd8922ab0506c4607992a2d",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix_codex_008_preflight.py"
+    },
+    {
+      "bytes": 3203,
+      "path": "operations/skhynix_codex_008_record.py",
+      "sha256": "c22dffc2e62567a791debb8096036765d2cedf1f2d895b42be00873925ae5b72",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix_codex_008_record.py"
+    },
+    {
+      "bytes": 6287,
+      "path": "preflight-helper-correction.json",
+      "sha256": "d32eda7562ab76a8a688d65002e2205224b3a718a4fcdf5742202911e163910a",
+      "source": "/home/trimem-runner/skhynix-codex-008/preflight-helper-correction.json"
+    },
+    {
+      "bytes": 33499,
+      "path": "preflight.json",
+      "sha256": "c4c19ee6c8a2da03e929d0466b6eb0d767d904bb3e3597788da2b8bceeba3f66",
+      "source": "/home/trimem-runner/skhynix-codex-008/preflight.json"
+    },
+    {
+      "bytes": 43154,
+      "path": "public-probe-results.json",
+      "sha256": "41262bce2a86a70b255bc96c781fed4755045aa29133ce4b104acc8ff066155a",
+      "source": "/home/trimem-runner/skhynix-codex-008/public-probe-results.json"
+    },
+    {
+      "bytes": 825,
+      "path": "recovery-20428-r1/cells/A/bank-projection.json",
+      "sha256": "3bd95cff182ac126b44b29856db30dff5c95c023a2531276dabc2ff1a96c5a23",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/A/bank-projection.json"
+    },
+    {
+      "bytes": 1306,
+      "path": "recovery-20428-r1/cells/A/public-result.json",
+      "sha256": "41ba4ba846459cea504dead297fc3cfb92a45c4133f612f4f8a442b175ef8ab9",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/A/public-result.json"
+    },
+    {
+      "bytes": 4884,
+      "path": "recovery-20428-r1/cells/A/public-task.json",
+      "sha256": "8fc15888c94ddd24ad2d86a9c1c72bd4b56f19759f558b379af23b6628282318",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/A/public-task.json"
+    },
+    {
+      "bytes": 149,
+      "path": "recovery-20428-r1/cells/A/state.json",
+      "sha256": "9defe60a3abdc71fa17fc19b87327400775c459dfba9ed243c432045ad2a4ce7",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/A/state.json"
+    },
+    {
+      "bytes": 1986,
+      "path": "recovery-20428-r1/cells/A/submission.diff",
+      "sha256": "edf3554d55d3ccbffeea3ed47cc4836fab6248cf0ac6154cc8ab3810673cb1f9",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/A/submission.diff"
+    },
+    {
+      "bytes": 1102,
+      "path": "recovery-20428-r1/cells/A/submission.json",
+      "sha256": "90c86229b1a785f3dc9a1173c63790df272963845026b81a319fd233e8d528ff",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/A/submission.json"
+    },
+    {
+      "bytes": 54384,
+      "path": "recovery-20428-r1/cells/A/tool-events.jsonl",
+      "sha256": "b8b356e120cf28a5b2c241335461581ad6d1252354c3a1190a90495bb98d6982",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/A/tool-events.jsonl"
+    },
+    {
+      "bytes": 540,
+      "path": "recovery-20428-r1/cells/A/workspace.json",
+      "sha256": "6269d40f1c8a9ce0b6458a76888d251648822227d3b146343e13c4350c59f02e",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/A/workspace.json"
+    },
+    {
+      "bytes": 2228,
+      "path": "recovery-20428-r1/cells/B/bank-projection.json",
+      "sha256": "0058d80e10ccb883186b00197518543459354f9516da6e06076b6d199c7abb35",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/B/bank-projection.json"
+    },
+    {
+      "bytes": 4884,
+      "path": "recovery-20428-r1/cells/B/public-task.json",
+      "sha256": "111c63b394f18fe404e21a7a73efe45ead2f5dee552b2890192e2d37e360eea5",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/B/public-task.json"
+    },
+    {
+      "bytes": 129,
+      "path": "recovery-20428-r1/cells/B/state.json",
+      "sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/B/state.json"
+    },
+    {
+      "bytes": 542,
+      "path": "recovery-20428-r1/cells/B/workspace.json",
+      "sha256": "0f257d5d33f1748c4155314f4862cd544c01f9f70eb10064322131282af2fd93",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/B/workspace.json"
+    },
+    {
+      "bytes": 2522,
+      "path": "recovery-20428-r1/cells/C/bank-projection.json",
+      "sha256": "d62cad9a4d558db59336854ef7d856307ad47350500b6b2fefaf60d0dbe16565",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/C/bank-projection.json"
+    },
+    {
+      "bytes": 1304,
+      "path": "recovery-20428-r1/cells/C/public-result.json",
+      "sha256": "27b3fd36dcbb049051f568460b05af298fd18f0d658d3f0be37dd64deb185dec",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/C/public-result.json"
+    },
+    {
+      "bytes": 4884,
+      "path": "recovery-20428-r1/cells/C/public-task.json",
+      "sha256": "b7ef4c108b41ea8f875c51f46219683be903e5ee6a9449edbf9dfd293bf1d64f",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/C/public-task.json"
+    },
+    {
+      "bytes": 149,
+      "path": "recovery-20428-r1/cells/C/state.json",
+      "sha256": "f48e09ea3cd7f3483c7fd619fa67637642f00f6eb0dcfc3e312aa841bfeb04f8",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/C/state.json"
+    },
+    {
+      "bytes": 2067,
+      "path": "recovery-20428-r1/cells/C/submission.diff",
+      "sha256": "2ae530e72c5e700cf51fa4cee3baa10e7916c2e20eae79b88311e3f30e5d1bb9",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/C/submission.diff"
+    },
+    {
+      "bytes": 1218,
+      "path": "recovery-20428-r1/cells/C/submission.json",
+      "sha256": "e6d73bd461da0af39475941f707e18ffddfe52eb4a460a0e351ad911cff30512",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/C/submission.json"
+    },
+    {
+      "bytes": 54910,
+      "path": "recovery-20428-r1/cells/C/tool-events.jsonl",
+      "sha256": "16696f99ca2d6d44e7a826c485daa55a2c5cfb502d37b0df41ca8984edeac774",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/C/tool-events.jsonl"
+    },
+    {
+      "bytes": 538,
+      "path": "recovery-20428-r1/cells/C/workspace.json",
+      "sha256": "4b116a89de859be605381d146570cf84ed2fed2488f9abe03141335ca7d6f1a3",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/cells/C/workspace.json"
+    },
+    {
+      "bytes": 2961,
+      "path": "recovery-20428-r1/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json",
+      "sha256": "9fbea774c2fca8455922ea276a2a205a732df257bbb364d08fa35d2267d3866a",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20428-r1/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json",
+      "sha256": "2439b257357c6b7c8ab2f4ab2e94ebdf8313fe34cf3c02c0487c938ac956ee82",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2951,
+      "path": "recovery-20428-r1/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json",
+      "sha256": "279066bab79a67e311664cf92713fbb95e8029376ffff904a3628c9e16cca26b",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20428-r1/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json",
+      "sha256": "2439b257357c6b7c8ab2f4ab2e94ebdf8313fe34cf3c02c0487c938ac956ee82",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2941,
+      "path": "recovery-20428-r1/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json",
+      "sha256": "414d0e41abaf1aab873802cb2e00c02a98eca38f4a9cc2b9dda1cbe1f9114665",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20428-r1/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json",
+      "sha256": "2439b257357c6b7c8ab2f4ab2e94ebdf8313fe34cf3c02c0487c938ac956ee82",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2391,
+      "path": "recovery-20428-r1/environment/control/local-environment-preflight.json",
+      "sha256": "5d3f5994c8e920105762cb2e30f3bd1d76229cd09e028471333be1f8c81d755a",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/environment/control/local-environment-preflight.json"
+    },
+    {
+      "bytes": 8482,
+      "path": "recovery-20428-r1/environment/control/official-harness-loader-preflight.json",
+      "sha256": "ebacd14487785b43328e060b095dfd52ab2b7e0cc208afab52f4e300010ee8ab",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/environment/control/official-harness-loader-preflight.json"
+    },
+    {
+      "bytes": 42660,
+      "path": "recovery-20428-r1/plan.json",
+      "sha256": "0a3aa2634fa08c586ddd83ed40aef80efc417d825f6d7e5bca21561b136e58e8",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/plan.json"
+    },
+    {
+      "bytes": 65,
+      "path": "recovery-20428-r1/plan.sha256",
+      "sha256": "601b8a355f0124dbaa116df8ccdeb7840cd599649e9275996f2afea7b23ab07b",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/execution/plan.sha256"
+    },
+    {
+      "bytes": 38582,
+      "path": "recovery-20428-r1/source-snapshot.json",
+      "sha256": "8611f981b6cad0af637d229e51b15eeb0799ad4bcf75d15886d88464c750d0e2",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r1/source-snapshot.json"
+    },
+    {
+      "bytes": 825,
+      "path": "recovery-20428-r2/cells/A/bank-projection.json",
+      "sha256": "4041e827072c9067103bbcae852509ad26fc8788bbb227ad633afbc7ac73e85f",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/A/bank-projection.json"
+    },
+    {
+      "bytes": 1307,
+      "path": "recovery-20428-r2/cells/A/public-result.json",
+      "sha256": "a65a682ef3d6f6efe23cbe090fa87fd598eeefa9f5b424b8897db7420c70d4d4",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/A/public-result.json"
+    },
+    {
+      "bytes": 4884,
+      "path": "recovery-20428-r2/cells/A/public-task.json",
+      "sha256": "bf5b26aba83c6913d0e637f38d43f6cecec452d7ae9ecddb305ff8fae774319e",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/A/public-task.json"
+    },
+    {
+      "bytes": 148,
+      "path": "recovery-20428-r2/cells/A/state.json",
+      "sha256": "10c2bdddcf9ed25693fb933643715a5ce58b93157e0c7c3dc76c40b673143405",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/A/state.json"
+    },
+    {
+      "bytes": 2115,
+      "path": "recovery-20428-r2/cells/A/submission.diff",
+      "sha256": "1126b392a41548766953d1b3feb7087d47bd260088f3d4f150696cf2599f3b87",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/A/submission.diff"
+    },
+    {
+      "bytes": 1048,
+      "path": "recovery-20428-r2/cells/A/submission.json",
+      "sha256": "ca2794ba16285e3a5fb60ab94e5b75241c7c0d5d8dfc401f0fae5cab6c19c905",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/A/submission.json"
+    },
+    {
+      "bytes": 47258,
+      "path": "recovery-20428-r2/cells/A/tool-events.jsonl",
+      "sha256": "c5f9f61a7c43308cff0af3830032047e687ddb752d5494877f55b64da4d386ef",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/A/tool-events.jsonl"
+    },
+    {
+      "bytes": 540,
+      "path": "recovery-20428-r2/cells/A/workspace.json",
+      "sha256": "0728b72cbf6d084f3785d31233cbf9c4af89de92e37429e5faa8f832c4fefe4a",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/A/workspace.json"
+    },
+    {
+      "bytes": 2228,
+      "path": "recovery-20428-r2/cells/B/bank-projection.json",
+      "sha256": "1a142897e02493840ec245384ed43a5dd0982e7bf08024b415874d65170454e9",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/B/bank-projection.json"
+    },
+    {
+      "bytes": 4884,
+      "path": "recovery-20428-r2/cells/B/public-task.json",
+      "sha256": "16230535e01d04a1694ff804c37b4a9947ae89373301e3806089b2b00156f23b",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/B/public-task.json"
+    },
+    {
+      "bytes": 129,
+      "path": "recovery-20428-r2/cells/B/state.json",
+      "sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/B/state.json"
+    },
+    {
+      "bytes": 542,
+      "path": "recovery-20428-r2/cells/B/workspace.json",
+      "sha256": "2b504cbf61418fd2d1d3bd9f496181043c3e028325c62d07eaac291060b30547",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/B/workspace.json"
+    },
+    {
+      "bytes": 2522,
+      "path": "recovery-20428-r2/cells/C/bank-projection.json",
+      "sha256": "f77d1c584affb919ad04ef45b8158f5237b697ed1976593c15342d10c78b22ce",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/C/bank-projection.json"
+    },
+    {
+      "bytes": 1384,
+      "path": "recovery-20428-r2/cells/C/public-result.json",
+      "sha256": "2eb3ed7b6e097f2500386893246912a566f3658ebc1fd6a6828e9812b40f1066",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/C/public-result.json"
+    },
+    {
+      "bytes": 4884,
+      "path": "recovery-20428-r2/cells/C/public-task.json",
+      "sha256": "1d75a3c6948b1f60c9379e4553e573fa00ee05d110592fa9f7af2ac2b1b62b73",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/C/public-task.json"
+    },
+    {
+      "bytes": 149,
+      "path": "recovery-20428-r2/cells/C/state.json",
+      "sha256": "7f2e011a6c863dd75e8a1d18e1e04c93f446ac0af7e4cc287fdf4eb2ad98aa55",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/C/state.json"
+    },
+    {
+      "bytes": 4486,
+      "path": "recovery-20428-r2/cells/C/submission.diff",
+      "sha256": "8fc4e3e5abf138bf6b739f692c5d0fc71ff715bac716bab315a6ed2d3899c21c",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/C/submission.diff"
+    },
+    {
+      "bytes": 1390,
+      "path": "recovery-20428-r2/cells/C/submission.json",
+      "sha256": "af0b6e9eb6a7058c16101d2f7c58e9bd05e6f7d0a8ef4dd8a6e3fa6c06c1ebac",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/C/submission.json"
+    },
+    {
+      "bytes": 71771,
+      "path": "recovery-20428-r2/cells/C/tool-events.jsonl",
+      "sha256": "d85912942ff16fee2e4179934724c65683f64725d9824a71d413724a9405b351",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/C/tool-events.jsonl"
+    },
+    {
+      "bytes": 538,
+      "path": "recovery-20428-r2/cells/C/workspace.json",
+      "sha256": "d48f139fd51bbe52067279db0589d19ccc47351918487cb8fc9e74783e12af81",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/cells/C/workspace.json"
+    },
+    {
+      "bytes": 2961,
+      "path": "recovery-20428-r2/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json",
+      "sha256": "d24d7bf21c92033e513e1a52dae039904abe55d9b1fae4d4c13371c201c2d5b2",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20428-r2/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json",
+      "sha256": "2439b257357c6b7c8ab2f4ab2e94ebdf8313fe34cf3c02c0487c938ac956ee82",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2951,
+      "path": "recovery-20428-r2/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json",
+      "sha256": "541fdb8909848f21cb0c8672d2669c9f5dcb9443f5d9cf13c2effe58bf1d8713",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20428-r2/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json",
+      "sha256": "2439b257357c6b7c8ab2f4ab2e94ebdf8313fe34cf3c02c0487c938ac956ee82",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2941,
+      "path": "recovery-20428-r2/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json",
+      "sha256": "c0c78218fb418a66a90e411e45dd49f6932e8ed251a3c340c9428e0045c276dc",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20428/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20428-r2/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json",
+      "sha256": "2439b257357c6b7c8ab2f4ab2e94ebdf8313fe34cf3c02c0487c938ac956ee82",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20428/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2391,
+      "path": "recovery-20428-r2/environment/control/local-environment-preflight.json",
+      "sha256": "11acea99d0e98391da8aeb01e98e5d7981a6c878de862b1c1e1b2b4c1965b9f3",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/environment/control/local-environment-preflight.json"
+    },
+    {
+      "bytes": 8482,
+      "path": "recovery-20428-r2/environment/control/official-harness-loader-preflight.json",
+      "sha256": "7bf0195aca462e2f2b036e64c4b483e9d33f541be45ae12897b22e674af890bc",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/environment/control/official-harness-loader-preflight.json"
+    },
+    {
+      "bytes": 42660,
+      "path": "recovery-20428-r2/plan.json",
+      "sha256": "891ec941dd345c8ec5f3fb472e0185b9595d4cc8a204678f0046f12af0a9026f",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/plan.json"
+    },
+    {
+      "bytes": 65,
+      "path": "recovery-20428-r2/plan.sha256",
+      "sha256": "619ed7b4ae6441e01b4fe640bb8db233bffd49600c5ab6941f0e4161e02b14c2",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/execution/plan.sha256"
+    },
+    {
+      "bytes": 38582,
+      "path": "recovery-20428-r2/source-snapshot.json",
+      "sha256": "c0274c93be526e48941d5dd585c7718c150acc2e5e3172a4113e163d7c2b5023",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20428-r2/source-snapshot.json"
+    },
+    {
+      "bytes": 825,
+      "path": "recovery-20438-r1/cells/A/bank-projection.json",
+      "sha256": "7aaf048f509e490a331a6d175188b135c592d00ee28e8a67bcdf468c2dc52666",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/A/bank-projection.json"
+    },
+    {
+      "bytes": 1306,
+      "path": "recovery-20438-r1/cells/A/public-result.json",
+      "sha256": "5edd95eda2d57d03b0abc501a10930faf2fe7864645eba6c9a1fa941ba7085ab",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/A/public-result.json"
+    },
+    {
+      "bytes": 2307,
+      "path": "recovery-20438-r1/cells/A/public-task.json",
+      "sha256": "b6eab3310d99994585cc619da5107b38f72ff86b60fce8295ab54114568c251e",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/A/public-task.json"
+    },
+    {
+      "bytes": 149,
+      "path": "recovery-20438-r1/cells/A/state.json",
+      "sha256": "671211f83e3632fc9f0f0b886787f27d5e2b8874bff66bcff582e9822523ff19",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/A/state.json"
+    },
+    {
+      "bytes": 3966,
+      "path": "recovery-20438-r1/cells/A/submission.diff",
+      "sha256": "be36d9eb0d88a1e94be77c3bb64e36361eae5b52e6ae62f142646d5a1f77dbd0",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/A/submission.diff"
+    },
+    {
+      "bytes": 1066,
+      "path": "recovery-20438-r1/cells/A/submission.json",
+      "sha256": "04d5ccaf50a2e6d6e6855699487baa76c756362cd7141da6ed1cc5e96b90d036",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/A/submission.json"
+    },
+    {
+      "bytes": 78053,
+      "path": "recovery-20438-r1/cells/A/tool-events.jsonl",
+      "sha256": "6603a8cdbfd323fc70d2e7479d784006e6e43ff5e741ae36ed1de5b793ec3567",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/A/tool-events.jsonl"
+    },
+    {
+      "bytes": 540,
+      "path": "recovery-20438-r1/cells/A/workspace.json",
+      "sha256": "7579405f1653171689b0bfec2ea69addea00a51bdc271006a51616eb1e50d47e",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/A/workspace.json"
+    },
+    {
+      "bytes": 2228,
+      "path": "recovery-20438-r1/cells/B/bank-projection.json",
+      "sha256": "3f06606ab7438a606935178e80fa37ffaae7c893f02b34434054bb75a93ee70c",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/B/bank-projection.json"
+    },
+    {
+      "bytes": 2307,
+      "path": "recovery-20438-r1/cells/B/public-task.json",
+      "sha256": "526f69b18f3bcf310cdffbceee5d6862964eab3fb12a72f12d834736523f01fa",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/B/public-task.json"
+    },
+    {
+      "bytes": 129,
+      "path": "recovery-20438-r1/cells/B/state.json",
+      "sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/B/state.json"
+    },
+    {
+      "bytes": 542,
+      "path": "recovery-20438-r1/cells/B/workspace.json",
+      "sha256": "a627775d153c355228b35c9fe16696f06a5161a3701bae404b8c60196a5a2808",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/B/workspace.json"
+    },
+    {
+      "bytes": 2522,
+      "path": "recovery-20438-r1/cells/C/bank-projection.json",
+      "sha256": "6c77665483fb2f1d5203977862dce13655380d0bf36032310ca4f9dbe4c26fa0",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/C/bank-projection.json"
+    },
+    {
+      "bytes": 1386,
+      "path": "recovery-20438-r1/cells/C/public-result.json",
+      "sha256": "b299fc9ad4f7a91e4e33b9721a29801fea5847cb73076ffd4d49e15af0e3a3d2",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/C/public-result.json"
+    },
+    {
+      "bytes": 2307,
+      "path": "recovery-20438-r1/cells/C/public-task.json",
+      "sha256": "17d965dd08e46fabcde9b10f4b780aeb407999dd8feb79df3e9025e4ce781aee",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/C/public-task.json"
+    },
+    {
+      "bytes": 149,
+      "path": "recovery-20438-r1/cells/C/state.json",
+      "sha256": "df0295db36076ddaf95ec6604f336dd978f0fb4e4899fce3efc9d8f8ee8ef5a5",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/C/state.json"
+    },
+    {
+      "bytes": 6644,
+      "path": "recovery-20438-r1/cells/C/submission.diff",
+      "sha256": "5f5d1c096a12af7fbd24dde9dfd4e6bcb177b7c8f75c8e359b3ea0bbade1550d",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/C/submission.diff"
+    },
+    {
+      "bytes": 1101,
+      "path": "recovery-20438-r1/cells/C/submission.json",
+      "sha256": "a27fd066f6795a36b25cb5b69ece92a557dd400da036c23defa97bc4d8aa8e87",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/C/submission.json"
+    },
+    {
+      "bytes": 135871,
+      "path": "recovery-20438-r1/cells/C/tool-events.jsonl",
+      "sha256": "3581f8cd58d03981dd4b2b492496e0ab0b5db5e685e7667b54f33eacefce1d3e",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/C/tool-events.jsonl"
+    },
+    {
+      "bytes": 538,
+      "path": "recovery-20438-r1/cells/C/workspace.json",
+      "sha256": "42ccb674bad2057f465f43aac2cd159df0c6c247b8cb9229b756c7a32729bb36",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/cells/C/workspace.json"
+    },
+    {
+      "bytes": 2977,
+      "path": "recovery-20438-r1/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json",
+      "sha256": "6cadd62251b6eabbf4bb1e49676b8ce0c4bc9f93b712ace4a7f6de4afb026ddf",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20438-r1/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json",
+      "sha256": "85ef75034044796d5976d3014db9e57f29d6e2295c8cbea37124d9c15d27d6d1",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2967,
+      "path": "recovery-20438-r1/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json",
+      "sha256": "4cea8f4dcfab6d923fdffb7ed636b3aaaf4adf691816c84b471b9d282d876c58",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20438-r1/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json",
+      "sha256": "85ef75034044796d5976d3014db9e57f29d6e2295c8cbea37124d9c15d27d6d1",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2957,
+      "path": "recovery-20438-r1/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json",
+      "sha256": "8f02c1b00d08daebc434aacde9cce2ea6a1e8eb5e3904193dce9684623e78927",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20438-r1/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json",
+      "sha256": "85ef75034044796d5976d3014db9e57f29d6e2295c8cbea37124d9c15d27d6d1",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2391,
+      "path": "recovery-20438-r1/environment/control/local-environment-preflight.json",
+      "sha256": "c886e40b928708c82c74128dfd3eb95dfe1f249aba47c40f975b58778a7a742b",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/environment/control/local-environment-preflight.json"
+    },
+    {
+      "bytes": 8482,
+      "path": "recovery-20438-r1/environment/control/official-harness-loader-preflight.json",
+      "sha256": "a059a93679964b9e52aebaafc30735904c86333658f6ab1033f999a8f995ea49",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/environment/control/official-harness-loader-preflight.json"
+    },
+    {
+      "bytes": 40083,
+      "path": "recovery-20438-r1/plan.json",
+      "sha256": "fbda8364689c4c311cbcde6be0432629d7fb3e6a1574d95bda4909fb14ecd90a",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/plan.json"
+    },
+    {
+      "bytes": 65,
+      "path": "recovery-20438-r1/plan.sha256",
+      "sha256": "8c36b5a9cb6257aa9f3c8492bdf567e3e716f34bd62cf58816a5ad8505f8363e",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/execution/plan.sha256"
+    },
+    {
+      "bytes": 38582,
+      "path": "recovery-20438-r1/source-snapshot.json",
+      "sha256": "b43b49e9b01de662e56e1e3a357a28d18ef4f7395f5f7cc37cde0ea90d0b8c23",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r1/source-snapshot.json"
+    },
+    {
+      "bytes": 825,
+      "path": "recovery-20438-r2/cells/A/bank-projection.json",
+      "sha256": "b0447c1f6c8ca3e7282351d98c0c594faa074f6f2d9615bcf011053fa6c5cf3d",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/A/bank-projection.json"
+    },
+    {
+      "bytes": 1307,
+      "path": "recovery-20438-r2/cells/A/public-result.json",
+      "sha256": "b4a2285f7ca0a7748649b0c0c077350bba51364b92ac09657371ff95da5538a3",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/A/public-result.json"
+    },
+    {
+      "bytes": 2307,
+      "path": "recovery-20438-r2/cells/A/public-task.json",
+      "sha256": "99fcf1467dec334e71f7768993785b6c5485be24c601615acdf4d4d8d5290788",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/A/public-task.json"
+    },
+    {
+      "bytes": 148,
+      "path": "recovery-20438-r2/cells/A/state.json",
+      "sha256": "3e87c56df568a9f1a0b0f1657769c1805f655f3479adb629a88140100fde643c",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/A/state.json"
+    },
+    {
+      "bytes": 4410,
+      "path": "recovery-20438-r2/cells/A/submission.diff",
+      "sha256": "5356d632862bb8585853bbd7ee2c54e09061bbc0323981a68afd556c2ea131a0",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/A/submission.diff"
+    },
+    {
+      "bytes": 1154,
+      "path": "recovery-20438-r2/cells/A/submission.json",
+      "sha256": "d5818e9f2fbb1fa1ec8d0cf8d7a0483fd1ccd8c73d37bd52ed11df660e1bc6c5",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/A/submission.json"
+    },
+    {
+      "bytes": 88062,
+      "path": "recovery-20438-r2/cells/A/tool-events.jsonl",
+      "sha256": "fb128a1de0437b4a64848caf22f74f4d9d198f01b6bc44f0d3ad8fca8cf0a1c1",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/A/tool-events.jsonl"
+    },
+    {
+      "bytes": 540,
+      "path": "recovery-20438-r2/cells/A/workspace.json",
+      "sha256": "a11091d0e378b96118d0bf7b22d0406f689f4d2e0e38f6ca31850ed43296180d",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/A/workspace.json"
+    },
+    {
+      "bytes": 2228,
+      "path": "recovery-20438-r2/cells/B/bank-projection.json",
+      "sha256": "4228105e19edb4f3b4b720776c7317b4780daed5e326237edec4b37fd9bb73ed",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/B/bank-projection.json"
+    },
+    {
+      "bytes": 2307,
+      "path": "recovery-20438-r2/cells/B/public-task.json",
+      "sha256": "003a2ef06c63dd851c646de8b60710c7ad851fc7db8ec10d72d1bff5b95099d1",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/B/public-task.json"
+    },
+    {
+      "bytes": 129,
+      "path": "recovery-20438-r2/cells/B/state.json",
+      "sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/B/state.json"
+    },
+    {
+      "bytes": 542,
+      "path": "recovery-20438-r2/cells/B/workspace.json",
+      "sha256": "e7f14518d0ef61efcedac7b09f4ad48f1d4eb67b63f77e378b12f4e78020fb23",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/B/workspace.json"
+    },
+    {
+      "bytes": 2522,
+      "path": "recovery-20438-r2/cells/C/bank-projection.json",
+      "sha256": "0a9fc6a28a5b616614242b08c62ad984ec10a1b43384df77a229196abb09c2c2",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/C/bank-projection.json"
+    },
+    {
+      "bytes": 1305,
+      "path": "recovery-20438-r2/cells/C/public-result.json",
+      "sha256": "e58e2cfb61d53a3862aa0faf80449effd7ef73ba5bfdc8ababfe52bc7e12ef38",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/C/public-result.json"
+    },
+    {
+      "bytes": 2307,
+      "path": "recovery-20438-r2/cells/C/public-task.json",
+      "sha256": "c9d5c21e9010843f878b46b4db167367b66a17eae3e03c09a7676e3bd61dae2f",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/C/public-task.json"
+    },
+    {
+      "bytes": 148,
+      "path": "recovery-20438-r2/cells/C/state.json",
+      "sha256": "769380f8081b28510e639586f9daa4b4e858c9d97f68560373464cb55fbf7217",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/C/state.json"
+    },
+    {
+      "bytes": 4767,
+      "path": "recovery-20438-r2/cells/C/submission.diff",
+      "sha256": "f407b5d9a4835a6f7a92ebde444dbc97628b41e2e99df5f239cb1f885ce1d125",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/C/submission.diff"
+    },
+    {
+      "bytes": 1199,
+      "path": "recovery-20438-r2/cells/C/submission.json",
+      "sha256": "7ea2e222ba4b1c51981190a338bbe029062e1f003c7a13b5e80bb973db018fd6",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/C/submission.json"
+    },
+    {
+      "bytes": 90711,
+      "path": "recovery-20438-r2/cells/C/tool-events.jsonl",
+      "sha256": "88fed9301b9763955fbebd38e7a8b87edffaa3921b44d53e816c3826d16537e9",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/C/tool-events.jsonl"
+    },
+    {
+      "bytes": 538,
+      "path": "recovery-20438-r2/cells/C/workspace.json",
+      "sha256": "90708342e33bc4ee6f8b17c327102c1f2954a1935e813e0ba6b6bd184157a3c9",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/cells/C/workspace.json"
+    },
+    {
+      "bytes": 2977,
+      "path": "recovery-20438-r2/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json",
+      "sha256": "7d4c61fab2a0cf9ac64d6d2b17761cbbe22afed44a61b0b9feb855544f15d580",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20438-r2/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json",
+      "sha256": "85ef75034044796d5976d3014db9e57f29d6e2295c8cbea37124d9c15d27d6d1",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2967,
+      "path": "recovery-20438-r2/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json",
+      "sha256": "fce54f3e4c2d8ae3936da797928cdb7fc9c1900b0fa16dc4501a442c2c59919d",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20438-r2/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json",
+      "sha256": "85ef75034044796d5976d3014db9e57f29d6e2295c8cbea37124d9c15d27d6d1",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2957,
+      "path": "recovery-20438-r2/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json",
+      "sha256": "449923c417a9d24a96ddc58dac6c16e19bf7c0b31cde153b6a6ed14375f18cf0",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20438/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "recovery-20438-r2/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json",
+      "sha256": "85ef75034044796d5976d3014db9e57f29d6e2295c8cbea37124d9c15d27d6d1",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20438/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2391,
+      "path": "recovery-20438-r2/environment/control/local-environment-preflight.json",
+      "sha256": "bcb10ad0bc888ce8ac38c741c4e82a2afb386369695f22e506ea27ef463af4f5",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/environment/control/local-environment-preflight.json"
+    },
+    {
+      "bytes": 8482,
+      "path": "recovery-20438-r2/environment/control/official-harness-loader-preflight.json",
+      "sha256": "c3ae4731c7985b930113b47fa7ad9b2a2e3e74b4f04344bf8a904048e93a04a7",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/environment/control/official-harness-loader-preflight.json"
+    },
+    {
+      "bytes": 40083,
+      "path": "recovery-20438-r2/plan.json",
+      "sha256": "9fa6d020ca989e39b1a28450505a236a507d18c80055030a9bb049ea86b41a14",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/plan.json"
+    },
+    {
+      "bytes": 65,
+      "path": "recovery-20438-r2/plan.sha256",
+      "sha256": "17ec1986455c2c884b14be76790bffcf963db9443ffd69976f511060a92db34f",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/execution/plan.sha256"
+    },
+    {
+      "bytes": 38582,
+      "path": "recovery-20438-r2/source-snapshot.json",
+      "sha256": "034656114cde11d11e21fcea0752048f42255716937ede5a70920583bd4e4b1d",
+      "source": "/home/trimem-runner/skhynix-codex-008/recovery-20438-r2/source-snapshot.json"
+    },
+    {
+      "bytes": 3746,
+      "path": "skhynix_codex_008_preflight.initial.py",
+      "sha256": "fe1f63c54068f327db8399d6b7786c1bc87dbcd9916c117b2a8e3a6eed197f04",
+      "source": "/home/trimem-runner/skhynix-codex-008/skhynix_codex_008_preflight.initial.py"
+    },
+    {
+      "bytes": 4799,
+      "path": "skhynix_codex_008_preflight.py",
+      "sha256": "e920a70db58cce861bae3e308dabedf2bc3975894dd8922ab0506c4607992a2d",
+      "source": "/home/trimem-runner/skhynix-codex-008/skhynix_codex_008_preflight.py"
+    },
+    {
+      "bytes": 2343,
+      "path": "solver-launches/recovery-20428-r1-A-prompt.txt",
+      "sha256": "b93fc26c113af612a69d7f1b8cf8564e897e1ad8788e2dd4b19921fec9504b80",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20428-r1-A-prompt.txt"
+    },
+    {
+      "bytes": 556,
+      "path": "solver-launches/recovery-20428-r1-A.json",
+      "sha256": "858038dcd077eaee0e230452242f77a0bd6237bcfcc0121bc32295a8eb5bea34",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20428-r1-A.json"
+    },
+    {
+      "bytes": 2343,
+      "path": "solver-launches/recovery-20428-r1-C-prompt.txt",
+      "sha256": "733b46e5dc9a039f991033660ef97b3386a38ae3a5ce9532229410b6293a9748",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20428-r1-C-prompt.txt"
+    },
+    {
+      "bytes": 556,
+      "path": "solver-launches/recovery-20428-r1-C.json",
+      "sha256": "7772afc6be7eb60804a2f0579d1f13f8e39bcba4b456f5df46e636604e463dd2",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20428-r1-C.json"
+    },
+    {
+      "bytes": 2343,
+      "path": "solver-launches/recovery-20428-r2-A-prompt.txt",
+      "sha256": "f0da7ac2baad421ab2797bbe6b3995b4b39c5aec344b5274ff48e224cc855f76",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20428-r2-A-prompt.txt"
+    },
+    {
+      "bytes": 554,
+      "path": "solver-launches/recovery-20428-r2-A.json",
+      "sha256": "bb14af62b0125cacca029b5d0b86ec20a14ff383ce793d76625210496055d349",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20428-r2-A.json"
+    },
+    {
+      "bytes": 2343,
+      "path": "solver-launches/recovery-20428-r2-C-prompt.txt",
+      "sha256": "36f9d97cf830f7ed653f5e99d755c758833b6e289922052afe26f4843b6e045b",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20428-r2-C-prompt.txt"
+    },
+    {
+      "bytes": 555,
+      "path": "solver-launches/recovery-20428-r2-C.json",
+      "sha256": "37535d541b75a64f51f4c78ab646ed2967ceda138d85ffa3e7bceb1fce7cf380",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20428-r2-C.json"
+    },
+    {
+      "bytes": 2343,
+      "path": "solver-launches/recovery-20438-r1-A-prompt.txt",
+      "sha256": "14dd44c15d9cb85ff3dae4676c3b435dd7dc74f57eefd162c976dbe5c549554c",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20438-r1-A-prompt.txt"
+    },
+    {
+      "bytes": 556,
+      "path": "solver-launches/recovery-20438-r1-A.json",
+      "sha256": "579f4d74ae32f2d2606a2325e058720b7bc0f79cf1c035041d44a6e3469b9e86",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20438-r1-A.json"
+    },
+    {
+      "bytes": 2343,
+      "path": "solver-launches/recovery-20438-r1-C-prompt.txt",
+      "sha256": "0bed999f59adfda9b877393e27053e6200277a89314c0911c5922722e24d3292",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20438-r1-C-prompt.txt"
+    },
+    {
+      "bytes": 555,
+      "path": "solver-launches/recovery-20438-r1-C.json",
+      "sha256": "ce536e8b55f5145664ecf97904afd340e7ce8944cf64734885b0a7076f26a7f1",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20438-r1-C.json"
+    },
+    {
+      "bytes": 2343,
+      "path": "solver-launches/recovery-20438-r2-A-prompt.txt",
+      "sha256": "3064c1dcd13784a84b4e9dadceca7951285e26af90e3b020b460e99f9a7ea0c6",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20438-r2-A-prompt.txt"
+    },
+    {
+      "bytes": 555,
+      "path": "solver-launches/recovery-20438-r2-A.json",
+      "sha256": "89d103ae1f98006491860fc8e6ac9799c5942346fbd3c2df8f35635bdf25de7e",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20438-r2-A.json"
+    },
+    {
+      "bytes": 2343,
+      "path": "solver-launches/recovery-20438-r2-C-prompt.txt",
+      "sha256": "923f3c6406caa0cc810777a63f3c8d12e97cea576d9ead8635292b7abafb81e0",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20438-r2-C-prompt.txt"
+    },
+    {
+      "bytes": 555,
+      "path": "solver-launches/recovery-20438-r2-C.json",
+      "sha256": "60a5f53806fa7194a2bdc30a7cbdf12e03f79da6ab496011338b748ef2ca942e",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver-launches/recovery-20438-r2-C.json"
+    },
+    {
+      "bytes": 2310,
+      "path": "solver_prompt_template.txt",
+      "sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05",
+      "source": "/home/trimem-runner/skhynix-codex-008/solver_prompt_template.txt"
+    },
+    {
+      "bytes": 38448,
+      "path": "source-freeze.json",
+      "sha256": "a6f8450dbadc8882b6a5b6994756a59a45e5c570ccf4b0aa06193c22bfbb5dd1",
+      "source": "/home/trimem-runner/skhynix-codex-008/source-freeze.json"
+    },
+    {
+      "bytes": 90316,
+      "path": "supplemental-manifest.json",
+      "sha256": "57f369ee641b923ec551698fb52f043e7cf8569e4872f0f691883f47d399f6b9",
+      "source": "/home/trimem-runner/skhynix-codex-008/supplemental-manifest.json"
+    },
+    {
+      "bytes": 47265,
+      "path": "validation.xml",
+      "sha256": "e4cd8de6951673abdf246ce701ce6d155c4ce8ae6a4f73cf49b79f898bc63c6c",
+      "source": "/home/trimem-runner/skhynix-codex-008/validation.xml"
+    }
+  ],
+  "manifest_excludes_itself": true,
+  "schema": "skhynix/native-public-manifest/1.0"
+}

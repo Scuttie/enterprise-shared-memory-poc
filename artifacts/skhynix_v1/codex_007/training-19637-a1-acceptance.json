@@ -1,0 +1,12 @@
+{
+  "attempt": 1,
+  "attestation_sha256": "df05d884e968c0c61d900a9645b6720f31979aed08a025b13b7ca5c437992043",
+  "cell": "A",
+  "name": "training-19637-a1",
+  "official_resolved": true,
+  "patch_sha256": "6929e4155f8f6d0ca3c61c3788b5abd5e1be27722f6afc14284bc0982cbf4087",
+  "procedure_attested": true,
+  "public_result_sha256": "b6a49cdde5f5ab113a7edf89ceb40a7251278b26efb6c72cee321049b77cc5c8",
+  "run_root": "/home/trimem-runner/skhynix-codex-007/training-19637-a1/execution",
+  "task_id": "swebench_verified--sympy__sympy-19637"
+}

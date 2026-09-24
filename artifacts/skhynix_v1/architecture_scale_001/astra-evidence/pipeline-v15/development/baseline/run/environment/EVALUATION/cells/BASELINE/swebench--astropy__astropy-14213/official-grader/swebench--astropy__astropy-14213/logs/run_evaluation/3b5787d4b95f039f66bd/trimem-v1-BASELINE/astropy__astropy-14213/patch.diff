@@ -1,0 +1,177 @@
+diff --git a/astropy/units/quantity_helper/function_helpers.py b/astropy/units/quantity_helper/function_helpers.py
+index d7e15db..9c848ab 100644
+--- a/astropy/units/quantity_helper/function_helpers.py
++++ b/astropy/units/quantity_helper/function_helpers.py
+@@ -663,6 +663,12 @@ def _check_bins(bins, unit):
+         return bins
+ 
+ 
++def _check_range(range, unit):
++    if range is None:
++        return None
++    return tuple(_as_quantity(bound).to_value(unit) for bound in range)
++
++
+ @function_helper
+ def histogram(a, bins=10, range=None, weights=None, density=None):
+     if weights is not None:
+@@ -675,6 +681,7 @@ def histogram(a, bins=10, range=None, weights=None, density=None):
+     a = _as_quantity(a)
+     if not isinstance(bins, str):
+         bins = _check_bins(bins, a.unit)
++    range = _check_range(range, a.unit)
+ 
+     if density:
+         unit = (unit or 1) / a.unit
+@@ -693,6 +700,7 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
+     a = _as_quantity(a)
+     if not isinstance(bins, str):
+         bins = _check_bins(bins, a.unit)
++    range = _check_range(range, a.unit)
+ 
+     return (a.value, bins, range, weights), {}, a.unit, None
+ 
+@@ -725,6 +733,11 @@ def histogram2d(x, y, bins=10, range=None, weights=None, density=None):
+             bins = _check_bins(bins, x.unit)
+             y = y.to(x.unit)
+ 
++    if range is not None:
++        if len(range) != 2:
++            raise ValueError("range argument must have one entry per dimension")
++        range = [_check_range(r, unit) for r, unit in zip(range, (x.unit, y.unit))]
++
+     if density:
+         unit = (unit or 1) / x.unit / y.unit
+ 
+@@ -773,6 +786,11 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=None):
+             )
+         bins = [_check_bins(b, unit) for (b, unit) in zip(bins, sample_units)]
+ 
++    if range is not None:
++        if len(range) != D:
++            raise ValueError("range argument must have one entry per dimension")
++        range = [_check_range(r, unit) for r, unit in zip(range, sample_units)]
++
+     if density:
+         unit = functools.reduce(operator.truediv, sample_units, (unit or 1))
+ 
+diff --git a/astropy/units/tests/test_quantity_non_ufuncs.py b/astropy/units/tests/test_quantity_non_ufuncs.py
+index 49d9ddd..ec02ee4 100644
+--- a/astropy/units/tests/test_quantity_non_ufuncs.py
++++ b/astropy/units/tests/test_quantity_non_ufuncs.py
+@@ -1392,6 +1392,28 @@ class TestHistogramFunctions(metaclass=CoverageMeta):
+         with pytest.raises(u.UnitsError):
+             np.histogram(x.value, [125, 200] * u.s)
+ 
++    @needs_array_function
++    @pytest.mark.parametrize("function", [np.histogram, np.histogram_bin_edges])
++    @pytest.mark.parametrize("bins", [3, "auto"])
++    @pytest.mark.parametrize(
++        "range", [None, [100, 300] * u.cm, (100 * u.cm, 3 * u.m)]
++    )
++    def test_histogram_range(self, function, bins, range):
++        value_range = None if range is None else (1, 3)
++        out = function(self.x, bins=bins, range=range)
++        expected = function(self.x.value, bins=bins, range=value_range)
++        if function is np.histogram:
++            assert_array_equal(out[0], expected[0])
++            out, expected = out[1], expected[1]
++        assert_array_equal(out, expected * self.x.unit)
++
++    @needs_array_function
++    @pytest.mark.parametrize("function", [np.histogram, np.histogram_bin_edges])
++    @pytest.mark.parametrize("range", [[1, 3] * u.s, [1, 3]])
++    def test_histogram_range_invalid_units(self, function, range):
++        with pytest.raises(u.UnitsError):
++            function(self.x, range=range)
++
+     @needs_array_function
+     def test_histogram_bin_edges(self):
+         x = np.array([1.1, 1.2, 1.3, 2.1, 5.1]) * u.m
+@@ -1571,6 +1593,86 @@ class TestHistogramFunctions(metaclass=CoverageMeta):
+         with pytest.raises(u.UnitsError):
+             np.histogramdd(sample_values, ([125, 200] * u.s, [125, 200]))
+ 
++    @needs_array_function
++    @pytest.mark.parametrize("function", [np.histogram2d, np.histogramdd])
++    @pytest.mark.parametrize("default_axis", [False, True])
++    @pytest.mark.parametrize("density", [False, True])
++    def test_histogram_range_per_axis(self, function, default_axis, density):
++        x = self.x
++        y = self.y.value * u.s
++        bounds = [(100 * u.cm, 3 * u.m), [2000, 4000] * u.ms]
++        value_bounds = [(1, 3), (2, 4)]
++        if default_axis:
++            bounds[1] = value_bounds[1] = None
++        args = (x, y)
++        value_args = (x.value, y.value)
++        unit = self.weights.unit / (x.unit * y.unit) if density else self.weights.unit
++        expected_units = (unit, x.unit, y.unit)
++        if function is np.histogramdd:
++            args, value_args = (args,), (value_args,)
++            expected_units = (unit, (x.unit, y.unit))
++        self.check(
++            function,
++            *args,
++            bins=3,
++            range=bounds,
++            weights=self.weights,
++            density=density,
++            value_args=value_args,
++            value_kwargs=dict(range=value_bounds, weights=self.weights.value),
++            expected_units=expected_units,
++        )
++
++    @needs_array_function
++    @pytest.mark.parametrize("function", [np.histogram2d, np.histogramdd])
++    @pytest.mark.parametrize(
++        "range",
++        [([1, 3] * u.s, None), (None, [1, 3] * u.s), ([1, 3], None)],
++    )
++    def test_histogram_range_per_axis_invalid_units(self, function, range):
++        args = (self.x, self.y)
++        if function is np.histogramdd:
++            args = (args,)
++        with pytest.raises(u.UnitsError):
++            function(*args, range=range)
++
++    @needs_array_function
++    @pytest.mark.parametrize("function", [np.histogram2d, np.histogramdd])
++    @pytest.mark.parametrize("range", [[], [None], [None, None, None]])
++    def test_histogram_range_wrong_dimensions(self, function, range):
++        args = (self.x, self.y)
++        if function is np.histogramdd:
++            args = (args,)
++        with pytest.raises(ValueError, match="one entry per dimension"):
++            function(*args, range=range)
++
++    @needs_array_function
++    def test_histogramdd_range_array(self):
++        sample = np.arange(15).reshape(5, 3) * u.m
++        bounds = [[0, 1000], [100, 1100], [200, 1200]] * u.cm
++        self.check(
++            np.histogramdd,
++            sample,
++            bins=3,
++            range=bounds,
++            value_args=(sample.value,),
++            value_kwargs=dict(range=bounds.to_value(u.m)),
++            expected_units=(None, (u.m,) * 3),
++        )
++
++    @needs_array_function
++    def test_histogram2d_range_shared_bins(self):
++        self.check(
++            np.histogram2d,
++            self.x,
++            self.y,
++            bins=[0, 1, 2, 3] * u.m,
++            range=([100, 300] * u.cm, [0, 4] * u.cm),
++            value_args=(self.x.value, self.y.to_value(u.m)),
++            value_kwargs=dict(bins=[0, 1, 2, 3], range=[(1, 3), (0, 0.04)]),
++            expected_units=(None, u.m, u.m),
++        )
++
+     @needs_array_function
+     def test_correlate(self):
+         x1 = [1, 2, 3] * u.m

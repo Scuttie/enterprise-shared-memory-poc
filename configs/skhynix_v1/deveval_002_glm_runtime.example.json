@@ -1,0 +1,13 @@
+{
+  "gateway": {
+    "provider": "vllm",
+    "base_url": "http://YOUR_INTERNAL_VLLM_HOST:8000/v1",
+    "model": "YOUR_SERVED_GLM_MODEL_ID",
+    "api_key_env": "DEVEVAL_VLLM_API_KEY",
+    "max_tokens": 4096,
+    "temperature": 0,
+    "timeout_seconds": 180,
+    "max_request_bytes": 1048576,
+    "max_response_bytes": 1048576
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "commits": [
+    {
+      "base": "b8fe457a02cc24b3470ff678d0099c350b7fef43",
+      "id": "sympy__sympy-16766",
+      "timestamp": 1556687645
+    },
+    {
+      "base": "70381f282f2d9d039da860e391fe51649df2779d",
+      "id": "sympy__sympy-18763",
+      "timestamp": 1576882794
+    },
+    {
+      "base": "94fb720696f5f5d12bad8bc813699fd696afd2fb",
+      "id": "sympy__sympy-19346",
+      "timestamp": 1589545886
+    },
+    {
+      "base": "82298df6a51491bfaad0c6d1980e7e3ca808ae93",
+      "id": "sympy__sympy-20916",
+      "timestamp": 1612551021
+    },
+    {
+      "base": "de446c6d85f633271dfec1452f6f28ea783e293f",
+      "id": "sympy__sympy-21930",
+      "timestamp": 1629656991
+    },
+    {
+      "base": "3f8c8c2377cb8e0daaf8073e8d03ac7d87580813",
+      "id": "sympy__sympy-22080",
+      "timestamp": 1631313848
+    },
+    {
+      "base": "a3475b3f9ac662cd425157dd3bdb93ad7111c090",
+      "id": "sympy__sympy-22456",
+      "timestamp": 1636914299
+    },
+    {
+      "base": "c4e836cdf73fc6aa7bab6a86719a0f08861ffb1d",
+      "id": "sympy__sympy-22914",
+      "timestamp": 1643215194
+    }
+  ],
+  "pairs": [
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-16766",
+      "stderr": "",
+      "target": "sympy__sympy-18763"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-16766",
+      "stderr": "",
+      "target": "sympy__sympy-19346"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-16766",
+      "stderr": "",
+      "target": "sympy__sympy-20916"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-16766",
+      "stderr": "",
+      "target": "sympy__sympy-21930"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-16766",
+      "stderr": "",
+      "target": "sympy__sympy-22080"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-16766",
+      "stderr": "",
+      "target": "sympy__sympy-22456"
+    },
+    {
+      "returncode": 0,
+      "source": "sympy__sympy-16766",
+      "stderr": "",
+      "target": "sympy__sympy-22914"
+    },
+    {
+      "returncode": 1,
+      "source": "sympy__sympy-18763",
+      "stderr": "",
+      "target": "sympy__sympy-19346"
+    },
+    {
+      "returncode": 1,
+      "source": "sympy__sympy-18763",
+      "stderr": "",
+      "target": "sympy__sympy-20916"
+    },
+    {
+      "returncode": 1,
+      "source": "sympy__sympy-18763",
+      "stderr": "",
+      "target": "sympy__sympy-21930"
+    },
+    {
+      "returncode": 1,
+      "source": "sympy__sympy-18763",
+      "stderr": "",
+      "target": "sympy__sympy-22080"
+    },
+    {
+      "returncode": 1,
+      "source": "sympy__sympy-18763",
+      "stderr": "",
+      "target": "sympy__sympy-22456"
+    },
+    {
+      "returncode": 1,
+      "source": "sympy__sympy-18763",
+      "stderr": "",
+      "target": "sympy__sympy-22914"
+    }
+  ],
+  "shallow": "false"
+}

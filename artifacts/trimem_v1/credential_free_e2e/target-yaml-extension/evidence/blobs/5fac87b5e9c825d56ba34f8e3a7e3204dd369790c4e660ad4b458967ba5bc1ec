@@ -1,0 +1,1 @@
+{"arguments":{"content":"def load_config(name):\n    folded = name.casefold()\n    if not folded.endswith(('.yaml', '.yml')):\n        raise ValueError('yaml required')\n    return 'loaded'\n","path":"src/config.py"},"tool":"write_file"}

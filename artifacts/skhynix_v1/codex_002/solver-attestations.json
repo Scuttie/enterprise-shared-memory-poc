@@ -1,0 +1,114 @@
+{
+  "schema": "skhynix/native-solver-attestations/1.0",
+  "source": "Manager transcription of collaboration agent final messages; these are self-attestations, not OS access logs.",
+  "requested_model": "gpt-6-astra",
+  "fork_turns": "none",
+  "rows": [
+    {
+      "run": "training",
+      "cell": "A",
+      "task_name": "/root/native002_train",
+      "submitted_patch_sha256": "f703f89bc0094a24a4fe1a036f98c28ea8b97008a3bb4b2cc72b501cc7b48ae2",
+      "self_reported_public_tests_passed": 6,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    },
+    {
+      "run": "eval-23534",
+      "cell": "A",
+      "task_name": "/root/native002_23534_a",
+      "submitted_patch_sha256": "807e1a0cb91542b17fad2f7e6ef91d1800ac821767e0b337b7f4aacce129d404",
+      "self_reported_public_tests_passed": 14,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    },
+    {
+      "run": "eval-23534",
+      "cell": "B",
+      "task_name": "/root/native002_23534_b",
+      "submitted_patch_sha256": "2455e0c3e7247719ce49cb87a6e4065939253f7ac905832fba7167097bfd8105",
+      "self_reported_public_tests_passed": 19,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    },
+    {
+      "run": "eval-23534",
+      "cell": "C",
+      "task_name": "/root/native002_23534_c",
+      "submitted_patch_sha256": "a3002afe283def004e7b26c0e02dc8b15c62e94a4a8ca7d8403a10747cf74e37",
+      "self_reported_public_tests_passed": 14,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    },
+    {
+      "run": "eval-23824",
+      "cell": "A",
+      "task_name": "/root/native002_23824_a",
+      "submitted_patch_sha256": "78c2b2588b75bb0a9c905d968fb6010c23a65668f8c8b4f69ffb865071df37ee",
+      "self_reported_public_tests_passed": 5,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    },
+    {
+      "run": "eval-23824",
+      "cell": "B",
+      "task_name": "/root/native002_23824_b",
+      "submitted_patch_sha256": "70104bd5fb7ef8b728b3e69e125d2ab26e905196601eb18f016496c2474731ac",
+      "self_reported_public_tests_passed": 5,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    },
+    {
+      "run": "eval-23824",
+      "cell": "C",
+      "task_name": "/root/native002_23824_c",
+      "submitted_patch_sha256": "1e87ccad22253e53d5f5b3ee7bc0946d60a1c98296a8db298f60774a6d977beb",
+      "self_reported_public_tests_passed": 5,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    },
+    {
+      "run": "eval-23950",
+      "cell": "A",
+      "task_name": "/root/native002_23950_a",
+      "submitted_patch_sha256": "20b8f97ff05ea8dcaac97f98c853aa3393fc628ab03086154b9c5638971b8844",
+      "self_reported_public_tests_passed": 145,
+      "self_reported_skipped": 5,
+      "self_reported_expected_failures": 1,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    },
+    {
+      "run": "eval-23950",
+      "cell": "B",
+      "task_name": "/root/native002_23950_b",
+      "submitted_patch_sha256": "39cfef9ece4eb37c2782fcaecf07de4b9847b0e219f148957da976c0063f1885",
+      "self_reported_public_tests_passed": 146,
+      "self_reported_skipped": 5,
+      "self_reported_expected_failures": 1,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    },
+    {
+      "run": "eval-23950",
+      "cell": "C",
+      "task_name": "/root/native002_23950_c",
+      "submitted_patch_sha256": "4f87fef2419d06cc80872f76bbdc430db7f6b0f1eca6c4bf921e990e5e19e3a1",
+      "self_reported_public_tests_passed": 145,
+      "self_reported_skipped": 5,
+      "self_reported_expected_failures": 1,
+      "broker_only_self_attested": true,
+      "no_external_access_self_attested": true,
+      "no_subagents_self_attested": true
+    }
+  ]
+}

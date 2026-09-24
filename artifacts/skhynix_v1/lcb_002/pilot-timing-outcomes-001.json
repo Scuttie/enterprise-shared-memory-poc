@@ -1,0 +1,1172 @@
+{
+  "arms": {
+    "OFF": {
+      "all_attempt_timing": {
+        "attempts": 24,
+        "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+        "mean_seconds": 95.99692285060883,
+        "median_seconds": 93.73646855354309,
+        "missing_time_attempts": 0,
+        "sum_observed_seconds": 2303.926148414612,
+        "timed_attempts": 24,
+        "total_seconds": 2303.926148414612
+      },
+      "arm": "OFF",
+      "attempts": 24,
+      "outcomes": {
+        "BUDGET_EXHAUSTED": 0,
+        "INFRASTRUCTURE_UNRESOLVED": 0,
+        "MODEL_PROTOCOL_FAILURE": 11,
+        "PENDING_GRADING": 0,
+        "SOLVED": 12,
+        "WRONG_SOLUTION": 1
+      },
+      "private_failed": 1,
+      "private_passed": 12,
+      "private_unavailable": 11,
+      "resolved_false": 12,
+      "resolved_null": 0,
+      "resolved_true": 12,
+      "timing_by_outcome": {
+        "BUDGET_EXHAUSTED": {
+          "attempts": 0,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": null,
+          "median_seconds": null,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": null,
+          "timed_attempts": 0,
+          "total_seconds": null
+        },
+        "INFRASTRUCTURE_UNRESOLVED": {
+          "attempts": 0,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": null,
+          "median_seconds": null,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": null,
+          "timed_attempts": 0,
+          "total_seconds": null
+        },
+        "MODEL_PROTOCOL_FAILURE": {
+          "attempts": 11,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 121.54319667816162,
+          "median_seconds": 122.18504786491394,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 1336.9751634597778,
+          "timed_attempts": 11,
+          "total_seconds": 1336.9751634597778
+        },
+        "PENDING_GRADING": {
+          "attempts": 0,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": null,
+          "median_seconds": null,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": null,
+          "timed_attempts": 0,
+          "total_seconds": null
+        },
+        "SOLVED": {
+          "attempts": 12,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 75.87327696879704,
+          "median_seconds": 65.76908004283905,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 910.4793236255646,
+          "timed_attempts": 12,
+          "total_seconds": 910.4793236255646
+        },
+        "WRONG_SOLUTION": {
+          "attempts": 1,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 56.47166132926941,
+          "median_seconds": 56.47166132926941,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 56.47166132926941,
+          "timed_attempts": 1,
+          "total_seconds": 56.47166132926941
+        }
+      },
+      "timing_by_resolved": {
+        "false": {
+          "attempts": 12,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 116.12056873242061,
+          "median_seconds": 116.48488914966583,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 1393.4468247890472,
+          "timed_attempts": 12,
+          "total_seconds": 1393.4468247890472
+        },
+        "null": {
+          "attempts": 0,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": null,
+          "median_seconds": null,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": null,
+          "timed_attempts": 0,
+          "total_seconds": null
+        },
+        "true": {
+          "attempts": 12,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 75.87327696879704,
+          "median_seconds": 65.76908004283905,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 910.4793236255646,
+          "timed_attempts": 12,
+          "total_seconds": 910.4793236255646
+        }
+      }
+    },
+    "ON": {
+      "all_attempt_timing": {
+        "attempts": 24,
+        "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+        "mean_seconds": 45.91937431693077,
+        "median_seconds": 39.34102964401245,
+        "missing_time_attempts": 0,
+        "sum_observed_seconds": 1102.0649836063385,
+        "timed_attempts": 24,
+        "total_seconds": 1102.0649836063385
+      },
+      "arm": "ON",
+      "attempts": 24,
+      "outcomes": {
+        "BUDGET_EXHAUSTED": 0,
+        "INFRASTRUCTURE_UNRESOLVED": 0,
+        "MODEL_PROTOCOL_FAILURE": 2,
+        "PENDING_GRADING": 0,
+        "SOLVED": 22,
+        "WRONG_SOLUTION": 0
+      },
+      "private_failed": 0,
+      "private_passed": 22,
+      "private_unavailable": 2,
+      "resolved_false": 2,
+      "resolved_null": 0,
+      "resolved_true": 22,
+      "timing_by_outcome": {
+        "BUDGET_EXHAUSTED": {
+          "attempts": 0,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": null,
+          "median_seconds": null,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": null,
+          "timed_attempts": 0,
+          "total_seconds": null
+        },
+        "INFRASTRUCTURE_UNRESOLVED": {
+          "attempts": 0,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": null,
+          "median_seconds": null,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": null,
+          "timed_attempts": 0,
+          "total_seconds": null
+        },
+        "MODEL_PROTOCOL_FAILURE": {
+          "attempts": 2,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 71.23790204524994,
+          "median_seconds": 71.23790204524994,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 142.47580409049988,
+          "timed_attempts": 2,
+          "total_seconds": 142.47580409049988
+        },
+        "PENDING_GRADING": {
+          "attempts": 0,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": null,
+          "median_seconds": null,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": null,
+          "timed_attempts": 0,
+          "total_seconds": null
+        },
+        "SOLVED": {
+          "attempts": 22,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 43.61768997799266,
+          "median_seconds": 38.58724117279053,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 959.5891795158386,
+          "timed_attempts": 22,
+          "total_seconds": 959.5891795158386
+        },
+        "WRONG_SOLUTION": {
+          "attempts": 0,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": null,
+          "median_seconds": null,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": null,
+          "timed_attempts": 0,
+          "total_seconds": null
+        }
+      },
+      "timing_by_resolved": {
+        "false": {
+          "attempts": 2,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 71.23790204524994,
+          "median_seconds": 71.23790204524994,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 142.47580409049988,
+          "timed_attempts": 2,
+          "total_seconds": 142.47580409049988
+        },
+        "null": {
+          "attempts": 0,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": null,
+          "median_seconds": null,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": null,
+          "timed_attempts": 0,
+          "total_seconds": null
+        },
+        "true": {
+          "attempts": 22,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 43.61768997799266,
+          "median_seconds": 38.58724117279053,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 959.5891795158386,
+          "timed_attempts": 22,
+          "total_seconds": 959.5891795158386
+        }
+      }
+    }
+  },
+  "bank_sha256": "28cab53a800811a72004cf13e64b0952bb5235b15b001543d796752637338f0d",
+  "both_solved_paired_timing": {
+    "both_solved_pairs": 11,
+    "interpretation": "DESCRIPTIVE_SELECTED_SUBSET_ONLY_NOT_CAUSAL_SPEEDUP",
+    "off_timing_on_joint_timed_subset": {
+      "attempts": 11,
+      "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+      "mean_seconds": 73.43530390479349,
+      "median_seconds": 63.05125045776367,
+      "missing_time_attempts": 0,
+      "sum_observed_seconds": 807.7883429527283,
+      "timed_attempts": 11,
+      "total_seconds": 807.7883429527283
+    },
+    "on_minus_off_seconds": {
+      "attempts": 11,
+      "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+      "mean_seconds": -33.26668743653731,
+      "median_seconds": -31.008015632629395,
+      "missing_time_attempts": 0,
+      "sum_observed_seconds": -365.9335618019104,
+      "timed_attempts": 11,
+      "total_seconds": -365.9335618019104
+    },
+    "on_timing_on_joint_timed_subset": {
+      "attempts": 11,
+      "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+      "mean_seconds": 40.16861646825617,
+      "median_seconds": 33.597004890441895,
+      "missing_time_attempts": 0,
+      "sum_observed_seconds": 441.85478115081787,
+      "timed_attempts": 11,
+      "total_seconds": 441.85478115081787
+    },
+    "pairs": [
+      {
+        "difficulty": "medium",
+        "off_seconds": 43.365082025527954,
+        "on_minus_off_seconds": 63.270124197006226,
+        "on_seconds": 106.63520622253418,
+        "task_id": "abc380_d"
+      },
+      {
+        "difficulty": "medium",
+        "off_seconds": 57.55551886558533,
+        "on_minus_off_seconds": -31.008015632629395,
+        "on_seconds": 26.547503232955933,
+        "task_id": "3653"
+      },
+      {
+        "difficulty": "medium",
+        "off_seconds": 54.55213737487793,
+        "on_minus_off_seconds": -22.19326901435852,
+        "on_seconds": 32.35886836051941,
+        "task_id": "3627"
+      },
+      {
+        "difficulty": "hard",
+        "off_seconds": 103.82725358009338,
+        "on_minus_off_seconds": -50.83516502380371,
+        "on_seconds": 52.99208855628967,
+        "task_id": "3637"
+      },
+      {
+        "difficulty": "medium",
+        "off_seconds": 86.56912684440613,
+        "on_minus_off_seconds": -55.01411271095276,
+        "on_seconds": 31.55501413345337,
+        "task_id": "abc384_d"
+      },
+      {
+        "difficulty": "hard",
+        "off_seconds": 129.44740772247314,
+        "on_minus_off_seconds": -90.96745276451111,
+        "on_seconds": 38.479954957962036,
+        "task_id": "3648"
+      },
+      {
+        "difficulty": "easy",
+        "off_seconds": 63.05125045776367,
+        "on_minus_off_seconds": -23.063718557357788,
+        "on_seconds": 39.987531900405884,
+        "task_id": "abc379_b"
+      },
+      {
+        "difficulty": "easy",
+        "off_seconds": 55.3471736907959,
+        "on_minus_off_seconds": -34.554908752441406,
+        "on_seconds": 20.792264938354492,
+        "task_id": "abc380_a"
+      },
+      {
+        "difficulty": "easy",
+        "off_seconds": 68.48690962791443,
+        "on_minus_off_seconds": -29.79238224029541,
+        "on_seconds": 38.69452738761902,
+        "task_id": "abc379_a"
+      },
+      {
+        "difficulty": "easy",
+        "off_seconds": 53.83425545692444,
+        "on_minus_off_seconds": -20.237250566482544,
+        "on_seconds": 33.597004890441895,
+        "task_id": "3651"
+      },
+      {
+        "difficulty": "easy",
+        "off_seconds": 91.75222730636597,
+        "on_minus_off_seconds": -71.53741073608398,
+        "on_seconds": 20.214816570281982,
+        "task_id": "abc378_a"
+      }
+    ],
+    "pairs_missing_either_time": 0,
+    "pairs_with_both_times": 11,
+    "task_ids": [
+      "abc380_d",
+      "3653",
+      "3627",
+      "3637",
+      "abc384_d",
+      "3648",
+      "abc379_b",
+      "abc380_a",
+      "abc379_a",
+      "3651",
+      "abc378_a"
+    ]
+  },
+  "by_difficulty": {
+    "easy": {
+      "OFF": {
+        "all_attempt_timing": {
+          "attempts": 8,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 82.3369899392128,
+          "median_seconds": 80.1195684671402,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 658.6959195137024,
+          "timed_attempts": 8,
+          "total_seconds": 658.6959195137024
+        },
+        "arm": "OFF",
+        "attempts": 8,
+        "outcomes": {
+          "BUDGET_EXHAUSTED": 0,
+          "INFRASTRUCTURE_UNRESOLVED": 0,
+          "MODEL_PROTOCOL_FAILURE": 2,
+          "PENDING_GRADING": 0,
+          "SOLVED": 6,
+          "WRONG_SOLUTION": 0
+        },
+        "private_failed": 0,
+        "private_passed": 6,
+        "private_unavailable": 2,
+        "resolved_false": 2,
+        "resolved_null": 0,
+        "resolved_true": 6,
+        "timing_by_outcome": {
+          "BUDGET_EXHAUSTED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "INFRASTRUCTURE_UNRESOLVED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "MODEL_PROTOCOL_FAILURE": {
+            "attempts": 2,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 111.76656115055084,
+            "median_seconds": 111.76656115055084,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 223.53312230110168,
+            "timed_attempts": 2,
+            "total_seconds": 223.53312230110168
+          },
+          "PENDING_GRADING": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "SOLVED": {
+            "attempts": 6,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 72.52713286876678,
+            "median_seconds": 65.76908004283905,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 435.1627972126007,
+            "timed_attempts": 6,
+            "total_seconds": 435.1627972126007
+          },
+          "WRONG_SOLUTION": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          }
+        },
+        "timing_by_resolved": {
+          "false": {
+            "attempts": 2,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 111.76656115055084,
+            "median_seconds": 111.76656115055084,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 223.53312230110168,
+            "timed_attempts": 2,
+            "total_seconds": 223.53312230110168
+          },
+          "null": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "true": {
+            "attempts": 6,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 72.52713286876678,
+            "median_seconds": 65.76908004283905,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 435.1627972126007,
+            "timed_attempts": 6,
+            "total_seconds": 435.1627972126007
+          }
+        }
+      },
+      "ON": {
+        "all_attempt_timing": {
+          "attempts": 8,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 37.90460893511772,
+          "median_seconds": 36.14576613903046,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 303.2368714809418,
+          "timed_attempts": 8,
+          "total_seconds": 303.2368714809418
+        },
+        "arm": "ON",
+        "attempts": 8,
+        "outcomes": {
+          "BUDGET_EXHAUSTED": 0,
+          "INFRASTRUCTURE_UNRESOLVED": 0,
+          "MODEL_PROTOCOL_FAILURE": 1,
+          "PENDING_GRADING": 0,
+          "SOLVED": 7,
+          "WRONG_SOLUTION": 0
+        },
+        "private_failed": 0,
+        "private_passed": 7,
+        "private_unavailable": 1,
+        "resolved_false": 1,
+        "resolved_null": 0,
+        "resolved_true": 7,
+        "timing_by_outcome": {
+          "BUDGET_EXHAUSTED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "INFRASTRUCTURE_UNRESOLVED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "MODEL_PROTOCOL_FAILURE": {
+            "attempts": 1,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 75.71094727516174,
+            "median_seconds": 75.71094727516174,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 75.71094727516174,
+            "timed_attempts": 1,
+            "total_seconds": 75.71094727516174
+          },
+          "PENDING_GRADING": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "SOLVED": {
+            "attempts": 7,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 32.50370345796858,
+            "median_seconds": 33.597004890441895,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 227.52592420578003,
+            "timed_attempts": 7,
+            "total_seconds": 227.52592420578003
+          },
+          "WRONG_SOLUTION": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          }
+        },
+        "timing_by_resolved": {
+          "false": {
+            "attempts": 1,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 75.71094727516174,
+            "median_seconds": 75.71094727516174,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 75.71094727516174,
+            "timed_attempts": 1,
+            "total_seconds": 75.71094727516174
+          },
+          "null": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "true": {
+            "attempts": 7,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 32.50370345796858,
+            "median_seconds": 33.597004890441895,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 227.52592420578003,
+            "timed_attempts": 7,
+            "total_seconds": 227.52592420578003
+          }
+        }
+      }
+    },
+    "hard": {
+      "OFF": {
+        "all_attempt_timing": {
+          "attempts": 8,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 101.6226199567318,
+          "median_seconds": 103.92840301990509,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 812.9809596538544,
+          "timed_attempts": 8,
+          "total_seconds": 812.9809596538544
+        },
+        "arm": "OFF",
+        "attempts": 8,
+        "outcomes": {
+          "BUDGET_EXHAUSTED": 0,
+          "INFRASTRUCTURE_UNRESOLVED": 0,
+          "MODEL_PROTOCOL_FAILURE": 5,
+          "PENDING_GRADING": 0,
+          "SOLVED": 2,
+          "WRONG_SOLUTION": 1
+        },
+        "private_failed": 1,
+        "private_passed": 2,
+        "private_unavailable": 5,
+        "resolved_false": 6,
+        "resolved_null": 0,
+        "resolved_true": 2,
+        "timing_by_outcome": {
+          "BUDGET_EXHAUSTED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "INFRASTRUCTURE_UNRESOLVED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "MODEL_PROTOCOL_FAILURE": {
+            "attempts": 5,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 104.64692740440368,
+            "median_seconds": 104.0295524597168,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 523.2346370220184,
+            "timed_attempts": 5,
+            "total_seconds": 523.2346370220184
+          },
+          "PENDING_GRADING": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "SOLVED": {
+            "attempts": 2,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 116.63733065128326,
+            "median_seconds": 116.63733065128326,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 233.27466130256653,
+            "timed_attempts": 2,
+            "total_seconds": 233.27466130256653
+          },
+          "WRONG_SOLUTION": {
+            "attempts": 1,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 56.47166132926941,
+            "median_seconds": 56.47166132926941,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 56.47166132926941,
+            "timed_attempts": 1,
+            "total_seconds": 56.47166132926941
+          }
+        },
+        "timing_by_resolved": {
+          "false": {
+            "attempts": 6,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 96.6177163918813,
+            "median_seconds": 98.1224809885025,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 579.7062983512878,
+            "timed_attempts": 6,
+            "total_seconds": 579.7062983512878
+          },
+          "null": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "true": {
+            "attempts": 2,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 116.63733065128326,
+            "median_seconds": 116.63733065128326,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 233.27466130256653,
+            "timed_attempts": 2,
+            "total_seconds": 233.27466130256653
+          }
+        }
+      },
+      "ON": {
+        "all_attempt_timing": {
+          "attempts": 8,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 53.62819644808769,
+          "median_seconds": 50.52672481536865,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 429.02557158470154,
+          "timed_attempts": 8,
+          "total_seconds": 429.02557158470154
+        },
+        "arm": "ON",
+        "attempts": 8,
+        "outcomes": {
+          "BUDGET_EXHAUSTED": 0,
+          "INFRASTRUCTURE_UNRESOLVED": 0,
+          "MODEL_PROTOCOL_FAILURE": 0,
+          "PENDING_GRADING": 0,
+          "SOLVED": 8,
+          "WRONG_SOLUTION": 0
+        },
+        "private_failed": 0,
+        "private_passed": 8,
+        "private_unavailable": 0,
+        "resolved_false": 0,
+        "resolved_null": 0,
+        "resolved_true": 8,
+        "timing_by_outcome": {
+          "BUDGET_EXHAUSTED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "INFRASTRUCTURE_UNRESOLVED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "MODEL_PROTOCOL_FAILURE": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "PENDING_GRADING": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "SOLVED": {
+            "attempts": 8,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 53.62819644808769,
+            "median_seconds": 50.52672481536865,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 429.02557158470154,
+            "timed_attempts": 8,
+            "total_seconds": 429.02557158470154
+          },
+          "WRONG_SOLUTION": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          }
+        },
+        "timing_by_resolved": {
+          "false": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "null": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "true": {
+            "attempts": 8,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 53.62819644808769,
+            "median_seconds": 50.52672481536865,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 429.02557158470154,
+            "timed_attempts": 8,
+            "total_seconds": 429.02557158470154
+          }
+        }
+      }
+    },
+    "medium": {
+      "OFF": {
+        "all_attempt_timing": {
+          "attempts": 8,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 104.03115865588188,
+          "median_seconds": 104.37708735466003,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 832.249269247055,
+          "timed_attempts": 8,
+          "total_seconds": 832.249269247055
+        },
+        "arm": "OFF",
+        "attempts": 8,
+        "outcomes": {
+          "BUDGET_EXHAUSTED": 0,
+          "INFRASTRUCTURE_UNRESOLVED": 0,
+          "MODEL_PROTOCOL_FAILURE": 4,
+          "PENDING_GRADING": 0,
+          "SOLVED": 4,
+          "WRONG_SOLUTION": 0
+        },
+        "private_failed": 0,
+        "private_passed": 4,
+        "private_unavailable": 4,
+        "resolved_false": 4,
+        "resolved_null": 0,
+        "resolved_true": 4,
+        "timing_by_outcome": {
+          "BUDGET_EXHAUSTED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "INFRASTRUCTURE_UNRESOLVED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "MODEL_PROTOCOL_FAILURE": {
+            "attempts": 4,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 147.55185103416443,
+            "median_seconds": 148.2346578836441,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 590.2074041366577,
+            "timed_attempts": 4,
+            "total_seconds": 590.2074041366577
+          },
+          "PENDING_GRADING": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "SOLVED": {
+            "attempts": 4,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 60.510466277599335,
+            "median_seconds": 56.05382812023163,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 242.04186511039734,
+            "timed_attempts": 4,
+            "total_seconds": 242.04186511039734
+          },
+          "WRONG_SOLUTION": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          }
+        },
+        "timing_by_resolved": {
+          "false": {
+            "attempts": 4,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 147.55185103416443,
+            "median_seconds": 148.2346578836441,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 590.2074041366577,
+            "timed_attempts": 4,
+            "total_seconds": 590.2074041366577
+          },
+          "null": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "true": {
+            "attempts": 4,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 60.510466277599335,
+            "median_seconds": 56.05382812023163,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 242.04186511039734,
+            "timed_attempts": 4,
+            "total_seconds": 242.04186511039734
+          }
+        }
+      },
+      "ON": {
+        "all_attempt_timing": {
+          "attempts": 8,
+          "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+          "mean_seconds": 46.2253175675869,
+          "median_seconds": 32.539657950401306,
+          "missing_time_attempts": 0,
+          "sum_observed_seconds": 369.8025405406952,
+          "timed_attempts": 8,
+          "total_seconds": 369.8025405406952
+        },
+        "arm": "ON",
+        "attempts": 8,
+        "outcomes": {
+          "BUDGET_EXHAUSTED": 0,
+          "INFRASTRUCTURE_UNRESOLVED": 0,
+          "MODEL_PROTOCOL_FAILURE": 1,
+          "PENDING_GRADING": 0,
+          "SOLVED": 7,
+          "WRONG_SOLUTION": 0
+        },
+        "private_failed": 0,
+        "private_passed": 7,
+        "private_unavailable": 1,
+        "resolved_false": 1,
+        "resolved_null": 0,
+        "resolved_true": 7,
+        "timing_by_outcome": {
+          "BUDGET_EXHAUSTED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "INFRASTRUCTURE_UNRESOLVED": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "MODEL_PROTOCOL_FAILURE": {
+            "attempts": 1,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 66.76485681533813,
+            "median_seconds": 66.76485681533813,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 66.76485681533813,
+            "timed_attempts": 1,
+            "total_seconds": 66.76485681533813
+          },
+          "PENDING_GRADING": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "SOLVED": {
+            "attempts": 7,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 43.291097675051006,
+            "median_seconds": 32.35886836051941,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 303.03768372535706,
+            "timed_attempts": 7,
+            "total_seconds": 303.03768372535706
+          },
+          "WRONG_SOLUTION": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          }
+        },
+        "timing_by_resolved": {
+          "false": {
+            "attempts": 1,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 66.76485681533813,
+            "median_seconds": 66.76485681533813,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 66.76485681533813,
+            "timed_attempts": 1,
+            "total_seconds": 66.76485681533813
+          },
+          "null": {
+            "attempts": 0,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": null,
+            "median_seconds": null,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": null,
+            "timed_attempts": 0,
+            "total_seconds": null
+          },
+          "true": {
+            "attempts": 7,
+            "mean_median_denominator": "TIMED_ATTEMPTS_ONLY",
+            "mean_seconds": 43.291097675051006,
+            "median_seconds": 32.35886836051941,
+            "missing_time_attempts": 0,
+            "sum_observed_seconds": 303.03768372535706,
+            "timed_attempts": 7,
+            "total_seconds": 303.03768372535706
+          }
+        }
+      }
+    }
+  },
+  "experiment_id": "skhynix-lcb-002-luna-pilot",
+  "grader_calls": 0,
+  "helper_sha256": "39f619b3f6cf905f55cb486747a28d374fbf48f75db939046fae594409016994",
+  "input_references": [
+    {
+      "bytes": 6696,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_002\\pilot-results-001.json",
+      "sha256": "cd6c23d527fe3ea8be363f4939a1592ca50235bacb31b902a1adf707bf2b7263"
+    },
+    {
+      "bytes": 3074,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_002\\pilot-paired-results-001.csv",
+      "sha256": "4415584c824713157467ce85e631073d943fa287ffd67b4412fe8c17f6f64946"
+    }
+  ],
+  "model": "gpt-5.6-luna",
+  "model_calls": 0,
+  "notes": [
+    "Times are native solve wall_seconds; they are not end-to-end runtime or grader time.",
+    "Null outcomes and missing times remain unavailable; no missing observation becomes zero or false.",
+    "Protocol/budget failures are effective failures, separate from privately graded wrong solutions.",
+    "Means and medians use explicitly counted timed attempts, including failed attempts where grouped.",
+    "Both-solved comparisons condition on both outcomes; they do not estimate causal memory speedup.",
+    "Same-machine concurrency, task order, native service latency and censoring can affect durations.",
+    "Input hashes bind these two reports. Original frozen enrollment and per-cell provenance are not re-audited."
+  ],
+  "reasoning_effort": "low",
+  "schema": "trimem/lcb-pilot-timing-supplement/1.0",
+  "scope": "DESCRIPTIVE_VALIDATION_PILOT_METADATA_ONLY",
+  "split_sha256": "a960fee4bd549dcec2bda5828b657b4b2cd6af76198485030c33a4a55e5a75c9",
+  "status": "COMPLETE",
+  "train": {
+    "per_difficulty": null,
+    "reason": "TRAIN_CELL_DIFFICULTY_AND_TIMING_NOT_AVAILABLE_IN_THE_TWO_ALLOWED_INPUTS",
+    "reported_aggregate_metadata": {
+      "budget_exhausted": 0,
+      "failed": 0,
+      "graded": 9,
+      "max_solve_seconds": 193.33052611351013,
+      "mean_solve_seconds": 84.13194172581036,
+      "median_solve_seconds": 82.98868012428284,
+      "model_protocol_failures": 15,
+      "not_graded": 15,
+      "passed": 9,
+      "planned": 24,
+      "recorded": 24,
+      "resolved_failed": 15,
+      "resolved_passed": 9,
+      "solve_seconds": 2019.1666014194489,
+      "timed_cells": 24,
+      "unresolved": 0
+    },
+    "timing_by_resolved": null
+  },
+  "valid_pairs": 24
+}

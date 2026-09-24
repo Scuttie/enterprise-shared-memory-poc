@@ -1,0 +1,140 @@
+{
+  "benchmark_workspace": {
+    "all_tasks_require_digest_bound_command_runner": true,
+    "chunked_read_supported": true,
+    "factory_class": "enterprise_memory.trimem.git_workspace.GitCheckoutWorkspaceFactory",
+    "max_read_bytes": 131072,
+    "max_search_hits": 100,
+    "production_capable_required": true,
+    "same_factory_content_hash_across_arms": true
+  },
+  "docker_command_runner": {
+    "cap_drop": "ALL",
+    "checkout_git_metadata": "nested read-only bind",
+    "class": "enterprise_memory.trimem.git_workspace.DockerSandboxCommandRunner",
+    "container_environment": {
+      "CI": "1",
+      "HOME": "/tmp/trimem-home",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "/tmp"
+    },
+    "checkout_mount_owner": "1000:1000",
+    "container_supplementary_groups": [],
+    "container_user": "1000:1000",
+    "container_user_policy": "fixed_non_root_numeric_checkout_owner",
+    "container_workspace": "/testbed",
+    "cpu_limit": "4",
+    "host_environment_forwarded_to_container": false,
+    "image": "per-target exact image@sha256 from grader_image_lock.json",
+    "image_path_masking": {
+      "content_hash_binds_exact_masks": true,
+      "directory_projection": "read-only empty tmpfs",
+      "file_projection": "read-only /dev/null bind",
+      "overlapping_or_noncanonical_masks_rejected": true
+    },
+    "max_output_bytes_per_stream": 262144,
+    "max_timeout_seconds": 120,
+    "memory_limit": "8g",
+    "network": "none",
+    "no_new_privileges": true,
+    "pids_limit": 1024,
+    "pull": "never",
+    "root_filesystem": "read-only",
+    "schema": "trimem/docker-command-runner/1.2",
+    "tmpfs_size_bytes": 1073741824,
+    "writable_mounts": [
+      "task checkout",
+      "/tmp tmpfs"
+    ]
+  },
+  "runtime_lock_content_hash": "9a145a15b7beba296b05efbad074be4aeb527609c7b42751cccac5f673933165",
+  "runtime_lock_manifest": {
+    "function_tools_sha256": "1f9f70c6ae31464a03d93ec7294a3901ee6b34ded1bb79d65224e925c8aea63c",
+    "limits": {
+      "max_agent_steps": 24,
+      "max_decomposition_calls": 1,
+      "max_extraction_calls": 1,
+      "max_memory_context_bytes": 12000,
+      "max_memory_injections": 3,
+      "max_output_tokens_decomposition": 8192,
+      "max_output_tokens_extraction": 8192,
+      "max_output_tokens_per_solve": 16384,
+      "max_solve_calls": 24,
+      "max_steps_per_subtask": 8,
+      "max_total_output_tokens_per_task_arm": 65536,
+      "max_total_solve_output_tokens_per_task_arm": 49152
+    },
+    "list_files_pagination_contract_sha256": "591db921e9009791c2d1e5c9c9da1a0d478f71f5c68cd39f6adb639ed7c85a53",
+    "live_solve_response_mode": "SINGLE_FUNCTION_CALL",
+    "model_visible_observation_projection_sha256": "72d57a4dfb6daba2fb1455af03f44293d5dd05ddf4c35ea01756c0ea53267731",
+    "parallel_tool_calls": false,
+    "parser_hash": "827230b0fe620ba7c66e1c36a87f22e9517339179f109c1e2c6299f590e1d34c",
+    "prompt_context_contract_sha256": "cbb11227c93266e522dda26876b2ddd81798ddbc40cdfeeb100a76faaaeb63c4",
+    "prompt_hashes": {
+      "decomposer_prompt": "8a2a27bb89e3747f832dd8ec2d57da5134c10526ac7e8b8bbc5c6538985ab1ec",
+      "extraction_prompt": "1417d55cfed243ee4246bae74f67d5155ac6577a0bcaed3158ae89fcbd689098",
+      "solve_prompt": "1a3caba70a1f37bfb819b6c0fe8babb780343ffb409c1164196b48cc034bbb75"
+    },
+    "request_lifecycle_contract_sha256": "a0b5128a0328227619005af3947e95aef97f5e9cad02b776dd4f5b225124743d",
+    "resume_automaton_sha256": "746d8aa2dfecadc48c9876b467b2411928582ce967ac6251ade823cdfe94d461",
+    "tool_choice": "required",
+    "tool_hash": "43d2dea120a6aa54aa4063a599a8423095ac48fbe7666ae56f7c9d146a8865b4",
+    "version": "trimem-agent-v1"
+  },
+  "schema": "trimem/tool-environment-lock/1.0",
+  "source_files": {
+    "src/enterprise_memory/trimem/accounting.py": {
+      "bytes": 17423,
+      "sha256": "a66e78ca451b530a83bb5f55f7923b9d2e3b8a79263ac8db3c9235b14e412631"
+    },
+    "src/enterprise_memory/trimem/agent_runtime.py": {
+      "bytes": 227737,
+      "sha256": "e35bfc84fe6b544d9f7dcce0ff707d42acf1b905fc3ca64f2e72e40513f62628"
+    },
+    "src/enterprise_memory/trimem/checkpoint.py": {
+      "bytes": 14881,
+      "sha256": "634ca3d6ec4fd12b044ba34e837c474a78753779268f89038fd355e2129cedfe"
+    },
+    "src/enterprise_memory/trimem/context_projection.py": {
+      "bytes": 26292,
+      "sha256": "e7f249fab48bbcb6f0262b2a1a81cdcf141d66ae3feba287ca703ba8721dcb5a"
+    },
+    "src/enterprise_memory/trimem/credential_free.py": {
+      "bytes": 23658,
+      "sha256": "9cefd82522d4bd711e02bbe400bc5f01cd2288e4b39ce76499ef29c2c3b4915d"
+    },
+    "src/enterprise_memory/trimem/function_tools.py": {
+      "bytes": 8265,
+      "sha256": "ed99572a83700e83f7df4b8109074528e030a682c001d3732d77e75dfaf3277d"
+    },
+    "src/enterprise_memory/trimem/gateway.py": {
+      "bytes": 53501,
+      "sha256": "77ff9ef190d9b5837f66c71e24eb2f50b45645c3856db45a66995362e3a9035c"
+    },
+    "src/enterprise_memory/trimem/git_workspace.py": {
+      "bytes": 51743,
+      "sha256": "18543a9980f36e20ea7489812f7b8a3cbcd65b2cd2c46ad6bfd36a2a35fedd39"
+    },
+    "src/enterprise_memory/trimem/production_runtime.py": {
+      "bytes": 136643,
+      "sha256": "cf502d265281d2abe12b19c204214e256dfe23d7702958ee3fe47fefa69a7247"
+    },
+    "src/enterprise_memory/trimem/runtime_lock.py": {
+      "bytes": 9532,
+      "sha256": "1ed5b6b5e075c9a0b37421503a2c1b67b825e993c153f47591fb7b1b6205797c"
+    },
+    "src/enterprise_memory/trimem/workspace.py": {
+      "bytes": 27238,
+      "sha256": "a7d000314af0a265ad8f4ea4d2e7583e2ed26b9f78b21b8e64ec6b76e95db51b"
+    }
+  },
+  "status": "FROZEN",
+  "tool_authority_boundary": {
+    "arbitrary_host_environment": false,
+    "dag_revision": "evidence-driven task-local topology only",
+    "generic_host_shell": false,
+    "gold_patch_visible_to_agent": false,
+    "hidden_tests_visible_to_agent": false,
+    "public_repository_commands": "argv-only in the digest-pinned task container"
+  }
+}

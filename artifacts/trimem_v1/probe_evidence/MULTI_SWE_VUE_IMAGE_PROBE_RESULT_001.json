@@ -1,0 +1,24 @@
+{
+  "expected_digest": "sha256:2883a52a2eb4054e820dc3a88f9fb0b93fbef7ce10801a57e718f1c6d9f8e9c1",
+  "observed_digests": [
+    "sha256:2883a52a2eb4054e820dc3a88f9fb0b93fbef7ce10801a57e718f1c6d9f8e9c1"
+  ],
+  "removal_evidence": {
+    "digest_reference_absent": true,
+    "removal_established": true,
+    "removed_reference_count": 2,
+    "tag_reference_absent": true
+  },
+  "repository": {
+    "base_commit": "3be4e3cbe34b394096210897c1be8deeb6d748d8",
+    "checkout_present": true,
+    "head": "3be4e3cbe34b394096210897c1be8deeb6d748d8",
+    "path": "/home/core"
+  },
+  "required_paths_present": {
+    "/home/fix-run.sh": true,
+    "/home/test.patch": true
+  },
+  "schema": "trimem/multi-swe-prebuilt-image-contract-probe/1.0",
+  "status": "PASS"
+}

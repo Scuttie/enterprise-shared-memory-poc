@@ -1,0 +1,134 @@
+{
+  "copy_policy": "Finite public metadata list. Raw tool journals, model-produced patches and private grader logs excluded.",
+  "file_count": 21,
+  "files": [
+    {
+      "bytes": 11768,
+      "path": "audit.json",
+      "sha256": "f92167ea8d1969c69bf5c0e72db6575978a458cb9aa1a937aadcd8a638d87c6a",
+      "source": "/home/trimem-runner/skhynix-codex-001/audit.json"
+    },
+    {
+      "bytes": 630,
+      "path": "cells/A/bank-projection.json",
+      "sha256": "ba0da8a7f654dc723e77cb13b63247206c61fc2df0ef38d5a0791c69a7c9f3da",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/cells/A/bank-projection.json"
+    },
+    {
+      "bytes": 1245,
+      "path": "cells/A/public-result.json",
+      "sha256": "bbea034da3a5defdbf4c6654989744be250ecfb92aa1cd8aec7d9237959a9196",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/cells/A/public-result.json"
+    },
+    {
+      "bytes": 1041,
+      "path": "cells/B/bank-projection.json",
+      "sha256": "8a7a4b471bdf1f58a5b4d0de919044769a7a56b9546db0402cce39bb126291bd",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/cells/B/bank-projection.json"
+    },
+    {
+      "bytes": 1290,
+      "path": "cells/B/public-result.json",
+      "sha256": "5e5c3f78fc166f48a73832b8525aed7976149cd21fc6f1c9f64a4f2fa077c0c8",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/cells/B/public-result.json"
+    },
+    {
+      "bytes": 1979,
+      "path": "cells/C/bank-projection.json",
+      "sha256": "44ac08846a908fc44e083d580af38f1fdce49ce8941e4ed3ea40f96a378b72a7",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/cells/C/bank-projection.json"
+    },
+    {
+      "bytes": 1243,
+      "path": "cells/C/public-result.json",
+      "sha256": "2f4956ace46396b3532f9a2f62989fd110b5791660a34e4add998e21e36c3399",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/cells/C/public-result.json"
+    },
+    {
+      "bytes": 2886,
+      "path": "environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-23262/control/checkout-preflight.json",
+      "sha256": "88dcb276af1ac53e1ba2870129f6213d2bbd4d0c2ebbefc47d71c2560a81c9d5",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-23262/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-23262/control/solver-sandbox-preflight.json",
+      "sha256": "9ed62caf3835e540ab2f81a6013565594c9f21f690108a2615ba26f19b8dcefd",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-23262/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2876,
+      "path": "environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-23262/control/checkout-preflight.json",
+      "sha256": "fc10ed1ad62355dd3838bc829aa464f86bf9c98f355cc2a1248a9d025c44c6ca",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-23262/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-23262/control/solver-sandbox-preflight.json",
+      "sha256": "9ed62caf3835e540ab2f81a6013565594c9f21f690108a2615ba26f19b8dcefd",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-23262/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2866,
+      "path": "environment/cells/SKHYNIX/swebench_verified--sympy__sympy-23262/control/checkout-preflight.json",
+      "sha256": "004e0f81cf558b902e581d26186ee75acb5ad5dd0dfbf4fdc54f05ec5184fa87",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-23262/control/checkout-preflight.json"
+    },
+    {
+      "bytes": 216,
+      "path": "environment/cells/SKHYNIX/swebench_verified--sympy__sympy-23262/control/solver-sandbox-preflight.json",
+      "sha256": "9ed62caf3835e540ab2f81a6013565594c9f21f690108a2615ba26f19b8dcefd",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-23262/control/solver-sandbox-preflight.json"
+    },
+    {
+      "bytes": 2289,
+      "path": "environment/control/local-environment-preflight.json",
+      "sha256": "86484f07e0843e50c6b5e1ae6ea49bab31aaea5dcf17057b8d8c43e4a6b09ccb",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/environment/control/local-environment-preflight.json"
+    },
+    {
+      "bytes": 8410,
+      "path": "environment/control/official-harness-loader-preflight.json",
+      "sha256": "94bde73376b7cab3479e316df20be7d801d6c254d689ec95a428019931665104",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/environment/control/official-harness-loader-preflight.json"
+    },
+    {
+      "bytes": 252,
+      "path": "memory-preflight.json",
+      "sha256": "307751228f3085c83d2663efc1f9d4bf911344eebc028b2f835e1ecfdac82f35",
+      "source": "/home/trimem-runner/skhynix-codex-001/memory-preflight.json"
+    },
+    {
+      "bytes": 39197,
+      "path": "plan.json",
+      "sha256": "76f391fc50ff74c1ab539ca045db38a1fdf318c6e011a5d345e91216d4d75327",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/plan.json"
+    },
+    {
+      "bytes": 65,
+      "path": "plan.sha256",
+      "sha256": "64aced45b7473f731ba7c51b1b87c98b2871758d6ae5687048e5629fa5a96917",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/plan.sha256"
+    },
+    {
+      "bytes": 4570,
+      "path": "public-python-readiness.json",
+      "sha256": "e4b3d62d92bcd2ce3e6b2a6408570831faa921178732368170e058ecf1bf41b4",
+      "source": "/home/trimem-runner/skhynix-codex-001-readiness/execution/public-python-readiness.json"
+    },
+    {
+      "bytes": 4643,
+      "path": "report.json",
+      "sha256": "275c639e31f6f077345d7f99d4d58ef6e17ff086e2217ae48d7e0170c5c60aa2",
+      "source": "/home/trimem-runner/skhynix-codex-001/execution/report.json"
+    },
+    {
+      "bytes": 1188,
+      "path": "launch.json",
+      "sha256": "04e495cf22bcf7182f11f68bc1f0f938c38e004d7498e787da0ec1d2cd03bc9f",
+      "source": "manager launch parameters and solver final attestations"
+    }
+  ],
+  "manifest_excludes_itself": true,
+  "schema": "skhynix/native-public-manifest/1.0"
+}

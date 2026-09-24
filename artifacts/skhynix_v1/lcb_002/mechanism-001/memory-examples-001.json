@@ -1,0 +1,1615 @@
+{
+  "bank_sha256": "28cab53a800811a72004cf13e64b0952bb5235b15b001543d796752637338f0d",
+  "counts": {
+    "episodes_with_any_narrative_literal_match": 0,
+    "episodes_with_numeric_trace_step_example": 7,
+    "exposed_targets": 23,
+    "injections": 36,
+    "unique_injected_episodes": 7,
+    "valid_targets": 24
+  },
+  "episodes": [
+    {
+      "action_step_examples": [
+        2
+      ],
+      "canonical_memory_hash": "sha256:3300711b0c9429aaa7ebd93d70fd6335c626fa587cd1676e133e167d35361a0e",
+      "embedded_trace_steps": [
+        2
+      ],
+      "interpretation": "STRUCTURED_SOURCE_EXAMPLE_PRESENT_NOT_PROOF_OF_MODEL_COPYING_OR_CAUSAL_USE",
+      "memory_id": "episode:aa6308075c4ced656e7a3504bd961b6e873ed9ccfcd4ca7b6c086a76d8226d55",
+      "narrative_literal_substring_matches": {
+        "finish": false,
+        "format": false,
+        "integer": false,
+        "schema": false,
+        "source_lesson": false,
+        "submission": false,
+        "submit": false,
+        "trace_steps": false
+      },
+      "narrative_sha256": "f37ede0f89d2dbe711b3ce9e04e4e6fffe0dce193590ae77503ff559fc2aa23d",
+      "protocol_fragment": "{\"trace_steps\": [2]}",
+      "source_capture_reference": {
+        "bytes": 11478,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\da1beb2bd82dd556937ce5e728ef922312e1938066950d8fbf9293ae67517d31.json",
+        "sha256": "d35b7db4f3d05337a1e04acbd2b962744c128fd64eaabfdfb34e85a9403ad311"
+      },
+      "source_family_id": "99b789ad0727ad72bbf72064a0f6a20a8ab549e30486a7fd90ac63709dbd79b3",
+      "source_task_id": "abc311_b",
+      "summary_json_keys": [
+        "applicability",
+        "procedure",
+        "provenance",
+        "summary",
+        "trace_steps",
+        "verification_scope"
+      ],
+      "view_sha256": "2049c3d0d1bb96fadab67590ef2f74d49f8efdb557bc232814ae86b6e31ac078"
+    },
+    {
+      "action_step_examples": [
+        2
+      ],
+      "canonical_memory_hash": "sha256:bc7ac823cbfe7bc7c38c106301878092370fd1e840458416fdd6aecb324d34cd",
+      "embedded_trace_steps": [
+        2
+      ],
+      "interpretation": "STRUCTURED_SOURCE_EXAMPLE_PRESENT_NOT_PROOF_OF_MODEL_COPYING_OR_CAUSAL_USE",
+      "memory_id": "episode:86307d532fafc1906ca65b76ce481eee4dd02303c6a597d84faadede7447af24",
+      "narrative_literal_substring_matches": {
+        "finish": false,
+        "format": false,
+        "integer": false,
+        "schema": false,
+        "source_lesson": false,
+        "submission": false,
+        "submit": false,
+        "trace_steps": false
+      },
+      "narrative_sha256": "ad09b9c43effd44e8bc06b439ac8e99b0aff99b0e5cddf450fe6fa55de6965ff",
+      "protocol_fragment": "{\"trace_steps\": [2]}",
+      "source_capture_reference": {
+        "bytes": 11957,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e84fd1090ac4c12996a3ff4bcc1b8e0722d6351a350ec1bb57efc44c789fc15c.json",
+        "sha256": "3bd935dddbccd0a7e579b128e4fb4fe016bcbc2f7c86c9caf4687a3eae731e68"
+      },
+      "source_family_id": "2fdf5b14f0eec43db9a19b8d1fdec7eab91b38608d58b4559d806bbb98438e37",
+      "source_task_id": "abc347_a",
+      "summary_json_keys": [
+        "applicability",
+        "procedure",
+        "provenance",
+        "summary",
+        "trace_steps",
+        "verification_scope"
+      ],
+      "view_sha256": "d35c6e120ff264af95fd3e4aa524615adc0c9d320070c92fbf971e46cd477927"
+    },
+    {
+      "action_step_examples": [
+        2
+      ],
+      "canonical_memory_hash": "sha256:94f007dae49a21379d25b9c90480ee8fedb2ecae6884e864e3eb7acec704b9ca",
+      "embedded_trace_steps": [
+        2
+      ],
+      "interpretation": "STRUCTURED_SOURCE_EXAMPLE_PRESENT_NOT_PROOF_OF_MODEL_COPYING_OR_CAUSAL_USE",
+      "memory_id": "episode:a570db632cbd044d033c8bb264b8e0e80e2deaff93fd064f9a9291361e736d95",
+      "narrative_literal_substring_matches": {
+        "finish": false,
+        "format": false,
+        "integer": false,
+        "schema": false,
+        "source_lesson": false,
+        "submission": false,
+        "submit": false,
+        "trace_steps": false
+      },
+      "narrative_sha256": "b37f9668ad564c0caf71a16824f8fa886f5fc2369411379f640009a98cc30d39",
+      "protocol_fragment": "{\"trace_steps\": [2]}",
+      "source_capture_reference": {
+        "bytes": 9474,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e1065731e93d0c59da19dd045482af9bd851b57282ec4c1b5b48950c02f583b8.json",
+        "sha256": "2c258070d8e227e24519d985aed0e7859f8e48612cbfe37a4d10f1aba7bddb21"
+      },
+      "source_family_id": "535e323f54a04bf0eb033b78b28900e76f162ec99d3529ee8972be03ec9fb270",
+      "source_task_id": "abc375_a",
+      "summary_json_keys": [
+        "applicability",
+        "procedure",
+        "provenance",
+        "summary",
+        "trace_steps",
+        "verification_scope"
+      ],
+      "view_sha256": "049f337ab74721306483c5695721cbea71347bc81d301f0989e32ab1abf2b889"
+    },
+    {
+      "action_step_examples": [
+        2
+      ],
+      "canonical_memory_hash": "sha256:ce37d136c747fb3e91cc956e429b9bfeb2d7f664b970a693c8cfb3a00748ed16",
+      "embedded_trace_steps": [
+        2
+      ],
+      "interpretation": "STRUCTURED_SOURCE_EXAMPLE_PRESENT_NOT_PROOF_OF_MODEL_COPYING_OR_CAUSAL_USE",
+      "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+      "narrative_literal_substring_matches": {
+        "finish": false,
+        "format": false,
+        "integer": false,
+        "schema": false,
+        "source_lesson": false,
+        "submission": false,
+        "submit": false,
+        "trace_steps": false
+      },
+      "narrative_sha256": "a8a9c02cd04a0acccfc0e9fa682705f05f49ad884ac1e8d000157b3d17265d4c",
+      "protocol_fragment": "{\"trace_steps\": [2]}",
+      "source_capture_reference": {
+        "bytes": 11010,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+        "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+      },
+      "source_family_id": "0f5ed276b3d284000677dfd00818c35d5e7f829a3a0f0eac5cb6f85ada4352ff",
+      "source_task_id": "2848",
+      "summary_json_keys": [
+        "applicability",
+        "procedure",
+        "provenance",
+        "summary",
+        "trace_steps",
+        "verification_scope"
+      ],
+      "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+    },
+    {
+      "action_step_examples": [
+        2
+      ],
+      "canonical_memory_hash": "sha256:aeebca55731ae502bf61f89721d882362c206124d22ab373f5a9d1917804186c",
+      "embedded_trace_steps": [
+        2
+      ],
+      "interpretation": "STRUCTURED_SOURCE_EXAMPLE_PRESENT_NOT_PROOF_OF_MODEL_COPYING_OR_CAUSAL_USE",
+      "memory_id": "episode:0fd2aaa3a9a3e2c0a2bb82855b587030d6303cc6a8e4b6274d3ee9c083df0b1a",
+      "narrative_literal_substring_matches": {
+        "finish": false,
+        "format": false,
+        "integer": false,
+        "schema": false,
+        "source_lesson": false,
+        "submission": false,
+        "submit": false,
+        "trace_steps": false
+      },
+      "narrative_sha256": "254e50b8937dac5766e7848d75cb9187e4ddfd831d68b66e248d234cecc67418",
+      "protocol_fragment": "{\"trace_steps\": [2]}",
+      "source_capture_reference": {
+        "bytes": 8872,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\aa820e78b3dd8ec329101747c3c61f4279890a172f85daffed3403cb452050c2.json",
+        "sha256": "24444f707f2828da4ca701ab51d64060d149cd4389b6bda3f0db330a97dcd7c8"
+      },
+      "source_family_id": "12d09feef6e30adbb984f4f95d5874e65bece4e64d446d939d0a958ed6f4e424",
+      "source_task_id": "3379",
+      "summary_json_keys": [
+        "applicability",
+        "procedure",
+        "provenance",
+        "summary",
+        "trace_steps",
+        "verification_scope"
+      ],
+      "view_sha256": "efc9f609cea6fce8c0a7aa523a6b45cdd93ba5cc63f1245c3d006a16bcd2db80"
+    },
+    {
+      "action_step_examples": [
+        2
+      ],
+      "canonical_memory_hash": "sha256:97322e98953447568aa7fedee4ad458b596825b7530765374fb4d80ba97b45d4",
+      "embedded_trace_steps": [
+        2
+      ],
+      "interpretation": "STRUCTURED_SOURCE_EXAMPLE_PRESENT_NOT_PROOF_OF_MODEL_COPYING_OR_CAUSAL_USE",
+      "memory_id": "episode:b1fed9ae8dbf005a7ae20b69defc5d07eada5cfb9837f4c8f25869d98f2ebdb5",
+      "narrative_literal_substring_matches": {
+        "finish": false,
+        "format": false,
+        "integer": false,
+        "schema": false,
+        "source_lesson": false,
+        "submission": false,
+        "submit": false,
+        "trace_steps": false
+      },
+      "narrative_sha256": "f8c8ce0e0c9f0c592e97072c8944f10b9e86611cd7b2a2456b25f30e41ea538a",
+      "protocol_fragment": "{\"trace_steps\": [2]}",
+      "source_capture_reference": {
+        "bytes": 11188,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\8cca60820f130dd0fa0ffdc3118d037ce732041192dc205387c903c5e1e935a4.json",
+        "sha256": "a7b7cf62c263d79b3408df18159026fcf80521d5a6eaa24638483f028fee2d8d"
+      },
+      "source_family_id": "d4eb0ed94cdba9a1321cda3c2655772a7087bca927666877a3ef0f491b3a61f6",
+      "source_task_id": "abc318_d",
+      "summary_json_keys": [
+        "applicability",
+        "procedure",
+        "provenance",
+        "summary",
+        "trace_steps",
+        "verification_scope"
+      ],
+      "view_sha256": "ebd893f385e8a549aa3cbb64d3b1c680c71d03b12e6d94ea26e31387a44aadf0"
+    },
+    {
+      "action_step_examples": [
+        11
+      ],
+      "canonical_memory_hash": "sha256:2c04847ff1ab07c5a38bd60721ed321674f2738196eb67732e119b3d8024bfa0",
+      "embedded_trace_steps": [
+        11
+      ],
+      "interpretation": "STRUCTURED_SOURCE_EXAMPLE_PRESENT_NOT_PROOF_OF_MODEL_COPYING_OR_CAUSAL_USE",
+      "memory_id": "episode:840dd023996e7458dbfef1d96e7e71fee0ba42425d651a9d40c8bc20c36e2072",
+      "narrative_literal_substring_matches": {
+        "finish": false,
+        "format": false,
+        "integer": false,
+        "schema": false,
+        "source_lesson": false,
+        "submission": false,
+        "submit": false,
+        "trace_steps": false
+      },
+      "narrative_sha256": "8faa6772779ba48ffe8c6c1ef1c13afe42ad849a88b22f3d598d5b809e87b39f",
+      "protocol_fragment": "{\"trace_steps\": [11]}",
+      "source_capture_reference": {
+        "bytes": 11575,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\c11b1a6788f017e51027980accd3d33b4ab1fb1626849d1707a1e7df7194620b.json",
+        "sha256": "11645963a13d909785bd84beaf2ddfc0bf1de1fcca08088f711a1df1e3d256ee"
+      },
+      "source_family_id": "f8ec971f3e3f8c7c4d9f9d502acd2dd5120e38791c98635768e1ca27ece6a783",
+      "source_task_id": "abc327_a",
+      "summary_json_keys": [
+        "applicability",
+        "procedure",
+        "provenance",
+        "summary",
+        "trace_steps",
+        "verification_scope"
+      ],
+      "view_sha256": "d8ace95156cb1abb745c2309637f1e0fc44eb0455ca9bb8aea17cc78c2e0d4db"
+    }
+  ],
+  "experiment_id": "skhynix-lcb-002-luna-pilot",
+  "grader_calls": 0,
+  "helper_reference": {
+    "bytes": 9019,
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_002\\mechanism-001\\memory-examples-source-001.py",
+    "sha256": "61be54777660c09acdbcd000b18688d5947ed9664b515cfa4b85bece9039a9d9"
+  },
+  "limitations": [
+    "Literal substring scans do not prove semantic absence of format advice.",
+    "Source step numbers identify source TRAIN history; target must cite its own history.",
+    "This projection alone does not establish delivery before a target action.",
+    "Recorded schema examples do not prove internal reasoning, copying or causal attribution."
+  ],
+  "model": "gpt-5.6-luna",
+  "model_calls": 0,
+  "original_writes": 0,
+  "prose_code_problem_test_reasoning_output": false,
+  "reasoning_effort": "low",
+  "references": [
+    {
+      "bytes": 6696,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_002\\pilot-results-001.json",
+      "sha256": "cd6c23d527fe3ea8be363f4939a1592ca50235bacb31b902a1adf707bf2b7263"
+    },
+    {
+      "bytes": 76674,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_002\\pilot-exposure-audit-001.json",
+      "sha256": "59f2f2efab1b8b3d6f4b5d79c26ebeaeec9503c421b752cddd7ac813b2c00430"
+    },
+    {
+      "bytes": 90554,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\summary.json",
+      "sha256": "6ba3dfd8103aa28c37dddb7fe14044e453e3a4f0a22a520d00a3431c7547b8dc"
+    },
+    {
+      "bytes": 19592,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-inputs.json",
+      "sha256": "972061d70b0c4744ba07c951bbed267313271c30b5f8a42794c79d2e3aeaad59"
+    },
+    {
+      "bytes": 21216,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_dataset.py",
+      "sha256": "3c6d087bfaaa4a72507a07688710eb846eb8e9358b7abdc56e14ba0edcff0962"
+    },
+    {
+      "bytes": 37928,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_experiment.py",
+      "sha256": "58537cdfaf25aa55220f902c7f8cd68a7d25d67734ff55bf1384309b54db0966"
+    },
+    {
+      "bytes": 17792,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_grade.py",
+      "sha256": "3502d90f6d961aaf26e1b689158dd4638e82961ad0f9055936c6d8410554ade1"
+    },
+    {
+      "bytes": 42118,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_memory.py",
+      "sha256": "65648afb5f2d938e058c33631f83779a32d40e0b8caba4bd5893429149367dd0"
+    },
+    {
+      "bytes": 26766,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_native.py",
+      "sha256": "79f50384bb56d0d3326c59fe1e41894555edab61c6ca373820f4c99bda8d39d1"
+    },
+    {
+      "bytes": 21220,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_public.py",
+      "sha256": "1bdeb0266426a5294dd86474a1d8512f3b4d78f22d85ce9310908ee7a0dae399"
+    },
+    {
+      "bytes": 9538,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_smoke.py",
+      "sha256": "086470bc60a36fd3239eb1ca58ba09d2357b6759734d42c3d6666e92a59e0461"
+    },
+    {
+      "bytes": 2005,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_status.py",
+      "sha256": "1285e3e8c378d1262615b777733ffd425ac2ed7aec90557396230bb984b63ac1"
+    },
+    {
+      "bytes": 4817,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\__init__.py",
+      "sha256": "e9e1b62e3c84e284575e3ed40d20416c4cb8a799e3e1ca8d90923749ac3bfa1d"
+    },
+    {
+      "bytes": 17423,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\accounting.py",
+      "sha256": "a66e78ca451b530a83bb5f55f7923b9d2e3b8a79263ac8db3c9235b14e412631"
+    },
+    {
+      "bytes": 21564,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\adaptive_horizon.py",
+      "sha256": "76801ed58c7e93582254e8fd6da07e02a8142c5762f2946b92c3587510535e57"
+    },
+    {
+      "bytes": 227737,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\agent_runtime.py",
+      "sha256": "e35bfc84fe6b544d9f7dcce0ff707d42acf1b905fc3ca64f2e72e40513f62628"
+    },
+    {
+      "bytes": 17871,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\arms.py",
+      "sha256": "7fa3285fa52d3ad76c4ebaa19ce333f39921593597c315c815a7db0c01a88ce3"
+    },
+    {
+      "bytes": 18255,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\benchmark_seed.py",
+      "sha256": "2d152c7d941fd06125efb0e8c66290319b1206ead597ce8fee7b1ca91a65bd33"
+    },
+    {
+      "bytes": 14881,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\checkpoint.py",
+      "sha256": "634ca3d6ec4fd12b044ba34e837c474a78753779268f89038fd355e2129cedfe"
+    },
+    {
+      "bytes": 18225,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\consolidation.py",
+      "sha256": "dd8736ff8ad6a3c861add956239887af8ac9bb14ab05f0511ed49bbe21db7df8"
+    },
+    {
+      "bytes": 26292,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\context_projection.py",
+      "sha256": "e7f249fab48bbcb6f0262b2a1a81cdcf141d66ae3feba287ca703ba8721dcb5a"
+    },
+    {
+      "bytes": 23658,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\credential_free.py",
+      "sha256": "9cefd82522d4bd711e02bbe400bc5f01cd2288e4b39ce76499ef29c2c3b4915d"
+    },
+    {
+      "bytes": 12365,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\exploration_runtime.py",
+      "sha256": "aa30e32bb83e24b028cd3fed093c4e1f8a72e43b8f327b9400a77ee7cbb50bdb"
+    },
+    {
+      "bytes": 8265,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\function_tools.py",
+      "sha256": "ed99572a83700e83f7df4b8109074528e030a682c001d3732d77e75dfaf3277d"
+    },
+    {
+      "bytes": 53501,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\gateway.py",
+      "sha256": "77ff9ef190d9b5837f66c71e24eb2f50b45645c3856db45a66995362e3a9035c"
+    },
+    {
+      "bytes": 51743,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\git_workspace.py",
+      "sha256": "18543a9980f36e20ea7489812f7b8a3cbcd65b2cd2c46ad6bfd36a2a35fedd39"
+    },
+    {
+      "bytes": 19399,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\grader.py",
+      "sha256": "4746bac3f6530f7c82dd18c0433c1acc206c6d5732a216007ded732cc0359719"
+    },
+    {
+      "bytes": 20707,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\lifecycle.py",
+      "sha256": "34af69824a550afb4a9cd7dafbc64d7021f151bb069737f8ab559b47bf8be6e2"
+    },
+    {
+      "bytes": 24647,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\native_architecture_context.py",
+      "sha256": "2079c490b68fe2a004619229c026f1a2a1604c57e86a6af248aab6573d0f1276"
+    },
+    {
+      "bytes": 29468,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\policy.py",
+      "sha256": "ed5c1d1a202eadfd1054a7bb9a684829a21eaa9a966e27cdebdc4f57a7f0c38b"
+    },
+    {
+      "bytes": 24360,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\postgres_retrieval.py",
+      "sha256": "519b5d2a901917be6861064e7ddeda34e36a4587fc08971807b188957f032287"
+    },
+    {
+      "bytes": 150413,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\postgres_store.py",
+      "sha256": "4884458160b5a8ee7f9152c69c45aa9c19d9eb68be6005f29bdd2a006ca6622a"
+    },
+    {
+      "bytes": 11425,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\ppr.py",
+      "sha256": "ccf9c3aa9914ccb99079529b7f3130ffdbb17094ea106f3e41c3bbc084ed5ac1"
+    },
+    {
+      "bytes": 77597,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\production_lifecycle.py",
+      "sha256": "b1a85f40d0c6b99fbedc3470fe950318a7bd778dcbff51ced2606ff51934fc7c"
+    },
+    {
+      "bytes": 15591,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\production_promotion.py",
+      "sha256": "4302b5e43cb36a55ffb453e3600475d3c1846a3ce3881f297de8457659b88ffa"
+    },
+    {
+      "bytes": 136643,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\production_runtime.py",
+      "sha256": "cf502d265281d2abe12b19c204214e256dfe23d7702958ee3fe47fefa69a7247"
+    },
+    {
+      "bytes": 58764,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\production_v03_lifecycle.py",
+      "sha256": "a590332bf30f097dca3a88c581c20ee969be4c6d28d75ee4a95ad1529153591e"
+    },
+    {
+      "bytes": 11814,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\provider_output_contracts.py",
+      "sha256": "6b2e5711ae78057b7a29ce7424ad88e0c63e03e0051ac452dc96e67e4885f906"
+    },
+    {
+      "bytes": 52182,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\retrieval.py",
+      "sha256": "00eb5cbffdab5a84344f0b46948e6262d63c2d594223d63121324daed446ceb8"
+    },
+    {
+      "bytes": 15014,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\retrieval_store.py",
+      "sha256": "cad0c041146b2c14217d1a9fdac7d4d2b04a6828276e45ac64c8d0765bb5f62f"
+    },
+    {
+      "bytes": 9532,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\runtime_lock.py",
+      "sha256": "1ed5b6b5e075c9a0b37421503a2c1b67b825e993c153f47591fb7b1b6205797c"
+    },
+    {
+      "bytes": 26573,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\schema.py",
+      "sha256": "d27b5e42eef352050bd7da515e3c9302942f72c37af12fb6353876ab7680416d"
+    },
+    {
+      "bytes": 39333,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\scientific_terminal.py",
+      "sha256": "0e720da03bd5979bd3dd358ab6b9958dc2ce9361ffaf0dbd0b276154580e9bf2"
+    },
+    {
+      "bytes": 30954,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\skill_memory.py",
+      "sha256": "61a9366262d206fc4961719e715b7a13cf932b9ae1dcde06bdd4ff714ba3bf3b"
+    },
+    {
+      "bytes": 24235,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\skill_runtime.py",
+      "sha256": "7f8177ca78ab6afff072460273a2a54bb1876e582e8a56746d74e598239e3af7"
+    },
+    {
+      "bytes": 5961,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\solve_forensics.py",
+      "sha256": "c8b470e4ad632957c0149e6d9ddd0b2df71f895a6f109e7596de26f08736ee0e"
+    },
+    {
+      "bytes": 28497,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\store.py",
+      "sha256": "552e6caf33076f0c397c960ba29b6cd13566d4b495f9bf3b66a13ab30a5d8498"
+    },
+    {
+      "bytes": 13676,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\subgoal_context.py",
+      "sha256": "06e0a9efb15c256437e318e5c4957b009deb2712585a2363a4482128309deea5"
+    },
+    {
+      "bytes": 34880,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\vector_index.py",
+      "sha256": "346d293215bd8ced8c721756bd5ecb853b780dc5b390fec490df6a14c51a6ff8"
+    },
+    {
+      "bytes": 18185,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\working_graph.py",
+      "sha256": "e28bd7d0fad011ae5ee7ec48170e7e77ad683c732a53f51cf199185793678123"
+    },
+    {
+      "bytes": 27238,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\workspace.py",
+      "sha256": "a7d000314af0a265ad8f4ea4d2e7583e2ed26b9f78b21b8e64ec6b76e95db51b"
+    },
+    {
+      "bytes": 429327,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.json",
+      "sha256": "28cab53a800811a72004cf13e64b0952bb5235b15b001543d796752637338f0d"
+    },
+    {
+      "bytes": 34374,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-f234345cb6945da1b9d6\\state.json",
+      "sha256": "946040f05e9da4313a58fa36132a13a5502dcefccc7ea7fd3f5fa6e1a527e2c3"
+    },
+    {
+      "bytes": 2049,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-f234345cb6945da1b9d6\\solve-receipt.json",
+      "sha256": "9a6cc2f283fc8d195916f1f28625393f43a7e9f1dc3f22ccda94d66d2297539b"
+    },
+    {
+      "bytes": 11478,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\da1beb2bd82dd556937ce5e728ef922312e1938066950d8fbf9293ae67517d31.json",
+      "sha256": "d35b7db4f3d05337a1e04acbd2b962744c128fd64eaabfdfb34e85a9403ad311"
+    },
+    {
+      "bytes": 11957,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e84fd1090ac4c12996a3ff4bcc1b8e0722d6351a350ec1bb57efc44c789fc15c.json",
+      "sha256": "3bd935dddbccd0a7e579b128e4fb4fe016bcbc2f7c86c9caf4687a3eae731e68"
+    },
+    {
+      "bytes": 21721,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-32a694504bb275568b3d\\state.json",
+      "sha256": "e555953382a1645a1d06e703ef55ba70edaa034d6b962d146fb2385464c798c3"
+    },
+    {
+      "bytes": 990,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-32a694504bb275568b3d\\solve-receipt.json",
+      "sha256": "407221edcb95e162c92915077f6077208444756657202c06f9af192df30a8102"
+    },
+    {
+      "bytes": 16289,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-f77a10661490143caf84\\state.json",
+      "sha256": "af8a9b7b508603ca6e5bfdb94435898c0606aec5b8a69b0ccafe238ce3e94b8b"
+    },
+    {
+      "bytes": 961,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-f77a10661490143caf84\\solve-receipt.json",
+      "sha256": "c73df877d8450fc1d9fbe4804751c163b5c848345979a0ebfe8ad5bb2d99103c"
+    },
+    {
+      "bytes": 9474,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e1065731e93d0c59da19dd045482af9bd851b57282ec4c1b5b48950c02f583b8.json",
+      "sha256": "2c258070d8e227e24519d985aed0e7859f8e48612cbfe37a4d10f1aba7bddb21"
+    },
+    {
+      "bytes": 17496,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-00b8f2fdf1fbd1d01c27\\state.json",
+      "sha256": "6ce0b1cbe83ce5e81c72ed2838473ff36c749c2c4c85552a75a2f9e58e646c02"
+    },
+    {
+      "bytes": 951,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-00b8f2fdf1fbd1d01c27\\solve-receipt.json",
+      "sha256": "5b85e73dbbd639bc3f03643f08c95fb967565eb05863cafce42a6f26900abe55"
+    },
+    {
+      "bytes": 11478,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\da1beb2bd82dd556937ce5e728ef922312e1938066950d8fbf9293ae67517d31.json",
+      "sha256": "d35b7db4f3d05337a1e04acbd2b962744c128fd64eaabfdfb34e85a9403ad311"
+    },
+    {
+      "bytes": 32124,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-5af8357f5aa69a674c65\\state.json",
+      "sha256": "aa97b6f13164a846055f8b6d19e4723e370be43fbe20a628e5dbc533fce32a54"
+    },
+    {
+      "bytes": 955,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-5af8357f5aa69a674c65\\solve-receipt.json",
+      "sha256": "9250777c9cb79778449696f4fbb8724cada1a818427884369913c01a9b48ec67"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 25377,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-831e6bd92db10f33cc72\\state.json",
+      "sha256": "35b8dcf257487fb803e5ad377f47d197cb2c44e2c4b83a43c7bd4daa1aa34fe4"
+    },
+    {
+      "bytes": 962,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-831e6bd92db10f33cc72\\solve-receipt.json",
+      "sha256": "48960191a3917eae5127b4869f285ab3989f1a7b489d7d9d1a750a3fcaf8c30e"
+    },
+    {
+      "bytes": 9474,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e1065731e93d0c59da19dd045482af9bd851b57282ec4c1b5b48950c02f583b8.json",
+      "sha256": "2c258070d8e227e24519d985aed0e7859f8e48612cbfe37a4d10f1aba7bddb21"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 17906,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-2708fbb65c9c549281fe\\state.json",
+      "sha256": "3a4a9ca97e2f915f7a58552d2491c50a67e27bebeeba6ec8bccd9ca35d2b9914"
+    },
+    {
+      "bytes": 967,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-2708fbb65c9c549281fe\\solve-receipt.json",
+      "sha256": "0fcac47b1e20ffb47e028f4b182f405d61354a2544a09ce9e934e2c429461ac9"
+    },
+    {
+      "bytes": 8872,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\aa820e78b3dd8ec329101747c3c61f4279890a172f85daffed3403cb452050c2.json",
+      "sha256": "24444f707f2828da4ca701ab51d64060d149cd4389b6bda3f0db330a97dcd7c8"
+    },
+    {
+      "bytes": 20860,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-3b75b26bd57f743d4bf2\\state.json",
+      "sha256": "250590fdac11e67d7d77285237b23e0ec51053047b3c0d743f65c994ae227a2d"
+    },
+    {
+      "bytes": 967,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-3b75b26bd57f743d4bf2\\solve-receipt.json",
+      "sha256": "882fe889c8adee1f339a713349fa9ee63caecfaf1ec3cb986b57ea13bb42ece8"
+    },
+    {
+      "bytes": 9474,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e1065731e93d0c59da19dd045482af9bd851b57282ec4c1b5b48950c02f583b8.json",
+      "sha256": "2c258070d8e227e24519d985aed0e7859f8e48612cbfe37a4d10f1aba7bddb21"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 24329,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-8d3e3fa0a4294fb5cad5\\state.json",
+      "sha256": "56cf836c7db8cc956a443708e49a814e1c394c7e4912e9e140b738de9c38ae16"
+    },
+    {
+      "bytes": 964,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-8d3e3fa0a4294fb5cad5\\solve-receipt.json",
+      "sha256": "8df2b97f38c6e056c34ddb6a69b72a4f56d6632f2f78bab1b82ee94d03de5315"
+    },
+    {
+      "bytes": 11188,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\8cca60820f130dd0fa0ffdc3118d037ce732041192dc205387c903c5e1e935a4.json",
+      "sha256": "a7b7cf62c263d79b3408df18159026fcf80521d5a6eaa24638483f028fee2d8d"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 22801,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-d93e0c50d196856c24f9\\state.json",
+      "sha256": "7ee82ef09fb6bb5a18ff8b5a898ca93e34779431f21132c223be340c3ea9c202"
+    },
+    {
+      "bytes": 1504,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-d93e0c50d196856c24f9\\solve-receipt.json",
+      "sha256": "36eac046ef094ea7f8cf209e7a851b649d8450ec1554f21f3eef7dd56ad58c71"
+    },
+    {
+      "bytes": 11957,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e84fd1090ac4c12996a3ff4bcc1b8e0722d6351a350ec1bb57efc44c789fc15c.json",
+      "sha256": "3bd935dddbccd0a7e579b128e4fb4fe016bcbc2f7c86c9caf4687a3eae731e68"
+    },
+    {
+      "bytes": 11478,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\da1beb2bd82dd556937ce5e728ef922312e1938066950d8fbf9293ae67517d31.json",
+      "sha256": "d35b7db4f3d05337a1e04acbd2b962744c128fd64eaabfdfb34e85a9403ad311"
+    },
+    {
+      "bytes": 18121,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-d5addeaf26175d1bcc29\\state.json",
+      "sha256": "ca30a84a01572e25d6b304023ac5802ffe2b36ac1d73a4a81f5582d4d743a672"
+    },
+    {
+      "bytes": 968,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-d5addeaf26175d1bcc29\\solve-receipt.json",
+      "sha256": "179b49cb1bed3e41a70e2295b28077ad52a3529e754406a938cde0a1e216be20"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 22269,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-3cb25825a619415e255a\\state.json",
+      "sha256": "2043d75fa584b4a2d39c2671ff64a7e81754df4a552beadc3e364b1563395c56"
+    },
+    {
+      "bytes": 1527,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-3cb25825a619415e255a\\solve-receipt.json",
+      "sha256": "318ead0069438370e7b51e3b005174af96d844efde2582848c47b079190193e8"
+    },
+    {
+      "bytes": 11575,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\c11b1a6788f017e51027980accd3d33b4ab1fb1626849d1707a1e7df7194620b.json",
+      "sha256": "11645963a13d909785bd84beaf2ddfc0bf1de1fcca08088f711a1df1e3d256ee"
+    },
+    {
+      "bytes": 20990,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-09d19db776dade1bbfef\\state.json",
+      "sha256": "196bf065bf230f03f9e940315821b96148ae35e32507b44725246f84ee48f678"
+    },
+    {
+      "bytes": 967,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-09d19db776dade1bbfef\\solve-receipt.json",
+      "sha256": "a1543d606b6e206ff87834fedc73477759ecb0cae392a2f9a2f6dcad5efcaa7b"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 9474,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e1065731e93d0c59da19dd045482af9bd851b57282ec4c1b5b48950c02f583b8.json",
+      "sha256": "2c258070d8e227e24519d985aed0e7859f8e48612cbfe37a4d10f1aba7bddb21"
+    },
+    {
+      "bytes": 25948,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-c9666ca719574009eb5b\\state.json",
+      "sha256": "c577e4d805d8b23dac20428a34ba0b469fa58fd0967eaef2114c1225febb9e0e"
+    },
+    {
+      "bytes": 1501,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-c9666ca719574009eb5b\\solve-receipt.json",
+      "sha256": "f3b57c234e46e5629c77119067452f42f0005be2f7d84b86248becd7cb67f0b5"
+    },
+    {
+      "bytes": 8872,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\aa820e78b3dd8ec329101747c3c61f4279890a172f85daffed3403cb452050c2.json",
+      "sha256": "24444f707f2828da4ca701ab51d64060d149cd4389b6bda3f0db330a97dcd7c8"
+    },
+    {
+      "bytes": 11957,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e84fd1090ac4c12996a3ff4bcc1b8e0722d6351a350ec1bb57efc44c789fc15c.json",
+      "sha256": "3bd935dddbccd0a7e579b128e4fb4fe016bcbc2f7c86c9caf4687a3eae731e68"
+    },
+    {
+      "bytes": 11188,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\8cca60820f130dd0fa0ffdc3118d037ce732041192dc205387c903c5e1e935a4.json",
+      "sha256": "a7b7cf62c263d79b3408df18159026fcf80521d5a6eaa24638483f028fee2d8d"
+    },
+    {
+      "bytes": 26559,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-c83f8ce24dcd4c2b07e7\\state.json",
+      "sha256": "80b3b595aa374084469da23c029c98cc2f03afcafda0ae4d956d6fd4dbfd9fb3"
+    },
+    {
+      "bytes": 1501,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-c83f8ce24dcd4c2b07e7\\solve-receipt.json",
+      "sha256": "a2d35d4644ae8d332f0ae78cd08d14991fd19caf66611aa14c9f26fc95e85141"
+    },
+    {
+      "bytes": 9474,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e1065731e93d0c59da19dd045482af9bd851b57282ec4c1b5b48950c02f583b8.json",
+      "sha256": "2c258070d8e227e24519d985aed0e7859f8e48612cbfe37a4d10f1aba7bddb21"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 21869,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-37a3ec47d5585f0d6609\\state.json",
+      "sha256": "75a007b481a52b77d1471c60a5581b9176c3a3114b9e1dfeae0d2950a5af25c3"
+    },
+    {
+      "bytes": 967,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-37a3ec47d5585f0d6609\\solve-receipt.json",
+      "sha256": "68010f846e4b1ed5557a15fa8662e07ff3f6210bf3fcec014e97d0b76c797d10"
+    },
+    {
+      "bytes": 11478,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\da1beb2bd82dd556937ce5e728ef922312e1938066950d8fbf9293ae67517d31.json",
+      "sha256": "d35b7db4f3d05337a1e04acbd2b962744c128fd64eaabfdfb34e85a9403ad311"
+    },
+    {
+      "bytes": 22220,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-3197657c5ae95dcbea32\\state.json",
+      "sha256": "0fd5670ea787344a68905ddb85fd85dade050962fcda0d90170ba23b61cbd475"
+    },
+    {
+      "bytes": 966,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-3197657c5ae95dcbea32\\solve-receipt.json",
+      "sha256": "fd3c742ad2e57bbd7d3f72b2ecca8d7cddbc65339e7eca5d1f7cdad8dbdf801b"
+    },
+    {
+      "bytes": 11575,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\c11b1a6788f017e51027980accd3d33b4ab1fb1626849d1707a1e7df7194620b.json",
+      "sha256": "11645963a13d909785bd84beaf2ddfc0bf1de1fcca08088f711a1df1e3d256ee"
+    },
+    {
+      "bytes": 9474,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e1065731e93d0c59da19dd045482af9bd851b57282ec4c1b5b48950c02f583b8.json",
+      "sha256": "2c258070d8e227e24519d985aed0e7859f8e48612cbfe37a4d10f1aba7bddb21"
+    },
+    {
+      "bytes": 16911,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-0fc6d6a5b4564843ae3f\\state.json",
+      "sha256": "f7c06fd43ed39949b9b5bb184168bc61715f09d11f7ede350be0e930dbe68dcb"
+    },
+    {
+      "bytes": 966,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-0fc6d6a5b4564843ae3f\\solve-receipt.json",
+      "sha256": "c20bf4b22ef14c91df931318bb432e85564591cbc1cadfd114cb73356706250c"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 14631,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-c9a7ba4bc1890b3212bf\\state.json",
+      "sha256": "e8cab6b3d2aa4cf639b514bcd9e247fa9cb29d86768d269f5bbbea86673a5fa0"
+    },
+    {
+      "bytes": 966,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-c9a7ba4bc1890b3212bf\\solve-receipt.json",
+      "sha256": "cc6cb06f19cc4fee4e8c11b7c70a904eb663e34330bf6f415f476c631286f922"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 22813,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-70fd140a7871d7e07936\\state.json",
+      "sha256": "e4668f2082647ef5744bd7bcceb17942bd1cd5382cdcb06f442c4ad3ee0673a1"
+    },
+    {
+      "bytes": 965,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-70fd140a7871d7e07936\\solve-receipt.json",
+      "sha256": "261c6f0c0ae045069c1574d30b1ef18c24fc24c4f42d84f3bbe35d321a529234"
+    },
+    {
+      "bytes": 9474,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e1065731e93d0c59da19dd045482af9bd851b57282ec4c1b5b48950c02f583b8.json",
+      "sha256": "2c258070d8e227e24519d985aed0e7859f8e48612cbfe37a4d10f1aba7bddb21"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 22016,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-50242e67e6f7d0c1b378\\state.json",
+      "sha256": "31e935c196db8db146b92e27ca42359e83e739702e1f260ad332b26207d46a85"
+    },
+    {
+      "bytes": 1505,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-50242e67e6f7d0c1b378\\solve-receipt.json",
+      "sha256": "4a180ebe56e2cec7330833505dd1b07221a5b4c4bbe2aff63c59324d0afbc018"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 11957,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e84fd1090ac4c12996a3ff4bcc1b8e0722d6351a350ec1bb57efc44c789fc15c.json",
+      "sha256": "3bd935dddbccd0a7e579b128e4fb4fe016bcbc2f7c86c9caf4687a3eae731e68"
+    },
+    {
+      "bytes": 17420,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-0ab77c56eece2d243991\\state.json",
+      "sha256": "82056c2ec1795a6031c46a18f35cea0f364ba75828d5e42e2c7ef2fd74d9f254"
+    },
+    {
+      "bytes": 963,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-0ab77c56eece2d243991\\solve-receipt.json",
+      "sha256": "7c9b72fff1a77a8ee05e14bb3e69a1aa22315fb91e39707744ffc0b9d965e7c0"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 21824,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-b52b378cbef9d95e5b93\\state.json",
+      "sha256": "c03c714bda971c50a488d68cdd88728467fbc2b0412dd025d9aa852a3094ba21"
+    },
+    {
+      "bytes": 1489,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-b52b378cbef9d95e5b93\\solve-receipt.json",
+      "sha256": "0dee1de767418d1db1f99ab8918bc3b4788f249168f1dda13b9540c81171fd64"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    },
+    {
+      "bytes": 11957,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\e84fd1090ac4c12996a3ff4bcc1b8e0722d6351a350ec1bb57efc44c789fc15c.json",
+      "sha256": "3bd935dddbccd0a7e579b128e4fb4fe016bcbc2f7c86c9caf4687a3eae731e68"
+    },
+    {
+      "bytes": 13865,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-a801191f5ab88055b0b3\\state.json",
+      "sha256": "000379135ee29fd506cec3c3fe1d4ae060b0938ed54cafad29f0a058fb3bbe25"
+    },
+    {
+      "bytes": 952,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-a801191f5ab88055b0b3\\solve-receipt.json",
+      "sha256": "ab8d7beaffc382dc6d0b1c136f640004010af5befe04563d28d0c71361688934"
+    },
+    {
+      "bytes": 11010,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.data\\captures\\2e1dea3c93dcb7a3d9e569bfdaeceb82692e93f99f98b93b3c6e1f72971f9536.json",
+      "sha256": "2117ccf821ef294b96cdb8d2b188d2cd3c60992f9adf9e077b2f8b96e72d705f"
+    }
+  ],
+  "references_unchanged": true,
+  "schema": "trimem/lcb-memory-format-examples/1.0",
+  "scope": "POSTHOC_READ_ONLY_SCHEMA_PROJECTION_NOT_NEW_EXPERIMENT",
+  "status": "COMPLETE",
+  "targets": [
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:aa6308075c4ced656e7a3504bd961b6e873ed9ccfcd4ca7b6c086a76d8226d55",
+          "ordinal": 0,
+          "source_task_id": "abc311_b",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "2049c3d0d1bb96fadab67590ef2f74d49f8efdb557bc232814ae86b6e31ac078"
+        },
+        {
+          "active_node_id": "subgoal-3",
+          "memory_id": "episode:86307d532fafc1906ca65b76ce481eee4dd02303c6a597d84faadede7447af24",
+          "ordinal": 1,
+          "source_task_id": "abc347_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "d35c6e120ff264af95fd3e4aa524615adc0c9d320070c92fbf971e46cd477927"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 34374,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-f234345cb6945da1b9d6\\state.json",
+        "sha256": "946040f05e9da4313a58fa36132a13a5502dcefccc7ea7fd3f5fa6e1a527e2c3"
+      },
+      "task_id": "abc380_d"
+    },
+    {
+      "injection_count": 0,
+      "injections": [],
+      "target_state_reference": {
+        "bytes": 21721,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-32a694504bb275568b3d\\state.json",
+        "sha256": "e555953382a1645a1d06e703ef55ba70edaa034d6b962d146fb2385464c798c3"
+      },
+      "task_id": "abc386_c"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "solution",
+          "memory_id": "episode:a570db632cbd044d033c8bb264b8e0e80e2deaff93fd064f9a9291361e736d95",
+          "ordinal": 0,
+          "source_task_id": "abc375_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "049f337ab74721306483c5695721cbea71347bc81d301f0989e32ab1abf2b889"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 16289,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-f77a10661490143caf84\\state.json",
+        "sha256": "af8a9b7b508603ca6e5bfdb94435898c0606aec5b8a69b0ccafe238ce3e94b8b"
+      },
+      "task_id": "3653"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:aa6308075c4ced656e7a3504bd961b6e873ed9ccfcd4ca7b6c086a76d8226d55",
+          "ordinal": 0,
+          "source_task_id": "abc311_b",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "2049c3d0d1bb96fadab67590ef2f74d49f8efdb557bc232814ae86b6e31ac078"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 17496,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-00b8f2fdf1fbd1d01c27\\state.json",
+        "sha256": "6ce0b1cbe83ce5e81c72ed2838473ff36c749c2c4c85552a75a2f9e58e646c02"
+      },
+      "task_id": "3627"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 0,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 32124,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-5af8357f5aa69a674c65\\state.json",
+        "sha256": "aa97b6f13164a846055f8b6d19e4723e370be43fbe20a628e5dbc533fce32a54"
+      },
+      "task_id": "abc382_f"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "solution",
+          "memory_id": "episode:a570db632cbd044d033c8bb264b8e0e80e2deaff93fd064f9a9291361e736d95",
+          "ordinal": 0,
+          "source_task_id": "abc375_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "049f337ab74721306483c5695721cbea71347bc81d301f0989e32ab1abf2b889"
+        },
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 1,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 25377,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-831e6bd92db10f33cc72\\state.json",
+        "sha256": "35b8dcf257487fb803e5ad377f47d197cb2c44e2c4b83a43c7bd4daa1aa34fe4"
+      },
+      "task_id": "3637"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:0fd2aaa3a9a3e2c0a2bb82855b587030d6303cc6a8e4b6274d3ee9c083df0b1a",
+          "ordinal": 0,
+          "source_task_id": "3379",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "efc9f609cea6fce8c0a7aa523a6b45cdd93ba5cc63f1245c3d006a16bcd2db80"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 17906,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-2708fbb65c9c549281fe\\state.json",
+        "sha256": "3a4a9ca97e2f915f7a58552d2491c50a67e27bebeeba6ec8bccd9ca35d2b9914"
+      },
+      "task_id": "abc378_e"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "solution",
+          "memory_id": "episode:a570db632cbd044d033c8bb264b8e0e80e2deaff93fd064f9a9291361e736d95",
+          "ordinal": 0,
+          "source_task_id": "abc375_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "049f337ab74721306483c5695721cbea71347bc81d301f0989e32ab1abf2b889"
+        },
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 1,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 20860,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-3b75b26bd57f743d4bf2\\state.json",
+        "sha256": "250590fdac11e67d7d77285237b23e0ec51053047b3c0d743f65c994ae227a2d"
+      },
+      "task_id": "abc384_d"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "solution",
+          "memory_id": "episode:b1fed9ae8dbf005a7ae20b69defc5d07eada5cfb9837f4c8f25869d98f2ebdb5",
+          "ordinal": 0,
+          "source_task_id": "abc318_d",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "ebd893f385e8a549aa3cbb64d3b1c680c71d03b12e6d94ea26e31387a44aadf0"
+        },
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 1,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 24329,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-8d3e3fa0a4294fb5cad5\\state.json",
+        "sha256": "56cf836c7db8cc956a443708e49a814e1c394c7e4912e9e140b738de9c38ae16"
+      },
+      "task_id": "3648"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:86307d532fafc1906ca65b76ce481eee4dd02303c6a597d84faadede7447af24",
+          "ordinal": 0,
+          "source_task_id": "abc347_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "d35c6e120ff264af95fd3e4aa524615adc0c9d320070c92fbf971e46cd477927"
+        },
+        {
+          "active_node_id": "subgoal-2",
+          "memory_id": "episode:aa6308075c4ced656e7a3504bd961b6e873ed9ccfcd4ca7b6c086a76d8226d55",
+          "ordinal": 1,
+          "source_task_id": "abc311_b",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "2049c3d0d1bb96fadab67590ef2f74d49f8efdb557bc232814ae86b6e31ac078"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 22801,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-d93e0c50d196856c24f9\\state.json",
+        "sha256": "7ee82ef09fb6bb5a18ff8b5a898ca93e34779431f21132c223be340c3ea9c202"
+      },
+      "task_id": "abc379_b"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 0,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 18121,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-d5addeaf26175d1bcc29\\state.json",
+        "sha256": "ca30a84a01572e25d6b304023ac5802ffe2b36ac1d73a4a81f5582d4d743a672"
+      },
+      "task_id": "abc381_d"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "solution",
+          "memory_id": "episode:840dd023996e7458dbfef1d96e7e71fee0ba42425d651a9d40c8bc20c36e2072",
+          "ordinal": 0,
+          "source_task_id": "abc327_a",
+          "source_trace_steps": [
+            11
+          ],
+          "view_sha256": "d8ace95156cb1abb745c2309637f1e0fc44eb0455ca9bb8aea17cc78c2e0d4db"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 22269,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-3cb25825a619415e255a\\state.json",
+        "sha256": "2043d75fa584b4a2d39c2671ff64a7e81754df4a552beadc3e364b1563395c56"
+      },
+      "task_id": "3636"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "solution",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 0,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        },
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:a570db632cbd044d033c8bb264b8e0e80e2deaff93fd064f9a9291361e736d95",
+          "ordinal": 1,
+          "source_task_id": "abc375_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "049f337ab74721306483c5695721cbea71347bc81d301f0989e32ab1abf2b889"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 20990,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-09d19db776dade1bbfef\\state.json",
+        "sha256": "196bf065bf230f03f9e940315821b96148ae35e32507b44725246f84ee48f678"
+      },
+      "task_id": "abc384_f"
+    },
+    {
+      "injection_count": 3,
+      "injections": [
+        {
+          "active_node_id": "solution",
+          "memory_id": "episode:0fd2aaa3a9a3e2c0a2bb82855b587030d6303cc6a8e4b6274d3ee9c083df0b1a",
+          "ordinal": 0,
+          "source_task_id": "3379",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "efc9f609cea6fce8c0a7aa523a6b45cdd93ba5cc63f1245c3d006a16bcd2db80"
+        },
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:86307d532fafc1906ca65b76ce481eee4dd02303c6a597d84faadede7447af24",
+          "ordinal": 1,
+          "source_task_id": "abc347_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "d35c6e120ff264af95fd3e4aa524615adc0c9d320070c92fbf971e46cd477927"
+        },
+        {
+          "active_node_id": "subgoal-2",
+          "memory_id": "episode:b1fed9ae8dbf005a7ae20b69defc5d07eada5cfb9837f4c8f25869d98f2ebdb5",
+          "ordinal": 2,
+          "source_task_id": "abc318_d",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "ebd893f385e8a549aa3cbb64d3b1c680c71d03b12e6d94ea26e31387a44aadf0"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 25948,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-c9666ca719574009eb5b\\state.json",
+        "sha256": "c577e4d805d8b23dac20428a34ba0b469fa58fd0967eaef2114c1225febb9e0e"
+      },
+      "task_id": "3620"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:a570db632cbd044d033c8bb264b8e0e80e2deaff93fd064f9a9291361e736d95",
+          "ordinal": 0,
+          "source_task_id": "abc375_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "049f337ab74721306483c5695721cbea71347bc81d301f0989e32ab1abf2b889"
+        },
+        {
+          "active_node_id": "subgoal-2",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 1,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 26559,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-c83f8ce24dcd4c2b07e7\\state.json",
+        "sha256": "80b3b595aa374084469da23c029c98cc2f03afcafda0ae4d956d6fd4dbfd9fb3"
+      },
+      "task_id": "3631"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:aa6308075c4ced656e7a3504bd961b6e873ed9ccfcd4ca7b6c086a76d8226d55",
+          "ordinal": 0,
+          "source_task_id": "abc311_b",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "2049c3d0d1bb96fadab67590ef2f74d49f8efdb557bc232814ae86b6e31ac078"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 21869,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-37a3ec47d5585f0d6609\\state.json",
+        "sha256": "75a007b481a52b77d1471c60a5581b9176c3a3114b9e1dfeae0d2950a5af25c3"
+      },
+      "task_id": "abc380_e"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "solution",
+          "memory_id": "episode:840dd023996e7458dbfef1d96e7e71fee0ba42425d651a9d40c8bc20c36e2072",
+          "ordinal": 0,
+          "source_task_id": "abc327_a",
+          "source_trace_steps": [
+            11
+          ],
+          "view_sha256": "d8ace95156cb1abb745c2309637f1e0fc44eb0455ca9bb8aea17cc78c2e0d4db"
+        },
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:a570db632cbd044d033c8bb264b8e0e80e2deaff93fd064f9a9291361e736d95",
+          "ordinal": 1,
+          "source_task_id": "abc375_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "049f337ab74721306483c5695721cbea71347bc81d301f0989e32ab1abf2b889"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 22220,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-3197657c5ae95dcbea32\\state.json",
+        "sha256": "0fd5670ea787344a68905ddb85fd85dade050962fcda0d90170ba23b61cbd475"
+      },
+      "task_id": "abc381_c"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 0,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 16911,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-0fc6d6a5b4564843ae3f\\state.json",
+        "sha256": "f7c06fd43ed39949b9b5bb184168bc61715f09d11f7ede350be0e930dbe68dcb"
+      },
+      "task_id": "abc378_b"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 0,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 14631,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-c9a7ba4bc1890b3212bf\\state.json",
+        "sha256": "e8cab6b3d2aa4cf639b514bcd9e247fa9cb29d86768d269f5bbbea86673a5fa0"
+      },
+      "task_id": "abc380_a"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "solution",
+          "memory_id": "episode:a570db632cbd044d033c8bb264b8e0e80e2deaff93fd064f9a9291361e736d95",
+          "ordinal": 0,
+          "source_task_id": "abc375_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "049f337ab74721306483c5695721cbea71347bc81d301f0989e32ab1abf2b889"
+        },
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 1,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 22813,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-70fd140a7871d7e07936\\state.json",
+        "sha256": "e4668f2082647ef5744bd7bcceb17942bd1cd5382cdcb06f442c4ad3ee0673a1"
+      },
+      "task_id": "3659"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 0,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        },
+        {
+          "active_node_id": "subgoal-2",
+          "memory_id": "episode:86307d532fafc1906ca65b76ce481eee4dd02303c6a597d84faadede7447af24",
+          "ordinal": 1,
+          "source_task_id": "abc347_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "d35c6e120ff264af95fd3e4aa524615adc0c9d320070c92fbf971e46cd477927"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 22016,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-50242e67e6f7d0c1b378\\state.json",
+        "sha256": "31e935c196db8db146b92e27ca42359e83e739702e1f260ad332b26207d46a85"
+      },
+      "task_id": "abc379_a"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 0,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 17420,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-0ab77c56eece2d243991\\state.json",
+        "sha256": "82056c2ec1795a6031c46a18f35cea0f364ba75828d5e42e2c7ef2fd74d9f254"
+      },
+      "task_id": "3651"
+    },
+    {
+      "injection_count": 2,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 0,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        },
+        {
+          "active_node_id": "subgoal-2",
+          "memory_id": "episode:86307d532fafc1906ca65b76ce481eee4dd02303c6a597d84faadede7447af24",
+          "ordinal": 1,
+          "source_task_id": "abc347_a",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "d35c6e120ff264af95fd3e4aa524615adc0c9d320070c92fbf971e46cd477927"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 21824,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-b52b378cbef9d95e5b93\\state.json",
+        "sha256": "c03c714bda971c50a488d68cdd88728467fbc2b0412dd025d9aa852a3094ba21"
+      },
+      "task_id": "3626"
+    },
+    {
+      "injection_count": 1,
+      "injections": [
+        {
+          "active_node_id": "subgoal-1",
+          "memory_id": "episode:1deaff18e21e36dbe6f88e35ef191070f36248ba1254d564dd5f7eb0779b2dbe",
+          "ordinal": 0,
+          "source_task_id": "2848",
+          "source_trace_steps": [
+            2
+          ],
+          "view_sha256": "9cf9c65150cf698a422a42c1e87251f38596bbbb95f6660fc8c221d93cf6f778"
+        }
+      ],
+      "target_state_reference": {
+        "bytes": 13865,
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\cells\\valid-on-a801191f5ab88055b0b3\\state.json",
+        "sha256": "000379135ee29fd506cec3c3fe1d4ae060b0938ed54cafad29f0a058fb3bbe25"
+      },
+      "task_id": "abc378_a"
+    }
+  ]
+}

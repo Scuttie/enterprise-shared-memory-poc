@@ -1,0 +1,229 @@
+{
+  "attestations": [
+    {
+      "agent": "/root/native007_train_19637_a1",
+      "cell": "A",
+      "limitations": "No full-module PASS claim; official grade separate from solver self-report.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "6929e4155f8f6d0ca3c61c3788b5abd5e1be27722f6afc14284bc0982cbf4087",
+      "public_test_summary": "Required regression: one direct assertion failure before fix, one pass afterward. All kernS tests: two passed. Full module: 42 passed, five skipped, two expected failures, two exceptions in separate evaluate=False parsing.",
+      "run": "training-19637-a1"
+    },
+    {
+      "agent": "/root/native007_train_19783_a1",
+      "cell": "A",
+      "limitations": "NumPy unavailable; official grading recorded separately.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "af4fe2b3046b8dd5e05f4d370494058736a199955e86cba20a3762962bdf1b96",
+      "public_test_summary": "Declared regression demonstrated RED then GREEN for identity on both sides of daggered operators, default dimension and dimension 2. Public dagger/operator/qexpr checks: 17 passed, two skipped.",
+      "run": "training-19783-a1"
+    },
+    {
+      "agent": "/root/native007_eval_19954_a",
+      "cell": "A",
+      "limitations": "Full repository suite not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "956890da62d60e7d75babf9f218bffb9c5a1cbc7402340a2952a6a8d1d27aa10",
+      "public_test_summary": "Permutation-group public tests: 58 passed, one skipped, two expected failures. Added regressions for both reported Dihedral groups.",
+      "run": "eval-19954"
+    },
+    {
+      "agent": "/root/native007_eval_19954_b",
+      "cell": "B",
+      "limitations": "Hidden tests not accessed; official grade separate.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "7ef0c2c27da7096f4ad2da59cb189c7e43a6fd0cfdec0ab8c3720374b48f6a09",
+      "public_test_summary": "Both regressions failed before fix and passed afterward. Full permutation-group tests: 60 passed, one skipped, two expected failures.",
+      "run": "eval-19954"
+    },
+    {
+      "agent": "/root/native007_eval_19954_c",
+      "cell": "C",
+      "limitations": "No hidden tests run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "5e9c75ffe197e43eb375638f51a4fc53f066b4014504d95f50fc7f8102fccc44",
+      "public_test_summary": "Regression failed before and passed after fix. Full permutation-group suite: 59 passed, one skipped, two expected failures.",
+      "run": "eval-19954"
+    },
+    {
+      "agent": "/root/native007_eval_20154_b",
+      "cell": "B",
+      "limitations": "Full suite and performance benchmarks not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "61efc45e3f5ddddaa06b2d502faf2c26d3ecce703bc031856f70f7a5f25874ed",
+      "public_test_summary": "Regression failed before fix. All 44 test_iterables.py tests passed after independently yielding dictionaries including size=True; documentation updated.",
+      "run": "eval-20154"
+    },
+    {
+      "agent": "/root/native007_eval_20154_c",
+      "cell": "C",
+      "limitations": "Full repository tests and performance benchmarks not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "cee2c01a994d75ba0ebc47f330ce0b988913e08bbb6fc7ec7b35a97436cc9b2e",
+      "public_test_summary": "Regression failed before fix and passed afterward; all 44 public iterable tests passed. Added independent-dictionary collection and mutation regression for both output modes.",
+      "run": "eval-20154"
+    },
+    {
+      "agent": "/root/native007_eval_20154_a",
+      "cell": "A",
+      "limitations": "Full suite not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "09fb1753f07ccd43fc9e981cf6c2ac613b7e1f1cba46f8f0ce87ccba2408a94e",
+      "public_test_summary": "Regression failed before fix; all 44 iterable tests passed after independent-dictionary fix. Collection and mutation covered in both size modes.",
+      "run": "eval-20154"
+    },
+    {
+      "agent": "/root/native007_eval_20428_c",
+      "cell": "C",
+      "limitations": "Full suite and hidden tests not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "89fb2d9ba52f869c5635f597627e52bb7cca77f69bffbd15fed4fcedad439f59",
+      "public_test_summary": "Dense scalar multiplication strips leading zeros including recursive multivariate representations. Regression failed before fix and passed afterward; 241 relevant public tests passed.",
+      "run": "eval-20428"
+    },
+    {
+      "agent": "/root/native007_eval_20428_a",
+      "cell": "A",
+      "limitations": "Full suite not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "0bb4f083aabd8085be101de54df78dbf7e8df3d93d04fc69e53f6751a6864653",
+      "public_test_summary": "Reproduced failure before scalar multiplication leading-zero fix; 241 relevant public tests passed afterward. Regression covers clear_denoms and downstream operations.",
+      "run": "eval-20428"
+    },
+    {
+      "agent": "/root/native007_eval_20428_b",
+      "cell": "B",
+      "limitations": "Official grading separate from solver self-report.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "b0298468b9cc1d852f3f0bd3e231f90f5b06a3ea7ba1e8d476276ab0602c72ce",
+      "public_test_summary": "Fixed zero normalization after ground multiplication. Both regressions failed before and passed after fix; 242 relevant public tests passed. Original reported example behaves correctly.",
+      "run": "eval-20428"
+    },
+    {
+      "agent": "/root/native007_eval_20438_a",
+      "cell": "A",
+      "limitations": "Expansion requires factors that rewrite to explicit FiniteSet objects.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "a8e5bc4748fff9c6938cff63ea5ab5db6dc6a51812993f774b3b44d3ec262492",
+      "public_test_summary": "Fixed finite ProductSet rewriting, subset checks and equality. 254 tests passed, eight expected failures. Three new regressions failed before fix and passed afterward.",
+      "run": "eval-20438"
+    },
+    {
+      "agent": "/root/native007_eval_20438_c",
+      "cell": "C",
+      "limitations": "Full suite not run; rewriting requires factors that rewrite to FiniteSet.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "5c1337c9991d4711f1d8285f531ded219c5f812d6b82eee63f52da34211720b8",
+      "public_test_summary": "Fixed ProductSet/FiniteSet subset detection, equality and rewriting. Regression failed before fix and passed afterward. Public set and relational suites: 252 passed, eight expected failures.",
+      "run": "eval-20438"
+    },
+    {
+      "agent": "/root/native007_eval_20438_b",
+      "cell": "B",
+      "limitations": "Full repository and hidden tests not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "7268e2a3b985f4d4ce1beddd9ed8d13563a89840ea3778e66b0287595f43efb1",
+      "public_test_summary": "Fixed finite ProductSet rewriting, subset comparisons and equality simplification. Regression failed before fix and passed afterward. Set suite: 191 passed, six expected failures. Relational suite: 61 passed, two expected failures.",
+      "run": "eval-20438"
+    },
+    {
+      "agent": "/root/native007_eval_20801_b",
+      "cell": "B",
+      "limitations": "Hidden tests not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "bc33e4794a380253a845e8ea6a8c7dd5c281b1b147b0264cc46c0886139a7379",
+      "public_test_summary": "Fixed Float zero/Boolean comparison asymmetry. Regression failed before fix; number and Boolean suites afterward: 167 passed, two skipped, two expected failures.",
+      "run": "eval-20801"
+    },
+    {
+      "agent": "/root/native007_eval_20801_a",
+      "cell": "A",
+      "limitations": "Full suite not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "c57a14c5cf250e7337530efc8db0c68169a12558e8884be28b07515579524dce",
+      "public_test_summary": "Fixed Float/Boolean equality asymmetry with regressions. Regression failed before fix; relevant public tests afterward: 167 passed, two skipped, two expected failures.",
+      "run": "eval-20801"
+    },
+    {
+      "agent": "/root/native007_eval_20801_c",
+      "cell": "C",
+      "limitations": "Full suite not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "699410c83309331f550fc82a4a109fa6ea3aa41c0a9aa7cbb713d81264fd0206",
+      "public_test_summary": "Fixed asymmetric Float/Boolean equality. Regression failed before fix and passed afterward. Relevant public suites: 167 passed, two skipped, two expected failures.",
+      "run": "eval-20801"
+    },
+    {
+      "agent": "/root/native007_eval_21379_c",
+      "cell": "C",
+      "limitations": "Full repository suite not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "5b30932fb7746b47d70967784edc64684fe3f9fdda5d6bf521b2616e3e474632",
+      "public_test_summary": "Fixed optional GCD simplification in Mod to handle PolynomialError gracefully; regression covers reported substitutions. Tests: 199 passed, four expected failures.",
+      "run": "eval-21379"
+    },
+    {
+      "agent": "/root/native007_eval_21379_b",
+      "cell": "B",
+      "limitations": "Full suite not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "87d1eaedadc62e0edd13d384c028922c47a177b79b0a626d220ad9abfcd98663",
+      "public_test_summary": "Fixed unsupported polynomial GCD extraction in Mod; added Piecewise modulo and hyperbolic substitution regressions. Arithmetic, substitution and hyperbolic tests: 221 passed, three expected failures.",
+      "run": "eval-21379"
+    },
+    {
+      "agent": "/root/native007_eval_21379_a",
+      "cell": "A",
+      "limitations": "Full suite not run.",
+      "no_external_access": true,
+      "no_subagents": true,
+      "only_assigned_broker": true,
+      "patch_sha256": "5baa108d65bba396350ebd02ecda151dac6f5866417a248c33689efd3f16546d",
+      "public_test_summary": "Fixed unsupported polynomial GCD inputs in Mod; added Piecewise and cold-cache hyperbolic substitution regressions. Arithmetic and hyperbolic tests: 155 passed, two expected failures.",
+      "run": "eval-21379"
+    }
+  ],
+  "fork_turns": "none",
+  "limitations": "Solver self-attestation plus broker journals is protocol evidence, not independent OS-level absence proof of all host activity. Exact native model snapshot/tokens/cost unmeasured.",
+  "requested_model": "gpt-6-astra",
+  "schema": "skhynix/native-solver-attestations/1.0",
+  "source": "ROOT_TRANSCRIPTION_OF_ACTUAL_AGENT_FINAL_MESSAGES"
+}

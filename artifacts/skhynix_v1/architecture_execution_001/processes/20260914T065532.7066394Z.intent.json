@@ -1,0 +1,10 @@
+﻿{
+    "schema":  "skhynix/architecture-background-launch/1.0",
+    "configuration_path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\configs\\skhynix_v1\\architecture_001_pipeline_v2.json",
+    "configuration_sha256":  "b45c2b44e8ac3ad5bb29b9e826e952faa1f2d4defa1a692a5e01af30e1060211",
+    "launcher_sha256":  "2dc31e6ec391a0368f12a4c549f23871ac0f414e59a598a97830e9f9720a0c73",
+    "started_at":  "2026-09-14T06:55:32.7116447Z",
+    "stdout_path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_execution_001\\processes\\20260914T065532.7066394Z.stdout.log",
+    "stderr_path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_execution_001\\processes\\20260914T065532.7066394Z.stderr.log",
+    "automatic_outcome_retries":  false
+}

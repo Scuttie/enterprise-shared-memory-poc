@@ -1,0 +1,153 @@
+{
+    "schema":  "skhynix/scale-local-health/1.0",
+    "checked_at":  "2026-09-15T06:11:37.7772162Z",
+    "checked_at_kst":  "2026-09-15T15:11:37.7772162+09:00",
+    "status":  "PROGRESSING",
+    "severity":  "INFO",
+    "interval_minutes":  5,
+    "stale_minutes":  60,
+    "configuration":  "architecture_002_pipeline_v3.json",
+    "configuration_sha256":  "7915f668ebce850c82e95464de963694e4c5e9b65be7efb4d37789ca87e010b1",
+    "controller_running":  true,
+    "controller_process_ids":  [
+                                   33496
+                               ],
+    "process_check_completed":  true,
+    "controller_stderr_bytes":  0,
+    "wsl_running":  true,
+    "host_c_free_gib":  48.55,
+    "probe_error":  null,
+    "warnings":  [
+
+                 ],
+    "probe":  {
+                  "activity_age_seconds":  7.7,
+                  "adopted_official_complete":  19,
+                  "adopted_sources":  21,
+                  "disk_free_gib":  840.87,
+                  "evaluation_cohort":  null,
+                  "latest_activity_at":  1789452693.593872,
+                  "observed_at":  "2026-09-15T06:11:41.333336+00:00",
+                  "pipeline":  {
+                                   "at":  1789452550.1370866,
+                                   "error_type":  null,
+                                   "stage":  "COHORT_ADVANCE_STARTED",
+                                   "task_id":  null
+                               },
+                  "process_liveness":  "NOT_OBSERVED",
+                  "schema":  "skhynix/scale-health/1.0",
+                  "stages":  [
+                                 {
+                                     "cohort":  {
+                                                    "completed":  3,
+                                                    "completed_is_lower_bound":  true,
+                                                    "current":  {
+                                                                    "actions":  51,
+                                                                    "pending_actions":  0,
+                                                                    "state":  "SUBMITTED",
+                                                                    "worker_status_counts":  {
+                                                                                                 "REVOKED":  3
+                                                                                             },
+                                                                    "workers":  3
+                                                                },
+                                                    "last_event":  {
+                                                                       "at":  1789438392.7652688,
+                                                                       "error_type":  null,
+                                                                       "stage":  "CLEANED",
+                                                                       "task_id":  "swebench--sympy__sympy-11384"
+                                                                   },
+                                                    "official_complete":  3,
+                                                    "planned":  3,
+                                                    "resolved":  2
+                                                },
+                                     "learning":  {
+                                                      "L1_episodes":  111,
+                                                      "L2_nodes":  698,
+                                                      "L2_relations":  645,
+                                                      "L3_skills":  0,
+                                                      "captures":  111,
+                                                      "cells":  24,
+                                                      "edges":  645,
+                                                      "ingestions":  0,
+                                                      "knowledge":  698,
+                                                      "reflections":  0,
+                                                      "skills":  0
+                                                  },
+                                     "size":  24
+                                 },
+                                 {
+                                     "cohort":  {
+                                                    "completed":  16,
+                                                    "completed_is_lower_bound":  true,
+                                                    "current":  {
+                                                                    "actions":  8,
+                                                                    "pending_actions":  0,
+                                                                    "state":  "ACTIVE",
+                                                                    "worker_status_counts":  {
+                                                                                                 "ADMITTED":  1,
+                                                                                                 "REVOKED":  1
+                                                                                             },
+                                                                    "workers":  2
+                                                                },
+                                                    "last_event":  {
+                                                                       "at":  1789452597.0864427,
+                                                                       "error_type":  null,
+                                                                       "stage":  "SOLVE_STARTED",
+                                                                       "task_id":  "swebench--django__django-14169"
+                                                                   },
+                                                    "official_complete":  16,
+                                                    "planned":  96,
+                                                    "resolved":  6
+                                                },
+                                     "learning":  {
+                                                      "L1_episodes":  142,
+                                                      "L2_nodes":  847,
+                                                      "L2_relations":  779,
+                                                      "L3_skills":  0,
+                                                      "captures":  142,
+                                                      "cells":  40,
+                                                      "edges":  779,
+                                                      "ingestions":  0,
+                                                      "knowledge":  847,
+                                                      "reflections":  0,
+                                                      "skills":  0
+                                                  },
+                                     "size":  120
+                                 },
+                                 {
+                                     "cohort":  {
+                                                    "completed":  0,
+                                                    "completed_is_lower_bound":  true,
+                                                    "current":  {
+                                                                    "state":  "NO_ACTIVE_CELL"
+                                                                },
+                                                    "last_event":  {
+                                                                       "at":  0.0,
+                                                                       "error_type":  null,
+                                                                       "stage":  "UNKNOWN",
+                                                                       "task_id":  null
+                                                                   },
+                                                    "official_complete":  0,
+                                                    "planned":  0,
+                                                    "resolved":  0
+                                                },
+                                     "learning":  {
+
+                                                  },
+                                     "size":  240
+                                 }
+                             ],
+                  "stale_after_seconds":  3600.0,
+                  "status":  "PROGRESSING",
+                  "warnings":  [
+
+                               ]
+              },
+    "last_successful_probe_at":  "2026-09-15T06:11:37.7772162Z",
+    "alert_fingerprint":  "7915f668ebce850c82e95464de963694e4c5e9b65be7efb4d37789ca87e010b1|PROGRESSING|",
+    "desktop_notification":  "NOT_REQUESTED",
+    "automatic_solver_retries":  false,
+    "automatic_grader_retries":  false,
+    "automatic_pipeline_restart":  false,
+    "monitor_source_sha256":  "ab952c4df62ab05bf39311c695f36348fe73ffab8a82a8ecbe03b2a414dd118b"
+}

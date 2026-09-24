@@ -1,0 +1,45 @@
+{
+  "schema": "trimem/development-action-protocol-failure-receipt/1.0",
+  "status": "TERMINAL_PRESERVED",
+  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+  "scientific_status": "STARTED_NO_COMPLETED_CELL",
+  "workflow_run": {
+    "id": 33894821607,
+    "attempt": 1,
+    "head_sha": "0e41ef4a73118730489c57220536287559b048b6"
+  },
+  "first_cell": {
+    "stream": "M2-baseline",
+    "target_id": "swebench_verified--django__django-16100",
+    "completed_task_arm_runs": 0,
+    "official_grader_runs": 0
+  },
+  "root_cause": {
+    "classification": "RESPONSE_OUTPUT_ITEM_BOUNDARY_ACTION_PROTOCOL_FAILURE",
+    "response_status": "completed",
+    "message_items": 3,
+    "output_text_items": 3,
+    "legacy_concatenated_parser_error": "Extra data at position 102"
+  },
+  "execution_accounting": {
+    "model_generation_calls": 5,
+    "input_tokens": null,
+    "cached_input_tokens": null,
+    "output_tokens": null,
+    "total_usd": 0.0326529,
+    "completed_task_arm_runs": 0,
+    "official_grader_runs": 0
+  },
+  "interpretation": {
+    "model_capability_result": false,
+    "memory_method_result": false,
+    "retrieval_result": false,
+    "grader_result": false,
+    "performance_measured": false
+  },
+  "custody": {
+    "encrypted_artifact_preserved_externally": true,
+    "inventory_artifact_preserved_externally": true,
+    "plaintext_committed": false
+  }
+}

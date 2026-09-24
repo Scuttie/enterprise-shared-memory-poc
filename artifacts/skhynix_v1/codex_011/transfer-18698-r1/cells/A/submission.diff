@@ -1,0 +1,69 @@
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index c9e77a9..4659b0a 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -5950,6 +5950,21 @@ def _symbolic_factor_list(expr, opt, method):
+ 
+                 factors.append((_factors_product(other), exp))
+ 
++    if method == 'sqf':
++        # Polynomial factors of the same multiplicity form one square-free
++        # factor. Keep expressions with unrestricted powers separate.
++        grouped = {}
++        other = []
++        for f, k in factors:
++            if f.is_Poly:
++                if k in grouped:
++                    grouped[k] *= f
++                else:
++                    grouped[k] = f
++            else:
++                other.append((f, k))
++        factors = [(f, k) for k, f in grouped.items()] + other
++
+     return coeff, factors
+ 
+ 
+diff --git a/sympy/polys/tests/test_polytools.py b/sympy/polys/tests/test_polytools.py
+index 82e5f4d..2b0a6e1 100644
+--- a/sympy/polys/tests/test_polytools.py
++++ b/sympy/polys/tests/test_polytools.py
+@@ -2331,6 +2331,29 @@ def test_sqf():
+     assert sqf_list(f) == (1, [(x + 1, 40000000000)])
+ 
+ 
++def test_sqf_list_equal_multiplicities():
++    f = (x**2 + 1)*(x - 1)**2*(x - 2)**3*(x - 3)**3
++    factors = [(x**2 + 1, 1), (x - 1, 2), (x**2 - 5*x + 6, 3)]
++    assert sqf_list(f) == (1, factors)
++    assert sqf_list(f, x) == sqf_list(f.expand(), x) == (1, factors)
++    assert sqf_list(6*f, polys=True) == (
++        6, [(Poly(g, x), k) for g, k in factors])
++    assert sqf(f) == (x**2 + 1)*(x - 1)**2*(x**2 - 5*x + 6)**3
++
++    g = (x + 1)**2*(x + 2)**2
++    assert sqf_list(f/g, frac=True) == (
++        1, factors, [(x**2 + 3*x + 2, 2)])
++    assert sqf_list((x - 1)*(x + 1)) == (1, [(x**2 - 1, 1)])
++    assert sqf_list((x + 1)**2*(y + 1)**2) == (
++        1, [(x*y + x + y + 1, 2)])
++
++    # Combining bases under unrestricted powers could change their branches.
++    g = sqrt(x - 1)*sqrt(x + 1)
++    assert sqf(g) == g
++    g = (x - 1)**y*(x + 1)**y
++    assert sqf(g) == g
++
++
+ def test_factor():
+     f = x**5 - x**3 - x**2 + 1
+ 
+@@ -3273,7 +3296,7 @@ def test_to_rational_coeffs():
+ def test_factor_terms():
+     # issue 7067
+     assert factor_list(x*(x + y)) == (1, [(x, 1), (x + y, 1)])
+-    assert sqf_list(x*(x + y)) == (1, [(x, 1), (x + y, 1)])
++    assert sqf_list(x*(x + y)) == (1, [(x**2 + x*y, 1)])
+ 
+ 
+ def test_as_list():

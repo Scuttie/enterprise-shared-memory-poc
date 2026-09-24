@@ -1,0 +1,203 @@
+{
+  "first_started_at": "2026-09-24T02:44:58.871327+00:00",
+  "format_scheduled72_sensitivity_bounds": [
+    0.8888888888888888,
+    0.9166666666666666
+  ],
+  "keep_observed_failures": [
+    {
+      "anchor_valid": false,
+      "available_history_ids": [
+        1,
+        2
+      ],
+      "candidate_same": true,
+      "fixed_candidate_success": false,
+      "reason": "LESSON_VALIDATION_REJECTED",
+      "repeat": 1,
+      "submission_valid": false,
+      "task_id": "abc386_c",
+      "trace_steps_container_type": "list",
+      "trace_steps_element_types": [
+        "dict"
+      ],
+      "trace_steps_integer_values": []
+    },
+    {
+      "anchor_valid": false,
+      "available_history_ids": [
+        1,
+        2
+      ],
+      "candidate_same": true,
+      "fixed_candidate_success": false,
+      "reason": "INVALID_LESSON_KEYS",
+      "repeat": 1,
+      "submission_valid": false,
+      "task_id": "abc378_b",
+      "trace_steps_container_type": "NoneType",
+      "trace_steps_element_types": [],
+      "trace_steps_integer_values": []
+    },
+    {
+      "anchor_valid": true,
+      "available_history_ids": [
+        1,
+        2
+      ],
+      "candidate_same": false,
+      "fixed_candidate_success": false,
+      "reason": "VALID_FINISH",
+      "repeat": 2,
+      "submission_valid": true,
+      "task_id": "abc378_b",
+      "trace_steps_container_type": "list",
+      "trace_steps_element_types": [
+        "int"
+      ],
+      "trace_steps_integer_values": [
+        2
+      ]
+    },
+    {
+      "anchor_valid": false,
+      "available_history_ids": [
+        1,
+        2
+      ],
+      "candidate_same": true,
+      "fixed_candidate_success": false,
+      "reason": "INVALID_LESSON_KEYS",
+      "repeat": 2,
+      "submission_valid": false,
+      "task_id": "abc386_c",
+      "trace_steps_container_type": "NoneType",
+      "trace_steps_element_types": [],
+      "trace_steps_integer_values": []
+    },
+    {
+      "anchor_valid": false,
+      "available_history_ids": [
+        1,
+        2
+      ],
+      "candidate_same": true,
+      "fixed_candidate_success": false,
+      "reason": "LESSON_VALIDATION_REJECTED",
+      "repeat": 3,
+      "submission_valid": false,
+      "task_id": "abc386_c",
+      "trace_steps_container_type": "list",
+      "trace_steps_element_types": [
+        "dict"
+      ],
+      "trace_steps_integer_values": []
+    },
+    {
+      "anchor_valid": false,
+      "available_history_ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "candidate_same": true,
+      "fixed_candidate_success": false,
+      "reason": "INVALID_LESSON_KEYS",
+      "repeat": 3,
+      "submission_valid": false,
+      "task_id": "abc378_e",
+      "trace_steps_container_type": "NoneType",
+      "trace_steps_element_types": [],
+      "trace_steps_integer_values": []
+    }
+  ],
+  "last_finished_at": "2026-09-24T03:12:59.015276+00:00",
+  "native_sessions": 144,
+  "new_private_grades": 0,
+  "new_public_tests": 0,
+  "primary_scheduled72_sensitivity_bounds": [
+    0.875,
+    0.9027777777777778
+  ],
+  "reasons": {
+    "DROP": {
+      "INVALID_LESSON_KEYS": 11,
+      "LESSON_VALIDATION_REJECTED": 61
+    },
+    "KEEP": {
+      "INVALID_LESSON_KEYS": 3,
+      "LESSON_VALIDATION_REJECTED": 2,
+      "VALID_FINISH": 64
+    }
+  },
+  "repeats": [
+    {
+      "arm": "KEEP",
+      "fixed_candidate_success": 21,
+      "observed": 24,
+      "repeat": 1,
+      "scheduled": 24,
+      "submission_valid": 21
+    },
+    {
+      "arm": "DROP",
+      "fixed_candidate_success": 0,
+      "observed": 24,
+      "repeat": 1,
+      "scheduled": 24,
+      "submission_valid": 0
+    },
+    {
+      "arm": "KEEP",
+      "fixed_candidate_success": 21,
+      "observed": 23,
+      "repeat": 2,
+      "scheduled": 24,
+      "submission_valid": 22
+    },
+    {
+      "arm": "DROP",
+      "fixed_candidate_success": 0,
+      "observed": 24,
+      "repeat": 2,
+      "scheduled": 24,
+      "submission_valid": 0
+    },
+    {
+      "arm": "KEEP",
+      "fixed_candidate_success": 21,
+      "observed": 23,
+      "repeat": 3,
+      "scheduled": 24,
+      "submission_valid": 21
+    },
+    {
+      "arm": "DROP",
+      "fixed_candidate_success": 0,
+      "observed": 24,
+      "repeat": 3,
+      "scheduled": 24,
+      "submission_valid": 0
+    }
+  ],
+  "schema": "lcb-format-execution-summary/1",
+  "task_counts_primary": {
+    "negative": 0,
+    "positive": 23,
+    "zero": 1
+  },
+  "trace_shapes": {
+    "DROP": {
+      "NoneType:": 11,
+      "list:dict": 46,
+      "list:str": 15
+    },
+    "KEEP": {
+      "NoneType:": 3,
+      "list:dict": 2,
+      "list:int": 64
+    }
+  },
+  "wall_seconds": 1680.143949
+}

@@ -1,0 +1,66 @@
+diff --git a/lib/matplotlib/tests/test_widgets.py b/lib/matplotlib/tests/test_widgets.py
+index 11db049..eefa28b 100644
+--- a/lib/matplotlib/tests/test_widgets.py
++++ b/lib/matplotlib/tests/test_widgets.py
+@@ -1161,6 +1161,30 @@ def test_range_slider(orientation):
+     assert_allclose(handle_positions(slider), (0.1, 0.34))
+ 
+ 
++@pytest.mark.parametrize("orientation", ["horizontal", "vertical"])
++@pytest.mark.parametrize("valinit", [(0, 0), (0.5, 0.5), (1, 1)])
++def test_range_slider_equal_endpoints(orientation, valinit):
++    fig, ax = plt.subplots()
++    slider = widgets.RangeSlider(
++        ax, "", 0, 1, valinit=valinit, orientation=orientation)
++
++    # Expand, collapse, and expand again after a zero-width initialization.
++    for val in [valinit, (0, 1), (0.5, 0.5), (0.25, 0.75)]:
++        slider.set_val(val)
++        assert_allclose(slider.val, val)
++        assert slider.poly.get_closed()
++        assert_allclose(slider.poly.xy[0], slider.poly.xy[-1])
++
++        box = slider.poly.get_extents().transformed(ax.transAxes.inverted())
++        if orientation == "horizontal":
++            assert_allclose(box.bounds, [val[0], .25, val[1] - val[0], .5])
++            handles = [handle.get_xdata()[0] for handle in slider._handles]
++        else:
++            assert_allclose(box.bounds, [.25, val[0], .5, val[1] - val[0]])
++            handles = [handle.get_ydata()[0] for handle in slider._handles]
++        assert_allclose(handles, val)
++
++
+ def check_polygon_selector(event_sequence, expected_result, selections_count,
+                            **kwargs):
+     """
+diff --git a/lib/matplotlib/widgets.py b/lib/matplotlib/widgets.py
+index cd79e95..20ac7f7 100644
+--- a/lib/matplotlib/widgets.py
++++ b/lib/matplotlib/widgets.py
+@@ -905,22 +905,15 @@ class RangeSlider(SliderBase):
+         _api.check_shape((2,), val=val)
+         val[0] = self._min_in_bounds(val[0])
+         val[1] = self._max_in_bounds(val[1])
+-        xy = self.poly.xy
+         if self.orientation == "vertical":
+-            xy[0] = .25, val[0]
+-            xy[1] = .25, val[1]
+-            xy[2] = .75, val[1]
+-            xy[3] = .75, val[0]
+-            xy[4] = .25, val[0]
++            xy = [[.25, val[0]], [.25, val[1]], [.75, val[1]],
++                  [.75, val[0]], [.25, val[0]]]
+ 
+             self._handles[0].set_ydata([val[0]])
+             self._handles[1].set_ydata([val[1]])
+         else:
+-            xy[0] = val[0], .25
+-            xy[1] = val[0], .75
+-            xy[2] = val[1], .75
+-            xy[3] = val[1], .25
+-            xy[4] = val[0], .25
++            xy = [[val[0], .25], [val[0], .75], [val[1], .75],
++                  [val[1], .25], [val[0], .25]]
+ 
+             self._handles[0].set_xdata([val[0]])
+             self._handles[1].set_xdata([val[1]])

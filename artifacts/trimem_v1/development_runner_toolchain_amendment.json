@@ -1,0 +1,77 @@
+{
+  "amendment": {
+    "classification": "NON_SEMANTIC_RUNNER_TOOLCHAIN_DEPENDENCY_FIX",
+    "dependency": {
+      "expected_version_first_line": "gh version 2.97.0 (2026-07-31)",
+      "name": "GitHub CLI",
+      "platform": "linux_amd64",
+      "version": "2.97.0"
+    },
+    "method_amendment": false,
+    "reason": "The exact protected DEVELOPMENT_TUNING gate requires the pinned GitHub CLI for cryptographic verification of the frozen official-grader-smoke attestation. The prior ephemeral runner did not contain gh."
+  },
+  "authorization_boundary": {
+    "authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_GH_RECOVERY_EXEC_APPROVED_ONCE",
+    "effective_only_after": [
+      "exact correction HEAD passes all credential-free CI",
+      "exact correction HEAD passes ci-trimem-dev-toolchain on the dedicated ephemeral self-hosted runner",
+      "pinned gh archive, binary, and exact version verification pass",
+      "the shared official smoke attestation verifier passes cryptographically and verifies the live historical run attempt"
+    ],
+    "new_request_allowed_after_conditions": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_003",
+    "prior_request_final": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_002",
+    "prior_run_attempt_final": "33739545314/1",
+    "prior_run_rerun_allowed": false
+  },
+  "causal_boundary": {
+    "api_calls": 0,
+    "benchmark_model_results_observed": false,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "official_grader_runs": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "scientific_status": "NOT_STARTED",
+    "target_image_pulls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0.0
+  },
+  "preserved_contracts": {
+    "path_sha256": {
+      "artifacts/trimem_v1/development_model_pricing_amendment.json": "19caede5a601f8d0ebc1267dbb393b9b707aae37e144a31a9346087d2c320cee",
+      "artifacts/trimem_v1/grader_image_lock.json": "12a90bcc8e9bf46a9e65ed7e606aeee44b9c50b68c311a01180dc5080e41adeb",
+      "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-bundle.json": "c1cc04284b8f1be1cde006fa2309f6af918e8478485002b4556df7fcb165335e",
+      "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-subject.json": "647d9d3eaddaf2917bfaaa8fc47c0c54f814a50ddf5e900c3176d3c895513846",
+      "artifacts/trimem_v1/grader_smoke_official/exec-005/evidence-inventory.json": "b1c3ba191c4d037f4f8ee70cf8a4821592b5b25a65700d7ce3faa2d0024add8e",
+      "artifacts/trimem_v1/grader_smoke_official/exec-005/public-results.json": "4a1253e69a95b3058b9433fbfe51ef3f8bee538c90b5faf29c996a841224faa4",
+      "configs/trimem_v1/arms.json": "88cbe12d47780509216498816fa13349f0027f239937c5f8cb54d90a17c93cb1",
+      "configs/trimem_v1/cost_plan.json": "d54b70e8c700cedff987efa713aeddf724059b7320bbe8fc1970ca9c0f69a86e",
+      "configs/trimem_v1/development_manifest.json": "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
+      "configs/trimem_v1/grader_lock.json": "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb",
+      "configs/trimem_v1/grader_smoke_manifest.json": "cf9a841a5509133d501dc83e7b69ddbd85770c371ab3ed9cda008f598349d409",
+      "configs/trimem_v1/heldout_manifest.json": "951371ed84931b37e27929e2669aff5d06e32215d1a300e3343ba7f1bdd84fda",
+      "configs/trimem_v1/m2_candidate_bundles.json": "3248b15e3f9f7293cacfea1f13fcfd354dbb804d34a1ea40dce6d8c1b881a6de",
+      "configs/trimem_v1/model_lock.json": "f5e932696d31d1cb7185b32b67c38e4c9cbbfedd79783adfb8faddc7b90abfe0",
+      "configs/trimem_v1/selected_m2.json": "1b9a1777515475dddaf303c2ad85e3be67eac7cfb7a1bc1918a208c740f4a8fc",
+      "configs/trimem_v1/selection_plan.json": "dddc421120d16f241a2941afbd67190df4b3be6cefeab99e37437abf7133dcf4",
+      "configs/trimem_v1/sigstore_trusted_root.jsonl": "65ca537f6ed8a47fd0e560c421baa1f6c1efb8b25fc200d8c5c02c0e92eb2b9c",
+      "configs/trimem_v1/tool_environment_lock.json": "7b4bafe0a5366fdb9277a49ebb70fe6197f3bb27fa253f75ffe686a7a44f7c6c",
+      "src/enterprise_memory/trimem/runtime_lock.py": "053de00adb66a13fb0cb3b039b008e9fdc028121dc5fc060cfddc2c371a32aed"
+    },
+    "summary": "Model, pricing, targets and order, arms, M2 candidates, memory policies, prompt/tool/parser/runtime, selection rule, grader/image locks, trusted root, and official smoke evidence remain byte-identical."
+  },
+  "prior_failure": {
+    "dev_scientific_status": "NOT_STARTED",
+    "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+    "failure_subtype": "TRIMEM_DEV_EXEC_GATE_GH_CLI_MISSING",
+    "git_head": "c2738cae074351927dde117b628c601b1e296cf2",
+    "run_attempt": 1,
+    "run_id": 33739545314
+  },
+  "recorded_at_utc": "2026-09-03T14:00:24.951Z",
+  "schema": "trimem/development-runner-toolchain-amendment/1.0",
+  "source_freeze_raw_sha256": "e6d343266d58ecca6a85c28f8d0d3bc089fb793ce5e8f76dca7a04dc03b29d90",
+  "source_git_head": "c0b8b862ee50515a9a83506233646f6362f0c091",
+  "status": "AUTHORIZED_CONDITIONAL_ON_EXACT_REMOTE_GATES"
+}

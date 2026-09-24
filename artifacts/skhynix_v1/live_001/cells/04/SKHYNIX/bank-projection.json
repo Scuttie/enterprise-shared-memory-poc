@@ -1,0 +1,28 @@
+{
+  "entries": [
+    {
+      "applicable_target_revision": "0d94283959a3aa016881b9644767b937c34d2807",
+      "chronology_and_version_evidence_sha256": "20cabe3676829498cc6721bb4f4c4ff6300bd93e526f2cc7fa2bb116399f5027",
+      "knowledge_content_hash": "sha256:3e967048c6985bb500d2802f4353737a8409108c0b82252eb0acac7a766ed213",
+      "knowledge_id": "knowledge:e530315fd478b214ccc421db10ee228dbc5af0b81b4d3a103a6e1ad5861a75ce",
+      "memory_id": "dev-oracle-pr-3bdfdaaa518355d9e1f9b9d8",
+      "shared_source_content_bytes": 6313,
+      "shared_source_content_sha256": "c2d235a3872ade89999bce6e910e7e6bf651a8194ecc930d61bac65c770b19c0",
+      "source_commit": "50e1450f97b9288dc16fbfe0f1aa08803588f20a",
+      "source_task_id": "github-pr--mui__material-ui--24794"
+    }
+  ],
+  "imported_episode_count": 0,
+  "knowledge_relation_count": 0,
+  "l3_effect_claim_allowed": false,
+  "language": "typescript",
+  "repository_knowledge_count": 1,
+  "schema": "skhynix/historical-source-seed/1.0",
+  "seed_snapshot_sha256": "sha256:fe50bfe27ad5b6a7025f6d95bf2ae4761871db7c1281ac10cca997b4c6946049",
+  "source_bank_snapshot_sha256": "55fe3c03ef545181986605166247f78896c5fcd2db37535d19f574781c16be1e",
+  "source_content_identical_to_existing_m2": true,
+  "source_evidence_label": "HISTORICAL_MERGED_PR_KNOWLEDGE_NOT_TESTED_PROCEDURE",
+  "target_id": "multi_swe_bench_mini--mui__material-ui-29880",
+  "verified_skill_count": 0,
+  "wire_envelope": "STANDARD_SKHYNIX_REPOSITORY_SEMANTIC_JSON"
+}

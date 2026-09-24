@@ -1,0 +1,58 @@
+diff --git a/sympy/polys/monomials.py b/sympy/polys/monomials.py
+index 0e84403..d2cd345 100644
+--- a/sympy/polys/monomials.py
++++ b/sympy/polys/monomials.py
+@@ -127,7 +127,7 @@ def itermonomials(variables, max_degrees, min_degrees=None):
+                 for variable in item:
+                     if variable != 1:
+                         powers[variable] += 1
+-                if max(powers.values()) >= min_degree:
++                if sum(powers.values()) >= min_degree:
+                     monomials_list_comm.append(Mul(*item))
+             yield from set(monomials_list_comm)
+         else:
+@@ -139,7 +139,7 @@ def itermonomials(variables, max_degrees, min_degrees=None):
+                 for variable in item:
+                     if variable != 1:
+                         powers[variable] += 1
+-                if max(powers.values()) >= min_degree:
++                if sum(powers.values()) >= min_degree:
+                     monomials_list_non_comm.append(Mul(*item))
+             yield from set(monomials_list_non_comm)
+     else:
+diff --git a/sympy/polys/tests/test_monomials.py b/sympy/polys/tests/test_monomials.py
+index 482cbee..14ec4cf 100644
+--- a/sympy/polys/tests/test_monomials.py
++++ b/sympy/polys/tests/test_monomials.py
+@@ -162,6 +162,31 @@ def test_monomials():
+                     x*j**2, x*k**2, x*j*k, x**2*j**2*k**2, x*j*k**2, x**2, x**2*j*k**2
+             }
+ 
++def test_itermonomials_min_total_degree():
++    degree_two = {x**2, y**2, z**2, x*y, x*z, y*z}
++    degree_three = {
++        x**3, y**3, z**3, x**2*y, x**2*z, x*y**2, y**2*z,
++        x*z**2, y*z**2, x*y*z,
++    }
++    assert set(itermonomials([x, y, z], 3, min_degrees=3)) == degree_three
++    assert set(itermonomials([x, y, z], 3, min_degrees=2)) == (
++        degree_two | degree_three)
++
++
++def test_itermonomials_min_total_degree_noncommutative():
++    i, j = symbols('i j', commutative=False)
++    degree_two = {i**2, i*j, j*i, j**2}
++    degree_three = {
++        i**3, i**2*j, i*j*i, i*j**2, j*i**2, j*i*j, j**2*i, j**3,
++    }
++    assert set(itermonomials([i, j], 3, min_degrees=3)) == degree_three
++    assert set(itermonomials([i, j], 3, min_degrees=2)) == (
++        degree_two | degree_three)
++
++    # Commutative and noncommutative variables also share the total degree.
++    assert set(itermonomials([x, i], 2, min_degrees=2)) == {x**2, x*i, i**2}
++
++
+ def test_monomial_count():
+     assert monomial_count(2, 2) == 6
+     assert monomial_count(2, 3) == 10

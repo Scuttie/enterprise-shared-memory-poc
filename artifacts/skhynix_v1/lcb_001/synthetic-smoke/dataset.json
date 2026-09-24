@@ -1,0 +1,21 @@
+{
+  "schema": "trimem/lcb-evaluation-samples/1.0",
+  "provenance": {
+    "kind": "SYNTHETIC_NOT_BENCHMARK",
+    "reference": "Two public arithmetic fixtures"
+  },
+  "samples": [
+    {
+      "question_id": "synthetic-stdin-add-one",
+      "sample": {
+        "input_output": "{\"inputs\": [\"1\\n\", \"41\\n\"], \"outputs\": [\"2\\n\", \"42\\n\"], \"fn_name\": null}"
+      }
+    },
+    {
+      "question_id": "synthetic-functional-add",
+      "sample": {
+        "input_output": "{\"inputs\": [\"1\\n2\", \"20\\n22\"], \"outputs\": [\"3\", \"42\"], \"fn_name\": \"add\"}"
+      }
+    }
+  ]
+}

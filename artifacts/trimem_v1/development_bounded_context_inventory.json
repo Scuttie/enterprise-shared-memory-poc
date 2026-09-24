@@ -1,0 +1,831 @@
+{
+  "authority_boundary": {
+    "ablation_authorized": false,
+    "heldout_authorized": false,
+    "merge_tag_release_authorized": false,
+    "request_009_attempt_2_allowed": false,
+    "request_009_rerun_allowed": false,
+    "request_010_created": false,
+    "request_011_authorized": false
+  },
+  "classification": "PRE_RESULT_BOUNDED_SHORT_TERM_CONTEXT_AND_PREFLIGHT_FIX",
+  "company_handoff_separation": {
+    "hash_basis": "explicit research allowlist; no live tree walk",
+    "manifest_bytes": 2428,
+    "manifest_raw_sha256": "7362a5475447e2a2a20968da3a1365e6a70564b8a4281d89558adfd9df9aacb2",
+    "manifest_rewritten": false,
+    "product_hash_basis": "git ls-files -z (tracked files only; newline-normalized content)",
+    "product_manifest_authority": "PRODUCT_HANDOFF_ONLY_NOT_TRIMEM_RESEARCH_STATE",
+    "rejected_if_tracked": [
+      "__pycache__",
+      "*.pyc",
+      "*.pyo",
+      "*.egg-info",
+      "build",
+      "dist"
+    ],
+    "research_state_authority": "artifacts/trimem_v1/freeze.json"
+  },
+  "contract_documents": {
+    "credential_free_bundle_sha256": {
+      "algorithm": "sha256",
+      "canonical_preimage": null,
+      "preimage_kind": "raw-file-bytes",
+      "sha256": "6c9f0192c4ffba6fa2ed67066d5b45edd30cd8e96ec14af68cf6fb258290a3d5",
+      "source_paths": [
+        "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json"
+      ],
+      "source_sha256": {
+        "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json": "6c9f0192c4ffba6fa2ed67066d5b45edd30cd8e96ec14af68cf6fb258290a3d5"
+      }
+    },
+    "function_tool_schema_sha256": {
+      "algorithm": "sha256",
+      "canonical_preimage": [
+        {
+          "description": "List one bounded page of repository files in deterministic lexicographic path order.",
+          "name": "list_files",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "limit": {
+                "maximum": 200,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "path_prefix": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "start_after": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "path_prefix",
+              "start_after",
+              "limit"
+            ],
+            "type": "object"
+          },
+          "strict": true,
+          "type": "function"
+        },
+        {
+          "description": "Read a bounded UTF-8 line window from one repository file.",
+          "name": "read_file",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "max_lines": {
+                "anyOf": [
+                  {
+                    "maximum": 2000,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "path": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "start_line": {
+                "anyOf": [
+                  {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "path",
+              "start_line",
+              "max_lines"
+            ],
+            "type": "object"
+          },
+          "strict": true,
+          "type": "function"
+        },
+        {
+          "description": "Search repository text for a non-empty literal query, optionally under one path.",
+          "name": "search",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "query": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "query",
+              "path"
+            ],
+            "type": "object"
+          },
+          "strict": true,
+          "type": "function"
+        },
+        {
+          "description": "Create a new UTF-8 file or intentionally replace one complete small file.",
+          "name": "write_file",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "path": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "content"
+            ],
+            "type": "object"
+          },
+          "strict": true,
+          "type": "function"
+        },
+        {
+          "description": "Atomically replace one exact text span in an existing UTF-8 file bound to its SHA-256.",
+          "name": "replace_text",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "expected_file_sha256": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "new_text": {
+                "type": "string"
+              },
+              "old_text": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "path": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "expected_file_sha256",
+              "old_text",
+              "new_text"
+            ],
+            "type": "object"
+          },
+          "strict": true,
+          "type": "function"
+        },
+        {
+          "description": "Run the task's frozen public test command in its isolated environment.",
+          "name": "run_public_tests",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+          },
+          "strict": true,
+          "type": "function"
+        },
+        {
+          "description": "Run one bounded argv command in the digest-pinned network-disabled task image.",
+          "name": "run_command",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "argv": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "maxItems": 64,
+                "minItems": 1,
+                "type": "array"
+              },
+              "cwd": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "timeout_seconds": {
+                "anyOf": [
+                  {
+                    "maximum": 120,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "argv",
+              "cwd",
+              "timeout_seconds"
+            ],
+            "type": "object"
+          },
+          "strict": true,
+          "type": "function"
+        },
+        {
+          "description": "Revise the task-local semantic DAG when new repository evidence reveals additional work.",
+          "name": "revise_subtask_dag",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "dependency_additions": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "depends_on": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "node_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "node_id",
+                    "depends_on"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 32,
+                "type": "array"
+              },
+              "new_subtasks": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "apis": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 64,
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "depends_on": {
+                      "items": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "maxItems": 64,
+                      "type": "array"
+                    },
+                    "errors": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 64,
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "files": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 64,
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 64,
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "objective": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "preconditions": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 64,
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "predicted_operation": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "required_memory_facets": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 64,
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "symbols": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 64,
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "tests": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 64,
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "objective",
+                    "predicted_operation",
+                    "depends_on",
+                    "preconditions",
+                    "invariants",
+                    "files",
+                    "symbols",
+                    "apis",
+                    "errors",
+                    "tests",
+                    "required_memory_facets"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 16,
+                "type": "array"
+              },
+              "reason": {
+                "maxLength": 4096,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "reason",
+              "new_subtasks",
+              "dependency_additions"
+            ],
+            "type": "object"
+          },
+          "strict": true,
+          "type": "function"
+        },
+        {
+          "description": "Complete the active semantic subtask with non-empty observed evidence.",
+          "name": "complete_subtask",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "evidence": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "evidence"
+            ],
+            "type": "object"
+          },
+          "strict": true,
+          "type": "function"
+        }
+      ],
+      "preimage_kind": "canonical-json",
+      "sha256": "1f9f70c6ae31464a03d93ec7294a3901ee6b34ded1bb79d65224e925c8aea63c",
+      "source_paths": [
+        "src/enterprise_memory/trimem/function_tools.py"
+      ],
+      "source_sha256": {
+        "src/enterprise_memory/trimem/function_tools.py": "ed99572a83700e83f7df4b8109074528e030a682c001d3732d77e75dfaf3277d"
+      }
+    },
+    "list_files_pagination_contract_sha256": {
+      "algorithm": "sha256",
+      "canonical_preimage": {
+        "arguments": {
+          "limit": {
+            "maximum": 200,
+            "minimum": 1
+          },
+          "path_prefix": "normalized relative POSIX prefix or null",
+          "required": [
+            "path_prefix",
+            "start_after",
+            "limit"
+          ],
+          "start_after": "normalized matching repository path or null"
+        },
+        "cursor": "exclusive; must name a path in the full matching listing",
+        "full_matching_listing_sha256": "lowercase sha256 of canonical JSON UTF-8 for the complete sorted matching path list",
+        "ordering": "unique normalized paths; Unicode lexicographic ascending",
+        "schema": "trimem/list-files-pagination/1.0",
+        "serialized_response": {
+          "encoding": "canonical JSON UTF-8",
+          "maximum_bytes": 32768
+        }
+      },
+      "preimage_kind": "canonical-json",
+      "sha256": "591db921e9009791c2d1e5c9c9da1a0d478f71f5c68cd39f6adb639ed7c85a53",
+      "source_paths": [
+        "src/enterprise_memory/trimem/workspace.py"
+      ],
+      "source_sha256": {
+        "src/enterprise_memory/trimem/workspace.py": "a7d000314af0a265ad8f4ea4d2e7583e2ed26b9f78b21b8e64ec6b76e95db51b"
+      }
+    },
+    "model_visible_observation_projection_sha256": {
+      "algorithm": "sha256",
+      "canonical_preimage": {
+        "command_output": "utf8-head-tail-with-exact-hashes-and-byte-counts",
+        "max_model_visible_tool_history_bytes": 98304,
+        "max_model_visible_tool_result_bytes": 65536,
+        "raw_evidence": "exact-and-immutable",
+        "schema": "trimem/model-visible-observation-projection/1.0",
+        "selection_order": [
+          "active_subtask",
+          "most_recent",
+          "edit_and_test",
+          "compact_older"
+        ],
+        "summarizer": "deterministic-no-model",
+        "write_bodies_reinjected": false
+      },
+      "preimage_kind": "canonical-json",
+      "sha256": "72d57a4dfb6daba2fb1455af03f44293d5dd05ddf4c35ea01756c0ea53267731",
+      "source_paths": [
+        "src/enterprise_memory/trimem/context_projection.py"
+      ],
+      "source_sha256": {
+        "src/enterprise_memory/trimem/context_projection.py": "e7f249fab48bbcb6f0262b2a1a81cdcf141d66ae3feba287ca703ba8721dcb5a"
+      }
+    },
+    "prompt_context_contract_sha256": {
+      "algorithm": "sha256",
+      "canonical_preimage": {
+        "json_compaction": "complete-objects-only",
+        "max_extraction_prompt_utf8_bytes": 196608,
+        "max_ordinary_input_bound": 200704,
+        "max_solve_prompt_utf8_bytes": 196608,
+        "model_request_framing_allowance": 4096,
+        "native_function_schema": "present-and-hash-bound",
+        "required_active_state": "never-silently-omitted",
+        "schema": "trimem/prompt-context-contract/1.0",
+        "textual_full_tool_schema": false
+      },
+      "preimage_kind": "canonical-json",
+      "sha256": "cbb11227c93266e522dda26876b2ddd81798ddbc40cdfeeb100a76faaaeb63c4",
+      "source_paths": [
+        "src/enterprise_memory/trimem/context_projection.py"
+      ],
+      "source_sha256": {
+        "src/enterprise_memory/trimem/context_projection.py": "e7f249fab48bbcb6f0262b2a1a81cdcf141d66ae3feba287ca703ba8721dcb5a"
+      }
+    },
+    "request_lifecycle_contract_sha256": {
+      "algorithm": "sha256",
+      "canonical_preimage": {
+        "covered_call_kinds": [
+          "decompose",
+          "solve",
+          "extract"
+        ],
+        "durable_journal_states": [
+          "REQUEST_RECORDED",
+          "PROVIDER_SEND_STARTED",
+          "PROVIDER_TERMINAL_SUCCESS",
+          "PROVIDER_TERMINAL_FAILURE",
+          "PROVIDER_OUTCOME_UNKNOWN"
+        ],
+        "ordering": [
+          "construct_exact_request",
+          "deterministic_prompt_projection",
+          "read_only_budget_preflight",
+          "record_model_request",
+          "record_journal_request",
+          "atomic_reservation_recheck",
+          "record_provider_send_started",
+          "provider_invocation",
+          "record_provider_terminal_outcome",
+          "reconcile_atomic_ledger",
+          "record_terminal_evidence_and_accounting"
+        ],
+        "prepared_checkpoint_phases": {
+          "decompose": "DECOMPOSE_PREPARED",
+          "extract": "GRADED_OR_CELL_FAILURE_GRADED_REQUEST_SUFFIX",
+          "solve": "RECALL_PREPARED"
+        },
+        "resume_authorization": {
+          "not_started_requires_no_ledger_reservation": true,
+          "provider_started_requires_terminal_or_unknown_replay": true,
+          "replay_none_after_provider_start": "GLOBAL_INTEGRITY_FAILURE_NO_SEND",
+          "source": "HASH_BOUND_REQUEST_LIFECYCLE_SNAPSHOT"
+        },
+        "schema": "trimem/request-lifecycle-contract/1.0",
+        "states": [
+          "NOT_PREPARED",
+          "NOT_STARTED",
+          "PREFLIGHT_PASSED",
+          "REQUEST_RECORDED",
+          "PROVIDER_SEND_STARTED",
+          "PROVIDER_TERMINAL_SUCCESS",
+          "PROVIDER_TERMINAL_FAILURE",
+          "PROVIDER_OUTCOME_UNKNOWN"
+        ]
+      },
+      "preimage_kind": "canonical-json",
+      "sha256": "a0b5128a0328227619005af3947e95aef97f5e9cad02b776dd4f5b225124743d",
+      "source_paths": [
+        "src/enterprise_memory/trimem/gateway.py"
+      ],
+      "source_sha256": {
+        "src/enterprise_memory/trimem/gateway.py": "77ff9ef190d9b5837f66c71e24eb2f50b45645c3856db45a66995362e3a9035c"
+      }
+    },
+    "resume_automaton_sha256": {
+      "algorithm": "sha256",
+      "canonical_preimage": {
+        "covered_call_kinds": [
+          "decompose",
+          "solve",
+          "extract"
+        ],
+        "rules": {
+          "A": {
+            "action": "PREFLIGHT_AND_SEND_ONCE_WITHOUT_DUPLICATE_REQUEST",
+            "evidence": "REQUEST_RECORDED",
+            "journal": "ABSENT",
+            "ledger": "ABSENT"
+          },
+          "B": {
+            "action": "RESERVE_OR_RESUME_AND_SEND_ONCE",
+            "journal": "REQUEST_RECORDED",
+            "provider_send_started": false
+          },
+          "C": {
+            "action": "DO_NOT_RETRY_SETTLE_UNKNOWN",
+            "journal": "PROVIDER_SEND_STARTED",
+            "terminal": "ABSENT"
+          },
+          "D": {
+            "action": "RECONCILE_OR_VERIFY_AND_REPLAY_WITH_ZERO_PROVIDER_CALLS",
+            "journal": [
+              "PROVIDER_TERMINAL_SUCCESS",
+              "PROVIDER_TERMINAL_FAILURE"
+            ]
+          },
+          "E": {
+            "action": "NO_REQUEST_NO_RESERVATION_CELL_OR_GLOBAL_FAILURE",
+            "preflight": "FAILED"
+          }
+        },
+        "schema": "trimem/request-resume-automaton/1.0"
+      },
+      "preimage_kind": "canonical-json",
+      "sha256": "746d8aa2dfecadc48c9876b467b2411928582ce967ac6251ade823cdfe94d461",
+      "source_paths": [
+        "src/enterprise_memory/trimem/gateway.py"
+      ],
+      "source_sha256": {
+        "src/enterprise_memory/trimem/gateway.py": "77ff9ef190d9b5837f66c71e24eb2f50b45645c3856db45a66995362e3a9035c"
+      }
+    },
+    "runner_sha256": {
+      "algorithm": "sha256",
+      "canonical_preimage": null,
+      "preimage_kind": "raw-file-bytes",
+      "sha256": "7d9820ab9dac633832e4a8d76970d6ae73a9c6362fee2b12c21136bf807c057a",
+      "source_paths": [
+        "scripts/trimem_benchmark_run.py"
+      ],
+      "source_sha256": {
+        "scripts/trimem_benchmark_run.py": "7d9820ab9dac633832e4a8d76970d6ae73a9c6362fee2b12c21136bf807c057a"
+      }
+    },
+    "workflow_sha256": {
+      "algorithm": "sha256",
+      "canonical_preimage": null,
+      "preimage_kind": "raw-file-bytes",
+      "sha256": "78f806475528ab938a3f4975f73039d8055946c52cb5d94ae30d691319a69ab4",
+      "source_paths": [
+        ".github/workflows/trimem-benchmark.yml"
+      ],
+      "source_sha256": {
+        ".github/workflows/trimem-benchmark.yml": "78f806475528ab938a3f4975f73039d8055946c52cb5d94ae30d691319a69ab4"
+      }
+    }
+  },
+  "contracts": {
+    "credential_free_bundle_sha256": "6c9f0192c4ffba6fa2ed67066d5b45edd30cd8e96ec14af68cf6fb258290a3d5",
+    "function_tool_schema_sha256": "1f9f70c6ae31464a03d93ec7294a3901ee6b34ded1bb79d65224e925c8aea63c",
+    "list_files_pagination_contract_sha256": "591db921e9009791c2d1e5c9c9da1a0d478f71f5c68cd39f6adb639ed7c85a53",
+    "model_visible_observation_projection_sha256": "72d57a4dfb6daba2fb1455af03f44293d5dd05ddf4c35ea01756c0ea53267731",
+    "prompt_context_contract_sha256": "cbb11227c93266e522dda26876b2ddd81798ddbc40cdfeeb100a76faaaeb63c4",
+    "request_lifecycle_contract_sha256": "a0b5128a0328227619005af3947e95aef97f5e9cad02b776dd4f5b225124743d",
+    "resume_automaton_sha256": "746d8aa2dfecadc48c9876b467b2411928582ce967ac6251ade823cdfe94d461",
+    "runner_sha256": "7d9820ab9dac633832e4a8d76970d6ae73a9c6362fee2b12c21136bf807c057a",
+    "workflow_sha256": "78f806475528ab938a3f4975f73039d8055946c52cb5d94ae30d691319a69ab4"
+  },
+  "credential_free_gate": {
+    "benchmark_images": 0,
+    "context_roundtrip_required": true,
+    "credential_free_replay_required": true,
+    "official_graders": 0,
+    "paid_model_calls": 0,
+    "real_provider_calls": 0,
+    "total_usd": 0
+  },
+  "historical_request_only_fixture": {
+    "bytes": 2739,
+    "compatibility_path": "EXPLICIT_LEGACY_REPLAY_ONLY",
+    "historical_function_tools_sha256": "5c035f219b9e023c2fb5c7792a7a51c0c4c783a718a9367d723e26b7253039eb",
+    "live_function_tools_sha256": "1f9f70c6ae31464a03d93ec7294a3901ee6b34ded1bb79d65224e925c8aea63c",
+    "path": "artifacts/trimem_v1/development_tuning_exec/exec-009/request-only-boundary-fixture.json",
+    "prompt_content_policy": "CONTENT_ADDRESS_ONLY_RESTRICTED_PAYLOAD_NOT_COMMITTED",
+    "restricted_payload_committed": false,
+    "schema": "trimem/d19-historical-request-only-boundary-fixture/1.0",
+    "sha256": "0229c7147bc6777c09d8a1488b8edccdd9829665c102333fdb135e909d8eb575",
+    "status": "EXACT_SANITIZED_CONTENT_ADDRESS_FIXTURE"
+  },
+  "historical_request_raw_sha256": {
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_001.json": "7501c630a05ab0b87b9b510a72a5389f6ea7046dee6153b583e2833fa8e7e1db",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_002.json": "c81c57a5c93d4be9efdc971147191d8bc2e1bc2f06fe241e38ce36b6a4ee3f98",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_003.json": "3d6b4291f7a1ab8b72203e4756a2f7e4614c1139c9f6e0da74a3a949fa78ca56",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_004.json": "20bccf63d7f09e4130e7297bc0b1c07b4d97f15baefa77099b582e105874dd80",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_005.json": "97e2ce227418ace0db1edbf816391cdf0fda4f8d29359da4a3f81687f1aa19de",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_006.json": "9eb67d9b9ca5382a5f120108e12f767cdd51f421e1123f8cc74e18ec309cf01c",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_007.json": "90b7cbcc43a7b1a8ce5df8413ab48d386c500aaee3f167fa3cebc064eaa33ab7",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_008.json": "2eac68069e9a2cc760138eca5b9e6ae1d5438a97cd9e4918a496ab920cc584b7",
+    "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_009.json": "3bf60d8b60ce2c902875593a0c10261c32bb6ed4961cd83703d926c33c5f968f"
+  },
+  "implementation_sha256": {
+    ".gitattributes": "8828ca1acf66549d0860a71bcf382e77c03514075f673536fb15c031094db147",
+    ".github/workflows/ci-trimem-dev-toolchain.yml": "d491cabb52282f67d6f337f29e1d64bfe17d4afc7b23df142e62c717a6e262f4",
+    ".github/workflows/ci-trimem.yml": "30e94bef269ccd06a894434ff6f4fc8c2c533825222501844e4d305ed5f11fc3",
+    ".github/workflows/trimem-benchmark.yml": "78f806475528ab938a3f4975f73039d8055946c52cb5d94ae30d691319a69ab4",
+    "artifacts/trimem_v1/credential_free_e2e/credential_free_e2e_bundle.json": "6c9f0192c4ffba6fa2ed67066d5b45edd30cd8e96ec14af68cf6fb258290a3d5",
+    "artifacts/trimem_v1/development_tuning_exec/exec-009/bounded-short-term-context-failure-receipt.json": "71e85eef6ea558208f445ef4667afbf2c7a8126b61b536ff413212b2e52c2270",
+    "artifacts/trimem_v1/development_tuning_exec/exec-009/request-only-boundary-fixture.json": "0229c7147bc6777c09d8a1488b8edccdd9829665c102333fdb135e909d8eb575",
+    "artifacts/trimem_v1/readiness_requirements.json": "37952c20aedfc165f270b8433e93e99294fc8a10f1fa6f8699f4810bd16185fe",
+    "configs/trimem_v1/m2_candidate_bundles.json": "d321c33edf233dafc643f92ad44796a6adfb4fb65bf5fd14efc75c0519a7a5ae",
+    "configs/trimem_v1/tool_environment_lock.json": "fd48c2bff6b7c35893bdd62802d0dc8b88f5992f9f346d66d38ffeadd2130470",
+    "reports/TRIMEM_DEVELOPMENT_TUNING_EXEC_009_BOUNDED_CONTEXT_FAILURE.md": "c3364063018c3c0756416b510b861246dbe1e3a6a437919a6e9e5cf162803ece",
+    "scripts/trimem_action_canary.py": "13e89eadae79cbfa1236ef719b51e9c7d6eb381320c6ab9919a9822ac07cccd5",
+    "scripts/trimem_benchmark_matrix.py": "0b69b8e16d74d0968dcd17c6e28cfd5c97f4555d066db0d9548edbd882cff372",
+    "scripts/trimem_benchmark_run.py": "7d9820ab9dac633832e4a8d76970d6ae73a9c6362fee2b12c21136bf807c057a",
+    "scripts/trimem_context_roundtrip.py": "d6830b75f11f2f6f4eb93bcfdbb252f5c49eb288b1d727edd5ba28487720e56e",
+    "scripts/trimem_d19_reseal.py": "818ec46fafb9ddd4158e51a93da6686689a5254339652881016add05c01aa322",
+    "scripts/trimem_development_trigger_d19.py": "cc64ef3400396528f1f8d7c25ac9b7a1782b39c7d111276699b06340c64146d8",
+    "scripts/trimem_development_trigger_preflight.py": "fa1c89196b0c99ff6ba11167f934d96064cd0d5d5c70ec04a33b589199c9c54e",
+    "scripts/trimem_freeze.py": "9cb1bc00c35903c0ce5d4a91621eaa20b8b8468369b61ef96bbaab8ac1194d39",
+    "scripts/trimem_public_artifact.py": "ec147017cbd4d09827d25592f4a0161905601170404795f8c24c71754ca98369",
+    "scripts/trimem_verify_ready.py": "4709594fffabd1312dc504f7f6d385c45f464981d97c330d2519a2c4d6194d31",
+    "src/enterprise_memory/trimem/accounting.py": "a66e78ca451b530a83bb5f55f7923b9d2e3b8a79263ac8db3c9235b14e412631",
+    "src/enterprise_memory/trimem/agent_runtime.py": "43c096e77e93c3be28aff1f6e4346dcb2b19dea38173029d73a659e882c1a5d9",
+    "src/enterprise_memory/trimem/checkpoint.py": "fa2741535a670a0378b5b1e6091a0aa20b1c0b7959abe1545a26f02881c43798",
+    "src/enterprise_memory/trimem/context_projection.py": "e7f249fab48bbcb6f0262b2a1a81cdcf141d66ae3feba287ca703ba8721dcb5a",
+    "src/enterprise_memory/trimem/credential_free.py": "9cefd82522d4bd711e02bbe400bc5f01cd2288e4b39ce76499ef29c2c3b4915d",
+    "src/enterprise_memory/trimem/function_tools.py": "ed99572a83700e83f7df4b8109074528e030a682c001d3732d77e75dfaf3277d",
+    "src/enterprise_memory/trimem/gateway.py": "77ff9ef190d9b5837f66c71e24eb2f50b45645c3856db45a66995362e3a9035c",
+    "src/enterprise_memory/trimem/git_workspace.py": "aafcfb11496363ce391e2ef2e8cf22a8a0c10ecc14c78a5f95d660cd4ae449de",
+    "src/enterprise_memory/trimem/production_runtime.py": "7234eb424b0f551d11d69eea53c0410753a6fdee88c58227efa6144fe9b6c9c2",
+    "src/enterprise_memory/trimem/runtime_lock.py": "0bd730294197f67fb080688f5d5e29f65959725b253e78bcffeaab556797f387",
+    "src/enterprise_memory/trimem/scientific_terminal.py": "0e720da03bd5979bd3dd358ab6b9958dc2ce9361ffaf0dbd0b276154580e9bf2",
+    "src/enterprise_memory/trimem/workspace.py": "a7d000314af0a265ad8f4ea4d2e7583e2ed26b9f78b21b8e64ec6b76e95db51b",
+    "tests/openai/test_openai_response_outcomes.py": "68b091061752dc8e2ea2fe7749e1760f88fcbdd428c4511516c86a29ff513747",
+    "tests/trimem/e2e/test_full_replay.py": "9d748e080d76312f357ff734dc915d5ea28acbc051743fe47ac45b2322568387",
+    "tests/unit/test_trimem_benchmark_readiness.py": "b6d22012fae932f41b74665695a0832c986a072a394d40e3be7dff7be7f8cf86",
+    "tests/unit/test_trimem_d16_native_action.py": "7d803f27396b5110b34a37c84f5c6f355af10594e3630b2758421bc85466694c",
+    "tests/unit/test_trimem_d17_approval_cap_integration.py": "6b4fe15c5641f0ffe7b173cd7cd31f66a17ecb55173d13075fb5e733806bd5d0",
+    "tests/unit/test_trimem_d18_terminal_contract_integration.py": "d3f672aa276ef25821212b90fa25481cc361fbfd97c4b15258f1a2eaf3cbdb63",
+    "tests/unit/test_trimem_d19_bounded_short_term_context.py": "55a60dc0daf4313e1e0bd6a7ce9b282762f928f448ff0dc57279f0007afbe9e6",
+    "tests/unit/test_trimem_d19_failed_cell_resume.py": "2ad7e6ae6b7231fbfc265778b94bde39ed091d921824e9a6f07911cd8e8392f1",
+    "tests/unit/test_trimem_d19_list_files_pagination.py": "fc99895f56317d682a0f42265aa39bb118f9676d2b89da60fc51a1c79588c5f9",
+    "tests/unit/test_trimem_d19_model_preflight.py": "9a7d02ba801ccf0a930a44188f76ec618ffddbed2cd790d1c3dda162d0cbfa3b",
+    "tests/unit/test_trimem_d19_request_only_resume.py": "8d6a381d06db487a3de76b2e08aa9f784cf86e75b0e1b54bf6786d26f8b0a0ee",
+    "tests/unit/test_trimem_d19_terminal_contract.py": "5bb050f011a55e6dfbc2cd04a32e8745bf19e1e07e95c74831216c478f088577",
+    "tests/unit/test_trimem_d19_trigger.py": "9467d832669128af126f550469c0d5e84d43ef0f2f24acd72b1dc5c31a98cb5c",
+    "tests/unit/test_trimem_dev_toolchain_workflows.py": "e0e1a39a426f856c16925362c679877d0ddac918e3eb467a4f485e6f1d028ce4",
+    "tests/unit/test_trimem_development_trigger.py": "37377a947ca0367fc18f00ce741cc44fe7cf618a474f57054be49afbf0d68767",
+    "tests/unit/test_trimem_git_workspace.py": "2f1f40362780e56b752f8e2fb030f5de91581f636a6144c298be515bf85096d9",
+    "tests/unit/test_trimem_production_runtime.py": "3e7b7244870d3be4a1b78c6fdac73747d730c050b9b14435d02e1d7368cd9681",
+    "tests/unit/test_trimem_runtime_boundaries.py": "ca89432a19f50de956e1223a820138345c539f898a363f53a71fd52dedd03984"
+  },
+  "schema": "trimem/development-bounded-context-inventory/1.0",
+  "status": "FROZEN_PRE_RESULT_PENDING_FRESH_EXECUTION"
+}

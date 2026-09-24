@@ -1,0 +1,52 @@
+{
+  "analysis_scope": "AFTER_ALL_THREE_SUBMISSIONS_AND_OFFICIAL_GRADES_FOR_THIS_TASK",
+  "cells": [
+    {
+      "cell": "A",
+      "fail_to_pass_failure_count": 2,
+      "fail_to_pass_success_count": 1,
+      "infra_failure": false,
+      "pass_to_pass_failure_count": 1,
+      "patch_applied": true,
+      "private_receipt_sha256": "183005326459086193533c771f4b7df270b7bf69c679a80cf6c273621ecf40ef",
+      "resolved": false,
+      "same_three_printer_contract_failures_observed": true,
+      "test_output_sha256": "31ef8dcbd77ac4836a7b501eb3d2c03b3f4336be31fe4b73bdaeff66a5a241d1",
+      "test_status_sha256": "5924edc10cbec19be5bdb1f416362e513c446612f5c79910f293c713fa07a00b"
+    },
+    {
+      "cell": "B",
+      "fail_to_pass_failure_count": 2,
+      "fail_to_pass_success_count": 1,
+      "infra_failure": false,
+      "pass_to_pass_failure_count": 1,
+      "patch_applied": true,
+      "private_receipt_sha256": "78ea9231528f4c067f0c910ae6797da1f75e66fa2c1185bf9132297a67765803",
+      "resolved": false,
+      "same_three_printer_contract_failures_observed": true,
+      "test_output_sha256": "5bb2212fd5b8a82cdec9bd1438e658a15bf5ac179d81981681e7f5faf392ee3b",
+      "test_status_sha256": "5924edc10cbec19be5bdb1f416362e513c446612f5c79910f293c713fa07a00b"
+    },
+    {
+      "cell": "C",
+      "fail_to_pass_failure_count": 2,
+      "fail_to_pass_success_count": 1,
+      "infra_failure": false,
+      "pass_to_pass_failure_count": 1,
+      "patch_applied": true,
+      "private_receipt_sha256": "025ff1541aef1366524aeb4d6fc9bfd8e05144640db37ac9ec73fb8ed30dd288",
+      "resolved": false,
+      "same_three_printer_contract_failures_observed": true,
+      "test_output_sha256": "a1458210085a89315dbc3a61620e04abf8fc7b8ac2f0326fcf565be8f85cbb3e",
+      "test_status_sha256": "5924edc10cbec19be5bdb1f416362e513c446612f5c79910f293c713fa07a00b"
+    }
+  ],
+  "diagnosis": "All three fixed the numerical lambdify reproduction by adding parentheses to every Mod print. This changed the existing standalone Mod/frac output format and did not satisfy the separate negative expanded-power printer check.",
+  "evaluation_bank_updated": false,
+  "interpretation": "A local workaround passed the new numerical regression but did not preserve the full printer output contract. Some official failures are exact generated-text expectations; do not equate all of them with incorrect numerical values.",
+  "patches_changed_or_regraded": false,
+  "raw_private_output_exported": false,
+  "schema": "skhynix/native-post-evaluation-diagnosis/1.0",
+  "solver_feedback_sent": false,
+  "target_id": "swebench_verified--sympy__sympy-22080"
+}

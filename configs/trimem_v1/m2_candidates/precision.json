@@ -1,0 +1,143 @@
+{
+  "authority_boundary": {
+    "dqn_controls_only": [
+      "FORGET",
+      "MOVE_TO_EPISODIC",
+      "MOVE_TO_SEMANTIC_CANDIDATE"
+    ],
+    "dqn_never_controls": [
+      "ACL or tenant scope",
+      "secret filtering",
+      "verified-source eligibility",
+      "organisation shared publication",
+      "grader or target selection"
+    ]
+  },
+  "consolidation": {
+    "archive_order": {
+      "episodic": "oldest event_time then episode_id within each user",
+      "semantic": "lowest semantic_strength then semantic_id"
+    },
+    "capacities": {
+      "episodic_per_user": 75,
+      "organisation_semantic": 750,
+      "user_semantic_per_user": 75
+    },
+    "organisation_promotion": "deterministic human review plus at least two independent supporting episodes, or trusted-document evidence",
+    "semantic_strength_formula": "support + successful_reuse + independent_user_evidence + recent_verification - negative_transfer - contradiction - version_staleness",
+    "verified_semantic_source_rule": "verified successful source only; a single verified episode may create a private user-semantic candidate but cannot self-publish organisation-wide"
+  },
+  "development_freeze_rule": {
+    "checkpoint_selection": "run each of the four preregistered full-policy candidates over all 12 development targets in exact order, select by resolved desc then actual total tokens asc then actual USD asc then candidate_id asc, and freeze only the selected candidate's final DoubleDQN checkpoint",
+    "heldout_visibility": "forbidden until the selected full policy, selected RuntimeLock and selected final checkpoint are hash-linked in a new committed freeze and separately approved",
+    "pending_credit_finalization": "after development target 11, deterministically credit every still-pending memory with no-reuse reward = -0.05 * normalized_context_cost",
+    "required_before_export": {
+      "development_resume_cursor": 12,
+      "pending_credit_count": 0,
+      "policy_frozen": true
+    },
+    "status": "PENDING_FOUR_CANDIDATE_DEVELOPMENT"
+  },
+  "double_dqn": {
+    "action_order": [
+      "FORGET",
+      "MOVE_TO_EPISODIC",
+      "MOVE_TO_SEMANTIC_CANDIDATE"
+    ],
+    "batch_size": 8,
+    "epsilon_decay_steps": 36,
+    "epsilon_end": 0.03,
+    "epsilon_start": 0.2,
+    "feature_encoder": {
+      "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+      "projection": "NONE",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+    },
+    "feature_schema": {
+      "candidate_embedding_dim": 384,
+      "graph_statistics_dim": 3,
+      "scalar_features": [
+        "verification_outcome",
+        "novelty",
+        "redundancy",
+        "recency",
+        "reuse_frequency",
+        "past_gain_loss",
+        "version_validity",
+        "memory_occupancy",
+        "context_cost"
+      ],
+      "subtask_embedding_dim": 384,
+      "task_embedding_dim": 384
+    },
+    "gamma": 0.98,
+    "hidden_dim": 64,
+    "learning_rate": 0.0015,
+    "min_replay_size": 8,
+    "network": "pure-python one-hidden-layer ReLU online and target networks",
+    "replay_capacity": 2048,
+    "seed": 23,
+    "target_sync_interval": 8
+  },
+  "graph_topology": {
+    "compiler": "trimem-canonical-topology-v1",
+    "dependency_orientation": "subtask_to_prerequisite",
+    "edge_weights": {
+      "APPLIED": 1.6,
+      "CALLS": 1.0,
+      "DECOMPOSES_TO": 1.5,
+      "DEPENDS_ON": 1.5,
+      "DERIVED_FROM": 1.5,
+      "OBSERVED": 0.9,
+      "PRODUCED": 1.25,
+      "TOUCHES": 0.85,
+      "VALID_FOR": 1.1,
+      "VERIFIED_BY": 1.6
+    }
+  },
+  "heuristic_warm_start": {
+    "enabled": false,
+    "implementation_available": true,
+    "reason": "No synthetic demonstration set is introduced after target selection; development learns only from the preregistered stream."
+  },
+  "retrieval": {
+    "context_budget_bytes": 8000,
+    "embedding_dimensions": 384,
+    "embedding_weight": 0.75,
+    "episode_complete_threshold": 0.9,
+    "lexical_weight": 0.25,
+    "max_episodic_per_active_node": 1,
+    "max_semantic_per_active_node": 1,
+    "max_task_injections": 2,
+    "min_confidence": 0.45,
+    "min_margin": 0.08,
+    "ppr_damping": 0.85,
+    "ppr_iterations": 32,
+    "retrieval_point": "exactly when a semantic subtask becomes active",
+    "self_memory_exclusion": "source_task_id equal to current target task_id is excluded before ranking"
+  },
+  "reward": {
+    "context_cost_coefficient": -0.08,
+    "failure_outcome": -1.2,
+    "latency_cost_coefficient": -0.02,
+    "latency_normalization_ms": 600000,
+    "negative_transfer": -0.75,
+    "stale_conflict_coefficient": -0.75,
+    "storage_cost_coefficient": -0.02,
+    "storage_normalization_bytes": 12000,
+    "subtask_completion_coefficient": 0.25,
+    "successful_outcome": 1.0,
+    "successful_reuse": 0.25,
+    "token_cost_coefficient": -0.08,
+    "token_normalization": 100000
+  },
+  "schema": "trimem/m2-policy/1.0",
+  "state_features": {
+    "algorithm": "trimem-canonical-state-features-v1",
+    "max_history_records": 1200,
+    "recency_half_life_seconds": 2592000,
+    "reuse_frequency_scale": 10,
+    "version_scope": "repository-exact-or-generalized-null"
+  },
+  "status": "FROZEN_PRE_EXEC_TUNING_CONTRACT"
+}

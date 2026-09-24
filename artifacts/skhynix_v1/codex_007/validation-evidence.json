@@ -1,0 +1,16 @@
+{
+  "distinct_passed_tests": 657,
+  "status": "PASS",
+  "xml": [
+    {
+      "name": "codex_007_integration_validation.xml",
+      "sha256": "6df4767cef77a0746082fa8f2230a8cc1d7d046e1ad1b873f3e9b7b68c2c63fb",
+      "test_cases": 239
+    },
+    {
+      "name": "codex_007_observer_validation.xml",
+      "sha256": "92e655e91fbd54f856546ba233ecfd86f637c3dd7cf714918078e3bb9fbbc9ea",
+      "test_cases": 430
+    }
+  ]
+}

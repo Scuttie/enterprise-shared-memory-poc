@@ -1,0 +1,2 @@
+# Keep synthetic raw ledgers, checkpoints and SQLite state local; publish aggregates.
+mechanism_evaluation_*/**/

@@ -1,0 +1,100 @@
+{
+  "audit_sha256": "d67bb31b06c04458d251703b14c74096ced94f4ea40eae9a8ad54ce7735f378f",
+  "manifest_target_set_sha256": "01f9e41f1ce3f285c651c3bc857a1f7422ed7e0f9ccfb451b42aedf9a4aef52e",
+  "noop_baseline": {
+    "changed_paths": [
+      ".trimem_grader_noop"
+    ],
+    "format": "GIT_UNIFIED_DIFF_NEW_FILE_ONLY_V1",
+    "patch_bytes": 165,
+    "patch_sha256": "0f4fb705a73dd7e804773b35e2ab0e4e2f17248c571e69333e9b8de7c2025775"
+  },
+  "rows": [
+    {
+      "base_commit": "0df94ff7097961e92fd7812036a24b145bc13ca8",
+      "base_tree": "143afe34df1cb22c3b3c2860c036fa3a7f891c78",
+      "changed_paths": [
+        ".trimem_grader_noop"
+      ],
+      "forbidden_source_test_build_or_package_paths_touched": [],
+      "instance_id": "astropy__astropy-13579",
+      "isolated_temporary_index": true,
+      "patch_applies_cached": true,
+      "repository": "astropy/astropy",
+      "root_marker_absent_at_base": true,
+      "staged_marker_sha256": "4d1267b1fbbe25489fc99da28d159e79d738a20964d80b5c701be7c6c50effe5"
+    },
+    {
+      "base_commit": "cc183652bf6e1273e985e1c4b3cba79c896c1193",
+      "base_tree": "d0928dedee3fa90d91745c02d64a274bb2e55b50",
+      "changed_paths": [
+        ".trimem_grader_noop"
+      ],
+      "forbidden_source_test_build_or_package_paths_touched": [],
+      "instance_id": "pydata__xarray-6721",
+      "isolated_temporary_index": true,
+      "patch_applies_cached": true,
+      "repository": "pydata/xarray",
+      "root_marker_absent_at_base": true,
+      "staged_marker_sha256": "4d1267b1fbbe25489fc99da28d159e79d738a20964d80b5c701be7c6c50effe5"
+    },
+    {
+      "base_commit": "3be4e3cbe34b394096210897c1be8deeb6d748d8",
+      "base_tree": "e4d2e4214e5590c928e11a041c1235d89632bc33",
+      "changed_paths": [
+        ".trimem_grader_noop"
+      ],
+      "forbidden_source_test_build_or_package_paths_touched": [],
+      "instance_id": "vuejs__core-8911",
+      "isolated_temporary_index": true,
+      "patch_applies_cached": true,
+      "repository": "vuejs/core",
+      "root_marker_absent_at_base": true,
+      "staged_marker_sha256": "4d1267b1fbbe25489fc99da28d159e79d738a20964d80b5c701be7c6c50effe5"
+    },
+    {
+      "base_commit": "e3a4cee081cf60650b8824f0646383b79cb110e7",
+      "base_tree": "5d5605745353baf05093b5cd559c4005e26c4661",
+      "changed_paths": [
+        ".trimem_grader_noop"
+      ],
+      "forbidden_source_test_build_or_package_paths_touched": [],
+      "instance_id": "django__django-16493",
+      "isolated_temporary_index": true,
+      "patch_applies_cached": true,
+      "repository": "django/django",
+      "root_marker_absent_at_base": true,
+      "staged_marker_sha256": "4d1267b1fbbe25489fc99da28d159e79d738a20964d80b5c701be7c6c50effe5"
+    },
+    {
+      "base_commit": "dc538f6e810bd462c98ee7e6aae24c64d4b1da93",
+      "base_tree": "64ef44e12590d31b11d0fabf389b8333ff0e1f7f",
+      "changed_paths": [
+        ".trimem_grader_noop"
+      ],
+      "forbidden_source_test_build_or_package_paths_touched": [],
+      "instance_id": "expressjs__express-3870",
+      "isolated_temporary_index": true,
+      "patch_applies_cached": true,
+      "repository": "expressjs/express",
+      "root_marker_absent_at_base": true,
+      "staged_marker_sha256": "4d1267b1fbbe25489fc99da28d159e79d738a20964d80b5c701be7c6c50effe5"
+    },
+    {
+      "base_commit": "7f547827e47b5ade563a293329deb4226496d72f",
+      "base_tree": "7918c86308a5d0caffc97b76a7a120e3023b37cd",
+      "changed_paths": [
+        ".trimem_grader_noop"
+      ],
+      "forbidden_source_test_build_or_package_paths_touched": [],
+      "instance_id": "jqlang__jq-2919",
+      "isolated_temporary_index": true,
+      "patch_applies_cached": true,
+      "repository": "jqlang/jq",
+      "root_marker_absent_at_base": true,
+      "staged_marker_sha256": "4d1267b1fbbe25489fc99da28d159e79d738a20964d80b5c701be7c6c50effe5"
+    }
+  ],
+  "schema": "trimem/noop-baseline-six-commit-audit/1.0",
+  "status": "PASS"
+}

@@ -1,0 +1,82 @@
+{
+  "arms": [
+    {
+      "arm_id": "M0",
+      "description": "NO_MEMORY",
+      "memory_system": "disabled"
+    },
+    {
+      "arm_id": "M1",
+      "baseline_git_commit": "ce10ab49586db7a859fbe5cca93051b93f9f5b55",
+      "description": "CURRENT_V03_MEMORY",
+      "memory_system": "enterprise-shared-memory-poc-v0.3",
+      "production_lifecycle_configuration_hash": "sha256:9a9f1f0d8811340ae588ac8331c29afc0a959b74a5b63e8d6eb4b37b87795cf6",
+      "live_implementation_hash": "sha256:3f05ee3bd4169c7e30d703da510949a27ae4174282b37aaa500ea126b0c22e32",
+      "retained_episode_shape": [
+        "task_id",
+        "repo_id",
+        "commit",
+        "outcome",
+        "injected_memory_ids"
+      ],
+      "retention_path": "current private_episodes canonical row + CONTRACT_CANDIDATE outbox event in one tenant transaction; no direct Qdrant indexing",
+      "retrieval_path": "indexing.validated_search.validated_search(private+shared) -> service.injection.plan_injection",
+      "retrieval_audit_path": "service.durable.persist_retrieval_candidate",
+      "candidate_outbox_event_type": "CONTRACT_CANDIDATE",
+      "fresh_solve_immediate_carryover": false,
+      "fresh_solve_episode_private_view": "NOT_INDEXED_BY_CURRENT_SOLVE_PATH",
+      "extractor_output_changes_retention": false,
+      "benchmark_grade_changes_retention": false,
+      "shared_publication": false,
+      "shared_read_policy": "read only already-promoted current v0.3 contract versions present in the arm-isolated current index"
+    },
+    {
+      "arm_id": "M2",
+      "description": "FULL_TRIMEM_CODER",
+      "development_candidate_bundle_path": "configs/trimem_v1/m2_candidate_bundles.json",
+      "final_policy_checkpoint_status": "PENDING_FOUR_CANDIDATE_DEVELOPMENT_SELECTION",
+      "memory_system": "trimem-coder-v1"
+    }
+  ],
+  "comparability_contract": {
+    "actual_compute_recorded_per_task_arm": [
+      "solve_calls",
+      "decomposition_calls",
+      "extraction_calls",
+      "input_tokens",
+      "cached_input_tokens",
+      "output_tokens",
+      "reasoning_tokens",
+      "model_wall_time_ms",
+      "tool_wall_time_ms",
+      "grader_wall_time_ms"
+    ],
+    "maximum_budget_is_not_actual_compute": true,
+    "heldout_same_selected_prompt_model_tool_parser_and_limits": true,
+    "tuning_boundary": "The four M2 development bundles are joint tuning candidates, not component ablations. After deterministic selection, development M0/M1 and all held-out M0/M1/M2 use the same selected RuntimeLock prompt/tool/parser/limits."
+  },
+  "development_streams": [
+    "M2-baseline",
+    "M2-precision",
+    "M2-recall",
+    "M2-balanced",
+    "M0",
+    "M1"
+  ],
+  "runtime_ceiling": {
+    "max_agent_steps": 24,
+    "max_decomposition_calls": 1,
+    "max_extraction_calls": 1,
+    "max_memory_context_bytes": 12000,
+    "max_memory_injections": 3,
+    "max_output_tokens_decomposition": 8192,
+    "max_output_tokens_extraction": 8192,
+    "max_output_tokens_per_solve": 16384,
+    "max_total_output_tokens_per_task_arm": 65536,
+    "max_total_solve_output_tokens_per_task_arm": 49152,
+    "max_solve_calls": 24,
+    "max_steps_per_subtask": 8
+  },
+  "schema": "trimem/arm-manifest/1.0",
+  "status": "FROZEN_STATIC_CONTRACT"
+}

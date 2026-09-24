@@ -1,0 +1,337 @@
+{
+  "schema": "skhynix/native-codex-public-audit/1.0",
+  "status": "PASS_FINAL",
+  "audited_at": "2026-09-11T06:23:16.598631+00:00",
+  "plan_sha256": "986574b19caf981da361ea7451763392b35dab2768a40f8c7b9f9d6c1472b9e3",
+  "audit_script_sha256": "965406e02980a3cfb7a5e758d6070bb3346c9c2954939503be054f8acf961b88",
+  "source_hashes_sha256": "976ca9b20d7c39fe2466f22d4fec981bb716045b46e61d277bf41b0dc47f9ace",
+  "source_files_checked": 324,
+  "source_mismatch_count": 0,
+  "report_status": "COMPLETE",
+  "official_cells_audited": 3,
+  "tool_actions_audited": 45,
+  "official_expected_image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-23262@sha256:c29e2fbcef442fa9833021bc492ea4c39bc71a0fb606e61fc5521a841ae88b2e",
+  "checks_passed": 304,
+  "checks_failed": 0,
+  "global_failures": [],
+  "cells": [
+    {
+      "cell": "A",
+      "arm": "NO_MEMORY",
+      "target_id": "swebench_verified--sympy__sympy-23262",
+      "actions": 15,
+      "tool_event_tail_sha256": "489516924043b774e756a339eebc9cdd8bcdd18f98dfba56d5eeafef7a3e239d",
+      "tool_event_file_sha256": "95bb26d7950939ad4acc8d0a8026e517521f07dca9e515f9ac3744b9b7212562",
+      "submission_sha256": "d4e3d524ea43b1c322cbf5755fb538c3c61319569f368aa55e12a17c66675be4",
+      "submission_patch_bytes": 1471,
+      "agent_completed": true,
+      "wall_seconds": 138.86741423606873,
+      "tool_errors": 0,
+      "operation_counts": {
+        "info": 1,
+        "recall": 1,
+        "tool": 11,
+        "diff": 1,
+        "submit": 1
+      },
+      "command_count": 2,
+      "successful_commands": 1,
+      "commands": [
+        {
+          "sequence": 10,
+          "ok": true,
+          "exit_code": 1,
+          "public_suite": false,
+          "public_test_counts": {},
+          "inline_python_check": true,
+          "assertion_error_marker": true,
+          "before_first_edit": true,
+          "stdout_bytes": 80,
+          "stderr_bytes": 89
+        },
+        {
+          "sequence": 13,
+          "ok": true,
+          "exit_code": 0,
+          "public_suite": true,
+          "public_test_counts": {
+            "passed": 64,
+            "skipped": 54
+          },
+          "inline_python_check": false,
+          "assertion_error_marker": false,
+          "before_first_edit": false,
+          "stdout_bytes": 652,
+          "stderr_bytes": 0
+        }
+      ],
+      "memory_queries": 1,
+      "memory_injections": 0,
+      "memory_bytes": 0,
+      "injected_memory_ids": [],
+      "controller_sha256": "9ee781370f3635ad0b3112423c9e0d5d8f5c488bdd7d4a69b5f0d8624adcb6b4",
+      "seed_bank_counts": {
+        "imported_episode_count": 0,
+        "records": 0,
+        "verified_skill_count": 0
+      },
+      "recall_decisions": [
+        {
+          "decisions": [
+            {
+              "bank": "ALL",
+              "decision": "ABSTAIN",
+              "reason": "M0_NO_MEMORY"
+            }
+          ],
+          "rejection_count": 0,
+          "decision_telemetry_count": 0
+        }
+      ],
+      "official_result_available": true,
+      "resolved": true,
+      "grader_status": "success",
+      "grader_private_sha256": "437baab84b534c678a5bc9d82be286782ca112530be100855bf405c14a358cba",
+      "official_references_verified": 9,
+      "status": "PASS",
+      "checks_passed": 96,
+      "checks_failed": 0,
+      "failures": []
+    },
+    {
+      "cell": "B",
+      "arm": "EXISTING_M2",
+      "target_id": "swebench_verified--sympy__sympy-23262",
+      "actions": 14,
+      "tool_event_tail_sha256": "21a99b2e71a0a0a8cc014995c2f063f7c21b4e7b1f716cc32ad5f1c7b65f2f56",
+      "tool_event_file_sha256": "d00e22b83e07d26b18e321528221b897f59a1edcf17368dd3cf02a033e1369c7",
+      "submission_sha256": "0b2d9bf34331a48dc19ca52655689df30602ad7ef84803621faba6b1479bb70d",
+      "submission_patch_bytes": 1302,
+      "agent_completed": true,
+      "wall_seconds": 136.01314687728882,
+      "tool_errors": 0,
+      "operation_counts": {
+        "info": 1,
+        "recall": 1,
+        "tool": 10,
+        "diff": 1,
+        "submit": 1
+      },
+      "command_count": 3,
+      "successful_commands": 2,
+      "commands": [
+        {
+          "sequence": 8,
+          "ok": true,
+          "exit_code": 1,
+          "public_suite": false,
+          "public_test_counts": {},
+          "inline_python_check": true,
+          "assertion_error_marker": true,
+          "before_first_edit": true,
+          "stdout_bytes": 80,
+          "stderr_bytes": 89
+        },
+        {
+          "sequence": 11,
+          "ok": true,
+          "exit_code": 0,
+          "public_suite": true,
+          "public_test_counts": {
+            "passed": 64,
+            "skipped": 54
+          },
+          "inline_python_check": false,
+          "assertion_error_marker": false,
+          "before_first_edit": false,
+          "stdout_bytes": 652,
+          "stderr_bytes": 0
+        },
+        {
+          "sequence": 12,
+          "ok": true,
+          "exit_code": 0,
+          "public_suite": false,
+          "public_test_counts": {},
+          "inline_python_check": true,
+          "assertion_error_marker": false,
+          "before_first_edit": false,
+          "stdout_bytes": 80,
+          "stderr_bytes": 0
+        }
+      ],
+      "memory_queries": 1,
+      "memory_injections": 1,
+      "memory_bytes": 5806,
+      "injected_memory_ids": [
+        "dev-oracle-pr-4812e05cf6aa81c3adb7f0f9"
+      ],
+      "controller_sha256": "a18a579ba4a9f1b2fe7c7e0c028d05bbe71b09cee1c2c49b5d7acf0be497dabf",
+      "seed_bank_counts": {
+        "imported_episode_count": 0,
+        "records": 1,
+        "verified_skill_count": 0
+      },
+      "recall_decisions": [
+        {
+          "decisions": [
+            {
+              "bank": "EPISODIC",
+              "decision": "ABSTAIN",
+              "reason": "no_eligible"
+            },
+            {
+              "bank": "USER_SEMANTIC",
+              "decision": "ABSTAIN",
+              "reason": "no_eligible"
+            },
+            {
+              "bank": "ORG_SEMANTIC",
+              "confidence": 1.0,
+              "decision": "USE",
+              "graph_hash": "0adb11904c9d81d7ed8c72bcb302a4087449a59c3c45a0de83903787c19e4498",
+              "margin": 1.0,
+              "memory_id": "dev-oracle-pr-4812e05cf6aa81c3adb7f0f9"
+            }
+          ],
+          "rejection_count": 0,
+          "decision_telemetry_count": 3
+        }
+      ],
+      "official_result_available": true,
+      "resolved": true,
+      "grader_status": "success",
+      "grader_private_sha256": "46c62d7349904ece50f8470faf2b2afa7f74597fc534919c8a2295e1fa238057",
+      "official_references_verified": 9,
+      "status": "PASS",
+      "checks_passed": 96,
+      "checks_failed": 0,
+      "failures": []
+    },
+    {
+      "cell": "C",
+      "arm": "SKHYNIX",
+      "target_id": "swebench_verified--sympy__sympy-23262",
+      "actions": 16,
+      "tool_event_tail_sha256": "69b55e607a9b22484dba5f2832143d54fd9b3741317e4e797a6f75747b8382e9",
+      "tool_event_file_sha256": "02ebac2e5d36ef64cd2a1a15b926c93a6e41f03c610f2a943840ddd05497d091",
+      "submission_sha256": "99587ce7a319a1238a4f56db2d4a5b1f514e460cbe07480271ef8bfddb873441",
+      "submission_patch_bytes": 1344,
+      "agent_completed": true,
+      "wall_seconds": 143.95762825012207,
+      "tool_errors": 0,
+      "operation_counts": {
+        "info": 1,
+        "recall": 1,
+        "tool": 12,
+        "diff": 1,
+        "submit": 1
+      },
+      "command_count": 2,
+      "successful_commands": 1,
+      "commands": [
+        {
+          "sequence": 12,
+          "ok": true,
+          "exit_code": 1,
+          "public_suite": false,
+          "public_test_counts": {},
+          "inline_python_check": true,
+          "assertion_error_marker": true,
+          "before_first_edit": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 217
+        },
+        {
+          "sequence": 14,
+          "ok": true,
+          "exit_code": 0,
+          "public_suite": true,
+          "public_test_counts": {
+            "passed": 64,
+            "skipped": 54
+          },
+          "inline_python_check": false,
+          "assertion_error_marker": false,
+          "before_first_edit": false,
+          "stdout_bytes": 651,
+          "stderr_bytes": 0
+        }
+      ],
+      "memory_queries": 1,
+      "memory_injections": 0,
+      "memory_bytes": 0,
+      "injected_memory_ids": [],
+      "controller_sha256": "046aaeb39bbe97312f4af76c6e522cec6205d22dc85954804d331232c8b1a375",
+      "seed_bank_counts": {
+        "imported_episode_count": 0,
+        "repository_knowledge_count": 1,
+        "source_content_identical_to_existing_m2": true,
+        "verified_skill_count": 0
+      },
+      "recall_decisions": [
+        {
+          "decisions": [
+            {
+              "bank": "SKILL",
+              "candidate_count": 0,
+              "decision": "ABSTAIN",
+              "eligible_count": 0,
+              "policy": "SKILL_REPO_EPISODE",
+              "snapshot_sha256": "sha256:2222956420e34e057e74c6e4cfc44ac25cdcf7e06afd83afc8ffa2f77789d0dd"
+            },
+            {
+              "bank": "REPOSITORY_SEMANTIC",
+              "candidate_count": 1,
+              "decision": "ABSTAIN",
+              "eligible_count": 0,
+              "policy": "SKILL_REPO_EPISODE",
+              "snapshot_sha256": "sha256:2222956420e34e057e74c6e4cfc44ac25cdcf7e06afd83afc8ffa2f77789d0dd"
+            },
+            {
+              "bank": "EPISODIC",
+              "candidate_count": 0,
+              "decision": "ABSTAIN",
+              "eligible_count": 0,
+              "policy": "SKILL_REPO_EPISODE",
+              "snapshot_sha256": "sha256:2222956420e34e057e74c6e4cfc44ac25cdcf7e06afd83afc8ffa2f77789d0dd"
+            }
+          ],
+          "rejection_count": 0,
+          "decision_telemetry_count": 0
+        }
+      ],
+      "official_result_available": true,
+      "resolved": true,
+      "grader_status": "success",
+      "grader_private_sha256": "f130873e52b9c675ab21d554e2d1ac473690d6e2b3c1a66f8222c964b04a27aa",
+      "official_references_verified": 9,
+      "status": "PASS",
+      "checks_passed": 98,
+      "checks_failed": 0,
+      "failures": []
+    }
+  ],
+  "native_model": {
+    "requested": "gpt-6-astra",
+    "model_snapshot_attested": false,
+    "orchestrator_reported_selection": "Three explicit spawn calls used model=gpt-6-astra and fork_turns=none; reasoning inherited.",
+    "agent_access_attestation": "Parent reports all three agents self-attested broker-only access; launcher export retained separately by parent."
+  },
+  "accounting": {
+    "dedicated_model_api_gateway_guard_verified": true,
+    "dedicated_model_api_calls_reported": 0,
+    "dedicated_paid_ledger_present": false,
+    "native_codex_token_usage": null,
+    "native_codex_cost": null
+  },
+  "limitations": [
+    "The native agents were instructed to use a protocol-restricted broker, but host-native permissions were not OS-restricted. Hash-chained receipts do not prove absence of unrecorded host access.",
+    "Native Astra selection is explicitly requested and parent-reported; this artifact cannot independently attest the backend model snapshot.",
+    "The dedicated model API gateway is disabled. Native Codex token usage and cost remain unknown, not zero.",
+    "Only one previously examined DEV target was evaluated; this is not heldout or population solve-rate evidence.",
+    "The native context did not apply the SkhynixAgentRuntime L0 projection; no procedural skills or experience learning were seeded.",
+    "Restricted evidence is hashed and final official classification is re-parsed without emitting gold patches, hidden tests, raw prompts or tool content.",
+    "No models, graders or containers were invoked during this audit; only read-only Git diff/status data were inspected."
+  ]
+}

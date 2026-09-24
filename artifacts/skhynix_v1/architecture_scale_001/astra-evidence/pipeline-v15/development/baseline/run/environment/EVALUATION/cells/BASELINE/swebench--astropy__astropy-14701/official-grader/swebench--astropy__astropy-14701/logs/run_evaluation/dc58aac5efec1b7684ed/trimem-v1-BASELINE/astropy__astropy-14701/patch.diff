@@ -1,0 +1,296 @@
+diff --git a/astropy/cosmology/io/__init__.py b/astropy/cosmology/io/__init__.py
+index 9ed9a99..6bfea08 100644
+--- a/astropy/cosmology/io/__init__.py
++++ b/astropy/cosmology/io/__init__.py
+@@ -5,4 +5,4 @@ Read/Write/Interchange methods for `astropy.cosmology`. **NOT public API**.
+ """
+ 
+ # Import to register with the I/O machinery
+-from . import cosmology, ecsv, html, mapping, model, row, table, yaml
++from . import cosmology, ecsv, html, latex, mapping, model, row, table, yaml
+diff --git a/astropy/cosmology/io/latex.py b/astropy/cosmology/io/latex.py
+new file mode 100644
+index 0000000..2a5aa98
+--- /dev/null
++++ b/astropy/cosmology/io/latex.py
+@@ -0,0 +1,83 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++
++from astropy.cosmology.connect import readwrite_registry
++from astropy.cosmology.core import Cosmology
++from astropy.table import QTable
++
++from .table import to_table
++
++# Format look-up for conversion, {original_name: new_name}.
++# TODO: move this information into the Parameters themselves.
++_FORMAT_TABLE = {
++    "H0": r"$H_{0}$",
++    "Om0": r"$\Omega_{m,0}$",
++    "Ode0": r"$\Omega_{\Lambda,0}$",
++    "Tcmb0": r"$T_{0}$",
++    "Neff": r"$N_{\mathrm{eff}}$",
++    "m_nu": r"$m_{\nu}$",
++    "Ob0": r"$\Omega_{b,0}$",
++    "w0": r"$w_{0}$",
++    "wa": r"$w_{a}$",
++    "wz": r"$w_{z}$",
++    "wp": r"$w_{p}$",
++    "zp": r"$z_{p}$",
++}
++
++
++def write_latex(
++    cosmology, file, *, overwrite=False, cls=QTable, latex_names=True, **kwargs
++):
++    r"""Serialize the |Cosmology| into a LaTeX table.
++
++    Parameters
++    ----------
++    cosmology : |Cosmology| subclass instance
++        The cosmology to serialize.
++    file : path-like or file-like
++        Where to write the LaTeX table.
++    overwrite : bool, optional keyword-only
++        Whether to overwrite the file, if it exists.
++    cls : |Table| class, optional keyword-only
++        Astropy |Table| (sub)class to use when writing. Default is |QTable|.
++    latex_names : bool, optional keyword-only
++        Whether to format parameter column names as LaTeX, for example
++        ``H0`` as ``$H_{0}$``. Default is `True`.
++    **kwargs : Any
++        Passed to ``cls.write`` with ``format="ascii.latex"``. Column names in
++        options such as ``formats`` and ``include_names`` refer to the names
++        after applying ``latex_names``.
++
++    Raises
++    ------
++    TypeError
++        If ``cls`` is not a subclass of |Table|.
++    ValueError
++        If ``format`` is given and is neither ``ascii.latex`` nor ``latex``.
++
++    Notes
++    -----
++    The cosmology class is stored in the first column, since LaTeX tables do
++    not preserve table metadata. Units are written as a separate header row
++    by the table writer. This format supports writing only.
++    """
++    format = kwargs.pop("format", "ascii.latex")
++    if format not in ("ascii.latex", "latex"):
++        raise ValueError(f"format must be 'ascii.latex' or 'latex', not {format}")
++
++    table = to_table(cosmology, cls=cls, cosmology_in_meta=False)
++
++    if latex_names:
++        new_names = [_FORMAT_TABLE.get(name, name) for name in cosmology.__parameters__]
++        table.rename_columns(cosmology.__parameters__, new_names)
++
++    table.write(file, overwrite=overwrite, format="ascii.latex", **kwargs)
++
++
++def latex_identify(origin, filepath, fileobj, *args, **kwargs):
++    """Identify LaTeX output files by their ``.tex`` extension."""
++    return origin == "write" and isinstance(filepath, str) and filepath.endswith(".tex")
++
++
++readwrite_registry.register_writer("ascii.latex", Cosmology, write_latex)
++readwrite_registry.register_writer("latex", Cosmology, write_latex)
++readwrite_registry.register_identifier("ascii.latex", Cosmology, latex_identify)
+diff --git a/astropy/cosmology/io/tests/test_.py b/astropy/cosmology/io/tests/test_.py
+index 8db934e..54c735f 100644
+--- a/astropy/cosmology/io/tests/test_.py
++++ b/astropy/cosmology/io/tests/test_.py
+@@ -16,6 +16,11 @@ def test_expected_readwrite_io():
+ 
+     assert got == expected
+ 
++    got = {k for k, _ in readwrite_registry._writers.keys()}
++    expected = {"ascii.ecsv", "ascii.html", "ascii.latex", "latex"}
++
++    assert got == expected
++
+ 
+ def test_expected_convert_io():
+     """Test that ONLY the expected I/O is registered."""
+diff --git a/astropy/cosmology/io/tests/test_latex.py b/astropy/cosmology/io/tests/test_latex.py
+new file mode 100644
+index 0000000..082b914
+--- /dev/null
++++ b/astropy/cosmology/io/tests/test_latex.py
+@@ -0,0 +1,120 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++
++from copy import deepcopy
++from io import StringIO
++
++import numpy as np
++import pytest
++
++import astropy.units as u
++from astropy.cosmology import Planck18, w0waCDM
++from astropy.cosmology.io.latex import latex_identify, write_latex
++from astropy.table import QTable, Table
++
++
++@pytest.mark.parametrize("format", ["ascii.latex", "latex"])
++@pytest.mark.parametrize("cls", [QTable, Table])
++@pytest.mark.parametrize("latex_names", [True, False])
++def test_write_latex(format, cls, latex_names):
++    """Export names, scalar values, vector parameters, and units."""
++    output = StringIO()
++    Planck18.write(output, format=format, cls=cls, latex_names=latex_names)
++    lines = output.getvalue().splitlines()
++
++    assert lines[0] == r"\begin{table}"
++    assert lines[1] == r"\begin{tabular}{cccccccc}"
++    header = lines[2].removesuffix(r" \\").split(" & ")
++    if latex_names:
++        assert header == [
++            "cosmology",
++            "name",
++            r"$H_{0}$",
++            r"$\Omega_{m,0}$",
++            r"$T_{0}$",
++            r"$N_{\mathrm{eff}}$",
++            r"$m_{\nu}$",
++            r"$\Omega_{b,0}$",
++        ]
++    else:
++        assert header == [
++            "cosmology", "name", "H0", "Om0", "Tcmb0", "Neff", "m_nu", "Ob0"
++        ]
++    for unit in (u.km / (u.Mpc * u.s), u.K, u.eV):
++        assert unit.to_string("latex_inline") in lines[3]
++    assert "FlatLambdaCDM & Planck18 & 67.66 & 0.30966 & 2.7255 & 3.046" in lines[4]
++    assert "0.0 .. 0.06" in lines[4]
++    assert "0.04897" in lines[4]
++    assert lines[-2:] == [r"\end{tabular}", r"\end{table}"]
++
++
++def test_write_latex_options():
++    output = StringIO()
++    Planck18.write(
++        output,
++        format="ascii.latex",
++        include_names=["name", r"$H_{0}$"],
++        formats={r"$H_{0}$": ".1f"},
++        caption="Planck cosmology",
++        col_align="lr",
++        latexdict={"tabletype": "table*"},
++    )
++    result = output.getvalue()
++    assert r"\begin{table*}" in result
++    assert r"\caption{Planck cosmology}" in result
++    assert r"\begin{tabular}{lr}" in result
++    assert "Planck18 & 67.7" in result
++    assert r"$\Omega_{m,0}$" not in result
++
++
++@pytest.mark.parametrize("use_string", [True, False])
++def test_write_latex_file(tmp_path, use_string):
++    path = tmp_path / "cosmology.tex"
++    target = str(path) if use_string else path
++    Planck18.write(target)
++    original = path.read_text()
++    assert r"$H_{0}$" in original
++    with pytest.raises(OSError):
++        Planck18.write(target)
++    assert path.read_text() == original
++    Planck18.write(target, overwrite=True, latex_names=False)
++    assert "H0 & Om0" in path.read_text()
++
++
++def test_write_latex_nonflat():
++    cosmo = w0waCDM(70, 0.3, 0.6, w0=-0.9, wa=0.1, name="example")
++    output = StringIO()
++    cosmo.write(output, format="ascii.latex")
++    header = output.getvalue().splitlines()[2]
++    for name in (r"$\Omega_{\Lambda,0}$", r"$w_{0}$", r"$w_{a}$"):
++        assert name in header
++
++
++def test_write_latex_preserves_cosmology():
++    cosmo = Planck18.clone(meta={"H0": {"format": ".2f"}, "reference": "example"})
++    metadata = deepcopy(cosmo.meta)
++    masses = cosmo.m_nu.copy()
++    cosmo.write(StringIO(), format="ascii.latex")
++    assert cosmo.meta == metadata
++    np.testing.assert_array_equal(cosmo.m_nu, masses)
++    assert cosmo.H0 == Planck18.H0
++
++
++@pytest.mark.parametrize("format", ["ascii.latex", "latex"])
++def test_write_latex_direct(format):
++    output = StringIO()
++    write_latex(Planck18, output, format=format)
++    assert "Planck18" in output.getvalue()
++
++
++def test_write_latex_invalid_options():
++    with pytest.raises(TypeError, match="'cls' must be"):
++        Planck18.write(StringIO(), format="ascii.latex", cls=list)
++    with pytest.raises(ValueError, match="format must be"):
++        write_latex(Planck18, StringIO(), format="ascii.ecsv")
++
++
++def test_latex_identify():
++    assert latex_identify("write", "cosmology.tex", None)
++    assert not latex_identify("read", "cosmology.tex", None)
++    assert not latex_identify("write", "cosmology.ecsv", None)
++    assert not latex_identify("write", None, StringIO())
+diff --git a/docs/changes/cosmology/14701.feature.rst b/docs/changes/cosmology/14701.feature.rst
+new file mode 100644
+index 0000000..ad7245f
+--- /dev/null
++++ b/docs/changes/cosmology/14701.feature.rst
+@@ -0,0 +1,4 @@
++Cosmologies can now be exported to LaTeX tables using ``Cosmology.write`` with
++``format="ascii.latex"`` (or ``"latex"``). Parameter names are formatted as
++LaTeX by default, and output filenames ending in ``.tex`` are identified
++automatically.
+diff --git a/docs/cosmology/io.rst b/docs/cosmology/io.rst
+index e4da4b8..3ffa9be 100644
+--- a/docs/cosmology/io.rst
++++ b/docs/cosmology/io.rst
+@@ -34,8 +34,9 @@ The |Cosmology| class includes two methods, |Cosmology.read| and
+ |Cosmology.write|, that make it possible to read from and write to files.
+ 
+ The registered ``read`` / ``write`` formats include "ascii.ecsv" and
+-"ascii.html", like for Table. Also, custom ``read`` / ``write`` formats may be
+-registered into the Astropy Cosmology I/O framework.
++"ascii.html", like for Table. The "ascii.latex" format (also available as
++"latex") supports writing a cosmology as a LaTeX table. Also, custom ``read`` /
++``write`` formats may be registered into the Astropy Cosmology I/O framework.
+ 
+ Writing a cosmology instance requires only the file location and optionally,
+ if the file format cannot be inferred, a keyword argument "format". Additional
+@@ -179,6 +180,28 @@ the |Planck18| cosmology from which it was created.
+ 
+ Perhaps more usefully, |QTable| can be saved to ``latex`` and ``html`` formats,
+ which can be copied into journal articles and websites, respectively.
++A cosmology can also be exported directly to a LaTeX table:
++
++.. doctest-skip::
++
++    >>> Planck18.write("planck18.tex", format="ascii.latex")
++
++The format can be omitted for filenames ending in ``.tex``. The table includes
++the cosmology class, name, and parameters, with units in a separate header row.
++Parameter names use LaTeX notation by default, such as ``$H_{0}$`` for ``H0``;
++pass ``latex_names=False`` to keep the original names. This is an export format
++and cannot be read back with |Cosmology.read|.
++
++Additional keywords are passed to the :class:`~astropy.io.ascii.Latex` table
++writer. For example, to select columns, format a value, and add a caption:
++
++.. doctest-skip::
++
++    >>> Planck18.write("planck18.tex", format="ascii.latex", overwrite=True,
++    ...                include_names=["name", r"$H_{0}$"],
++    ...                formats={r"$H_{0}$": ".1f"}, caption="Planck cosmology")
++
++Column names in these options refer to the names after applying ``latex_names``.
+ 
+ .. EXAMPLE END
+ 

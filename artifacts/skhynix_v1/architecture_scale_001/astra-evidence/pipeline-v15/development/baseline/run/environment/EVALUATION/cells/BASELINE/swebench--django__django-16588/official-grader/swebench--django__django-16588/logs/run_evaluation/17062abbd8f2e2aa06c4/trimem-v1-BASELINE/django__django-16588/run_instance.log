@@ -1,0 +1,72 @@
+2026-09-20 20:27:22,152 - INFO - Creating container for django__django-16588...
+2026-09-20 20:27:22,185 - INFO - Container for django__django-16588 created: 5201729de82a307b8ff20c1354d5dd30f71f7e3cac652a1020ec220e211c71ca
+2026-09-20 20:27:22,294 - INFO - Container for django__django-16588 started: 5201729de82a307b8ff20c1354d5dd30f71f7e3cac652a1020ec220e211c71ca
+2026-09-20 20:27:22,294 - INFO - Intermediate patch for django__django-16588 written to logs/run_evaluation/17062abbd8f2e2aa06c4/trimem-v1-BASELINE/django__django-16588/patch.diff, now applying to container...
+2026-09-20 20:27:22,427 - INFO - >>>>> Applied Patch:
+Checking patch django/template/defaultfilters.py...
+Checking patch tests/template_tests/filter_tests/test_floatformat.py...
+Applied patch django/template/defaultfilters.py cleanly.
+Applied patch tests/template_tests/filter_tests/test_floatformat.py cleanly.
+
+2026-09-20 20:27:23,507 - INFO - Git diff before:
+diff --git a/django/template/defaultfilters.py b/django/template/defaultfilters.py
+index 78881987fc..6009c94b3d 100644
+--- a/django/template/defaultfilters.py
++++ b/django/template/defaultfilters.py
+@@ -183,7 +183,7 @@ def floatformat(text, arg=-1):
+     tupl = d.as_tuple()
+     units = len(tupl[1])
+     units += -tupl[2] if m else tupl[2]
+-    prec = abs(p) + units + 1
++    prec = max(1, abs(p) + units + 1)
+ 
+     # Avoid conversion to scientific notation by accessing `sign`, `digits`,
+     # and `exponent` from Decimal.as_tuple() directly.
+diff --git a/tests/template_tests/filter_tests/test_floatformat.py b/tests/template_tests/filter_tests/test_floatformat.py
+index 8f75c2b4ee..b0309bce5e 100644
+--- a/tests/template_tests/filter_tests/test_floatformat.py
++++ b/tests/template_tests/filter_tests/test_floatformat.py
+@@ -114,6 +114,18 @@ class FunctionTests(SimpleTestCase):
+         self.assertEqual(floatformat("0.00", 0), "0")
+         self.assertEqual(floatformat(Decimal("0.00"), 0), "0")
+ 
++    def test_zero_values_with_trailing_zeros(self):
++        for value in ("0.0000", "0.000000", "-0.0000", "-0.000000"):
++            for num in (value, Decimal(value)):
++                for decimal_places, expected in (
++                    (-2, "0"),
++                    (0, "0"),
++                    (2, "0.00"),
++                    (6, "0.000000"),
++                ):
++                    with self.subTest(num=num, decimal_places=decimal_places):
++                        self.assertEqual(floatformat(num, decimal_places), expected)
++
+     def test_negative_zero_values(self):
+         tests = [
+             (-0.01, -1, "0.0"),
+2026-09-20 20:27:23,507 - INFO - Eval script for django__django-16588 written to logs/run_evaluation/17062abbd8f2e2aa06c4/trimem-v1-BASELINE/django__django-16588/eval.sh; copying to container...
+2026-09-20 20:27:26,682 - INFO - Test runtime: 3.12 seconds
+2026-09-20 20:27:26,682 - INFO - Test output for django__django-16588 written to logs/run_evaluation/17062abbd8f2e2aa06c4/trimem-v1-BASELINE/django__django-16588/test_output.txt
+2026-09-20 20:27:26,723 - INFO - Git diff after:
+diff --git a/django/template/defaultfilters.py b/django/template/defaultfilters.py
+index 78881987fc..6009c94b3d 100644
+--- a/django/template/defaultfilters.py
++++ b/django/template/defaultfilters.py
+@@ -183,7 +183,7 @@ def floatformat(text, arg=-1):
+     tupl = d.as_tuple()
+     units = len(tupl[1])
+     units += -tupl[2] if m else tupl[2]
+-    prec = abs(p) + units + 1
++    prec = max(1, abs(p) + units + 1)
+ 
+     # Avoid conversion to scientific notation by accessing `sign`, `digits`,
+     # and `exponent` from Decimal.as_tuple() directly.
+2026-09-20 20:27:26,723 - INFO - Git diff changed after running eval script
+2026-09-20 20:27:26,723 - INFO - Grading answer for django__django-16588...
+2026-09-20 20:27:26,724 - INFO - report: {'django__django-16588': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_zero_values (template_tests.filter_tests.test_floatformat.FunctionTests.test_zero_values)'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_floatformat01 (template_tests.filter_tests.test_floatformat.FloatformatTests.test_floatformat01)', 'test_floatformat02 (template_tests.filter_tests.test_floatformat.FloatformatTests.test_floatformat02)', 'test_float_dunder_method (template_tests.filter_tests.test_floatformat.FunctionTests.test_float_dunder_method)', 'test_force_grouping (template_tests.filter_tests.test_floatformat.FunctionTests.test_force_grouping)', 'test_infinity (template_tests.filter_tests.test_floatformat.FunctionTests.test_infinity)', 'test_inputs (template_tests.filter_tests.test_floatformat.FunctionTests.test_inputs)', '#15789', 'test_negative_zero_values (template_tests.filter_tests.test_floatformat.FunctionTests.test_negative_zero_values)', 'test_unlocalize (template_tests.filter_tests.test_floatformat.FunctionTests.test_unlocalize)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-16588: resolved: True
+2026-09-20 20:27:26,724 - INFO - Attempting to stop container sweb.eval.django__django-16588.17062abbd8f2e2aa06c4...
+2026-09-20 20:27:41,930 - INFO - Container sweb.eval.django__django-16588.17062abbd8f2e2aa06c4 stopped successfully.
+2026-09-20 20:27:41,930 - INFO - Attempting to remove container sweb.eval.django__django-16588.17062abbd8f2e2aa06c4...
+2026-09-20 20:27:41,989 - INFO - Container sweb.eval.django__django-16588.17062abbd8f2e2aa06c4 removed successfully.

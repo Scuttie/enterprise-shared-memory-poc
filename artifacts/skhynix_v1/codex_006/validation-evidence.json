@@ -1,0 +1,16 @@
+{
+  "distinct_passed_tests": 504,
+  "status": "PASS",
+  "xml": [
+    {
+      "name": "codex_006_integration_validation.xml",
+      "sha256": "38fb0da7afbba37ad8d6c835333241f4ae594750b53d1700fd2fbeb6bb345d51",
+      "test_cases": 239
+    },
+    {
+      "name": "codex_006_procedure_validation.xml",
+      "sha256": "09cf1531c248ad87a0b04ba7b5ae2c33744403c83cfe7918d7e16886615b9cd2",
+      "test_cases": 265
+    }
+  ]
+}

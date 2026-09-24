@@ -1,0 +1,124 @@
+diff --git a/sympy/sets/handlers/comparison.py b/sympy/sets/handlers/comparison.py
+index 6f7a19f..2f91879 100644
+--- a/sympy/sets/handlers/comparison.py
++++ b/sympy/sets/handlers/comparison.py
+@@ -49,6 +49,15 @@ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return tfn[fuzzy_and(map(fuzzy_bool, eqs))]
+ 
+ 
++@dispatch(ProductSet, FiniteSet) # type:ignore
++def _eval_is_eq(lhs, rhs): # noqa: F811
++    if lhs.is_finite_set is False:
++        return False
++    finite = lhs.rewrite(FiniteSet)
++    if isinstance(finite, FiniteSet):
++        return is_eq(finite, rhs)
++
++
+ @dispatch(Set, Basic) # type:ignore
+ def _eval_is_eq(lhs, rhs): # noqa: F811
+     return False
+diff --git a/sympy/sets/handlers/issubset.py b/sympy/sets/handlers/issubset.py
+index fdca060..118e603 100644
+--- a/sympy/sets/handlers/issubset.py
++++ b/sympy/sets/handlers/issubset.py
+@@ -1,7 +1,7 @@
+ from sympy import S, Symbol
+ from sympy.core.logic import fuzzy_and, fuzzy_bool, fuzzy_not, fuzzy_or
+ from sympy.core.relational import Eq
+-from sympy.sets.sets import FiniteSet, Interval, Set, Union
++from sympy.sets.sets import FiniteSet, Interval, ProductSet, Set, Union
+ from sympy.sets.fancysets import Complexes, Reals, Range, Rationals
+ from sympy.multipledispatch import dispatch
+ 
+@@ -12,6 +12,12 @@
+ def is_subset_sets(a, b): # noqa:F811
+     return None
+ 
++@dispatch(ProductSet, FiniteSet)  # type: ignore # noqa:F811
++def is_subset_sets(a, b): # noqa:F811
++    finite = a.rewrite(FiniteSet)
++    if isinstance(finite, FiniteSet):
++        return finite.is_subset(b)
++
+ @dispatch(Interval, Interval)  # type: ignore # noqa:F811
+ def is_subset_sets(a, b): # noqa:F811
+     # This is correct but can be made more comprehensive...
+diff --git a/sympy/sets/sets.py b/sympy/sets/sets.py
+index 3c4aa86..11f7ea2 100644
+--- a/sympy/sets/sets.py
++++ b/sympy/sets/sets.py
+@@ -843,6 +843,15 @@ def __iter__(self):
+         """
+         return iproduct(*self.sets)
+ 
++    def _eval_rewrite_as_FiniteSet(self, *args, **kwargs):
++        if self.is_finite_set and self.is_iterable:
++            try:
++                return FiniteSet(*self)
++            except (TypeError, ValueError):
++                # Finite iterable sets can still have undecidable membership
++                # or a symbolic number of elements.
++                pass
++
+     @property
+     def is_empty(self):
+         return fuzzy_or(s.is_empty for s in self.sets)
+diff --git a/sympy/sets/tests/test_sets.py b/sympy/sets/tests/test_sets.py
+index d29a046..d6f4889 100644
+--- a/sympy/sets/tests/test_sets.py
++++ b/sympy/sets/tests/test_sets.py
+@@ -618,6 +618,53 @@ def test_ProductSet():
+     assert Contains((1, 2), Z2) is S.true
+ 
+ 
++def test_ProductSet_rewrite_FiniteSet():
++    a = FiniteSet(1, 2)
++    b = ProductSet(a, a)
++    c = FiniteSet((1, 1), (1, 2), (2, 1), (2, 2))
++    assert b.rewrite(FiniteSet) == c
++    assert ProductSet(a).rewrite(FiniteSet) == FiniteSet((1,), (2,))
++    assert ProductSet(b, a).rewrite(FiniteSet) == FiniteSet(*ProductSet(c, a))
++    assert ProductSet(Range(2), a).rewrite(FiniteSet) == FiniteSet(
++        (0, 1), (0, 2), (1, 1), (1, 2))
++    assert ProductSet(S.Integers, a).rewrite(FiniteSet) == ProductSet(S.Integers, a)
++    symbolic = ProductSet(Intersection(FiniteSet(1), Interval(0, x)), a)
++    assert symbolic.rewrite(FiniteSet) == symbolic
++
++
++def test_issue_20438():
++    a = FiniteSet(1, 2)
++    b = ProductSet(a, a)
++    c = FiniteSet((1, 1), (1, 2), (2, 1), (2, 2))
++    assert b.intersection(c) == c.intersection(b)
++    assert b.is_subset(c) is True
++    assert c.is_subset(b) is True
++    assert Eq(b, c) is S.true
++    assert Eq(c, b) is S.true
++    assert Eq(b, c, evaluate=False).simplify() is S.true
++
++    missing = FiniteSet((1, 1), (1, 2), (2, 1))
++    extra = c | FiniteSet((3, 3))
++    assert b.is_subset(missing) is False
++    assert b.is_subset(extra) is True
++    assert extra.is_subset(b) is False
++    assert Eq(b, missing) is S.false
++    assert Eq(extra, b) is S.false
++    assert b.is_subset(FiniteSet(1, 2)) is False
++    assert Eq(b, FiniteSet(1, 2)) is S.false
++
++    symbolic = ProductSet(FiniteSet(x), FiniteSet(1))
++    point = FiniteSet((1, 1))
++    assert symbolic.is_subset(point) is None
++    assert unchanged(Eq, symbolic, point)
++    assert symbolic.subs(x, 1).is_subset(point) is True
++    assert symbolic.subs(x, 2).is_subset(point) is False
++    infinite = ProductSet(S.Integers, a)
++    assert infinite.is_subset(c) is False
++    assert Eq(infinite, c) is S.false
++    assert Eq(c, infinite) is S.false
++
++
+ def test_ProductSet_of_single_arg_is_not_arg():
+     assert unchanged(ProductSet, Interval(0, 1))
+     assert unchanged(ProductSet, ProductSet(Interval(0, 1)))

@@ -1,0 +1,1 @@
+{"arm":"BASELINE","at":1789901659.2797253,"details":{"same_cell_only":true,"workers_issued_before":0},"ordinal":6,"previous_sha256":"3248b1afa38738d82207b6d724df84cc69b2a631cd27f11211a251bf6214cce1","sequence":53,"sha256":"30891288509596badd07c1680d1493375cc68bc4904fa2508bf1a9de43ff5b76","stage":"SOLVE_STARTED","task_id":"swebench--django__django-14374"}

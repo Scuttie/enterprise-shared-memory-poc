@@ -3,12 +3,7 @@ never be called) and the sentence-transformers embedder (counted). Proves: physi
 shared Memory instances, infer=False, add/search/delete, canonical metadata survives, hidden LLM calls == 0,
 embeddings counted, and that the authoritative content is reloaded from PostgreSQL — Mem0 prose is never
 returned to the caller."""
-import os
 import pytest
-
-os.environ.setdefault("MEM0_TELEMETRY", "False")
-os.environ.setdefault("OPENAI_API_KEY", "sk-noop")          # placeholder; infer=False must never call it
-os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 pytest.importorskip("mem0")
 pytest.importorskip("torch")
@@ -19,15 +14,10 @@ from conftest import eng, run, seed_contract                 # noqa: E402
 
 COUNT = {"llm": 0, "embed": 0}
 
-_orig_create = openai.resources.chat.completions.Completions.create
-
-
 def _spy_create(self, *a, **k):                              # no-network: increment and refuse
     COUNT["llm"] += 1
     raise AssertionError("LLM transport must not be called under infer=False")
 
-
-openai.resources.chat.completions.Completions.create = _spy_create
 
 _orig_encode = st.SentenceTransformer.encode
 
@@ -37,8 +27,6 @@ def _spy_encode(self, *a, **k):
     return _orig_encode(self, *a, **k)
 
 
-st.SentenceTransformer.encode = _spy_encode
-
 from enterprise_memory.indexing.mem0_indexes import build_real     # noqa: E402
 from enterprise_memory.indexing.projection import build_record     # noqa: E402
 from enterprise_memory.indexing.models import SHARED, PRIVATE, IndexRecord, ObjectType  # noqa: E402
@@ -46,6 +34,21 @@ from enterprise_memory.indexing import canonical_loaders as cl     # noqa: E402
 
 MODEL = "sentence-transformers/multi-qa-MiniLM-L6-cos-v1"
 pytestmark = pytest.mark.mem0
+
+
+@pytest.fixture(autouse=True)
+def _isolated_no_llm_runtime(monkeypatch: pytest.MonkeyPatch):
+    """Keep the no-network placeholders and spies local to each test."""
+
+    monkeypatch.setenv("MEM0_TELEMETRY", "False")
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-noop")
+    monkeypatch.setenv("TOKENIZERS_PARALLELISM", "false")
+    monkeypatch.setattr(
+        openai.resources.chat.completions.Completions,
+        "create",
+        _spy_create,
+    )
+    monkeypatch.setattr(st.SentenceTransformer, "encode", _spy_encode)
 
 
 def _paths(tmp):

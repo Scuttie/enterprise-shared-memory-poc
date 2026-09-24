@@ -1,0 +1,59 @@
+{
+  "schema": "trimem/development-response-contract-amendment/1.0",
+  "status": "FROZEN_PRE_RESULT_PENDING_FRESH_EXECUTION",
+  "recorded_at_utc": "2026-09-04T02:57:07Z",
+  "classification": "PRE_RESULT_PROVIDER_OUTPUT_CONTRACT_AMENDMENT",
+  "causal_boundary": {
+    "historical_run_id": 33788493773,
+    "historical_run_attempt": 1,
+    "historical_api_calls": 1,
+    "historical_completed_task_arm_runs": 0,
+    "performance_result_existed_before_amendment": false,
+    "reason": "No DEV task-arm completed and no performance result existed."
+  },
+  "preserved": {
+    "model_id": "gpt-5.4-mini-2026-03-17",
+    "reasoning_effort": "medium",
+    "solve_max_output_tokens": 2048,
+    "development_targets": 12,
+    "development_task_arm_runs": 72,
+    "m2_candidates": 4,
+    "selection_rule_changed": false,
+    "memory_system_parameters_changed": false,
+    "grader_smoke_rerun": false
+  },
+  "role_output_ceiling_assertion": {
+    "before": {
+      "decomposition": 2048,
+      "experience_extraction": 1536
+    },
+    "after": {
+      "decomposition": 8192,
+      "experience_extraction": 8192
+    }
+  },
+  "development_cost_envelope": {
+    "input_token_hard_cap": 36000000,
+    "output_token_hard_cap": 4718592,
+    "uncached_input_price_per_million_usd": 0.75,
+    "output_price_per_million_usd": 4.5,
+    "uncached_token_cost_ceiling_usd": 48.233664,
+    "phase_currency_hard_cap_usd": 50.0,
+    "expected_cost_changed": false,
+    "expected_total_usd": 10.8
+  },
+  "output_contracts": {
+    "decomposition": "trimem_decomposition_v1",
+    "experience_extraction": "trimem_experience_extraction_v1",
+    "solve": null,
+    "config": "configs/trimem_v1/provider_output_schemas.json",
+    "lock": "artifacts/trimem_v1/provider_output_schema_lock.json"
+  },
+  "execution_boundary": {
+    "fresh_request_id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_004",
+    "required_authorization": "TRIMEM_V1_DEVELOPMENT_TUNING_RESPONSE_CONTRACT_RECOVERY_EXEC_APPROVED_ONCE",
+    "historical_run_rerun_allowed": false,
+    "heldout_allowed": false,
+    "ablation_allowed": false
+  }
+}

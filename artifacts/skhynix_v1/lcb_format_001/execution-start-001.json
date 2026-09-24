@@ -1,0 +1,9 @@
+{
+  "execution_head": "c262dd2cdc5d03df4b2654a539126850eebbbe43",
+  "initial_transport_check_sessions": 2,
+  "protocol_sha256": "6e7c52625d6043eedfcecf787859d7ad091a23528352253823825fd9ed742e65",
+  "root": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\lcb_format_001\\run-001",
+  "scheduled_sessions": 144,
+  "started_at": "2026-09-24T02:44:55.778323+00:00",
+  "transport_check_sessions_are_in_primary_cohort": true
+}

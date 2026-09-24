@@ -1,0 +1,179 @@
+diff --git a/django/forms/models.py b/django/forms/models.py
+index a88c384..f2b004f 100644
+--- a/django/forms/models.py
++++ b/django/forms/models.py
+@@ -1005,13 +1005,21 @@ def _get_foreign_key(parent_model, model, fk_name=None, can_fail=False):
+     # avoid circular import
+     from django.db.models import ForeignKey
+     opts = model._meta
++    all_parents = parent_model._meta.get_parent_list() + [parent_model]
+     if fk_name:
+         fks_to_parent = [f for f in opts.fields if f.name == fk_name]
+         if len(fks_to_parent) == 1:
+             fk = fks_to_parent[0]
+-            if not isinstance(fk, ForeignKey) or \
+-                    (fk.remote_field.model != parent_model and
+-                     fk.remote_field.model not in parent_model._meta.get_parent_list()):
++            if (
++                not isinstance(fk, ForeignKey) or
++                (
++                    fk.remote_field.model not in all_parents and
++                    (
++                        not fk.remote_field.model._meta.proxy or
++                        fk.remote_field.model._meta.concrete_model not in all_parents
++                    )
++                )
++            ):
+                 raise ValueError(
+                     "fk_name '%s' is not a ForeignKey to '%s'." % (fk_name, parent_model._meta.label)
+                 )
+@@ -1024,8 +1032,11 @@ def _get_foreign_key(parent_model, model, fk_name=None, can_fail=False):
+         fks_to_parent = [
+             f for f in opts.fields
+             if isinstance(f, ForeignKey) and (
+-                f.remote_field.model == parent_model or
+-                f.remote_field.model in parent_model._meta.get_parent_list()
++                f.remote_field.model in all_parents or
++                (
++                    f.remote_field.model._meta.proxy and
++                    f.remote_field.model._meta.concrete_model in all_parents
++                )
+             )
+         ]
+         if len(fks_to_parent) == 1:
+diff --git a/tests/admin_checks/tests.py b/tests/admin_checks/tests.py
+index 67625c7..1b51656 100644
+--- a/tests/admin_checks/tests.py
++++ b/tests/admin_checks/tests.py
+@@ -7,7 +7,9 @@ from django.contrib.contenttypes.admin import GenericStackedInline
+ from django.contrib.messages.middleware import MessageMiddleware
+ from django.contrib.sessions.middleware import SessionMiddleware
+ from django.core import checks
++from django.db import models
+ from django.test import SimpleTestCase, override_settings
++from django.test.utils import isolate_apps
+ 
+ from .models import (
+     Album, Author, Book, City, Influence, Song, State, TwoAlbumFKAndAnE,
+@@ -672,6 +674,34 @@ class SystemChecksTestCase(SimpleTestCase):
+         errors = MyAdmin(Album, AdminSite()).check()
+         self.assertEqual(errors, [])
+ 
++    @isolate_apps('admin_checks')
++    def test_inline_foreign_key_to_proxy_superclass(self):
++        class Reporter(models.Model):
++            pass
++
++        class Journalist(Reporter):
++            class Meta:
++                proxy = True
++
++        class SpecialJournalist(Journalist):
++            class Meta:
++                proxy = True
++
++        class Article(models.Model):
++            journalist = models.ForeignKey(Journalist, models.CASCADE)
++
++        class ArticleInline(admin.TabularInline):
++            model = Article
++
++        class SpecialJournalistAdmin(admin.ModelAdmin):
++            inlines = [ArticleInline]
++
++        for fk_name in (None, 'journalist'):
++            with self.subTest(fk_name=fk_name):
++                ArticleInline.fk_name = fk_name
++                model_admin = SpecialJournalistAdmin(SpecialJournalist, AdminSite())
++                self.assertEqual(model_admin.check(), [])
++
+     def test_inlines_property(self):
+         class CitiesInline(admin.TabularInline):
+             model = City
+diff --git a/tests/model_formsets/models.py b/tests/model_formsets/models.py
+index 72728ec..daa2299 100644
+--- a/tests/model_formsets/models.py
++++ b/tests/model_formsets/models.py
+@@ -18,6 +18,21 @@ class BetterAuthor(Author):
+     write_speed = models.IntegerField()
+ 
+ 
++class AuthorProxy(Author):
++    class Meta:
++        proxy = True
++
++
++class AuthorProxyProxy(AuthorProxy):
++    class Meta:
++        proxy = True
++
++
++class BookWithAuthorProxy(models.Model):
++    author = models.ForeignKey(AuthorProxy, models.CASCADE)
++    title = models.CharField(max_length=100)
++
++
+ class Book(models.Model):
+     author = models.ForeignKey(Author, models.CASCADE)
+     title = models.CharField(max_length=100)
+diff --git a/tests/model_formsets/tests.py b/tests/model_formsets/tests.py
+index 98fd501..00185a9 100644
+--- a/tests/model_formsets/tests.py
++++ b/tests/model_formsets/tests.py
+@@ -14,7 +14,8 @@ from django.http import QueryDict
+ from django.test import TestCase, skipUnlessDBFeature
+ 
+ from .models import (
+-    AlternateBook, Author, AuthorMeeting, BetterAuthor, Book, BookWithCustomPK,
++    AlternateBook, Author, AuthorMeeting, AuthorProxy, AuthorProxyProxy,
++    BetterAuthor, Book, BookWithAuthorProxy, BookWithCustomPK,
+     BookWithOptionalAltEditor, ClassyMexicanRestaurant, CustomPrimaryKey,
+     Location, Membership, MexicanRestaurant, Owner, OwnerProfile, Person,
+     Place, Player, Poem, Poet, Post, Price, Product, Repository, Restaurant,
+@@ -1206,6 +1207,46 @@ class ModelFormsetTest(TestCase):
+         self.assertEqual(type(_get_foreign_key(Restaurant, Owner)), models.ForeignKey)
+         self.assertEqual(type(_get_foreign_key(MexicanRestaurant, Owner)), models.ForeignKey)
+ 
++    def test_foreign_key_to_proxy_parent(self):
++        for parent_model in (Author, AuthorProxy, AuthorProxyProxy, BetterAuthor):
++            for fk_name in (None, 'author'):
++                with self.subTest(parent_model=parent_model, fk_name=fk_name):
++                    FormSet = inlineformset_factory(
++                        parent_model, BookWithAuthorProxy, fk_name=fk_name,
++                        fields='__all__',
++                    )
++                    self.assertIs(FormSet.fk, BookWithAuthorProxy._meta.get_field('author'))
++
++    def test_inline_formset_with_proxy_superclass(self):
++        author = AuthorProxyProxy.objects.create(name='Author')
++        other_author = AuthorProxy.objects.create(name='Other author')
++        BookWithAuthorProxy.objects.create(author=other_author, title='Other book')
++        FormSet = inlineformset_factory(
++            AuthorProxyProxy, BookWithAuthorProxy, fields='__all__',
++        )
++        data = {
++            'bookwithauthorproxy_set-TOTAL_FORMS': '1',
++            'bookwithauthorproxy_set-INITIAL_FORMS': '0',
++            'bookwithauthorproxy_set-0-title': 'New book',
++            'bookwithauthorproxy_set-0-author': str(author.pk),
++        }
++        formset = FormSet(data, instance=author)
++        self.assertTrue(formset.is_valid())
++        book, = formset.save()
++        book.refresh_from_db()
++        self.assertEqual(book.author, author)
++        self.assertEqual(book.title, 'New book')
++        self.assertSequenceEqual(FormSet(instance=author).get_queryset(), [book])
++
++    def test_foreign_key_to_unrelated_proxy(self):
++        msg = "fk_name 'author' is not a ForeignKey to 'model_formsets.Poet'."
++        with self.assertRaisesMessage(ValueError, msg):
++            _get_foreign_key(Poet, BookWithAuthorProxy, fk_name='author')
++        msg = "'model_formsets.BookWithAuthorProxy' has no ForeignKey to 'model_formsets.Poet'."
++        with self.assertRaisesMessage(ValueError, msg):
++            _get_foreign_key(Poet, BookWithAuthorProxy)
++        self.assertIsNone(_get_foreign_key(Poet, BookWithAuthorProxy, can_fail=True))
++
+     def test_unique_validation(self):
+         FormSet = modelformset_factory(Product, fields="__all__", extra=1)
+         data = {

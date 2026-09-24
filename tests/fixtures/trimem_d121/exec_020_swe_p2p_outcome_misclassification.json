@@ -1,0 +1,177 @@
+{
+  "schema": "trimem/development-exec-020-swe-p2p-outcome-misclassification/1.0",
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "branch": "codex/trimem-coder-v1",
+  "source_head": "138619d5d5e83009c3c22a4d9619a9394b0b59a1",
+  "execution_head": "f15371a612d6c35acabe56e7d3196429b95ca3bb",
+  "performance_measured": false,
+  "pass_at_1": null,
+  "workflow_run": {
+    "id": 34240675412,
+    "run_attempt": 1,
+    "head_sha": "f15371a612d6c35acabe56e7d3196429b95ca3bb",
+    "path": ".github/workflows/trimem-benchmark.yml",
+    "conclusion": "failure",
+    "created_at_utc": "2026-09-08T14:48:42Z",
+    "updated_at_utc": "2026-09-08T15:05:06Z"
+  },
+  "request": {
+    "id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_020",
+    "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_020.json",
+    "source_head": "138619d5d5e83009c3c22a4d9619a9394b0b59a1",
+    "raw_bytes": 49618,
+    "raw_sha256": "c177d9664972eaa128c3d7efe6666c192c2666912fd52b258364944fa3ad2665",
+    "git_blob_oid": "c37ed850c34bb8d398e7670eaf242e4e6020f14d",
+    "payload_sha256": "041f09b92e2f8b42224c560a95dac82fd76cbede7aa726042135d54fdab53d7c",
+    "freeze_sha256": "3b91b43f7b299bdcca90f604e78975308543b5680b37be0a19ebb370686b5e71"
+  },
+  "successful_gates": {
+    "branch_trigger_preflight": "PASS",
+    "bounded_context_preflight": "PASS",
+    "approval_materialization": "PASS",
+    "protected_environment": "PASS",
+    "exec_gate": "PASS",
+    "exact_model_metadata": "PASS",
+    "protocol_canary": "PASS",
+    "image_materialization": "PASS",
+    "protected_grader_factory_rehearsal": "PASS",
+    "evidence_custody": "PASS"
+  },
+  "scientific_cell": {
+    "sequence_index": 0,
+    "target_id": "swebench_verified--django__django-16100",
+    "stream": "M2-baseline",
+    "official_grader": true,
+    "container_started": true,
+    "harness_exit_code": 0,
+    "authoritative_report_present": true,
+    "fail_to_pass": {
+      "failure_count": 0,
+      "status": "PASS"
+    },
+    "pass_to_pass": {
+      "failure_count": 1,
+      "status": "REGRESSION"
+    },
+    "computed_resolved": false,
+    "scientific_outcome": "UNRESOLVED",
+    "terminal_cell_committed": false,
+    "terminal_cells": 0,
+    "campaign_cells": 72,
+    "artifacts": {
+      "official_report_sha256": "0c039090a67cf690dbeef9711331fa517c8f8166ffbe12fa93eb43b744c7ee3b",
+      "test_status_report_sha256": "f8309e7d66b62c3a6b31d54b21fc167c94a3651cc2e0faa2ca125bfa2726b516",
+      "test_output_sha256": "6b0120ae7e687a5f4644b278fdec16efb487b38314b6eff0c721852542ae288d",
+      "grader_journal_file_sha256": "9b7bcddf3d90f7990f35d96a5a43d42d2dfa8f30e867ddea9b0a5475f5cf114f",
+      "grader_journal_sha256": "81eb1a59baa1b38bc24785b98d1be9bd5616bf3025a30729def31e60a317bcd4",
+      "grader_stdout_sha256": "9966a54b9c87018702edd9eb8cb6561e717044fd8eb2376cfafbac8d17bb4f03",
+      "grader_stderr_sha256": "916013e1ffd51023e33caad9cc3b6887fd3e3827f8ec82ed8882713dbc055aba"
+    }
+  },
+  "observed_failure": {
+    "adapter_status": "adapter_contract_failed",
+    "driver_error": "official grader failed before an authoritative result: adapter_contract_failed",
+    "process_disposition": "GLOBAL_GRADER_INFRA_FAILURE",
+    "process_exit_code": 1,
+    "request_020_attempt_one_consumed": true,
+    "request_020_rerun_allowed": false,
+    "resume_eligible": false,
+    "resume_started": false,
+    "driver_stdout_bytes": 164,
+    "driver_stdout_sha256": "99fcb964f2d4d5a5a61a400a95ce1389aac2f51410789c56e6b2bf04f0014ef4",
+    "driver_stderr_bytes": 440,
+    "driver_stderr_sha256": "2bdb74770e41a560af98ce265b46837de05e3a95791efba67b3ee07ba3424cee"
+  },
+  "root_cause": {
+    "classification": "OFFICIAL_GRADER_SCIENTIFIC_OUTCOME_CLASSIFICATION_FAILURE",
+    "failure_subtype": "SWE_PASS_TO_PASS_REGRESSION_MISCLASSIFIED_AS_ADAPTER_CONTRACT_FAILURE",
+    "scientific_result": "UNRESOLVED",
+    "incorrect_behavior": "A non-empty PASS_TO_PASS failure set was rejected as an adapter contract failure even though the upstream harness exited zero and emitted a complete authoritative report.",
+    "recovery_contract": {
+      "source_domain_equality_required": true,
+      "failure_sets_disjoint_and_complete": true,
+      "pass_to_pass_regression_is_valid_scientific_unresolved": true,
+      "computed_resolved_predicate": "len(FAIL_TO_PASS.failure)==0 and len(PASS_TO_PASS.failure)==0",
+      "pass_to_pass_regression_count_is_reported": true,
+      "matrix_recomputes_outcome_independently": true,
+      "adapter_and_infrastructure_failures_remain_fail_closed": true
+    }
+  },
+  "actuals": {
+    "benchmark_image_pulls": 13,
+    "cached_input_tokens": 0,
+    "completed_task_arm_runs": 0,
+    "decomposition_calls": 1,
+    "exact_model_metadata_requests": 1,
+    "extraction_calls": 0,
+    "grader_attempts": 1,
+    "grader_containers": 1,
+    "input_tokens": 143150,
+    "model_generation_calls": 18,
+    "official_grader_runs": 1,
+    "output_tokens": 6444,
+    "paid_model_calls": 18,
+    "protocol_canary_generation_calls": 1,
+    "provider_control_plane_requests": 1,
+    "reasoning_tokens": null,
+    "reasoning_tokens_status": "UNAVAILABLE_NOT_INFERRED",
+    "scientific_model_calls": 17,
+    "solve_calls": 16,
+    "task_arm_reservations": 1,
+    "task_arm_runs": 0,
+    "terminal_cells": 0,
+    "total_tokens_excluding_unavailable_reasoning_breakout": 149594,
+    "total_usd": "0.136360500000"
+  },
+  "scientific_actuals": {
+    "cached_input_tokens": 0,
+    "decomposition_calls": 1,
+    "extraction_calls": 0,
+    "input_tokens": 142200,
+    "model_generation_calls": 17,
+    "output_tokens": 6416,
+    "paid_model_calls": 17,
+    "reasoning_tokens": null,
+    "reasoning_tokens_status": "UNAVAILABLE_NOT_INFERRED",
+    "solve_calls": 16,
+    "total_tokens_excluding_unavailable_reasoning_breakout": 148616,
+    "total_usd": "0.135522000000"
+  },
+  "canary_actuals": {
+    "cached_input_tokens": 0,
+    "input_tokens": 950,
+    "model_generation_calls": 1,
+    "output_tokens": 28,
+    "paid_model_calls": 1,
+    "reasoning_tokens": null,
+    "reasoning_tokens_status": "UNAVAILABLE_NOT_INFERRED",
+    "total_tokens_excluding_unavailable_reasoning_breakout": 978,
+    "total_usd": "0.000838500000"
+  },
+  "evidence_custody": {
+    "public_result": "ABSENT_EXPECTED",
+    "remote_custody_status": "TRIMEM_FAILURE_EVIDENCE_CUSTODY_PASS",
+    "restricted_artifact": {
+      "id": 10062528991,
+      "digest": "311d83fd954d01f84622f45647eda55457653d2454abdf0c21e51d51b33a91fd",
+      "size_in_bytes": 10939876
+    },
+    "inventory_artifact": {
+      "id": 10062530700,
+      "digest": "2f6ea4abaa2b26213db5c21bb73bd490e54d2cd72a058bdd29920cde197a9a32",
+      "size_in_bytes": 11170
+    },
+    "custody_artifact": {
+      "id": 10062533559,
+      "digest": "d4fd4cad7f8995276b2506dd774c2c1a9ff0689ed72b40f9f8dfa7935833db4b",
+      "size_in_bytes": 648
+    },
+    "restricted_inventory": {
+      "inventory_sha256": "2eb8ab41af1211632134ecfe92348a44537ea346e479dd15211f8099e7e4f14a",
+      "document_sha256": "afdeb86c4e777b447dc9d2977014d1fa8f1ed6e682305b743b83f69f7cc65989",
+      "total_bytes": 10562762,
+      "total_files": 239
+    },
+    "custody_document_sha256": "8e935544342872f8eee558327260091e6bf0d00f915b7aa8f818ca45f816000c"
+  }
+}

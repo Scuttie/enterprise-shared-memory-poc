@@ -1,0 +1,35 @@
+{
+    "schema":  "skhynix/scale-stop-diagnostic/1.0",
+    "observed_at":  "2026-09-15T07:02:05.7763702Z",
+    "incident":  "2026-09-15-native-usage-limit",
+    "status":  "BLOCKED",
+    "task_id":  "django__django-16686",
+    "worker":  "worker-003",
+    "direct_cause":  "native session error and turn.failed: usage limit",
+    "provider_retry_text":  "Sep 19th, 2026 10:34 PM",
+    "provider_retry_timezone":  "NOT_SPECIFIED",
+    "native_exit_code":  1,
+    "native_timed_out":  false,
+    "final_linux_submission_state":  "NOT_INSPECTED_WSL_STOPPED",
+    "last_confirmed_source_cells":  45,
+    "last_confirmed_L1":  151,
+    "last_confirmed_L2_nodes":  885,
+    "last_confirmed_L2_relations":  812,
+    "last_confirmed_L3":  0,
+    "last_healthy_kst":  "2026-09-15T15:51:37+09:00",
+    "pipeline_blocked_kst":  "2026-09-15T15:53:32+09:00",
+    "first_monitor_stopped_kst":  "2026-09-15T15:56:37+09:00",
+    "native_completion":  {
+                              "path":  "C:\\Users\\jewon\\AppData\\Local\\Temp\\skhynix-architecture-scale-001-native-v1\\training-120\\TRAINING\\django__django-16686\\PDF_MEMORY\\worker-003\\output\\completion.json",
+                              "sha256":  "5af0803e4c6f797cad76d7a98d2e42469f432ea26852e72e48b56fe28f77d49f"
+                          },
+    "native_events":  {
+                          "path":  "C:\\Users\\jewon\\AppData\\Local\\Temp\\skhynix-architecture-scale-001-native-v1\\training-120\\TRAINING\\django__django-16686\\PDF_MEMORY\\worker-003\\output\\events.jsonl",
+                          "sha256":  "fca95e59945ad31eb71d0b369029baeac93354a9cd1980d0057210de47ae3300"
+                      },
+    "progress_sha256":  "22b1caf425d14f94cd85524c7cb28db34351d1abba45c1bb9d36030fa1c4f2e5",
+    "automatic_retry":  false,
+    "wsl_started_for_diagnosis":  false,
+    "model_calls_for_diagnosis":  0,
+    "grader_runs_for_diagnosis":  0
+}

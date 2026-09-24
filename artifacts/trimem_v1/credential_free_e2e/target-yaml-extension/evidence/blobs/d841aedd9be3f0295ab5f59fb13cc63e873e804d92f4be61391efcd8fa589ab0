@@ -1,0 +1,9 @@
+--- a/src/config.py
++++ b/src/config.py
+@@ -1,4 +1,5 @@
+ def load_config(name):
+-    if not name.endswith(('.yaml', '.yml')):
++    folded = name.casefold()
++    if not folded.endswith(('.yaml', '.yml')):
+         raise ValueError('yaml required')
+     return 'loaded'

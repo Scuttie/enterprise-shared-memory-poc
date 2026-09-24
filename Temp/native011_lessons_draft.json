@@ -1,0 +1,50 @@
+{
+    "schema":  "skhynix/native011-source-lessons/1.0",
+    "scientific_role":  "RETROSPECTIVE_DISJOINT_TRANSFER",
+    "source_spec":  {
+                        "path":  "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/codex_010/diagnostic-source-spec.json",
+                        "sha256":  "02ada35adbb3900391dfe27dbb4394ab113b83e51a11182c14c11911c8f950c5"
+                    },
+    "lessons":  [
+                    {
+                        "lesson_id":  "canonical_polynomial_zero",
+                        "family":  "polynomial_normalization",
+                        "source_task_id":  "swebench_verified--sympy__sympy-20428",
+                        "repository":  "sympy/sympy",
+                        "source_commit":  "c0e85160406f9bf2bcaa2992138587668a1cd0bc",
+                        "source_instruction_sha256":  "25ab0d27dec7b75aca8e84b90104dea0cde0d61728608ed79d379f94758b8969",
+                        "source_run_root":  "/home/trimem-runner/skhynix-codex-007/eval-20428/execution",
+                        "source_cell":  "A",
+                        "source_patch_sha256":  "0bb4f083aabd8085be101de54df78dbf7e8df3d93d04fc69e53f6751a6864653",
+                        "public_probe_sha256":  "41262bce2a86a70b255bc96c781fed4755045aa29133ce4b104acc8ff066155a",
+                        "source_lesson_sha256":  "5c84e4f6cf14e7b3a77c10eef8eff75a83f0c1516f8bf3f076e7e0d51844b1f7",
+                        "lesson_text":  "When a polynomial operation changes coefficients, check the representation invariant at its output. A value that prints as zero can still retain stored zero coefficients. In a dense representation, inspect the documented canonical zero shape at each recursion level before deciding whether an arithmetic result is normalized.\n\nTrace the invariant through sibling ground operations, including multiplication, quotient and exact quotient, and through both univariate and recursive variants. A correction in one path does not establish that the other paths normalize their results. Read the current domain\u0027s equality and zero behavior; symbolic coefficients can become zero during arithmetic, so expression truthiness alone is not evidence of canonical storage.\n\nFor a repair, identify where existing strip or zero helpers belong without changing the mathematical operation. Preserve exact-division errors and ordinary nonzero behavior. Check leading zeros, an all-zero result and a nonzero tail after coefficient simplification. Exercise recursive coefficient lists as well as flat lists. Compare the stored result with the appropriate canonical form, not only its rendered expression.\n\nThen check downstream consumers that depend on normalization: zero predicates, representation, degree, term-factor extraction and primitive decomposition. Reproduce the suspected behavior with public examples in the current checkout and verify the relevant public tests. This is an analyst-derived diagnostic lesson from earlier public code observations, not a supplied patch or a validated repair for this task. Its applicability and any improvement must be established independently.",
+                        "lesson_sha256":  "6f48425504b743e97661461a38af4b25c5adfd5021b860c7bd7a1e0727afa5b8",
+                        "lesson_utf8_bytes":  1670,
+                        "lesson_word_count":  231
+                    },
+                    {
+                        "lesson_id":  "extensional_set_relations",
+                        "family":  "set_relations",
+                        "source_task_id":  "swebench_verified--sympy__sympy-20438",
+                        "repository":  "sympy/sympy",
+                        "source_commit":  "33b47e4bd60e2302e42616141e76285038b724d6",
+                        "source_instruction_sha256":  "fd765160d7049b22cddabc6176449775fa71e4bbb261f4f5cdb923cc3b183cf8",
+                        "source_run_root":  "/home/trimem-runner/skhynix-codex-007/eval-20438/execution",
+                        "source_cell":  "A",
+                        "source_patch_sha256":  "a8e5bc4748fff9c6938cff63ea5ab5db6dc6a51812993f774b3b44d3ec262492",
+                        "public_probe_sha256":  "41262bce2a86a70b255bc96c781fed4755045aa29133ce4b104acc8ff066155a",
+                        "source_lesson_sha256":  "2122192d944dfa1fdfed793ca7f8e23caef0adf3e5fb5267623dbe8ff2b0fc62",
+                        "lesson_text":  "When comparing sets, check mathematical membership rather than relying on their expression structure. Different representations may describe the same elements. For equal sets, both subset directions should hold while proper subset and proper superset relations should be false. Inspect whether a strict relation incorrectly uses structural inequality as evidence that the sets differ.\n\nTrace related behavior through subset, superset, proper relations and equality, in both operand orders. Preserve unknown symbolic outcomes: inability to decide membership or a reverse subset relation is not proof of truth or falsity. Use the current code\u0027s fuzzy logic where needed, and examine equality simplification as well as direct comparison. A set complement must not be assumed to behave like an arithmetic difference.\n\nWhen explicit enumeration is appropriate, base it on known finite and iterable capabilities rather than requiring one concrete set class. Another representation, such as a finite range, can describe the same values. Do not enumerate infinite sets or sets with unknown finiteness. A symbolic finite set may still resist iteration, so preserve an unevaluated outcome when its elements cannot be established.\n\nCheck alternate representations, equal and unequal sets, symbolic membership, intersection symmetry and explicit finite rewriting. Include both operand orders in public examples and verify the relevant public tests in the current checkout. This is an analyst-derived diagnostic lesson from earlier public observations, not a supplied patch or a validated repair for this task. Its applicability and any improvement must be established independently.",
+                        "lesson_sha256":  "972e71c3d1c6ad1ff539df407d2ed73f96d6be06237e46dd601f66ebefdf6525",
+                        "lesson_utf8_bytes":  1670,
+                        "lesson_word_count":  240
+                    }
+                ],
+    "source_official_resolved":  false,
+    "analyst_interpretation_verified":  false,
+    "verified_skill":  false,
+    "target_fix_verified":  false,
+    "manual_analyst_diagnosis":  true,
+    "gate_b_count":  0
+}

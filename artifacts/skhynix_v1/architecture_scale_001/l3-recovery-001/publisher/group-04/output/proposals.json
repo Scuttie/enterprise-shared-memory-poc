@@ -1,0 +1,72 @@
+{
+  "schema": "skhynix/native-architecture-reflection-proposals/1.0",
+  "reflection_sha256": "34522471a049df88f211a32a4caa4f99ecc974575aef2d281ffb37d3c43a12a6",
+  "proposals": [
+    {
+      "template": {
+        "subgoal_signature": "Replace reuse of context-stale derived state with resolution from the current authoritative context, where configuration updates or differing item globals invalidate the reused value. Update the access path and remove its obsolete synchronization or caching machinery. Applies to the demonstrated configuration-backed property and per-item condition evaluation cases; it does not establish a general prohibition on caching. Verification covers only the observed historical checkpoint, not final repair or official benchmark success.",
+        "parameters": [
+          "source_path",
+          "first_old",
+          "first_new",
+          "second_old",
+          "second_new",
+          "test_argv"
+        ],
+        "preconditions": [
+          "Inspect the current public checkout and validate the bound public test command; this workflow does not certify a target repair.",
+          "Establish that a reused derived value can outlive the configuration or evaluation context that determines it, and identify the authoritative context available at access time.",
+          "The bound source replacements must jointly establish live resolution and remove the obsolete reuse machinery; arbitrary pairs of text replacements do not satisfy this procedure.",
+          "The unchanged regression command must first fail with an assertion exposing the context mismatch and then pass after only the bound non-test source edits, with complete output and nonzero executed tests.",
+          "Later mutations are outside the verification claim."
+        ],
+        "steps": [
+          "run_command {test_argv}",
+          "replace_text {source_path}\nold_text: {first_old}\nnew_text: {first_new}",
+          "replace_text {source_path}\nold_text: {second_old}\nnew_text: {second_new}",
+          "run_command {test_argv}"
+        ],
+        "verification_command": "{test_argv}",
+        "language": "python"
+      },
+      "observations": [
+        {
+          "source_alias": "source-1",
+          "bindings": {
+            "source_path": "pylint/checkers/similar.py",
+            "first_old": "    def set_option(self, optname, value, action=None, optdict=None):\n",
+            "first_new": "    @property\n    def min_lines(self) -> int:\n        \"\"\"Read the threshold from the current checker configuration.\"\"\"\n        return self.config.min_similarity_lines\n\n    @min_lines.setter\n    def min_lines(self, value: int) -> None:\n        self.config.min_similarity_lines = value\n\n    def set_option(self, optname, value, action=None, optdict=None):\n",
+            "second_old": "        if optname == \"min-similarity-lines\":\n            self.min_lines = self.config.min_similarity_lines\n        elif optname == \"ignore-comments\":\n",
+            "second_new": "        if optname == \"ignore-comments\":\n",
+            "test_argv": "[\"/opt/miniconda3/envs/testbed/bin/python\",\"-m\",\"pytest\",\"tests/checkers/unittest_similar.py::test_checker_configured_min_similarity_lines\",\"tests/test_self.py::TestRunTC::test_min_similarity_lines\",\"-q\"]"
+          },
+          "step_numbers": [
+            36,
+            37,
+            38,
+            39
+          ],
+          "red_step": 36
+        },
+        {
+          "source_alias": "source-2",
+          "bindings": {
+            "source_path": "src/_pytest/mark/evaluate.py",
+            "first_old": "from typing import Any\nfrom typing import Dict\nfrom typing import List\nfrom typing import Optional\n\nfrom ..outcomes import fail\nfrom ..outcomes import TEST_OUTCOME\nfrom .structures import Mark\nfrom _pytest.config import Config\nfrom _pytest.nodes import Item\nfrom _pytest.store import StoreKey\n\n\nevalcache_key = StoreKey[Dict[str, Any]]()\n\n\ndef cached_eval(config: Config, expr: str, d: Dict[str, object]) -> Any:\n    default = {}  # type: Dict[str, object]\n    evalcache = config._store.setdefault(evalcache_key, default)\n    try:\n        return evalcache[expr]\n    except KeyError:\n        import _pytest._code\n\n        exprcode = _pytest._code.compile(expr, mode=\"eval\")\n        evalcache[expr] = x = eval(exprcode, d)\n        return x\n",
+            "first_new": "from typing import Dict\nfrom typing import List\nfrom typing import Optional\n\nfrom ..outcomes import fail\nfrom ..outcomes import TEST_OUTCOME\nfrom .structures import Mark\nfrom _pytest.nodes import Item\n",
+            "second_old": "                    if isinstance(expr, str):\n                        d = self._getglobals()\n                        result = cached_eval(self.item.config, expr, d)\n",
+            "second_new": "                    if isinstance(expr, str):\n                        import _pytest._code\n\n                        d = self._getglobals()\n                        exprcode = _pytest._code.compile(expr, mode=\"eval\")\n                        result = eval(exprcode, d)\n",
+            "test_argv": "[\"/opt/miniconda3/envs/testbed/bin/python\",\"-m\",\"pytest\",\"testing/test_skipping.py::TestEvaluator::test_string_condition_uses_item_globals\",\"-q\"]"
+          },
+          "step_numbers": [
+            15,
+            16,
+            17,
+            18
+          ],
+          "red_step": 15
+        }
+      ]
+    }
+  ]
+}

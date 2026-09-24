@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "docker",
+    "pull",
+    "swebench/sweb.eval.x86_64.sympy_1776_sympy-15875@sha256:e2812656720310590f43b2773a81f896dafe9e36efa151494a6663bb26ec49f0"
+  ],
+  "cwd": null,
+  "returncode": 0,
+  "started_at_unix_seconds": 1789306419.2548823,
+  "stderr": "",
+  "stdout": "docker.io/swebench/sweb.eval.x86_64.sympy_1776_sympy-15875@sha256:e2812656720310590f43b2773a81f896dafe9e36efa151494a6663bb26ec49f0: Pulling from swebench/sweb.eval.x86_64.sympy_1776_sympy-15875\n4f4fb700ef54: Pulling fs layer\nc8f3bca75a81: Pulling fs layer\n4f4fb700ef54: Already exists\n4f4fb700ef54: Pull complete\n8b09be019dac: Download complete\nc8f3bca75a81: Download complete\nc8f3bca75a81: Pull complete\nDigest: sha256:e2812656720310590f43b2773a81f896dafe9e36efa151494a6663bb26ec49f0\nStatus: Downloaded newer image for swebench/sweb.eval.x86_64.sympy_1776_sympy-15875@sha256:e2812656720310590f43b2773a81f896dafe9e36efa151494a6663bb26ec49f0\ndocker.io/swebench/sweb.eval.x86_64.sympy_1776_sympy-15875@sha256:e2812656720310590f43b2773a81f896dafe9e36efa151494a6663bb26ec49f0\n",
+  "wall_seconds": 5.820532560348511
+}

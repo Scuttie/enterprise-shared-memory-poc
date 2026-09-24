@@ -1,0 +1,6 @@
+{
+  "dataset": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v15/development/baseline/run/environment/EVALUATION/cells/BASELINE/swebench--astropy__astropy-14701/official-grader/swebench--astropy__astropy-14701/dataset.json",
+  "split": "test",
+  "task_repo": null,
+  "created_at": "2026-09-20T10:35:26+00:00"
+}

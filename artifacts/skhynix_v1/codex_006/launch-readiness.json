@@ -1,0 +1,41 @@
+{
+  "executed_evaluation_cells": 0,
+  "grader_calls_so_far": 0,
+  "initial_training": [
+    {
+      "cell": "A",
+      "name": "training-19637-a1",
+      "plan_sha256": "a2b2e2a47b6205d375e519428a2df8290c6be8b662020791c4b8ee518a65e062",
+      "requested_model": "gpt-6-astra",
+      "solver_user_id": "native-codex-006-training-19637-a1"
+    },
+    {
+      "cell": "A",
+      "name": "training-19783-a1",
+      "plan_sha256": "fc7977067038ca55a483eb2c9bfa117e1f5b6e5dca47c34b2817e363b7ab925c",
+      "requested_model": "gpt-6-astra",
+      "solver_user_id": "native-codex-006-training-19783-a1"
+    }
+  ],
+  "launch_contract_sha256": "2ee5e9cc316deb96caace00799e42b3cd105c290ae0bc6bae9a32383f8d882e9",
+  "schema": "skhynix/native006-launch-readiness/1.0",
+  "solver_model_calls_so_far": 0,
+  "source_freeze_sha256": "45f27c1ba03d193ea84a6cbcdef5c1afc3eb7f453e471ae0322a4595ec8588a0",
+  "status": "PASS",
+  "validation": {
+    "distinct_passed_tests": 504,
+    "status": "PASS",
+    "xml": [
+      {
+        "name": "codex_006_integration_validation.xml",
+        "sha256": "38fb0da7afbba37ad8d6c835333241f4ae594750b53d1700fd2fbeb6bb345d51",
+        "test_cases": 239
+      },
+      {
+        "name": "codex_006_procedure_validation.xml",
+        "sha256": "09cf1531c248ad87a0b04ba7b5ae2c33744403c83cfe7918d7e16886615b9cd2",
+        "test_cases": 265
+      }
+    ]
+  }
+}

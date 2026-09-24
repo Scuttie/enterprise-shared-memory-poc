@@ -1,0 +1,81 @@
+diff --git a/sympy/parsing/sympy_parser.py b/sympy/parsing/sympy_parser.py
+index 52711d1..ee1dbd1 100644
+--- a/sympy/parsing/sympy_parser.py
++++ b/sympy/parsing/sympy_parser.py
+@@ -1186,6 +1186,36 @@ def visit_BinOp(self, node):
+             return new_node
+         return node
+ 
++    def visit_Compare(self, node):
++        relations = {
++            ast.Eq: 'Eq',
++            ast.NotEq: 'Ne',
++            ast.Lt: 'Lt',
++            ast.LtE: 'Le',
++            ast.Gt: 'Gt',
++            ast.GtE: 'Ge',
++        }
++        if any(type(op) not in relations for op in node.ops):
++            return self.generic_visit(node)
++
++        operands = [self.visit(arg) for arg in [node.left] + node.comparators]
++        comparisons = [
++            ast.Call(
++                func=ast.Name(id=relations[type(op)], ctx=ast.Load()),
++                args=[left, right],
++                keywords=[ast.keyword(arg='evaluate', value=ast.Constant(False))],
++            )
++            for left, op, right in zip(operands, node.ops, operands[1:])
++        ]
++        if len(comparisons) == 1:
++            return comparisons[0]
++        # Chained comparisons are the conjunction of adjacent relations.
++        return ast.Call(
++            func=ast.Name(id='And', ctx=ast.Load()),
++            args=comparisons,
++            keywords=[ast.keyword(arg='evaluate', value=ast.Constant(False))],
++        )
++
+     def visit_Call(self, node):
+         new_node = self.generic_visit(node)
+         if isinstance(node.func, ast.Name) and node.func.id in self.functions:
+diff --git a/sympy/parsing/tests/test_sympy_parser.py b/sympy/parsing/tests/test_sympy_parser.py
+index 7c43e1f..ed4cecf 100644
+--- a/sympy/parsing/tests/test_sympy_parser.py
++++ b/sympy/parsing/tests/test_sympy_parser.py
+@@ -209,6 +209,35 @@ def test_function_evaluate_false():
+     assert str(parse_expr('cbrt(0)', evaluate=False)) == '0**(1/3)'
+ 
+ 
++def test_relational_evaluate_false():
++    from sympy import Add, Eq, Ne, Lt, Le, Gt, Ge
++
++    x = Symbol('x')
++    for op, relation in [
++        ('==', Eq), ('!=', Ne), ('<', Lt), ('<=', Le),
++        ('>', Gt), ('>=', Ge),
++    ]:
++        for left, right in [(1, 2), (2, 1), (1, 1), (1, x), (x, x)]:
++            text = '%s %s %s' % (left, op, right)
++            assert parse_expr(text, evaluate=False) == relation(
++                left, right, evaluate=False)
++        assert parse_expr('1 + 2 %s 3' % op, evaluate=False) == relation(
++            Add(1, 2, evaluate=False), 3, evaluate=False)
++
++    assert parse_expr('1 < 2') == True
++    assert parse_expr('1 > 2') == False
++    assert parse_expr('[1 < 2]', evaluate=False) == [
++        Lt(1, 2, evaluate=False)]
++    assert parse_expr('(1 < 2) & (2 <= 3)', evaluate=False) == And(
++        Lt(1, 2, evaluate=False), Le(2, 3, evaluate=False),
++        evaluate=False)
++    assert parse_expr('1 < x <= 3', evaluate=False) == And(
++        Lt(1, x, evaluate=False), Le(x, 3, evaluate=False),
++        evaluate=False)
++    assert parse_expr('1 in [1, 2]', evaluate=False) is True
++    assert parse_expr('x is x', evaluate=False) is True
++
++
+ def test_issue_10773():
+     inputs = {
+     '-10/5': '(-10)/5',

@@ -1,0 +1,23 @@
+{
+  "command": "python -c \"import sys,pytest; sys.path.insert(0,'scripts'); raise SystemExit(pytest.main(['tests/unit/test_trimem_lcb_dataset.py','-q']))\"",
+  "evidence_kind": "recorded_console_validation",
+  "grader_runs": 0,
+  "model_calls": 0,
+  "observed_at": "2026-09-23T14:50:04.840644+00:00",
+  "private_tests_decoded_by_unit_tests": 0,
+  "pytest_version": "9.1.1",
+  "python_version": "3.11.9",
+  "result": "PASS",
+  "schema": "trimem/lcb-dataset-unit-validation/1.0",
+  "source_reference": {
+    "bytes": 21216,
+    "path": "scripts/trimem_lcb_dataset.py",
+    "sha256": "3c6d087bfaaa4a72507a07688710eb846eb8e9358b7abdc56e14ba0edcff0962"
+  },
+  "tests_passed": 12,
+  "tests_reference": {
+    "bytes": 8320,
+    "path": "tests/unit/test_trimem_lcb_dataset.py",
+    "sha256": "3f677d9e8e586d6e9ed79644b42103b3e827630056f5bb37354dfe35c8524838"
+  }
+}

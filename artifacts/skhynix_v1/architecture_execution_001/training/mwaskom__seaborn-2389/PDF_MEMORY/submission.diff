@@ -1,0 +1,59 @@
+diff --git a/seaborn/matrix.py b/seaborn/matrix.py
+index 21f06c1..4ee1791 100644
+--- a/seaborn/matrix.py
++++ b/seaborn/matrix.py
+@@ -891,7 +891,7 @@ class ClusterGrid(Grid):
+ 
+                 # Replace na's with background color
+                 # TODO We should set these to transparent instead
+-                colors = colors.fillna('white')
++                colors = colors.astype(object).fillna('white')
+ 
+                 # Extract color values and labels from frame/series
+                 if isinstance(colors, pd.DataFrame):
+diff --git a/seaborn/tests/test_matrix.py b/seaborn/tests/test_matrix.py
+index 441cc3b..16ed925 100644
+--- a/seaborn/tests/test_matrix.py
++++ b/seaborn/tests/test_matrix.py
+@@ -1110,6 +1110,41 @@ class TestClustermap:
+         assert list(cm.col_colors) == [(1.0, 1.0, 1.0)] + list(self.col_colors[1:])
+         assert list(cm.row_colors) == [(1.0, 1.0, 1.0)] + list(self.row_colors[1:])
+ 
++    @pytest.mark.parametrize("axis", [0, 1])
++    @pytest.mark.parametrize("as_frame", [False, True])
++    @pytest.mark.parametrize("missing", [None, "null", "index"])
++    def test_row_col_colors_categorical(self, axis, as_frame, missing):
++        index = self.df_norm.axes[axis]
++        colors = pd.Series("red", index=index, name="annotation")
++        colors.iloc[-1] = "blue"
++        colors = colors.astype("category")
++        expected = [mpl.colors.to_rgb(c) for c in colors]
++
++        if missing == "null":
++            colors.iloc[0] = np.nan
++        elif missing == "index":
++            colors = colors.drop(index[0])
++        if missing is not None:
++            expected[0] = (1.0, 1.0, 1.0)
++
++        colors = colors.iloc[::-1]
++        if as_frame:
++            colors = colors.to_frame()
++            expected = [expected]
++        original = colors.copy(deep=True)
++
++        axis_name = "row" if axis == 0 else "col"
++        kws = self.default_kws.copy()
++        kws[axis_name + "_colors"] = colors
++        cg = mat.ClusterGrid(self.df_norm, **kws)
++
++        npt.assert_array_equal(getattr(cg, axis_name + "_colors"), expected)
++        assert getattr(cg, axis_name + "_color_labels") == ["annotation"]
++        if as_frame:
++            pdt.assert_frame_equal(colors, original)
++        else:
++            pdt.assert_series_equal(colors, original)
++
+     def test_row_col_colors_ignore_heatmap_kwargs(self):
+ 
+         g = mat.clustermap(self.rs.uniform(0, 200, self.df_norm.shape),

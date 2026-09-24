@@ -1,0 +1,56 @@
+{
+  "evaluation_tasks": [
+    {
+      "commit": "b4777fdcef467b7132c055f8ac2c9a5059e6a145",
+      "instruction_sha256": "bf86240347aa9728d82d7c032b1192f3ba486fda414381afcf2c44f6f0605755",
+      "language": "python",
+      "repository": "sympy/sympy",
+      "task_id": "swebench_verified--sympy__sympy-21612"
+    },
+    {
+      "commit": "d9b18c518d64d0ebe8e35a98c2fb519938b9b151",
+      "instruction_sha256": "a8e2a63d4b414021170393cd7cbeb1d29696c8212a9ea10ed765e1bb3850d8ce",
+      "language": "python",
+      "repository": "sympy/sympy",
+      "task_id": "swebench_verified--sympy__sympy-21847"
+    },
+    {
+      "commit": "3ff4717b6aef6086e78f01cdfa06f64ae23aed7e",
+      "instruction_sha256": "f97c1aca35f8a9ed342c1d16139485a12a7709b4bc4a0fcb3ac423367ea56559",
+      "language": "python",
+      "repository": "sympy/sympy",
+      "task_id": "swebench_verified--sympy__sympy-22714"
+    },
+    {
+      "commit": "a36caf5c74fe654cedc488e8a8a05fad388f8406",
+      "instruction_sha256": "a31089a418ede6334b4bf122bc04b8854a95dc8f878934dd7a58a22b844db871",
+      "language": "python",
+      "repository": "sympy/sympy",
+      "task_id": "swebench_verified--sympy__sympy-24661"
+    }
+  ],
+  "retrieval_text_policy": "DIAGNOSTIC_LESSON_CONTENT",
+  "scenario": "DISJOINT_TRANSFER",
+  "sources": [
+    {
+      "cell": "A",
+      "lesson_text": "A completed earlier patch fixed the literal public clear_denoms issue and public tests by stripping leading zeros in dup_mul_ground/dmp_mul_ground, yet its official task remained unresolved. Additional independent PUBLIC probes showed five surviving normalization defects; these are not identified hidden assertions or a verified successful repair.\n Dense polynomial zero has canonical shape [] (one variable) and [[]] at recursive level 1. In the EX domain, z=EX((a+1)**2-a**2-2*a-1) may become zero during scalar arithmetic. With scalar EX(2), dup_quo_ground([z], EX(2), EX) and dup_exquo_ground([z], EX(2), EX) still returned [EX(0)] after that multiplication-only patch; recursive dmp counterparts returned [[EX(0)]]. dup_quo_ground([ZZ.one, ZZ.one], ZZ(2), ZZ) returned [0,0]. Expected canonical outputs are [] or [[]]. Multiplication siblings need the same invariant. Relevant public code: sympy/polys/densearith.py ground arithmetic helpers, densebasic.py strip/zero helpers, densetools.py clear_denoms.\n Analyst lesson: trace the invariant across every sibling operation that changes coefficients, both univariate and recursive variants. Inspect domain equality/zero semantics rather than treating expression truthiness as proof. Preserve exact-division errors and ordinary nonzero behavior. Test leading zeros, all-zero and nonzero tails plus downstream Poly.is_zero, representation, degree/terms_gcd/primitive; a rendered expression of zero alone is insufficient. Reproduce and verify these claims in your own checkout; there is no supplied patch and no guarantee of official success.",
+      "public_probe_evidence": {
+        "path": "/home/trimem-runner/skhynix-codex-008/public-probe-results.json",
+        "sha256": "41262bce2a86a70b255bc96c781fed4755045aa29133ce4b104acc8ff066155a"
+      },
+      "run_root": "/home/trimem-runner/skhynix-codex-007/eval-20428/execution",
+      "title": "Canonical polynomial representation after coefficient simplification, multiplication and quotient"
+    },
+    {
+      "cell": "A",
+      "lesson_text": "A completed earlier patch repaired all literal public ProductSet/FiniteSet examples and relevant public tests, yet its official task remained unresolved. It special-cased the FiniteSet class. Seven independently executed neighboring PUBLIC checks still failed; these are not identified hidden assertions or a verified successful repair.\n Let a=FiniteSet(1,2), b=ProductSet(a,a), c=FiniteSet((1,1),(1,2),(2,1),(2,2)). They are extensionally equal. Both ordinary subset directions should be True and all four proper subset/superset directions should be False. The earlier patch incorrectly returned True for every proper relation: generic methods used structural self != other, which is insufficient for extensional inequality.\n Replacing b with ProductSet(Range(1,3), Range(1,3)) represents the same four values. The earlier FiniteSet-only implementation left b.is_subset(c) as None, Eq(b,c).simplify() raising the public Complement.equals AttributeError, and b.rewrite(FiniteSet) unchanged. ProductSet already exposes is_finite_set and is_iterable; Range is a different concrete finite iterable representation. Relevant public code: sympy/sets/sets.py subset/proper relations and ProductSet; sympy/sets/handlers/comparison.py equality; fancysets.py Range.\n Analyst lesson: implement extensional set behavior using justified capabilities and both operand orders, rather than one concrete class or Python structural inequality. For enumeration require known finite and iterable inputs; do not enumerate infinite or unknown sets. Preserve None/unknown symbolic outcomes and use fuzzy logic where appropriate. Test subset/superset, proper relations, equality simplification, intersection symmetry and explicit finite rewrite for alternate representations, equal/unequal sets and symbolic membership. Reproduce and verify the claims in your own checkout; no supplied patch or guarantee of official success.",
+      "public_probe_evidence": {
+        "path": "/home/trimem-runner/skhynix-codex-008/public-probe-results.json",
+        "sha256": "41262bce2a86a70b255bc96c781fed4755045aa29133ce4b104acc8ff066155a"
+      },
+      "run_root": "/home/trimem-runner/skhynix-codex-007/eval-20438/execution",
+      "title": "Extensional set equality, ProductSet finite iteration, Range and proper subset semantics"
+    }
+  ]
+}

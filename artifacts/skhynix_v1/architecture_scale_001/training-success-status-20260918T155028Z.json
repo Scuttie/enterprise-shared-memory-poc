@@ -1,0 +1,1883 @@
+{
+  "schema": "skhynix/training-resolution-status/1.0",
+  "cutoff_utc": "2026-09-18T15:50:28Z",
+  "cutoff_kst": "2026-09-19T00:50:28+09:00",
+  "observed_at_utc": "2026-09-18T15:52:46.153948+00:00",
+  "scope": "CUMULATIVE_EXPERIENCE_COLLECTION_NOT_OFF_ON_EVALUATION",
+  "inherited_learning_state_reference": {
+    "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-state.json",
+    "sha256": "65bc7cb7c5e899f1108e05dc847ab4fa74e8f80674bd817c483e8563e179c6b2"
+  },
+  "summary": {
+    "attempts_with_grade_or_retained_hold": 132,
+    "official_resolved": 64,
+    "official_unresolved": 61,
+    "undetermined": 7,
+    "official_scored": 125,
+    "resolved_fraction_official_only": 0.512,
+    "confirmed_resolved_fraction_including_undetermined": 0.48484848484848486,
+    "new_240_grade_complete": 12,
+    "new_240_cell_complete": 11,
+    "inherited_120": {
+      "UNRESOLVED": 55,
+      "RESOLVED": 58,
+      "UNDETERMINED": 7
+    },
+    "new_240": {
+      "RESOLVED": 6,
+      "UNRESOLVED": 6
+    },
+    "official_result_memory_injection_counts": {
+      "0": 125
+    }
+  },
+  "records": [
+    {
+      "task_id": "swebench--astropy__astropy-12318",
+      "group": "new_240",
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--astropy__astropy-12318/PDF_MEMORY/public-result.json",
+        "sha256": "4d28823d24764e0be6b8e2192012a3dece1d35e6cad7de3add2c2ad41c6f49e8"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000046.json",
+        "sha256": "a27fcc35355a845f5251aa3a6e0de28c5ed32e8d803704a82b89f3f26949b304"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-13390",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/9d93f0baabd47a557ead0782586091ba59493b3e2c8edd94a859c546f4dab41d.json",
+        "sha256": "b7215005b633bee6ef4228801fa3c2290a32c7f6fc40abf40de8a3c63ea92e47"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--astropy__astropy-13390/PDF_MEMORY/public-result.json",
+        "sha256": "e7b4a7603087b7653e2c212eddd4de428d3c07c0a87976de6b8b131f214d0469"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-13404",
+      "group": "new_240",
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--astropy__astropy-13404/PDF_MEMORY/public-result.json",
+        "sha256": "50d87eb4a3c7e9589ab0773446135ced73b1a83ee53d73d48bd8614a658d3945"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000026.json",
+        "sha256": "ed7894e6d0f16e66f4524aa99efeda93ae041bcea9afc257e73250f24c62df58"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-13477",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/3e428c29c44d9e241ef070941518694e7724990d6440afd2656d818e2a372ffd.json",
+        "sha256": "c504eb4b5a1191399385e4031eddaa788c7f4b7613e94bd3b69b661f20145b21"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--astropy__astropy-13477/PDF_MEMORY/public-result.json",
+        "sha256": "73726ee476a6793c0b3d383dfe1ef750a313a55ca1e1174df17381a142b26601"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-13734",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/e1b8133dbab6da400b7e6d70cb1b665227f12c76731f96af5f58990dec871fa3.json",
+        "sha256": "eaee2c7fb3454642782a9e116549424a3b2053e16413b7401a73966b0d3faca5"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--astropy__astropy-13734/PDF_MEMORY/public-result.json",
+        "sha256": "0c478ef2b875cc9b58e64a281106ac3fadaa8550588a8b4f56c455622ddeb3ef"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-13803",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/d9e1b1e067336f5a76c81426f63f684b41bd200cb0d6c1e098aecc6fdc9a0645.json",
+        "sha256": "5ed8fb2d7258d8731e107ff2b919335650af952034b7dfaafcc50501be0064f9"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--astropy__astropy-13803/PDF_MEMORY/public-result.json",
+        "sha256": "b5b075045c290f785a7c783203c41f6600ddc2de1c5e0c6a88562417803e195c"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-13838",
+      "group": "new_240",
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--astropy__astropy-13838/PDF_MEMORY/public-result.json",
+        "sha256": "675a7a9a7c7bb713a91e9465d88961b4d211f9a3ed7baf48b16a9d728378d8f8"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000006.json",
+        "sha256": "7da0571a6c4ec68d618e7b37390972d66a4f5d99ba5d4f009505d67c4a4a5265"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-13933",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/8ee7ed1693296432838a6ac95ac7e3b39cd542d7254dcaf437ba767849b8ff29.json",
+        "sha256": "b92f57870f8f96e40e30f01bfd3da8e97f177679d2472ba95e1519307ec08b21"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--astropy__astropy-13933/PDF_MEMORY/public-result.json",
+        "sha256": "560032db1a9fc65eb5c6c3dc19500b5cc168c6d77f7ff05e98fb5e02c026088c"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-14253",
+      "group": "new_240",
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--astropy__astropy-14253/PDF_MEMORY/public-result.json",
+        "sha256": "47a7c6bb8d906e55aaf456c870a5be6efd8202de3d58fc29e474e72e30b66b2f"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000016.json",
+        "sha256": "db10dbbfd50d9cedf95c8a788e13bd5ca6ca77a8bfb0fe6c45d76b76a46a3c7e"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-14295",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/a76b7f568c0cd6f70c52e139237467e179d986d722f3ab93c8a4d0e900de938f.json",
+        "sha256": "8204e20f1224e3347eddda7cf8f7c7ddf5ed5c5aa19c264c631639c5c8e6f088"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--astropy__astropy-14295/PDF_MEMORY/public-result.json",
+        "sha256": "28005e8f0b8e257cbab5c3041fd2d60b74c38b45fe511113fca218b29c7ac9e3"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-14590",
+      "group": "new_240",
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--astropy__astropy-14590/PDF_MEMORY/public-result.json",
+        "sha256": "5e18cc61a0492b48d4c0667c0a607338116bad8b33ceef55212ef76c325dd4df"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000056.json",
+        "sha256": "5bf1194e0a5a7a4cafbb24c261f96f0840b61794fb5b889826af6ac67d15f772"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-6938",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/96d4f7a36c5d02b8e3c9540e39930c48ddaf0d2b93948f5554d328734f78a0dc.json",
+        "sha256": "acf3071a39d08cef2e6447d6210b7cafd97a425d12442b7f516262c5b051583c"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--astropy__astropy-6938/PDF_MEMORY/public-result.json",
+        "sha256": "3548dde4ad74e0318bd6fa7d58d6bce439a8bf0826a8981e216c90101155bfd8"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-7008",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/1a30bc372754e17dbdc8b4269a7b692f4e489c578d2f67fe47722a0eb919238c.json",
+        "sha256": "bcbef0d3a022e91eff74f96fb51aaba2b56bbc174b3cefcfd2d35d3cbcf6dde3"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--astropy__astropy-7008/PDF_MEMORY/public-result.json",
+        "sha256": "d697e369a08958e7479d4c6d089375f466ff447ddb4ce2f982910709ea15505d"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--astropy__astropy-7746",
+      "group": "new_240",
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--astropy__astropy-7746/PDF_MEMORY/public-result.json",
+        "sha256": "995d3b754e7ec8d82ab55c22c7d11a67e7e77f6b85ad17aff8b9eaab0de9e0c4"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000036.json",
+        "sha256": "732076060d90a73c5c789262fb5cf468f00699ff05ccd4999238f10f64faa017"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-10287",
+      "group": "new_240",
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--django__django-10287/PDF_MEMORY/public-result.json",
+        "sha256": "32ba47c680d2dacf545086f42636b3b9ed2c7c3e513727b0f639446a32c34a86"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000066.json",
+        "sha256": "a459215ebba5d4085205b92b375d69a8b7b3a023e108b152576c17a4bf1cbf74"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-10643",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/8a4a2507d7b0977cffab9900e4ea96708d96d6f29264bc45fd45cd235e16381f.json",
+        "sha256": "7f0867c7197bc399a570c7b849fad843e0d160c8421af37d64cd935b29edb2bb"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-10643/PDF_MEMORY/public-result.json",
+        "sha256": "626f70ac5aa6ec676fed530ddeab8f5541a7f51c4abf1a830cc57c3d2813f24b"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-11085",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/cde22033d2c0553226990f5776879295d21607e228e62a11fc2e63b3468a0841.json",
+        "sha256": "0e342cd96d8a210e5809ed3875fb1f79940aa5c76844853f0c201f5bdbc286f0"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-11085/PDF_MEMORY/public-result.json",
+        "sha256": "70a13c3b6d1cfe396220f1edac610a0bf2fd14b7b0ad08d789d85dd546d23910"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-11417",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/ae16de0ffc88221291a0c309dd3ad88e720d638cb5c9eb314194b2487ffd6134.json",
+        "sha256": "424a54efbdae28f400e03f9e6b9f57f01cbbfed2cc0a145dbf5d27ecef6a189c"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-11417/PDF_MEMORY/public-result.json",
+        "sha256": "63291de82f68dc2149d2dbdc69fa240d4f4859796bf583517e747a682bfd4464"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-11618",
+      "group": "new_240",
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--django__django-11618/PDF_MEMORY/public-result.json",
+        "sha256": "8c982ef6e1ec61f20d6104e67806d36181e6183a3a5523b0238d63a7fc52499e"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000086.json",
+        "sha256": "07a35a9da0a79636c4337d91f6d68049a7d72a67c8118b1787e1bdc59278625c"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-11903",
+      "group": "new_240",
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--django__django-11903/PDF_MEMORY/public-result.json",
+        "sha256": "5aecec11556040ef0521c1e2a5e03c5f08f0eb80115769df2035715043fd8708"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000076.json",
+        "sha256": "c38e2b4eb6d81d9e56abcc378593567a06d7d6855a6435857b7e5e339c293315"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-12343",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/1589a16b3ade224e8989df8095b2ad965a9dcf0dd530ed8ca983798c42b25fbc.json",
+        "sha256": "cf72ed74f1e803fe096a27f31bd9d942788dbf4aa07984b340e2162a7cf56359"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-12343/PDF_MEMORY/public-result.json",
+        "sha256": "d48c71ed32162ec18333731bfac5e8a6677ad8996ff0c9c253a4225c6bc03b89"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-12851",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/232ca26cdf6edaf24232693624603ad000c9ce4f3515ad618bbb5242bb961156.json",
+        "sha256": "ba3c851b3e560964d19957ba49e5dfc2c78190f93c9b78fc24f348ab6f53c691"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-12851/PDF_MEMORY/public-result.json",
+        "sha256": "e54e496cd23030342035a58b02f60d79c590606a315b6a168961b32ecdf640ef"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-12855",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/2eb62bddf564b0e7e24abee6626492c0c80cd7d66f77100f720baa2ee31e368b.json",
+        "sha256": "4bbe864afb59c662d379ca630d64ce87ae64a17c65c64af390a009bb6aa8af95"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-12855/PDF_MEMORY/public-result.json",
+        "sha256": "6b37b19d218d07021e9eaefacecdf23493485b31a26c732bc924dcd96c0707fb"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-13170",
+      "group": "new_240",
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--django__django-13170/PDF_MEMORY/public-result.json",
+        "sha256": "f761dc8d1fd2fb9ed8bf199931d516b94d35069845aa1d28a5e78de93b905c84"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000116.json",
+        "sha256": "88410b64467a2870edf0e577f33007e6e680f2935bf5aff5f3c3497d9387e1be"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-13615",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/16ad3ff72d8ff13a890353dbdf1811d74fd390eb5032c295949828e98a876659.json",
+        "sha256": "d71505865888f89c2a7a4b5f0e55cc469f9fb39d0a3a55e66c6c9e5099268549"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-13615/PDF_MEMORY/public-result.json",
+        "sha256": "e822cd709d3c066eca59fc2e25aa60d58d829d33982010ad6cbc497cce5f6bfa"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-13671",
+      "group": "new_240",
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--django__django-13671/PDF_MEMORY/public-result.json",
+        "sha256": "3160d027557b4721218fbb50c8bac6fc614d773361972b3223307b3fb82534b9"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000106.json",
+        "sha256": "d7f60ca2b625b4e3108066052f5b34090318f5798071c8f96e7f2189e31d13bf"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-13684",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/22ba9530dbed818221a9b326bd53b3552c147dd41207e3d76514f327c69a2873.json",
+        "sha256": "5e1c9f65a420bece4a222534eccfd92df4ff1737d6b3c39a0a9da474c822b91c"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-13684/PDF_MEMORY/public-result.json",
+        "sha256": "6eb79476c4da957e4a10c4f3509cd7fcae24ed897118db9e04e149065d45d81f"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-14169",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/de324cef22ae9f330a9f2cca1805519c14e296fc070805fb71d031d5c4b62540.json",
+        "sha256": "640350c704c7f798713319dfd2a825a94a81e47b72d8934108aeca36ff988a30"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-14169/PDF_MEMORY/public-result.json",
+        "sha256": "255619c5f09044aa19db2553133ad9f2c59922d84ad3f335bea3ed06cab5db81"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-14334",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/b753c849d1436363cb8af52afc2d5bb9454bf45d5f617406e6938912e9982e3f.json",
+        "sha256": "af870a54c261ceebb0789b6e161d993442bfe02274184c18ce82ba2b0eaaa6d4"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--django__django-14334/PDF_MEMORY/public-result.json",
+        "sha256": "9ed94ec1e20c3bb57c0ef0ebfb20d8dca1d6def640978046eadfc7d64d08ceeb"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-14645",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/0655f87fd0401cf2918cd749bee268e655672a8b9de016309635a47de7360d4d.json",
+        "sha256": "a0fb13f683a2036ee0326ee81db81d972eea5e0c4bd8d697e1cb76a173e4ec4b"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-14645/PDF_MEMORY/public-result.json",
+        "sha256": "e8aea35b0b01b1eec2b8e38a2fc8212c44be6b0f389dddb1bbb53fea3d3d82b7"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-15248",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/7d94cf30fb58923c063b1ec8761ba91797f602b23d926a9492815f0382679f04.json",
+        "sha256": "70a2af38efca435d646e587b5f24e535ff17b0884f790601cc4e02d05f223606"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-15248/PDF_MEMORY/public-result.json",
+        "sha256": "cfc612a5d890f07964c2990f823dfd1a2821772bf54b2ed2b71dcd5459e23a90"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-15742",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/5f14a4dbd3e60f51995f1cac8b900e3561b9cf3f4850fec1d298ad34c6f82eb4.json",
+        "sha256": "091392f610c8a472fc1a70262b593511eb6fe5e0482c8cf882c842cfddeba1eb"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-15742/PDF_MEMORY/public-result.json",
+        "sha256": "ac281b4e54243d345681225316f2e061786ac9366e1270888f70b25132136f8c"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-15902",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/50379db3b90585a2adcc71691070266bfd63cdadb7ea81714b3c1abdfbc1470f.json",
+        "sha256": "6acc86adbdfb5668132b35aa92b5b3c2530cd36c8e9110c9741948268779946b"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-15902/PDF_MEMORY/public-result.json",
+        "sha256": "4d5830282df9614d17e794fd824161d40730034bf6e5b416cf65ee2b616ac120"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-16111",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/8a0ddbf06b0d39f99c5b76e3ecf64d5d385cf20d8cdf45651e48c77e29e7c322.json",
+        "sha256": "22f642a7e436fbb862d2ee61bcff43da746d40a3174c9671bc55a7f5c4bac584"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-16111/PDF_MEMORY/public-result.json",
+        "sha256": "82aa3828784c2f78f55428ff3308c241967c559e12f709f068995fcdf51dd552"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-16686",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/814bf7f6a096df56bdc1098b2004aa2e17f0d398d601cd4ce0dfc38739052455.json",
+        "sha256": "6c39680246569b1ebf00a7a690e9d7f789d1b88d29f2e97e4f35b70a694fbdcc"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--django__django-16686/PDF_MEMORY/public-result.json",
+        "sha256": "668dc8927d4a5a62b88f1426df8516e4e853766672d88b99e5c5450efe655cdc"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-16810",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/00bf60cf8a3a42d8552658b01df1c5a4f99f714dbced9c7a47084a1309ff1699.json",
+        "sha256": "5e88e7fe00fcadf8e17de729382290a8d8da7a6e9603cf705ae37a6bac06a177"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--django__django-16810/PDF_MEMORY/public-result.json",
+        "sha256": "ee6fd6608a8e3812291b0cdab6359122952237e9fc980bd5251ff0e9ec030c47"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-16920",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/5c2e2f0743a4c65afe342caa06269476d9cb9e995e7e35948a79670a3cb52e6b.json",
+        "sha256": "60ae5c4d55ade78a171bcb8c07360df653b1fe423a72ed4a34c3c64b9e22785a"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v1/cells/TRAINING/swebench--django__django-16920/PDF_MEMORY/public-result.json",
+        "sha256": "c820b42567f969779fc981e6370d08b72da9b733dd2cc266ba82b8e74f0e5485"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-5158",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/548dbb3472318b9190d1818fe6116dc4a1f253d1c3ee9deab3436f295a173bcd.json",
+        "sha256": "d1dde3fae1c32ba78b0535e4ed4b4ade36be3fadc903aa9eb923e1a2ffed21ff"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--django__django-5158/PDF_MEMORY/public-result.json",
+        "sha256": "28059a61a58c6627f67207b17f37d2392082f2f9afd7e5b783f76e64daac741a"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-5470",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/0cec6ae0402c499a37be612993ce2ab7bc586f5ba849e4c7f48aa945917a7675.json",
+        "sha256": "37884e6c65224dadb055a27ea80db9a5dfeaa3d76726a95cb601185c151baaba"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--django__django-5470/PDF_MEMORY/public-result.json",
+        "sha256": "1179b72511e639c344eff4c1897ce9120a71170f5a05cb255f351fe15b65ee56"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--django__django-8961",
+      "group": "new_240",
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cells/TRAINING/swebench--django__django-8961/PDF_MEMORY/public-result.json",
+        "sha256": "3528e441c77529010cb260ec8a2f5f27b8ce6ae59ac64d51669e470c83187149"
+      },
+      "grade_event_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-240-v1/cohort/events/00000096.json",
+        "sha256": "0fb87d81982bc7205e064d07901a9f95c8e9b333bcb8023b8ab2211d72e43b8a"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-13859",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/886cf9a7306d91a1f083c5ca3ba26acf1d6b82ccf43aacab45618de73aa68800.json",
+        "sha256": "ec192a03fffe27a1d7ff83272f2696a44a32f3bcc99243052f8dd5c538c69356"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--matplotlib__matplotlib-13859/PDF_MEMORY/public-result.json",
+        "sha256": "65a25ded2de5a15757f77017e96276e1fb2e664031ad853a7bc628630f881801"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-13908",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/2494df98358fbc0c1b8cdbdf861e2a4340e7336240d5911906e3e9c0b8300de5.json",
+        "sha256": "46902ef5b2212fd5065357b6487bad25120ec57404fa59532d5bedbba52c9464"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--matplotlib__matplotlib-13908/PDF_MEMORY/public-result.json",
+        "sha256": "06ff03fa1fca3dcf19049c71fe572b753846034c1997a2724c674baadc8a6ff3"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-13959",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/57b74f5ffc31075bf2165d2e188aafd6c541bdecd1a6c329ba523b84b5c86408.json",
+        "sha256": "97333f68946a2df7c3c68ee238957fdec8271ef989b52724be90f21f832f0e65"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--matplotlib__matplotlib-13959/PDF_MEMORY/public-result.json",
+        "sha256": "684407a528f0d9f90635b3d6b2c44852586d83515fe67f16e28ea37bba394e8a"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-21238",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/37cc762b1f18e56f2532b0d9d693fcd2f5917007e65bf81c2f6d40218cc93df2.json",
+        "sha256": "a2066ae8ee9ae293e8d13a4e2506b472fa06b0a43b8afc048bd0231cf5a4b7d5"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--matplotlib__matplotlib-21238/PDF_MEMORY/public-result.json",
+        "sha256": "2a26f53b70b8007286ff34e78dee3fefec2139d1049de1b2ba95425d018229da"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-23047",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/063186598cc6d2ddef811a76079c0d4d8f1994f9c7daa657260a5b4f0fbff1b7.json",
+        "sha256": "bdd3daaf6cc063b03e5e9bbc4a13acd88729308a9cfe47c07f0fc2437175c90c"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--matplotlib__matplotlib-23047/PDF_MEMORY/public-result.json",
+        "sha256": "74b852ffc942c368a36a0985ea4bc24452da630565ac03c0ac6d22395d174657"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-24224",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/e8c3c0bd14c4137496acb3a48984cf9f2f4a47c1e81f2b343bf765c65d9f3a12.json",
+        "sha256": "94bb6388db1b0af2226f46a6d91f3f6e2ed4fdb65884edc2fe50b1d4438a8bb5"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--matplotlib__matplotlib-24224/PDF_MEMORY/public-result.json",
+        "sha256": "bf7c4508ec15da17ba88be89bc33c31c939d7684d02707708c95481588afeacc"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-25651",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/dba40c82ad87ebf89332e2537946a4b1a7a273421329c50728db1490f3aff202.json",
+        "sha256": "f8aab8bc9ff90ecac66908aad49b902d666017ccc68315d691732d346d2ec0cc"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--matplotlib__matplotlib-25651/PDF_MEMORY/public-result.json",
+        "sha256": "b18fd53cccd2df1fe03ab094fd1388eb677b1231f169585f432cf62639c57833"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-25667",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/f0e42d7fdd732d0074d1bf22d877ffb10afb3514c35ee7f462008cfaeb131362.json",
+        "sha256": "c5fd721c8183346f28b79283066cce6785e6dd9d451a00a17d91853602ebfc98"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--matplotlib__matplotlib-25667/PDF_MEMORY/public-result.json",
+        "sha256": "584fe6fe49e23d19a8958378edded3217ffcd5d40d96ff792396aaf5ce83f542"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-25772",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/6c6b9ad954ed1a123bf4518dd47e9453e2a92f78100df57efed8ce9a0c104e46.json",
+        "sha256": "950bdeacd21aeb38b7ba7bd128c2965344b5a308f509f747f596b1ee544cb8a8"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--matplotlib__matplotlib-25772/PDF_MEMORY/public-result.json",
+        "sha256": "f51048b1e46c31f84c9f0c36eb85dee6d3ece6aa22fa11d5471b0e95d64d203d"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--matplotlib__matplotlib-26223",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/3ee97fabd698ea5129b459c55ea4f1e4ba6bc26e660806dd4124e6b13d1211be.json",
+        "sha256": "5ae701343c64dfa813efecdb3ab6e2fd14e28e2e8af30d3cf8396089a459cfa3"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--matplotlib__matplotlib-26223/PDF_MEMORY/public-result.json",
+        "sha256": "7448c7115790184f7037b2a3b1ff93f7b9941084b9b8cd391ce2661f625ccdb3"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--mwaskom__seaborn-2389",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/cfae4a4b8dcdc58fa1afeaad9ce2d09d28ac53ed0fd0996bebdc7cc7d28f11cc.json",
+        "sha256": "d0573dee965b8ec4aafc0ded4db27c5f8c9f6c7ec7076b0f65266aa16270d26e"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--mwaskom__seaborn-2389/PDF_MEMORY/public-result.json",
+        "sha256": "c34c7d675d482471659fe3f1a0b9c6f1084eeaf6a693cede70b7887015d15028"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--mwaskom__seaborn-2457",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/a4eda6eaed592fb0f29034825e364271fd0e9d768b935ffbaae642a54c6deeeb.json",
+        "sha256": "14f482522894d17521409252bf5e4a23aacecb277ea513c3430f04f55e347f70"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--mwaskom__seaborn-2457/PDF_MEMORY/public-result.json",
+        "sha256": "577f355fe2ac10bc8e2074a4dfe58ccb61611ddafff413c5c079e8661d39024a"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--mwaskom__seaborn-2576",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/2751d358cab4e2cba7ac803ddb009266ff8d4dabb94d19041e6d1cf1d2cbeed0.json",
+        "sha256": "248f18e0e6480b644f5b92e1de3080abccdbadb07be11126805cdcb30e3e253b"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--mwaskom__seaborn-2576/PDF_MEMORY/public-result.json",
+        "sha256": "87aad6419997e0d542c05ec5fca8a54971412a8191d8dc5fc14f13a103f34d06"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--mwaskom__seaborn-2766",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/a3688078450f8cf07c48c69fa0b6d91071b433f76636a07c15451ebb72608237.json",
+        "sha256": "acc7b6330f3700eec2c5bb156888ad8508c86abfe5178f34822fc81b07a1a1b4"
+      },
+      "outcome": "UNDETERMINED",
+      "pending_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--mwaskom__seaborn-2766/PDF_MEMORY/grader-pending.json",
+        "sha256": "ca4bf81f377e5396ec573d4b1c5c5b209be9affb87abddb90821770c478a6ce4"
+      },
+      "classification_reason": "NO_OFFICIAL_PUBLIC_RESULT_RETAINED_PENDING_RECEIPT"
+    },
+    {
+      "task_id": "swebench--mwaskom__seaborn-3190",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/e07cc2fea8529d2d2a2b41093f855693a268148de9017ab4ca224d95dc4a8ade.json",
+        "sha256": "64517937dc9f1be54ba00c8867e78bfff20bba430e5051fc953c94db0d6914a4"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--mwaskom__seaborn-3190/PDF_MEMORY/public-result.json",
+        "sha256": "368fab730b1d5b4ac76d3057409e64c046f5d5baa4b4811997ce1881c97ca954"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--mwaskom__seaborn-3217",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/7ff32d2c0dd8a2870302fa2b10a4360f89ddca1795ee2aad39dff1c7e74eac86.json",
+        "sha256": "b994b5609f5672abbd19661867a5fd644ade854cf9e7c6d57fc141a19cb83993"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--mwaskom__seaborn-3217/PDF_MEMORY/public-result.json",
+        "sha256": "bf7d15a6a9f16cf69fe1b00cdfb083f55bdc1bc48d6fc54eb88d2315b45438e0"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--mwaskom__seaborn-3276",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/823d1ae197e8285eb19bf7692f50afe4de3fad0401a5ef5eba7e743850d8d02e.json",
+        "sha256": "516c2c1c7a6b44ba7efe0643222691fe251f37b70c3565622575fac767707445"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v2/cells/TRAINING/swebench--mwaskom__seaborn-3276/PDF_MEMORY/public-result.json",
+        "sha256": "0bb1eaaec7b22cdf40e2d7a7a4d294c4b675e88e0edf53c3306d6c0d8ae8c389"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pallets__flask-4045",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/3488bf2cf53e543a8707129ad1c794af54e1737571498c11a08e896a9ab22c52.json",
+        "sha256": "eeb0f844cd84697996cbd75419284db14c00f6ff13eb017c97a1766236d046c5"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--pallets__flask-4045/PDF_MEMORY/public-result.json",
+        "sha256": "0082bbda548171ef17aa30339e782433c593980d463c91e2ef851a28727c6979"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pallets__flask-4074",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/a0d2d50fde0cdc3ef096c1ef4f412e98bbb7200160ce402407c6195885aece9b.json",
+        "sha256": "f7a77e4e1bcceaa3d7801405b1769c22ce8e9c6e2ee62265c92c057f8b7e4414"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--pallets__flask-4074/PDF_MEMORY/public-result.json",
+        "sha256": "5b12a116f883730509a1bcc1558cfd4fef058e790f96938dfa999b2f3f5f2c42"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pallets__flask-4160",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/b75e20e1c39fde39a0430d62a432918489d0792f0cdda1260107f39b8b5f0596.json",
+        "sha256": "97d427f98150251bed824d3155bc7f9f35287cf669470339a8fcfe16d076bffc"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--pallets__flask-4160/PDF_MEMORY/public-result.json",
+        "sha256": "1b3e447cd981cfabffeab9b64ca19411872d6518c31bc583f245930bb326b1b7"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pallets__flask-4544",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/1b2ec2863d88ea063004b0d72fe03600c234ca9ee997ef3133eca191195a0416.json",
+        "sha256": "cb3568786b1d6aed94cf3ab165edaf371df4c67974156fdd0beecf45dd79c4d4"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--pallets__flask-4544/PDF_MEMORY/public-result.json",
+        "sha256": "3096cd2b759293cb9a348ac72de34181c30bf9cf104a941633235bc64684f2cc"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pallets__flask-4575",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/9a477afdcc967a0ab2f0e5d38579001678bc6bbff500e07ff8aeebaf3701f302.json",
+        "sha256": "43d1852ec0114771bb73c0ce5dea881a694079f0cfbfb4f3bad597a3005c4cef"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--pallets__flask-4575/PDF_MEMORY/public-result.json",
+        "sha256": "f6a3133990d7ee57344bdce858c074b28c7cbe4c34ab11614a8a7f10051dab11"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pallets__flask-4935",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/4f00c3c0673237153890d96c1295abe70ea243f3146f554b3c0fd3388771b0bd.json",
+        "sha256": "9da3d0441fe70393c58cebf7621f3d94f9f0bdf444fca35d109a36c1dc5cb0c4"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--pallets__flask-4935/PDF_MEMORY/public-result.json",
+        "sha256": "9a9ab5db1b73cfd0b9062bb1b8860a48f9b9c38276a2ef7094ea7cd63e4c74ea"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--psf__requests-1376",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/aa924033310f7f275846a1eea9685d605bfa836f2a287451930a6eeb783a4ae2.json",
+        "sha256": "0e1848edc8d202235184ee4f002f49b4c428cdb526dbcea47822215f4c0e03b3"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--psf__requests-1376/PDF_MEMORY/public-result.json",
+        "sha256": "f729943fedb8aa00b0d6abe1eba24d01a17f9f65c0023e562189fa76d74531e2"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--psf__requests-1635",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/d4d41cb284a61c3353b7db9e2319cfbe71ffcd8ff97efc1b23a8e6c878472d79.json",
+        "sha256": "ae5b450c9d8edfc4c5994f19d966e3a68aa9864f8fe517a0d2a6179881c85487"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--psf__requests-1635/PDF_MEMORY/public-result.json",
+        "sha256": "7495b6b644021d23fd0a35a07fa93683ed29805bda0e764e74cb8c6ebbd06fa6"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--psf__requests-1689",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/dc600c328ede636c86567f00b4e7d2816a60e56a554b5da606e9db5cba647cba.json",
+        "sha256": "c26e75e1c10121e8c48993c99f4bd7cb28b44dcfcda938ff88eeafd54627d076"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--psf__requests-1689/PDF_MEMORY/public-result.json",
+        "sha256": "3238bf8231a46f5df6324aaa1a74eb692bcaaa35bb3d52ffd429a121adc3780b"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--psf__requests-2413",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/c1a528df81e74ab844529b6b6bb1bb89570eb6a8a79bf83beb01892020867391.json",
+        "sha256": "38cc7c2ffccc14fbee7b4a7580f03505f43bcc5bc7322c57d7e8d22d29e64589"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--psf__requests-2413/PDF_MEMORY/public-result.json",
+        "sha256": "d3d3aa7fd559860d1ed0994d99843af364ace530b4f3b669c6fd3dd00f7141d4"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--psf__requests-2617",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/95b3b8097d7814cc474350a47d4cd8655ff3ccaca7d3e56bb4a0ad2670c65f88.json",
+        "sha256": "976e8b781fa3c9cebaad9580db12b5dbd8a1c10f43b7a3241f20d85bfaf5a4f7"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--psf__requests-2617/PDF_MEMORY/public-result.json",
+        "sha256": "58044f8bed3b0a789508cce7650a75ecf035ab7a856c9a6783200760e5267358"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--psf__requests-5087",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/7c01c7e335ee3f9ab659bd0386950083e406b60b5cd36ee302823035f641c616.json",
+        "sha256": "76f4aca6de45d12a8318e924e9f0504f92f789c939cfa3f4a34b5954f05e3ccd"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--psf__requests-5087/PDF_MEMORY/public-result.json",
+        "sha256": "5500009d4a62865b2eb6fde60c54627bed3e95662a53c1c3831777faba0974f0"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--psf__requests-774",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/ca806b6a21686016e238c3bcd6d1bdad7b53a2387610dbbc2abb84bd80a0bfb4.json",
+        "sha256": "9a164e2827783efbcadba3edaa9f6672b0bd8cf46b3d5c2b3a8282ba686d38be"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--psf__requests-774/PDF_MEMORY/public-result.json",
+        "sha256": "b78e4226889ccdbdb1dfc8125cbefdaff04589d53ec1782fe7ef226859caed7b"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--psf__requests-863",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/7186605ae74ea729bc92d3bb43bc56e89c0871195f6e491f2808f4044bd27b78.json",
+        "sha256": "7b3eb0cdd74c46d5aa3f89f56d288ab0c39ce0ef1f3453af45bac66f5a9af467"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--psf__requests-863/PDF_MEMORY/public-result.json",
+        "sha256": "c9c2560bb482b3392c9e18703db70110393274c4489bd13a90e7c45da70170e7"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pydata__xarray-2922",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/8519d63ba4b2461e5b8b6a867e5cd2768215e7b1c511a1a8779eb739ac2c7578.json",
+        "sha256": "81b9556c910008fcdba64d3a0112da3ad8c7d27c5fb7ddaf3d4db808562d4ddb"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--pydata__xarray-2922/PDF_MEMORY/public-result.json",
+        "sha256": "9f4896de465eb5a20949a951681db6e528031e485fccb16794a2cb53156f1ffc"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pydata__xarray-3114",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/775b05811fc56493253b2bceed1bb54545aa5f597ce031aec02593de659ff382.json",
+        "sha256": "7d2b0cac7021cac258892069b90f6d349b031875a439f8ce3b4b00b94e38af5a"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--pydata__xarray-3114/PDF_MEMORY/public-result.json",
+        "sha256": "75af04738ddd29eb1586c34ab95d62ea89a832f9d7df9d97428ef7f75cca2afa"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pydata__xarray-3156",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/409938cd81fd03f7eac137c6522eca40b33736086c2ab33ab3602175c7b5feb1.json",
+        "sha256": "da6d4ff4a5b93a583d21c076baaefb3db4c51a1d2b97ae965c627a522c3cea08"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pydata__xarray-3156/PDF_MEMORY/public-result.json",
+        "sha256": "e941af98729660c3d6c62a6fd31347d8e52eb351029567fd7ed74b06248983b2"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pydata__xarray-3635",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/019dd3c3a9b2a033bbebcc9f4bf9953341eef81e0c585d1ffb7720911e1a13d0.json",
+        "sha256": "f2bb23c695679f6e8036ac9fa740cc73dd84a8a937d6f1816ddc42e5672d35e3"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pydata__xarray-3635/PDF_MEMORY/public-result.json",
+        "sha256": "60508b877e00012331f17169a4e34f258c6efe307ad90cf53673b85cede8acd9"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pydata__xarray-4767",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/35ec91cc0ac6628eca69053cac992e74a875fbcc01e07b1e5fa432fa9ef2b36a.json",
+        "sha256": "d02aa068746798d0b3ebf105773c198792100c8da0a5c77c59dacac7c03a7810"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pydata__xarray-4767/PDF_MEMORY/public-result.json",
+        "sha256": "98a58f9c31fea9742a9e7a31de287425756919c4220762eb273a5adf808cb0c9"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pydata__xarray-4819",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/53b0287d400f7c97db5d461b3be97ad11ccadcca8c2fb75d037a30a3ea05db8f.json",
+        "sha256": "97ed481e31904764c2ed11aeb47eb29f1ebc4d59da47bd3f524b92dde6c44a99"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pydata__xarray-4819/PDF_MEMORY/public-result.json",
+        "sha256": "2494ba8bf72b71166b848c6b3548b85be76355ffeec202f1fa2e09c3244f872f"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pydata__xarray-7052",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/ce9e2977ef12de6a44b3d29b1a368b651c081f925145ac9645ea04669fc54d76.json",
+        "sha256": "be65d9c4ee7577cf90fe566dd966300b0da3a7aaedcc252d14589726f16388c1"
+      },
+      "outcome": "UNDETERMINED",
+      "pending_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v6/cells/TRAINING/swebench--pydata__xarray-7052/PDF_MEMORY/grader-pending.json",
+        "sha256": "9eb8a9ce9b15dee4d3bd3c245f9d788edcfdb2ebfff134671cd4d635a078ef6d"
+      },
+      "classification_reason": "NO_OFFICIAL_PUBLIC_RESULT_RETAINED_PENDING_RECEIPT"
+    },
+    {
+      "task_id": "swebench--pydata__xarray-7120",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/6c048b4b2727d7963bdda6685e417afb6da8ea466920e6dd1938858e12d36cc0.json",
+        "sha256": "30a0f3d18bc5acde041b13e3a8b4f0f631efb7ef6a214e6557a3e7ffdfec9b18"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pydata__xarray-7120/PDF_MEMORY/public-result.json",
+        "sha256": "61b02bbe24a22cd3a2e6346486d01b850c519e43efcb93fdac808528862eee9c"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pydata__xarray-7203",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/148a8d3273c143e494e2fbe547540096eb7683a695a80cd21b85bd4042edee9f.json",
+        "sha256": "1c2c4e628c6bbb0e0d6185ce789bd0cda5da9bd9a25f2edb8c4570371b1650b1"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pydata__xarray-7203/PDF_MEMORY/public-result.json",
+        "sha256": "5a8a93765dc27da33bd586a1c0c29d695296b09028c986861b894f563e5ce2db"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pylint-dev__pylint-4175",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/5f1b9dcbf3b96e9ec0f1c462102974c54f6dfc31e3d55bf1aeb8437975e3b8a7.json",
+        "sha256": "4aaec123f2b0b4d0297849292fc77f6e2a70bbd687324b9a66134e27bff59fc2"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--pylint-dev__pylint-4175/PDF_MEMORY/public-result.json",
+        "sha256": "119b4ee55b37158b2a9e71c3f505a9577817c133cf62d8e9c4d7f9c07b90a941"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pylint-dev__pylint-4330",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/95f27dc5c4fd3655b5d84b0501e602f9f594198ea6342677253d431428d51714.json",
+        "sha256": "56b58b66dfe6525f9245b3e4a47c52ab6b8cc725d109b242f3b1b679a77717ff"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--pylint-dev__pylint-4330/PDF_MEMORY/public-result.json",
+        "sha256": "bc249cca61de58afb117b22a8c9d4395a58fcff009b4d03ec017d92926f27239"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pylint-dev__pylint-4492",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/890c9236d9d58667785566eb4919986f83122b1e378eed389d8af37d826f33e5.json",
+        "sha256": "ca8f2710c86286dda6035f7adacf233c551147cb95c024a2ffb6e18312baf2a0"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pylint-dev__pylint-4492/PDF_MEMORY/public-result.json",
+        "sha256": "2c083187c0735070e77ebfaea532b7c574dfb48ef23a84b1918e3dd99916c161"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pylint-dev__pylint-5201",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/879492c99a20331b608c1df22f35df89906e5506de0bb0589883044b5348e28c.json",
+        "sha256": "07d7395a9822c074037c9828b5ea8a76d66afb4be9c4f142fe722a00fe720d5f"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pylint-dev__pylint-5201/PDF_MEMORY/public-result.json",
+        "sha256": "1221ed24f421e6b2aaa8f787817490a123447e4d93a524b714621ef870f0a5c0"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pylint-dev__pylint-5743",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/bc3d8792092bdbb7e81966afdce3faff0bf1c0ca642172bdb38f2a41f9fec5ca.json",
+        "sha256": "66c39300e4b99a4e36c89e63ea9e01cb877480aaca35051f1f5d26ba874d1fdf"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pylint-dev__pylint-5743/PDF_MEMORY/public-result.json",
+        "sha256": "800cb2890354c4dfb65e00c95312e263577b1a43cf46e0ec5ff8576d972c7b9d"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pylint-dev__pylint-6412",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/9768befbb28f60fd5a4164ca4733d67d0eb5d80c901325cceda0a0f96aed6f84.json",
+        "sha256": "f6f6ba1d217efcf966425e1d994b07789fe227fdc2977c4852826bbbedd95882"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pylint-dev__pylint-6412/PDF_MEMORY/public-result.json",
+        "sha256": "a6c39d3310737584aa44eaada70acf14965a6d1b6ecd902548f6830d889ca9a3"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pylint-dev__pylint-8124",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/9ba2bb9dccd3d135894859284cbc3e9618993cdf0ae10bf716d1c3199d2436a9.json",
+        "sha256": "e2fdce03d689a05284bf3afc700652f4c22b68052620f2c086176fdf07c5e5e5"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pylint-dev__pylint-8124/PDF_MEMORY/public-result.json",
+        "sha256": "860ebd89cf7be43a9cf65f9ecf3f5e2b3b9dd2924f279191d68fee8236ff2bd6"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pylint-dev__pylint-8281",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/b56ca3f26dc4fb12b0d4464bc70920c9b4e0e57959040f957e9f3c1f12a10aad.json",
+        "sha256": "05b091fb2ef245762b34b2a19ac00ac430e5425f0a36881ecb73730af6211d19"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pylint-dev__pylint-8281/PDF_MEMORY/public-result.json",
+        "sha256": "6fcf1e6d9b70fc213e334c0e450cbef71570cde3478a1b16f100b42f5bc4c15e"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pytest-dev__pytest-11041",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/c0ba6df35c3460e99d2318d6db678bd7b992f505185b10d9843fd60ff908a052.json",
+        "sha256": "1da8db47c42756ce817e0595ea4687e313709cc37bb35c74aebbdda4120d6aaa"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--pytest-dev__pytest-11041/PDF_MEMORY/public-result.json",
+        "sha256": "1a247f6524c359dc9e26aac789b72be0b46ebde2f4cf75d5424a18e38128ef72"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pytest-dev__pytest-5103",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/88fa5f43fee61aeb53c770eb9e6b65e49832324f665e4a81be674f9295f3ec9c.json",
+        "sha256": "a0943231101792f4811d9e4a3a8ff7cf5664f30c8f74e37e25aa04b4468ed261"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--pytest-dev__pytest-5103/PDF_MEMORY/public-result.json",
+        "sha256": "feff4778beaf82a2ef8c4e84b996f4d35a36242a4dd57ddda99d35fc8755b1c3"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pytest-dev__pytest-5205",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/67ec9386653a5a1cb522995b9b787de52653f26efa826adbe9840de4e2e6e1f0.json",
+        "sha256": "b3dfb745790bed72de0db689726c9a7cbaea81e727174d4c3f6bdb01d23fd4ee"
+      },
+      "outcome": "UNDETERMINED",
+      "pending_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-001-live-v5/cells/TRAINING/swebench--pytest-dev__pytest-5205/PDF_MEMORY/grader-pending.json",
+        "sha256": "a25a2d64b1a95931fc01e2240d2da77b85b2ba96300d0083f35e3ba1bc38e8e0"
+      },
+      "classification_reason": "NO_OFFICIAL_PUBLIC_RESULT_RETAINED_PENDING_RECEIPT"
+    },
+    {
+      "task_id": "swebench--pytest-dev__pytest-5692",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/4b549c70d93d81201ad8b1ccfa41b21d687544bce7554285c3ddc0066d388f5c.json",
+        "sha256": "2565af651d2b02fc93d39ac2a7e9fd52acc1539b6f59eb4b1edcec26388a445b"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--pytest-dev__pytest-5692/PDF_MEMORY/public-result.json",
+        "sha256": "d8273b4e11e2177226c36e97d7bcb71e562442b139ece6087cb94544ced620be"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pytest-dev__pytest-6116",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/7b75dbeec10522bb0b1ca2578b644eded5799adaef3e960576237fb67414a1b8.json",
+        "sha256": "02cc03a8fa607a4612f428f6fbb4eed32c7ddcf2ebc0eb6080c5977ba153d245"
+      },
+      "outcome": "UNDETERMINED",
+      "hold_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--pytest-dev__pytest-6116/PDF_MEMORY/training-grade-undetermined.json",
+        "sha256": "15fe8a249f52615004a558b360d7f5718293ba323621ccac61019ecd712c305b"
+      }
+    },
+    {
+      "task_id": "swebench--pytest-dev__pytest-7481",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/98c0dd01f3a370927686cc354bd2ae7bc09ab6a4b81f4b5d186ecbe766cad355.json",
+        "sha256": "05c14305e6e2f204a12bc0e49fc3f65345d41e9c01031417bae556733ed09087"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--pytest-dev__pytest-7481/PDF_MEMORY/public-result.json",
+        "sha256": "d9ccca8150402369ff5a1ba3e6f1e12f86e9aa67f8ca7a8e097db85e5bbc06f5"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--pytest-dev__pytest-8447",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/1d351cab382dc3f938d135123268e8cd0f99351e9f7f0dfe3033350451b5979a.json",
+        "sha256": "f94c9af18e7cc2a7c5335869a18ca70d7ce2b1ea04125321982fd56293bfbaad"
+      },
+      "outcome": "UNDETERMINED",
+      "pending_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v7/cells/TRAINING/swebench--pytest-dev__pytest-8447/PDF_MEMORY/grader-pending.json",
+        "sha256": "e852e0102193c9ba6c6f65eac4ce748d6461c2cb2442a248d53a29eef29e57a5"
+      },
+      "classification_reason": "NO_OFFICIAL_PUBLIC_RESULT_RETAINED_PENDING_RECEIPT"
+    },
+    {
+      "task_id": "swebench--pytest-dev__pytest-8950",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/c201eedf9fe90777cf5f0618874dd1ef415df016576e93d2d52bd6f4d1fed91d.json",
+        "sha256": "a6c63c1db78ef1173b487d487ce70ecf6c041aec94f13dd0f81a3f8c6b3d58e2"
+      },
+      "outcome": "UNDETERMINED",
+      "pending_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v8/cells/TRAINING/swebench--pytest-dev__pytest-8950/PDF_MEMORY/grader-pending.json",
+        "sha256": "e9a9881dcc58ce13400e5a5aea0cb3aee5a75e9e32278b8a3ab44bdcdee8290b"
+      },
+      "classification_reason": "NO_OFFICIAL_PUBLIC_RESULT_RETAINED_PENDING_RECEIPT"
+    },
+    {
+      "task_id": "swebench--pytest-dev__pytest-9911",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/762291ae21885a6e4d3a17eb501a6d9a9910225ac7aa8c9d5bc837f66c32fbb6.json",
+        "sha256": "08233f09536b5ff42935e32f858a3fa376473f5816459992c75b9917f6883d59"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--pytest-dev__pytest-9911/PDF_MEMORY/public-result.json",
+        "sha256": "746986d99f08833a5f372a3b90b7d6b8b9ebec537b42e802c9b477450f1f5231"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-12258",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/dee106adffcba89c24f45c1f705e414fa9d5bd1427c58da11c91da83a8fde226.json",
+        "sha256": "8037a2688a7e16d1b5fb63ee52aec7604ad4f4ca3fb2862c88c9aaa66cc6f4b9"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--scikit-learn__scikit-learn-12258/PDF_MEMORY/public-result.json",
+        "sha256": "0e18a1bc5273059903e08c0aba849a779e6ecea17e731cea5013ef4b96160c04"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-12733",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/58d5c3be8cf158ddadd0707c870f814ee5d555d3a5ffd6fe6ceb6a99382c9d69.json",
+        "sha256": "0f8c228de7136172ecc7229edec9662bc047f6a7637a98feb4f0f8faa5484468"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--scikit-learn__scikit-learn-12733/PDF_MEMORY/public-result.json",
+        "sha256": "e361917c27243d6c44a1a930fb80e4a1a8072d6456789dd56c9c03ff97cdc686"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-13165",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/bba97980f1ee8e5587f376aa45a051f33b5b4d52b10bab2781bf7f6b5394ce3d.json",
+        "sha256": "13d3d9f9c9aac9edcbed78cd86aac64f3c37faa6d14ced5c4f6f75f700cf5366"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--scikit-learn__scikit-learn-13165/PDF_MEMORY/public-result.json",
+        "sha256": "c2e27639bffd7d16a8baca9ee60a56b46705da443eab3e217f2ca98adf8cc0f5"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-13549",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/04f1e3d5d69893001a2c126ab79e628f28bdc905d57afda1c600a91335cad809.json",
+        "sha256": "a5828506c427c16b5e59deeee88e51f0837d4808733dfdb382f96f2b1820515d"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--scikit-learn__scikit-learn-13549/PDF_MEMORY/public-result.json",
+        "sha256": "3329e7c962c0fa513a8c51207e0bae594c7a44943a64f42cbeb0cec80488b146"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-14309",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/4957a8994be221b60d2ccbfa604d959826210dc1cb50ba3effaffcf8d78a08e6.json",
+        "sha256": "0fd436abc196a91138273b9888f951112c33ac78810af222079d32288b5fb895"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--scikit-learn__scikit-learn-14309/PDF_MEMORY/public-result.json",
+        "sha256": "2c9ee03378c79440cdf90ae7bc59825402f087ca63207dc36cc5b878c889a547"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-15138",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/4a2c2b0b2b9b309de6d097e29cd33d853c232ea097e3f1424a8a216c4c1faae7.json",
+        "sha256": "97c9ef4cfbdbfa717db61d62c2efa110da842a12d90939b0242891fe97b869c3"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--scikit-learn__scikit-learn-15138/PDF_MEMORY/public-result.json",
+        "sha256": "9d7f04f7769dd97b6825f3a48c6d02b3b4970033ea92cbbcd33e856d115ca4ea"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-25370",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/db5a23fdf2c697d370a288f96d25129606208247d62487da7b98ff435601ed10.json",
+        "sha256": "ff2bc57103186502dd817c54d2e62f9c83c4e97699f1417d12a4cb2c3fb69071"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--scikit-learn__scikit-learn-25370/PDF_MEMORY/public-result.json",
+        "sha256": "89eb1d3eae61df3ee5b2236e82150c8ecd349ea4aed0d0268a194349ea339827"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-25570",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/5466452729b8fa9f61ff0346698d7a95329bc6cf744f610adc3d9321c426d577.json",
+        "sha256": "e59993124b1fc2c1960b01eb4ffdd75d203d8ddcd1c9e566b21e6e7fab5feb7d"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--scikit-learn__scikit-learn-25570/PDF_MEMORY/public-result.json",
+        "sha256": "e78843d4997a84032bedab56502c434960b5cbd5745da3bfc009471b4527ae2b"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-3840",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/f6424a9c239f146a6de488aca217faf971ebed8033478416a4c648d323223047.json",
+        "sha256": "9880e6a94f4c354e943a8c6fb33c706320cbeb32f6d75eae3c8fc94d801fa3f2"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-24-v1/cells/TRAINING/swebench--scikit-learn__scikit-learn-3840/PDF_MEMORY/public-result.json",
+        "sha256": "d088a4ea70278898bb2e77cc83de0ea4ba4574ac00231c5709842c02b867caf6"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-7760",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/115ed8121d5a0d25691a55690890aa6dfcb18171de3ec7e10b5b2a3c6ed3ec4a.json",
+        "sha256": "0d8b5acd8f799292cd16f5c136f5b40816136b2169679fd1c60b7e84fb878d9b"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-24-v1/cells/TRAINING/swebench--scikit-learn__scikit-learn-7760/PDF_MEMORY/public-result.json",
+        "sha256": "783a180886102d67541eb198d3de03aa0191db9f3a0d4334aae067caba6e2ba5"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--scikit-learn__scikit-learn-9274",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/b1b29bd1fa121742b09434b109f02546e2063fbe807dcf1f4ec551ac86436846.json",
+        "sha256": "cfe33d758ab72e5827a276e7867998cfe1534525e10ca7a175731e264792051e"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--scikit-learn__scikit-learn-9274/PDF_MEMORY/public-result.json",
+        "sha256": "5ee916eb74379a8c214f99745425517fca34c9221ac92c932ef49057f4a8bdb1"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-10097",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/9ed79daf6f4453c69c98c5f561a056bfb6b6fb128ab2947d7204efaea7cb388e.json",
+        "sha256": "4f5f96dddbd94b4be7d37e469354abea7f72f4bc17a466aed3c58b136154d287"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sphinx-doc__sphinx-10097/PDF_MEMORY/public-result.json",
+        "sha256": "e2b299f924ff329907a6be3d3425ee71bf0b96757593ab1c1b27baf8f19a6943"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-10360",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/a2ca83cab2cda9b926c1c47bb2d8c097a5345ee6048bc0e90d6f90ef92801da3.json",
+        "sha256": "1c1825c776b429cf25eac1b3d0f9ffc42e5d9e0b07e13bf26dcadfa10e8f57e5"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sphinx-doc__sphinx-10360/PDF_MEMORY/public-result.json",
+        "sha256": "459779bba71f1a7099f42a2511c4aa5064687449c162817e0dc92412c070bf67"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-7234",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/77b45e1cef7202ee720492e36effa0d3b685a4e64d149ab3d0c5b76c7215fcad.json",
+        "sha256": "da0e236ae4465d3857dc63480750348fae89bcec39c08c49d05a490edff0c3c8"
+      },
+      "outcome": "UNDETERMINED",
+      "pending_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-24-v1/cells/TRAINING/swebench--sphinx-doc__sphinx-7234/PDF_MEMORY/grader-pending.json",
+        "sha256": "a66a6ff87bd6f74fabc8585558d75ee3e9c7655563e648a923dd54186dcd4d3e"
+      },
+      "classification_reason": "NO_OFFICIAL_PUBLIC_RESULT_RETAINED_PENDING_RECEIPT"
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-7268",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/302633ebc1c952724b4b3da45f3ab86938abfaa7831833825d6445855fadd0f1.json",
+        "sha256": "7e8ad4290a9b8be0ad5447c4a518e726180b9801bde23414e63ff06aa554acc9"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-24-v2/cells/TRAINING/swebench--sphinx-doc__sphinx-7268/PDF_MEMORY/public-result.json",
+        "sha256": "1c2b554442fee720896e1e2d71a389dd0dad79e858fdaf443e6a048386f68713"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-7854",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/d7a132c3a46b76face2b5db7cc9f7b51dd667996b45e26b49b4dcf3884ca942b.json",
+        "sha256": "f98b8ffbd41d0e649cfdf8bb5d3021c6aa3e01209fc144840304e63506204352"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sphinx-doc__sphinx-7854/PDF_MEMORY/public-result.json",
+        "sha256": "b4c11657596aa359720ddfebe63deb9a47422f06e55ac14044b1d3a6664288aa"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-8506",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/1935ea95d4eefec9f7aba2a8d5497fba3f4c1df5895c0638796e3e5ded5c0180.json",
+        "sha256": "1a371c1ba4f88cf0c6092d70aa50ec876f0c8646dde66fe45c90a29653248110"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sphinx-doc__sphinx-8506/PDF_MEMORY/public-result.json",
+        "sha256": "36fbf0e46aff0c34a4a93c4355cb960b30d5a8d45875c2ff01110d21fdfe7c20"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-8579",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/4188ca7ef57d3c9c793a372c20af1a33218bd77faa7f21c8f7fb155d6f7e1339.json",
+        "sha256": "072acbc8305a5f2baafa716630c78ba6c18a2459c79465121f576a25a5c509d1"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sphinx-doc__sphinx-8579/PDF_MEMORY/public-result.json",
+        "sha256": "c64f96295d27289935ed21b5a77693fa7a78555217cb63acc544c36535ec3d81"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-9171",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/e5bc64415cbae43c77830a3633ce74d9e5a2b81bd14e8e1d96911e27ac5425c2.json",
+        "sha256": "d95c09d731d75096803667c678e52e130642174fb67737e99c403234223e825e"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sphinx-doc__sphinx-9171/PDF_MEMORY/public-result.json",
+        "sha256": "f2b2ea84943f595f03f3ba26a49ec946be4e8ae00786dc80f9cec0960e91491e"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-9309",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/2534d339cd07edb76d5bedf1b7cb9f19a66b6b7c7f0455145e888980753d805d.json",
+        "sha256": "7bfb569b16190dc054d78b41eca2a59cd9c8c53e341772b4963c66839e95fde7"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sphinx-doc__sphinx-9309/PDF_MEMORY/public-result.json",
+        "sha256": "491b7fc2d30af9c194a6fc5b1eba7752494ec99cedaa5d00a0b52897575d4bcd"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sphinx-doc__sphinx-9829",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/53a69f7f759a6b015d302ad996648866d179ec162ac49e36e6523be5ce574e55.json",
+        "sha256": "80cce74d221538fecb112ee019a4f28cca2af8cbec5cc6c7273df7d70bcd2cb8"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sphinx-doc__sphinx-9829/PDF_MEMORY/public-result.json",
+        "sha256": "9d42343300115d22c3c714255e0d54a2469d546d5336e5d4aa33c7c29c2f030d"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-11232",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/5a06e82824c96aebf2edbf9f4a154fe27ecf791e5064e77ad154196b5fec4d42.json",
+        "sha256": "330269b9e5d79065d1c6efab767995f92b08c4bc1277314d8d32270dc19fd936"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-24-v2/cells/TRAINING/swebench--sympy__sympy-11232/PDF_MEMORY/public-result.json",
+        "sha256": "8c1fb5e07017ff56c16f2ddf5c9ebf6bb52fa5d93d8907c93f39b5268889f78f"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-11384",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/8e754d0bc4ddba965d2907e11fd52a43523079bc8a4f570c1cfb9abcc5c92bba.json",
+        "sha256": "61ce24426dd2182389aa8a499801d9adbd30f22cb759ee7dcdbe834ec2f6e666"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-24-v2/cells/TRAINING/swebench--sympy__sympy-11384/PDF_MEMORY/public-result.json",
+        "sha256": "18eab795eb8ff55a9beac5dde164f52ce94dd53172eb099070db6d6af1d9c822"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-11831",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/f24bffb7ada3a27bbc632306633d61cac82b846f5f531d6cc8aba4823372ce44.json",
+        "sha256": "6dd239809a1ce125db20e8b0447717b5011cc9c6f6f40c9f910d18983407d32c"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-11831/PDF_MEMORY/public-result.json",
+        "sha256": "8ed4682ca7ccff44b90976c386f7e4ae73fe6dfe0252e865ec66b5dcff3d319b"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-12454",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/afe55a4d96ee3e5800b857506fd78bf9ea9b365d45025d3df85decd147c71966.json",
+        "sha256": "086e32e6e25b54cb1a31177ddbf9945c9ddb6c8bf9644bd3e78df3ff0bd6756a"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-12454/PDF_MEMORY/public-result.json",
+        "sha256": "35f9ea41ddfb1689a31757be0bfc2ae611b419c32ac04af0cf41c2dadada494e"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-13018",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/6fb2d7414eb2e7efffa61bec6319c5b73e506ada968f9ee8044c333b02a59972.json",
+        "sha256": "58e06e2f07c75c73cab095fb875c610458e425db0ca0cd0095b9d48200ab1c1e"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-13018/PDF_MEMORY/public-result.json",
+        "sha256": "0c4c12887827cdc24463e34f7265cb4197c09cf227698e6051c011a7f92d2e88"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-13198",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/6dbf33d9d4e7802d8335e49cc7ce0bbdfcfad524b2366ccbe6722f3db2c5510e.json",
+        "sha256": "0362f4bcf34786399447ec139ce8bfafbf63ec0a74d77da7b02474f4b2521b2b"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-13198/PDF_MEMORY/public-result.json",
+        "sha256": "f3c27a29ef4f025cb8c0cac3c528e976ff8f44af3825e2e7a368b7b8311283ae"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-13437",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/e7f22e02206fc07cdb458e7c26f2d76c9bcb2f91e74d30e6677844bc0b3e20cd.json",
+        "sha256": "553dce9b56a7670f7708e3396bec9ca1a5fab4f120421a21e1bae3b00745981a"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-13437/PDF_MEMORY/public-result.json",
+        "sha256": "01aa7d05c902d70e6ca32a4aa76270fa9be33a15c9a1f4d41167ee1091f4f4e2"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-16085",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/f7922141efd311c36ab416300d57304cd9a78f0ba26d4c3e3ef88e510ea3e692.json",
+        "sha256": "7dd6b051d7cf07b6feb9993ed290506381b37ce0dd61a4fa46c53d846b1247f8"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-16085/PDF_MEMORY/public-result.json",
+        "sha256": "8a454ded0f43e7abc825781b1d463c3d5a13c3455593d5abf8c6a71f7c952bfb"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-16437",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/53b2f596e88aa39214449474e92c487a9433db0e7b248c8604536c99d6bf0f09.json",
+        "sha256": "06c74a93568b68e8e6a6b70212b4a15699709a8ad1ed15b99c4988c25e89faa7"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-16437/PDF_MEMORY/public-result.json",
+        "sha256": "0f3bdfce7ab62a34effb8b84e99867f89ed782e52906d1414935fbb532aad5f9"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-16527",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/8358fccbdd0a0e69352557ca2fa154d3fa2f77037ba31a63fe3f367638dffeba.json",
+        "sha256": "99234c9a6bd3e536d55a0444ce1437dade833663d1864ef364abeb29f904ce9c"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-16527/PDF_MEMORY/public-result.json",
+        "sha256": "66a7655bf5e9970cadbea2f8cb927c306777700d9642cf2e855bfbe1deced1c2"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-18087",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/13586034e7e191f517a5e2fc0c03c83aad8231ee517c718547fa22cc818e97f2.json",
+        "sha256": "64aadc0f33d1e96aff115b4af756fe7cb24ea51c441134fb7871659685433228"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-18087/PDF_MEMORY/public-result.json",
+        "sha256": "72d3eb0a5ba111eb62b428294f1293399c5c6b6a2f231114892a1db739832fce"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-18765",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/fd71d8771953a02949fe5a3abf429b2ad3d053acc4a3ca14bbf4b09cb06e7729.json",
+        "sha256": "46f8cb9691f149defdd234a0a15af70d915495bcc5320013ca4278f354009a48"
+      },
+      "outcome": "RESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-18765/PDF_MEMORY/public-result.json",
+        "sha256": "11b38264f0e0bd246a7b2490913309c1c48bbaf6b891fe28bf6f4e4bc6de6bce"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-21259",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/70aae4b1ef9c49c2facc3900a729d078713e3539342e869d5c3ec2df7f9def98.json",
+        "sha256": "db8078ed081783ca4c2930aef7a9bb23abed62303d9f2f622c492a11366663a7"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-21259/PDF_MEMORY/public-result.json",
+        "sha256": "8d25843198bc44337819e22895fb67b204cc9f0cedb4db6a20aa937c16c211d1"
+      },
+      "memory_injections": 0
+    },
+    {
+      "task_id": "swebench--sympy__sympy-23021",
+      "group": "inherited_120",
+      "learning_receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-120/learning-cells/1419f6f9be8907ea508ba2666193b633af2509d38b7f43f31579c043773771ac.json",
+        "sha256": "636996e264ddcf047f22f3ce8d01414584e0902919f1490fa19a2c7ae3b71e79"
+      },
+      "outcome": "UNRESOLVED",
+      "result_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/training-120-v11/cells/TRAINING/swebench--sympy__sympy-23021/PDF_MEMORY/public-result.json",
+        "sha256": "46804313f983297c8544fa4cf42b2970a8b993d3da06b8357ea6847759bc7676"
+      },
+      "memory_injections": 0
+    }
+  ]
+}

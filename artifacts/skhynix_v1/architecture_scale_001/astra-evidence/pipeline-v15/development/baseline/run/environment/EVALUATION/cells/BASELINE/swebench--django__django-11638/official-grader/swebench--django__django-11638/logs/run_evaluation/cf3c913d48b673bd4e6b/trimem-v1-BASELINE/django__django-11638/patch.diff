@@ -1,0 +1,138 @@
+diff --git a/django/test/client.py b/django/test/client.py
+index e8e4e0c..7de687d 100644
+--- a/django/test/client.py
++++ b/django/test/client.py
+@@ -193,8 +193,8 @@ def encode_multipart(boundary, data):
+     for (key, value) in data.items():
+         if value is None:
+             raise TypeError(
+-                'Cannot encode None as POST data. Did you mean to pass an '
+-                'empty string or omit the value?'
++                "Cannot encode None for key '%s' as POST data. Did you mean "
++                'to pass an empty string or omit the value?' % (key,)
+             )
+         elif is_file(value):
+             lines.extend(encode_file(boundary, key, value))
+diff --git a/django/utils/http.py b/django/utils/http.py
+index b6a7818..3eb2de6 100644
+--- a/django/utils/http.py
++++ b/django/utils/http.py
+@@ -113,8 +113,8 @@ def urlencode(query, doseq=False):
+     for key, value in query:
+         if value is None:
+             raise TypeError(
+-                'Cannot encode None in a query string. Did you mean to pass '
+-                'an empty string or omit the value?'
++                "Cannot encode None for key '%s' in a query string. Did you "
++                'mean to pass an empty string or omit the value?' % (key,)
+             )
+         elif not doseq or isinstance(value, (str, bytes)):
+             query_val = value
+@@ -130,8 +130,9 @@ def urlencode(query, doseq=False):
+                 for item in itr:
+                     if item is None:
+                         raise TypeError(
+-                            'Cannot encode None in a query string. Did you '
+-                            'mean to pass an empty string or omit the value?'
++                            "Cannot encode None for key '%s' in a query "
++                            'string. Did you mean to pass an empty string or '
++                            'omit the value?' % (key,)
+                         )
+                     elif not isinstance(item, bytes):
+                         item = str(item)
+diff --git a/tests/test_client/tests.py b/tests/test_client/tests.py
+index 84d245c..b31793c 100644
+--- a/tests/test_client/tests.py
++++ b/tests/test_client/tests.py
+@@ -61,8 +61,8 @@ class ClientTest(TestCase):
+ 
+     def test_get_data_none(self):
+         msg = (
+-            'Cannot encode None in a query string. Did you mean to pass an '
+-            'empty string or omit the value?'
++            "Cannot encode None for key 'value' in a query string. Did you "
++            'mean to pass an empty string or omit the value?'
+         )
+         with self.assertRaisesMessage(TypeError, msg):
+             self.client.get('/get_view/', {'value': None})
+@@ -101,12 +101,14 @@ class ClientTest(TestCase):
+         self.assertContains(response, 'Data received')
+ 
+     def test_post_data_none(self):
+-        msg = (
+-            'Cannot encode None as POST data. Did you mean to pass an empty '
+-            'string or omit the value?'
+-        )
+-        with self.assertRaisesMessage(TypeError, msg):
+-            self.client.post('/post_view/', {'value': None})
++        for key in ('value', 'other'):
++            with self.subTest(key=key):
++                msg = (
++                    "Cannot encode None for key '%s' as POST data. Did you mean "
++                    'to pass an empty string or omit the value?' % key
++                )
++                with self.assertRaisesMessage(TypeError, msg):
++                    self.client.post('/post_view/', {'valid': 'data', key: None})
+ 
+     def test_json_serialization(self):
+         """The test client serializes JSON data."""
+diff --git a/tests/utils_tests/test_http.py b/tests/utils_tests/test_http.py
+index c843bc9..08fe48f 100644
+--- a/tests/utils_tests/test_http.py
++++ b/tests/utils_tests/test_http.py
+@@ -14,8 +14,8 @@ from django.utils.http import (
+ 
+ class URLEncodeTests(SimpleTestCase):
+     cannot_encode_none_msg = (
+-        'Cannot encode None in a query string. Did you mean to pass an '
+-        'empty string or omit the value?'
++        "Cannot encode None for key 'a' in a query string. Did you mean to "
++        'pass an empty string or omit the value?'
+     )
+ 
+     def test_tuples(self):
+@@ -80,19 +80,40 @@ class URLEncodeTests(SimpleTestCase):
+         self.assertEqual(urlencode({'a': range(2)}, doseq=False), 'a=range%280%2C+2%29')
+ 
+     def test_none(self):
+-        with self.assertRaisesMessage(TypeError, self.cannot_encode_none_msg):
+-            urlencode({'a': None})
++        for doseq in (False, True):
++            with self.subTest(doseq=doseq):
++                with self.assertRaisesMessage(TypeError, self.cannot_encode_none_msg):
++                    urlencode({'a': None}, doseq=doseq)
+ 
+     def test_none_in_sequence(self):
+-        with self.assertRaisesMessage(TypeError, self.cannot_encode_none_msg):
+-            urlencode({'a': [None]}, doseq=True)
++        for value in ([None], [1, None], (1, None)):
++            with self.subTest(value=value):
++                with self.assertRaisesMessage(TypeError, self.cannot_encode_none_msg):
++                    urlencode({'a': value}, doseq=True)
+ 
+     def test_none_in_generator(self):
+         def gen():
++            yield 1
+             yield None
+         with self.assertRaisesMessage(TypeError, self.cannot_encode_none_msg):
+             urlencode({'a': gen()}, doseq=True)
+ 
++    def test_none_parameter_name(self):
++        msg = (
++            "Cannot encode None for key 'other' in a query string. Did you "
++            'mean to pass an empty string or omit the value?'
++        )
++        queries = (
++            {'valid': 1, 'other': None},
++            [('valid', 1), ('other', None)],
++            {'valid': 1, 'other': [1, None]},
++            MultiValueDict({'valid': [1], 'other': [1, None]}),
++        )
++        for query in queries:
++            with self.subTest(query=query):
++                with self.assertRaisesMessage(TypeError, msg):
++                    urlencode(query, doseq=True)
++
+ 
+ class Base36IntTests(SimpleTestCase):
+     def test_roundtrip(self):

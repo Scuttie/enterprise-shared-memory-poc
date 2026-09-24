@@ -1,0 +1,189 @@
+{
+  "file_count": 30,
+  "files": [
+    {
+      "bytes": 692054,
+      "path": "configuration/architecture_001_preparation.json",
+      "sha256": "6454391df77910daf5102be056a420207b0b154eb10a465422f1f719e54224f5",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_001_preparation.json"
+    },
+    {
+      "bytes": 542506,
+      "path": "configuration/architecture_training_candidates_inventory.json",
+      "sha256": "b92a1399cc5c51882e48449f508a6609ae82df4c7e0816f4f198cc135d83a8a5",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_training_candidates_inventory.json"
+    },
+    {
+      "bytes": 151561,
+      "path": "configuration/architecture_verified500_inventory.json",
+      "sha256": "437d84f2e76eaa8a2293788b7bebb0f86dbf27cd6e4acb9a6b855d4e19ac7f77",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/configs/skhynix_v1/architecture_verified500_inventory.json"
+    },
+    {
+      "bytes": 2617,
+      "path": "dataset-preparation/file-manifest.json",
+      "sha256": "93e83de1c35f26884acaa313e0da9798e35e6e5f47ba2abeb333449a9e546e65",
+      "source": "/home/trimem-runner/skhynix-architecture-preparation/datasets/file-manifest.json"
+    },
+    {
+      "bytes": 3231,
+      "path": "dataset-preparation/provenance.json",
+      "sha256": "23e1fbb88c8111eb6b69bc4ea1dec3507226482d7b0c4eb141335737f573396a",
+      "source": "/home/trimem-runner/skhynix-architecture-preparation/datasets/provenance.json"
+    },
+    {
+      "bytes": 403,
+      "path": "dataset-preparation/public-analysis-files.json",
+      "sha256": "4fe0c1582e4598691a9e02a33890d484fe1af4fd4d2feccfc25a33f07b116a3a",
+      "source": "/home/trimem-runner/skhynix-architecture-preparation/datasets/public-analysis-files.json"
+    },
+    {
+      "bytes": 570053,
+      "path": "dataset-preparation/public-source-inventory.json",
+      "sha256": "05686f535e20b369af3ea28062cda0a123c528ad84eb5cac3fe7bfed24272b7c",
+      "source": "/home/trimem-runner/skhynix-architecture-preparation/datasets/public-source-inventory.json"
+    },
+    {
+      "bytes": 24165,
+      "path": "dataset-preparation/public-source-overlap-audit.json",
+      "sha256": "0d111e3caa2b5f8172f34a8803850fc94e1be7cd5d6fe92be3cfb3647dd14ffc",
+      "source": "/home/trimem-runner/skhynix-architecture-preparation/datasets/public-source-overlap-audit.json"
+    },
+    {
+      "bytes": 8162,
+      "path": "operations/skhynix_architecture_collect_preparation.py",
+      "sha256": "666cf1a9d936a61169340ffdcd579950022c1799ba3b8eacaba75024a17ab636",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix_architecture_collect_preparation.py"
+    },
+    {
+      "bytes": 2113,
+      "path": "operations/skhynix_architecture_filter_candidates.py",
+      "sha256": "fea385ff47c8923b3f4285f14f86867733fda9953f4ab5bccaeff52f66e69aae",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix_architecture_filter_candidates.py"
+    },
+    {
+      "bytes": 2147,
+      "path": "operations/skhynix_architecture_verified_inventory.py",
+      "sha256": "dbc83aa1d53cefa4db519c9394676a950cd8f2f87576c4dcb648f5d1a21742f1",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix_architecture_verified_inventory.py"
+    },
+    {
+      "bytes": 5885,
+      "path": "readiness.json",
+      "sha256": "cba58654fd6bed0283155195771e288f3fdce3eca4cbb993ba3cff89cde78a27",
+      "source": "GENERATED_PREPARATION_REPORT"
+    },
+    {
+      "bytes": 20365,
+      "path": "source/scripts/trimem_skhynix_architecture_plan.py",
+      "sha256": "ede8dbd09fa2bd5716ea6f6b3a93dabbc3a387b69e70d9a472081b4a6988ae3e",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/scripts/trimem_skhynix_architecture_plan.py"
+    },
+    {
+      "bytes": 26292,
+      "path": "source/src/enterprise_memory/trimem/context_projection.py",
+      "sha256": "e7f249fab48bbcb6f0262b2a1a81cdcf141d66ae3feba287ca703ba8721dcb5a",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/src/enterprise_memory/trimem/context_projection.py"
+    },
+    {
+      "bytes": 24647,
+      "path": "source/src/enterprise_memory/trimem/native_architecture_context.py",
+      "sha256": "2079c490b68fe2a004619229c026f1a2a1604c57e86a6af248aab6573d0f1276",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/src/enterprise_memory/trimem/native_architecture_context.py"
+    },
+    {
+      "bytes": 13676,
+      "path": "source/src/enterprise_memory/trimem/subgoal_context.py",
+      "sha256": "06e0a9efb15c256437e318e5c4957b009deb2712585a2363a4482128309deea5",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/src/enterprise_memory/trimem/subgoal_context.py"
+    },
+    {
+      "bytes": 24441,
+      "path": "source/tests/unit/test_trimem_d19_bounded_short_term_context.py",
+      "sha256": "98212c51e812fe94471b97207b84485e73eca7a03f77f25b94c5ecd00a55ba8b",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/tests/unit/test_trimem_d19_bounded_short_term_context.py"
+    },
+    {
+      "bytes": 22042,
+      "path": "source/tests/unit/test_trimem_native_architecture_context.py",
+      "sha256": "dcf41a70cf0386d213d39f1b381d85e0b701a43fbcd851faf44d3efb7bafb792",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/tests/unit/test_trimem_native_architecture_context.py"
+    },
+    {
+      "bytes": 16106,
+      "path": "source/tests/unit/test_trimem_skhynix_architecture_plan.py",
+      "sha256": "15a082c87ab36a962d35a4589f4a28fdfafe24b12ddff2dbf1d6adb829c59c99",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/tests/unit/test_trimem_skhynix_architecture_plan.py"
+    },
+    {
+      "bytes": 9534,
+      "path": "source/tests/unit/test_trimem_subgoal_context.py",
+      "sha256": "c279add718a61de81f9ccb6cea35f1ec539089387c50fc49f19793ba7eda1d5b",
+      "source": "/mnt/c/Users/jewon/esm-r23-d115-writer/tests/unit/test_trimem_subgoal_context.py"
+    },
+    {
+      "bytes": 2905,
+      "path": "summary.json",
+      "sha256": "c59d7f73b1f0eb6fb86cb67e5f9d774c82666590336c6205bd4310d1eca10193",
+      "source": "GENERATED_PREPARATION_REPORT"
+    },
+    {
+      "bytes": 2547,
+      "path": "validation/context.json",
+      "sha256": "ab6e88f221e49439747f4e6a6563f76061d3c2a83e2295e8d9b15c581210bdfe",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_context_validation.json"
+    },
+    {
+      "bytes": 19790,
+      "path": "validation/context.xml",
+      "sha256": "05e4bc95ed1c17ac030a9c03c82549dbdb962b9adc4c4ee993e72fd64bb4e1a8",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_context_validation.xml"
+    },
+    {
+      "bytes": 20737,
+      "path": "validation/initial/native_architecture_context_module.v1.py",
+      "sha256": "174c317bd0769bc3154eed12e632e6a02f1f151e997008bdea387fca6ddc7746",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_context_module.v1.py"
+    },
+    {
+      "bytes": 17081,
+      "path": "validation/initial/native_architecture_context_tests.v1.py",
+      "sha256": "27a9256654d42f017a0042104b7619b8f76aa263d7e909386e85960b41372595",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_context_tests.v1.py"
+    },
+    {
+      "bytes": 1552,
+      "path": "validation/initial/native_architecture_context_validation.v1.json",
+      "sha256": "360e3be8025dfe3aab7864dcc5f05a4d8b5e9ef25c745b3c57d02a405ceccd81",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_context_validation.v1.json"
+    },
+    {
+      "bytes": 15990,
+      "path": "validation/initial/native_architecture_context_validation.v1.xml",
+      "sha256": "1ae5d5d434bc25325a94ee78f1427f43db562c2e023fd303e5065bce135eec2b",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_context_validation.v1.xml"
+    },
+    {
+      "bytes": 9308,
+      "path": "validation/initial/native_architecture_plan_validation.initial.xml",
+      "sha256": "09d9c654ce2ee709da065b81e3203ab9ad085e37159b0e93b17a70105876de59",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_plan_validation.initial.xml"
+    },
+    {
+      "bytes": 1849,
+      "path": "validation/plan.json",
+      "sha256": "9aa6f83b2cb0ebfd60773df0e68e9b88657ddf3d9b481e10485f8d4baa270ab1",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_plan_validation.json"
+    },
+    {
+      "bytes": 10066,
+      "path": "validation/plan.xml",
+      "sha256": "9e89e49cc9ce5e2c7a555e2114c1508d2219b3741e37350c6a1bd90cc45574dc",
+      "source": "/mnt/c/Users/jewon/AppData/Local/Temp/native_architecture_plan_validation.xml"
+    }
+  ],
+  "manifest_excludes_itself": true,
+  "raw_datasets_or_grader_payloads_exported": false,
+  "schema": "skhynix/public-preparation-artifact-manifest/1.0",
+  "status": "PREPARATION_ONLY"
+}

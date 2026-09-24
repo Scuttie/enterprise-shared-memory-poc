@@ -1,0 +1,175 @@
+{
+  "benchmark_roles": [
+    {
+      "benchmark_id": "swebench_verified",
+      "dataset_id": "SWE-bench/SWE-bench_Verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "role": "PRIMARY",
+      "target_count": 4
+    },
+    {
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset_id": "ByteDance-Seed/Multi-SWE-bench_mini",
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "role": "SECONDARY",
+      "target_count": 4
+    },
+    {
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset_id": "ByteDance-Seed/Multi-SWE-bench-flash",
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "role": "SECONDARY",
+      "target_count": 4
+    }
+  ],
+  "contamination_policy": {
+    "heldout_instance_overlap_allowed": false,
+    "heldout_outcomes_visible_during_tuning": false,
+    "selection_precedes_all_model_results": true,
+    "smoke_instance_overlap_allowed": false
+  },
+  "matrix_ready": true,
+  "ordered_stream": true,
+  "purpose": "Run four pre-registered joint M2 tuning bundles as independent serial streams, select deterministically, then run M0 and M1 with the selected prompt. Freeze the selected M2 policy and checkpoint only after development completes.",
+  "tuning_selection_objective": "DESIGN_CHOICE: pooled resolved_count over the fixed 12-target mixed development set (SWE-bench Verified 4, Multi-SWE-bench 8), then actual total tokens, actual USD, and candidate_id; this joint tuning score is not the held-out primary endpoint",
+  "row_hash_canonicalization": "sha256 of the entire decoded source row serialized as UTF-8 JSON with sorted keys, comma/colon separators, and ensure_ascii=false",
+  "schema": "trimem/development-manifest/1.0",
+  "selection_rule": "selection_plan.json trimem-selector-v3: public identity fields only; exclude smoke and any identity already selected earlier in the split; greedily take four repository-distinct rows per benchmark. Source-row hashes are attached only after selection.",
+  "status": "FROZEN",
+  "subset_claim": "PRE_REGISTERED_STRATIFIED_BENCHMARK_SUBSET_NOT_FULL_SUITE",
+  "target_set_sha256": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2",
+  "targets": [
+    {
+      "base_commit": "c6350d594c359151ee17b0c4f354bb44f28ff69e",
+      "benchmark_id": "swebench_verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "instance_id": "django__django-16100",
+      "language": "python",
+      "order_index": 0,
+      "repository": "django/django",
+      "source_row_sha256": "2f77ea0d0ac19321e300d3a13061cc779c05e0d6eedf9cba4cd465fac55ff109",
+      "target_id": "swebench_verified--django__django-16100"
+    },
+    {
+      "base_commit": "fdc707f73a65a429935c01532cd3970d3355eab6",
+      "benchmark_id": "swebench_verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "instance_id": "sympy__sympy-23262",
+      "language": "python",
+      "order_index": 1,
+      "repository": "sympy/sympy",
+      "source_row_sha256": "3ceefbb2fe155b534671f1b944732d734001ff80752392b15394ad082f6c2b4e",
+      "target_id": "swebench_verified--sympy__sympy-23262"
+    },
+    {
+      "base_commit": "71db08c05197545944949d5aa76cd340e7143627",
+      "benchmark_id": "swebench_verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "instance_id": "sphinx-doc__sphinx-11445",
+      "language": "python",
+      "order_index": 2,
+      "repository": "sphinx-doc/sphinx",
+      "source_row_sha256": "230ac914f45a777d00e1a9261183b3fbc753bbd35108eb918f7d714e7bced7c1",
+      "target_id": "swebench_verified--sphinx-doc__sphinx-11445"
+    },
+    {
+      "base_commit": "430fb1db88843300fb4baae3edc499bbfe073b0c",
+      "benchmark_id": "swebench_verified",
+      "dataset_revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+      "instance_id": "matplotlib__matplotlib-25311",
+      "language": "python",
+      "order_index": 3,
+      "repository": "matplotlib/matplotlib",
+      "source_row_sha256": "85776d05766bfa4c77f4d743cac0b8e86618ee98363f35189e97eb35d761ab59",
+      "target_id": "swebench_verified--matplotlib__matplotlib-25311"
+    },
+    {
+      "base_commit": "0d94283959a3aa016881b9644767b937c34d2807",
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "instance_id": "mui__material-ui-29880",
+      "language": "typescript",
+      "order_index": 4,
+      "repository": "mui/material-ui",
+      "source_row_sha256": "7a7cb55e61e73fae29f25aed402b6ebc2049144a45a5871008abd68ce2186e46",
+      "target_id": "multi_swe_bench_mini--mui__material-ui-29880"
+    },
+    {
+      "base_commit": "560c412e0eb23a0b922a9ba3bea064c14f18d84a",
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "instance_id": "ponylang__ponyc-1981",
+      "language": "c",
+      "order_index": 5,
+      "repository": "ponylang/ponyc",
+      "source_row_sha256": "6796d1e48544164f62a357fb5300538e38a4c2db697475f3380099b685611b34",
+      "target_id": "multi_swe_bench_mini--ponylang__ponyc-1981"
+    },
+    {
+      "base_commit": "5e02445ce5f6eb89933d5985736c69059d0dc7af",
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "instance_id": "clap-rs__clap-3960",
+      "language": "rust",
+      "order_index": 6,
+      "repository": "clap-rs/clap",
+      "source_row_sha256": "8191fb6f1ddbc612b3063b10d80bd79c14d1b314a58f61d745ba3ef00d3e2876",
+      "target_id": "multi_swe_bench_mini--clap-rs__clap-3960"
+    },
+    {
+      "base_commit": "b3d76e0a94502e2f484d7495c88ca3a21d44155b",
+      "benchmark_id": "multi_swe_bench_mini",
+      "dataset_revision": "d0fab3ccc7dff232fcaac234cf8af9a2efeaccf6",
+      "instance_id": "facebook__zstd-938",
+      "language": "c",
+      "order_index": 7,
+      "repository": "facebook/zstd",
+      "source_row_sha256": "e80aeace6924e93b483bfe4031c0d50361a7bc7b6a35daa91dedc08918bc9d45",
+      "target_id": "multi_swe_bench_mini--facebook__zstd-938"
+    },
+    {
+      "base_commit": "33128d75f22a7c029df17b1ee595865933551469",
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "instance_id": "sharkdp__bat-1276",
+      "language": "rust",
+      "order_index": 8,
+      "repository": "sharkdp/bat",
+      "source_row_sha256": "f6e043be5ec73fa014c94028170a84d334cd76c3eed0b56e427d49b549d7cf06",
+      "target_id": "multi_swe_bench_flash--sharkdp__bat-1276"
+    },
+    {
+      "base_commit": "00347f1e79260e76d5072cca5b3636868397dda5",
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "instance_id": "catchorg__Catch2-1616",
+      "language": "cpp",
+      "order_index": 9,
+      "repository": "catchorg/Catch2",
+      "source_row_sha256": "dd75d8bf7a7061a798ae14047c076be1753baae1cdc3a813f964ac2ef2e1f629",
+      "target_id": "multi_swe_bench_flash--catchorg__Catch2-1616"
+    },
+    {
+      "base_commit": "d4cfceedabb908068473650410924ff2a522d5d1",
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "instance_id": "clap-rs__clap-3394",
+      "language": "rust",
+      "order_index": 10,
+      "repository": "clap-rs/clap",
+      "source_row_sha256": "7d26a8f05f865297fd8a4ce193bd96afc902889aeb24f931e610217d15cae1a1",
+      "target_id": "multi_swe_bench_flash--clap-rs__clap-3394"
+    },
+    {
+      "base_commit": "658d548c5e690b4fb4dd6ac06d4b798238b6157f",
+      "benchmark_id": "multi_swe_bench_flash",
+      "dataset_revision": "b0485dbebaf8a1317ebf140e80e6fc6c02d3502b",
+      "instance_id": "cli__cli-869",
+      "language": "go",
+      "order_index": 11,
+      "repository": "cli/cli",
+      "source_row_sha256": "ee8939e505517e1889a3636b2269e5f8e33c206344e1bd0b0736e248534de427",
+      "target_id": "multi_swe_bench_flash--cli__cli-869"
+    }
+  ]
+}

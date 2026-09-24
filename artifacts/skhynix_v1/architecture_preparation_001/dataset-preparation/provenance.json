@@ -1,0 +1,56 @@
+{
+  "completed_utc": "2026-09-14T01:18:27.896836+00:00",
+  "downloads": [
+    {
+      "bytes": 2301,
+      "completed_utc": "2026-09-14T01:18:23.320487+00:00",
+      "path": "metadata/dataset-api.json",
+      "requested_url": "https://huggingface.co/api/datasets/SWE-bench/SWE-bench/revision/c6fe717fd7a4c3ac1daa4055a4fd082c6a1d28a2",
+      "resolved_url_had_query": false,
+      "resolved_url_without_query": "https://huggingface.co/api/datasets/SWE-bench/SWE-bench/revision/c6fe717fd7a4c3ac1daa4055a4fd082c6a1d28a2",
+      "sha256": "b55369ced05b1be15d120383bc42902d968dfd87f29657fb14d4b517d385fb1e",
+      "started_utc": "2026-09-14T01:18:22.978925+00:00"
+    },
+    {
+      "bytes": 3974,
+      "completed_utc": "2026-09-14T01:18:23.633793+00:00",
+      "path": "metadata/README.md",
+      "requested_url": "https://huggingface.co/datasets/SWE-bench/SWE-bench/raw/c6fe717fd7a4c3ac1daa4055a4fd082c6a1d28a2/README.md",
+      "resolved_url_had_query": false,
+      "resolved_url_without_query": "https://huggingface.co/datasets/SWE-bench/SWE-bench/raw/c6fe717fd7a4c3ac1daa4055a4fd082c6a1d28a2/README.md",
+      "sha256": "6433ee353e763e5c1e6f3e9ef4e9872d7f2e9639effc2e52cc5521f419444764",
+      "started_utc": "2026-09-14T01:18:23.322920+00:00"
+    },
+    {
+      "bytes": 3299303,
+      "completed_utc": "2026-09-14T01:18:25.255373+00:00",
+      "path": "raw/dev-00000-of-00001.parquet",
+      "requested_url": "https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/c6fe717fd7a4c3ac1daa4055a4fd082c6a1d28a2/data/dev-00000-of-00001.parquet",
+      "resolved_url_had_query": true,
+      "resolved_url_without_query": "https://us.aws.cdn.hf.co/xet-bridge-us/681135686873bfa1cd321a8a/244894f9321598e1aafc0c8bed5cf0995faf8f5ca043bc50253c675fc4e8e506",
+      "sha256": "7812438935be9cbe36049b93c73412d523fb07251bd255813168c38c5fc92454",
+      "started_utc": "2026-09-14T01:18:23.637268+00:00"
+    },
+    {
+      "bytes": 33293897,
+      "completed_utc": "2026-09-14T01:18:27.416692+00:00",
+      "path": "raw/test-00000-of-00001.parquet",
+      "requested_url": "https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/c6fe717fd7a4c3ac1daa4055a4fd082c6a1d28a2/data/test-00000-of-00001.parquet",
+      "resolved_url_had_query": true,
+      "resolved_url_without_query": "https://us.aws.cdn.hf.co/xet-bridge-us/681135686873bfa1cd321a8a/3b135a91afe5b1f4dab9476df880038f141c4ec7be6c370297fccd967e393dd5",
+      "sha256": "d4f5a245c75319fa8240c540674958c4d491e82edf274b144d43836bdcbc4567",
+      "started_utc": "2026-09-14T01:18:25.256879+00:00"
+    }
+  ],
+  "network_byte_cap": 134217728,
+  "network_bytes_including_initial_probe": 36601776,
+  "pinned_current_revision_probe": {
+    "bytes": 2301,
+    "note": "Initial read-only probe identified revision; pinned metadata bytes are separately retained.",
+    "revision": "c6fe717fd7a4c3ac1daa4055a4fd082c6a1d28a2",
+    "url": "https://huggingface.co/api/datasets/SWE-bench/SWE-bench"
+  },
+  "public_inventory_sha256": "05686f535e20b369af3ea28062cda0a123c528ad84eb5cac3fe7bfed24272b7c",
+  "raw_parquet_policy": "Full source bytes retained only as bound offline data; only explicit public metadata columns decoded.",
+  "schema": "skhynix/disjoint-source-download-provenance/1.0"
+}

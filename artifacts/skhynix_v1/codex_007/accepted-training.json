@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "attempt": 1,
+      "attestation_sha256": "df05d884e968c0c61d900a9645b6720f31979aed08a025b13b7ca5c437992043",
+      "cell": "A",
+      "name": "training-19637-a1",
+      "official_resolved": true,
+      "patch_sha256": "6929e4155f8f6d0ca3c61c3788b5abd5e1be27722f6afc14284bc0982cbf4087",
+      "procedure_attested": true,
+      "public_result_sha256": "b6a49cdde5f5ab113a7edf89ceb40a7251278b26efb6c72cee321049b77cc5c8",
+      "run_root": "/home/trimem-runner/skhynix-codex-007/training-19637-a1/execution",
+      "task_id": "swebench_verified--sympy__sympy-19637"
+    },
+    {
+      "attempt": 1,
+      "attestation_sha256": "c85e33e4a9d9b044f29597bf20ccde3973bb29e96e69039829224793fa9e4ce9",
+      "cell": "A",
+      "name": "training-19783-a1",
+      "official_resolved": true,
+      "patch_sha256": "af4fe2b3046b8dd5e05f4d370494058736a199955e86cba20a3762962bdf1b96",
+      "procedure_attested": true,
+      "public_result_sha256": "842f5490b911ca86eacf20c9f89642af9ec91f621d7b3b0a50537453fb0ad2d3",
+      "run_root": "/home/trimem-runner/skhynix-codex-007/training-19783-a1/execution",
+      "task_id": "swebench_verified--sympy__sympy-19783"
+    }
+  ],
+  "evaluation_solve_rates": null,
+  "executed_evaluation_cells": 0,
+  "exhausted_task_ids": [],
+  "max_fresh_attempts_per_task": 3,
+  "official_training_grades": 2,
+  "planned_evaluation_cells": 18,
+  "retry_feedback_provided": false,
+  "schema": "skhynix/native007-training-gate-decision/1.0",
+  "selected": [
+    {
+      "cell": "A",
+      "name": "training-19637-a1",
+      "run_root": "/home/trimem-runner/skhynix-codex-007/training-19637-a1/execution"
+    },
+    {
+      "cell": "A",
+      "name": "training-19783-a1",
+      "run_root": "/home/trimem-runner/skhynix-codex-007/training-19783-a1/execution"
+    }
+  ],
+  "status": "PASS_READY_TO_PROMOTE",
+  "training_official_resolved": 2,
+  "verified_training_procedures": 2
+}

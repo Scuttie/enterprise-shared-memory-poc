@@ -1,0 +1,238 @@
+2026-09-20 22:13:54,400 - INFO - Creating container for matplotlib__matplotlib-20374...
+2026-09-20 22:13:54,440 - INFO - Container for matplotlib__matplotlib-20374 created: 9447e486c8512156a146307471fc30433927185ddd134580d5c4be8f98e98787
+2026-09-20 22:13:54,544 - INFO - Container for matplotlib__matplotlib-20374 started: 9447e486c8512156a146307471fc30433927185ddd134580d5c4be8f98e98787
+2026-09-20 22:13:54,544 - INFO - Intermediate patch for matplotlib__matplotlib-20374 written to logs/run_evaluation/649c40043eeceb45e3ed/trimem-v1-BASELINE/matplotlib__matplotlib-20374/patch.diff, now applying to container...
+2026-09-20 22:13:54,623 - INFO - >>>>> Applied Patch:
+Checking patch lib/matplotlib/sphinxext/plot_directive.py...
+Checking patch lib/matplotlib/tests/test_sphinxext.py...
+Applied patch lib/matplotlib/sphinxext/plot_directive.py cleanly.
+Applied patch lib/matplotlib/tests/test_sphinxext.py cleanly.
+
+2026-09-20 22:13:55,289 - INFO - Git diff before:
+diff --git a/lib/matplotlib/sphinxext/plot_directive.py b/lib/matplotlib/sphinxext/plot_directive.py
+index 890eca2625..54bfa20b0f 100644
+--- a/lib/matplotlib/sphinxext/plot_directive.py
++++ b/lib/matplotlib/sphinxext/plot_directive.py
+@@ -541,7 +541,8 @@ def render_figures(code, code_path, output_dir, output_base, context,
+     """
+     formats = get_plot_formats(config)
+ 
+-    # Try to determine if all images already exist
++    # Try to determine if all images already exist.  Context-dependent plots
++    # must always run to update the shared namespace, even if images exist.
+ 
+     is_doctest, code_pieces = _split_code_at_show(code)
+ 
+@@ -549,7 +550,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
+     all_exists = True
+     img = ImageFile(output_base, output_dir)
+     for format, dpi in formats:
+-        if out_of_date(code_path, img.filename(format)):
++        if context or out_of_date(code_path, img.filename(format)):
+             all_exists = False
+             break
+         img.formats.append(format)
+@@ -569,7 +570,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
+             else:
+                 img = ImageFile('%s_%02d' % (output_base, j), output_dir)
+             for fmt, dpi in formats:
+-                if out_of_date(code_path, img.filename(fmt)):
++                if context or out_of_date(code_path, img.filename(fmt)):
+                     all_exists = False
+                     break
+                 img.formats.append(fmt)
+diff --git a/lib/matplotlib/tests/test_sphinxext.py b/lib/matplotlib/tests/test_sphinxext.py
+index 5d48a9817c..6ab7620d74 100644
+--- a/lib/matplotlib/tests/test_sphinxext.py
++++ b/lib/matplotlib/tests/test_sphinxext.py
+@@ -62,3 +62,71 @@ def test_tinypages(tmpdir):
+     assert b'plot-directive my-class my-other-class' in html_contents
+     # check that the multi-image caption is applied twice
+     assert html_contents.count(b'This caption applies to both plots.') == 2
++
++
++@pytest.mark.parametrize('figure_count', [1, 2])
++def test_plot_context_include(tmp_path, figure_count):
++    source_dir = tmp_path / 'source'
++    source_dir.mkdir()
++    (source_dir / 'conf.py').write_text(
++        "extensions = ['matplotlib.sphinxext.plot_directive']\n"
++        "master_doc = 'index'\n"
++        "plot_formats = ['png']\n", encoding='utf-8')
++    (source_dir / 'index.rst').write_text(f'''\
++Context plots
++=============
++
++.. plot::
++   :context:
++
++   from pathlib import Path
++   with Path('context_runs').open('a') as log:
++       log.write('x')
++   a = 1
++   for _ in range({figure_count}):
++       plt.figure()
++       plt.plot(range(2))
++
++.. plot::
++
++   from pathlib import Path
++   with Path('cached_runs').open('a') as log:
++       log.write('x')
++   plt.plot(range(3))
++
++.. plot::
++   :context: close-figs
++
++   assert a == 1
++
++.. include:: included.txt
++''', encoding='utf-8')
++    included = source_dir / 'included.txt'
++    included.write_text('Original text.\n', encoding='utf-8')
++    html_dir = tmp_path / 'html'
++    cmd = [sys.executable, '-msphinx', '-W', '-b', 'html',
++           '-d', str(tmp_path / 'doctrees'), str(source_dir), str(html_dir)]
++
++    def build():
++        proc = Popen(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True,
++                     env={**os.environ, "MPLBACKEND": ""})
++        out, err = proc.communicate()
++        assert proc.returncode == 0, \
++            f"sphinx build failed with stdout:\n{out}\nstderr:\n{err}\n"
++        assert not err
++
++    build()
++    assert (source_dir / 'context_runs').read_text() == 'x'
++    assert (source_dir / 'cached_runs').read_text() == 'x'
++
++    # Only the included file changes; the plot source and images stay current.
++    included.write_text('Updated text.\n', encoding='utf-8')
++    build()
++    assert 'Updated text.' in (html_dir / 'index.html').read_text()
++    assert (source_dir / 'context_runs').read_text() == 'xx'
++    assert (source_dir / 'cached_runs').read_text() == 'x'
++
++    # With no further changes, Sphinx does not run any plot directives.
++    build()
++    assert (source_dir / 'context_runs').read_text() == 'xx'
++    assert (source_dir / 'cached_runs').read_text() == 'x'
+2026-09-20 22:13:55,289 - INFO - Eval script for matplotlib__matplotlib-20374 written to logs/run_evaluation/649c40043eeceb45e3ed/trimem-v1-BASELINE/matplotlib__matplotlib-20374/eval.sh; copying to container...
+2026-09-20 22:13:57,951 - INFO - Test runtime: 2.59 seconds
+2026-09-20 22:13:57,951 - INFO - Test output for matplotlib__matplotlib-20374 written to logs/run_evaluation/649c40043eeceb45e3ed/trimem-v1-BASELINE/matplotlib__matplotlib-20374/test_output.txt
+2026-09-20 22:13:58,008 - INFO - Git diff after:
+diff --git a/lib/matplotlib/sphinxext/plot_directive.py b/lib/matplotlib/sphinxext/plot_directive.py
+index 890eca2625..54bfa20b0f 100644
+--- a/lib/matplotlib/sphinxext/plot_directive.py
++++ b/lib/matplotlib/sphinxext/plot_directive.py
+@@ -541,7 +541,8 @@ def render_figures(code, code_path, output_dir, output_base, context,
+     """
+     formats = get_plot_formats(config)
+ 
+-    # Try to determine if all images already exist
++    # Try to determine if all images already exist.  Context-dependent plots
++    # must always run to update the shared namespace, even if images exist.
+ 
+     is_doctest, code_pieces = _split_code_at_show(code)
+ 
+@@ -549,7 +550,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
+     all_exists = True
+     img = ImageFile(output_base, output_dir)
+     for format, dpi in formats:
+-        if out_of_date(code_path, img.filename(format)):
++        if context or out_of_date(code_path, img.filename(format)):
+             all_exists = False
+             break
+         img.formats.append(format)
+@@ -569,7 +570,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
+             else:
+                 img = ImageFile('%s_%02d' % (output_base, j), output_dir)
+             for fmt, dpi in formats:
+-                if out_of_date(code_path, img.filename(fmt)):
++                if context or out_of_date(code_path, img.filename(fmt)):
+                     all_exists = False
+                     break
+                 img.formats.append(fmt)
+diff --git a/lib/matplotlib/tests/test_sphinxext.py b/lib/matplotlib/tests/test_sphinxext.py
+index 5d48a9817c..6ab7620d74 100644
+--- a/lib/matplotlib/tests/test_sphinxext.py
++++ b/lib/matplotlib/tests/test_sphinxext.py
+@@ -62,3 +62,71 @@ def test_tinypages(tmpdir):
+     assert b'plot-directive my-class my-other-class' in html_contents
+     # check that the multi-image caption is applied twice
+     assert html_contents.count(b'This caption applies to both plots.') == 2
++
++
++@pytest.mark.parametrize('figure_count', [1, 2])
++def test_plot_context_include(tmp_path, figure_count):
++    source_dir = tmp_path / 'source'
++    source_dir.mkdir()
++    (source_dir / 'conf.py').write_text(
++        "extensions = ['matplotlib.sphinxext.plot_directive']\n"
++        "master_doc = 'index'\n"
++        "plot_formats = ['png']\n", encoding='utf-8')
++    (source_dir / 'index.rst').write_text(f'''\
++Context plots
++=============
++
++.. plot::
++   :context:
++
++   from pathlib import Path
++   with Path('context_runs').open('a') as log:
++       log.write('x')
++   a = 1
++   for _ in range({figure_count}):
++       plt.figure()
++       plt.plot(range(2))
++
++.. plot::
++
++   from pathlib import Path
++   with Path('cached_runs').open('a') as log:
++       log.write('x')
++   plt.plot(range(3))
++
++.. plot::
++   :context: close-figs
++
++   assert a == 1
++
++.. include:: included.txt
++''', encoding='utf-8')
++    included = source_dir / 'included.txt'
++    included.write_text('Original text.\n', encoding='utf-8')
++    html_dir = tmp_path / 'html'
++    cmd = [sys.executable, '-msphinx', '-W', '-b', 'html',
++           '-d', str(tmp_path / 'doctrees'), str(source_dir), str(html_dir)]
++
++    def build():
++        proc = Popen(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True,
++                     env={**os.environ, "MPLBACKEND": ""})
++        out, err = proc.communicate()
++        assert proc.returncode == 0, \
++            f"sphinx build failed with stdout:\n{out}\nstderr:\n{err}\n"
++        assert not err
++
++    build()
++    assert (source_dir / 'context_runs').read_text() == 'x'
++    assert (source_dir / 'cached_runs').read_text() == 'x'
++
++    # Only the included file changes; the plot source and images stay current.
++    included.write_text('Updated text.\n', encoding='utf-8')
++    build()
++    assert 'Updated text.' in (html_dir / 'index.html').read_text()
++    assert (source_dir / 'context_runs').read_text() == 'xx'
++    assert (source_dir / 'cached_runs').read_text() == 'x'
++
++    # With no further changes, Sphinx does not run any plot directives.
++    build()
++    assert (source_dir / 'context_runs').read_text() == 'xx'
++    assert (source_dir / 'cached_runs').read_text() == 'x'
+2026-09-20 22:13:58,008 - INFO - Grading answer for matplotlib__matplotlib-20374...
+2026-09-20 22:13:58,008 - INFO - report: {'matplotlib__matplotlib-20374': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False, 'infra_failure_reason': 'no_tests_collected'}}
+Result for matplotlib__matplotlib-20374: resolved: False
+2026-09-20 22:13:58,009 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-20374.649c40043eeceb45e3ed...
+2026-09-20 22:14:13,181 - INFO - Container sweb.eval.matplotlib__matplotlib-20374.649c40043eeceb45e3ed stopped successfully.
+2026-09-20 22:14:13,181 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-20374.649c40043eeceb45e3ed...
+2026-09-20 22:14:13,236 - INFO - Container sweb.eval.matplotlib__matplotlib-20374.649c40043eeceb45e3ed removed successfully.

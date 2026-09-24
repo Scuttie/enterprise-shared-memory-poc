@@ -1,0 +1,148 @@
+{
+  "schema": "trimem/dev-activation-source-bank-plan/1.0",
+  "status": "FROZEN_PRE_EXEC_SOURCE_SELECTION",
+  "diagnostic_id": "TRIMEM_V1_DEV_ACTIVATION_DIAGNOSTIC_001",
+  "scientific_role": "POST_DEV_DIAGNOSTIC_ORACLE_BANK_NOT_SELECTION_OR_HELDOUT_EVIDENCE",
+  "execution_authorized": false,
+  "public_github_capture_allowed": true,
+  "model_or_grader_calls_allowed": false,
+  "read_only_same_snapshot_for_C1_and_C2": true,
+  "frozen_inputs": {
+    "development_manifest": {
+      "path": "configs/trimem_v1/development_manifest.json",
+      "raw_sha256": "44e52137dad68618396c15d6b3c2221a683f89988e361efb2966e244ba230900",
+      "target_set_sha256": "e7da59b3c2638c89da4e333a7391851e992c122acac11bc9edf60619cfd5eff2"
+    },
+    "grader_lock": {
+      "path": "configs/trimem_v1/grader_lock.json",
+      "raw_sha256": "853d42e86c2caf1449f28bba9143741e3ccff5e75bbe790115a0d9c746014fbb"
+    }
+  },
+  "source_universe": {
+    "mode": "FROZEN_PUBLIC_GITHUB_ORACLE_SOURCE_PRS",
+    "rule": "Use exactly the one pre-declared same-repository public merged source PR for each frozen DEV target. Source rows are canonical public GitHub PR/body/merged-diff projections, not benchmark target rows.",
+    "source_instance_must_differ_from_every_dev_target": true,
+    "same_repository_required": true,
+    "exact_source_row_sha256_required": true,
+    "source_owned_public_issue_and_merged_diff_allowed": true,
+    "target_gold_patch_test_outcome_or_target_derived_memory_allowed": false,
+    "oracle_source_prs": [
+      {"target_id": "swebench_verified--django__django-16100", "repository": "django/django", "pull_number": 7143},
+      {"target_id": "swebench_verified--sympy__sympy-23262", "repository": "sympy/sympy", "pull_number": 21546},
+      {"target_id": "swebench_verified--sphinx-doc__sphinx-11445", "repository": "sphinx-doc/sphinx", "pull_number": 6746},
+      {"target_id": "swebench_verified--matplotlib__matplotlib-25311", "repository": "matplotlib/matplotlib", "pull_number": 23913},
+      {"target_id": "multi_swe_bench_mini--mui__material-ui-29880", "repository": "mui/material-ui", "pull_number": 24794},
+      {"target_id": "multi_swe_bench_mini--ponylang__ponyc-1981", "repository": "ponylang/ponyc", "pull_number": 1130},
+      {"target_id": "multi_swe_bench_mini--clap-rs__clap-3960", "repository": "clap-rs/clap", "pull_number": 3334},
+      {"target_id": "multi_swe_bench_mini--facebook__zstd-938", "repository": "facebook/zstd", "pull_number": 656},
+      {"target_id": "multi_swe_bench_flash--sharkdp__bat-1276", "repository": "sharkdp/bat", "pull_number": 579},
+      {"target_id": "multi_swe_bench_flash--catchorg__Catch2-1616", "repository": "catchorg/Catch2", "pull_number": 845},
+      {"target_id": "multi_swe_bench_flash--clap-rs__clap-3394", "repository": "clap-rs/clap", "pull_number": 2876},
+      {"target_id": "multi_swe_bench_flash--cli__cli-869", "repository": "cli/cli", "pull_number": 302}
+    ],
+    "target_problem_objects": [
+      {"target_id": "swebench_verified--django__django-16100", "task_projection": "SWE_BENCH_PROBLEM_STATEMENT", "tracker": "DJANGO_TRAC", "issue_number": 32603, "url": "https://code.djangoproject.com/ticket/32603"},
+      {"target_id": "swebench_verified--sympy__sympy-23262", "task_projection": "SWE_BENCH_PROBLEM_STATEMENT", "tracker": "GITHUB_ISSUE", "issue_number": 23224, "url": "https://api.github.com/repos/sympy/sympy/issues/23224"},
+      {"target_id": "swebench_verified--sphinx-doc__sphinx-11445", "task_projection": "SWE_BENCH_PROBLEM_STATEMENT", "tracker": "GITHUB_ISSUE", "issue_number": 11437, "url": "https://api.github.com/repos/sphinx-doc/sphinx/issues/11437"},
+      {"target_id": "swebench_verified--matplotlib__matplotlib-25311", "task_projection": "SWE_BENCH_PROBLEM_STATEMENT", "tracker": "GITHUB_ISSUE", "issue_number": 25300, "url": "https://api.github.com/repos/matplotlib/matplotlib/issues/25300"},
+      {"target_id": "multi_swe_bench_mini--mui__material-ui-29880", "task_projection": "MULTI_SWE_PUBLIC_INSTRUCTION", "tracker": "GITHUB_ISSUE", "issue_number": 29861, "url": "https://api.github.com/repos/mui/material-ui/issues/29861"},
+      {"target_id": "multi_swe_bench_mini--ponylang__ponyc-1981", "task_projection": "MULTI_SWE_PUBLIC_INSTRUCTION", "tracker": "GITHUB_ISSUE", "issue_number": 1979, "url": "https://api.github.com/repos/ponylang/ponyc/issues/1979"},
+      {"target_id": "multi_swe_bench_mini--clap-rs__clap-3960", "task_projection": "MULTI_SWE_PUBLIC_INSTRUCTION", "tracker": "GITHUB_ISSUE", "issue_number": 3959, "url": "https://api.github.com/repos/clap-rs/clap/issues/3959"},
+      {"target_id": "multi_swe_bench_mini--facebook__zstd-938", "task_projection": "MULTI_SWE_PUBLIC_INSTRUCTION", "tracker": "GITHUB_ISSUE", "issue_number": 935, "url": "https://api.github.com/repos/facebook/zstd/issues/935"},
+      {"target_id": "multi_swe_bench_flash--sharkdp__bat-1276", "task_projection": "MULTI_SWE_PUBLIC_INSTRUCTION", "tracker": "GITHUB_ISSUE", "issue_number": 1163, "url": "https://api.github.com/repos/sharkdp/bat/issues/1163"},
+      {"target_id": "multi_swe_bench_flash--catchorg__Catch2-1616", "task_projection": "MULTI_SWE_PUBLIC_INSTRUCTION", "tracker": "GITHUB_ISSUE", "issue_number": 1186, "url": "https://api.github.com/repos/catchorg/Catch2/issues/1186"},
+      {"target_id": "multi_swe_bench_flash--clap-rs__clap-3394", "task_projection": "MULTI_SWE_PUBLIC_INSTRUCTION", "tracker": "GITHUB_ISSUE", "issue_number": 3320, "url": "https://api.github.com/repos/clap-rs/clap/issues/3320"},
+      {"target_id": "multi_swe_bench_flash--cli__cli-869", "task_projection": "MULTI_SWE_PUBLIC_INSTRUCTION", "tracker": "GITHUB_ISSUE", "issue_number": 835, "url": "https://api.github.com/repos/cli/cli/issues/835"}
+    ]
+  },
+  "eligibility": {
+    "required_source_fix_signal": "PUBLIC_GITHUB_MERGED_PR_DIFF",
+    "required_chronology_signals": [
+      "fix_pr_merged_at",
+      "fix_commit_public_timestamp",
+      "source_issue_closed_at",
+      "target_problem_first_published_at"
+    ],
+    "chronology_rule": "max(fix_pr_merged_at,fix_commit_public_timestamp,source_issue_closed_at) < target_problem_first_published_at",
+    "required_version_signal": "FIX_COMMIT_IS_ANCESTOR_OF_TARGET_BASE",
+    "unknown_or_missing_signal": "REJECT",
+    "provenance_requires_observed_at_and_raw_sha256": true
+  },
+  "source_feature_compiler": {
+    "version": "trimem-source-feature-compiler-v1",
+    "inputs": [
+      "source PR public title/body",
+      "source PR public merged diff"
+    ],
+    "outputs": [
+      "changed_paths",
+      "symbols",
+      "apis",
+      "errors"
+    ],
+    "target_input_allowed": false,
+    "model_calls": 0
+  },
+  "candidate_rule": {
+    "version": "trimem-dev-oracle-source-candidate-v1",
+    "target_inputs": [
+      "exact hash-bound runtime public instruction",
+      "target repository",
+      "target base commit",
+      "true target problem first-publication timestamp"
+    ],
+    "forbidden_target_inputs": [
+      "gold patch",
+      "fix patch",
+      "test patch",
+      "FAIL_TO_PASS",
+      "PASS_TO_PASS",
+      "grader outcome",
+      "diagnostic benchmark-reader model output"
+    ],
+    "rank": "the exact oracle_source_prs target mapping in frozen DEV order; no result-conditioned fallback or substitute PR",
+    "top_k_per_target": 1,
+    "actual_declared_candidates_per_target": 1,
+    "failed_candidate_fallback": "Preserve a zero-candidate assignment; never substitute another PR or weaken a safety gate.",
+    "minimum_verified_source_records": 1,
+    "coverage_sufficiency_target_count": 12,
+    "zero_candidate_assignment": "PRESERVE_AND_RUN_AS_NO_SAFE_CANDIDATE",
+    "partial_coverage_execution_allowed": true,
+    "coverage_shortfall_verdict": "RETRIEVAL_BANK_COVERAGE_INSUFFICIENT"
+  },
+  "artifact_policy": {
+    "manifest_contains_source_metadata_features_and_hash_references": true,
+    "source_fix_patch_bytes_committed_in_manifest": false,
+    "payloads_are_separate_hash_bound_files": true,
+    "payload_mutation_during_diagnostic": false
+  },
+  "runtime_projection": {
+    "memory_kind": "ORG_SEMANTIC",
+    "bank_type": "ORG_SEMANTIC",
+    "permission_scope": "PUBLIC_READ",
+    "tenant_scope": "BENCHMARK_ISOLATED",
+    "repository_scope": "EXACT_SOURCE_AND_TARGET_REPOSITORY",
+    "version_scope": "EXACT_SOURCE_COMMIT",
+    "memory_record_version": "source_commit",
+    "path_scope": "**",
+    "changed_paths_are_reporting_features_not_path_admission_scope": true,
+    "verified": true,
+    "reviewed": true,
+    "source_outcome": "passed"
+  },
+  "public_evidence_capture": {
+    "network_scope": "PINNED_DATASETS_PLUS_PUBLIC_GITHUB_AND_DJANGO_TRAC_NO_AUTHORIZATION_HEADER",
+    "raw_response_bytes_content_addressed": true,
+    "resume_without_reissuing_cached_requests": true,
+    "api_failure_or_unknown_candidate": "REJECT_CANDIDATE_AND_CONTINUE_FROZEN_RANK",
+    "credentials_or_response_headers_persisted": false,
+    "model_calls": 0,
+    "grader_containers": 0
+  },
+  "required_materialization_inputs": [
+    "PINNED_RUNTIME_PUBLIC_INSTRUCTION_PROJECTION",
+    "TRUE_TARGET_PROBLEM_CHRONOLOGY_CACHE",
+    "PUBLIC_SOURCE_PR_BODY_AND_MERGED_DIFF_EVIDENCE",
+    "FIX_COMMIT_TO_TARGET_BASE_ANCESTRY_EVIDENCE"
+  ]
+}

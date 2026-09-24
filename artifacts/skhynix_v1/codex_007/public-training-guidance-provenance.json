@@ -1,0 +1,15 @@
+{
+  "guidance_frozen_in_training_template": true,
+  "prior_patches_or_memory_reused": false,
+  "public_diagnostics": [
+    {
+      "name": "training-19637-a2-verifier-diagnostic.json",
+      "sha256": "b6710e4d4cf28b01750e8b781950be6387948bc12ff7f872bc0ea69fc436078e"
+    },
+    {
+      "name": "training-19783-public-diagnostic.json",
+      "sha256": "39b79314022fce684a3df4627fd6a3eff8c2106d529add3fff50bb7b2eea6fa2"
+    }
+  ],
+  "scope": "KNOWN_TRAINING_ONLY; NO_EVALUATION_OUTCOMES_OR_HIDDEN_FIXTURE_CONTENT"
+}

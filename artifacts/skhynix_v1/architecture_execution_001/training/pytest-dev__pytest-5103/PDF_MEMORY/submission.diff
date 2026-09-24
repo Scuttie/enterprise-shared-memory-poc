@@ -1,0 +1,453 @@
+diff --git a/changelog/5103.feature.rst b/changelog/5103.feature.rst
+new file mode 100644
+index 0000000..77c255c
+--- /dev/null
++++ b/changelog/5103.feature.rst
+@@ -0,0 +1 @@
++Improve assertion failure messages for builtin ``all()`` and ``any()`` calls with generator expressions and list comprehensions by showing evaluated predicate details.
+diff --git a/src/_pytest/assertion/rewrite.py b/src/_pytest/assertion/rewrite.py
+index 2903b89..fb7ff01 100644
+--- a/src/_pytest/assertion/rewrite.py
++++ b/src/_pytest/assertion/rewrite.py
+@@ -605,6 +605,45 @@ def set_location(node, lineno, col_offset):
+     return node
+ 
+ 
++def _get_assertion_iterator(iterable):
++    # Generator expressions acquire their outer iterator immediately.  The
++    # adapter also avoids calling a user iterator's __iter__ a second time.
++    iterator = iter(iterable)
++
++    def consume():
++        while True:
++            try:
++                value = next(iterator)
++            except StopIteration:
++                return
++            yield value
++
++    return consume()
++
++
++def _call_all_any(function, iterable, instrumented):
++    if not instrumented:
++        return function(iterable), None
++
++    explanations = []
++
++    def values():
++        for value, explain in iterable:
++            if function is all:
++                explanations[:] = [explain]
++            else:
++                explanations.append(explain)
++            yield value
++
++    return function(values()), explanations
++
++
++def _format_all_any(explanations, iterable):
++    if explanations is None:
++        return _saferepr(iterable)
++    return ", ".join(explain() for explain in explanations) or "[]"
++
++
+ class AssertionRewriter(ast.NodeVisitor):
+     """Assertion rewriting implementation.
+ 
+@@ -1027,13 +1066,137 @@ warn_explicit(
+         outer_expl = "%s\n{%s = %s\n}" % (res_expl, res_expl, expl)
+         return res, outer_expl
+ 
+-    # ast.Call signature changed on 3.5,
+-    # conditionally change  which methods is named
+-    # visit_Call depending on Python version
+-    if sys.version_info >= (3, 5):
+-        visit_Call = visit_Call_35
+-    else:
+-        visit_Call = visit_Call_legacy
++    def visit_Call(self, call):
++        if (
++            isinstance(call.func, ast.Name)
++            and call.func.id in ("all", "any")
++            and len(call.args) == 1
++            and not call.keywords
++            and not getattr(call, "starargs", None)
++            and not getattr(call, "kwargs", None)
++            and isinstance(call.args[0], (ast.GeneratorExp, ast.ListComp))
++            # Python 2 list comprehensions leak their targets into the caller.
++            and not (six.PY2 and isinstance(call.args[0], ast.ListComp))
++            and not any(getattr(g, "is_async", False) for g in call.args[0].generators)
++            # The ordinary comparison visitor evaluates all operands eagerly.
++            # Keep chained predicates intact so their operands short circuit.
++            and not any(
++                isinstance(node, ast.Compare) and len(node.ops) > 1
++                for node in ast.walk(call.args[0].elt)
++            )
++            # Assignment expressions bind in the enclosing scope.
++            and not any(
++                type(node).__name__ in ("NamedExpr", "Await")
++                for node in ast.walk(call.args[0])
++            )
++        ):
++            return self.visit_all_any(call)
++        if sys.version_info >= (3, 5):
++            return self.visit_Call_35(call)
++        return self.visit_Call_legacy(call)
++
++    def visit_all_any(self, call):
++        """Rewrite the predicate in a comprehension without leaking its locals.
++
++        Each iteration yields its value and a deferred explanation.  The real
++        builtin consumes the values, retaining its normal truth testing and
++        short circuiting.  List comprehensions still evaluate eagerly.
++        """
++        function = self.assign(call.func)
++        instrumented = self.assign(
++            ast.Compare(function, [ast.Is()], [self.builtin(call.func.id)])
++        )
++        comprehension = call.args[0]
++        generator_name = self.variable()
++        generator = ast.parse("def iterate(iterator): pass").body[0]
++        generator.name = generator_name
++        iterator_name = "@py_iterator"
++        if six.PY3:
++            generator.args.args[0].arg = iterator_name
++        else:
++            generator.args.args[0].id = iterator_name
++
++        statements, on_failure, variables = (
++            self.statements,
++            self.on_failure,
++            self.variables,
++        )
++        self.statements, self.on_failure, self.variables = [], [], []
++        self.push_format_context()
++        value, explanation = self.visit(comprehension.elt)
++        formatted = self.pop_format_context(ast.Str(explanation))
++
++        # Defaults capture this iteration's values, including temporaries from
++        # the ordinary assertion visitors.  Unvisited boolean operands may not
++        # have assigned their temporaries, and their explanations won't use them.
++        targets = []
++        for clause in comprehension.generators:
++            for node in ast.walk(clause.target):
++                if isinstance(node, ast.Name) and node.id not in targets:
++                    targets.append(node.id)
++        captured = self.variables + targets
++        explain_name = self.variable()
++        explain = ast.parse("def explain(): pass").body[0]
++        explain.name = explain_name
++        if six.PY3:
++            explain.args.args = [ast.arg(arg=name, annotation=None) for name in captured]
++        else:
++            explain.args.args = [ast.Name(name, ast.Param()) for name in captured]
++        local_values = ast_Call(self.builtin("locals"), [], [])
++        explain.args.defaults = [
++            ast_Call(ast.Attribute(local_values, "get", ast.Load()), [ast.Str(name)], [])
++            for name in captured
++        ]
++        explain.body = self.on_failure + [ast.Return(formatted)]
++        self.statements.append(explain)
++        item = ast.Tuple([value, ast.Name(explain_name, ast.Load())], ast.Load())
++        eager = isinstance(comprehension, ast.ListComp)
++        if eager:
++            # A list comprehension must propagate StopIteration from its
++            # predicate, rather than treating it as a generator's termination.
++            items = ast.Name(self.variable(), ast.Load())
++            append = ast.Attribute(items, "append", ast.Load())
++            self.statements.append(ast.Expr(ast_Call(append, [item], [])))
++        else:
++            self.statements.append(ast.Expr(ast.Yield(item)))
++        body = self.statements
++        for index in reversed(range(len(comprehension.generators))):
++            clause = comprehension.generators[index]
++            for condition in reversed(clause.ifs):
++                body = [ast.If(condition, body, [])]
++            iterator = clause.iter if index else ast.Name(iterator_name, ast.Load())
++            body = [ast.For(clause.target, iterator, body, [])]
++        if eager:
++            body.insert(
++                0, ast.Assign([ast.Name(items.id, ast.Store())], ast.List([], ast.Load()))
++            )
++            body.append(ast.Return(items))
++        generator.body = body
++        self.statements, self.on_failure, self.variables = (
++            statements,
++            on_failure,
++            variables,
++        )
++        self.statements.append(generator)
++
++        iterator = self.helper(
++            "_get_assertion_iterator", comprehension.generators[0].iter
++        )
++        rewritten = ast_Call(ast.Name(generator_name, ast.Load()), [iterator], [])
++        iterable = self.assign(ast.IfExp(instrumented, rewritten, comprehension))
++        outcome = self.assign(
++            self.helper("_call_all_any", function, iterable, instrumented)
++        )
++        result = self.assign(ast.Subscript(outcome, ast.Index(ast.Num(0)), ast.Load()))
++        explanations = ast.Subscript(outcome, ast.Index(ast.Num(1)), ast.Load())
++        arg_expl = self.explanation_param(
++            self.helper("_format_all_any", explanations, iterable)
++        )
++        result_expl = self.explanation_param(self.display(result))
++        explanation = "%s\n{%s = %s(%s)\n}" % (
++            result_expl, result_expl, call.func.id, arg_expl
++        )
++        return result, explanation
+ 
+     def visit_Attribute(self, attr):
+         if not isinstance(attr.ctx, ast.Load):
+diff --git a/testing/test_assertrewrite_all_any.py b/testing/test_assertrewrite_all_any.py
+new file mode 100644
+index 0000000..4f81d92
+--- /dev/null
++++ b/testing/test_assertrewrite_all_any.py
+@@ -0,0 +1,245 @@
++import ast
++import textwrap
++
++import pytest
++
++from _pytest.assertion.rewrite import rewrite_asserts
++
++
++def run_assertion(source, namespace=None):
++    tree = ast.parse(textwrap.dedent(source))
++    rewrite_asserts(tree)
++    code = compile(tree, "<all-any assertion>", "exec")
++    if namespace is None:
++        namespace = {}
++    exec(code, namespace)
++    return namespace
++
++
++@pytest.mark.parametrize("quantifier", ["all", "any"])
++@pytest.mark.parametrize(
++    "iterable",
++    [
++        "is_even(number) for number in numbers",
++        "[is_even(number) for number in numbers]",
++    ],
++)
++def test_predicate_details(quantifier, iterable):
++    source = """
++        def is_even(number):
++            return number % 2 == 0
++
++        numbers = [1, 3, 5]
++        assert {quantifier}({iterable})
++    """.format(quantifier=quantifier, iterable=iterable)
++    with pytest.raises(AssertionError) as excinfo:
++        run_assertion(source)
++    message = str(excinfo.value)
++    assert "is_even(1)" in message
++    if quantifier == "any":
++        assert "is_even(3)" in message
++        assert "is_even(5)" in message
++
++
++@pytest.mark.parametrize("quantifier", ["all", "any"])
++def test_comparison_details(quantifier):
++    with pytest.raises(AssertionError) as excinfo:
++        run_assertion("assert {}(number > 10 for number in [1, 3])".format(quantifier))
++    assert "1 > 10" in str(excinfo.value)
++
++
++@pytest.mark.parametrize("quantifier", ["all", "any"])
++@pytest.mark.parametrize("eager", [False, True])
++def test_evaluation_and_truth_testing(quantifier, eager):
++    expression = "predicate(number) for number in [0, 1, 2]"
++    if eager:
++        expression = "[" + expression + "]"
++    namespace = {"stop_value": quantifier == "any"}
++    source = """
++        calls = []
++        truth_tests = []
++        class Result:
++            def __init__(self, number):
++                self.number = number
++            def __bool__(self):
++                truth_tests.append(self.number)
++                return stop_value
++            __nonzero__ = __bool__
++        def predicate(number):
++            calls.append(number)
++            return Result(number)
++        try:
++            assert {quantifier}({expression})
++        except AssertionError:
++            pass
++    """.format(quantifier=quantifier, expression=expression)
++    run_assertion(source, namespace)
++    assert namespace["calls"] == ([0, 1, 2] if eager else [0])
++    assert namespace["truth_tests"] == [0]
++
++
++@pytest.mark.parametrize("quantifier", ["all", "any"])
++@pytest.mark.parametrize("eager", [False, True])
++def test_shadowed_builtin(quantifier, eager):
++    expression = "number for number in [1, 2]"
++    if eager:
++        expression = "[" + expression + "]"
++    namespace = run_assertion("""
++        received = []
++        def custom(values):
++            received.append(values)
++            return list(values) == [1, 2]
++        {quantifier} = custom
++        assert {quantifier}({expression})
++    """.format(quantifier=quantifier, expression=expression))
++    assert isinstance(namespace["received"][0], list) == eager
++
++
++@pytest.mark.parametrize("quantifier", ["all", "any"])
++def test_empty_and_negated(quantifier):
++    namespace = run_assertion("""
++        calls = []
++        def predicate(value):
++            calls.append(value)
++            return value
++        result = {quantifier}([])
++        assert {quantifier}(predicate(x) for x in []) == result
++        assert not {quantifier}(predicate(x) for x in [False])
++    """.format(quantifier=quantifier))
++    assert namespace["calls"] == [False]
++
++
++def test_nested_clauses_and_scope():
++    namespace = run_assertion("""
++        number = "outer"
++        def check():
++            limit = 3
++            assert all(number < limit for number in range(5)
++                       if number < limit for unused in [0, 1])
++        check()
++    """)
++    assert namespace["number"] == "outer"
++    assert "unused" not in namespace
++
++
++def test_iterator_name_does_not_shadow_enclosing_scope():
++    run_assertion("""
++        def check():
++            iterator = 3
++            assert all(number < iterator for number in [1, 2])
++        check()
++    """)
++
++
++def test_iterator_acquired_once():
++    namespace = run_assertion("""
++        events = []
++        class Once:
++            def __iter__(self):
++                events.append("iter")
++                if len(events) != 1:
++                    raise RuntimeError("iterator acquired twice")
++                return self
++            def __next__(self):
++                events.append("next")
++                return False
++            next = __next__
++        try:
++            assert all(value for value in Once())
++        except AssertionError:
++            pass
++    """)
++    assert namespace["events"] == ["iter", "next"]
++
++
++def test_list_predicate_stop_iteration():
++    with pytest.raises(StopIteration):
++        run_assertion("""
++            def predicate(value):
++                raise StopIteration("predicate")
++            assert all([predicate(value) for value in [1]])
++        """)
++
++
++def test_late_bound_closures():
++    namespace = run_assertion("""
++        callbacks = []
++        def record(callback):
++            callbacks.append(callback)
++            return True
++        assert all([record(lambda: number) for number in [1, 2, 3]])
++        values = [callback() for callback in callbacks]
++    """)
++    assert namespace["values"] == [3, 3, 3]
++
++
++def test_nested_quantifiers():
++    with pytest.raises(AssertionError) as excinfo:
++        run_assertion("assert all(any(x > 5 for x in row) for row in [[1, 2]])")
++    assert "1 > 5" in str(excinfo.value)
++    assert "2 > 5" in str(excinfo.value)
++
++
++def test_predicate_report_layout():
++    with pytest.raises(AssertionError) as excinfo:
++        run_assertion("""
++            def predicate(value):
++                return False
++            assert all(predicate(value) for value in [1])
++        """)
++    message = str(excinfo.value)
++    assert "\n" in message
++    assert "\\n" not in message
++    assert "where False = all(" in message
++
++
++@pytest.mark.parametrize("expression", [
++    "value > 5 and value < 10",
++    "value > 5 or value < 0",
++])
++def test_compound_predicate_details(expression):
++    with pytest.raises(AssertionError) as excinfo:
++        run_assertion("assert any({} for value in [1, 2]), 'numbers'".format(expression))
++    assert "numbers" in str(excinfo.value)
++    assert "1" in str(excinfo.value)
++    assert "2" in str(excinfo.value)
++
++
++def test_passing_predicate_does_not_format_values():
++    namespace = run_assertion("""
++        calls = []
++        class Value:
++            def __repr__(self):
++                calls.append("repr")
++                return "value"
++        assert all(value for value in [Value()])
++    """)
++    assert namespace["calls"] == []
++
++
++@pytest.mark.parametrize("eager", [False, True])
++def test_predicate_exception_propagates(eager):
++    expression = "predicate(value) for value in [1]"
++    if eager:
++        expression = "[" + expression + "]"
++    with pytest.raises(ValueError, match="predicate"):
++        run_assertion("""
++            def predicate(value):
++                raise ValueError("predicate")
++            assert any({expression})
++        """.format(expression=expression))
++
++
++def test_chained_comparison_short_circuit():
++    run_assertion("""
++        def unexpected():
++            raise RuntimeError("comparison should short circuit")
++        assert not any(2 < value < unexpected() for value in [1])
++    """)
++
++
++def test_ordinary_iterable_calls():
++    run_assertion("""
++        assert all([True, True])
++        assert any(iter([False, True]))
++    """)

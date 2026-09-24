@@ -1,0 +1,46 @@
+diff --git a/sympy/geometry/point.py b/sympy/geometry/point.py
+index 73c2033..11bad7f 100644
+--- a/sympy/geometry/point.py
++++ b/sympy/geometry/point.py
+@@ -152,7 +152,7 @@ def __new__(cls, *args, **kwargs):
+                         'warn' or 'ignore'.'''))
+         if any(coords[dim:]):
+             raise ValueError('Nonzero coordinates cannot be removed.')
+-        if any(a.is_number and im(a) for a in coords):
++        if any(a.is_number and im(a).is_zero is False for a in coords):
+             raise ValueError('Imaginary coordinates are not permitted.')
+         if not all(isinstance(a, Expr) for a in coords):
+             raise TypeError('Coordinates must be valid SymPy expressions.')
+diff --git a/sympy/geometry/tests/test_point.py b/sympy/geometry/tests/test_point.py
+index 930d707..3d73fee 100644
+--- a/sympy/geometry/tests/test_point.py
++++ b/sympy/geometry/tests/test_point.py
+@@ -1,5 +1,6 @@
+ from sympy.core.basic import Basic
+ from sympy.core.numbers import (I, Rational, pi)
++from sympy.core.parameters import evaluate
+ from sympy.core.singleton import S
+ from sympy.core.symbol import Symbol
+ from sympy.core.sympify import sympify
+@@ -164,6 +165,21 @@ def test_point():
+     assert Point.affine_rank() == -1
+ 
+ 
++def test_point_evaluate_false():
++    expected = Point2D(1, 2)
++    real_coords = (S.One, S.Half, sqrt(2), pi)
++    imaginary_coords = (I, 2*I, 1 + I)
++    with evaluate(False):
++        assert S('Point2D(Integer(1),Integer(2))') == expected
++        for cls, coords in ((Point2D, real_coords[:2]),
++                            (Point3D, real_coords[:3]),
++                            (Point, real_coords)):
++            assert cls(*coords).args == coords
++            for coord in imaginary_coords:
++                raises(ValueError, lambda: cls(coord, *coords[1:]))
++        assert Point2D(0.5, 0.25).args == (S(0.5), S(0.25))
++
++
+ def test_point3D():
+     x = Symbol('x', real=True)
+     y = Symbol('y', real=True)

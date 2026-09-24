@@ -1,0 +1,213 @@
+diff --git a/doc/api/axis_api.rst b/doc/api/axis_api.rst
+index 3889b86..c94824c 100644
+--- a/doc/api/axis_api.rst
++++ b/doc/api/axis_api.rst
+@@ -92,6 +92,9 @@ Ticks, tick labels and Offset text
+    Axis.get_minorticklabels
+    Axis.get_minorticklines
+    Axis.get_minorticklocs
++   Axis.remove_overlapping_locs
++   Axis.get_remove_overlapping_locs
++   Axis.set_remove_overlapping_locs
+ 
+    Axis.get_offset_text
+ 
+diff --git a/doc/api/next_api_changes/overlapping_minor_ticks.rst b/doc/api/next_api_changes/overlapping_minor_ticks.rst
+new file mode 100644
+index 0000000..2ffc019
+--- /dev/null
++++ b/doc/api/next_api_changes/overlapping_minor_ticks.rst
+@@ -0,0 +1,15 @@
++Control overlapping minor ticks
++------------------------------
++
++Minor tick locations that overlap major tick locations are removed by default.
++To display minor ticks and their labels at these positions, set
++`~matplotlib.axis.Axis.remove_overlapping_locs` to False::
++
++    ax.xaxis.remove_overlapping_locs = False
++
++For example, this allows an hourly minor tick formatter to label midnight even
++when a daily major tick is at the same position.  The same setting is available
++on ``ax.yaxis``.
++
++The setting applies consistently to drawing, tick labels, and tick locations
++returned by `~matplotlib.axis.Axis.get_minorticklocs`.
+diff --git a/lib/matplotlib/axis.py b/lib/matplotlib/axis.py
+index 3569187..945b747 100644
+--- a/lib/matplotlib/axis.py
++++ b/lib/matplotlib/axis.py
+@@ -734,6 +734,7 @@ class Axis(martist.Artist):
+ 
+         self._autolabelpos = True
+         self._smart_bounds = False
++        self._remove_overlapping_locs = True
+ 
+         self.label = self._get_label()
+         self.labelpad = rcParams['axes.labelpad']
+@@ -754,6 +755,28 @@ class Axis(martist.Artist):
+     majorTicks = _LazyTickList(major=True)
+     minorTicks = _LazyTickList(major=False)
+ 
++    def get_remove_overlapping_locs(self):
++        """Return whether overlapping minor tick locations are removed."""
++        return self._remove_overlapping_locs
++
++    def set_remove_overlapping_locs(self, val):
++        """
++        Set whether to remove minor tick locations that overlap major ticks.
++
++        Parameters
++        ----------
++        val : bool
++            If True (the default), remove overlapping minor tick locations.
++            If False, keep all locations from the minor tick locator.
++        """
++        self._remove_overlapping_locs = bool(val)
++        self.stale = True
++
++    remove_overlapping_locs = property(
++        get_remove_overlapping_locs, set_remove_overlapping_locs,
++        doc="If True (the default), remove minor tick locations that overlap "
++            "major tick locations.")
++
+     def set_label_coords(self, x, y, transform=None):
+         """
+         Set the coordinates of the label.
+@@ -1072,7 +1095,7 @@ class Axis(martist.Artist):
+             tick.update_position(loc)
+             tick.set_label1(label)
+             tick.set_label2(label)
+-        minor_locs = self.minor.locator()
++        minor_locs = self.get_minorticklocs()
+         minor_ticks = self.get_minor_ticks(len(minor_locs))
+         minor_labels = self.minor.formatter.format_ticks(minor_locs)
+         for tick, loc, label in zip(minor_ticks, minor_locs, minor_labels):
+@@ -1312,19 +1335,20 @@ class Axis(martist.Artist):
+ 
+     def get_minorticklocs(self):
+         """Get the array of minor tick locations in data coordinates."""
+-        # Remove minor ticks duplicating major ticks.
+-        major_locs = self.major.locator()
+         minor_locs = self.minor.locator()
+-        transform = self._scale.get_transform()
+-        tr_minor_locs = transform.transform(minor_locs)
+-        tr_major_locs = transform.transform(major_locs)
+-        lo, hi = sorted(transform.transform(self.get_view_interval()))
+-        # Use the transformed view limits as scale.  1e-5 is the default rtol
+-        # for np.isclose.
+-        tol = (hi - lo) * 1e-5
+-        minor_locs = [
+-            loc for loc, tr_loc in zip(minor_locs, tr_minor_locs)
+-            if not np.isclose(tr_loc, tr_major_locs, atol=tol, rtol=0).any()]
++        if self.remove_overlapping_locs:
++            # Remove minor ticks duplicating major ticks.
++            major_locs = self.major.locator()
++            transform = self._scale.get_transform()
++            tr_minor_locs = transform.transform(minor_locs)
++            tr_major_locs = transform.transform(major_locs)
++            lo, hi = sorted(transform.transform(self.get_view_interval()))
++            # Use the transformed view limits as scale.  1e-5 is the default
++            # rtol for np.isclose.
++            tol = (hi - lo) * 1e-5
++            minor_locs = [
++                loc for loc, tr_loc in zip(minor_locs, tr_minor_locs)
++                if not np.isclose(tr_loc, tr_major_locs, atol=tol, rtol=0).any()]
+         return minor_locs
+ 
+     def get_ticklocs(self, minor=False):
+@@ -1404,7 +1428,7 @@ class Axis(martist.Artist):
+     def get_minor_ticks(self, numticks=None):
+         'Get the minor tick instances; grow as necessary.'
+         if numticks is None:
+-            numticks = len(self.get_minor_locator()())
++            numticks = len(self.get_minorticklocs())
+ 
+         while len(self.minorTicks) < numticks:
+             # Update the new tick label properties from the old.
+diff --git a/lib/matplotlib/tests/test_axes.py b/lib/matplotlib/tests/test_axes.py
+index cff4325..cc7d8ad 100644
+--- a/lib/matplotlib/tests/test_axes.py
++++ b/lib/matplotlib/tests/test_axes.py
+@@ -6287,6 +6287,43 @@ def test_tickdirs():
+                                atol=1e-2)
+ 
+ 
++@pytest.mark.parametrize('axis_name', ['x', 'y'])
++@pytest.mark.parametrize('scale', ['linear', 'log'])
++@pytest.mark.parametrize('inverted', [False, True])
++def test_remove_overlapping_locs(axis_name, scale, inverted):
++    fig, ax = plt.subplots()
++    getattr(ax, 'set_' + axis_name + 'scale')(scale)
++    limits = (0.5, 25)
++    getattr(ax, 'set_' + axis_name + 'lim')(
++        limits[::-1] if inverted else limits)
++    axis = getattr(ax, axis_name + 'axis')
++    major_locs = [1, 10]
++    minor_locs = [1, 1 + 1e-8, 2, 10, 20]
++    axis.set_major_locator(mpl.ticker.FixedLocator(major_locs))
++    axis.set_minor_locator(mpl.ticker.FixedLocator(minor_locs))
++    axis.set_minor_formatter(mpl.ticker.FormatStrFormatter('%g'))
++
++    assert axis.remove_overlapping_locs is True
++    assert axis.get_remove_overlapping_locs() is True
++    for remove in [True, False, True]:
++        if remove:
++            axis.set_remove_overlapping_locs(True)
++        else:
++            axis.remove_overlapping_locs = False
++        assert axis.get_remove_overlapping_locs() is remove
++        assert fig.stale
++        fig.canvas.draw()
++
++        expected = [2, 20] if remove else minor_locs
++        assert_array_equal(axis.get_minorticklocs(), expected)
++        assert_array_equal(axis.get_ticklocs(minor=True), expected)
++        assert_array_equal(
++            [tick.get_loc() for tick in axis.get_minor_ticks()], expected)
++        assert [label.get_text() for label in axis.get_minorticklabels()] == [
++            '%g' % loc for loc in expected]
++        assert_array_equal(axis.get_majorticklocs(), major_locs)
++
++
+ def test_minor_accountedfor():
+     with rc_context({'_internal.classic_mode': False}):
+         fig, ax = plt.subplots(dpi=200, figsize=(6, 6))
+diff --git a/lib/matplotlib/tests/test_dates.py b/lib/matplotlib/tests/test_dates.py
+index f934fee..9f78096 100644
+--- a/lib/matplotlib/tests/test_dates.py
++++ b/lib/matplotlib/tests/test_dates.py
+@@ -23,6 +23,33 @@ def __has_pytz():
+         return False
+ 
+ 
++@pytest.mark.parametrize('axis_name', ['x', 'y'])
++def test_minor_labels_at_major_ticks(axis_name):
++    dates = np.arange('2018-11-03', '2018-11-06', dtype='datetime64')
++    values = [0, 1, 0]
++    fig, ax = plt.subplots()
++    if axis_name == 'x':
++        ax.plot(dates, values)
++        ax.set_xlim(dates[0], dates[-1])
++    else:
++        ax.plot(values, dates)
++        ax.set_ylim(dates[0], dates[-1])
++    axis = getattr(ax, axis_name + 'axis')
++    axis.set_major_locator(mdates.DayLocator())
++    axis.set_major_formatter(mdates.DateFormatter('\n%a'))
++    axis.set_minor_locator(mdates.HourLocator((0, 6, 12, 18)))
++    axis.set_minor_formatter(mdates.DateFormatter('%H:%M'))
++    axis.remove_overlapping_locs = False
++
++    fig.canvas.draw()
++
++    assert [label.get_text() for label in axis.get_minorticklabels()] == [
++        '00:00', '06:00', '12:00', '18:00',
++        '00:00', '06:00', '12:00', '18:00', '00:00']
++    np.testing.assert_array_equal(axis.get_minorticklocs(),
++                                  axis.get_minor_locator()())
++
++
+ def test_date_numpyx():
+     # test that numpy dates work properly...
+     base = datetime.datetime(2017, 1, 1)

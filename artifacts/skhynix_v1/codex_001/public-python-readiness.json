@@ -1,0 +1,56 @@
+{
+  "base_commit": "fdc707f73a65a429935c01532cd3970d3355eab6",
+  "checkout": "/home/trimem-runner/skhynix-codex-001-readiness/workspaces/NO_MEMORY/swebench_verified--sympy__sympy-23262/checkouts/swebench_verified--sympy__sympy-23262",
+  "image_preserved_for_main_pilot": true,
+  "model_calls": 0,
+  "official_grader_runs": 0,
+  "python": "/opt/miniconda3/envs/testbed/bin/python",
+  "records": [
+    {
+      "argv": [
+        "/opt/miniconda3/envs/testbed/bin/python",
+        "-c",
+        "import json,sys,sympy,mpmath;print(json.dumps({\"python\":sys.executable,\"python_version\":sys.version.split()[0],\"sympy_version\":sympy.__version__,\"sympy_path\":sympy.__file__,\"mpmath_version\":mpmath.__version__},sort_keys=True))"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "name": "interpreter",
+      "output_truncated": false,
+      "stderr": "",
+      "stdout": "{\"mpmath_version\": \"1.3.0\", \"python\": \"/opt/miniconda3/envs/testbed/bin/python\", \"python_version\": \"3.9.20\", \"sympy_path\": \"/testbed/sympy/__init__.py\", \"sympy_version\": \"1.11.dev\"}\n",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/miniconda3/envs/testbed/bin/python",
+        "bin/test",
+        "--help"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "name": "public_runner_help",
+      "output_truncated": false,
+      "stderr": "",
+      "stdout": "usage: test [-h] [-v] [--pdb] [--no-colors] [--force-colors]\n            [-k [KEYWORDS ...]] [--tb TBSTYLE] [--random] [--seed SEED]\n            [-t {gmpy,gmpy1,python}] [-C] [--timeout TIMEOUT] [--slow]\n            [--no-subprocess] [-E] [--split SPLIT] [--rerun RERUN]\n\noptional arguments:\n  -h, --help            show this help message and exit\n  -v, --verbose\n  --pdb                 Run post mortem pdb on each failure (default: False)\n  --no-colors           Do not report colored [OK] and [FAIL] (default: True)\n  --force-colors        Always use colors, even if the output is not to a\n                        terminal. (default: False)\n  -k [KEYWORDS ...]     Only run tests matching the given keyword expressions\n                        (default: None)\n  --tb TBSTYLE          Traceback verboseness (short/no) (default: short)\n  --random              Run tests in random order instead of sorting them.\n                        (default: True)\n  --seed SEED           Use this seed for randomized tests. (default: None)\n  -t {gmpy,gmpy1,python}, --types {gmpy,gmpy1,python}\n                        Setup ground types. (default: None)\n  -C, --no-cache        Disable caching mechanism. (default: True)\n  --timeout TIMEOUT     Set a timeout for the all functions, in seconds. By\n                        default there is no timeout. (default: False)\n  --slow                Run only the slow functions. (default: False)\n  --no-subprocess       Don't run the tests in a separate subprocess. This may\n                        prevent hash randomization from being enabled.\n                        (default: True)\n  -E, --enhance-asserts\n                        Rewrite assert statements to give more useful error\n                        messages. (default: False)\n  --split SPLIT         Only run part of the tests. Should be of the form a/b,\n                        (e.g., 1/2) (default: None)\n  --rerun RERUN         Number of times to rerun the specified tests.\n                        (default: 0)\n\n\"options\" are any of the options above. \"tests\" are 0 or more glob strings of\ntests to run. If no test arguments are given, all tests will be run.\n",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/opt/miniconda3/envs/testbed/bin/python",
+        "bin/test",
+        "sympy/core/tests/test_basic.py",
+        "--no-colors",
+        "--no-subprocess"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "name": "public_core_basic_smoke",
+      "output_truncated": false,
+      "stderr": "",
+      "stdout": "============================= test process starts ==============================\nexecutable:         /opt/miniconda3/envs/testbed/bin/python  (3.9.20-final-0) [CPython]\narchitecture:       64-bit\ncache:              yes\nground types:       python \nnumpy:              None\nrandom seed:        18024426\nhash randomization: off\n\nsympy/core/tests/test_basic.py[22] ......................                   [OK]\n\n================== tests finished: 22 passed, in 0.10 seconds ==================\n",
+      "timed_out": false
+    }
+  ],
+  "status": "PASS",
+  "target_id": "swebench_verified--sympy__sympy-23262"
+}

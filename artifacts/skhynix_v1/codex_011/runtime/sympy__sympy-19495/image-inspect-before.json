@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "docker",
+    "image",
+    "inspect",
+    "swebench/sweb.eval.x86_64.sympy_1776_sympy-19495@sha256:d8a5b9f1f21ae86a2141b234c99b960680c67c4088fa44830b43f8ef845ab731"
+  ],
+  "cwd": null,
+  "returncode": 0,
+  "started_at_unix_seconds": 1789306427.7057865,
+  "stderr": "",
+  "stdout": "[\n    {\n        \"Id\": \"sha256:d8a5b9f1f21ae86a2141b234c99b960680c67c4088fa44830b43f8ef845ab731\",\n        \"RepoTags\": [\n            \"swebench/sweb.eval.x86_64.sympy_1776_sympy-19495@sha256:d8a5b9f1f21ae86a2141b234c99b960680c67c4088fa44830b43f8ef845ab731\"\n        ],\n        \"RepoDigests\": [\n            \"swebench/sweb.eval.x86_64.sympy_1776_sympy-19495@sha256:d8a5b9f1f21ae86a2141b234c99b960680c67c4088fa44830b43f8ef845ab731\"\n        ],\n        \"Comment\": \"buildkit.dockerfile.v0\",\n        \"Created\": \"2026-08-13T04:00:19.45655725Z\",\n        \"Config\": {\n            \"Env\": [\n                \"PATH=/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",\n                \"TZ=Etc/UTC\"\n            ],\n            \"Cmd\": [\n                \"/bin/bash\"\n            ],\n            \"WorkingDir\": \"/testbed/\",\n            \"Labels\": {\n                \"org.opencontainers.image.version\": \"22.04\"\n            }\n        },\n        \"Architecture\": \"amd64\",\n        \"Os\": \"linux\",\n        \"Size\": 1085911157,\n        \"RootFS\": {\n            \"Type\": \"layers\",\n            \"Layers\": [\n                \"sha256:beb59027b96ddbf30ac9c80b527668fe7011f4f553fe83f5e59199e9a84fb5ca\",\n                \"sha256:24df650e8ccc41451cf4f7113e09420f7ec00ca9ae41e8be09c60bc467cdf4fe\",\n                \"sha256:098cb03ec50e1bd1637b7db5e2696a4d1dc3f1c3811adbbe444f43f631f2e7fd\",\n                \"sha256:fc3a8fa12509a555b3cea8d1f7457c0837ab8360be78e7a380294e09f96fe2f2\",\n                \"sha256:a3540f5c375c231bc054e7472d0de5a6d8fe5c96b92948f7655914860647fb54\",\n                \"sha256:f3684f1a85d5159913e2c41a55a86947882302421241b14b57583633bfc31873\",\n                \"sha256:2455f643467ee0c5cbb7cd1aa35434f29a85a5a74ffcc45a575147bcab07dcd7\",\n                \"sha256:6894100f97d50c053f9fa1810dea433f7ccaa1ae9b3ccc89f84d44e0f08be352\",\n                \"sha256:9247f8f32104406451392d2edee11d38a3ea066195bccf4c69fbda7f69246ff3\",\n                \"sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef\"\n            ]\n        },\n        \"Metadata\": {\n            \"LastTagTime\": \"2026-09-12T16:33:50.576556046Z\"\n        },\n        \"Descriptor\": {\n            \"mediaType\": \"application/vnd.oci.image.index.v1+json\",\n            \"digest\": \"sha256:d8a5b9f1f21ae86a2141b234c99b960680c67c4088fa44830b43f8ef845ab731\",\n            \"size\": 856\n        }\n    }\n]\n",
+  "wall_seconds": 0.09172630310058594
+}

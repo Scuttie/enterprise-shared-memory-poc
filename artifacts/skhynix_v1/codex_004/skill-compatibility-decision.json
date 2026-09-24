@@ -1,0 +1,16 @@
+{
+  "actual_promoted_training_skills": 1,
+  "compatibility_guards_relaxed": false,
+  "evaluation_available_skills": 0,
+  "evaluation_runner_sha256": [
+    "da4284cc210d8db5109f916248d97a8e82f725547e60c5d9a4d6c43573e3e9d5"
+  ],
+  "fallback_predeclared_in": "launch-contract.json",
+  "learned_bank_sha256": "a484eead941f0971d0e32ab5b8cee59b88cd04966f110663cbb54855b5428793",
+  "observation_bank_sha256": "a484eead941f0971d0e32ab5b8cee59b88cd04966f110663cbb54855b5428793",
+  "reason": "public workflow compatibility scope, runner or result differs",
+  "status": "PREDECLARED_OBSERVATION_ONLY_FALLBACK",
+  "training_runner_sha256": [
+    "973e3cf784388b8e7821e4962da8eeb4b615447cd652af920452b322bd63588c"
+  ]
+}

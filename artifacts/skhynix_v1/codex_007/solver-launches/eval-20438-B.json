@@ -1,0 +1,14 @@
+{
+  "agent": "/root/native007_eval_20438_b",
+  "cell": "B",
+  "filled_prompt_sha256": "5cd2d270281ef9ae64d33389de8216c78e99d6fb680ee554ac8397cf49b68780",
+  "fork_turns": "none",
+  "name": "eval-20438",
+  "reasoning_effort": "INHERITED_PARENT_UNCHANGED",
+  "recorded_at_unix_seconds": 1789239572.051228,
+  "requested_model": "gpt-6-astra",
+  "root_cross_cell_feedback": false,
+  "schema": "skhynix/native007-solver-launch/1.0",
+  "separate_model_api_calls": 0,
+  "template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05"
+}

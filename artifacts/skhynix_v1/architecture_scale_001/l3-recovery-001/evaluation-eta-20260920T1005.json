@@ -1,0 +1,141 @@
+{
+  "assumptions": [
+    "Sequential uninterrupted operation",
+    "No quota or infrastructure pause",
+    "15-25 min is a provisional planning range, not a statistical prediction interval",
+    "Current completed evaluation sample is too small for a stable throughput estimate"
+  ],
+  "evaluation_completed_cells": 2,
+  "evaluation_public_timings": [
+    {
+      "arm": "BASELINE",
+      "at": 1789897448.3051353,
+      "at_kst": "2026-09-20T18:44:08.305135+09:00",
+      "stage": "PREPARE_STARTED",
+      "task_id": "swebench--astropy__astropy-14484"
+    },
+    {
+      "arm": "BASELINE",
+      "at": 1789897489.4670756,
+      "at_kst": "2026-09-20T18:44:49.467076+09:00",
+      "stage": "SOLVE_STARTED",
+      "task_id": "swebench--astropy__astropy-14484"
+    },
+    {
+      "arm": "BASELINE",
+      "at": 1789897959.9726975,
+      "at_kst": "2026-09-20T18:52:39.972697+09:00",
+      "stage": "GRADE_STARTED",
+      "task_id": "swebench--astropy__astropy-14484"
+    },
+    {
+      "arm": "BASELINE",
+      "at": 1789898054.8261356,
+      "at_kst": "2026-09-20T18:54:14.826136+09:00",
+      "stage": "CELL_COMPLETE",
+      "task_id": "swebench--astropy__astropy-14484"
+    },
+    {
+      "arm": "BASELINE",
+      "at": 1789898173.532884,
+      "at_kst": "2026-09-20T18:56:13.532884+09:00",
+      "stage": "CLEANED",
+      "task_id": "swebench--astropy__astropy-14484"
+    },
+    {
+      "arm": "BASELINE",
+      "at": 1789898209.0857375,
+      "at_kst": "2026-09-20T18:56:49.085737+09:00",
+      "stage": "PREPARE_STARTED",
+      "task_id": "swebench--astropy__astropy-7858"
+    },
+    {
+      "arm": "BASELINE",
+      "at": 1789898253.9422464,
+      "at_kst": "2026-09-20T18:57:33.942246+09:00",
+      "stage": "SOLVE_STARTED",
+      "task_id": "swebench--astropy__astropy-7858"
+    },
+    {
+      "arm": "BASELINE",
+      "at": 1789898615.9402242,
+      "at_kst": "2026-09-20T19:03:35.940224+09:00",
+      "stage": "GRADE_STARTED",
+      "task_id": "swebench--astropy__astropy-7858"
+    },
+    {
+      "arm": "BASELINE",
+      "at": 1789898689.5941365,
+      "at_kst": "2026-09-20T19:04:49.594136+09:00",
+      "stage": "CELL_COMPLETE",
+      "task_id": "swebench--astropy__astropy-7858"
+    }
+  ],
+  "grader_payloads_read": 0,
+  "milestones": {
+    "baseline10": {
+      "earliest_kst": "2026-09-20T21:06:15.555645+09:00",
+      "latest_kst": "2026-09-20T22:26:15.555645+09:00",
+      "planning_minutes_per_cell": [
+        15,
+        25
+      ],
+      "remaining_cells": 8
+    },
+    "baseline60": {
+      "earliest_kst": "2026-09-21T09:36:15.555645+09:00",
+      "latest_kst": "2026-09-21T19:16:15.555645+09:00",
+      "planning_minutes_per_cell": [
+        15,
+        25
+      ],
+      "remaining_cells": 58
+    },
+    "development_complete": {
+      "earliest_kst": "2026-09-22T00:36:15.555645+09:00",
+      "latest_kst": "2026-09-22T20:16:15.555645+09:00",
+      "planning_minutes_per_cell": [
+        15,
+        25
+      ],
+      "remaining_cells": 118
+    },
+    "final_complete": {
+      "earliest_kst": "2026-10-02T10:36:15.555645+09:00",
+      "latest_kst": "2026-10-10T04:56:15.555645+09:00",
+      "planning_minutes_per_cell": [
+        15,
+        25
+      ],
+      "remaining_cells": 1118
+    },
+    "paired_development10": {
+      "earliest_kst": "2026-09-21T12:06:15.555645+09:00",
+      "latest_kst": "2026-09-21T23:26:15.555645+09:00",
+      "planning_minutes_per_cell": [
+        15,
+        25
+      ],
+      "remaining_cells": 68
+    }
+  },
+  "model_calls": 0,
+  "observed_at_kst": "2026-09-20T19:06:15.555645+09:00",
+  "schema": "skhynix/public-timing-estimate/1.0",
+  "training_cleaned_interval_statistics": {
+    "10": {
+      "max_minutes": 22.4459938287735,
+      "mean_minutes": 15.966725907325745,
+      "median_minutes": 15.483544890085856,
+      "min_minutes": 12.280756247043609,
+      "n": 10
+    },
+    "20": {
+      "max_minutes": 22.4459938287735,
+      "mean_minutes": 15.90508482992649,
+      "median_minutes": 15.594935377438864,
+      "min_minutes": 10.529690221945446,
+      "n": 20
+    }
+  }
+}

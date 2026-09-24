@@ -1,0 +1,484 @@
+diff --git a/django/contrib/sessions/backends/file.py b/django/contrib/sessions/backends/file.py
+index cc5f93a..7032b4b 100644
+--- a/django/contrib/sessions/backends/file.py
++++ b/django/contrib/sessions/backends/file.py
+@@ -59,10 +59,8 @@ class SessionStore(SessionBase):
+         Return the modification time of the file storing the session's content.
+         """
+         modification = os.stat(self._key_to_file()).st_mtime
+-        if settings.USE_TZ:
+-            modification = datetime.datetime.utcfromtimestamp(modification)
+-            return modification.replace(tzinfo=timezone.utc)
+-        return datetime.datetime.fromtimestamp(modification)
++        tz = timezone.utc if settings.USE_TZ else None
++        return datetime.datetime.fromtimestamp(modification, tz=tz)
+ 
+     def _expiry_date(self, session_data):
+         """
+diff --git a/django/contrib/sitemaps/views.py b/django/contrib/sitemaps/views.py
+index bffdebb..5987683 100644
+--- a/django/contrib/sitemaps/views.py
++++ b/django/contrib/sitemaps/views.py
+@@ -8,6 +8,7 @@ from django.http import Http404
+ from django.template.response import TemplateResponse
+ from django.urls import reverse
+ from django.utils.http import http_date
++from django.utils.timezone import is_aware
+ 
+ 
+ def x_robots_tag(func):
+@@ -72,10 +73,9 @@ def sitemap(request, sitemaps, section=None,
+             if all_sites_lastmod:
+                 site_lastmod = getattr(site, 'latest_lastmod', None)
+                 if site_lastmod is not None:
+-                    site_lastmod = (
+-                        site_lastmod.utctimetuple() if isinstance(site_lastmod, datetime.datetime)
+-                        else site_lastmod.timetuple()
+-                    )
++                    if isinstance(site_lastmod, datetime.datetime) and is_aware(site_lastmod):
++                        site_lastmod = site_lastmod.astimezone(datetime.timezone.utc)
++                    site_lastmod = site_lastmod.timetuple()
+                     lastmod = site_lastmod if lastmod is None else max(lastmod, site_lastmod)
+                 else:
+                     all_sites_lastmod = False
+diff --git a/django/contrib/syndication/views.py b/django/contrib/syndication/views.py
+index 6d567dd..408a764 100644
+--- a/django/contrib/syndication/views.py
++++ b/django/contrib/syndication/views.py
+@@ -1,5 +1,3 @@
+-from calendar import timegm
+-
+ from django.contrib.sites.shortcuts import get_current_site
+ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+ from django.http import Http404, HttpResponse
+@@ -43,7 +41,8 @@ class Feed:
+             # if item_pubdate or item_updateddate is defined for the feed, set
+             # header so as ConditionalGetMiddleware is able to send 304 NOT MODIFIED
+             response.headers['Last-Modified'] = http_date(
+-                timegm(feedgen.latest_post_date().utctimetuple()))
++                feedgen.latest_post_date().replace(microsecond=0).timestamp()
++            )
+         feedgen.write(response, 'utf-8')
+         return response
+ 
+diff --git a/django/core/cache/backends/db.py b/django/core/cache/backends/db.py
+index 9051139..4f3428d 100644
+--- a/django/core/cache/backends/db.py
++++ b/django/core/cache/backends/db.py
+@@ -124,7 +124,7 @@ class DatabaseCache(BaseDatabaseCache):
+             if timeout is None:
+                 exp = datetime.max
+             elif settings.USE_TZ:
+-                exp = datetime.utcfromtimestamp(timeout)
++                exp = datetime.fromtimestamp(timeout, tz=timezone.utc).replace(tzinfo=None)
+             else:
+                 exp = datetime.fromtimestamp(timeout)
+             exp = exp.replace(microsecond=0)
+@@ -236,7 +236,7 @@ class DatabaseCache(BaseDatabaseCache):
+         quote_name = connection.ops.quote_name
+ 
+         if settings.USE_TZ:
+-            now = datetime.utcnow()
++            now = datetime.now(tz=timezone.utc).replace(tzinfo=None)
+         else:
+             now = datetime.now()
+         now = now.replace(microsecond=0)
+diff --git a/django/core/files/storage.py b/django/core/files/storage.py
+index 8190791..2cf5e2a 100644
+--- a/django/core/files/storage.py
++++ b/django/core/files/storage.py
+@@ -347,11 +347,8 @@ class FileSystemStorage(Storage):
+         If timezone support is enabled, make an aware datetime object in UTC;
+         otherwise make a naive one in the local timezone.
+         """
+-        if settings.USE_TZ:
+-            # Safe to use .replace() because UTC doesn't have DST
+-            return datetime.utcfromtimestamp(ts).replace(tzinfo=timezone.utc)
+-        else:
+-            return datetime.fromtimestamp(ts)
++        tz = timezone.utc if settings.USE_TZ else None
++        return datetime.fromtimestamp(ts, tz=tz)
+ 
+     def get_accessed_time(self, name):
+         return self._datetime_from_timestamp(os.path.getatime(self.path(name)))
+diff --git a/django/http/response.py b/django/http/response.py
+index f1f0a1e..99f0020 100644
+--- a/django/http/response.py
++++ b/django/http/response.py
+@@ -203,9 +203,9 @@ class HttpResponseBase:
+         self.cookies[key] = value
+         if expires is not None:
+             if isinstance(expires, datetime.datetime):
+-                if timezone.is_aware(expires):
+-                    expires = timezone.make_naive(expires, timezone.utc)
+-                delta = expires - expires.utcnow()
++                if timezone.is_naive(expires):
++                    expires = timezone.make_aware(expires, timezone.utc)
++                delta = expires - datetime.datetime.now(tz=timezone.utc)
+                 # Add one second so the date matches exactly (a fraction of
+                 # time gets lost between converting to a timedelta and
+                 # then the date string).
+diff --git a/django/utils/dateformat.py b/django/utils/dateformat.py
+index 4833b5a..1043cd2 100644
+--- a/django/utils/dateformat.py
++++ b/django/utils/dateformat.py
+@@ -296,7 +296,7 @@ class DateFormat(TimeFormat):
+     def U(self):
+         "Seconds since the Unix epoch (January 1 1970 00:00:00 GMT)"
+         if isinstance(self.data, datetime.datetime) and is_aware(self.data):
+-            return int(calendar.timegm(self.data.utctimetuple()))
++            return int(calendar.timegm(self.data.astimezone(datetime.timezone.utc).timetuple()))
+         else:
+             return int(time.mktime(self.data.timetuple()))
+ 
+diff --git a/django/utils/feedgenerator.py b/django/utils/feedgenerator.py
+index f08e89b..24b2d1d 100644
+--- a/django/utils/feedgenerator.py
++++ b/django/utils/feedgenerator.py
+@@ -172,8 +172,7 @@ class SyndicationFeed:
+                     if latest_date is None or item_date > latest_date:
+                         latest_date = item_date
+ 
+-        # datetime.now(tz=utc) is slower, as documented in django.utils.timezone.now
+-        return latest_date or datetime.datetime.utcnow().replace(tzinfo=utc)
++        return latest_date or datetime.datetime.now(tz=utc)
+ 
+ 
+ class Enclosure:
+diff --git a/django/utils/http.py b/django/utils/http.py
+index 5397bb8..f4f0143 100644
+--- a/django/utils/http.py
++++ b/django/utils/http.py
+@@ -1,5 +1,4 @@
+ import base64
+-import calendar
+ import datetime
+ import re
+ import unicodedata
+@@ -114,7 +113,7 @@ def parse_http_date(date):
+     try:
+         year = int(m['year'])
+         if year < 100:
+-            current_year = datetime.datetime.utcnow().year
++            current_year = datetime.datetime.now(tz=datetime.timezone.utc).year
+             current_century = current_year - (current_year % 100)
+             if year - (current_year % 100) > 50:
+                 # year that appears to be more than 50 years in the future are
+@@ -127,8 +126,8 @@ def parse_http_date(date):
+         hour = int(m['hour'])
+         min = int(m['min'])
+         sec = int(m['sec'])
+-        result = datetime.datetime(year, month, day, hour, min, sec)
+-        return calendar.timegm(result.utctimetuple())
++        result = datetime.datetime(year, month, day, hour, min, sec, tzinfo=datetime.timezone.utc)
++        return int(result.timestamp())
+     except Exception as exc:
+         raise ValueError("%r is not a valid date" % date) from exc
+ 
+diff --git a/django/utils/timezone.py b/django/utils/timezone.py
+index cf22ec3..bb2b6b9 100644
+--- a/django/utils/timezone.py
++++ b/django/utils/timezone.py
+@@ -194,11 +194,7 @@ def now():
+     """
+     Return an aware or naive datetime.datetime, depending on settings.USE_TZ.
+     """
+-    if settings.USE_TZ:
+-        # timeit shows that datetime.now(tz=utc) is 24% slower
+-        return datetime.utcnow().replace(tzinfo=utc)
+-    else:
+-        return datetime.now()
++    return datetime.now(tz=utc if settings.USE_TZ else None)
+ 
+ 
+ # By design, these four functions don't perform any checks on their arguments.
+diff --git a/django/utils/version.py b/django/utils/version.py
+index 18cd138..7ffde68 100644
+--- a/django/utils/version.py
++++ b/django/utils/version.py
+@@ -90,7 +90,7 @@ def get_git_changeset():
+     )
+     timestamp = git_log.stdout
+     try:
+-        timestamp = datetime.datetime.utcfromtimestamp(int(timestamp))
++        timestamp = datetime.datetime.fromtimestamp(int(timestamp), tz=datetime.timezone.utc)
+     except ValueError:
+         return None
+     return timestamp.strftime('%Y%m%d%H%M%S')
+diff --git a/django/views/decorators/http.py b/django/views/decorators/http.py
+index 5caf13e..c1a3c8e 100644
+--- a/django/views/decorators/http.py
++++ b/django/views/decorators/http.py
+@@ -2,7 +2,6 @@
+ Decorators for views based on HTTP headers.
+ """
+ 
+-from calendar import timegm
+ from functools import wraps
+ 
+ from django.http import HttpResponseNotAllowed
+@@ -11,6 +10,7 @@ from django.utils.cache import get_conditional_response
+ from django.utils.decorators import decorator_from_middleware
+ from django.utils.http import http_date, quote_etag
+ from django.utils.log import log_response
++from django.utils.timezone import is_naive, make_aware, utc
+ 
+ conditional_page = decorator_from_middleware(ConditionalGetMiddleware)
+ 
+@@ -82,7 +82,9 @@ def condition(etag_func=None, last_modified_func=None):
+                 if last_modified_func:
+                     dt = last_modified_func(request, *args, **kwargs)
+                     if dt:
+-                        return timegm(dt.utctimetuple())
++                        if is_naive(dt):
++                            dt = make_aware(dt, utc)
++                        return int(dt.replace(microsecond=0).timestamp())
+ 
+             # The value from etag_func() could be quoted or unquoted.
+             res_etag = etag_func(request, *args, **kwargs) if etag_func else None
+diff --git a/docs/ref/models/fields.txt b/docs/ref/models/fields.txt
+index e5332d4..b147c0b 100644
+--- a/docs/ref/models/fields.txt
++++ b/docs/ref/models/fields.txt
+@@ -1661,8 +1661,10 @@ The possible values for :attr:`~ForeignKey.on_delete` are found in
+     with the Python ``datetime`` module to limit selections by date range. For
+     example::
+ 
++        import datetime
++
+         def limit_pub_date_choices():
+-            return {'pub_date__lte': datetime.date.utcnow()}
++            return {'pub_date__lte': datetime.date.today()}
+ 
+         limit_choices_to = limit_pub_date_choices
+ 
+diff --git a/docs/topics/i18n/timezones.txt b/docs/topics/i18n/timezones.txt
+index ab8902b..b7875fa 100644
+--- a/docs/topics/i18n/timezones.txt
++++ b/docs/topics/i18n/timezones.txt
+@@ -537,9 +537,9 @@ Troubleshooting
+ 
+        >>> import datetime
+        >>> from django.utils import timezone
+-       >>> naive = datetime.datetime.utcnow()
++       >>> naive = datetime.datetime.now()
+        >>> aware = timezone.now()
+-       >>> naive == aware
++       >>> naive < aware
+        Traceback (most recent call last):
+        ...
+        TypeError: can't compare offset-naive and offset-aware datetimes
+diff --git a/tests/conditional_processing/tests.py b/tests/conditional_processing/tests.py
+index 4c7a32c..16af1ef 100644
+--- a/tests/conditional_processing/tests.py
++++ b/tests/conditional_processing/tests.py
+@@ -1,6 +1,8 @@
+-from datetime import datetime
++from datetime import datetime, timedelta, timezone
+ 
+-from django.test import SimpleTestCase, override_settings
++from django.http import HttpResponse
++from django.test import RequestFactory, SimpleTestCase, override_settings
++from django.views.decorators.http import last_modified
+ 
+ FULL_RESPONSE = 'Test conditional get response'
+ LAST_MODIFIED = datetime(2007, 10, 21, 23, 21, 47)
+@@ -32,6 +34,22 @@ class ConditionalGet(SimpleTestCase):
+         self.assertEqual(response.status_code, 304)
+         self.assertEqual(response.content, b'')
+ 
++    def test_last_modified_timezone_and_microseconds(self):
++        utc_date = LAST_MODIFIED.replace(tzinfo=timezone.utc, microsecond=500000)
++        dates = (
++            utc_date.replace(tzinfo=None),
++            utc_date,
++            utc_date.astimezone(timezone(timedelta(hours=5, minutes=30))),
++        )
++        factory = RequestFactory()
++        for date in dates:
++            with self.subTest(date=date):
++                view = last_modified(lambda request: date)(lambda request: HttpResponse())
++                response = view(factory.get('/'))
++                self.assertEqual(response.headers['Last-Modified'], LAST_MODIFIED_STR)
++                response = view(factory.get('/', HTTP_IF_MODIFIED_SINCE=LAST_MODIFIED_STR))
++                self.assertEqual(response.status_code, 304)
++
+     def test_without_conditions(self):
+         response = self.client.get('/condition/')
+         self.assertFullResponse(response)
+diff --git a/tests/foreign_object/tests.py b/tests/foreign_object/tests.py
+index 2473a0a..e51a040 100644
+--- a/tests/foreign_object/tests.py
++++ b/tests/foreign_object/tests.py
+@@ -92,7 +92,7 @@ class MultiColumnFKTests(TestCase):
+ 
+     def test_reverse_query_filters_correctly(self):
+ 
+-        timemark = datetime.datetime.utcnow()
++        timemark = datetime.datetime.now()
+         timedelta = datetime.timedelta(days=1)
+ 
+         # Creating a to valid memberships
+diff --git a/tests/migrations/test_writer.py b/tests/migrations/test_writer.py
+index 5635dc6..c60e0be 100644
+--- a/tests/migrations/test_writer.py
++++ b/tests/migrations/test_writer.py
+@@ -479,8 +479,8 @@ class WriterTests(SimpleTestCase):
+         self.serialize_round_trip(models.SET(42))
+ 
+     def test_serialize_datetime(self):
+-        self.assertSerializedEqual(datetime.datetime.utcnow())
+-        self.assertSerializedEqual(datetime.datetime.utcnow)
++        self.assertSerializedEqual(datetime.datetime.now(tz=datetime.timezone.utc))
++        self.assertSerializedEqual(datetime.datetime.now)
+         self.assertSerializedEqual(datetime.datetime.today())
+         self.assertSerializedEqual(datetime.datetime.today)
+         self.assertSerializedEqual(datetime.date.today())
+@@ -660,8 +660,8 @@ class WriterTests(SimpleTestCase):
+         Tests serializing a simple migration.
+         """
+         fields = {
+-            'charfield': models.DateTimeField(default=datetime.datetime.utcnow),
+-            'datetimefield': models.DateTimeField(default=datetime.datetime.utcnow),
++            'charfield': models.DateTimeField(default=datetime.datetime.now),
++            'datetimefield': models.DateTimeField(default=datetime.datetime.now),
+         }
+ 
+         options = {
+diff --git a/tests/responses/test_cookie.py b/tests/responses/test_cookie.py
+index fd3a554..96dd603 100644
+--- a/tests/responses/test_cookie.py
++++ b/tests/responses/test_cookie.py
+@@ -19,7 +19,7 @@ class SetCookieTests(SimpleTestCase):
+         # evaluated expiration time and the time evaluated in set_cookie(). If
+         # this difference doesn't exist, the cookie time will be 1 second
+         # larger. The sleep guarantees that there will be a time difference.
+-        expires = datetime.utcnow() + timedelta(seconds=10)
++        expires = datetime.now(tz=utc).replace(tzinfo=None) + timedelta(seconds=10)
+         time.sleep(0.001)
+         response.set_cookie('datetime', expires=expires)
+         datetime_cookie = response.cookies['datetime']
+@@ -28,7 +28,7 @@ class SetCookieTests(SimpleTestCase):
+     def test_aware_expiration(self):
+         """set_cookie() accepts an aware datetime as expiration time."""
+         response = HttpResponse()
+-        expires = (datetime.utcnow() + timedelta(seconds=10)).replace(tzinfo=utc)
++        expires = datetime.now(tz=utc) + timedelta(seconds=10)
+         time.sleep(0.001)
+         response.set_cookie('datetime', expires=expires)
+         datetime_cookie = response.cookies['datetime']
+diff --git a/tests/utils_tests/test_dateformat.py b/tests/utils_tests/test_dateformat.py
+index f57c670..126c3ea 100644
+--- a/tests/utils_tests/test_dateformat.py
++++ b/tests/utils_tests/test_dateformat.py
+@@ -54,13 +54,27 @@ class DateFormatTests(SimpleTestCase):
+         self.assertEqual(datetime.fromtimestamp(int(format(dt, 'U')), ltz), dt)
+         # astimezone() is safe here because the target timezone doesn't have DST
+         self.assertEqual(datetime.fromtimestamp(int(format(dt, 'U'))), dt.astimezone(ltz).replace(tzinfo=None))
+-        self.assertEqual(datetime.fromtimestamp(int(format(dt, 'U')), tz).utctimetuple(), dt.utctimetuple())
+-        self.assertEqual(datetime.fromtimestamp(int(format(dt, 'U')), ltz).utctimetuple(), dt.utctimetuple())
++        self.assertEqual(
++            datetime.fromtimestamp(int(format(dt, 'U')), tz).astimezone(utc).timetuple(),
++            dt.astimezone(utc).timetuple(),
++        )
++        self.assertEqual(
++            datetime.fromtimestamp(int(format(dt, 'U')), ltz).astimezone(utc).timetuple(),
++            dt.astimezone(utc).timetuple(),
++        )
+ 
+     def test_epoch(self):
+         udt = datetime(1970, 1, 1, tzinfo=utc)
+         self.assertEqual(format(udt, 'U'), '0')
+ 
++    def test_epoch_microseconds(self):
++        for dt, expected in (
++            (datetime(1970, 1, 1, microsecond=500000, tzinfo=utc), '0'),
++            (datetime(1969, 12, 31, 23, 59, 59, 500000, tzinfo=utc), '-1'),
++        ):
++            with self.subTest(dt=dt):
++                self.assertEqual(format(dt, 'U'), expected)
++
+     def test_empty_format(self):
+         my_birthday = datetime(1979, 7, 8, 22, 00)
+ 
+diff --git a/tests/utils_tests/test_http.py b/tests/utils_tests/test_http.py
+index 675a6e1..e619884 100644
+--- a/tests/utils_tests/test_http.py
++++ b/tests/utils_tests/test_http.py
+@@ -1,6 +1,6 @@
+ import platform
+ import unittest
+-from datetime import datetime
++from datetime import datetime, timezone
+ from unittest import mock
+ 
+ from django.test import SimpleTestCase
+@@ -288,38 +288,51 @@ class HttpDateProcessingTests(unittest.TestCase):
+ 
+     def test_parsing_rfc1123(self):
+         parsed = parse_http_date('Sun, 06 Nov 1994 08:49:37 GMT')
+-        self.assertEqual(datetime.utcfromtimestamp(parsed), datetime(1994, 11, 6, 8, 49, 37))
++        self.assertEqual(
++            datetime.fromtimestamp(parsed, timezone.utc),
++            datetime(1994, 11, 6, 8, 49, 37, tzinfo=timezone.utc),
++        )
+ 
+     @unittest.skipIf(platform.architecture()[0] == '32bit', 'The Year 2038 problem.')
+     @mock.patch('django.utils.http.datetime.datetime')
+     def test_parsing_rfc850(self, mocked_datetime):
+         mocked_datetime.side_effect = datetime
+-        mocked_datetime.utcnow = mock.Mock()
+-        utcnow_1 = datetime(2019, 11, 6, 8, 49, 37)
+-        utcnow_2 = datetime(2020, 11, 6, 8, 49, 37)
+-        utcnow_3 = datetime(2048, 11, 6, 8, 49, 37)
++        mocked_datetime.now = mock.Mock()
++        now_1 = datetime(2019, 11, 6, 8, 49, 37)
++        now_2 = datetime(2020, 11, 6, 8, 49, 37)
++        now_3 = datetime(2048, 11, 6, 8, 49, 37)
+         tests = (
+-            (utcnow_1, 'Tuesday, 31-Dec-69 08:49:37 GMT', datetime(2069, 12, 31, 8, 49, 37)),
+-            (utcnow_1, 'Tuesday, 10-Nov-70 08:49:37 GMT', datetime(1970, 11, 10, 8, 49, 37)),
+-            (utcnow_1, 'Sunday, 06-Nov-94 08:49:37 GMT', datetime(1994, 11, 6, 8, 49, 37)),
+-            (utcnow_2, 'Wednesday, 31-Dec-70 08:49:37 GMT', datetime(2070, 12, 31, 8, 49, 37)),
+-            (utcnow_2, 'Friday, 31-Dec-71 08:49:37 GMT', datetime(1971, 12, 31, 8, 49, 37)),
+-            (utcnow_3, 'Sunday, 31-Dec-00 08:49:37 GMT', datetime(2000, 12, 31, 8, 49, 37)),
+-            (utcnow_3, 'Friday, 31-Dec-99 08:49:37 GMT', datetime(1999, 12, 31, 8, 49, 37)),
++            (now_1, 'Tuesday, 31-Dec-69 08:49:37 GMT', datetime(2069, 12, 31, 8, 49, 37)),
++            (now_1, 'Tuesday, 10-Nov-70 08:49:37 GMT', datetime(1970, 11, 10, 8, 49, 37)),
++            (now_1, 'Sunday, 06-Nov-94 08:49:37 GMT', datetime(1994, 11, 6, 8, 49, 37)),
++            (now_2, 'Wednesday, 31-Dec-70 08:49:37 GMT', datetime(2070, 12, 31, 8, 49, 37)),
++            (now_2, 'Friday, 31-Dec-71 08:49:37 GMT', datetime(1971, 12, 31, 8, 49, 37)),
++            (now_3, 'Sunday, 31-Dec-00 08:49:37 GMT', datetime(2000, 12, 31, 8, 49, 37)),
++            (now_3, 'Friday, 31-Dec-99 08:49:37 GMT', datetime(1999, 12, 31, 8, 49, 37)),
+         )
+-        for utcnow, rfc850str, expected_date in tests:
++        for now, rfc850str, expected_date in tests:
+             with self.subTest(rfc850str=rfc850str):
+-                mocked_datetime.utcnow.return_value = utcnow
++                mocked_datetime.now.return_value = now.replace(tzinfo=timezone.utc)
+                 parsed = parse_http_date(rfc850str)
+-                self.assertEqual(datetime.utcfromtimestamp(parsed), expected_date)
++                self.assertEqual(
++                    datetime.fromtimestamp(parsed, timezone.utc),
++                    expected_date.replace(tzinfo=timezone.utc),
++                )
++                mocked_datetime.now.assert_called_with(tz=timezone.utc)
+ 
+     def test_parsing_asctime(self):
+         parsed = parse_http_date('Sun Nov  6 08:49:37 1994')
+-        self.assertEqual(datetime.utcfromtimestamp(parsed), datetime(1994, 11, 6, 8, 49, 37))
++        self.assertEqual(
++            datetime.fromtimestamp(parsed, timezone.utc),
++            datetime(1994, 11, 6, 8, 49, 37, tzinfo=timezone.utc),
++        )
+ 
+     def test_parsing_year_less_than_70(self):
+         parsed = parse_http_date('Sun Nov  6 08:49:37 0037')
+-        self.assertEqual(datetime.utcfromtimestamp(parsed), datetime(2037, 11, 6, 8, 49, 37))
++        self.assertEqual(
++            datetime.fromtimestamp(parsed, timezone.utc),
++            datetime(2037, 11, 6, 8, 49, 37, tzinfo=timezone.utc),
++        )
+ 
+ 
+ class EscapeLeadingSlashesTests(unittest.TestCase):

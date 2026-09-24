@@ -1,0 +1,138 @@
+{
+  "cells": [
+    {
+      "arm": "NO_MEMORY",
+      "cell": "A",
+      "infrastructure_failure_reported": false,
+      "official_resolved": false,
+      "official_test_counts": {
+        "FAIL_TO_FAIL": {
+          "failed": 0,
+          "passed": 0,
+          "total": 0
+        },
+        "FAIL_TO_PASS": {
+          "failed": 2,
+          "passed": 0,
+          "total": 2
+        },
+        "PASS_TO_FAIL": {
+          "failed": 0,
+          "passed": 0,
+          "total": 0
+        },
+        "PASS_TO_PASS": {
+          "failed": 0,
+          "passed": 93,
+          "total": 93
+        }
+      },
+      "patch_exists": true,
+      "patch_successfully_applied": true,
+      "repository_actions": 26,
+      "source_public_result": {
+        "path": "/home/trimem-runner/skhynix-codex-007/eval-20438/execution/cells/A/public-result.json",
+        "sha256": "46441a22b037811aaf172dcdae29e5a445291939d3f24968fbdae346be3614d6"
+      },
+      "source_report": {
+        "path": "/home/trimem-runner/skhynix-codex-007/eval-20438/execution/environment/cells/NO_MEMORY/swebench_verified--sympy__sympy-20438/official-grader/swebench_verified--sympy__sympy-20438/logs/run_evaluation/e033061caf0c66303546/trimem-v1-NO_MEMORY/sympy__sympy-20438/report.json",
+        "sha256": "2b58ddbdb80acb3fe4e8726b4ae2768e774c82e331a51857165dbf90bd470cf4"
+      }
+    },
+    {
+      "arm": "EXISTING_M2",
+      "cell": "B",
+      "infrastructure_failure_reported": false,
+      "official_resolved": false,
+      "official_test_counts": {
+        "FAIL_TO_FAIL": {
+          "failed": 0,
+          "passed": 0,
+          "total": 0
+        },
+        "FAIL_TO_PASS": {
+          "failed": 2,
+          "passed": 0,
+          "total": 2
+        },
+        "PASS_TO_FAIL": {
+          "failed": 0,
+          "passed": 0,
+          "total": 0
+        },
+        "PASS_TO_PASS": {
+          "failed": 0,
+          "passed": 93,
+          "total": 93
+        }
+      },
+      "patch_exists": true,
+      "patch_successfully_applied": true,
+      "repository_actions": 31,
+      "source_public_result": {
+        "path": "/home/trimem-runner/skhynix-codex-007/eval-20438/execution/cells/B/public-result.json",
+        "sha256": "18e7cf922c03dda11f8fd5fd5ab51c96db1acc3b47b11679a5c08f9e2708f359"
+      },
+      "source_report": {
+        "path": "/home/trimem-runner/skhynix-codex-007/eval-20438/execution/environment/cells/EXISTING_M2/swebench_verified--sympy__sympy-20438/official-grader/swebench_verified--sympy__sympy-20438/logs/run_evaluation/08555bdcf2e3f2ea5193/trimem-v1-EXISTING_M2/sympy__sympy-20438/report.json",
+        "sha256": "2b58ddbdb80acb3fe4e8726b4ae2768e774c82e331a51857165dbf90bd470cf4"
+      }
+    },
+    {
+      "arm": "SKHYNIX",
+      "cell": "C",
+      "infrastructure_failure_reported": false,
+      "official_resolved": false,
+      "official_test_counts": {
+        "FAIL_TO_FAIL": {
+          "failed": 0,
+          "passed": 0,
+          "total": 0
+        },
+        "FAIL_TO_PASS": {
+          "failed": 2,
+          "passed": 0,
+          "total": 2
+        },
+        "PASS_TO_FAIL": {
+          "failed": 0,
+          "passed": 0,
+          "total": 0
+        },
+        "PASS_TO_PASS": {
+          "failed": 0,
+          "passed": 93,
+          "total": 93
+        }
+      },
+      "patch_exists": true,
+      "patch_successfully_applied": true,
+      "repository_actions": 32,
+      "source_public_result": {
+        "path": "/home/trimem-runner/skhynix-codex-007/eval-20438/execution/cells/C/public-result.json",
+        "sha256": "96af87890917c428fee61af208d4fad7dc4c69f4f204ab3ef0303d9007ebc80c"
+      },
+      "source_report": {
+        "path": "/home/trimem-runner/skhynix-codex-007/eval-20438/execution/environment/cells/SKHYNIX/swebench_verified--sympy__sympy-20438/official-grader/swebench_verified--sympy__sympy-20438/logs/run_evaluation/7051d744c6c731ddc4ca/trimem-v1-SKHYNIX/sympy__sympy-20438/report.json",
+        "sha256": "2b58ddbdb80acb3fe4e8726b4ae2768e774c82e331a51857165dbf90bd470cf4"
+      }
+    }
+  ],
+  "classification": "OFFICIAL_FAIL_TO_PASS_INCOMPLETE_NO_REPORTED_INFRASTRUCTURE_FAILURE",
+  "gold_or_submitted_patch_content_accessed": false,
+  "hidden_fixture_content_accessed": false,
+  "hidden_test_names_inspected_or_exported": false,
+  "limitation": "Counts distinguish the reported infrastructure flag and aggregate official outcomes; they do not identify the hidden failed assertion or explain its underlying cause.",
+  "model_calls": 0,
+  "official_grader_calls": 0,
+  "official_reruns": 0,
+  "original_outcomes_relabelled": false,
+  "original_report_and_public_result_bytes_unchanged": true,
+  "other_evaluation_targets_accessed": false,
+  "repository_actions": 0,
+  "schema": "skhynix/native007-post-target-grader-counts/1.0",
+  "scope": "POST_COMPLETED_TARGET_SANITIZED_OFFICIAL_METADATA_ONLY",
+  "solver_calls": 0,
+  "solver_feedback_sent": false,
+  "target_id": "swebench_verified--sympy__sympy-20438"
+}

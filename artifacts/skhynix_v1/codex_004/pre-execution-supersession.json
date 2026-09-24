@@ -1,0 +1,35 @@
+{
+  "evaluation_ids_unchanged": [
+    "sympy__sympy-19346",
+    "sympy__sympy-20916",
+    "sympy__sympy-21930",
+    "sympy__sympy-22080",
+    "sympy__sympy-22456",
+    "sympy__sympy-22914"
+  ],
+  "final_launch_sha256": "ba0d80026e51d9c2011d9c01e29ac0b1a60f1cd0094ab7ec111872990489f045",
+  "final_training_ids": [
+    "sympy__sympy-14976",
+    "sympy__sympy-16766"
+  ],
+  "frozen_plans": 0,
+  "grader_runs": 0,
+  "original_training_ids": [
+    "sympy__sympy-16766",
+    "sympy__sympy-18763"
+  ],
+  "preflight_evidence": [
+    {
+      "path": "/home/trimem-runner/skhynix-codex-004/ancestry-preflight.json",
+      "sha256": "b1421914ee7f9c34c253e279ba0e73cd5f16938abab5d33eb19e2ec2e902b6e4"
+    },
+    {
+      "path": "/home/trimem-runner/skhynix-codex-004/replacement-ancestry-preflight.json",
+      "sha256": "e59c4ffcc4ace2811da55d7b0f8e2e3757aee5b00d1cd1e89cf8a2590715b534"
+    }
+  ],
+  "preliminary_launch_sha256": "c501c21c43dece0df8719c1a8e0fd43f2c47750f469525b02237af5a619227ae",
+  "reason": "18763 public base is not an ancestor of any selected evaluation base; replace with the related earlier lambdify mpmath case14976. All evaluation IDs retained. No solver or grader attempts occurred.",
+  "schema": "skhynix/native004-pre-execution-supersession/1.0",
+  "solver_actions": 0
+}

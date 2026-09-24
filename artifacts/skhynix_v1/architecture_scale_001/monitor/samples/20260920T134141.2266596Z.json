@@ -1,0 +1,31 @@
+{
+    "schema":  "skhynix/scale-local-health/1.0",
+    "checked_at":  "2026-09-20T13:41:38.1055408Z",
+    "checked_at_kst":  "2026-09-20T22:41:41.1975860+09:00",
+    "status":  "STOPPED",
+    "severity":  "ERROR",
+    "interval_minutes":  5,
+    "stale_minutes":  60,
+    "configuration":  "architecture_002_pipeline_v15.json",
+    "configuration_sha256":  "8b4f078f8506e18723243b9b294d0518fcefc1f31676c0565fd85c0e9e9dd643",
+    "controller_running":  false,
+    "controller_process_ids":  [
+
+                               ],
+    "process_check_completed":  true,
+    "controller_stderr_bytes":  0,
+    "wsl_running":  false,
+    "host_c_free_gib":  52.64,
+    "probe_error":  "WSL_DISTRO_NOT_RUNNING",
+    "warnings":  [
+                     "WSL_DISTRO_NOT_RUNNING"
+                 ],
+    "probe":  null,
+    "last_successful_probe_at":  "2026-09-20T13:36:38.6479148Z",
+    "alert_fingerprint":  "8b4f078f8506e18723243b9b294d0518fcefc1f31676c0565fd85c0e9e9dd643|STOPPED|WSL_DISTRO_NOT_RUNNING",
+    "desktop_notification":  "ATTEMPTED_DELIVERY_NOT_CONFIRMED",
+    "automatic_solver_retries":  false,
+    "automatic_grader_retries":  false,
+    "automatic_pipeline_restart":  false,
+    "monitor_source_sha256":  "012762be96b1cc5542e2a8424ce4028e8022a83286b1a06a9a12dde873ba3b71"
+}

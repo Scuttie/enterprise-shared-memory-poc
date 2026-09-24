@@ -1,0 +1,56 @@
+diff --git a/sympy/sets/sets.py b/sympy/sets/sets.py
+index 917717b..5363aa5 100644
+--- a/sympy/sets/sets.py
++++ b/sympy/sets/sets.py
+@@ -217,7 +217,19 @@ def _complement(self, other):
+             return S.EmptySet
+ 
+         elif isinstance(other, FiniteSet):
+-            return FiniteSet(*[el for el in other if self.contains(el) != True])
++            known = []
++            unknown = []
++            for el in other:
++                contains = sympify(self.contains(el))
++                if contains is S.false:
++                    known.append(el)
++                elif contains is not S.true:
++                    unknown.append(el)
++            # Undecidable membership must retain the exclusion condition.
++            if unknown:
++                return Union(FiniteSet(*known), Complement(
++                    FiniteSet(*unknown), self, evaluate=False))
++            return FiniteSet(*known)
+ 
+     def symmetric_difference(self, other):
+         """
+diff --git a/sympy/sets/tests/test_sets.py b/sympy/sets/tests/test_sets.py
+index 8c59d85..0281caa 100644
+--- a/sympy/sets/tests/test_sets.py
++++ b/sympy/sets/tests/test_sets.py
+@@ -933,6 +933,26 @@ def test_issue_9637():
+     assert Complement(a, Interval(1, 3)) == Complement(a, Interval(1, 3), evaluate=False)
+ 
+ 
++def test_issue_13615():
++    interval = Interval(-10, 10)
++    unresolved = Complement(FiniteSet(x, y), interval, evaluate=False)
++    result = Complement(FiniteSet(x, y, 2), interval)
++    assert result == unresolved
++    assert result.subs({x: 0, y: 20}) == FiniteSet(20)
++    assert Complement(FiniteSet(x, y, 2, 20), interval) == Union(
++        FiniteSet(20), unresolved)
++    assert Complement(FiniteSet(x, y), interval) == unresolved
++    assert Complement(FiniteSet(2, 20), interval) == FiniteSet(20)
++    assert Complement(FiniteSet(2), interval) == S.EmptySet
++
++    # Expressions and symbolic endpoints also have undecidable membership.
++    assert Complement(FiniteSet(2, x + 1), interval) == Complement(
++        FiniteSet(x + 1), interval, evaluate=False)
++    symbolic_interval = Interval(x, x + 1)
++    assert Complement(FiniteSet(2), symbolic_interval) == Complement(
++        FiniteSet(2), symbolic_interval, evaluate=False)
++
++
+ def test_issue_9808():
+     assert Complement(FiniteSet(y), FiniteSet(1)) == Complement(FiniteSet(y), FiniteSet(1), evaluate=False)
+     assert Complement(FiniteSet(1, 2, x), FiniteSet(x, y, 2, 3)) == \

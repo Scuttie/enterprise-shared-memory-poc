@@ -1,0 +1,39 @@
+{
+  "approval_binding": {
+    "approval_artifact_sha256": "540c36e0bb9ff7d120d44e94c88181196a0b7f24bb92ad83626a66dcabe4bac9",
+    "approved_request_sha256": "3db77d2529f4f5bedacbf70a1de93a745034bf4642f10c0c5f2e9268e060b470",
+    "approved_workflow_run_attempt": "1",
+    "approved_workflow_run_id": "33674784590",
+    "freeze_sha256": "f1f2547ae79c9e6e19b235eb0f010509200393145299186e6bd667b7af22be63",
+    "git_head": "cc001245b8c26373b5467a0dbdcbbbda0a9542be",
+    "phase": "GRADER_SMOKE"
+  },
+  "artifacts": {
+    "encrypted_restricted_evidence": {
+      "bytes": 12636192,
+      "name": "trimem-grader-smoke-restricted.tar.enc",
+      "sha256": "6b22e66e8b22b6a30420903eac5ce6699fd8047ff5d71d925cc68320a1b3179c"
+    },
+    "evidence_inventory": {
+      "bytes": 113557,
+      "name": "evidence-inventory.json",
+      "sha256": "b1c3ba191c4d037f4f8ee70cf8a4821592b5b25a65700d7ce3faa2d0024add8e"
+    },
+    "public_results": {
+      "bytes": 26472,
+      "name": "public-results.json",
+      "sha256": "4a1253e69a95b3058b9433fbfe51ef3f8bee538c90b5faf29c996a841224faa4"
+    }
+  },
+  "execution": {
+    "event_name": "push",
+    "repository": "Scuttie/enterprise-shared-memory-poc",
+    "runner_environment": "github-hosted",
+    "signer_workflow": ".github/workflows/trimem-grader-smoke.yml",
+    "source_digest": "cc001245b8c26373b5467a0dbdcbbbda0a9542be",
+    "source_ref": "refs/heads/codex/trimem-coder-v1",
+    "workflow_run_attempt": "1",
+    "workflow_run_id": "33674784590"
+  },
+  "schema": "trimem/grader-smoke-attestation-subject/1.0"
+}

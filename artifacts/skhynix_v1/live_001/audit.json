@@ -1,0 +1,864 @@
+{
+  "schema": "skhynix/public-run-audit/1.0",
+  "status": "PASS_FINAL",
+  "audited_at": "2026-09-10T13:59:18.194428+00:00",
+  "plan_sha256": "a7e499d01263564cba3fa9183b0872778e0306ae78431cfdb9117face9176722",
+  "source_hashes_sha256": "167aca389ab2e0093a8cb93b93672f0ec33e1f4d95d0abbc4879b4d60ec0de8a",
+  "source_files_checked": 320,
+  "source_mismatch_count": 0,
+  "audit_script_sha256": "d90f0d77382b9b6b05f25f1f04edc821ca9f4ebdfa264cbbcba60496d55da301",
+  "base_git_head_recorded": "d4fd304339687b42c645ae84872a72eddddcda97",
+  "planned_cells": 36,
+  "finalized_cells_audited": 36,
+  "cells_passed": 36,
+  "cells_failed": 0,
+  "checks_passed": 1689,
+  "checks_failed": 0,
+  "global_failures": [],
+  "audited_target_ids": [
+    "multi_swe_bench_flash--catchorg__Catch2-1616",
+    "multi_swe_bench_flash--clap-rs__clap-3394",
+    "multi_swe_bench_flash--cli__cli-869",
+    "multi_swe_bench_flash--sharkdp__bat-1276",
+    "multi_swe_bench_mini--clap-rs__clap-3960",
+    "multi_swe_bench_mini--facebook__zstd-938",
+    "multi_swe_bench_mini--mui__material-ui-29880",
+    "multi_swe_bench_mini--ponylang__ponyc-1981",
+    "swebench_verified--django__django-16100",
+    "swebench_verified--matplotlib__matplotlib-25311",
+    "swebench_verified--sphinx-doc__sphinx-11445",
+    "swebench_verified--sympy__sympy-23262"
+  ],
+  "paired_summary": {
+    "fully_paired_target_ids": [
+      "swebench_verified--django__django-16100",
+      "swebench_verified--sympy__sympy-23262",
+      "swebench_verified--sphinx-doc__sphinx-11445",
+      "swebench_verified--matplotlib__matplotlib-25311",
+      "multi_swe_bench_mini--mui__material-ui-29880",
+      "multi_swe_bench_mini--ponylang__ponyc-1981",
+      "multi_swe_bench_mini--clap-rs__clap-3960",
+      "multi_swe_bench_mini--facebook__zstd-938",
+      "multi_swe_bench_flash--sharkdp__bat-1276",
+      "multi_swe_bench_flash--catchorg__Catch2-1616",
+      "multi_swe_bench_flash--clap-rs__clap-3394",
+      "multi_swe_bench_flash--cli__cli-869"
+    ],
+    "arms": {
+      "NO_MEMORY": {
+        "completed": 12,
+        "planned": 12,
+        "paired_targets": 12,
+        "paired_resolved": 0,
+        "paired_solve_rate": 0.0,
+        "wilson_95_interval": [
+          2.7755575615628914e-17,
+          0.24249400665524085
+        ],
+        "completed_resolved": 0,
+        "model_calls": 131,
+        "input_tokens": 849868,
+        "output_tokens": 65305,
+        "usd": "0.918918300000",
+        "injections": 0
+      },
+      "EXISTING_M2": {
+        "completed": 12,
+        "planned": 12,
+        "paired_targets": 12,
+        "paired_resolved": 1,
+        "paired_solve_rate": 0.08333333333333333,
+        "wilson_95_interval": [
+          0.014865094404917095,
+          0.35387991114111694
+        ],
+        "completed_resolved": 1,
+        "model_calls": 128,
+        "input_tokens": 976530,
+        "output_tokens": 59418,
+        "usd": "0.983362500000",
+        "injections": 12
+      },
+      "SKHYNIX": {
+        "completed": 12,
+        "planned": 12,
+        "paired_targets": 12,
+        "paired_resolved": 1,
+        "paired_solve_rate": 0.08333333333333333,
+        "wilson_95_interval": [
+          0.014865094404917095,
+          0.35387991114111694
+        ],
+        "completed_resolved": 1,
+        "model_calls": 131,
+        "input_tokens": 936835,
+        "output_tokens": 63485,
+        "usd": "0.970769550000",
+        "injections": 5
+      }
+    },
+    "contrasts": [
+      {
+        "baseline": "NO_MEMORY",
+        "treatment": "SKHYNIX",
+        "paired_n": 12,
+        "fail_to_pass": 1,
+        "pass_to_fail": 0,
+        "delta_percentage_points": 8.333333333333334,
+        "mcnemar_exact_two_sided_p": 1.0
+      },
+      {
+        "baseline": "EXISTING_M2",
+        "treatment": "SKHYNIX",
+        "paired_n": 12,
+        "fail_to_pass": 0,
+        "pass_to_fail": 0,
+        "delta_percentage_points": 0.0,
+        "mcnemar_exact_two_sided_p": 1.0
+      }
+    ]
+  },
+  "finalized_cell_totals": {
+    "paid_model_calls": 390,
+    "solve_calls": 318,
+    "decomposition_calls": 36,
+    "extraction_calls": 36,
+    "input_tokens": 2763233,
+    "cached_input_tokens": 68608,
+    "output_tokens": 188208,
+    "grader_containers": 36,
+    "task_arm_runs": 36,
+    "total_usd": "2.873050350000"
+  },
+  "ledger_actual": {
+    "cached_input_tokens": 68608,
+    "decomposition_calls": 36,
+    "extraction_calls": 36,
+    "grader_containers": 36,
+    "input_tokens": 2763233,
+    "output_tokens": 188208,
+    "paid_model_calls": 390,
+    "solve_calls": 318,
+    "task_arm_runs": 36,
+    "total_usd": 2.873050349999999
+  },
+  "ledger_outstanding": {
+    "decomposition_calls": 0,
+    "extraction_calls": 0,
+    "grader_containers": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "solve_calls": 0,
+    "task_arm_runs": 0,
+    "total_usd": 0.0
+  },
+  "ledger_minus_finalized_cells": {
+    "paid_model_calls": "0",
+    "solve_calls": "0",
+    "decomposition_calls": "0",
+    "extraction_calls": "0",
+    "input_tokens": "0",
+    "cached_input_tokens": "0",
+    "output_tokens": "0",
+    "grader_containers": "0",
+    "task_arm_runs": "0",
+    "total_usd": "-1E-15"
+  },
+  "ledger_equals_finalized_cells": true,
+  "complete_matrix": true,
+  "report_snapshot_compared": true,
+  "cell_audits": [
+    {
+      "target_id": "swebench_verified--django__django-16100",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.048101550000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 49
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "swebench_verified--django__django-16100",
+      "arm": "EXISTING_M2",
+      "resolved": true,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "MODEL_PARTIAL_PATCH",
+      "usd": "0.187800600000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 77,
+        "referenced_blobs_verified": 89
+      },
+      "injected_bytes": 5300
+    },
+    {
+      "target_id": "swebench_verified--django__django-16100",
+      "arm": "SKHYNIX",
+      "resolved": true,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "MODEL_PARTIAL_PATCH",
+      "usd": "0.147336750000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 73,
+        "referenced_blobs_verified": 84
+      },
+      "injected_bytes": 5866
+    },
+    {
+      "target_id": "swebench_verified--sympy__sympy-23262",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.049008300000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 37
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "swebench_verified--sympy__sympy-23262",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.066751800000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 43
+      },
+      "injected_bytes": 5806
+    },
+    {
+      "target_id": "swebench_verified--sympy__sympy-23262",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "MODEL_PARTIAL_PATCH",
+      "usd": "0.117963000000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 60,
+        "referenced_blobs_verified": 69
+      },
+      "injected_bytes": 6431
+    },
+    {
+      "target_id": "swebench_verified--sphinx-doc__sphinx-11445",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.070090800000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 49
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "swebench_verified--sphinx-doc__sphinx-11445",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.068406300000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 49
+      },
+      "injected_bytes": 2475
+    },
+    {
+      "target_id": "swebench_verified--sphinx-doc__sphinx-11445",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.072989550000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 49
+      },
+      "injected_bytes": 2833
+    },
+    {
+      "target_id": "swebench_verified--matplotlib__matplotlib-25311",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.052651800000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 44
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "swebench_verified--matplotlib__matplotlib-25311",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.075539550000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 45
+      },
+      "injected_bytes": 5576
+    },
+    {
+      "target_id": "swebench_verified--matplotlib__matplotlib-25311",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.062704800000",
+      "checks_passed": 39,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 9,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_mini--mui__material-ui-29880",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.083770800000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_mini--mui__material-ui-29880",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.091417500000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 6313
+    },
+    {
+      "target_id": "multi_swe_bench_mini--mui__material-ui-29880",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.079760250000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_mini--ponylang__ponyc-1981",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.068486250000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 45
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_mini--ponylang__ponyc-1981",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.068787750000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 46
+      },
+      "injected_bytes": 1628
+    },
+    {
+      "target_id": "multi_swe_bench_mini--ponylang__ponyc-1981",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.081315300000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 47
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_mini--clap-rs__clap-3960",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.091051800000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_mini--clap-rs__clap-3960",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.093430050000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 4607
+    },
+    {
+      "target_id": "multi_swe_bench_mini--clap-rs__clap-3960",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.071362050000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_mini--facebook__zstd-938",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.067222800000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_mini--facebook__zstd-938",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.068413800000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 45
+      },
+      "injected_bytes": 4035
+    },
+    {
+      "target_id": "multi_swe_bench_mini--facebook__zstd-938",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.071860050000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_flash--sharkdp__bat-1276",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "MODEL_PARTIAL_PATCH",
+      "usd": "0.213774150000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 89,
+        "referenced_blobs_verified": 100
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_flash--sharkdp__bat-1276",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.067134300000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 47
+      },
+      "injected_bytes": 3971
+    },
+    {
+      "target_id": "multi_swe_bench_flash--sharkdp__bat-1276",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.050110050000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_flash--catchorg__Catch2-1616",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.062114250000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_flash--catchorg__Catch2-1616",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.058489050000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 2961
+    },
+    {
+      "target_id": "multi_swe_bench_flash--catchorg__Catch2-1616",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.059997750000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 47
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_flash--clap-rs__clap-3394",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.049948050000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_flash--clap-rs__clap-3394",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.072334500000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 4015
+    },
+    {
+      "target_id": "multi_swe_bench_flash--clap-rs__clap-3394",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.067415250000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 45
+      },
+      "injected_bytes": 4500
+    },
+    {
+      "target_id": "multi_swe_bench_flash--cli__cli-869",
+      "arm": "NO_MEMORY",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.062697750000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 48
+      },
+      "injected_bytes": 0
+    },
+    {
+      "target_id": "multi_swe_bench_flash--cli__cli-869",
+      "arm": "EXISTING_M2",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.064857300000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 47
+      },
+      "injected_bytes": 5804
+    },
+    {
+      "target_id": "multi_swe_bench_flash--cli__cli-869",
+      "arm": "SKHYNIX",
+      "resolved": false,
+      "agent_completed": false,
+      "failure_class": "per-subtask step cap reached",
+      "grader_patch_source": "CANONICAL_FAILED_CELL_NOOP",
+      "usd": "0.087954750000",
+      "checks_passed": 47,
+      "checks_failed": 0,
+      "failures": [],
+      "status": "PASS",
+      "restricted_references_verified": 17,
+      "public_evidence": {
+        "events": 44,
+        "referenced_blobs_verified": 45
+      },
+      "injected_bytes": 6462
+    }
+  ],
+  "limitations": [
+    "This audit does not rerun models, containers or tests.",
+    "Restricted blobs are hashed; hidden test contents, patches and raw model outputs are not emitted or independently interpreted.",
+    "Official classification is re-parsed from the retained final report; test-semantic correctness additionally relies on the already validated grader journal.",
+    "Solver isolation is checked against recorded base-only checkout and sandbox evidence; baked image contents are not exhaustively re-inspected.",
+    "Solved official results can coexist with an incomplete agent and a runtime step-cap failure."
+  ]
+}

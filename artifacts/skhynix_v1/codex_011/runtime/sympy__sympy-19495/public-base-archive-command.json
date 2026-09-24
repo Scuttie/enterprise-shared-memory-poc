@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "git",
+    "-C",
+    "/home/trimem-runner/skhynix-codex-002/dataset-preparation/sympy-history.git",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "archive",
+    "--format=tar",
+    "--output=/home/trimem-runner/native011-dataset-preparation/sympy__sympy-19495/public-base.tar",
+    "25fbcce5b1a4c7e3956e6062930f4a44ce95a632"
+  ],
+  "cwd": null,
+  "returncode": 128,
+  "started_at_unix_seconds": 1789306427.8752217,
+  "stderr": "warning: lazy fetching disabled; some objects may not be available\nfatal: could not fetch e54ad4ae766bb92fa9bb50f3ed5442d28dbd0583 from promisor remote\n",
+  "stdout": "",
+  "wall_seconds": 2.263507127761841
+}

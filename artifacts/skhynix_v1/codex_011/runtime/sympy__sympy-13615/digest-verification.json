@@ -1,0 +1,11 @@
+{
+  "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13615@sha256:b71f0f3e41f7d5f64028c13703a3563c09b6cbd84ee43103e5925ebc52fda263",
+  "image_architecture": "amd64",
+  "image_id": "sha256:b71f0f3e41f7d5f64028c13703a3563c09b6cbd84ee43103e5925ebc52fda263",
+  "image_os": "linux",
+  "inspection_receipt_sha256": "b0a4e6807d8ebc5c89edcf72e624a2e5beba846b58ba2ba877738e833e0b1a07",
+  "instance_id": "sympy__sympy-13615",
+  "registry_evidence_path": "/home/trimem-runner/native011-dataset-preparation/sympy__sympy-13615/registry.json",
+  "registry_response_sha256": "5e4f1c4c6af5cd532607784d6edc6aab28d1522fa9cd1169f183030e3acd22f9",
+  "repo_digest_verified": true
+}

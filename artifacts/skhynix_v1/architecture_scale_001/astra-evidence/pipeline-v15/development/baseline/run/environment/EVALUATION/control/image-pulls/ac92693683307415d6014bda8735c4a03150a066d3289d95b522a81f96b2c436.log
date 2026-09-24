@@ -1,0 +1,25 @@
+docker.io/swebench/sweb.eval.x86_64.astropy_1776_astropy-14701@sha256:20b205356880b9d5f795220cbbb325d093233ad898d16606751f7d07528e754a: Pulling from swebench/sweb.eval.x86_64.astropy_1776_astropy-14701
+055a0bfa1ab8: Pulling fs layer
+c90a4dce48af: Pulling fs layer
+45d9eac42217: Pulling fs layer
+3ee0fc017199: Pulling fs layer
+a859a3c874ff: Pulling fs layer
+291e0ee4373b: Pulling fs layer
+7c1ec581fd1c: Pulling fs layer
+291e0ee4373b: Download complete
+7c1ec581fd1c: Download complete
+a859a3c874ff: Download complete
+45d9eac42217: Download complete
+7c1ec581fd1c: Pull complete
+a859a3c874ff: Pull complete
+3ee0fc017199: Download complete
+c90a4dce48af: Download complete
+055a0bfa1ab8: Download complete
+291e0ee4373b: Pull complete
+45d9eac42217: Pull complete
+3ee0fc017199: Pull complete
+c90a4dce48af: Pull complete
+055a0bfa1ab8: Pull complete
+Digest: sha256:20b205356880b9d5f795220cbbb325d093233ad898d16606751f7d07528e754a
+Status: Downloaded newer image for swebench/sweb.eval.x86_64.astropy_1776_astropy-14701@sha256:20b205356880b9d5f795220cbbb325d093233ad898d16606751f7d07528e754a
+docker.io/swebench/sweb.eval.x86_64.astropy_1776_astropy-14701@sha256:20b205356880b9d5f795220cbbb325d093233ad898d16606751f7d07528e754a

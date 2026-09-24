@@ -1,0 +1,68 @@
+{
+  "schema": "trimem/development-approval-schema-mismatch-receipt/1.0",
+  "status": "TERMINAL_PRESERVED",
+  "recorded_at_utc": "2026-09-05T02:18:33Z",
+  "endpoint": "TRIMEM_V1_DEV_INCOMPLETE",
+  "scientific_status": "NOT_STARTED",
+  "failure_subtype": "TRIMEM_DEV_PROTOCOL_CANARY_APPROVAL_SCHEMA_MISMATCH",
+  "workflow_run": {
+    "id": 33914304167,
+    "attempt": 1,
+    "head_sha": "d9c8560087e681b619a4ea5313451fe64257a77e",
+    "source_head_sha": "553f7b44f4ab2762103ed06dbb87981c32ba2052",
+    "created_at_utc": "2026-09-04T20:03:29Z",
+    "started_at_utc": "2026-09-04T20:03:28Z",
+    "completed_at_utc": "2026-09-04T20:08:01Z",
+    "conclusion": "failure"
+  },
+  "passed_boundaries": {
+    "protected_environment": true,
+    "external_approval_materialization": true,
+    "exec_gate": true,
+    "credential_validation": true,
+    "run_bound_credential_commitment": true,
+    "exact_model_metadata": true
+  },
+  "root_cause": {
+    "classification": "APPROVAL_CONSUMER_SCHEMA_MISMATCH",
+    "failing_step": "Execute one native-action protocol canary before benchmark images",
+    "consumer": "scripts/trimem_action_canary.py",
+    "authoritative_contract_ignored": "validate_exec_approval returned hard_cap and approval_artifact_sha256",
+    "invalid_second_interpretation": "raw external approval was parsed for a nonexistent top-level hard_cap",
+    "approval_schema_changed": false,
+    "provider_generation_started": false
+  },
+  "execution_accounting": {
+    "provider_control_plane_requests": 1,
+    "model_generation_calls": 0,
+    "paid_model_calls": 0,
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "reasoning_tokens": 0,
+    "completed_task_arm_runs": 0,
+    "official_grader_runs": 0,
+    "benchmark_target_image_pulls": 0,
+    "total_usd": 0.0
+  },
+  "evidence": {
+    "run_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/33914304167",
+    "restricted_encrypted_artifact_id": 9952668741,
+    "restricted_encrypted_zip_sha256": "11ed2179b5dad62c1a6cfaba9ee765b80bca343d6deacfc8f8a4388c8c8b5d63",
+    "public_inventory_artifact_id": 9952670077,
+    "public_inventory_zip_sha256": "a7e56e93e34719b6d8d35cb9bca3358bf6af489173b8d9428c092198c52c1093",
+    "inventory_seal_sha256": "60b1175090f87f45ed4e5dfe3fae322faf9d69cdb04967962491f1313b1b565c",
+    "inventory_files": 4,
+    "inventory_bytes": 1983,
+    "approval_plaintext_removed": true,
+    "temporary_exec_material_removed": true
+  },
+  "interpretation": {
+    "scientific_result": false,
+    "model_capability_result": false,
+    "memory_method_result": false,
+    "retrieval_result": false,
+    "grader_result": false,
+    "performance_measured": false
+  }
+}

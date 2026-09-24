@@ -1,0 +1,73 @@
+diff --git a/sympy/polys/densearith.py b/sympy/polys/densearith.py
+index bce08bb..7f7a88b 100644
+--- a/sympy/polys/densearith.py
++++ b/sympy/polys/densearith.py
+@@ -269,7 +269,7 @@ def dup_mul_ground(f, c, K):
+     if not c or not f:
+         return []
+     else:
+-        return [ cf * c for cf in f ]
++        return dup_strip([ cf * c for cf in f ])
+ 
+ 
+ def dmp_mul_ground(f, c, u, K):
+@@ -291,7 +291,7 @@ def dmp_mul_ground(f, c, u, K):
+ 
+     v = u - 1
+ 
+-    return [ dmp_mul_ground(cf, c, v, K) for cf in f ]
++    return dmp_strip([ dmp_mul_ground(cf, c, v, K) for cf in f ], u)
+ 
+ 
+ def dup_quo_ground(f, c, K):
+diff --git a/sympy/polys/tests/test_densearith.py b/sympy/polys/tests/test_densearith.py
+index 55b2f47..1e51928 100644
+--- a/sympy/polys/tests/test_densearith.py
++++ b/sympy/polys/tests/test_densearith.py
+@@ -196,6 +196,19 @@ def test_dmp_mul_ground():
+     ]
+ 
+ 
++def test_mul_ground_strip():
++    from sympy import sqrt
++    from sympy.polys.domains import EX
++
++    c = EX(1/(sqrt(2) + sqrt(3)) + sqrt(2) - sqrt(3))
++    assert dup_mul_ground([c], EX(2), EX) == []
++    assert dup_mul_ground([c, EX(1), EX(0)], EX(2), EX) == [EX(2), EX(0)]
++    assert dmp_mul_ground([[c], [c]], EX(2), 1, EX) == [[]]
++    assert dmp_mul_ground([[c], [c, EX(1)]], EX(2), 1, EX) == [[EX(2)]]
++    assert dmp_mul_ground([[[c]], [[c]]], EX(2), 2, EX) == [[[]]]
++    assert dmp_mul_ground([[ZZ(1)], [ZZ(2)]], ZZ(0), 1, ZZ) == [[]]
++
++
+ def test_dup_quo_ground():
+     raises(ZeroDivisionError, lambda: dup_quo_ground(dup_normal([1, 2,
+            3], ZZ), ZZ(0), ZZ))
+diff --git a/sympy/polys/tests/test_polytools.py b/sympy/polys/tests/test_polytools.py
+index c774fc4..4f55e7f 100644
+--- a/sympy/polys/tests/test_polytools.py
++++ b/sympy/polys/tests/test_polytools.py
+@@ -1445,6 +1445,22 @@ def test_Poly_clear_denoms():
+         x + 3*sqrt(2), x, domain='EX') and poly.get_domain() == EX
+ 
+ 
++def test_Poly_clear_denoms_zero():
++    # The coefficient becomes zero only after clearing its denominator.
++    c = 1/(sqrt(2) + sqrt(3)) + sqrt(2) - sqrt(3)
++    for gens in [(x,), (x, y), (x, y, z)]:
++        zero = Poly(0, *gens, domain='EX')
++        for convert in [False, True]:
++            coeff, poly = Poly(c, *gens, domain='EX').clear_denoms(
++                convert=convert)
++            assert coeff == sqrt(2) + sqrt(3)
++            assert poly == zero
++            assert poly.is_zero
++            assert poly.as_expr() == 0
++            assert poly.terms_gcd() == ((0,)*len(gens), zero)
++            assert poly.primitive() == (0, zero)
++
++
+ def test_Poly_rat_clear_denoms():
+     f = Poly(x**2/y + 1, x)
+     g = Poly(x**3 + y, x)

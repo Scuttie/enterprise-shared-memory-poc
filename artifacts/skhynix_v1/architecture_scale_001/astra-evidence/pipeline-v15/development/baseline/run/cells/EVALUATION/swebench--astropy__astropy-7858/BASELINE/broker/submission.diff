@@ -1,0 +1,40 @@
+diff --git a/astropy/wcs/tests/test_wcs.py b/astropy/wcs/tests/test_wcs.py
+index 39763a4..e337dac 100644
+--- a/astropy/wcs/tests/test_wcs.py
++++ b/astropy/wcs/tests/test_wcs.py
+@@ -275,6 +275,22 @@ def test_shape_mismatch():
+     assert xw.shape == (42,)
+ 
+ 
++@pytest.mark.parametrize('method, direction', [
++    ('all_pix2world', 1), ('wcs_pix2world', 1),
++    ('all_world2pix', -1), ('wcs_world2pix', -1)])
++@pytest.mark.parametrize('origin', [0, 1])
++@pytest.mark.parametrize('coordinate', [29, 29.0, np.array(29.0)])
++def test_1d_scalar(method, direction, origin, coordinate):
++    w = wcs.WCS(naxis=1)
++
++    result = getattr(w, method)(coordinate, origin)
++
++    assert isinstance(result, list)
++    assert len(result) == 1
++    assert result[0].shape == ()
++    assert_allclose(result[0], 29 + direction * (1 - origin))
++
++
+ def test_invalid_shape():
+     # Issue #1395
+     w = wcs.WCS(naxis=2)
+diff --git a/astropy/wcs/wcs.py b/astropy/wcs/wcs.py
+index 0b6657a..931ab53 100644
+--- a/astropy/wcs/wcs.py
++++ b/astropy/wcs/wcs.py
+@@ -1256,7 +1256,7 @@ reduce these to 2 dimensions using the naxis kwarg.
+                 raise TypeError(
+                     "When providing two arguments, they must be "
+                     "(coords[N][{0}], origin)".format(self.naxis))
+-            if self.naxis == 1 and len(xy.shape) == 1:
++            if self.naxis == 1 and len(xy.shape) <= 1:
+                 return _return_list_of_arrays([xy], origin)
+             return _return_single_array(xy, origin)
+ 

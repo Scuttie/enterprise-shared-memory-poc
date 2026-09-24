@@ -1,0 +1,137 @@
+diff --git a/requests/models.py b/requests/models.py
+index d845637..3d38fba 100644
+--- a/requests/models.py
++++ b/requests/models.py
+@@ -461,9 +461,12 @@ class Request(object):
+         return ''.join(url)
+ 
+     def register_hook(self, event, hook):
+-        """Properly register a hook."""
++        """Register a hook or an iterable of hooks for an event."""
+ 
+-        self.hooks[event].append(hook)
++        if hasattr(hook, '__call__'):
++            self.hooks[event].append(hook)
++        else:
++            self.hooks[event].extend(hook)
+ 
+     def deregister_hook(self, event, hook):
+         """Deregister a previously registered hook.
+diff --git a/tests/test_hooks.py b/tests/test_hooks.py
+new file mode 100644
+index 0000000..a03bb69
+--- /dev/null
++++ b/tests/test_hooks.py
+@@ -0,0 +1,112 @@
++"""Hook registration regressions that do not require a network service."""
++
++import unittest
++
++from requests import Request, Session
++from requests.hooks import HOOKS, dispatch_hook
++
++
++class HookRegistrationTests(unittest.TestCase):
++
++    def test_constructor_accepts_lists_in_order(self):
++        def first(value):
++            return value + ['first']
++
++        def second(value):
++            value.append('second')
++
++        callbacks = [first, second]
++        for event in HOOKS:
++            request = Request(hooks={event: callbacks})
++            self.assertEqual(dispatch_hook(event, request.hooks, []),
++                             ['first', 'second'])
++            self.assertEqual(request.hooks[event], callbacks)
++            self.assertIsNot(request.hooks[event], callbacks)
++
++    def test_constructor_preserves_single_callable(self):
++        def callback(value):
++            return value + ['single']
++
++        request = Request(hooks={'response': callback})
++        self.assertEqual(request.hooks['response'], [callback])
++        self.assertEqual(dispatch_hook('response', request.hooks, []),
++                         ['single'])
++
++    def test_constructor_accepts_empty_list(self):
++        request = Request(hooks={'response': []})
++        self.assertEqual(dispatch_hook('response', request.hooks, []), [])
++        self.assertEqual(request.hooks['response'], [])
++
++    def test_register_list_after_single_hook(self):
++        def first(value):
++            return value + ['first']
++
++        def second(value):
++            return value + ['second']
++
++        request = Request(hooks={'response': first})
++        callbacks = [second]
++        request.register_hook('response', callbacks)
++        self.assertEqual(dispatch_hook('response', request.hooks, []),
++                         ['first', 'second'])
++        self.assertTrue(request.deregister_hook('response', second))
++        self.assertFalse(request.deregister_hook('response', second))
++        self.assertEqual(callbacks, [second])
++        self.assertEqual(request.hooks['response'], [first])
++
++
++class SessionHookTests(unittest.TestCase):
++
++    def test_session_hook_list_is_reusable(self):
++        def first(value):
++            return value + ['first']
++
++        def second(value):
++            value.append('second')
++
++        callbacks = [first, second]
++        with Session(hooks={'response': callbacks}) as session:
++            for unused in range(2):
++                request = session.get('http://example.com/',
++                                      return_response=False)
++                self.assertEqual(
++                    dispatch_hook('response', request.hooks, []),
++                    ['first', 'second'])
++                request.deregister_hook('response', first)
++                self.assertEqual(session.hooks['response'], [first, second])
++                self.assertEqual(callbacks, [first, second])
++
++    def test_request_hooks_override_session_defaults(self):
++        def default(value):
++            return value + ['default']
++
++        def local(value):
++            return value + ['local']
++
++        with Session(hooks={'response': [default]}) as session:
++            for hooks, expected in ((local, ['local']),
++                                    ([local, local], ['local', 'local']),
++                                    ([], [])):
++                request = session.get('http://example.com/',
++                                      hooks={'response': hooks},
++                                      return_response=False)
++                self.assertEqual(
++                    dispatch_hook('response', request.hooks, []), expected)
++                self.assertEqual(session.hooks['response'], [default])
++
++    def test_session_args_hook_list_runs_in_order(self):
++        def first(args):
++            args['headers']['X-Hook-Order'] = 'first'
++            return args
++
++        def second(args):
++            args['headers']['X-Hook-Order'] += ',second'
++
++        with Session(hooks={'args': [first, second]}) as session:
++            request = session.get('http://example.com/',
++                                  return_response=False)
++            self.assertEqual(request.headers['X-Hook-Order'], 'first,second')
++
++
++if __name__ == '__main__':
++    unittest.main()

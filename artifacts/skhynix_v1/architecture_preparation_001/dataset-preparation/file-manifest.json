@@ -1,0 +1,77 @@
+{
+  "files": [
+    {
+      "bytes": 69343,
+      "path": "dev-disjoint-candidate-public-task-inventory.json",
+      "sha256": "9b8f623a010311e83deec079652f4a91a2b08ace8a600571abb2142b69273425",
+      "visibility": "PUBLIC_METADATA"
+    },
+    {
+      "bytes": 546,
+      "path": "download-receipts/README.md.json",
+      "sha256": "25bb106e556af277b465155dd49ea9d4d85d3ba908784c3502daf2c4ddf71ec2",
+      "visibility": "PUBLIC_METADATA"
+    },
+    {
+      "bytes": 551,
+      "path": "download-receipts/dataset-api.json.json",
+      "sha256": "472574364c4e419ab6a2b3ac2f1749cee79c3650aa54c141df7d767fd2341a50",
+      "visibility": "PUBLIC_METADATA"
+    },
+    {
+      "bytes": 608,
+      "path": "download-receipts/dev-00000-of-00001.parquet.json",
+      "sha256": "a34d22911b6b2c648fd0e5ba7d2d2648f090ecffd9611cdecf016a7a6f005a24",
+      "visibility": "PUBLIC_METADATA"
+    },
+    {
+      "bytes": 611,
+      "path": "download-receipts/test-00000-of-00001.parquet.json",
+      "sha256": "c2b7e559935a94c9ff6144e47eacba5d46e7c0501f48b7521d9ca5ad3d3acbd2",
+      "visibility": "PUBLIC_METADATA"
+    },
+    {
+      "bytes": 3974,
+      "path": "metadata/README.md",
+      "sha256": "6433ee353e763e5c1e6f3e9ef4e9872d7f2e9639effc2e52cc5521f419444764",
+      "visibility": "PUBLIC_METADATA"
+    },
+    {
+      "bytes": 2301,
+      "path": "metadata/dataset-api.json",
+      "sha256": "b55369ced05b1be15d120383bc42902d968dfd87f29657fb14d4b517d385fb1e",
+      "visibility": "PUBLIC_METADATA"
+    },
+    {
+      "bytes": 3231,
+      "path": "provenance.json",
+      "sha256": "23e1fbb88c8111eb6b69bc4ea1dec3507226482d7b0c4eb141335737f573396a",
+      "visibility": "PUBLIC_METADATA"
+    },
+    {
+      "bytes": 570053,
+      "path": "public-source-inventory.json",
+      "sha256": "05686f535e20b369af3ea28062cda0a123c528ad84eb5cac3fe7bfed24272b7c",
+      "visibility": "PUBLIC_METADATA"
+    },
+    {
+      "bytes": 3299303,
+      "path": "raw/dev-00000-of-00001.parquet",
+      "sha256": "7812438935be9cbe36049b93c73412d523fb07251bd255813168c38c5fc92454",
+      "visibility": "RAW_SOURCE_CACHE_NOT_SOLVER_VISIBLE"
+    },
+    {
+      "bytes": 33293897,
+      "path": "raw/test-00000-of-00001.parquet",
+      "sha256": "d4f5a245c75319fa8240c540674958c4d491e82edf274b144d43836bdcbc4567",
+      "visibility": "RAW_SOURCE_CACHE_NOT_SOLVER_VISIBLE"
+    },
+    {
+      "bytes": 544919,
+      "path": "test-disjoint-candidate-public-task-inventory.json",
+      "sha256": "d8b78e02f1f1c432c150f2839920e3c2f52a1c3f05bbe0a06f7a449f3da56ce3",
+      "visibility": "PUBLIC_METADATA"
+    }
+  ],
+  "schema": "skhynix/preparation-files/1.0"
+}

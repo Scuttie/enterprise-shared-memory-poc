@@ -1,0 +1,192 @@
+diff --git a/django/contrib/admin/options.py b/django/contrib/admin/options.py
+index 53801a981b4f..159baf5e424a 100644
+--- a/django/contrib/admin/options.py
++++ b/django/contrib/admin/options.py
+@@ -1405,9 +1405,11 @@ def get_changeform_initial_data(self, request):
+         return initial
+ 
+     @csrf_protect_m
+-    @transaction.atomic
+     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
++        with transaction.atomic(using=router.db_for_write(self.model)):
++            return self._changeform_view(request, object_id, form_url, extra_context)
+ 
++    def _changeform_view(self, request, object_id, form_url, extra_context):
+         to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
+         if to_field and not self.to_field_allowed(request, to_field):
+             raise DisallowedModelAdminToField("The field %s cannot be referenced." % to_field)
+@@ -1681,8 +1683,11 @@ def changelist_view(self, request, extra_context=None):
+         ], context)
+ 
+     @csrf_protect_m
+-    @transaction.atomic
+     def delete_view(self, request, object_id, extra_context=None):
++        with transaction.atomic(using=router.db_for_write(self.model)):
++            return self._delete_view(request, object_id, extra_context)
++
++    def _delete_view(self, request, object_id, extra_context):
+         "The 'delete' admin view for this model."
+         opts = self.model._meta
+         app_label = opts.app_label
+diff --git a/django/contrib/auth/admin.py b/django/contrib/auth/admin.py
+index fe9ccf6ff6af..f84652f8b420 100644
+--- a/django/contrib/auth/admin.py
++++ b/django/contrib/auth/admin.py
+@@ -9,7 +9,7 @@
+ )
+ from django.contrib.auth.models import Group, User
+ from django.core.exceptions import PermissionDenied
+-from django.db import transaction
++from django.db import router, transaction
+ from django.http import Http404, HttpResponseRedirect
+ from django.template.response import TemplateResponse
+ from django.urls import reverse
+@@ -98,8 +98,11 @@ def lookup_allowed(self, lookup, value):
+ 
+     @sensitive_post_parameters_m
+     @csrf_protect_m
+-    @transaction.atomic
+     def add_view(self, request, form_url='', extra_context=None):
++        with transaction.atomic(using=router.db_for_write(self.model)):
++            return self._add_view(request, form_url, extra_context)
++
++    def _add_view(self, request, form_url='', extra_context=None):
+         # It's an error for a user to have add permission but NOT change
+         # permission for users. If we allowed such users to add users, they
+         # could create superusers, which would mean they would essentially have
+diff --git a/tests/admin_views/test_multidb.py b/tests/admin_views/test_multidb.py
+new file mode 100644
+index 000000000000..f5f4d6dc8479
+--- /dev/null
++++ b/tests/admin_views/test_multidb.py
+@@ -0,0 +1,75 @@
++from django.conf.urls import url
++from django.contrib import admin
++from django.contrib.auth.models import User
++from django.db import connections
++from django.test import TestCase, mock, override_settings
++from django.urls import reverse
++
++from .models import Book
++
++
++class Router(object):
++    target_db = None
++
++    def db_for_read(self, model, **hints):
++        return self.target_db
++
++    db_for_write = db_for_read
++
++site = admin.AdminSite(name='test_adminsite')
++site.register(Book)
++
++urlpatterns = [
++    url(r'^admin/', site.urls),
++]
++
++
++@override_settings(ROOT_URLCONF=__name__, DATABASE_ROUTERS=['%s.Router' % __name__])
++class MultiDatabaseTests(TestCase):
++    multi_db = True
++
++    @classmethod
++    def setUpTestData(cls):
++        cls.superusers = {}
++        cls.test_book_ids = {}
++        for db in connections:
++            Router.target_db = db
++            cls.superusers[db] = User.objects.create_superuser(
++                username='admin', password='something', email='test@test.org',
++            )
++            b = Book(name='Test Book')
++            b.save(using=db)
++            cls.test_book_ids[db] = b.id
++
++    @mock.patch('django.contrib.admin.options.transaction')
++    def test_add_view(self, mock):
++        for db in connections:
++            Router.target_db = db
++            self.client.force_login(self.superusers[db])
++            self.client.post(
++                reverse('test_adminsite:admin_views_book_add'),
++                {'name': 'Foobar: 5th edition'},
++            )
++            mock.atomic.assert_called_with(using=db)
++
++    @mock.patch('django.contrib.admin.options.transaction')
++    def test_change_view(self, mock):
++        for db in connections:
++            Router.target_db = db
++            self.client.force_login(self.superusers[db])
++            self.client.post(
++                reverse('test_adminsite:admin_views_book_change', args=[self.test_book_ids[db]]),
++                {'name': 'Test Book 2: Test more'},
++            )
++            mock.atomic.assert_called_with(using=db)
++
++    @mock.patch('django.contrib.admin.options.transaction')
++    def test_delete_view(self, mock):
++        for db in connections:
++            Router.target_db = db
++            self.client.force_login(self.superusers[db])
++            self.client.post(
++                reverse('test_adminsite:admin_views_book_delete', args=[self.test_book_ids[db]]),
++                {'post': 'yes'},
++            )
++            mock.atomic.assert_called_with(using=db)
+diff --git a/tests/auth_tests/test_admin_multidb.py b/tests/auth_tests/test_admin_multidb.py
+new file mode 100644
+index 000000000000..6e2fb8d1b1cb
+--- /dev/null
++++ b/tests/auth_tests/test_admin_multidb.py
+@@ -0,0 +1,49 @@
++from django.conf.urls import url
++from django.contrib import admin
++from django.contrib.auth.admin import UserAdmin
++from django.contrib.auth.models import User
++from django.db import connections
++from django.test import TestCase, mock, override_settings
++from django.urls import reverse
++
++
++class Router(object):
++    target_db = None
++
++    def db_for_read(self, model, **hints):
++        return self.target_db
++
++    db_for_write = db_for_read
++
++site = admin.AdminSite(name='test_adminsite')
++site.register(User, admin_class=UserAdmin)
++
++urlpatterns = [
++    url(r'^admin/', site.urls),
++]
++
++
++@override_settings(ROOT_URLCONF=__name__, DATABASE_ROUTERS=['%s.Router' % __name__])
++class MultiDatabaseTests(TestCase):
++    multi_db = True
++
++    @classmethod
++    def setUpTestData(cls):
++        cls.superusers = {}
++        for db in connections:
++            Router.target_db = db
++            cls.superusers[db] = User.objects.create_superuser(
++                username='admin', password='something', email='test@test.org',
++            )
++
++    @mock.patch('django.contrib.auth.admin.transaction')
++    def test_add_view(self, mock):
++        for db in connections:
++            Router.target_db = db
++            self.client.force_login(self.superusers[db])
++            self.client.post(reverse('test_adminsite:auth_user_add'), {
++                'username': 'some_user',
++                'password1': 'helloworld',
++                'password2': 'helloworld',
++            })
++            mock.atomic.assert_called_with(using=db)

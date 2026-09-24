@@ -1,0 +1,83 @@
+{
+  "arms": {
+    "A": "NO_MEMORY",
+    "C": "SKHYNIX_WITH_PUBLIC_DIAGNOSTIC_KNOWLEDGE"
+  },
+  "codex_tokens_and_cost": null,
+  "cohort_scope": "BOTH KNOWN NATIVE007 FAILURE TASKS SELECTED USING PRIOR OUTCOMES. ANALYST-DERIVED MEMORY FROM THE SAME TASKS. DEVELOPMENT RECOVERY, NOT UNSEEN TRANSFER OR A CONFIRMATORY GLOBAL SOLVE RATE.",
+  "concurrency": "At most two fresh independent solvers, one task/replicate pair at a time.",
+  "diagnostic_bank_sha256": "080850cbadbf27afc617e478adc2e75b0fc334460768b9c8f3ffda285ff6961c",
+  "evaluation_instances": [
+    "swebench_verified--sympy__sympy-20428",
+    "swebench_verified--sympy__sympy-20438"
+  ],
+  "evaluation_template_sha256": "745986f93d449b91163f634ac85e91875f426948d68518239f3d99263b3a5c05",
+  "fork_turns": "none",
+  "frozen_at_unix_seconds": 1789267529.6917148,
+  "grader_calls_so_far": 0,
+  "launch_order": {
+    "recovery-20428-r1": [
+      "A",
+      "C"
+    ],
+    "recovery-20428-r2": [
+      "C",
+      "A"
+    ],
+    "recovery-20438-r1": [
+      "C",
+      "A"
+    ],
+    "recovery-20438-r2": [
+      "A",
+      "C"
+    ]
+  },
+  "limits": {
+    "actions": 120,
+    "memory_bytes": 12000,
+    "memory_injections": 3,
+    "wall_seconds": 1200
+  },
+  "manifest_sha256": "57f369ee641b923ec551698fb52f043e7cf8569e4872f0f691883f47d399f6b9",
+  "memory_type": "Human-directed analyst interpretation of bound public failure probes, not an automatically promoted successful skill. Gate A has failed sources; Gate B=0; KG relations=0.",
+  "names": [
+    "recovery-20428-r1",
+    "recovery-20428-r2",
+    "recovery-20438-r1",
+    "recovery-20438-r2"
+  ],
+  "next_phase": "Separate prospectively frozen transfer experiment on 21612/21847/22714/24661; no claim yet.",
+  "outcome_policy": "All eight fixed cells retained, one submission and official grade each. No outcome-based retries, memory edits, prompt changes, extra guidance or exclusions. Public diagnostic memory is frozen before first solver.",
+  "planned_evaluation_cells": 8,
+  "primary_metric": "Resolved C minus A over the four matched task-replicate observations; also report per-task two-replicate outcomes. Repeated tasks are not independent new issues.",
+  "prior_result": {
+    "A": {
+      "solved": 4,
+      "total": 6
+    },
+    "B": {
+      "solved": 4,
+      "total": 6
+    },
+    "C": {
+      "solved": 4,
+      "total": 6
+    },
+    "preserved": true,
+    "run": "native007"
+  },
+  "public_probe_sha256": "41262bce2a86a70b255bc96c781fed4755045aa29133ce4b104acc8ff066155a",
+  "reasoning_effort": "INHERITED_PARENT_UNCHANGED",
+  "replicates_per_task_arm": 2,
+  "requested_model": "gpt-6-astra",
+  "root_cross_cell_feedback": false,
+  "scenario": "KNOWN_FAILURE_RECOVERY",
+  "schema": "skhynix/native008-launch-contract/1.0",
+  "separate_model_api_calls": 0,
+  "solver_model_calls_so_far": 0,
+  "source_freeze_sha256": "a6f8450dbadc8882b6a5b6994756a59a45e5c570ccf4b0aa06193c22bfbb5dd1",
+  "unused_arm": "B is prepared by the three-cell broker but never launched, graded, or included in denominator. Existing M2 safe-pool intentionally rejects these failed same-target records.",
+  "validation_sha256": "e4cd8de6951673abdf246ce701ce6d155c4ce8ae6a4f73cf49b79f898bc63c6c",
+  "validation_tests": 226
+}

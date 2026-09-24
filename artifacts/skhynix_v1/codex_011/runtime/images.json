@@ -1,0 +1,222 @@
+[
+  {
+    "benchmark_id": "swebench_verified",
+    "harness_image_tag": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13615:latest",
+    "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-13615@sha256:b71f0f3e41f7d5f64028c13703a3563c09b6cbd84ee43103e5925ebc52fda263",
+    "instance_id": "sympy__sympy-13615",
+    "registry_evidence_url": "https://hub.docker.com/v2/repositories/swebench/sweb.eval.x86_64.sympy_1776_sympy-13615/tags/latest",
+    "registry_last_updated_utc": "2026-08-13T14:46:08.84158Z",
+    "registry_response": {
+      "content_type": "image",
+      "creator": 6502866,
+      "digest": "sha256:b71f0f3e41f7d5f64028c13703a3563c09b6cbd84ee43103e5925ebc52fda263",
+      "full_size": 1068195895,
+      "id": 823739520,
+      "images": [
+        {
+          "architecture": "amd64",
+          "digest": "sha256:e3e1300d5673bfe80ce06a79bdbc934720225deba5b0bb873570ef23e3a6333a",
+          "features": "",
+          "last_pulled": "2026-09-13T13:11:19.670176465Z",
+          "last_pushed": "2026-08-13T14:46:08.271483759Z",
+          "os": "linux",
+          "os_features": "",
+          "os_version": null,
+          "size": 1068195895,
+          "status": "active",
+          "variant": null
+        },
+        {
+          "architecture": "unknown",
+          "digest": "sha256:1a92f43fda1f33013f27e17632cbf9ec9ab82a9c401d0e0a3fee0cee5ff30125",
+          "features": "",
+          "last_pulled": "2026-09-13T12:43:14.410332402Z",
+          "last_pushed": "2026-08-13T14:46:08.16809631Z",
+          "os": "unknown",
+          "os_features": "",
+          "os_version": null,
+          "size": 1382,
+          "status": "active",
+          "variant": null
+        }
+      ],
+      "last_updated": "2026-08-13T14:46:08.84158Z",
+      "last_updater": 2525036,
+      "last_updater_username": "jyangballin",
+      "media_type": "application/vnd.oci.image.index.v1+json",
+      "name": "latest",
+      "repository": 25495568,
+      "tag_last_pulled": "2026-09-13T13:11:19.670176465Z",
+      "tag_last_pushed": "2026-08-13T14:46:08.84158Z",
+      "tag_status": "active",
+      "v2": true
+    },
+    "registry_response_canonical_sha256": "4396bcd1fe7337c837b7f0ce01bdd3e7d939417b50593e273f56e92cc1fa758e",
+    "registry_response_sha256": "5e4f1c4c6af5cd532607784d6edc6aab28d1522fa9cd1169f183030e3acd22f9"
+  },
+  {
+    "benchmark_id": "swebench_verified",
+    "harness_image_tag": "swebench/sweb.eval.x86_64.sympy_1776_sympy-15875:latest",
+    "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-15875@sha256:e2812656720310590f43b2773a81f896dafe9e36efa151494a6663bb26ec49f0",
+    "instance_id": "sympy__sympy-15875",
+    "registry_evidence_url": "https://hub.docker.com/v2/repositories/swebench/sweb.eval.x86_64.sympy_1776_sympy-15875/tags/latest",
+    "registry_last_updated_utc": "2026-08-13T14:47:25.412577Z",
+    "registry_response": {
+      "content_type": "image",
+      "creator": 6502866,
+      "digest": "sha256:e2812656720310590f43b2773a81f896dafe9e36efa151494a6663bb26ec49f0",
+      "full_size": 1075353468,
+      "id": 823739665,
+      "images": [
+        {
+          "architecture": "amd64",
+          "digest": "sha256:38f122d257b6cc7dbd14e195ae26f3c42d8a0627b7bb8bccfdf70178ecec34f7",
+          "features": "",
+          "last_pulled": "2026-09-13T12:36:15.286743634Z",
+          "last_pushed": "2026-08-13T14:47:24.762479024Z",
+          "os": "linux",
+          "os_features": "",
+          "os_version": null,
+          "size": 1075353468,
+          "status": "active",
+          "variant": null
+        },
+        {
+          "architecture": "unknown",
+          "digest": "sha256:59782191411f84d7987430dfc80f7a6245dd714d256447bbc3e7bd2e40493250",
+          "features": "",
+          "last_pulled": "2026-09-13T11:37:40.309150427Z",
+          "last_pushed": "2026-08-13T14:47:24.610779827Z",
+          "os": "unknown",
+          "os_features": "",
+          "os_version": null,
+          "size": 1383,
+          "status": "active",
+          "variant": null
+        }
+      ],
+      "last_updated": "2026-08-13T14:47:25.412577Z",
+      "last_updater": 2525036,
+      "last_updater_username": "jyangballin",
+      "media_type": "application/vnd.oci.image.index.v1+json",
+      "name": "latest",
+      "repository": 25495697,
+      "tag_last_pulled": "2026-09-13T12:36:15.286743634Z",
+      "tag_last_pushed": "2026-08-13T14:47:25.412577Z",
+      "tag_status": "active",
+      "v2": true
+    },
+    "registry_response_canonical_sha256": "b4d09a753bbf000722f75d6af4c0a57f44f9df552cba4fcbb787fb62ab924c6e",
+    "registry_response_sha256": "24e2a1a330a8590e95dabc3991908229b48fea5f97d5f56367f727d07d7f1cda"
+  },
+  {
+    "benchmark_id": "swebench_verified",
+    "harness_image_tag": "swebench/sweb.eval.x86_64.sympy_1776_sympy-18698:latest",
+    "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-18698@sha256:9b8ce19f9470ecbe3390699d06db56a5bf92b49cd41e687a468156fd5d3e947f",
+    "instance_id": "sympy__sympy-18698",
+    "registry_evidence_url": "https://hub.docker.com/v2/repositories/swebench/sweb.eval.x86_64.sympy_1776_sympy-18698/tags/latest",
+    "registry_last_updated_utc": "2026-08-16T19:21:35.555175Z",
+    "registry_response": {
+      "content_type": "image",
+      "creator": 6502866,
+      "digest": "sha256:9b8ce19f9470ecbe3390699d06db56a5bf92b49cd41e687a468156fd5d3e947f",
+      "full_size": 1084713375,
+      "id": 799598002,
+      "images": [
+        {
+          "architecture": "amd64",
+          "digest": "sha256:fddcc1afcb282e97ebe724c0df5d5f045593eee2265ca078ce9895e292019a4e",
+          "features": "",
+          "last_pulled": "2026-09-13T13:14:03.413374541Z",
+          "last_pushed": "2026-08-16T19:21:35.007637783Z",
+          "os": "linux",
+          "os_features": "",
+          "os_version": null,
+          "size": 1084713375,
+          "status": "active",
+          "variant": null
+        },
+        {
+          "architecture": "unknown",
+          "digest": "sha256:0bdcd6b2029b8ed10f8ad3d736d403a021bbba6e5b8fcabe8d4cb2a903344a2b",
+          "features": "",
+          "last_pulled": "2026-09-13T12:51:45.180666483Z",
+          "last_pushed": "2026-08-16T19:21:34.946986375Z",
+          "os": "unknown",
+          "os_features": "",
+          "os_version": null,
+          "size": 1344,
+          "status": "active",
+          "variant": null
+        }
+      ],
+      "last_updated": "2026-08-16T19:21:35.555175Z",
+      "last_updater": 2525036,
+      "last_updater_username": "jyangballin",
+      "media_type": "application/vnd.oci.image.index.v1+json",
+      "name": "latest",
+      "repository": 25495833,
+      "tag_last_pulled": "2026-09-13T13:14:03.413374541Z",
+      "tag_last_pushed": "2026-08-16T19:21:35.555175Z",
+      "tag_status": "active",
+      "v2": true
+    },
+    "registry_response_canonical_sha256": "4fe3c510943337f4d941a56805988ed52aead07b9df42f62811b768fcf08fc92",
+    "registry_response_sha256": "4db5e8767b11363b45436d12e45aba997d36e728b61a73da9dd4342060cbcc9e"
+  },
+  {
+    "benchmark_id": "swebench_verified",
+    "harness_image_tag": "swebench/sweb.eval.x86_64.sympy_1776_sympy-19495:latest",
+    "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-19495@sha256:d8a5b9f1f21ae86a2141b234c99b960680c67c4088fa44830b43f8ef845ab731",
+    "instance_id": "sympy__sympy-19495",
+    "registry_evidence_url": "https://hub.docker.com/v2/repositories/swebench/sweb.eval.x86_64.sympy_1776_sympy-19495/tags/latest",
+    "registry_last_updated_utc": "2026-08-13T14:48:49.67308Z",
+    "registry_response": {
+      "content_type": "image",
+      "creator": 6502866,
+      "digest": "sha256:d8a5b9f1f21ae86a2141b234c99b960680c67c4088fa44830b43f8ef845ab731",
+      "full_size": 1085903889,
+      "id": 823739798,
+      "images": [
+        {
+          "architecture": "amd64",
+          "digest": "sha256:cffd1c1a8c2cd69cf3032ca1515ead1e695648c2a788c79d86b22cedf599bb39",
+          "features": "",
+          "last_pulled": "2026-09-13T13:25:14.410994951Z",
+          "last_pushed": "2026-08-13T14:48:49.092558982Z",
+          "os": "linux",
+          "os_features": "",
+          "os_version": null,
+          "size": 1085903889,
+          "status": "active",
+          "variant": null
+        },
+        {
+          "architecture": "unknown",
+          "digest": "sha256:ebf996f86615983ab8fc542d476a569745e75c6e663345ebe117d5e5902a46e1",
+          "features": "",
+          "last_pulled": "2026-09-13T13:28:12.802664357Z",
+          "last_pushed": "2026-08-13T14:48:48.928311869Z",
+          "os": "unknown",
+          "os_features": "",
+          "os_version": null,
+          "size": 1383,
+          "status": "active",
+          "variant": null
+        }
+      ],
+      "last_updated": "2026-08-13T14:48:49.67308Z",
+      "last_updater": 2525036,
+      "last_updater_username": "jyangballin",
+      "media_type": "application/vnd.oci.image.index.v1+json",
+      "name": "latest",
+      "repository": 26106262,
+      "tag_last_pulled": "2026-09-13T13:28:12.802664357Z",
+      "tag_last_pushed": "2026-08-13T14:48:49.67308Z",
+      "tag_status": "active",
+      "v2": true
+    },
+    "registry_response_canonical_sha256": "a0ab6884a591384427c25a7b0cdd3492eb1bd8cd1fd9691c9ff6c7bb492ec734",
+    "registry_response_sha256": "4f552fd73f6f86ce8dc82b9fb68a1813d3904d891e12643cdfed4f1927a48359"
+  }
+]

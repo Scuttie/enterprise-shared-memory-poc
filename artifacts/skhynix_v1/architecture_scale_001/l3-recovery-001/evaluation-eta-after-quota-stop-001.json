@@ -1,0 +1,69 @@
+{
+  "schema": "skhynix/conditional-resume-estimate/1.0",
+  "status": "STOPPED_USAGE_LIMIT",
+  "previous_estimate_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\l3-recovery-001\\evaluation-eta-20260920T142403Z-v16-full-schedule.json",
+    "sha256": "b6cc3f9c35478479caa4ef660a7c49cbd69b94ee1b13264a9aee04cd5ae560cf"
+  },
+  "stop_diagnostic_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\l3-recovery-001\\evaluation-continuation-001\\native-quota-stop-001.json",
+    "sha256": "f85660af753a99c2557d6a1f60be34da3cdc48d13c94a8c8e97b4b5b6da8495f"
+  },
+  "service_retry_timezone_explicit": false,
+  "assumed_resume_kst_for_example_only": "2026-09-22T15:58:00+09:00",
+  "automatic_resume_scheduled": false,
+  "milestones": {
+    "development_on_start": {
+      "remaining_condition_runs_including_interrupted": 44,
+      "hours_after_eligible_resume": [
+        11.0,
+        18.333333333333332
+      ],
+      "conditional_earliest_kst": "2026-09-23T02:58:00+09:00",
+      "conditional_latest_kst": "2026-09-23T10:18:00+09:00"
+    },
+    "first_10_on_attempts": {
+      "remaining_condition_runs_including_interrupted": 54,
+      "hours_after_eligible_resume": [
+        13.5,
+        22.5
+      ],
+      "conditional_earliest_kst": "2026-09-23T05:28:00+09:00",
+      "conditional_latest_kst": "2026-09-23T14:28:00+09:00"
+    },
+    "development_on_complete": {
+      "remaining_condition_runs_including_interrupted": 104,
+      "hours_after_eligible_resume": [
+        26.0,
+        43.333333333333336
+      ],
+      "conditional_earliest_kst": "2026-09-23T17:58:00+09:00",
+      "conditional_latest_kst": "2026-09-24T11:18:00+09:00"
+    },
+    "final_first_50_pairs": {
+      "remaining_condition_runs_including_interrupted": 204,
+      "hours_after_eligible_resume": [
+        51.0,
+        85.0
+      ],
+      "conditional_earliest_kst": "2026-09-24T18:58:00+09:00",
+      "conditional_latest_kst": "2026-09-26T04:58:00+09:00"
+    },
+    "final_all_500_pairs": {
+      "remaining_condition_runs_including_interrupted": 1104,
+      "hours_after_eligible_resume": [
+        276.0,
+        460.0
+      ],
+      "conditional_earliest_kst": "2026-10-04T03:58:00+09:00",
+      "conditional_latest_kst": "2026-10-11T19:58:00+09:00"
+    }
+  },
+  "assumptions": [
+    "Restart time is an example, not a verified service timezone or scheduled resumption",
+    "Eligible audited disposition of interrupted native attempt required before continuation",
+    "15-25 minutes per condition run; ON/final throughput unmeasured",
+    "No subsequent quota, sleep or infrastructure pause",
+    "Transition and recovery verification overhead not separately timed"
+  ]
+}

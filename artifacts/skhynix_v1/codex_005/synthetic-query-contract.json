@@ -1,0 +1,23 @@
+{
+  "checks": [
+    "Separate synthetic cell directories only; actual evaluation actions must remain zero before and after.",
+    "NO_MEMORY returns no injection.",
+    "M2 and PDF expose the same promoted public execution view as an eligible candidate.",
+    "PDF synthetic query must select that actual SKILL.",
+    "M2 synthetic selected item is measured; candidate availability does not require its ranker to prefer the skill over observations."
+  ],
+  "frozen_at_unix_seconds": 1789231237.5925925,
+  "grader_calls": 0,
+  "live_solver_query_unchanged": true,
+  "query": {
+    "apis": [],
+    "errors": [],
+    "node_id": "synthetic-public-regression",
+    "objective": "Python regression workflow: reproduce an assertion failure, repair implementation, and verify focused public tests",
+    "operation": "reproduce assertion failure repair implementation verify focused public tests",
+    "symbols": []
+  },
+  "schema": "skhynix/native005-synthetic-delivery-contract/1.0",
+  "solver_model_calls": 0,
+  "synthetic_results_not_counted_as_actual_solver_injections": true
+}

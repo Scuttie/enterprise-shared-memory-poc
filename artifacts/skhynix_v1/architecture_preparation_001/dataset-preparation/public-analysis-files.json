@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "bytes": 24165,
+      "path": "public-source-overlap-audit.json",
+      "sha256": "0d111e3caa2b5f8172f34a8803850fc94e1be7cd5d6fe92be3cfb3647dd14ffc"
+    }
+  ],
+  "original_download_manifest": {
+    "path": "file-manifest.json",
+    "sha256": "93e83de1c35f26884acaa313e0da9798e35e6e5f47ba2abeb333449a9e546e65"
+  },
+  "schema": "skhynix/preparation-public-analysis-files/1.0"
+}

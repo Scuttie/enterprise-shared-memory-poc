@@ -1,0 +1,378 @@
+{
+  "groups": [
+    {
+      "applicability": "Applies when numeric arithmetic would otherwise retain an unsuitable low-precision floating or integer dtype. Promotion occurs before the affected arithmetic; it does not guarantee exact results for every magnitude.",
+      "candidate_ids": ["candidate-002", "candidate-027"],
+      "shared_transformation": "Promote the numeric operand to double-precision floating point before arithmetic: histogram bin edges before geometry calculations, and integer or boolean data before weighted mean calculations."
+    },
+    {
+      "applicability": "Applies to numeric parameters constrained to the closed interval [0, 1]. Validate the effective value after extraction or normalization, preserve the alpha None sentinel, and require every quantile element to satisfy the bounds. This grouping covers the range-validation edits.",
+      "candidate_ids": ["candidate-005", "candidate-029"],
+      "shared_transformation": "Add an explicit inclusive unit-interval check that raises ValueError when the resolved numeric input fails 0 <= value <= 1."
+    },
+    {
+      "applicability": "Applies to redirect loops whose next iteration derives its request from req. Advance that reference after preparing the current hop and before processing the next hop. This grouping covers request-reference advancement, not the additional cookie-merging or copying changes.",
+      "candidate_ids": ["candidate-020", "candidate-022", "candidate-023"],
+      "shared_transformation": "Assign the newly prepared redirect request back to the loop's current-request reference so subsequent redirects inherit the immediately preceding request's state."
+    },
+    {
+      "applicability": "Applies when a stored derived value can become stale because its authoritative configuration or evaluation environment changes without corresponding cache updates. The edits replace reuse with live resolution; they do not establish a general prohibition on caching.",
+      "candidate_ids": ["candidate-038", "candidate-053"],
+      "shared_transformation": "Remove reuse of context-stale derived state and resolve it from the current authoritative context at use time: read the similarity threshold through a configuration-backed property, and evaluate each condition using the current item's globals."
+    }
+  ],
+  "input_sha256": "427fb1c7f1ae9270be9cb62a1cbfb9ba7acf00e3f80b43814bab3c65547288bd",
+  "schema": "skhynix/semantic-repair-grouping/1.0",
+  "ungrouped": [
+    {
+      "candidate_id": "candidate-001",
+      "evidence_note": "No partner writes a non-mutating replacement result back into its original array view.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-003",
+      "evidence_note": "No partner shares constructor routing through validating and normalizing property setters.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-004",
+      "evidence_note": "No partner reorders event-handler registration to populate state before pick callbacks.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-006",
+      "evidence_note": "No partner validates the scalar-mesh versus RGB(A)-mesh shape alternatives.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-007",
+      "evidence_note": "No partner initializes axis units from a baseline before considering a displacement.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-008",
+      "evidence_note": "No partner derives discovery diagnostics from the bindings actually attempted.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-009",
+      "evidence_note": "No partner replaces synthetic plotting with axis-selective data-limit updates.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-010",
+      "evidence_note": "Version-parser migration repeats only within this candidate.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-011",
+      "evidence_note": "Endpoint extension repeats within one candidate; dtype promotion does not perform this operation.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-012",
+      "evidence_note": "No partner preserves a selected nested plotting container instead of its parent.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-013",
+      "evidence_note": "No partner computes centered endpoints in transformed coordinates and inverse-transforms them.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-014",
+      "evidence_note": "Other explicit-None fallback edits are also from contributor-2.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-015",
+      "evidence_note": "Missing-value filtering before type inference repeats only within this candidate.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-016",
+      "evidence_note": "No partner separates registration aliases from object identity across namespace construction.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-017",
+      "evidence_note": "No partner adds application-context redirect dispatch with a context-free fallback.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-018",
+      "evidence_note": "No partner composes parent and child subdomains during nested registration.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-019",
+      "evidence_note": "The related mutable request-state copying in candidate-022 shares contributor-1.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-021",
+      "evidence_note": "Native protocol-string normalization in candidate-025 shares contributor-2.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-024",
+      "evidence_note": "No partner broadens filename recognition to both Unicode and native string types.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-025",
+      "evidence_note": "Native protocol-string normalization in candidate-021 shares contributor-2.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-026",
+      "evidence_note": "No partner broadens HTTP-style URL preparation to schemes beginning with http.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-028",
+      "evidence_note": "No partner diagnoses failed assignment specifically to a non-owning, read-only array view.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-030",
+      "evidence_note": "No partner requires both operands to be lists before list-equivalence dispatch.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-031",
+      "evidence_note": "Matching rolling metadata-policy propagation in candidate-032 shares task-30 and contributor-2.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-032",
+      "evidence_note": "Matching rolling metadata-policy propagation in candidate-031 shares task-30 and contributor-2.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-033",
+      "evidence_note": "No partner delegates time conversion in original units to avoid floating-point rescaling.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-034",
+      "evidence_note": "No partner propagates a missing-dimension policy through transpose and ellipsis expansion.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-035",
+      "evidence_note": "No partner changes the default display row limit.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-036",
+      "evidence_note": "No partner binds an unavailable optional dependency to None and guards its API calls.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-037",
+      "evidence_note": "No partner rejects list-valued dimension names before ellipsis processing.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-039",
+      "evidence_note": "No partner identifies delimited code spans before tokenization and excludes covered tokens.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-040",
+      "evidence_note": "No partner changes AST providers to retain docstrings when locating signature boundaries.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-041",
+      "evidence_note": "No partner matches path expressions against both native and normalized separators.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-042",
+      "evidence_note": "No partner enables virtual interface membership by adding ABCMeta.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-043",
+      "evidence_note": "No partner exempts package-initializer re-exports from same-name alias diagnostics.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-044",
+      "evidence_note": "No partner expands glob patterns while retaining literal path handling.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-045",
+      "evidence_note": "No partner preserves already-normalized boolean failures during repeated status normalization.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-046",
+      "evidence_note": "No partner restores process-local plugin hooks after serialization with duplicate-registration protection.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-047",
+      "evidence_note": "No partner skips analysis after checking that all registered diagnostics are disabled.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-048",
+      "evidence_note": "No partner changes assertion rewriting to evaluate an assignment expression before its dependent operand.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-049",
+      "evidence_note": "No partner replaces byte indexing with single-byte slicing for diagnostic representation.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-050",
+      "evidence_note": "No partner adds host and session-start metadata to serialized test-suite output.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-051",
+      "evidence_note": "No partner adds a short command-line alias to an existing option.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-052",
+      "evidence_note": "No partner adds a migration-documentation link to an existing deprecation warning.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-054",
+      "evidence_note": "No partner converts a path object to text before repr-style traceback formatting.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-055",
+      "evidence_note": "No partner retries legacy constructors after filtering unsupported keywords using signature inspection.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-056",
+      "evidence_note": "No partner separates width and precision components in a formatting regex.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-057",
+      "evidence_note": "Empty exception-expectation rejection repeats only within this candidate.",
+      "reason_code": "INDEPENDENT_SUPPORT_MISSING"
+    },
+    {
+      "candidate_id": "candidate-058",
+      "evidence_note": "Shown edits remove local warning suppression; the stated broader suppression mechanism is absent.",
+      "reason_code": "INSUFFICIENT_CONTEXT"
+    },
+    {
+      "candidate_id": "candidate-059",
+      "evidence_note": "No partner validates a zero distance-matrix diagonal with dtype-dependent tolerance.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-060",
+      "evidence_note": "No partner substitutes accuracy for micro-averages under full single-label coverage.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-061",
+      "evidence_note": "No partner truncates representations using non-whitespace budgets and suffix line boundaries.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-062",
+      "evidence_note": "No partner routes degenerate metric samples through the common weighting continuation.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-063",
+      "evidence_note": "No partner snapshots and restores a separate RNG state for stable warm-start validation splits.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-064",
+      "evidence_note": "No partner checks constructor-created attributes on a fresh clone to exclude fitted state.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-065",
+      "evidence_note": "No partner remaps an iteration limit from function-evaluation budget to optimizer iteration budget.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-066",
+      "evidence_note": "No partner introduces a sentinel to distinguish omitted from explicitly supplied deprecated parameters.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-067",
+      "evidence_note": "No partner inserts discretionary LaTeX breaks after option-alternative separators.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-068",
+      "evidence_note": "No partner distinguishes keyword and symbolic unary operators when rendering spacing.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-069",
+      "evidence_note": "No partner suppresses URL anchor validation using configured URL regexes while retaining page checks.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-070",
+      "evidence_note": "No partner derives overload signatures from dispatch registrations without mutating implementations.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-071",
+      "evidence_note": "No partner selects the first overload signature for a compact summary.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-072",
+      "evidence_note": "No partner reverses extension setup dependency direction to load a component automatically.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-073",
+      "evidence_note": "No partner incorporates associated constraints into both symbol identifiers and rendered declarations.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-074",
+      "evidence_note": "No partner prefixes both sorting categories to order Unicode symbols before letters.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-075",
+      "evidence_note": "No partner preserves unmatched option syntax as a literal fallback instead of discarding it.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-076",
+      "evidence_note": "No partner adds a class-signature presentation mode that suppresses constructor signatures.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-077",
+      "evidence_note": "No partner selects shortened reference text conditionally on successful resolution.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-078",
+      "evidence_note": "No partner continues inherited-docstring lookup when the local docstring is absent.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    },
+    {
+      "candidate_id": "candidate-079",
+      "evidence_note": "No partner injects a default script-loading option only when both alternatives are absent.",
+      "reason_code": "NO_SEMANTIC_PARTNER"
+    }
+  ]
+}

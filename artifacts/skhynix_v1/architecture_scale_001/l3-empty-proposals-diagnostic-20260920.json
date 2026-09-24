@@ -1,0 +1,353 @@
+{
+  "schema": "skhynix/l3-empty-proposals-diagnostic/1.0",
+  "observed_at_utc": "2026-09-20T08:17:05.770253+00:00",
+  "bank_reference": {
+    "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/bank-240/bank-status.json",
+    "sha256": "67a900615c2f2ef711caf1af2979d7008272939d9d50eacde9c5cf3b853939b2"
+  },
+  "bank_status": {
+    "bank_reference": null,
+    "catalog_reference": {
+      "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/catalog.json",
+      "sha256": "6cdaea0d4597a82c7a659447a52d58e8a440cdc07a48a8eaf2ee58a9d4891906"
+    },
+    "publication_error": "The frozen bank requires at least one actually promoted Gate B skill",
+    "reason": "NO_VERIFIED_GATE_B_SKILL",
+    "reflection_plan_reference": {
+      "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/reflection-plan.json",
+      "sha256": "3bf26a95683034bcf1188785dc4b6c4ffee7119a1ed4c9865ce04a00b6a02c2a"
+    },
+    "size": 240,
+    "source_attempts": 240,
+    "status": "NOT_READY"
+  },
+  "reflection_plan_reference": {
+    "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/reflection-plan.json",
+    "sha256": "3bf26a95683034bcf1188785dc4b6c4ffee7119a1ed4c9865ce04a00b6a02c2a"
+  },
+  "terminal_event_reference": {
+    "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/events/00000427.json",
+    "sha256": "165d899c176788542c8d2ce37a0676835764d8e0558f9f78946426bd9adb9991"
+  },
+  "summary": {
+    "jobs": 15,
+    "selected_unique_captures": 44,
+    "capture_placements": 46,
+    "action_shape_groups": 12,
+    "repositories": [
+      "mwaskom/seaborn",
+      "psf/requests",
+      "pydata/xarray",
+      "pylint-dev/pylint",
+      "pytest-dev/pytest",
+      "scikit-learn/scikit-learn",
+      "sphinx-doc/sphinx"
+    ],
+    "skipped_counts": {
+      "NO_PUBLIC_RED_EDIT_GREEN_CANDIDATE": 795,
+      "LATER_DUPLICATE_TASK_ACTION_SHAPE": 42,
+      "INSUFFICIENT_INDEPENDENT_OWNERS_FOR_ACTION_SHAPE": 28,
+      "NO_INDEPENDENT_PAIR_FITS_EXACT_CONTEXT_CAP": 7
+    },
+    "ingestions": 15,
+    "proposal_count": 0,
+    "outcome_count": 0,
+    "failure_count": 0,
+    "promotions_added": 0,
+    "terminal_stage": "NO_READY_MEMORY_BANK",
+    "terminal_at_kst": "2026-09-20T08:44:05.195312+09:00",
+    "diagnosis": "ALL_STRUCTURED_REFLECTION_OUTPUTS_EMPTY_NO_PROPOSALS_SUBMITTED_TO_GATE_B",
+    "root_cause_of_empty_proposals": "NOT_ESTABLISHED_FROM_STRUCTURED_OUTPUTS"
+  },
+  "ingestions": [
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/0648d0750d5f8779b33ecca3bfbc688c32e13d5a9049aded639cc3093e5c01c9.json",
+        "sha256": "c54e91cfede428f0a0bfa4077b533378aa817afd30b2b8dead3a1a03a45bbce7"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-14/output/proposals.json",
+        "sha256": "c29c0c2ae223ec1f84e1a5f9459937d0c5a2cb8ac1c0090d385c0d37be74a4ad"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-14/output/completion.json",
+        "sha256": "08bef66343e3d5ba234afab3051e0cda442a886ebbc7b9dae751a041d1ec1036"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/0fbdbd14879f3ec0267154a98382a80c60b7cb21a4eaf79d907af4019161b0aa.json",
+        "sha256": "33ac8162bcddb6ca32c145701376dfd81810843585659e49a7b28afe7364c904"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-11/output/proposals.json",
+        "sha256": "4638e867e6e4bf1937f2ffca4da024ab6aee448bc083fe42c756fb7d18ce51f2"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-11/output/completion.json",
+        "sha256": "d80d3f42de213433ffcb05ac5b37de01d826ac720ba54be98ed33117e83bd857"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/4cc33a9bb68f91b8c545210827ad5f932aa017de44fef317841d71c2d9bf5048.json",
+        "sha256": "580060434a54730287a341e69987ecf1a314e6fe25f460028d2fb2b55a123490"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-05/output/proposals.json",
+        "sha256": "6e6fbd1047dce7d8aec34dd3f053f4656cde47c8998cb3f7ed2e7ac60d7cdea3"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-05/output/completion.json",
+        "sha256": "3f300a8df72a842825c29f9bc3362ea0dea2a40cec575f3b0cf4657a9c0cd467"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/56add9244deb597e5ab498274c579fdb3b890901c39015ca812227ad41d6f846.json",
+        "sha256": "79243bdedb32e7eaf45e0c8f73aab2abbe2d58a0f94e6f2df1a217ffa7703956"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-02/output/proposals.json",
+        "sha256": "70df306a03f00200fccc8079542834eed14a51afb7ff0985d028ea36f63ef964"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-02/output/completion.json",
+        "sha256": "8dcc0784f0a70d8c87f0dee3b24b9e4da1a809b816f4604ebc8507ee5f401de2"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/58d5896012a625ea9f4c38e5b79ba897b4685b8a2f463a0fa7ca63b2b7fe14c3.json",
+        "sha256": "9c23ae805ec02b3c94bf4e3a05bc3d945e5b319544aad199184a83cc940f33a2"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-08/output/proposals.json",
+        "sha256": "2e0a3c97f09b20be9aa801bd40c577e7cb7d02abbd915f2e08b54b6a865836bd"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-08/output/completion.json",
+        "sha256": "d88ffc2de730a4385d5e90e8d294a7387b7723c3de95bbbed1cbaaadc29133c0"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/74341dfd95bd093b45a82b243bc555d4235b7c62fb1c2e6e5351ad295e1ba516.json",
+        "sha256": "dc306ee0a524bb7f4778c5368f3be6098ca934844432b67b95dc4c4f87be9318"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-03/output/proposals.json",
+        "sha256": "b8124aaedb9515667ea61a370414dcce1711de55d2c81a2ad9e21b657f8f45a0"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-03/output/completion.json",
+        "sha256": "dd86583643cee57a39a9d44dccba1204d2782bdb60d40505b886875249193150"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/7cff24afe921b55e5230d4b4f309f9116c3e71bcb823b4de374ab05ed01b9392.json",
+        "sha256": "46f2dea63d9db70128942db313426dec5db025c9d8fd30e76c5f3876e731396a"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-09/output/proposals.json",
+        "sha256": "83026eee3a9d14baa6ef30563dd97af9b6d73020b4071b196c5227bba2d88f91"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-09/output/completion.json",
+        "sha256": "dab90c583dcf86f6917b87eb23a476d0c43bc56ecb13e49018b61720d194743d"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/7e4df28b77f390a9c14bbd924d26034594f11b07500f08341ee681c255979fc3.json",
+        "sha256": "bffc4e6dc5b10ce2cc5af5d0c7ffe194852b763e9606c83036da87949dae1ec6"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-15/output/proposals.json",
+        "sha256": "2ac34dc08163d5e687c503b461cf996284d3a13fccccd99efb99d03efc2d23aa"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-15/output/completion.json",
+        "sha256": "cebddcf05d681680c698f17aa430003e6686bc2d23dd47157540fef338cfa2ea"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/86030b07de6c7e0206a921f6aec2d88ef79ddffc0470944a56ab75bdec4a8140.json",
+        "sha256": "bb2f1e3064460520a5444457c552b7e895d35a5e1c4be2ab7de807b450498dbe"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-10/output/proposals.json",
+        "sha256": "b2963e39592e6f0d4b1a1e5a3712d53723d406f674852f9c53078cebcb003b9b"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-10/output/completion.json",
+        "sha256": "9af2b11a2c67327c0e159ced767e1688540fff95c3ac081ad0a855b4a2bdf5ed"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/b810b03b79c3b10a27eb0500f083dc6212cedf9c0cdc02e905b5defb86c28e8a.json",
+        "sha256": "fcfc37fae32067e633795737678226771a1dbed31f38805f479f0ff392849dfb"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-13/output/proposals.json",
+        "sha256": "21c46ff159fbbf7983c00abde9056e70f25380e2dc511460b920fc935d82b982"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-13/output/completion.json",
+        "sha256": "d15cb9e7427af8c2aaf29224121d167baf8aca415b56cbeafc2435fee6831bb9"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/bc3400af1a2144f47eaf1db73410cc8dd6b910550c9e4982879f2729b823b171.json",
+        "sha256": "8ef2ae674a9ab088df751300439834909ea96c1e502cfe99e03c934d8608292a"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-01/output/proposals.json",
+        "sha256": "d538c9bec23f3db06f11d86f863220d90a83dca56c38bcbb8035ba177d130492"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-01/output/completion.json",
+        "sha256": "698ae0836a47cb94d9fd13587d92d25df65183ebf328f5baa0bb24268710595a"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/d6750441d01a1cdd64d0bc0a0cfbeeea8c3224652df63cea87bfa5fd842fa50a.json",
+        "sha256": "c03af81881047a2cc3ab71698ff039429749510403dbd366938d8fc9510c94db"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-04/output/proposals.json",
+        "sha256": "ac34045e4c0d93f5079efe245fd0e9840fe61ec5017c60e9266c2c05fd38bb31"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-04/output/completion.json",
+        "sha256": "b029f4441c51d3a9776f007717267705a1680ae45fc83a98c646376740ff92b8"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/d759a7de7f2656a387741863c02d9259d936686dfdcf4f34b290be81e6372e7d.json",
+        "sha256": "3713eb74ef9ec583ef3801795733634c96304893889014bed3ded890f78daade"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-07/output/proposals.json",
+        "sha256": "9ed2ff3eb9d953b534d6958782784a7cb0521198051a34c8329d93bab534af39"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-07/output/completion.json",
+        "sha256": "397da10a1db3d5b53dd0d1b34802fc7f8f7b7096fa7e1b4a5c791bc296630291"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/db9be40e6912c6847f338fd6dc9535e56d6e804b27f941e0d44f9c9b16dc5afb.json",
+        "sha256": "0fee4b0a3cfbe00cd26cc10e1853723dfea17a1088ea2ee87591be453548e5e2"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-12/output/proposals.json",
+        "sha256": "46e069c3b37841a4a8ff461cb3fc2da02890ba4fef083fc012769ed41d786b1a"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-12/output/completion.json",
+        "sha256": "864e865edb3248c3116f577e8d9de5b53a93df8d73ca4ee98743c1bcca66335d"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    },
+    {
+      "receipt_reference": {
+        "path": "/home/trimem-runner/skhynix-architecture-scale-001/pipeline-v13/learning-240/learning-ingestions/ef192b5d8d28af32aa8228e336c049977c98c1261bf9e703d885e6f38feb48c3.json",
+        "sha256": "f564c4f802d78f6b004f0edf43c4bc13d3d7c79d7c9b7d1adeb38ee7bc708400"
+      },
+      "proposal_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-06/output/proposals.json",
+        "sha256": "3c1f1f6bc47ed2366f4d962d17714bac139d80a7be13f0b511d96d4659faaefd"
+      },
+      "completion_reference": {
+        "path": "/mnt/c/Users/jewon/AppData/Local/Temp/skhynix-architecture-scale-001-reflection-v12/bank-240/repo-06/output/completion.json",
+        "sha256": "2e5b0ba5663233924a559f71e3f0ff2358d12df49e5fe7d01cf20610dc0a9c6a"
+      },
+      "proposal_count": 0,
+      "status": "PROCESSED",
+      "outcome_count": 0,
+      "failure_count": 0,
+      "promotions_added": 0
+    }
+  ],
+  "private_grader_logs_read": false,
+  "raw_model_transcripts_read": false,
+  "solver_runs": 0,
+  "grader_runs": 0
+}

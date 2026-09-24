@@ -1,0 +1,128 @@
+{
+  "actuals": {
+    "benchmark_image_pulls": 0,
+    "dependency_installations": 1,
+    "grader_containers": 0,
+    "harness_materializations": 2,
+    "input_tokens": 0,
+    "model_api_calls": 0,
+    "model_generation_calls": 0,
+    "model_metadata_requests": 0,
+    "official_grader_runs": 0,
+    "official_harness_loader_preflight_attempts": 1,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "task_arm_runs": 0,
+    "terminal_cells": 0,
+    "total_usd": 0.0
+  },
+  "boundary": {
+    "bounded_context_preflight_entered": true,
+    "branch_trigger_preflight_entered": true,
+    "dependency_install_completed": true,
+    "failure_stage": "BOUNDED_SELF_HOSTED_EXACT_OFFICIAL_HARNESS_LOADER_PREFLIGHT",
+    "frozen_serial_phase_entered": false,
+    "harness_materialization_completed": true,
+    "official_harness_loader_preflight_entered": true,
+    "protected_environment_approval_requested": false,
+    "protected_environment_entered": false,
+    "self_hosted_job_assignments": 1,
+    "setup_python_passed": true
+  },
+  "branch": "codex/trimem-coder-v1",
+  "digests": {
+    "d114_amendment_sha256": "fbe9e8193b79cdcef1d53be802ac493d9fc051046c20063c5ad10f5c053d0c1f",
+    "d114_gate_contract_sha256": "2bd9aceb9db0e571cb194565473a0da19b5e2001913b236d7d0af9570da6e52b",
+    "d114_inventory_sha256": "d7ee03df98ab73dc427b0d12b94052331a854241fcaabae358a99beb4a6e3a14",
+    "d114_reseal_sha256": "9a10ffb0b2f91d842ff3579b4e06608109e320bd691db07bf98c361c8e8e3cdf",
+    "evidence_bundle_sha256": "6a3d6a2e76ecf5452e1740bb015a72366a41ad46ce1dcc3d62bf8509fe8bc5ef",
+    "failed_log_summary_sha256": "64a98513315779e22ed2d5e6683f9498011c50c65703d5fa3b2bca27733d7190",
+    "jobs_projection_sha256": "ee986db606fc17c4754d23363201433bfcb9b5ba929811126fe4d21ad417a100",
+    "loader_preflight_sha256": "3517f0b841be71c2dea472f3df26c1133e3ddbca6dbaf580551bbbacdc6c2b02",
+    "loader_sha256": "b988a2afe1740d1c9767736dae72daf96238d2b306786a6b765b6f423411f20d",
+    "request_raw_sha256": "7b4ff50e423cd12baea93413bbedcf7c2ee210d031fc20b30ad1c9d9f3c2dbaa",
+    "request_self_hash_sha256": "e046c09ac2a40a4f5a819e8dc522074d20157ddd6201233de8c49e209451d353",
+    "source_freeze_sha256": "19da74e3e4d217354c7b2483bf1a462da10867ebe62c995df72405f273847448",
+    "trigger_reader_sha256": "94da6bdcca105ea27e031eb240ebe4c333b25998b5e4bc5b35ecfb674dc734ac",
+    "workflow_file_sha256": "901aba968d9965430710b157a93b9cdbc874637a2ceca3f65ffc1a87d044854a",
+    "workflow_run_projection_sha256": "ca1d815615cf6a8010bfd0e5ffed6d2f78472e97193f4b77ddce65e346dbc245"
+  },
+  "execution_head": "31234fdd58fd43170764524662c9e51687521761",
+  "failed_log_summary": {
+    "failed_job": "bounded-context-preflight",
+    "failed_step": "Gate protected job on unprotected exact loader preflight",
+    "failure_classification": "CACHED_PYTHON_SYSCONFIG_LIBDIR_RELOCATION_FAIL_CLOSED",
+    "failure_message": "credential-free official-harness loader preflight failed",
+    "failure_subtype": "CACHED_PYTHON_SYSCONFIG_LIBDIR_ALIAS_ABSENT",
+    "loader_error_chain": [
+      "candidate libdir does not exist",
+      "loader probe LIBDIR is not a trusted Python library directory",
+      "exact Python loader is not ready",
+      "credential-free official-harness loader preflight failed"
+    ],
+    "observed_python_real_prefix": "/opt/trimem-runner-cache/work-ci/_tool/Python/3.11.10/x64",
+    "observed_sysconfig_libdir": "/opt/hostedtoolcache/Python/3.11.10/x64/lib",
+    "observed_sysconfig_libdir_exists": false,
+    "process_exit_code": 1,
+    "raw_log_embedded": false,
+    "remote_marker": "TRIMEM_OFFICIAL_HARNESS_LOADER_PREFLIGHT_NOT_READY",
+    "sanitization": "ALLOWLISTED_NORMALIZED_SUMMARY_ONLY"
+  },
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 101821655367,
+      "name": "branch-trigger-preflight",
+      "runner_boundary": "GITHUB_HOSTED",
+      "steps": {
+        "one_time_zero_authority_trigger": "success"
+      }
+    },
+    {
+      "conclusion": "failure",
+      "id": 101821724190,
+      "name": "bounded-context-preflight",
+      "runner_boundary": "SELF_HOSTED_UNPROTECTED",
+      "steps": {
+        "bounded_context_roundtrip": "success",
+        "checkout": "success",
+        "hash_locked_install": "success",
+        "official_harness_loader_preflight": "failure",
+        "pinned_harness_materialization": "success",
+        "post_setup_runner_reobservation": "success",
+        "pre_setup_cached_python": "success",
+        "setup_python": "success",
+        "terminal_cell_roundtrip": "success"
+      }
+    },
+    {
+      "conclusion": "skipped",
+      "id": 101821923240,
+      "name": "frozen-serial-phase",
+      "runner_boundary": "SELF_HOSTED_PROTECTED",
+      "steps": {}
+    }
+  ],
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "sanitization": {
+    "diagnostic_source": "PUBLIC_RUN_METADATA_PLUS_CREDENTIAL_FREE_EXACT_INTERPRETER_REHEARSAL",
+    "environment_projection": "ALLOWLISTED_PYTHON_PREFIX_AND_SYSCONFIG_LIBDIR_ONLY",
+    "jobs_api": "ALLOWLISTED_FIELDS_ONLY",
+    "raw_log_embedded": false,
+    "run_api": "ALLOWLISTED_FIELDS_ONLY",
+    "step_log": "ALLOWLISTED_NORMALIZED_SUMMARY_ONLY"
+  },
+  "schema": "trimem/d115-exec-014-loader-failure/1.0",
+  "source_head": "6e9abe999f2b9d7ebdd3eea23dbbea8f6afad931",
+  "workflow_run": {
+    "conclusion": "failure",
+    "event": "push",
+    "head_branch": "codex/trimem-coder-v1",
+    "head_sha": "31234fdd58fd43170764524662c9e51687521761",
+    "id": 34147189320,
+    "path": ".github/workflows/trimem-benchmark.yml",
+    "run_attempt": 1,
+    "source_head_sha": "6e9abe999f2b9d7ebdd3eea23dbbea8f6afad931",
+    "status": "completed"
+  }
+}

@@ -1,0 +1,66 @@
+diff --git a/sympy/printing/str.py b/sympy/printing/str.py
+index c3fdcdd..7d31c9f 100644
+--- a/sympy/printing/str.py
++++ b/sympy/printing/str.py
+@@ -250,6 +250,14 @@ def _print_Mul(self, expr):
+ 
+         prec = precedence(expr)
+ 
++        def parenthesize_denominator(item):
++            # These powers print as divisions, so their denominators must not
++            # become additional divisions of the enclosing product.
++            if (item.is_Pow and item.is_commutative and
++                    item.exp in (S.NegativeOne, -S.Half)):
++                return '(%s)' % self._print(item)
++            return self.parenthesize(item, prec, strict=False)
++
+         # Check for unevaluated Mul. In this case we need to make sure the
+         # identities are visible, multiple Rational factors are not combined
+         # etc so we display in a straight-forward form that fully preserves all
+@@ -284,8 +292,7 @@ def _print_Mul(self, expr):
+                 pre = [str(d.pop(0))]
+             else:
+                 pre = []
+-            dfactors = pre + [self.parenthesize(a, prec, strict=False)
+-                for a in d]
++            dfactors = pre + [parenthesize_denominator(a) for a in d]
+ 
+             n = '*'.join(nfactors)
+             d = '*'.join(dfactors)
+@@ -348,7 +355,7 @@ def apow(i):
+         a = a or [S.One]
+ 
+         a_str = [self.parenthesize(x, prec, strict=False) for x in a]
+-        b_str = [self.parenthesize(x, prec, strict=False) for x in b]
++        b_str = [parenthesize_denominator(x) for x in b]
+ 
+         # To parenthesize Pow with exp = -1 and having more than one Symbol
+         for item in pow_paren:
+diff --git a/sympy/printing/tests/test_str.py b/sympy/printing/tests/test_str.py
+index 690b1a8..6f36ac4 100644
+--- a/sympy/printing/tests/test_str.py
++++ b/sympy/printing/tests/test_str.py
+@@ -269,6 +269,23 @@ class CustomClass2(Expr):
+     assert str(cc1*Rational(2)*cc2) == '2*CustomClass1()*CustomClass2()'
+ 
+ 
++def test_Mul_reciprocal_denominator():
++    # The unevaluated expression produced by nested LaTeX fractions (issue 21612).
++    a, b, c = symbols('a b c')
++    numerator = Mul(a**3 + b, Pow(c, -1, evaluate=False), evaluate=False)
++    denominator = Pow(Pow(c, 2, evaluate=False), -1, evaluate=False)
++    expr = Mul(numerator, Pow(denominator, -1, evaluate=False), evaluate=False)
++    assert str(expr) == '((a**3 + b)/c)/(1/(c**2))'
++    assert (S(str(expr)) - expr).simplify() == 0
++
++    for exponent, expected in [(-1, '1/x'), (-S.Half, '1/sqrt(x)')]:
++        denominator = Pow(x, exponent, evaluate=False)
++        reciprocal = Pow(denominator, -1, evaluate=False)
++        assert str(Mul(y, reciprocal, evaluate=False)) == 'y/(%s)' % expected
++        # A leading identity uses the printer's unevaluated-product branch.
++        assert str(Mul(1, y, reciprocal, evaluate=False)) == '1*y/(%s)' % expected
++
++
+ def test_NaN():
+     assert str(nan) == "nan"
+ 

@@ -1,0 +1,19 @@
+{
+    "schema":  "skhynix/scale-monitor-install-validation/1.0",
+    "checked_at":  "2026-09-15T03:27:39.0531567Z",
+    "status":  "PASS",
+    "mode":  "TASK_SCHEDULER",
+    "interval_minutes":  5,
+    "timer_trigger_verified":  true,
+    "last_task_result":  0,
+    "last_task_run":  "2026-09-15T12:26:35.0000000+09:00",
+    "next_task_run":  "2026-09-15T12:31:35.0000000+09:00",
+    "sample_file":  "20260915T032636.7436887Z.json",
+    "sample_sha256":  "abd210176a119772e2965456d8abd373b82896d0ce91e36f35f83d95084b36a6",
+    "sample_status":  "PROGRESSING",
+    "probe_tests":  27,
+    "probe_receipt_sha256":  "b5d95f0499158229821aa7c3f938d6e3fec85baa1160b7a3945990b9c36e2bb6",
+    "model_calls":  0,
+    "official_grader_runs":  0,
+    "automatic_pipeline_restart":  false
+}

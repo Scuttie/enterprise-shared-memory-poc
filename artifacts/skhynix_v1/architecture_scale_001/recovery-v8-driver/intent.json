@@ -1,0 +1,70 @@
+{
+    "schema":  "skhynix/grading-continuation-driver-intent/1.0",
+    "at":  "2026-09-16T05:11:13.5357936Z",
+    "preparation_processes":  [
+                                  {
+                                      "process_id":  14508,
+                                      "process_started_at":  "2026-09-16T05:09:57.4219750Z"
+                                  },
+                                  {
+                                      "process_id":  33324,
+                                      "process_started_at":  "2026-09-16T05:09:57.4395771Z"
+                                  }
+                              ],
+    "dependencies":  [
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\prepare_skhynix_scale_recovery_v8.py",
+                             "sha256":  "c1385d2efb2b86300c233f7131568b02ae55ad56c6e69f097eb7fca3a1123454"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\validate_skhynix_scale_recovery_v8.py",
+                             "sha256":  "b72108f54dbc4d684ddd2e5c9437780ac273c05e6d418cd7b8abd4dc7f251047"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\Activate-SkhynixScaleRecoveryV8.ps1",
+                             "sha256":  "8b02799a1ead83203697bcacf24b2e1f186d6959115fd76e1f18c9ae487bf4c2"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\Temp\\Continue-SkhynixScaleRecoveryV8.ps1",
+                             "sha256":  "905e5ec37da1ab74a5936b3de9a14f41784c883ef2455dc5082ac41f7a967d26"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\Start-SkhynixScalePipeline.ps1",
+                             "sha256":  "ef7bbd424c96127505b4d7e58d5c399ce41c931b49effabd64654ba08bd04055"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\configs\\skhynix_v1\\architecture_002_pipeline_v8.json",
+                             "sha256":  "05b18c36d5a7b736479b2c29ea9e62ce3409e5c8931311ff7ce290d0ac4476bf"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\runtime-freeze-006.json",
+                             "sha256":  "c994328c8c31f3e6632b28a02286b33822a03d42f7741467d31b435ab2a3fc40"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\official-harness-loader-v3.json",
+                             "sha256":  "135ca17b1bbe8eb503b38ac5a353197c9774a9d9fd41bdce307185492dbef91e"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\native-binary-001.json",
+                             "sha256":  "ca5341debc058928a6dbbe03a034f70baa191a72f539e47ae671be9ca34234ac"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\continuation-controller-tests-008.xml",
+                             "sha256":  "46b774e419413a945f2dfa1112772ac856d7f42fd44ef99a17d0741c0686511b"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\architecture_scale_001\\continuation-runtime-tests-006.xml",
+                             "sha256":  "c80004d88c7a6c5988cd140570e6e971d4a62e9f96500e02b82f90432584d0f1"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\AppData\\Local\\Temp\\skhynix-architecture-scale-001-codex-v1\\codex.exe",
+                             "sha256":  "2271526227b06ca13ab2b975b88546460fc61b2a29225b6dda0fdc803024ccc9"
+                         },
+                         {
+                             "path":  "C:\\Users\\jewon\\AppData\\Local\\Temp\\skhynix-architecture-scale-001-controller-v8\\trimem_skhynix_architecture_scale_pipeline.py",
+                             "sha256":  "1ac5924dc3aeef99f06ef10872a5985592af6bd3e2d8c6553bc7797f3a0ed19e"
+                         }
+                     ],
+    "solver_retries":  false,
+    "grader_retries":  false
+}

@@ -1,0 +1,205 @@
+{
+  "actuals": {
+    "benchmark_image_pulls": 13,
+    "cached_input_tokens": 1664,
+    "completed_task_arm_runs": 1,
+    "decomposition_calls": 1,
+    "exact_model_metadata_requests": 1,
+    "extraction_calls": 1,
+    "grader_containers": 1,
+    "input_tokens": 178497,
+    "model_generation_calls": 19,
+    "official_grader_runs": 1,
+    "output_tokens": 5112,
+    "paid_model_calls": 19,
+    "protocol_canary_generation_calls": 1,
+    "provider_control_plane_requests": 1,
+    "reasoning_tokens": 2853,
+    "scientific_model_calls": 18,
+    "solve_calls": 16,
+    "task_arm_reservations": 2,
+    "task_arm_runs": 1,
+    "terminal_cells": 1,
+    "total_tokens": 183609,
+    "total_usd": "0.155753550000"
+  },
+  "approval_boundary": {
+    "approval_artifact_sha256": "f625e12d058f0b7d4e45fe9c384d99d10796618f67c8c772cbe773cf0648d5ad",
+    "approval_materialization": "PASS",
+    "approved_request_sha256": "534d8500073ae414fa7839b6af7c88bdcc88dbb28997066826ba18ebe8868c4e",
+    "approved_workflow_run_attempt": 1,
+    "approved_workflow_run_id": 34223706155,
+    "environment_secret_count_after_cleanup": 0,
+    "exec_gate": "PASS",
+    "protected_environment_entered": true
+  },
+  "boundary": {
+    "aggregate_entered": false,
+    "bounded_context_preflight": "PASS",
+    "branch_trigger_preflight": "PASS",
+    "campaign_result_available": false,
+    "exact_model_metadata": "PASS",
+    "failed_stream": "M2-baseline",
+    "failed_target_id": "swebench_verified--sympy__sympy-23262",
+    "failed_target_order_index": 1,
+    "failure_stage": "SECOND_CELL_PRE_MODEL_GRADER_FACTORY_REVALIDATION",
+    "image_materialization": "PASS",
+    "protocol_canary": "PASS",
+    "protected_grader_factory_rehearsal": "PASS",
+    "task_arm_reservation_started": true
+  },
+  "branch": "codex/trimem-coder-v1",
+  "evidence_custody": {
+    "github_artifacts": [
+      {
+        "digest": "sha256:1ab6b73601be6aad81b7b5b84d4f2991a88c1555e714e41159d88c922418ff65",
+        "id": 10055440705,
+        "name": "trimem-benchmark-restricted-encrypted",
+        "size_in_bytes": 20588901
+      },
+      {
+        "digest": "sha256:4306f9432491d12ee6fce48fadceac3ff056bd3f334cfd9101dd7402d85428c4",
+        "id": 10055442278,
+        "name": "trimem-benchmark-evidence-inventories",
+        "size_in_bytes": 11692
+      },
+      {
+        "digest": "sha256:46429579cc0a4a941c4c44bce71481a1177c908b799b2f8f95b824ca8fc743ff",
+        "id": 10055444677,
+        "name": "trimem-benchmark-remote-custody",
+        "size_in_bytes": 647
+      }
+    ],
+    "public_result": "ABSENT_EXPECTED",
+    "recomputed_inventory": {
+      "inventory_sha256": "6b13fd8fab63db8408e927d1be078c59c3f17a196b15264bb10e3ea55d477995",
+      "matches_uploaded_inventory": true,
+      "total_bytes": 20201702,
+      "total_files": 249
+    },
+    "remote_custody_status": "TRIMEM_FAILURE_EVIDENCE_CUSTODY_PASS"
+  },
+  "execution_head": "f3053cddc6b32c2b51ef7de5a6ccf0d95ea578c2",
+  "failure": {
+    "message": "official harness loader preflight swe revision cannot be reverified",
+    "process_disposition": "GLOBAL_ENVIRONMENT_FAILURE",
+    "process_exit_code": 1,
+    "request_019_attempt_one_consumed": true,
+    "request_019_rerun_allowed": false,
+    "resume_eligible": false,
+    "resume_started": false,
+    "stderr_bytes": 440,
+    "stderr_sha256": "2bdb74770e41a560af98ce265b46837de05e3a95791efba67b3ee07ba3424cee",
+    "stdout_bytes": 152,
+    "stdout_sha256": "a78bc491d88a3a7dcf9d3ff7109642bd3b71bf09162d664f994c7971ce7d3184"
+  },
+  "first_terminal_cell": {
+    "actual_accounting": {
+      "cached_input_tokens": 1664,
+      "decomposition_calls": 1,
+      "extraction_calls": 1,
+      "grader_containers": 1,
+      "grader_wall_time_ms": 22271,
+      "input_tokens": 177547,
+      "model_wall_time_ms": 57156,
+      "official_grader_runs": 1,
+      "output_tokens": 5084,
+      "paid_model_calls": 18,
+      "reasoning_tokens": 2853,
+      "solve_calls": 16,
+      "task_wall_time_ms": 136089,
+      "tool_wall_time_ms": 299,
+      "total_usd": "0.154915050000"
+    },
+    "agent_completed": false,
+    "cell_status": "CELL_SCIENTIFIC_FAILURE",
+    "grader_exit_code": 0,
+    "grader_patch_source": "MODEL_PARTIAL_PATCH",
+    "model_failure_class": "per-subtask step cap reached",
+    "official_grader": true,
+    "resolved": true,
+    "result_record_sha256": "ef5e944af70d7d13ead014b826b59c70b5c3fb84cd6d384da53d2dfc8c28c63b",
+    "runtime_arm": "M2",
+    "sequence_index": 0,
+    "stream": "M2-baseline",
+    "target_id": "swebench_verified--django__django-16100"
+  },
+  "jobs": [
+    {
+      "completed_at": "2026-09-08T12:01:05Z",
+      "conclusion": "success",
+      "id": 102052608047,
+      "name": "branch-trigger-preflight",
+      "started_at": "2026-09-08T12:00:45Z"
+    },
+    {
+      "completed_at": "2026-09-08T12:05:59Z",
+      "conclusion": "success",
+      "id": 102052722704,
+      "name": "bounded-context-preflight",
+      "started_at": "2026-09-08T12:01:08Z"
+    },
+    {
+      "completed_at": "2026-09-08T12:18:44Z",
+      "conclusion": "failure",
+      "id": 102054185453,
+      "name": "frozen-serial-phase",
+      "started_at": "2026-09-08T12:10:42Z"
+    }
+  ],
+  "pass_at_1": null,
+  "performance_measured": false,
+  "protocol_canary_actuals": {
+    "cached_input_tokens": 0,
+    "input_tokens": 950,
+    "output_tokens": 28,
+    "paid_model_calls": 1,
+    "reasoning_tokens": 0,
+    "scientific_result": false,
+    "status": "PASS",
+    "total_usd": "0.000838500000"
+  },
+  "repository": "Scuttie/enterprise-shared-memory-poc",
+  "request": {
+    "id": "TRIMEM_V1_DEVELOPMENT_TUNING_EXEC_019",
+    "path": "artifacts/trimem_v1/exec_requests/DEVELOPMENT_TUNING_EXEC_REQUEST_019.json",
+    "payload_sha256": "458acf0633b3f8ff09787a7f29609d09247ee800296d00988aa914fd05b2c06c",
+    "raw_sha256": "534d8500073ae414fa7839b6af7c88bdcc88dbb28997066826ba18ebe8868c4e",
+    "source_head": "df93cdbcf0d8e30014035e79cf5d7d52848d5072"
+  },
+  "root_cause": {
+    "classification": "OFFICIAL_HARNESS_RUNTIME_OUTPUT_ISOLATION_FAILURE",
+    "failure_subtype": "SHARED_SWE_HARNESS_RUNTIME_OUTPUT_CONTAMINATION",
+    "recovery_contract": {
+      "frozen_harness_checkout_never_used_as_runtime_cwd": true,
+      "pinned_harness_import_root_preserved": true,
+      "pristine_checkout_validation_preserved": true,
+      "runtime_output_directory_unique_per_task_arm_cell": true,
+      "sequential_swe_cells_rehearsed": true
+    },
+    "scope": "SHARED_PINNED_SWE_BENCH_CHECKOUT",
+    "scientific_result": false
+  },
+  "schema": "trimem/development-exec-019-shared-swe-harness-runtime-output-failure/1.0",
+  "second_cell_boundary": {
+    "container_started": false,
+    "model_calls": 0,
+    "reservation_status": "RESERVED",
+    "target_id": "swebench_verified--sympy__sympy-23262",
+    "tokens": 0,
+    "total_usd": "0.000000000000"
+  },
+  "source_head": "df93cdbcf0d8e30014035e79cf5d7d52848d5072",
+  "workflow_run": {
+    "conclusion": "failure",
+    "created_at": "2026-09-08T12:00:42Z",
+    "event": "push",
+    "head_sha": "f3053cddc6b32c2b51ef7de5a6ccf0d95ea578c2",
+    "html_url": "https://github.com/Scuttie/enterprise-shared-memory-poc/actions/runs/34223706155",
+    "id": 34223706155,
+    "path": ".github/workflows/trimem-benchmark.yml",
+    "run_attempt": 1,
+    "status": "completed",
+    "updated_at": "2026-09-08T12:18:45Z"
+  }
+}

@@ -1,0 +1,16 @@
+{
+    "schema":  "skhynix/scale-monitor-enrollment/1.0",
+    "task_name":  "SkhynixMemoryScaleMonitor-ESM",
+    "interval_minutes":  5,
+    "stale_minutes":  60,
+    "registered_at":  "2026-09-15T03:25:35.1031343Z",
+    "user":  "DESKTOP-LP27LTC\\jewon",
+    "executable":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments":  "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\Watch-SkhynixScalePipeline.ps1\" -Mode Check -IntervalMinutes 5 -StaleMinutes 60",
+    "watcher_sha256":  "ab952c4df62ab05bf39311c695f36348fe73ffab8a82a8ecbe03b2a414dd118b",
+    "probe_sha256":  "0a639bd3ebb4d34be20e282e780989a35bd392fc7df10f5648803be62e2dca7c",
+    "automatic_solver_retries":  false,
+    "automatic_grader_retries":  false,
+    "automatic_pipeline_restart":  false,
+    "mode":  "TASK_SCHEDULER"
+}

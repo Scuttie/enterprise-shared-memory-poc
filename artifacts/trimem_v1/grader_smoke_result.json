@@ -1,0 +1,45 @@
+{
+  "actual_execution": {
+    "docker_pulls": 7,
+    "grader_containers": 12,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "official_grader_runs": 12,
+    "output_tokens": 0,
+    "paid_model_calls": 0,
+    "total_usd": 0
+  },
+  "expected_condition_rows": {
+    "GOLD": 6,
+    "NOOP_BASELINE": 6
+  },
+  "expected_target_count": 12,
+  "expected_unique_instances": 6,
+  "grader_exec_package": "PASS",
+  "official_execution_evidence": {
+    "aggregate_raw_sha256": "5fd116bb8266209588255e58c6dd7806ba24e2072b65fc399fb1f47b831b9f6a",
+    "approval_binding": {
+      "approval_artifact_sha256": "540c36e0bb9ff7d120d44e94c88181196a0b7f24bb92ad83626a66dcabe4bac9",
+      "approved_request_sha256": "3db77d2529f4f5bedacbf70a1de93a745034bf4642f10c0c5f2e9268e060b470",
+      "approved_workflow_run_attempt": "1",
+      "approved_workflow_run_id": "33674784590",
+      "freeze_sha256": "f1f2547ae79c9e6e19b235eb0f010509200393145299186e6bd667b7af22be63",
+      "git_head": "cc001245b8c26373b5467a0dbdcbbbda0a9542be",
+      "phase": "GRADER_SMOKE"
+    },
+    "attestation_bundle_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-bundle.json",
+    "attestation_bundle_raw_sha256": "c1cc04284b8f1be1cde006fa2309f6af918e8478485002b4556df7fcb165335e",
+    "attestation_subject_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/attestation-subject.json",
+    "attestation_subject_raw_sha256": "647d9d3eaddaf2917bfaaa8fc47c0c54f814a50ddf5e900c3176d3c895513846",
+    "evidence_inventory_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/evidence-inventory.json",
+    "evidence_inventory_raw_sha256": "b1c3ba191c4d037f4f8ee70cf8a4821592b5b25a65700d7ce3faa2d0024add8e",
+    "public_result_path": "artifacts/trimem_v1/grader_smoke_official/exec-005/public-results.json",
+    "public_result_raw_sha256": "4a1253e69a95b3058b9433fbfe51ef3f8bee538c90b5faf29c996a841224faa4",
+    "verified_aggregate_sha256": "52c9863955b9d1b6ab5084f4671df44425406292391ff840a33e0126d73b3e0a"
+  },
+  "official_grader_viability": "ESTABLISHED",
+  "performance": "NOT_MEASURED",
+  "schema": "trimem/grader-smoke-result/1.0",
+  "status": "PASS",
+  "trimem_system_implementation": "CREDENTIAL_FREE_GREEN"
+}

@@ -1,0 +1,189 @@
+{
+  "amendment_scope": {
+    "new_egg_files_require_independent_control_path_size_hash": true,
+    "no_outcome_selection": true,
+    "optional_uncreated_generated_files_not_required": true,
+    "original_receipts_unchanged": true,
+    "pristine_inventory_must_match_pinned_manifest": true,
+    "protected_original_source_and_tests_must_all_exist_and_match": true
+  },
+  "boundaries": {
+    "actual_recovery_receipts_emitted_by_this_diagnostic": 0,
+    "fully_offline_handoff_validated": false,
+    "model_calls": 0,
+    "official_grader_reruns": 0,
+    "offline_four_distribution_support_validation": "SEPARATE_IN_PROGRESS",
+    "private_test_or_solution_contents_published": false
+  },
+  "future_grader_reference": {
+    "bytes": 11189,
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/scripts/deveval_repository_grade.py",
+    "sha256": "bcd3b16940f4715bb5bb33dbbe5d7654fc01318f4dcb89c172ebf760bd15fc69"
+  },
+  "inspection_provenance": "Programmatic native-Linux metadata/hash inspection via inline scripts; no retained inspection-script reference is claimed.",
+  "new_checker_reference": {
+    "bytes": 15999,
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/scripts/deveval_repository_grade_integrity.py",
+    "sha256": "b81e401525d6a3c98bcb3cc9f67ea37540efaad5df5ee1341c0203e9aecf24c1"
+  },
+  "observed_at": "2026-09-24T07:08:27.415568+00:00",
+  "old_grader_reference": {
+    "bytes": 8603,
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/data/deveval_002/grade-recovery-001/frozen-source/deveval_repository_grade.py",
+    "sha256": "a24ba97eae8cbb2e5b2f0c57b09ae7b84a08f64dea1430f6e57bf4f8e01f1baf"
+  },
+  "original_completed_grade_receipts": 78,
+  "original_status_counts": {
+    "INFRA_ERROR": 78
+  },
+  "policy_discrepancy": {
+    "old_eligibility_excluded_egg_info_and_pytest_cache_changes": true,
+    "old_grader_added_file_check_excluded_metadata_but_not_setup_eggs": true,
+    "old_grader_existing_file_check_included_generated_metadata": true
+  },
+  "representatives": [
+    {
+      "added_category_counts": {},
+      "added_files_manifest_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "baseline_file_count": 1396,
+      "changed_files_metadata": [
+        {
+          "after": {
+            "bytes": 51527,
+            "sha256": "169593bd5ce8b1fee0513a4513d99676a0fd920852b0031aa125bae269505422"
+          },
+          "before": {
+            "bytes": 51516,
+            "sha256": "92f32093e1442c36814a2e6b84318733dc122e1185428042e1aaca4c6a3bdd4c"
+          },
+          "category": "EGG_INFO",
+          "path": "src/pyramid.egg-info/SOURCES.txt"
+        }
+      ],
+      "original_receipt_reference": {
+        "bytes": 1432,
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/data/deveval_002/run-002/DISCOVERY/TRAIN/04c7d8f6ce3690a8cb09/private-grade/receipt.json",
+        "sha256": "54a857db066b1d9f03eb64e8c9434da82815f04487da96d6da229f903c01a6cb"
+      },
+      "project": "Internet/pyramid",
+      "protected_changed_or_missing_count": 0,
+      "request_reference": {
+        "bytes": 1064,
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/data/deveval_002/run-002/DISCOVERY/TRAIN/04c7d8f6ce3690a8cb09/private-grade/request.json",
+        "sha256": "901e105e6a4512f08001b95d0cd79ce53874b879e54727c98a9d6d432a82b77b"
+      },
+      "selection": "FIRST_LEXICOGRAPHIC_COMPLETED_RECEIPT_PER_PROJECT_WITHOUT_OUTCOME_FILTERING"
+    },
+    {
+      "added_category_counts": {},
+      "added_files_manifest_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "baseline_file_count": 219,
+      "changed_files_metadata": [
+        {
+          "after": {
+            "bytes": 5748,
+            "sha256": "1396bcc6a19f081b5f1ec4cade2230df8b2e9efbd92f589d420c218190707cc2"
+          },
+          "before": {
+            "bytes": 5835,
+            "sha256": "cf7512a76c7a5b01e2e45327c92534d3496fef6365fdb69a315b63af7ed7fc18"
+          },
+          "category": "PYTEST_CACHE",
+          "path": ".pytest_cache/v/cache/lastfailed"
+        },
+        {
+          "after": {
+            "bytes": 1458,
+            "sha256": "00b53c28129b805e147566edf60a2b1cbb431b09ef2275623c906a3bb6340bc0"
+          },
+          "before": {
+            "bytes": 1466,
+            "sha256": "28c7c068f641784119e90542ba004ac92bd63109fc821ef336ffa442a7cd132a"
+          },
+          "category": "EGG_INFO",
+          "path": "mingus.egg-info/SOURCES.txt"
+        }
+      ],
+      "original_receipt_reference": {
+        "bytes": 1447,
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/data/deveval_002/run-002/DISCOVERY/TRAIN/559628f0828cb57172e7/private-grade/receipt.json",
+        "sha256": "7d7a9348341dd8de2c00f13528c8c2780a9d14a69596ec96a65c9ca11c299e6e"
+      },
+      "project": "Multimedia/mingus",
+      "protected_changed_or_missing_count": 0,
+      "request_reference": {
+        "bytes": 1079,
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/data/deveval_002/run-002/DISCOVERY/TRAIN/559628f0828cb57172e7/private-grade/request.json",
+        "sha256": "65f7c2010eef0dd0041d69861d84f353977a68e173988e10de0f8c96b88bdc57"
+      },
+      "selection": "FIRST_LEXICOGRAPHIC_COMPLETED_RECEIPT_PER_PROJECT_WITHOUT_OUTCOME_FILTERING"
+    },
+    {
+      "added_category_counts": {
+        "EGG_DEPENDENCY": 109
+      },
+      "added_files_manifest_sha256": "747475ed8a154ea5b4a1efb3d53cd794a13d173dc67969c42de5033c3bbc58a5",
+      "baseline_file_count": 514,
+      "changed_files_metadata": [
+        {
+          "after": {
+            "bytes": 7349,
+            "sha256": "4e0c1f005cbb446f3e9295a60a938f1332e8cb599f4ca08b3e5c376103b79d98"
+          },
+          "before": {
+            "bytes": 7350,
+            "sha256": "27d35a9b65e6285be2a1563c5f263f19716cec4827244cdd12bc689e7516aa7d"
+          },
+          "category": "EGG_INFO",
+          "path": "mrjob.egg-info/SOURCES.txt"
+        }
+      ],
+      "independent_control_dependency_comparison": {
+        "control_file_count": 109,
+        "control_files_manifest_sha256": "747475ed8a154ea5b4a1efb3d53cd794a13d173dc67969c42de5033c3bbc58a5",
+        "control_receipt_reference": {
+          "bytes": 116206,
+          "path": "/home/trimem-runner/skhynix-deveval-002/eligibility-004/eligibility.json",
+          "sha256": "f6b9e518db1649954ee26446cc34181c2a392e6ddab085dfe2877a35a2e58f03"
+        },
+        "distribution_directories": [
+          "pyyaml-6.0.3-py3.9-linux-x86_64.egg",
+          "simplejson-4.1.2-py3.9-linux-x86_64.egg",
+          "ujson-5.11.0-py3.9-linux-x86_64.egg",
+          "warcio-1.8.1-py3.9.egg"
+        ],
+        "exact_paths_sizes_hashes_equal": true,
+        "model_file_count": 109,
+        "model_files_manifest_sha256": "747475ed8a154ea5b4a1efb3d53cd794a13d173dc67969c42de5033c3bbc58a5",
+        "not_in_original_79_package_environment_lock": true
+      },
+      "original_receipt_reference": {
+        "bytes": 1424,
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/data/deveval_002/run-002/DISCOVERY/TRAIN/2fe399211d0e946b4814/private-grade/receipt.json",
+        "sha256": "370c4c060a9577a018d000a59b059ce228c038e3019d5624c231e6c4d8811d83"
+      },
+      "project": "System/mrjob",
+      "protected_changed_or_missing_count": 0,
+      "request_reference": {
+        "bytes": 1056,
+        "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/data/deveval_002/run-002/DISCOVERY/TRAIN/2fe399211d0e946b4814/private-grade/request.json",
+        "sha256": "843673afec5f68e72a8f7b6a7c5590cfae42b37cbdeb06354b87eb2d8228914b"
+      },
+      "selection": "FIRST_LEXICOGRAPHIC_COMPLETED_RECEIPT_PER_PROJECT_WITHOUT_OUTCOME_FILTERING"
+    }
+  ],
+  "schema": "deveval/grade-integrity-diagnostic/1",
+  "status": "CONFIRMED_WORKING_METADATA_POLICY_MISMATCH",
+  "strict_initial_audit_reference": {
+    "bytes": 177411,
+    "path": "/mnt/c/Users/jewon/esm-r23-d115-writer/artifacts/skhynix_v1/deveval_002/results-002-initial-unresolved.json",
+    "sha256": "a47c5d38fa08d77a69f86feeb2b89b3093163f27839a3fdb177367b314302f8f"
+  },
+  "validation": {
+    "actual_old_control_receipt_validation": "PASS_30_REFERENCE_30_CONFIRMED_NEGATIVE",
+    "grader_tests_passed": 24,
+    "independent_checker_review": "PARENT_SOURCE_REVIEW_NO_RETAINED_BLOCKER",
+    "integrity_tests_passed": 13,
+    "total_focused_passed": 37
+  }
+}

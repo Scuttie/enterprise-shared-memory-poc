@@ -1,0 +1,51 @@
+diff --git a/django/contrib/admin/templatetags/admin_modify.py b/django/contrib/admin/templatetags/admin_modify.py
+index 60bc560..21934f7 100644
+--- a/django/contrib/admin/templatetags/admin_modify.py
++++ b/django/contrib/admin/templatetags/admin_modify.py
+@@ -72,7 +72,8 @@ def submit_row(context):
+         'show_save_as_new': not is_popup and has_change_permission and change and save_as,
+         'show_save_and_add_another': (
+             has_add_permission and not is_popup and
+-            (not save_as or add) and can_save
++            (not save_as or add) and can_save and
++            context.get('show_save_and_add_another', True)
+         ),
+         'show_save_and_continue': can_save_and_continue,
+         'show_save': show_save and can_save,
+diff --git a/tests/admin_views/test_templatetags.py b/tests/admin_views/test_templatetags.py
+index 71953d0..8827ef1 100644
+--- a/tests/admin_views/test_templatetags.py
++++ b/tests/admin_views/test_templatetags.py
+@@ -29,6 +29,32 @@ class AdminTemplateTagsTest(AdminViewBasicTestCase):
+         self.assertIs(template_context['extra'], True)
+         self.assertIs(template_context['show_save'], True)
+ 
++    def test_submit_row_show_save_and_add_another(self):
++        admin = ModelAdmin(User, site)
++        for object_id in (None, str(self.superuser.pk)):
++            if object_id is None:
++                url = reverse('admin:auth_user_add')
++            else:
++                url = reverse('admin:auth_user_change', args=[object_id])
++            request = self.request_factory.get(url)
++            request.user = self.superuser
++            for extra_context, visible in (
++                ({}, True),
++                ({'show_save_and_add_another': True}, True),
++                ({'show_save_and_add_another': False}, False),
++            ):
++                with self.subTest(object_id=object_id, extra_context=extra_context):
++                    response = admin.changeform_view(request, object_id, extra_context=extra_context)
++                    template_context = submit_row(response.context_data)
++                    self.assertIs(template_context['show_save_and_add_another'], visible)
++                    response.render()
++                    if visible:
++                        self.assertContains(response, 'name="_addanother"')
++                    else:
++                        self.assertNotContains(response, 'name="_addanother"')
++                    self.assertContains(response, 'name="_save"')
++                    self.assertContains(response, 'name="_continue"')
++
+     def test_override_change_form_template_tags(self):
+         """
+         admin_modify template tags follow the standard search pattern

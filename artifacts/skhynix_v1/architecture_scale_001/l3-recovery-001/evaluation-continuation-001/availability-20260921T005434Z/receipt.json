@@ -1,0 +1,23 @@
+{
+  "schema": "skhynix/native-availability-probe/1.0",
+  "checked_at_utc": "2026-09-21T00:54:40.341084+00:00",
+  "requested_model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "authentication": "CHATGPT_FORCED",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_seconds": 5.670080184936523,
+  "service_errors": [],
+  "usage": {
+    "input_tokens": 8676,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 5,
+    "reasoning_output_tokens": 0
+  },
+  "received_expected_reply": true,
+  "benchmark_attempts_started": 0,
+  "grader_runs": 0,
+  "model_availability_probes": 1,
+  "purchases": 0
+}

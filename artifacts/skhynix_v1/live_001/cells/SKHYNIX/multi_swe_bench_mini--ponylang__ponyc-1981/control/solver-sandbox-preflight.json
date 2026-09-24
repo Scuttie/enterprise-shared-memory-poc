@@ -1,0 +1,1 @@
+{"command_sandbox_content_hash":"006011d9e7d07159fea34305003518a9b958208d9f5c2aeb887d4c4a52be74ef","masked_image_directories":["/home/ponyc/.git"],"masked_image_files":["/home/fix.patch","/home/test.patch","/home/check_git_changes.sh","/home/prepare.sh","/home/run.sh","/home/test-run.sh","/home/fix-run.sh"],"official_grader_runs":0,"probe_containers":2,"status":"PASS"}

@@ -1,0 +1,123 @@
+{
+  "aborted_at_unix_seconds": 1789235034.566082,
+  "accepted_training": 0,
+  "codex_tokens_and_cost": null,
+  "comparison_goal_completed": false,
+  "diagnostic_ref": {
+    "path": "/home/trimem-runner/skhynix-codex-006/training-19637-a2-verifier-diagnostic.json",
+    "sha256": "b6710e4d4cf28b01750e8b781950be6387948bc12ff7f872bc0ea69fc436078e"
+  },
+  "early_abort_reason": "VERIFIED_OBSERVER_FALSE_NEGATIVE; NOT_MODEL_EXHAUSTION_OR_SUCCESS",
+  "evaluation_solve_rates": null,
+  "executed_evaluation_cells": 0,
+  "frozen_source_unchanged": true,
+  "graded_training": [
+    {
+      "cell": "A",
+      "name": "training-19637-a1",
+      "public_result_sha256": "354ac08621e0e7d9482fc8b41bed1988b3ff1492398ed58eaa3913452e5954dc"
+    },
+    {
+      "cell": "A",
+      "name": "training-19637-a2",
+      "public_result_sha256": "338877efad14eddad46fbb752b9202495f5fc03e662dc1365a54f9cd64208a79"
+    },
+    {
+      "cell": "A",
+      "name": "training-19783-a1",
+      "public_result_sha256": "b92c8963b21a6d30a36f3de6b5db5203be4538f78245cf8b0f0c00d6352e81b9"
+    },
+    {
+      "cell": "A",
+      "name": "training-19783-a2",
+      "public_result_sha256": "d94a63bbb3071d7c8e02efa8b9acce022a14e7f9350288884a77ae5fd3844de6"
+    }
+  ],
+  "guards_relaxed": false,
+  "launch_contract_sha256": "2ee5e9cc316deb96caace00799e42b3cd105c290ae0bc6bae9a32383f8d882e9",
+  "max_attempts_exhausted": false,
+  "model_feedback_provided": false,
+  "native_solver_sessions": 4,
+  "official_training_grades": 4,
+  "planned_evaluation_cells": 18,
+  "planned_max_training_attempts_per_task": 3,
+  "promoted_skills": 0,
+  "reason": "Frozen v2 observer rejects the actual normal single-failure footer 0 passed, 1 failed. Public diagnostic independently confirms genuine direct-assertion RED, clean implementation, valid one-function addition and later identical GREEN. Further006solvers stopped to avoid collecting unusable observer evidence.",
+  "results_relabelled": false,
+  "schema": "skhynix/native006-observer-defect-abort/1.0",
+  "separate_model_api_calls": 0,
+  "status": "EARLY_ABORT_OBSERVER_DEFECT",
+  "training_gate_ref": {
+    "path": "/home/trimem-runner/skhynix-codex-006/training-gate-after-4-grades.json",
+    "sha256": "75633eaae284faf206c6c9eff223a3aad86d0932db50bbcb34e5fb29abdd0409"
+  },
+  "training_official_resolved": 2,
+  "unused_prepared_cells": [
+    {
+      "cell": "B",
+      "name": "training-19637-a1",
+      "plan_sha256": "a2b2e2a47b6205d375e519428a2df8290c6be8b662020791c4b8ee518a65e062",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "C",
+      "name": "training-19637-a1",
+      "plan_sha256": "a2b2e2a47b6205d375e519428a2df8290c6be8b662020791c4b8ee518a65e062",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "B",
+      "name": "training-19637-a2",
+      "plan_sha256": "a3713a831bf977615525bb61439b9bbdec4ad5215892004b70fb99aeafdb5636",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "C",
+      "name": "training-19637-a2",
+      "plan_sha256": "a3713a831bf977615525bb61439b9bbdec4ad5215892004b70fb99aeafdb5636",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "A",
+      "name": "training-19637-a3",
+      "plan_sha256": "d250a9cc261ccaf7a7be774f3224358402f04a00ae55714cc61a6a18681675cc",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "B",
+      "name": "training-19637-a3",
+      "plan_sha256": "d250a9cc261ccaf7a7be774f3224358402f04a00ae55714cc61a6a18681675cc",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "C",
+      "name": "training-19637-a3",
+      "plan_sha256": "d250a9cc261ccaf7a7be774f3224358402f04a00ae55714cc61a6a18681675cc",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "B",
+      "name": "training-19783-a1",
+      "plan_sha256": "fc7977067038ca55a483eb2c9bfa117e1f5b6e5dca47c34b2817e363b7ab925c",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "C",
+      "name": "training-19783-a1",
+      "plan_sha256": "fc7977067038ca55a483eb2c9bfa117e1f5b6e5dca47c34b2817e363b7ab925c",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "B",
+      "name": "training-19783-a2",
+      "plan_sha256": "a5cd4098d78abaa0e0190762f21944bb3fd8fbd8600666c52df0630757d1c012",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    },
+    {
+      "cell": "C",
+      "name": "training-19783-a2",
+      "plan_sha256": "a5cd4098d78abaa0e0190762f21944bb3fd8fbd8600666c52df0630757d1c012",
+      "state_sha256": "d0a02cf858b9ba4135dfd0aab1867e08e019ca806778d71ba106da8fa54f82d8"
+    }
+  ]
+}

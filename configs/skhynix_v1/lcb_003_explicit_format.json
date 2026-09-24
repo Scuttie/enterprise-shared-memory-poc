@@ -1,0 +1,278 @@
+{
+  "schema": "trimem/lcb-pilot-config/1.0",
+  "experiment_id": "skhynix-lcb-003-explicit-format",
+  "split_path": "configs/skhynix_v1/lcb_001_public_split.json",
+  "split_sha256": "a960fee4bd549dcec2bda5828b657b4b2cd6af76198485030c33a4a55e5a75c9",
+  "org_id": "skhynix-lcb-001",
+  "owner_user_id": "experiment-owner",
+  "workers": 2,
+  "official_control_receipt": "artifacts/skhynix_v1/lcb_001/official-controls-001/control-receipt.json",
+  "official_control_receipt_sha256": "c9bb884119710625f825e7a7ae6cda74683d451e1ac852e7b12ebc6931468fe4",
+  "infrastructure_control_excluded_train_ids": [
+    "3593",
+    "3608",
+    "3629",
+    "abc372_a",
+    "abc372_c",
+    "abc372_d",
+    "abc372_e",
+    "abc372_f",
+    "abc372_g"
+  ],
+  "requested_model": "gpt-5.6-luna",
+  "reasoning_effort": "low",
+  "transport": "codex_native_chatgpt_login",
+  "train_selection": "train_pilot_ids",
+  "evaluation_selection": "pilot_ids",
+  "evaluation_partition": "valid",
+  "arms": [
+    "OFF",
+    "ON"
+  ],
+  "limits": {
+    "tool_actions": 24,
+    "public_tests": 4,
+    "task_seconds": 600,
+    "sessions": 4,
+    "code_bytes": 65536,
+    "prompt_bytes": 196608,
+    "context_bytes": 48000,
+    "memory_bytes": 12000,
+    "subtasks": 3
+  },
+  "private_grading": {
+    "timeout_seconds_per_case": 6,
+    "workers_per_cell": 1
+  },
+  "training": "Public solve trace and source reflection; no model weight update or hidden-test feedback",
+  "memory_off": "Common task graph and L0 context with no persistent-memory bank",
+  "memory_on": "Same L0 plus frozen train-only bank queried through the existing L3 then L2 then L1 controller",
+  "bank_updates_during_validation": false,
+  "test_access": "No test problem solver calls in this pilot",
+  "l3_policy": "Existing multi-owner promotion gate unchanged; one real owner cannot produce promoted L3 skills",
+  "glm_reproduction": "Use identical split IDs and budgets, collect a separate GLM training bank; Astra-bank transfer is a separate experiment",
+  "report_label": "Single-repeat matched development pilot,24previouslyseenVALIDtasks; fresh full-solving; explicit shared submission interface; conditional on frozen legacyTRAIN9 bank; not final-test generalization",
+  "repeats": 1,
+  "new_training_cells": 0,
+  "source_bank_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-bank.json",
+    "sha256": "28cab53a800811a72004cf13e64b0952bb5235b15b001543d796752637338f0d",
+    "bytes": 429327
+  },
+  "source_bank_receipt_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\bank-receipt.json",
+    "sha256": "cfe3d3f987556b84b7ec3900eb0dcadf5d411e9e5978d7aeea2e1405f9e96b21",
+    "bytes": 301
+  },
+  "source_summary_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\summary.json",
+    "sha256": "6ba3dfd8103aa28c37dddb7fe14044e453e3a4f0a22a520d00a3431c7547b8dc",
+    "bytes": 90554
+  },
+  "source_frozen_inputs_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\pilot-001\\frozen-inputs.json",
+    "sha256": "972061d70b0c4744ba07c951bbed267313271c30b5f8a42794c79d2e3aeaad59",
+    "bytes": 19592
+  },
+  "source_implementation_commit": "7b5c7e5d64e2ef11ef68e0e1b5ee0ff8fd4bcaf2",
+  "source_bank_policy": "Reuse legacy Luna train-only bank9 collected with original interface; conditional fixed-bank effect, no retraining and no negative15 bank",
+  "common_submission_contract": "Both arms receive identical explicit types, UTF8 byte limits, sorted unique target-local integers, synthetic valid JSON example, and live eligible history IDs after every action/session",
+  "diagnostic_candidate_policy": "Pregrade fixed rule: accepted final code; otherwise last trace-bound nonempty rejected finish code within65536bytes; otherwise last successful public-test action candidate; no candidate explicit",
+  "primary_metric": "Accepted final submission AND official hidden-test pass; known model/protocol/budget failure false; unknown infrastructure null",
+  "diagnostic_metric": "Official correctness of preserved candidate independently of accepted submission; never replaces primary",
+  "generation_grading_barrier": "Seal all48 fresh solve outcomes and diagnostic candidate selections before any private grading; no further model calls",
+  "launch_order": [
+    {
+      "task_id": "abc380_d",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc380_d",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc386_c",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc386_c",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "3653",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "3653",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3627",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3627",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc382_f",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc382_f",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3637",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3637",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc378_e",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc378_e",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc384_d",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc384_d",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "3648",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "3648",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc379_b",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc379_b",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc381_d",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc381_d",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3636",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3636",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc384_f",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc384_f",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3620",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3620",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "3631",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "3631",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc380_e",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc380_e",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc381_c",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc381_c",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc378_b",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc378_b",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc380_a",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc380_a",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3659",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3659",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc379_a",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "abc379_a",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3651",
+      "arm": "ON"
+    },
+    {
+      "task_id": "3651",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "3626",
+      "arm": "OFF"
+    },
+    {
+      "task_id": "3626",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc378_a",
+      "arm": "ON"
+    },
+    {
+      "task_id": "abc378_a",
+      "arm": "OFF"
+    }
+  ]
+}

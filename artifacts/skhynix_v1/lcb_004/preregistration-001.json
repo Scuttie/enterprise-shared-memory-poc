@@ -1,0 +1,323 @@
+{
+  "schema": "lcb004-preregistration/1",
+  "created_at": "2026-09-24T04:54:06.866773+00:00",
+  "status": "PREPARED",
+  "model_calls": 0,
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "low",
+  "workers": 2,
+  "planned_cells": 664,
+  "frozen_inputs_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_004\\run-001\\frozen-inputs.json",
+    "sha256": "b91145154bbc7d51135fe807285263ca27c51d85d15a346e5aeef443680f7da1",
+    "bytes": 82929
+  },
+  "validation": {
+    "synthetic_tests_passed": 82,
+    "lcb_synthetic_runtime": "artifacts/skhynix_v1/lcb_004/synthetic-runtime-001.json",
+    "deveval_reference_controls_passed": 10,
+    "deveval_negative_controls_detected": 10
+  },
+  "references": [
+    {
+      "bytes": 297858352,
+      "path": "C:\\Users\\jewon\\.vscode\\extensions\\openai.chatgpt-26.908.40401-win32-x64\\bin\\windows-x86_64\\codex.exe",
+      "sha256": "2271526227b06ca13ab2b975b88546460fc61b2a29225b6dda0fdc803024ccc9"
+    },
+    {
+      "bytes": 4829,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\artifacts\\skhynix_v1\\lcb_001\\official-controls-001\\control-receipt.json",
+      "sha256": "c9bb884119710625f825e7a7ae6cda74683d451e1ac852e7b12ebc6931468fe4"
+    },
+    {
+      "bytes": 463458,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\configs\\skhynix_v1\\lcb_001_public_split.json",
+      "sha256": "a960fee4bd549dcec2bda5828b657b4b2cd6af76198485030c33a4a55e5a75c9"
+    },
+    {
+      "bytes": 2126,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\configs\\skhynix_v1\\lcb_002_luna_pilot.json",
+      "sha256": "0446ee104765b34e8db974a9e581dc20ea20ae6c2a54205f942002a366ce7f79"
+    },
+    {
+      "bytes": 19904,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\configs\\skhynix_v1\\lcb_004_transfer_plan.json",
+      "sha256": "fe00428d819100ee2f0616e343f59e30cc983558d1ac3325222e385aedf88e78"
+    },
+    {
+      "bytes": 649,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_002\\runtime.local.json",
+      "sha256": "7ae0bc61aef6dbe48a26d0dbd06178f74be81fff52650ee6ec149bf2d036a838"
+    },
+    {
+      "bytes": 6313,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_explicit_format_native.py",
+      "sha256": "6fc7cad15e3625da5e466cf801fc4b4ad082ec377f7400ad1edb7fac0b6313ef"
+    },
+    {
+      "bytes": 36897,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_personal_memory.py",
+      "sha256": "fd96b5e8652cdf2f795088a93b8f8705e994690dcb2fccbf987a877e12dbe977"
+    },
+    {
+      "bytes": 21002,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_transfer_experiment.py",
+      "sha256": "b77136222bbcaec7a7f46e5c7cc4f071d947e2d9368d3beb9008d1ab9cbfdafa"
+    },
+    {
+      "bytes": 18445,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_transfer_native.py",
+      "sha256": "51f690312ed1ee1f8031d6777aef8414b23b7f1d2c394b36cc3120bbe5cce63d"
+    },
+    {
+      "bytes": 19088,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\lcb_transfer_plan.py",
+      "sha256": "e4ed6a3ae412e22ae881d30000b299424818ede6919700f4fad239d79b0682de"
+    },
+    {
+      "bytes": 21216,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_dataset.py",
+      "sha256": "3c6d087bfaaa4a72507a07688710eb846eb8e9358b7abdc56e14ba0edcff0962"
+    },
+    {
+      "bytes": 37928,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_experiment.py",
+      "sha256": "58537cdfaf25aa55220f902c7f8cd68a7d25d67734ff55bf1384309b54db0966"
+    },
+    {
+      "bytes": 17792,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_grade.py",
+      "sha256": "3502d90f6d961aaf26e1b689158dd4638e82961ad0f9055936c6d8410554ade1"
+    },
+    {
+      "bytes": 42118,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_memory.py",
+      "sha256": "65648afb5f2d938e058c33631f83779a32d40e0b8caba4bd5893429149367dd0"
+    },
+    {
+      "bytes": 26766,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_native.py",
+      "sha256": "79f50384bb56d0d3326c59fe1e41894555edab61c6ca373820f4c99bda8d39d1"
+    },
+    {
+      "bytes": 21220,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_public.py",
+      "sha256": "1bdeb0266426a5294dd86474a1d8512f3b4d78f22d85ce9310908ee7a0dae399"
+    },
+    {
+      "bytes": 9538,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_smoke.py",
+      "sha256": "086470bc60a36fd3239eb1ca58ba09d2357b6759734d42c3d6666e92a59e0461"
+    },
+    {
+      "bytes": 2005,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\scripts\\trimem_lcb_status.py",
+      "sha256": "1285e3e8c378d1262615b777733ffd425ac2ed7aec90557396230bb984b63ac1"
+    },
+    {
+      "bytes": 4817,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\__init__.py",
+      "sha256": "e9e1b62e3c84e284575e3ed40d20416c4cb8a799e3e1ca8d90923749ac3bfa1d"
+    },
+    {
+      "bytes": 17423,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\accounting.py",
+      "sha256": "a66e78ca451b530a83bb5f55f7923b9d2e3b8a79263ac8db3c9235b14e412631"
+    },
+    {
+      "bytes": 21564,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\adaptive_horizon.py",
+      "sha256": "76801ed58c7e93582254e8fd6da07e02a8142c5762f2946b92c3587510535e57"
+    },
+    {
+      "bytes": 227737,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\agent_runtime.py",
+      "sha256": "e35bfc84fe6b544d9f7dcce0ff707d42acf1b905fc3ca64f2e72e40513f62628"
+    },
+    {
+      "bytes": 17871,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\arms.py",
+      "sha256": "7fa3285fa52d3ad76c4ebaa19ce333f39921593597c315c815a7db0c01a88ce3"
+    },
+    {
+      "bytes": 18255,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\benchmark_seed.py",
+      "sha256": "2d152c7d941fd06125efb0e8c66290319b1206ead597ce8fee7b1ca91a65bd33"
+    },
+    {
+      "bytes": 14881,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\checkpoint.py",
+      "sha256": "634ca3d6ec4fd12b044ba34e837c474a78753779268f89038fd355e2129cedfe"
+    },
+    {
+      "bytes": 18225,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\consolidation.py",
+      "sha256": "dd8736ff8ad6a3c861add956239887af8ac9bb14ab05f0511ed49bbe21db7df8"
+    },
+    {
+      "bytes": 26292,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\context_projection.py",
+      "sha256": "e7f249fab48bbcb6f0262b2a1a81cdcf141d66ae3feba287ca703ba8721dcb5a"
+    },
+    {
+      "bytes": 23658,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\credential_free.py",
+      "sha256": "9cefd82522d4bd711e02bbe400bc5f01cd2288e4b39ce76499ef29c2c3b4915d"
+    },
+    {
+      "bytes": 12365,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\exploration_runtime.py",
+      "sha256": "aa30e32bb83e24b028cd3fed093c4e1f8a72e43b8f327b9400a77ee7cbb50bdb"
+    },
+    {
+      "bytes": 8265,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\function_tools.py",
+      "sha256": "ed99572a83700e83f7df4b8109074528e030a682c001d3732d77e75dfaf3277d"
+    },
+    {
+      "bytes": 53501,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\gateway.py",
+      "sha256": "77ff9ef190d9b5837f66c71e24eb2f50b45645c3856db45a66995362e3a9035c"
+    },
+    {
+      "bytes": 51743,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\git_workspace.py",
+      "sha256": "18543a9980f36e20ea7489812f7b8a3cbcd65b2cd2c46ad6bfd36a2a35fedd39"
+    },
+    {
+      "bytes": 19399,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\grader.py",
+      "sha256": "4746bac3f6530f7c82dd18c0433c1acc206c6d5732a216007ded732cc0359719"
+    },
+    {
+      "bytes": 20707,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\lifecycle.py",
+      "sha256": "34af69824a550afb4a9cd7dafbc64d7021f151bb069737f8ab559b47bf8be6e2"
+    },
+    {
+      "bytes": 24647,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\native_architecture_context.py",
+      "sha256": "2079c490b68fe2a004619229c026f1a2a1604c57e86a6af248aab6573d0f1276"
+    },
+    {
+      "bytes": 29468,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\policy.py",
+      "sha256": "ed5c1d1a202eadfd1054a7bb9a684829a21eaa9a966e27cdebdc4f57a7f0c38b"
+    },
+    {
+      "bytes": 24360,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\postgres_retrieval.py",
+      "sha256": "519b5d2a901917be6861064e7ddeda34e36a4587fc08971807b188957f032287"
+    },
+    {
+      "bytes": 150413,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\postgres_store.py",
+      "sha256": "4884458160b5a8ee7f9152c69c45aa9c19d9eb68be6005f29bdd2a006ca6622a"
+    },
+    {
+      "bytes": 11425,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\ppr.py",
+      "sha256": "ccf9c3aa9914ccb99079529b7f3130ffdbb17094ea106f3e41c3bbc084ed5ac1"
+    },
+    {
+      "bytes": 77597,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\production_lifecycle.py",
+      "sha256": "b1a85f40d0c6b99fbedc3470fe950318a7bd778dcbff51ced2606ff51934fc7c"
+    },
+    {
+      "bytes": 15591,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\production_promotion.py",
+      "sha256": "4302b5e43cb36a55ffb453e3600475d3c1846a3ce3881f297de8457659b88ffa"
+    },
+    {
+      "bytes": 136643,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\production_runtime.py",
+      "sha256": "cf502d265281d2abe12b19c204214e256dfe23d7702958ee3fe47fefa69a7247"
+    },
+    {
+      "bytes": 58764,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\production_v03_lifecycle.py",
+      "sha256": "a590332bf30f097dca3a88c581c20ee969be4c6d28d75ee4a95ad1529153591e"
+    },
+    {
+      "bytes": 11814,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\provider_output_contracts.py",
+      "sha256": "6b2e5711ae78057b7a29ce7424ad88e0c63e03e0051ac452dc96e67e4885f906"
+    },
+    {
+      "bytes": 52182,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\retrieval.py",
+      "sha256": "00eb5cbffdab5a84344f0b46948e6262d63c2d594223d63121324daed446ceb8"
+    },
+    {
+      "bytes": 15014,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\retrieval_store.py",
+      "sha256": "cad0c041146b2c14217d1a9fdac7d4d2b04a6828276e45ac64c8d0765bb5f62f"
+    },
+    {
+      "bytes": 9532,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\runtime_lock.py",
+      "sha256": "1ed5b6b5e075c9a0b37421503a2c1b67b825e993c153f47591fb7b1b6205797c"
+    },
+    {
+      "bytes": 26573,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\schema.py",
+      "sha256": "d27b5e42eef352050bd7da515e3c9302942f72c37af12fb6353876ab7680416d"
+    },
+    {
+      "bytes": 39333,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\scientific_terminal.py",
+      "sha256": "0e720da03bd5979bd3dd358ab6b9958dc2ce9361ffaf0dbd0b276154580e9bf2"
+    },
+    {
+      "bytes": 30954,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\skill_memory.py",
+      "sha256": "61a9366262d206fc4961719e715b7a13cf932b9ae1dcde06bdd4ff714ba3bf3b"
+    },
+    {
+      "bytes": 24235,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\skill_runtime.py",
+      "sha256": "7f8177ca78ab6afff072460273a2a54bb1876e582e8a56746d74e598239e3af7"
+    },
+    {
+      "bytes": 5961,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\solve_forensics.py",
+      "sha256": "c8b470e4ad632957c0149e6d9ddd0b2df71f895a6f109e7596de26f08736ee0e"
+    },
+    {
+      "bytes": 28497,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\store.py",
+      "sha256": "552e6caf33076f0c397c960ba29b6cd13566d4b495f9bf3b66a13ab30a5d8498"
+    },
+    {
+      "bytes": 13676,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\subgoal_context.py",
+      "sha256": "06e0a9efb15c256437e318e5c4957b009deb2712585a2363a4482128309deea5"
+    },
+    {
+      "bytes": 34880,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\vector_index.py",
+      "sha256": "346d293215bd8ced8c721756bd5ecb853b780dc5b390fec490df6a14c51a6ff8"
+    },
+    {
+      "bytes": 18185,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\working_graph.py",
+      "sha256": "e28bd7d0fad011ae5ee7ec48170e7e77ad683c732a53f51cf199185793678123"
+    },
+    {
+      "bytes": 27238,
+      "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\src\\enterprise_memory\\trimem\\workspace.py",
+      "sha256": "a7d000314af0a265ad8f4ea4d2e7583e2ed26b9f78b21b8e64ec6b76e95db51b"
+    },
+    {
+      "bytes": 3959,
+      "path": "\\\\wsl.localhost\\TriMemRunner2404\\home\\trimem-runner\\skhynix-lcb-001\\data\\public-manifest.json",
+      "sha256": "8b214cd96278b4d148447282918eaa42985452e2dbea20e8f0a4724e10b5a555"
+    },
+    {
+      "bytes": 2883232,
+      "path": "\\\\wsl.localhost\\TriMemRunner2404\\home\\trimem-runner\\skhynix-lcb-001\\data\\public\\tasks.jsonl",
+      "sha256": "2119728e9c819ad353f22e9e9cb1be50501df7d51cfa4fc7f4188a8733b53b65"
+    }
+  ]
+}

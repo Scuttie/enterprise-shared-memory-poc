@@ -7,6 +7,7 @@
 - **LCB004 종료:** DISCOVERY 80문제를 모두 제출했고 공식 채점은 성공 73, 실패 6, 미확정 1이다. 생성 테스트 실행이 0회라 개인 L3 후보가 없었고, 사전 등록한 준비 조건에 따라 `NOT_READY`로 종료했다. 후속 평가를 0점으로 계산하지 않는다. [실행 결과와 근거](SKHYNIX_LCB_004_PERSONAL_L3_RESULTS.md).
 - **DevEval001 환경 검증 완료:** Docker 없이 고정된 10문제에서 원래 구현 10/10 통과, 의도적 오답 10/10 실패를 확인했다. [환경 검증](SKHYNIX_DEVEVAL_NATIVE_PREFLIGHT.md).
 - **DevEval002 첫 실행 중단:** 커밋 `c82e724`에서 2026-09-24 05:37:30 UTC에 시작했으나, 생성 테스트의 `src/` import 경로 결함을 별도 예제로 재현해 30회 완료 후 중단했다. 수정 대상 대신 설치된 패키지를 불러올 수 있었고, 기존 후보 실행 검사는 이를 통과로 인정하지 않았지만 테스트 환경 자체가 잘못됐다. 공식 채점은 0회이며 기존 데이터는 재사용하거나 재개하지 않는다. 고정된 고유 30문제, TRAIN 18회 및 VALID/TEST 12문제 × 5조건의 총 78회 설계를 유지해 수정 후 새로 실행한다. [고정 설계](SKHYNIX_DEVEVAL_002_PLAN.md), [첫 시작 기록](../artifacts/skhynix_v1/deveval_002/execution-start-001.json), [중단 기록](../artifacts/skhynix_v1/deveval_002/interruption-001.json).
+- **DevEval002 수정 실행 시작:** 커밋 `9d4cbf3`에서 2026-09-24 06:04:41 UTC에 `run-002`를 시작했다. 모든 78회 풀이와 TRAIN 경험을 새로 수집하며 첫 실행과 합치지 않는다. 수정본의 합성 실행기·브로커 검사 21개와 실제 가려진 저장소 import 3/3을 확인했다. [수정 등록](../artifacts/skhynix_v1/deveval_002/import-protocol-amendment-001.json), [새 시작 기록](../artifacts/skhynix_v1/deveval_002/execution-start-002.json).
 - **사내 GLM 재현 준비:** 같은 문제 ID와 분할을 유지하고 GLM이 TRAIN 경험을 새로 수집한다. 로컬 GLM 호출은 하지 않았다. [이전 및 실행 안내](../docs/SKHYNIX_DEVEVAL_GLM_REPRODUCTION.md).
 
 LCB004의 TRAIN 성공률과 DevEval002의 held-out 비교를 하나의 성공률로 합치지 않는다. L3가 준비되지 않은 조건의 성적을 L3 효과의 증거로 해석하지 않는다.

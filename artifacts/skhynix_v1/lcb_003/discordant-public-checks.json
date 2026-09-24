@@ -1,0 +1,155 @@
+{
+  "schema": "lcb-explicit-format-discordant-public-checks/1",
+  "recorded_at": "2026-09-24T04:04:04.127168+00:00",
+  "summary_reference": {
+    "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\summary.json",
+    "sha256": "7007a75706b526408690bb86c5c92d04355d680009f9a249ffef5ed11ac76ee7",
+    "bytes": 64091
+  },
+  "model_calls": 0,
+  "grader_calls": 0,
+  "private_test_payloads_read": false,
+  "interpretation": "Recorded public-test outcomes only; no specific-memory causal attribution or hidden failure classification.",
+  "rows": [
+    {
+      "task_id": "abc382_f",
+      "arm": "OFF",
+      "official_passed": true,
+      "state_reference": {
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\cells\\valid-off-5af8357f5aa69a674c65\\state.json",
+        "sha256": "8a4527fa48a321148e904b6067645a1dd15ed501e38b3fab470e8f3c15fc4b29",
+        "bytes": 19365
+      },
+      "public_runs": [
+        {
+          "step": 2,
+          "status": "PASS",
+          "passed": true,
+          "candidate_sha256": "a612273099abfb7ee0fbcaa0e84193ca13daf438d7e7b564015a93a5048bdb01",
+          "passed_count": 3,
+          "failed_count": 0,
+          "test_count": 3
+        }
+      ],
+      "final_candidate_sha256": "ca3a7b019817f48e431db5d7365dffff3317aa034b3561d00aad155dacc6d2e4",
+      "final_equals_last_public_candidate": false,
+      "memory_injections": 0,
+      "public_test_budget": 4,
+      "solve_seconds": 58.775131702423096
+    },
+    {
+      "task_id": "abc382_f",
+      "arm": "ON",
+      "official_passed": false,
+      "state_reference": {
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\cells\\valid-on-5af8357f5aa69a674c65\\state.json",
+        "sha256": "956537a1284b4c95a4009c826cf754fe986e8b7db13aa86231794808c4e08777",
+        "bytes": 26878
+      },
+      "public_runs": [
+        {
+          "step": 2,
+          "status": "FAIL",
+          "passed": false,
+          "candidate_sha256": "1b51ecfa3a38c626473f2d1d664330b9782074f4e912c88b3351cc6b027ea7ea",
+          "passed_count": 0,
+          "failed_count": 1,
+          "test_count": 3
+        },
+        {
+          "step": 3,
+          "status": "FAIL",
+          "passed": false,
+          "candidate_sha256": "e3e81769e4732eb4ea92374e67d40ac97e04a883caf993be7e5d7844a23915fc",
+          "passed_count": 0,
+          "failed_count": 1,
+          "test_count": 3
+        }
+      ],
+      "final_candidate_sha256": "c49468d32cc29ec901b74bbae1145ea0665994ec3523e491f4f739fdd4e01394",
+      "final_equals_last_public_candidate": false,
+      "memory_injections": 1,
+      "public_test_budget": 4,
+      "solve_seconds": 67.04310965538025
+    },
+    {
+      "task_id": "abc384_f",
+      "arm": "OFF",
+      "official_passed": true,
+      "state_reference": {
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\cells\\valid-off-09d19db776dade1bbfef\\state.json",
+        "sha256": "4252c07de78c496e7a86f541b512dce0e5104bcfbc15845007a0cd8449a5ea05",
+        "bytes": 15441
+      },
+      "public_runs": [
+        {
+          "step": 2,
+          "status": "FAIL",
+          "passed": false,
+          "candidate_sha256": "139aadcc48e74dce2d83c19d52af971d8582f7113932e3a73836a3621f9b82f9",
+          "passed_count": 0,
+          "failed_count": 1,
+          "test_count": 3
+        },
+        {
+          "step": 3,
+          "status": "FAIL",
+          "passed": false,
+          "candidate_sha256": "42b2957c2abe742881c05554dfa5905b01c7e0166d89b9e59abde4bf0575de21",
+          "passed_count": 0,
+          "failed_count": 1,
+          "test_count": 3
+        },
+        {
+          "step": 4,
+          "status": "PASS",
+          "passed": true,
+          "candidate_sha256": "8644b03c09fc256001fc2f5d69fdcfb869c0f126f3a6c64732a3f1c01b341c41",
+          "passed_count": 3,
+          "failed_count": 0,
+          "test_count": 3
+        }
+      ],
+      "final_candidate_sha256": "8644b03c09fc256001fc2f5d69fdcfb869c0f126f3a6c64732a3f1c01b341c41",
+      "final_equals_last_public_candidate": true,
+      "memory_injections": 0,
+      "public_test_budget": 4,
+      "solve_seconds": 74.30668139457703
+    },
+    {
+      "task_id": "abc384_f",
+      "arm": "ON",
+      "official_passed": false,
+      "state_reference": {
+        "path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\cells\\valid-on-09d19db776dade1bbfef\\state.json",
+        "sha256": "8b485d0fedbefe1dea3af1295d4d8490a18425b367b202dac5ab8e14ef0bad4b",
+        "bytes": 23092
+      },
+      "public_runs": [
+        {
+          "step": 2,
+          "status": "FAIL",
+          "passed": false,
+          "candidate_sha256": "ecc55152e3f803b0a56a69981d9822d42052136640b9fd32752e10bb0ae2268a",
+          "passed_count": 1,
+          "failed_count": 1,
+          "test_count": 3
+        },
+        {
+          "step": 3,
+          "status": "FAIL",
+          "passed": false,
+          "candidate_sha256": "392566b0a2d58b2c5bd076f71a571fe585391a9df97f193f099e2030b61da2d8",
+          "passed_count": 0,
+          "failed_count": 1,
+          "test_count": 3
+        }
+      ],
+      "final_candidate_sha256": "1fcdfd00f63ada6dce46cfe28b7f6e84431a04f0eb92b1860728673029e1345c",
+      "final_equals_last_public_candidate": false,
+      "memory_injections": 2,
+      "public_test_budget": 4,
+      "solve_seconds": 83.84711694717407
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "lcb-explicit-format-closeout/1",
+  "status": "COMPLETE",
+  "confirmed_at": "2026-09-24T04:08:25.105715+00:00",
+  "execution_head": "24a277d04609ae1be3c5747ff85b96629c6f9583",
+  "manager_seconds": 1069.421000000002,
+  "cells": 48,
+  "native_sessions": 49,
+  "primary_off": 24,
+  "primary_on": 22,
+  "primary_denominator_each": 24,
+  "primary_grade_calls": 48,
+  "auxiliary_additional_grade_calls": 0,
+  "test_model_calls": 0,
+  "new_training_cells": 0,
+  "infrastructure_unresolved": 0,
+  "audit_status": "PASS",
+  "unit_tests": {
+    "core_passed": 57,
+    "audit_passed": 17
+  },
+  "copies": [
+    {
+      "name": "summary.json",
+      "sha256": "7007a75706b526408690bb86c5c92d04355d680009f9a249ffef5ed11ac76ee7",
+      "bytes": 64091,
+      "source_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\summary.json"
+    },
+    {
+      "name": "collection.json",
+      "sha256": "bbad1e33ed48753c3db54931573c2234cc3ef014155ee14a8f078debc115ceb4",
+      "bytes": 144648,
+      "source_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\collection.json"
+    },
+    {
+      "name": "diagnostic-selection.json",
+      "sha256": "66361e75a39a07abff2fec780e634eca56ef349dd693331f3e734669fe83730e",
+      "bytes": 97066,
+      "source_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\diagnostic-selection.json"
+    },
+    {
+      "name": "diagnostic-summary.json",
+      "sha256": "d097ab00765139e13e87c38c92bc7aec67af1445ef47bc342a7193500391eee1",
+      "bytes": 71510,
+      "source_path": "C:\\Users\\jewon\\esm-r23-d115-writer\\data\\skhynix_lcb_003\\run-001\\diagnostic-summary.json"
+    }
+  ]
+}
